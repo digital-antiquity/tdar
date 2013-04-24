@@ -10,6 +10,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
@@ -70,7 +71,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(false)
     public void updateOverdrawnAccountTest() throws InstantiationException, IllegalAccessException {
         Account account = setupAccountForPerson(getBasicUser());
         BillingActivityModel model = new BillingActivityModel();
@@ -82,6 +83,8 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(model);
         Document resource = generateInformationResourceWithFileAndUser();
         resource.setAccount(account);
+        final long rid = resource.getId();
+        final long accountId = account.getId();
         genericService.saveOrUpdate(resource);
         AccountAdditionStatus updateQuota = accountService.updateQuota(account, resource);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, updateQuota);
@@ -99,9 +102,33 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(activity);
         genericService.saveOrUpdate(invoice);
         genericService.saveOrUpdate(account);
-        accountService.updateQuota(account, account.getResources());
+        logger.info("updating quotas");
+        resource = null;
 
-        assertEquals(Status.ACTIVE, resource.getStatus());
+        setVerifyTransactionCallback(new TransactionCallback<Document>() {
+            @Override
+            public Document doInTransaction(org.springframework.transaction.TransactionStatus status) {
+                Account account = genericService.find(Account.class, accountId);
+                Document resource2 = genericService.find(Document.class, rid);
+                genericService.update(resource2);
+                assertFalse(resource2.isUpdated());
+                assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, resource2.getStatus());
+                accountService.updateQuota(account, account.getResources());
+
+                assertEquals(Status.ACTIVE, resource2.getStatus());
+                genericService.delete(resource2);
+                genericService.delete(account);
+                return null;
+            }
+
+        });
+    }
+
+    @Test
+    @Rollback
+    public void testUpdated() {
+        Document doc = genericService.findRandom(Document.class, 1).get(0);
+        logger.info("{}", doc.isUpdated());
     }
 
     @Test
