@@ -401,7 +401,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 iter.remove();
             }
         }
-        CollectionUtils.addIgnoreNull(kwds, toAdd);
+        kwds.addAll(toAdd);
     }
 
     protected void saveTemporalContext() {
