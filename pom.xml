@@ -188,11 +188,11 @@
 			<artifactId>icu4j</artifactId>
 			<version>4.8.1.1</version>
 		</dependency>
-		<dependency>
-			<groupId>de.schlichtherle</groupId>
-			<artifactId>truezip</artifactId>
-			<version>6.8.4</version>
-		</dependency>
+        <dependency>
+            <groupId>de.schlichtherle.truezip</groupId>
+            <artifactId>truezip-file</artifactId>
+            <version>7.7.1</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>

@@ -1,12 +1,8 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,10 +28,13 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+
+import static org.junit.Assert.*;
 
 /**
  * $Id$
@@ -56,10 +55,20 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Autowired
     private DataTableService dataTableService;
+    @Autowired
+    private DownloadService downloadService;
 
     @Before
     public void setUp() {
         controller = generateNewInitializedController(DatasetController.class);
+    }
+    
+    @Test
+    @Rollback
+    public void testDownloadArchive() throws IOException {
+        Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
+        InputStream stream = downloadService.generateZipArchive(dataset);
+        assertNotNull(stream);
     }
 
     @Test

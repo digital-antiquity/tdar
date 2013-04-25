@@ -13,7 +13,9 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
-import de.schlichtherle.io.ArchiveDetector;
+import de.schlichtherle.truezip.file.TArchiveDetector;
+import de.schlichtherle.truezip.file.TConfig;
+import de.schlichtherle.truezip.file.TFile;
 
 /**
  * @author Adam Brin
@@ -41,8 +43,8 @@ public class ListArchiveTask extends AbstractTask {
         // list all of the contents
         // NOTE: using fully qualified class names to ensure no confusion between packages
         // v7 of truezip moves to it's own dedicated namespace and resolves this issue
-        de.schlichtherle.io.File.setDefaultArchiveDetector(ArchiveDetector.ALL);
-        de.schlichtherle.io.File archiveFile = new de.schlichtherle.io.File(f_, ArchiveDetector.ALL);
+        TConfig.get().setArchiveDetector(TArchiveDetector.ALL);
+        TFile archiveFile = new TFile(f_, TArchiveDetector.ALL);
 
         listFiles(archiveContents, archiveFile, archiveFile);
 
