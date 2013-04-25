@@ -20,7 +20,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -282,10 +281,11 @@ public class ProjectController extends AbstractResourceController<Project> imple
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         return null;
     }
-    
+
     public PaginationHelper getPaginationHelper() {
-        if(paginationHelper == null) paginationHelper = PaginationHelper.withSearchResults(this);
+        if (paginationHelper == null)
+            paginationHelper = PaginationHelper.withSearchResults(this);
         return paginationHelper;
     }
-    
+
 }
