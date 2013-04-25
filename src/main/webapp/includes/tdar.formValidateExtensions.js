@@ -144,43 +144,6 @@ $.validator.addMethod("columnEncoding", function(value, element) {
     }
 });
 
-$.validator.addMethod("gis-ancillary-files", function(value, element) {
-    //get the helper,  find out what kind of files have been added;
-    var gisExt = "jpg";
-    var gisHelperExts = ["aaa", "bbb", "ccc"];
-    
-    var errors = [];
-    var helper = $(element).data("fileuploadHelper");
-    var validFiles = helper.validFiles();
-    var incompleteFiles = [];
-    if(validFiles.length) {
-        var extmap = {};
-        var compositeFiles = $.map(validFiles, function(file, idx){
-            if(extmap[file.base] === undefined) {
-                extmap[file.base] = {};
-            }
-            extmap[file.base][file.ext] = true;
-            return file.ext === gisExt ? file : null;
-        });
-        incompleteFiles = $.map(compositeFiles, function(file, idx) {
-            var neededFiles = $.map(gisHelperExts, function(ext) {
-                if(!extmap[file.base][ext])  {
-                    var neededFile = file.base + "." + ext;
-                    errors.push(file.filename + " should be accompanied by " + neededFile)
-                    return neededFile;
-                }
-            });
-            file.neededFiles = neededFiles;
-            if(file.neededFiles.length) return file;
-        });
-        var i, j;
-        
-    }
-    $(element).data('incompleteFiles', incompleteFiles);
-    return errors.length === 0;
-    
-    }, $.validator.format("One or more of your uploads is missing an accompanying file"));
-
 //if a form input has a certain value, an accompanying file upload is required
 //  $fileupload - jquery selection containing fileupload widget
 //  possibleValues - array of strings - if element value contained in this array,  this rule requires an async upload
@@ -206,3 +169,49 @@ $.validator.addMethod("valueRequiresAsyncUpload",
         }, 
         "This selection requires supporting upload file");
 
+
+//todo: still not sure where this belongs
+TDAR.fileupload.addGisMethods = function(fileuploadValidator) {
+    var f = fileuploadValidator;
+
+    //specify a file extension that requires companion files
+    // @parms.ext extension of base file (e.g. 'shp')
+    // @parms.otherExt extension of companion file
+    f.addMethod("gisCompanionFile",
+        function(file, files, parms) {
+            //TODO:  maybe add optional extension mask to addRule()?
+            if(file.ext !== parms.ext) return true;
+
+            var companionFound
+            $.each(files, function(otherFile) {
+                if((file.base === otherFile.base) && (file.ext === parms.otherExt)){
+                    return
+                }
+            });
+            return exts["dbf"] && exts["shpx"]
+        },
+        "{0} requires a companion file."
+    );
+
+    //shp, shpx and dbf files must come in a set.
+    //TODO: this is making a case for addAggregateRule() that applies once for ALL files,  but in meantime this I think
+    // this approach isn't as crappy as it appears.  Maybe gisCompanionFile should have parm.isViceVersa??
+    f.addRule("gisCompanionFile", {ext:"shp", otherExt:"dbf"}, "Please upload {1}.dbf");
+    f.addRule("gisCompanionFile", {ext:"shp", otherExt:"shpx"}, "Please upload {1}.shpx");
+
+    f.addRule("gisCompanionFile", {ext:"dbf", otherExt:"shp"}, "Please upload {1}.shp");
+    f.addRule("gisCompanionFile", {ext:"dbf", otherExt:"shpx"}, "Please upload {1}.shpx");
+
+    f.addRule("gisCompanionFile", {ext:"shpx", otherExt:"dbf"}, "Please upload {1}.dbf");
+    f.addRule("gisCompanionFile", {ext:"shpx", otherExt:"shp"}, "Please upload {1}.shp");
+
+    f.addSuggestion("gisCompanionFile", {ext:"tiff", otherExt:"tiffw"}, "You might wanna include a .tiffw with that. Just saying.");
+    f.addSuggestion("gisCompanionFile", {ext:"tiffw", otherExt:"tiff"}, "You might wanna include a .tiff with that. Just saying.");
+
+
+    //TODO: get message verbiage from abrin
+    //TODO: create "extension count max" method
+    //TODO: create "no dupes" method
+
+
+};

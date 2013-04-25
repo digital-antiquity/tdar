@@ -2,7 +2,8 @@
  * $Id$
  *
  * jQuery Validator Plugin extension for jQuery File Upload Plugin
- */ 
+ */
+//TODO: implement 'suggestions'.  treat them like rules but don't prevent submit.
 var FileuploadValidator;
 (function(console) {
     "option explicit";
@@ -26,6 +27,10 @@ var FileuploadValidator;
     FileuploadValidator = Class.extend({
         //errors resulting from the last validate()
         errors: [],
+
+        //suggestions are a subset of errors that, when present, will show error  messages but not cause uploud to be 'invalid'
+        suggestions: [],
+
         //similar to $.validator methods. defines for given context whether a file is valid, e.g. 'duplicate-name'
         methods: {},
 
@@ -76,18 +81,23 @@ var FileuploadValidator;
             var files = this.helper.validFiles();
             for(var i = 0; i < this.rules.length; i++) {
                 var rule = this.rules[i];
-                var method = this.methods[rule.methodName];
-                var message = this.messages[rule.methodName];
+                var method = rule.method;
+                var message = rule.message;
                 var self = this;
+                this.suggestions = [];
                 this.errors = $.map(files, function(file, idx) {
-                    var valid = !method(file, files, rule.settings)
+                    var valid = method(file, files, rule.settings);
                     console.log("validate  rule:%s   method:%s   valid:%s", rule, typeof method, valid);
-                    if(valid) {
+                    if(!valid) {
                         self.highlight(file);
-                        return {
+                        var error = {
                             "file": file,
-                            "message": (self.messages[rule.methodName])(file.filename, idx)
+                            "message": message(file.filename, file.base, file.ext, idx)
                         };
+                        self.errors.push(error);
+                        if(rule.suggestion) {
+                            self.suggestions.push(error);
+                        }
                     } else {
                         self.unhighlight(file);
                     }
@@ -98,7 +108,9 @@ var FileuploadValidator;
                     this.showErrors();
                 }
             }
-            return this.errors.length === 0;
+
+            //if we have no errors, or the only errors are mere suggestions,  then the uploads are valid
+            return this.errors.length === 0 || this.errors.length === this.suggestions.length;
         },
 
         clearErrors: function() {
@@ -130,13 +142,27 @@ var FileuploadValidator;
             }
         },
 
-        //unlike $.validator, it doesn't make sense to tie rules to elements
-        addRule: function(methodName, settings){
+        //THINKABOUTIT: unlike $.validator, it doesn't make sense to tie rules to elements...
+        // but it might make sense to tie to extensions?
+        addRule: function(methodName, settings, customMessage){
             console.log("add rule: %s", methodName);
-            this.rules.push({
-                "methodName": methodName,
-                "settings": settings
-            });
+            var message = this.messages[methodName];
+            if(customMessage) {
+                message = $.validator.format(customMessage);
+            }
+            var rule  = {
+                "method": this.methods[methodName],
+                "settings": settings,
+                "message": message,
+                "suggestion": false
+            };
+            this.rules.push(rule);
+            return rule;
+        },
+
+        addSuggestion: function(methodName, settings, customMessage) {
+            var rule = this.addRule( methodName, settings, customMessage);
+            rule.suggested = true;
         },
 
         highlight: function(file) {

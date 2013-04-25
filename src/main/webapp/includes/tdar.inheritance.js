@@ -114,25 +114,6 @@ function enableSection(idSelector) {
     $('.addAnother, .minus', idSelector).show();
 }
 
-// remove all but the first item of a repeatrow table.
-function resetRepeatRowTable(id, newSize) {
-    var table = $('#' + id);
-    table.hide();
-    if (!newSize)
-        newSize = 1;
-    table.find("tbody tr:not(:first)").remove();
-    // change the id/name for each element in first row that matches _num_
-    // format to _0_
-    var firstRow = table.find("tbody tr:first");
-    resetIndexedAttributes(firstRow);
-    if (newSize > 1) {
-        for ( var i = 1; i < newSize; i++) {
-            repeatRow(id, null, false);
-        }
-    }
-    table.show();
-}
-
 // modify id/name attribute in element and children if they follow 'indexed'
 // pattern
 // e.g. <input name='my_input_field[12]'> becomes <input
