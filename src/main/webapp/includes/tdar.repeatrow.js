@@ -185,7 +185,6 @@ TDAR.repeatrow = function() {
     };
     
     
-    
     //return public members
     //console.log("repeatrow loaded");
     return {
@@ -197,4 +196,30 @@ TDAR.repeatrow = function() {
     
 }();
 
+TDAR.namespace("supersecret");
+
+TDAR.supersecret.registerSplittables = function(rootSelector) {
+    var cloneSection = TDAR.repeatrow.cloneSection;
+    $(rootSelector).bind("change", ".splittable", function(evt) {
+        if(!evt.target.value) return;
+        var inputElem = evt.target;
+        var $inputElem = $(inputElem);
+        var $repeatable = $inputElem.closest(".repeatLastRow");
+        var $lastRow = $repeatable.find(".repeat-row:last");
+        
+        var vals = $inputElem.val().split("||");
+        if(vals.length > 1) {
+            inputElem.value = vals.shift();
+        }
+        $.each(vals, function(idx, val){
+            var $clone = cloneSection($lastRow[0]);
+            $clone.find(".splittable").val($.trim(val));
+        });
+    });
+};
+
+$(function() {
+    $('#resourceMetadataForm_temporalKeywords_0_').addClass("splittable");
+    TDAR.supersecret.registerSplittables('body');
+});
 
