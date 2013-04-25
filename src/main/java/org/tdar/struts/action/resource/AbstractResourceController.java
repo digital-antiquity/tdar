@@ -382,8 +382,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     private void cleanupKeywords(List<String> kwds) {
-        return;
-/*        if (CollectionUtils.isEmpty(kwds)) {
+
+        if (CollectionUtils.isEmpty(kwds)) {
             return;
         }
         String delim = "||";
@@ -401,7 +401,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 iter.remove();
             }
         }
-        CollectionUtils.addIgnoreNull(kwds, toAdd);*/
+        CollectionUtils.addIgnoreNull(kwds, toAdd);
     }
 
     protected void saveTemporalContext() {
