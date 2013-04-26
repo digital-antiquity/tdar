@@ -47,7 +47,7 @@ import com.opensymphony.xwork2.Preparable;
 @Result(name = "new", type = "redirect", location = "new")
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
 
-    protected static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
+    private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
 
     private static final long serialVersionUID = 1147098995283237748L;
 
@@ -141,8 +141,9 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @SkipValidation
     @HttpsOnly
     public String welcome() {
-        if (!isAuthenticated())
+        if (!isAuthenticated()) {
             return "new";
+        }
         person = getAuthenticatedUser();
         personId = person.getId();
         return SUCCESS;
