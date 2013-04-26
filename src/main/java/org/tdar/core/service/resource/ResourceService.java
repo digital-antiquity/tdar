@@ -1,5 +1,6 @@
 package org.tdar.core.service.resource;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -272,17 +273,17 @@ public class ResourceService extends GenericService {
         // tDAR entities/beans
         logger.debug("Current Collection of {}s ({}) : {} ", new Object[] { cls.getSimpleName(), current.size(), current });
 
-        // FIXME: This is far from IDEAL, but the set management is failing. From what I can tell, the issue may be
-        // deeper in Hibernate and not in the set management as the hashCode and equalityCode that's above seems to
-        // when uncommented show that the values are calculated properly, but even then, the system is failing in
-        // executing the remove properly. remove will even report that it's successful if you call "clear()" on
-        // the collection first.
+        /*
+         * Because we're using ID for the equality and hashCode, we have no way to avoid deleting everything and re-adding it.
+         * This is an issue as what'll end up happening otherwise is something like editing a Date results in no persisted change because the 
+         * "retainAll" below keeps the older version
+         */
 
         // Collection<H> retainAll = CollectionUtils.retainAll(current, incoming);
         // current.clear();
         // current.addAll(retainAll);
         current.retainAll(incoming);
-
+        Map<Long, H> idMap = Persistable.Base.createIdMap(current);
         if (!CollectionUtils.isEmpty(incoming)) {
             logger.debug("Incoming Collection of {}s ({})  : {} ", new Object[] { cls.getSimpleName(), incoming.size(), incoming });
             Iterator<H> incomingIterator = incoming.iterator();
@@ -290,6 +291,17 @@ public class ResourceService extends GenericService {
                 H hasResource_ = incomingIterator.next();
 
                 if (hasResource_ != null) {
+
+                    
+                    // attach the incoming notes to a hibernate session
+                    logger.trace("adding {} to {} ", hasResource_, current);
+                    if (idMap.containsKey(hasResource_.getId())) {
+                        try {
+                            BeanUtils.copyProperties(idMap.get(hasResource_.getId()), hasResource_);
+                        } catch (Exception e) {
+                            logger.error("exception setting bean property", e);
+                        }
+                    } 
 
                     if (validateMethod != ErrorHandling.NO_VALIDATION) {
                         boolean isValid = false;
@@ -308,9 +320,8 @@ public class ResourceService extends GenericService {
                         }
                     }
 
-                    // attach the incoming notes to a hibernate session
-                    logger.trace("adding {} to {} ", hasResource_, current);
                     current.add(hasResource_);
+
                     // if (shouldSave) {
                     // getGenericDao().saveOrUpdate(hasResource_);
                     // }
