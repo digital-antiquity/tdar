@@ -1,16 +1,17 @@
 package org.tdar.core.service;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-
-import static org.junit.Assert.assertTrue;
 
 public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
@@ -25,11 +26,15 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         FileUtils.cleanDirectory(ROOT_DEST);
     }
     
+    @After
+    public void cleanup() throws IOException {
+        FileUtils.cleanDirectory(ROOT_DEST);
+    }
     
     //get some files from the test dir and put them into an archive stream
     @Test
     public void testDownloadArchive() throws IOException {
-        Collection<File> files = FileUtils.listFiles(ROOT_DEST, null, false);
+        Collection<File> files = FileUtils.listFiles(ROOT_SRC, null, false);
         File dest = new File(ROOT_DEST, "everything.zip");
         downloadService.generateZipArchive(files, dest);
         assertTrue("file should have been created", dest.exists());

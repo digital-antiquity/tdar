@@ -41,10 +41,11 @@ public class DownloadService {
             ZipEntry entry = new ZipEntry(file.getName());
             zout.putNextEntry(entry);
             FileInputStream fin  = new FileInputStream(file);
+            logger.debug("adding to archive: {}", file);
             IOUtils.copy(fin, zout);
             IOUtils.closeQuietly(fin);
-            IOUtils.closeQuietly(zout);
         }
+        IOUtils.closeQuietly(zout);
     }
     
     public void generateZipArchive(InformationResource resource, File destinationFile) throws IOException {
