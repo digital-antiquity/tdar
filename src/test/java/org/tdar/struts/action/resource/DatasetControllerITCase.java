@@ -65,14 +65,6 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     
     @Test
     @Rollback
-    public void testDownloadArchive() throws IOException {
-        Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
-        InputStream stream = downloadService.generateZipArchive(dataset);
-        assertNotNull(stream);
-    }
-
-    @Test
-    @Rollback
     public void test() {
         Person p = genericService.find(Person.class, getUser().getId());
         Dataset dataset = genericService.findRandom(Dataset.class, 1).get(0);
