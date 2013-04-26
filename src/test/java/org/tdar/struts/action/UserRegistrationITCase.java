@@ -5,21 +5,36 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
+import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.web.SessionData;
+
+import freemarker.core.Environment;
+import freemarker.core.TemplateElement;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateModel;
 
 /**
  * $Id$
@@ -28,8 +43,9 @@ import org.tdar.web.SessionData;
  * 
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
+ * @param <E>
  */
-public class UserRegistrationITCase extends AbstractControllerITCase {
+public class UserRegistrationITCase<E> extends AbstractControllerITCase {
 
     static final String REASON = "because";
     private static final String TESTING_EMAIL = "test2asd@test2.com";
@@ -37,6 +53,9 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
     @Autowired
     UserAccountController controller;
+    
+    @Autowired
+    private Configuration freemarkerConfiguration;
 
     @Autowired
     AuthenticationAndAuthorizationService authService;
@@ -124,6 +143,24 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         boolean deleteUser = authService.getAuthenticationProvider().deleteUser(p);
         assertTrue("could not delete user", deleteUser);
         assertTrue("no errors expected", controller.getActionErrors().size() == 0);
+    }
+    
+    @Test
+    @Rollback
+    public void testRegistrationEmailSent() {
+        controller.setTimeCheck(System.currentTimeMillis() - 10000);
+        setupValidUserInController(controller);
+        Map<String, String> welcomeEmailValues = controller.getWelcomeEmailValues();
+        MockMailSender mms = (MockMailSender)controller.getEmailService().getMailSender();
+        ArrayList<SimpleMailMessage> messages = mms.getMessages();
+        // we assume that the message sent was the registration one. If it wasn't we will soon find out...
+        assertTrue("Registration email was not sent.", messages.size() == 1); 
+        String messageText = messages.get(0).getText();
+        // the following isn't exact: if we have duplicate values, for example, it may fail
+        // however, I don't know an easy way of getting the interpolations short of parsing the template directly... 
+        for (Map.Entry<String, String> entry : welcomeEmailValues.entrySet()) {
+            assertTrue("Interpololation ${" + entry.getKey() + "} is not set.", messageText.contains(entry.getValue()));
+        }
     }
 
     @Test

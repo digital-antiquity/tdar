@@ -1,6 +1,8 @@
 package org.tdar.struts.action;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -18,6 +20,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -43,6 +46,8 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @Result(name = "new", type = "redirect", location = "new")
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
+
+    protected static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
 
     private static final long serialVersionUID = 1147098995283237748L;
 
@@ -113,12 +118,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     public String edit() {
         if (isAuthenticated()) {
             return SUCCESS;
-        } else {
-            return "new";
         }
+        return "new";
     }
 
-    
     @Action("view")
     @SkipValidation
     @HttpsOnly
@@ -132,13 +135,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return UNAUTHORIZED;
     }
 
-    @Action(value="welcome", results={
+    @Action(value = "welcome", results = {
             @Result(name = SUCCESS, location = "view.ftl")
     })
     @SkipValidation
     @HttpsOnly
     public String welcome() {
-        if (!isAuthenticated()) return "new";
+        if (!isAuthenticated())
+            return "new";
         person = getAuthenticatedUser();
         personId = person.getId();
         return SUCCESS;
@@ -170,16 +174,17 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
         try {
             Person findByUsername = getEntityService().findByUsername(person.getUsername());
-            // short circut the login process -- if there username and password are registered and valid -- just move on. 
+            // short circut the login process -- if there username and password are registered and valid -- just move on.
             if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
                 try {
-                AuthenticationStatus status = getAuthenticationAndAuthorizationService().authenticatePerson(findByUsername.getUsername(), password, getServletRequest(), getServletResponse(),
-                        getSessionData());
-                if (status == AuthenticationStatus.AUTHENTICATED) {
-                    return SUCCESS;
-                }
+                    AuthenticationStatus status = getAuthenticationAndAuthorizationService().authenticatePerson(findByUsername.getUsername(), password,
+                            getServletRequest(), getServletResponse(),
+                            getSessionData());
+                    if (status == AuthenticationStatus.AUTHENTICATED) {
+                        return SUCCESS;
+                    }
                 } catch (Exception e) {
-                    logger.warn("could not authenticate" ,e);
+                    logger.warn("could not authenticate", e);
                 }
             }
             reconcilePersonWithTransient(findByUsername, ERROR_USERNAME_ALREADY_REGISTERED);
@@ -214,9 +219,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
             boolean success = getAuthenticationAndAuthorizationService().getAuthenticationProvider().addUser(person, password);
             if (success) {
+                sendWelcomeEmail();
                 getLogger().info("Added user to auth service successfully.");
             } else {
-                //we assume that the add operation failed because user was already in crowd. Common scenario for dev/alpha, but not prod.
+                // we assume that the add operation failed because user was already in crowd. Common scenario for dev/alpha, but not prod.
                 getLogger().error("user {} already existed in auth service.  Not unusual unless it happens in prod context ", person);
             }
             // log person in.
@@ -247,6 +253,36 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return ERROR;
     }
 
+    private void sendWelcomeEmail() {
+        try {
+            String subject = String.format("Welcome to %s", TdarConfiguration.getInstance().getSiteAcronym());
+            Map<String, String> map = getWelcomeEmailValues();
+            getEmailService().sendTemplate(EMAIL_WELCOME_TEMPLATE, map, subject, person);
+        } catch (Exception e) {
+            // we don't want to ruin the new user's experience with a nasty error message...
+            logger.error("Suppressed error that occured when trying to send welcome email", e);
+        }
+    }
+
+    protected Map<String, String> getWelcomeEmailValues() {
+        Map<String, String> result = new HashMap<>();
+        final TdarConfiguration config = TdarConfiguration.getInstance();
+        result.put("firstName", person.getFirstName());
+        result.put("siteAcronym", config.getSiteAcronym());
+        result.put("userName", person.getUsername());
+        result.put("baseUrl", config.getBaseUrl());
+        result.put("documentationUrl", config.getDocumentationUrl());
+        result.put("newsRssFeed", config.getNewsRssFeed());
+        result.put("bugReportUrl", config.getBugReportUrl());
+        result.put("culturalTermsHelpURL", config.getCulturalTermsHelpURL());
+        result.put("investigationTypesHelpURL", config.getInvestigationTypesHelpURL());
+        result.put("materialTypesHelpURL", config.getMaterialTypesHelpURL());
+        result.put("siteTypesHelpURL", config.getSiteTypesHelpURL());
+        result.put("contactEmail", config.getContactEmail());
+        result.put("siteName", config.getSiteName());
+        return result;
+    }
+
     private void reconcilePersonWithTransient(Person person_, String error) {
         if (person_ != null && Persistable.Base.isNullOrTransient(person)) {
             if (person_.isRegistered()) {
@@ -270,10 +306,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Override
     public void validate() {
         logger.trace("calling validate");
-        
-        if(person != null && person.getUsername() != null) {
-            String normalizedUsername =  getAuthenticationAndAuthorizationService().normalizeUsername(person.getUsername());
-            if(!normalizedUsername.equals(person.getUsername())) {
+
+        if (person != null && person.getUsername() != null) {
+            String normalizedUsername = getAuthenticationAndAuthorizationService().normalizeUsername(person.getUsername());
+            if (!normalizedUsername.equals(person.getUsername())) {
                 logger.info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
                 person.setUsername(normalizedUsername);
             }
@@ -308,10 +344,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         } else if (!new EqualsBuilder().append(password, confirmPassword).isEquals()) {
             addActionError(ERROR_PASSWORDS_DONT_MATCH);
         }
-        
+
         checkForSpammers();
     }
-    
+
     /**
      * 
      */
@@ -388,8 +424,9 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         this.personId = personId;
     }
 
+    @Override
     public void prepare() {
-        if (Persistable.Base.isNullOrTransient(personId)){
+        if (Persistable.Base.isNullOrTransient(personId)) {
             getLogger().debug("prepare: creating new person");
             person = new Person();
         } else {
