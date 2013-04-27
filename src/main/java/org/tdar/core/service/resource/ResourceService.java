@@ -1,6 +1,5 @@
 package org.tdar.core.service.resource;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +15,7 @@ import java.util.Set;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -135,7 +135,6 @@ public class ResourceService extends GenericService {
         logResourceModification(modifiedResource, person, message, null);
     }
 
-    
     @Transactional(readOnly = true)
     public List<Resource> findAllSparseActiveResources() {
         return datasetDao.findAllSparseActiveResources();
@@ -275,7 +274,7 @@ public class ResourceService extends GenericService {
 
         /*
          * Because we're using ID for the equality and hashCode, we have no way to avoid deleting everything and re-adding it.
-         * This is an issue as what'll end up happening otherwise is something like editing a Date results in no persisted change because the 
+         * This is an issue as what'll end up happening otherwise is something like editing a Date results in no persisted change because the
          * "retainAll" below keeps the older version
          */
 
@@ -292,16 +291,21 @@ public class ResourceService extends GenericService {
 
                 if (hasResource_ != null) {
 
-                    
                     // attach the incoming notes to a hibernate session
                     logger.trace("adding {} to {} ", hasResource_, current);
-                    if (idMap.containsKey(hasResource_.getId())) {
+                    H existing = idMap.get(hasResource_.getId());
+                    /*
+                     * If we're not transient, compare the two beans on all of their local properties (non-recursive) -- if there are differences
+                     * copy. otherwise, move on.  Question -- it may be more work to compare than to just "copy"... is it worth it?
+                     */
+                    if (Persistable.Base.isNotNullOrTransient(existing) && !EqualsBuilder.reflectionEquals(existing, hasResource_)) {
                         try {
-                            BeanUtils.copyProperties(idMap.get(hasResource_.getId()), hasResource_);
+                            logger.trace("copying bean properties for entry in existing set");
+                            BeanUtils.copyProperties(existing, hasResource_);
                         } catch (Exception e) {
                             logger.error("exception setting bean property", e);
                         }
-                    } 
+                    }
 
                     if (validateMethod != ErrorHandling.NO_VALIDATION) {
                         boolean isValid = false;

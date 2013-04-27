@@ -168,6 +168,16 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap2.put("coverageDates[0].endDate", ORIGINAL_END_DATE);
         docValMap2.put("coverageDates[0].dateType", CoverageType.CALENDAR_DATE.name());
 
+        if (TdarConfiguration.getInstance().getLicenseEnabled()) {
+            docValMap2.put("resource.licenseType", LicenseType.OTHER.name());
+            docValMap2.put("resource.licenseText", "my custom license");
+        }
+
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            docValMap2.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+
+        
         for (String key : docValMap2.keySet()) {
             setInput(key, docValMap2.get(key));
         }
