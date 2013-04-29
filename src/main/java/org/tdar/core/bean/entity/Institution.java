@@ -154,11 +154,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     }
 
     @Override
-    public List<?> getEqualityFields() {
-        return Arrays.asList(getProperName());
-    }
-
-    @Override
     protected String[] getIncludedJsonProperties() {
         return JSON_PROPERTIES;
     }

@@ -1,7 +1,10 @@
 package org.tdar.core.bean.entity;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -248,6 +251,11 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         return hashCode;
     }
 
+    @XmlTransient
+    public List<?> getEqualityFields() {
+        return Collections.emptyList();
+    }
+    
     /**
      * @param description
      *            the description to set

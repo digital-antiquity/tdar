@@ -319,10 +319,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.phonePublic = toggle;
     }
 
-    @XmlTransient
-    public List<?> getEqualityFields() {
-        return Arrays.asList(email, username, lastName, firstName, phone);
-    }
 
     @XmlTransient
     public Set<BookmarkedResource> getBookmarkedResources() {
