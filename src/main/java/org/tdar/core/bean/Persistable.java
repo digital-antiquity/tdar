@@ -160,46 +160,39 @@ public interface Persistable extends Serializable {
          */
         public static boolean isEqual(Persistable a, Persistable b) {
             Logger logger = LoggerFactory.getLogger(a.getClass());
+            //null is never equal to anything
             if (a == null || b == null) {
                 logger.trace("false b/c one is null");
                 return false;
             }
+            
+            //objects  that are the same are equal
             if (a == b) {
                 logger.trace("object equality");
                 return true;
             }
-            /*
-             * Some tests are failing b/c javaasist subclass? or bytecode manipulation of tDAR classes:
-             * eg: AdvancedSearchControllerITCase.testResourceCreatorPerson:
-             * result: final equality false b/c of class class org.tdar.core.bean.resource.Document != class
-             * org.tdar.core.bean.resource.Document_$$_javassist_62
-             */
-            if (!(a.getClass().isAssignableFrom(b.getClass()))) {
-                logger.trace("false b/c of class {} != {} ", a.getClass(), b.getClass());
+            
+            //objects of different classes are never equal
+            if(!a.getClass().equals(b.getClass())) {
                 return false;
             }
-            // at this point we know that a and b are: not null, not identical, and are the same class
 
-            // unless subclass says otherwise, use ID for equals & hashcode
-            if (a.getEqualityFields().isEmpty()) {
-                if (isTransient(a) || isTransient(b)) {
-                    logger.trace("false b/c of transience {} != {} ", a, b);
-                    // we treat transient objects the same as null. equals is always false and hashcode is always 0
+            EqualsBuilder equalsBuilder = new EqualsBuilder();
+
+            if(a.getEqualityFields().isEmpty()) {
+                if(isTransient(a) || isTransient(b)) {
                     return false;
                 } else {
-                    logger.trace("compairing IDs {} != {} ", a, b);
-                    return a.getId().equals(b.getId());
+                    equalsBuilder.append(a.getId(), b.getId());
                 }
             } else {
-                // OKAY. The persistable specifies how they define equality. The customer is always right.
-                EqualsBuilder equalsBuilder = new EqualsBuilder();
                 Object[] selfEqualityFields = a.getEqualityFields().toArray();
                 Object[] candidateEqualityFields = b.getEqualityFields().toArray();
                 logger.trace("comparing equality fields {} != {} ", selfEqualityFields, candidateEqualityFields);
                 equalsBuilder.append(selfEqualityFields, candidateEqualityFields);
-                return equalsBuilder.isEquals();
             }
-
+            
+            return equalsBuilder.isEquals();
         }
 
         public static <P extends Persistable> Map<Long, P> createIdMap(Collection<P> items) {
@@ -218,9 +211,7 @@ public interface Persistable extends Serializable {
                 return 0;
             HashCodeBuilder builder = new HashCodeBuilder(23, 37);
 
-            List<?> equalityTest = new ArrayList(persistable.getEqualityFields());
-            equalityTest.removeAll(Collections.singleton(null));
-            if (CollectionUtils.isEmpty(equalityTest)) {
+            if (CollectionUtils.isEmpty(persistable.getEqualityFields())) {
                 if (isTransient(persistable)) {
                     return System.identityHashCode(persistable);
                 } else {
