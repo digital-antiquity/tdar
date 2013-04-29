@@ -257,30 +257,18 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private void sendWelcomeEmail() {
         try {
             String subject = String.format("Welcome to %s", TdarConfiguration.getInstance().getSiteAcronym());
-            Map<String, String> map = getWelcomeEmailValues();
-            getEmailService().sendTemplate(EMAIL_WELCOME_TEMPLATE, map, subject, person);
+            getEmailService().sendTemplate(EMAIL_WELCOME_TEMPLATE, getWelcomeEmailValues(), subject, person);
         } catch (Exception e) {
             // we don't want to ruin the new user's experience with a nasty error message...
             logger.error("Suppressed error that occured when trying to send welcome email", e);
         }
     }
 
-    protected Map<String, String> getWelcomeEmailValues() {
-        Map<String, String> result = new HashMap<>();
+    protected Map<String, Object> getWelcomeEmailValues() {
+        Map<String, Object> result = new HashMap<>();
         final TdarConfiguration config = TdarConfiguration.getInstance();
-        result.put("firstName", person.getFirstName());
-        result.put("siteAcronym", config.getSiteAcronym());
-        result.put("userName", person.getUsername());
-        result.put("baseUrl", config.getBaseUrl());
-        result.put("documentationUrl", config.getDocumentationUrl());
-        result.put("newsRssFeed", config.getNewsRssFeed());
-        result.put("bugReportUrl", config.getBugReportUrl());
-        result.put("culturalTermsHelpURL", config.getCulturalTermsHelpURL());
-        result.put("investigationTypesHelpURL", config.getInvestigationTypesHelpURL());
-        result.put("materialTypesHelpURL", config.getMaterialTypesHelpURL());
-        result.put("siteTypesHelpURL", config.getSiteTypesHelpURL());
-        result.put("contactEmail", config.getContactEmail());
-        result.put("siteName", config.getSiteName());
+        result.put("user", person);
+        result.put("config", config);
         return result;
     }
 
