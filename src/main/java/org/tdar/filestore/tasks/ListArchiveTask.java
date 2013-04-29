@@ -41,8 +41,7 @@ public class ListArchiveTask extends AbstractTask {
         StringBuilder archiveContents = new StringBuilder();
 
         // list all of the contents
-        // NOTE: using fully qualified class names to ensure no confusion between packages
-        // v7 of truezip moves to it's own dedicated namespace and resolves this issue
+        // http://blog.msbbc.co.uk/2011/09/java-getting-started-with-truezip-api.html
         TConfig.get().setArchiveDetector(TArchiveDetector.ALL);
         TFile archiveFile = new TFile(f_, TArchiveDetector.ALL);
 
