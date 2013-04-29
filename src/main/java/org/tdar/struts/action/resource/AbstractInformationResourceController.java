@@ -151,7 +151,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         try {
             getInformationResourceService().importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this,
                     proxies);
-        } catch (IOException e) {
+        } catch (Exception e) {
             addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
         }
         getInformationResourceService().saveOrUpdate(getPersistable());

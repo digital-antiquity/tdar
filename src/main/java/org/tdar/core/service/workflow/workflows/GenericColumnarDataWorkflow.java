@@ -1,8 +1,12 @@
 package org.tdar.core.service.workflow.workflows;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -24,6 +28,7 @@ import org.tdar.db.conversion.converters.TabConverter;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
+import org.tdar.struts.data.FileProxy;
 
 /**
  * $Id$
@@ -52,8 +57,21 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
         registerFileExtension("accdb", AccessDatabaseConverter.class, null, ResourceType.DATASET);
         registerFileExtension("mdbx", AccessDatabaseConverter.class, null, ResourceType.DATASET);
         registerFileExtension("shp", ShapeFileDatabaseConverter.class, null, ResourceType.DATASET);
+        getRequiredExtensions().put("shp", Arrays.asList("dbf", "sbn", "sbx", "shp.xml", "shx", "xml"));
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
         addTask(ConvertDatasetTask.class, WorkflowPhase.CREATE_DERIVATIVE);
+    }
+    
+    @Override
+    public boolean validateProxyCollection(FileProxy primary) {
+        if (primary.getExtension().equals("shp")) {
+            List<String> supporting = new ArrayList<String>(getRequiredExtensions().get("shp"));
+            for (FileProxy proxy : primary.getSupportingProxies()) {
+                supporting.remove(proxy.getExtension());
+            }
+            return CollectionUtils.isEmpty(supporting);
+        }
+        return true;
     }
 
     public void registerFileExtension(String fileExtension, Class<? extends DatasetConverter> datasetConverter,

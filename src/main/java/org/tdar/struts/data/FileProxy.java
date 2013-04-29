@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Sequenceable;
+import org.tdar.core.bean.resource.HasExtension;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
@@ -24,7 +27,7 @@ import org.tdar.core.bean.resource.VersionType;
  * @author $Author$
  * @version $Revision$
  */
-public class FileProxy implements Serializable, Sequenceable<FileProxy> {
+public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExtension {
 
     private static final long serialVersionUID = 1390565134253286109L;
 
@@ -41,6 +44,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     private InformationResourceFileVersion informationResourceFileVersion;
 
     private List<FileProxy> additionalVersions = new ArrayList<FileProxy>();
+    private List<FileProxy> supportingProxies = new ArrayList<FileProxy>();
 
     private transient final static Logger LOGGER = LoggerFactory.getLogger(FileProxy.class);
 
@@ -219,6 +223,22 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
 
     public void setInformationResourceFileVersion(InformationResourceFileVersion informationResourceFileVersion) {
         this.informationResourceFileVersion = informationResourceFileVersion;
+    }
+
+    @Override
+    public String getExtension() {
+        if (StringUtils.isNotBlank(filename) && filename.contains(".")) {
+            return FilenameUtils.getExtension(filename);
+        }
+        return null;
+    }
+
+    public List<FileProxy> getSupportingProxies() {
+        return supportingProxies;
+    }
+
+    public void setSupportingProxies(List<FileProxy> supportingProxies) {
+        this.supportingProxies = supportingProxies;
     }
 
 }

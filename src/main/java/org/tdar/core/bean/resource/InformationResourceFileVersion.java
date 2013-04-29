@@ -34,7 +34,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 @Table(name = "information_resource_file_version", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "information_resource_file_id", "file_version", "internal_type" })
 })
-public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable {
+public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension {
 
     private static final long serialVersionUID = 3768354809654162949L;
 
@@ -53,7 +53,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     private String format;
 
-    @Column(name="primary_file")
+    @Column(name = "primary_file")
     private Boolean primaryFile = Boolean.FALSE;
 
     private String extension;

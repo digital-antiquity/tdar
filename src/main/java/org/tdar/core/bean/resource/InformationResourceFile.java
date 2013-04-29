@@ -100,7 +100,17 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     public enum FileType {
-        IMAGE, DOCUMENT, COLUMNAR_DATA, FILE_ARCHIVE, OTHER
+        IMAGE, DOCUMENT, COLUMNAR_DATA, FILE_ARCHIVE, GEOSPATIAL, OTHER;
+
+        public boolean isComposite() {
+            switch (this) {
+                case COLUMNAR_DATA:
+                case GEOSPATIAL:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 
     public enum FileAccessRestriction implements HasLabel {

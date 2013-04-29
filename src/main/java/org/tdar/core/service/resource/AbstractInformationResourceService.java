@@ -1,6 +1,7 @@
 package org.tdar.core.service.resource;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -8,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -27,6 +30,7 @@ import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 import org.tdar.core.service.workflow.WorkflowResult;
+import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.BaseFilestore;
@@ -88,18 +92,27 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     @Transactional
     public WorkflowResult importFileProxiesAndProcessThroughWorkflow(T resource, Person user, Long ticketId, ActionMessageErrorSupport listener,
-            List<FileProxy> fileProxiesToProcess) throws IOException {
+            List<FileProxy> fileProxiesToProcess) throws Exception {
         if (CollectionUtils.isEmpty(fileProxiesToProcess)) {
             logger.debug("Nothing to process, returning.");
             return new WorkflowResult(fileProxiesToProcess);
         }
 
+        List<FileProxy> consolidatedProxies = validateAndConsolidateProxies(fileProxiesToProcess);
+
         processMedataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
-        fileProxiesToProcess = validateAndConsolidateProxies(fileProxiesToProcess);
-        for (FileProxy proxy : fileProxiesToProcess) {
+        for (FileProxy proxy : consolidatedProxies) {
             InformationResourceFile irFile = proxy.getInformationResourceFile();
             InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
             logger.info("version: {} proxy: {} ", version, proxy);
+
+            if (CollectionUtils.isNotEmpty(proxy.getSupportingProxies())) {
+                List<InformationResourceFileVersion> supporting = proxy.getInformationResourceFileVersion().getSupportingFiles();
+                for (FileProxy proxy_ : proxy.getSupportingProxies()) {
+                    supporting.add(proxy_.getInformationResourceFileVersion());
+                }
+            }
+
             if (proxy.getAction().requiresWorkflowProcessing()) {
                 switch (version.getFileVersionType()) {
                     case UPLOADED:
@@ -131,12 +144,49 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    protected List<FileProxy> validateAndConsolidateProxies(List<FileProxy> fileProxiesToProcess) {
+    protected List<FileProxy> validateAndConsolidateProxies(List<FileProxy> fileProxiesToProcess) throws Exception {
         // TODO Auto-generated method stub
         // if we're dealing with a composite type; find the proxy with the primary file; add all the rest to that and pass it in
         // also validate that the thing is "right"
+        List<FileProxy> proxies = new ArrayList<FileProxy>();
+        boolean composite = false;
+        FileType type = null;
+        FileProxy primary = null;
+        /*
+         * iterate through all of the proxies and look at the ADD or REPLACE methods; for those, see if any of the "types" is a composite.
+         * If one is, then treat the set as composites. If, somehow they're different types, complain.
+         */
+        for (FileProxy proxy : fileProxiesToProcess) {
+            if (proxy.getAction().requiresWorkflowProcessing()) {
+                FileType type_ = analyzer.analyzeFile(proxy);
+                if (type == null) {
+                    type = type_;
+                } else if (type != type_) {
+                    if (ObjectUtils.equals(type.isComposite(), type_.isComposite())) {
+                        throw new TdarRecoverableRuntimeException("what to do?");
+                    } else if (type_.isComposite()) {
+                        type = type_;
+                    }
+                }
+                composite = type.isComposite();
+                if (analyzer.isPrimaryFile(proxy, type)) {
+                    primary = proxy;
+                } else {
+                    proxies.add(proxy);
+                }
+            }
+        }
+        if (composite) {
+            if (primary == null) {
+                throw new TdarRecoverableRuntimeException("what to do?");
+            }
+            Workflow workflow = analyzer.getWorkflow(primary);
+            workflow.validateProxyCollection(primary);
+            primary.setSupportingProxies(proxies);
+            return Arrays.asList(primary);
+        }
 
-        return fileProxiesToProcess;
+        return proxies;
     }
 
     @Transactional
@@ -151,6 +201,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 return;
             }
         }
+
         switch (proxy.getAction()) {
             case MODIFY_METADATA:
                 // set sequence number and confidentiality

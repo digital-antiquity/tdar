@@ -75,12 +75,12 @@ public class ImportService {
 
     public transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    public <R extends Resource> R bringObjectOntoSession(R incoming, Person authorizedUser) throws APIException, IOException {
+    public <R extends Resource> R bringObjectOntoSession(R incoming, Person authorizedUser) throws APIException, Exception {
         return bringObjectOntoSession(incoming, authorizedUser, null, null);
     }
 
     public <R extends Resource> R bringObjectOntoSession(R incoming_, Person authorizedUser, Collection<FileProxy> proxies, Long projectId)
-            throws APIException, IOException {
+            throws APIException, Exception {
         R incomingResource = incoming_;
         boolean created = true;
         if (Persistable.Base.isNotTransient(incomingResource)) {

@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.LoggingTask;
 import org.tdar.filestore.tasks.Task;
+import org.tdar.struts.data.FileProxy;
 
 /**
  * $Id$
@@ -45,6 +46,9 @@ public interface Workflow {
     public Set<String> getValidExtensionsForResourceType(ResourceType type);
 
     public abstract static class BaseWorkflow implements Workflow {
+
+        private Map<String,List<String>> requiredExtensions = new HashMap<>();
+        private Map<String,List<String>> suggestedExtensions = new HashMap<>();
 
         private Map<WorkflowPhase, List<Class<? extends Task>>> workflowPhaseToTasks = new HashMap<WorkflowPhase, List<Class<? extends Task>>>();
         // this appears to be a folded version of resourceTypeToExtensions.values() ?
@@ -152,8 +156,31 @@ public interface Workflow {
             return;
         }
 
+        
+        public boolean validateProxyCollection(FileProxy primary) {
+            return true;
+        }
+
+        public Map<String,List<String>> getSuggestedExtensions() {
+            return suggestedExtensions;
+        }
+
+        public void setSuggestedExtensions(Map<String,List<String>> suggestedExtensions) {
+            this.suggestedExtensions = suggestedExtensions;
+        }
+
+        public Map<String,List<String>> getRequiredExtensions() {
+            return requiredExtensions;
+        }
+
+        public void setRequiredExtensions(Map<String,List<String>> requiredExtensions) {
+            this.requiredExtensions = requiredExtensions;
+        }
+
     }
 
     public void initializeWorkflowContext(InformationResourceFileVersion version, WorkflowContext ctx);
+
+    public boolean validateProxyCollection(FileProxy primary);
 
 }

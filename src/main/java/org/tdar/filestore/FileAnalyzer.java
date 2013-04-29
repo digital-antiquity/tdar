@@ -15,11 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
+import org.tdar.core.bean.resource.HasExtension;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.struts.data.FileProxy;
 
 /**
  * $Id$
@@ -33,12 +35,13 @@ public class FileAnalyzer {
 
     private List<Workflow> workflows;
     private Map<String, Workflow> fileExtensionToWorkflowMap = new HashMap<String, Workflow>();
+    private Map<FileType, List<String>> primaryExtensionList = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public MessageService messageService;
 
-    public FileType analyzeFile(InformationResourceFileVersion version) {
+    public FileType analyzeFile(HasExtension version) {
         for (Workflow w : workflows) {
             if (w.canProcess(version.getExtension())) {
                 return w.getInformationResourceFileType();
@@ -81,7 +84,7 @@ public class FileAnalyzer {
         return null;
     }
 
-    public Workflow getWorkflow(InformationResourceFileVersion irFileVersion) throws Exception {
+    public Workflow getWorkflow(HasExtension irFileVersion) throws Exception {
         return fileExtensionToWorkflowMap.get(irFileVersion.getExtension());
     }
 
@@ -123,5 +126,13 @@ public class FileAnalyzer {
             }
         }
         this.workflows = workflows;
+    }
+
+    public boolean isPrimaryFile(FileProxy proxy, FileType type) {
+        List<String> extensions = primaryExtensionList.get(type);
+        if (CollectionUtils.isNotEmpty(extensions) && extensions.contains(proxy.getExtension())) {
+            return true;
+        } 
+        return false;
     }
 }

@@ -3,41 +3,22 @@ package org.tdar.db.conversion;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.resource.CodingRule;
-import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.db.conversion.converters.DatasetConverter;
-import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ShapefileReaderTask;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-
-import static org.junit.Assert.*;
 
 public class ShapefileConverterITCase extends AbstractDataIntegrationTestCase {
 
