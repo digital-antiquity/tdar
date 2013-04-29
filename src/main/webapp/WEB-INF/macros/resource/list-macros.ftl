@@ -158,6 +158,8 @@
 	                <@common.truncate _desc length />
 	            </p>
             </div>
+        <#elseif editor>
+	            <@common.cartouche resource true />          
         </#if>
 	</#if>
 </#macro>
