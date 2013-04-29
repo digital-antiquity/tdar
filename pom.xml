@@ -188,6 +188,21 @@
 			<artifactId>icu4j</artifactId>
 			<version>4.8.1.1</version>
 		</dependency>
+		 <dependency>
+		   <groupId>de.schlichtherle.truezip</groupId>
+		   <artifactId>truezip-driver-zip</artifactId>
+		   <version>7.7.1</version>
+  	   </dependency>
+		 <dependency>
+		   <groupId>de.schlichtherle.truezip</groupId>
+		   <artifactId>truezip-driver-tar</artifactId>
+		   <version>7.7.1</version>
+  	   </dependency>
+		 <dependency>
+		   <groupId>de.schlichtherle.truezip</groupId>
+		   <artifactId>truezip-driver-tzp</artifactId>
+		   <version>7.7.1</version>
+  	   </dependency>
         <dependency>
             <groupId>de.schlichtherle.truezip</groupId>
             <artifactId>truezip-file</artifactId>
