@@ -33,6 +33,7 @@
 		<jersey.version>1.17.1</jersey.version>
 		<jackson.version>2.2.0</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
+		<truezip.version>7.7.1</truezip.version>
 		<http-components.version>4.2.2</http-components.version>
 	</properties>
 	<prerequisites>
@@ -191,32 +192,32 @@
 		 <dependency>
 		   <groupId>de.schlichtherle.truezip</groupId>
 		   <artifactId>truezip-driver-zip</artifactId>
-		   <version>7.7.1</version>
+		   <version>${truezip.version}</version>
   	   </dependency>
 		 <dependency>
 		   <groupId>de.schlichtherle.truezip</groupId>
 		   <artifactId>truezip-driver-tar</artifactId>
-		   <version>7.7.1</version>
+		   <version>${truezip.version}</version>
   	   </dependency>
 		 <dependency>
 		   <groupId>de.schlichtherle.truezip</groupId>
 		   <artifactId>truezip-driver-tzp</artifactId>
-		   <version>7.7.1</version>
+		   <version>${truezip.version}</version>
   	   </dependency>
         <dependency>
             <groupId>de.schlichtherle.truezip</groupId>
             <artifactId>truezip-file</artifactId>
-            <version>7.7.1</version>
+            <version>${truezip.version}</version>
         </dependency>
         <dependency>
             <groupId>de.schlichtherle.truezip</groupId>
             <artifactId>truezip-kernel</artifactId>
-            <version>7.7.1</version>
+            <version>${truezip.version}</version>
         </dependency>
         <dependency>
             <groupId>de.schlichtherle.truezip</groupId>
             <artifactId>truezip-driver-file</artifactId>
-            <version>7.7.1</version>
+            <version>${truezip.version}</version>
         </dependency>        
 		<dependency>
 			<groupId>org.apache.ant</groupId>
