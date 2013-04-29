@@ -177,6 +177,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             }
         }
         if (composite) {
+            if (primary == null && proxies.size() == 1) {
+                primary = proxies.get(0);
+                proxies.clear();
+            }
+            
             if (primary == null) {
                 throw new TdarRecoverableRuntimeException("what to do?");
             }
