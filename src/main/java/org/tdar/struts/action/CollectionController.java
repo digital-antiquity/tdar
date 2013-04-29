@@ -238,7 +238,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollectionsRecursive(getPersistable(),
                     CollectionType.SHARED));
             collectionIds.add(getId());
-            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null, null));
+            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 
         if (getPersistable() != null) {

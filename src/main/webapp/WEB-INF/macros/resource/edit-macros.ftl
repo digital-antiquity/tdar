@@ -698,7 +698,7 @@ applyInheritance(project, formSelector);
 <#macro sourceCollectionRow sourceCollection prefix index=0>
 <#local plural = "${prefix}s" />
     <div class="controls controls-row repeat-row" id="${prefix}Row_${index}_">
-        <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" />
+        <#-- <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" /> -->
         <@s.textarea theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
         <div class="span1">
             <@edit.clearDeleteButton id="${prefix}Row${index}" />
@@ -810,7 +810,7 @@ applyInheritance(project, formSelector);
 
 <#macro dateRow proxy=proxy proxy_index=0>
 <div class="controls controls-row" id="DateRow_${proxy_index}_">
-        <@s.hidden name="coverageDates[${proxy_index}].id" cssClass="dont-inherit" />
+        <#--<@s.hidden name="coverageDates[${proxy_index}].id" cssClass="dont-inherit" /> -->
         <@s.select theme="tdar"name="coverageDates[${proxy_index}].dateType" cssClass="coverageTypeSelect input-medium"
             listValue='label'  headerValue="Date Type" headerKey="NONE"
             list=allCoverageTypes />

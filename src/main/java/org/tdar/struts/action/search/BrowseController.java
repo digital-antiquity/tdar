@@ -29,6 +29,7 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -113,7 +114,7 @@ public class BrowseController extends AbstractLookupController {
         if (isEditor()) {
             setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
                     Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
-                    null));
+                    Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 
         return SUCCESS;

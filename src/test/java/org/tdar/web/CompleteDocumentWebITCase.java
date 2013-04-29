@@ -146,6 +146,62 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docUnorderdValMap.put("resourceNotes[5].note", "I'm not internationally known, but I'm known to rock a microphone.");
 
     }
+    
+    @Test
+    @Rollback(true)
+    public void testCreateDocumentEditSavehasResource() {
+
+        gotoPage("/document/add");
+        
+        HashMap<String, String> docValMap2 = new HashMap<String,String>();
+        docValMap2.put("document.title", "My Sample Document");
+        docValMap2.put("document.documentType", "OTHER");
+        docValMap2.put("document.description", "A resource description");
+        docValMap2.put("document.date", "1923");
+        docValMap2.put("projectId", "1");
+        String ORIGINAL_START_DATE = "1200";
+        String COVERAGE_START = "coverageDates[0].startDate";
+        docValMap2.put(COVERAGE_START, ORIGINAL_START_DATE);
+        String ORIGINAL_END_DATE = "1500";
+        docValMap2.put("coverageDates[0].endDate", ORIGINAL_END_DATE);
+        docValMap2.put("coverageDates[0].dateType", CoverageType.CALENDAR_DATE.name());
+
+        if (TdarConfiguration.getInstance().getLicenseEnabled()) {
+            docValMap2.put("resource.licenseType", LicenseType.OTHER.name());
+            docValMap2.put("resource.licenseText", "my custom license");
+        }
+
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            docValMap2.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+
+        
+        for (String key : docValMap2.keySet()) {
+            setInput(key, docValMap2.get(key));
+        }
+
+        submitForm();
+
+        String path = internalPage.getUrl().getPath().toLowerCase();
+        logger.info(getPageText());
+        assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
+
+        assertTextPresent(ORIGINAL_START_DATE);
+        assertTextPresent(ORIGINAL_END_DATE);
+
+        clickLinkWithText("edit");
+        String NEW_START_DATE = "100";
+        setInput(COVERAGE_START, NEW_START_DATE);
+        submitForm();
+
+        path = internalPage.getUrl().getPath().toLowerCase();
+        logger.info(getPageText());
+        assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
+        assertTextPresent(NEW_START_DATE);
+        assertTextNotPresent(ORIGINAL_START_DATE);
+        assertTextPresent(ORIGINAL_END_DATE);
+        logger.trace(getPageText());
+    }
 
     @Test
     @Rollback(true)
