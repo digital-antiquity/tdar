@@ -56,11 +56,6 @@ public class AuthorizedUser extends Base implements Persistable {
     @JoinColumn(nullable = false, name = "user_id")
     private Person user;
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(user, generalPermission, adminPermission);
-    };
-
     /**
      * @param person
      * @param modifyRecord

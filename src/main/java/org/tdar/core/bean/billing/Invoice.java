@@ -99,11 +99,6 @@ public class Invoice extends Base implements Updatable {
         }
     }
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(owner,getPaymentMethod(), numberOfFiles, numberOfMb, items);
-    };
-
     @NotNull
     @Column(name = "date_created")
     private Date dateCreated;

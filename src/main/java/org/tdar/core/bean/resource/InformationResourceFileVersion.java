@@ -436,18 +436,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         return comparison;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.bean.Persistable.Base#getEqualityFields()
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<?> getEqualityFields() {
-        // ab probably okay as it includes Id
-        return Arrays.asList(getInformationResourceFileId(), version, fileVersionType, getId());
-    }
-
     public boolean hasValidFile() {
         return getFile() != null && getFile().exists();
     }

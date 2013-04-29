@@ -78,11 +78,6 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.name = name;
     }
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(parent, name, type);
-    };
-
     @ElementCollection()
     @JoinTable(name = "category_variable_synonyms")
     private Set<String> synonyms;

@@ -26,11 +26,6 @@ public abstract class AbstractResourceStatistic<S extends Persistable> extends P
         return date;
     }
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(getReference(), getDate());
-    };
-
     public void setDate(Date date) {
         this.date = date;
     }

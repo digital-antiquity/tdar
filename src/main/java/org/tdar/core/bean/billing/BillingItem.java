@@ -39,11 +39,6 @@ public class BillingItem extends Base implements Validatable {
     public BillingItem() {
     }
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(activity,quantity);
-    };
-
     public BillingItem(BillingActivity activity, int quantity) {
         this.activity = activity;
         this.quantity = quantity;

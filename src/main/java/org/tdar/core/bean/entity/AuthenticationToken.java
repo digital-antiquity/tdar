@@ -42,11 +42,6 @@ public class AuthenticationToken extends Persistable.Base {
         return token;
     }
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(sessionEnd, sessionStart,person);
-    };
-
     public Person getPerson() {
         return person;
     }

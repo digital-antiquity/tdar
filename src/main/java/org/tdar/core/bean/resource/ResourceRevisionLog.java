@@ -52,12 +52,6 @@ public class ResourceRevisionLog extends Persistable.Base {
     @Column(name="payload", nullable=true)
     private String payload;
     
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(resource, logMessage, person, payload, timestamp);
-    };
-
-    
     public Resource getResource() {
         return resource;
     }

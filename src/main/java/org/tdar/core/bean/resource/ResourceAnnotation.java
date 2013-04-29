@@ -64,11 +64,6 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     @Column(name = "last_updated")
     private Date lastUpdated;
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(getResourceAnnotationKey().getKey(), getValue());
-    };
-
     @Field
     public String getPairedValue() {
         return getResourceAnnotationKey().getKey() + ":" + getValue();

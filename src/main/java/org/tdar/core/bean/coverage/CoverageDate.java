@@ -65,11 +65,6 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     public CoverageDate() {
     }
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(dateType, startDate, endDate, description);
-    };
-    
     public CoverageDate(CoverageType type) {
         setDateType(type);
     }

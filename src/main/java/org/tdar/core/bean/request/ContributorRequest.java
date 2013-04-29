@@ -45,11 +45,6 @@ public class ContributorRequest extends Persistable.Base implements Comparable<C
     @Column(length=512, name="contributor_reason")
     private String contributorReason;
     
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(applicant, timestamp);
-    };
-
     private String comments;
     
     public boolean isApproved() {

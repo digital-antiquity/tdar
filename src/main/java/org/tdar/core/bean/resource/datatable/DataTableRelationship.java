@@ -44,11 +44,6 @@ public class DataTableRelationship extends Persistable.Base {
         return type;
     }
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(type, columnRelationships);
-    };
-
     @XmlElementWrapper(name = "columnRelationships")
     @XmlElement(name = "columnRelationship")
     public Set<DataTableColumnRelationship> getColumnRelationships() {

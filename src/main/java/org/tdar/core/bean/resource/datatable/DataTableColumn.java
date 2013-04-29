@@ -89,11 +89,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @Column(nullable = false)
     private String name;
     
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(getName(), columnEncodingType);
-    };
-
     @Column(nullable = false, name = "display_name")
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)

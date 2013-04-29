@@ -55,12 +55,6 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
         setRole(role);
     }
     
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(creator, role);
-    };
-
-
     public ResourceCreator() {
     }
 

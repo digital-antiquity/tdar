@@ -26,11 +26,6 @@ public class SensoryDataImage extends Persistable.Sequence<SensoryDataImage> imp
     public String getFilename() {
         return filename;
     }
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(filename, description);
-    };
-
 
     public void setFilename(String filename) {
         this.filename = filename;

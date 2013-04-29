@@ -34,11 +34,6 @@ public class BillingTransactionLog extends Base {
 
     private String transactionId;
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(transactionId, responseInJson);
-    };
-
     public BillingTransactionLog() {}
     
     public BillingTransactionLog(TransactionResponse response) {

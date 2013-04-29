@@ -45,11 +45,6 @@ public class PersonalFilestoreTicket extends Persistable.Base {
     @Column(length = 500)
     private String description;
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(personalFileType, submitter, description, dateGenerated);
-    };
-
     public Person getSubmitter() {
         return submitter;
     }

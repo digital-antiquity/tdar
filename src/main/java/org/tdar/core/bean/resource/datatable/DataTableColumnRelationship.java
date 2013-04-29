@@ -38,11 +38,6 @@ public class DataTableColumnRelationship extends Persistable.Base {
     @JoinColumn(name = "foreign_column_id")
     private DataTableColumn foreignColumn;
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(localColumn, foreignColumn);
-    };
-
     /**
      * @return the localColumn
      */

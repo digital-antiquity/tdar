@@ -48,10 +48,6 @@ public class Address extends Base implements Persistable, Validatable {
     @NotNull
     private AddressType type;
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(type, street1, street2, city,state,postal,country);
-    };
 
     public String getStreet1() {
         return street1;

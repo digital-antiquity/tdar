@@ -72,11 +72,6 @@ public class AccountGroup extends Base implements Updatable {
             nullable = false, name = "account_id") })
     private Set<Person> authorizedMembers = new HashSet<Person>();
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(name, description,status,owner, authorizedMembers);
-    };
-
     public Set<Account> getAccounts() {
         return accounts;
     }
