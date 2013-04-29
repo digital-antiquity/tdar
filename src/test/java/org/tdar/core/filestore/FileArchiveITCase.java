@@ -71,15 +71,18 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
 
+        boolean seen = false;
         for (InformationResourceFileVersion version : informationResourceFile.getLatestVersions()) {
             logger.info(version);
             if (version.isTranslated()) {
                 String contents = FileUtils.readFileToString(version.getFile());
                 assertTrue(contents.contains("Ark_HM_Headpot_01.txt"));
                 assertTrue(contents.contains("Ark_HM_Headpot_mtrx_01.txt"));
+                seen = true;
             }
         }
 
+        assertTrue("Should have gotten through some translated files", seen);
         // FIXME: confirm that there is a resulting file, and that the file has the right contents
         // confirm x number of versions, confirm types
         // confirm contents

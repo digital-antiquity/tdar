@@ -43,7 +43,7 @@ public class ListArchiveTask extends AbstractTask {
         // list all of the contents
         // NOTE: using fully qualified class names to ensure no confusion between packages
         // v7 of truezip moves to it's own dedicated namespace and resolves this issue
-        TConfig.get().setArchiveDetector(TArchiveDetector.ALL);
+        TConfig.get().setArchiveDetector(new TArchiveDetector("tar.bz2|tar.gz|zip|tgz|tar"));
         TFile archiveFile = new TFile(f_, TArchiveDetector.ALL);
 
         listFiles(archiveContents, archiveFile, archiveFile);

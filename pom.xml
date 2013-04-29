@@ -195,6 +195,11 @@
         </dependency>
         <dependency>
             <groupId>de.schlichtherle.truezip</groupId>
+            <artifactId>truezip-kernel</artifactId>
+            <version>7.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>de.schlichtherle.truezip</groupId>
             <artifactId>truezip-driver-file</artifactId>
             <version>7.7.1</version>
         </dependency>        
