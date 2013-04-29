@@ -172,8 +172,14 @@ public interface Persistable extends Serializable {
                 return true;
             }
             
-            //objects of different classes are never equal
-            if(!a.getClass().equals(b.getClass())) {
+            /*
+             * Some tests are failing b/c javaasist subclass? or bytecode manipulation of tDAR classes:
+             * eg: AdvancedSearchControllerITCase.testResourceCreatorPerson:
+             * result: final equality false b/c of class class org.tdar.core.bean.resource.Document != class
+             * org.tdar.core.bean.resource.Document_$$_javassist_62
+             */
+            if (!(a.getClass().isAssignableFrom(b.getClass()))) {
+                logger.trace("false b/c of class {} != {} ", a.getClass(), b.getClass());
                 return false;
             }
 

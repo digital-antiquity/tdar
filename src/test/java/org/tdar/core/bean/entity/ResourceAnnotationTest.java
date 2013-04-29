@@ -38,13 +38,13 @@ public class ResourceAnnotationTest {
         k1.setId(id);
         k2.setId(id);
         Assert.assertNotEquals("equality based on 'business key',  values should be different", k1, k2);
-        Assert.assertNotEquals("equality based on 'business key',  values should be different", a1, a2);
+        Assert.assertNotEquals("equality based on database identity, values are unequal because we consider them null", a1, a2);
 
         // making ID non-transient  (shouldn't make a difference on hashcode or equality for this class)
         id = 1L;
         a1.setId(id);
         a2.setId(id);
-        Assert.assertNotEquals("equality based on 'business key',  values should still be different", a1, a2);
+        Assert.assertEquals("equality based on database identity,  values should still be considered equal", a1, a2);
         logger.info(String.format("%s==%s %s==%s", a1.hashCode(), a2.hashCode(), a1.getEqualityFields(), a2.getEqualityFields()));
         
         
@@ -52,16 +52,18 @@ public class ResourceAnnotationTest {
         Set<ResourceAnnotation> set = new HashSet<ResourceAnnotation>();
         set.add(a1);
         set.add(a2);
-        Assert.assertEquals("set should have one item in it", 2, set.size());
+        Assert.assertEquals("set should have one item in it", 1, set.size());
         
         
         //create a new resourceAnnotation that is the same as (but not identical to) a1
         ResourceAnnotation a1c = new ResourceAnnotation();
         ResourceAnnotationKey k1c = new ResourceAnnotationKey();
+        
         //feed original string through buffer to force equal string that is not identical 
         a1c.setValue( (new StringBuffer(a1.getValue())).toString());
         k1c.setKey( ( new StringBuffer( k1.getKey() ) ).toString() );  
         a1c.setResourceAnnotationKey(k1c);
+        a1c.setId(a1.getId());
         
         Assert.assertEquals("expecting equal but not identical", a1, a1c);
         Assert.assertNotSame("expecting equal but not identical", a1, a1c);
