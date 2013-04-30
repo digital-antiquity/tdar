@@ -786,9 +786,9 @@ this bit of freemarker is voodoo:
 <#macro cartouche persistable useDocumentType=false>
     <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
     <span class="cartouche"><i class="icon-${cartouchePart?replace(" ","")?lower_case}"></i> 
-        <#if (persistable.status)?? && !persistable.active>
+<#--        <#if (persistable.status)?? && !persistable.active>
         ${persistable.status} <#t>
-    </#if> 
+    </#if>  -->
     <@upperPersistableTypeLabel persistable />
      </span>
     <#nested />
