@@ -123,7 +123,8 @@ header {
 }
 
 /*fixme: the "header input.searchbox" selector doesn't match any elements in current layout, but looks funny when we correct it ("header .searchbox input") */
-header input.searchbox, /* this selector works fine, however */ .hero input.searchbox
+header input.searchbox, /* this selector works fine, however */
+.hero input.searchbox
 	{
 	background-color: white;
 	border: none;
@@ -144,6 +145,40 @@ header input.searchbox, /* this selector works fine, however */ .hero input.sear
 	border-radius: none;
 	line-height: inherit;
 }
+
+header form input.searchbox {
+    width: 200px;
+    padding: 6px 10px;
+    margin: 40px 0 0 35px;
+    font-size: 13px;
+    line-height: 13px;
+    color: #7d7a77; 
+    font-style: italic;
+    border: 1px solid #dedede !important;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    background: url(/images/r4/bg-search.png) 195px 50% no-repeat;
+}
+
+.lt-ie9 header form input.searchbox {
+    padding: 9px 10px 3px 10px;
+}
+
+.hero input.searchbox {
+    padding: 11px 0 13px 25px !important;
+    background: url(/images/r4/bg-hero-search.png) 0 0 no-repeat !important;
+    border: none; 
+    font-style: italic;
+    font-size: 16px !important;
+    line-height: 16px !important;
+    color: #7d7a77 !important;
+}
+
+.lt-ie9 .hero input.searchbox {
+    padding: 15px 0 10px 18px !important;
+}
+
+
 
 header h1 {
 	margin: 20px 0 0 0;
@@ -206,24 +241,6 @@ header nav li.button a {
 	color: #fff;
 	text-align: center;
 	margin: 45px -10px 0 25px;
-}
-
-header form input.searchbox {
-	width: 200px;
-	padding: 6px 10px;
-	margin: 40px 0 0 35px;
-	font-size: 13px;
-	line-height: 13px;
-	color: #7d7a77; 
-	font-style: italic;
-	border: 1px solid #dedede !important;
-	-webkit-border-radius: 2px;
-	border-radius: 2px;
-	background: url(/images/r4/bg-search.png) 195px 50% no-repeat;
-}
-
-.lt-ie9 header form input.searchbox {
-	padding: 9px 10px 3px 10px;
 }
 
 header .welcome {
@@ -289,19 +306,6 @@ header .welcome-drop ul {
 	line-height: 24px;
 }
 
-.hero input.searchbox {
-	padding: 11px 0 13px 25px !important;
-	background: url(/images/r4/bg-hero-search.png) 0 0 no-repeat !important;
-	border: none; 
-	font-style: italic;
-	font-size: 16px !important;
-	line-height: 16px !important;
-	color: #7d7a77 !important;
-}
-
-.lt-ie9 .hero input.searchbox {
-	padding: 15px 0 10px 18px !important;
-}
 
 .hero ul,.hero li {
 	margin: 0;
