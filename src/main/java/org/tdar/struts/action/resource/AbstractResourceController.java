@@ -391,6 +391,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Set<String> toAdd = new HashSet<String>();
         while (iter.hasNext()) {
             String keyword = iter.next();
+            if (StringUtils.isBlank(keyword))
+                continue;
+
             if (keyword.contains(delim)) {
                 for (String sub : StringUtils.split(keyword, delim)) {
                     sub = StringUtils.trim(sub);
