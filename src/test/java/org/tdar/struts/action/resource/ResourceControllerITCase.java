@@ -34,7 +34,7 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
                 Resource resource = type.getResourceClass().newInstance();
                 if (resource instanceof InformationResource) {
                     InformationResource cast = (InformationResource) resource;
-                    InformationResource createAndSaveNewInformationResource = createAndSaveNewInformationResource(cast.getClass(), false);
+                    InformationResource createAndSaveNewInformationResource = createAndSaveNewInformationResource(cast.getClass());
                     ResourceController controller = generateNewInitializedController(ResourceController.class);
                     controller.setResourceType(type);
                     controller.setResourceId(createAndSaveNewInformationResource.getId());

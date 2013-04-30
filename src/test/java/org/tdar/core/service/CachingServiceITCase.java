@@ -56,7 +56,7 @@ public class CachingServiceITCase extends AbstractControllerITCase {
         count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
         assertEquals(count, count_);
 
-        createAndSaveNewInformationResource(CodingSheet.class, false);
+        createAndSaveNewInformationResource(CodingSheet.class);
         count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
         assertEquals(count, count_);
 
@@ -85,7 +85,7 @@ public class CachingServiceITCase extends AbstractControllerITCase {
         List<HomepageGeographicKeywordCache> findAll = genericService.findAll(HomepageGeographicKeywordCache.class);
         final Long count = new Long(findAll.size());
         Long count_ = count;
-        CodingSheet cs = createAndSaveNewInformationResource(CodingSheet.class, false);
+        CodingSheet cs = createAndSaveNewInformationResource(CodingSheet.class);
         GeographicKeyword mgc = new GeographicKeyword();
         mgc.setLabel("test");
         mgc.setLevel(Level.ISO_COUNTRY);

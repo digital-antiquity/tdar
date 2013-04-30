@@ -46,7 +46,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void findByFilename() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
         InformationResourceFile foundFile = informationResourceService.findFileByFilename(ir, TestConstants.TEST_DOCUMENT_NAME);
         assertNotNull(foundFile);
         boolean found = false;
@@ -61,7 +61,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testCreateInformationResourceFile() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
 
         assertEquals(ir.getInformationResourceFiles().size(), 1);
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
@@ -91,7 +91,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testIndexableTextExtractionInPDF() throws InstantiationException, IllegalAccessException, IOException {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
         List<Long> irfvids = new ArrayList<Long>();
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
         Map<VersionType, InformationResourceFileVersion> map = new HashMap<VersionType, InformationResourceFileVersion>();
@@ -109,7 +109,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testReprocessInformationResourceFile() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
 
         assertEquals(ir.getInformationResourceFiles().size(), 1);
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
@@ -162,7 +162,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDeleteInformationResourceFile() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
         int count = ir.getInformationResourceFiles().size();
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             Long id = irFile.getId();
@@ -180,7 +180,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testFileStatus() throws Exception {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
         for (InformationResourceFile file : ir.getInformationResourceFiles()) {
             file.setStatus(FileStatus.QUEUED);
             assertFalse(file.isProcessed());

@@ -276,7 +276,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return version;
     }
 
-    public Document generateInformationResourceWithFileAndUser() throws InstantiationException, IllegalAccessException {
+    public Document generateDocumentWithFileAndUser() throws InstantiationException, IllegalAccessException {
         Document ir = createAndSaveNewInformationResource(Document.class, false);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
         File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
@@ -321,12 +321,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls) throws InstantiationException, IllegalAccessException {
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls) {
         return createAndSaveNewInformationResource(cls, false);
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) throws InstantiationException,
-            IllegalAccessException {
+    private <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) {
         Person submitter = getUser();
         if (createUser) {
             submitter = createAndSaveNewPerson("test@user.com", "");
@@ -334,28 +333,22 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewInformationResource(cls, submitter);
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson)
-            throws InstantiationException, IllegalAccessException {
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson) {
         return createAndSaveNewInformationResource(cls, persistentPerson, "TEST TITLE");
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson, String resourceTitle)
-            throws InstantiationException, IllegalAccessException {
-        Project project = new Project();
-        project.markUpdated(persistentPerson);
-        project.setTitle("PROJECT " + resourceTitle);
-        project.setDescription("test description");
-        projectService.save(project);
-        return createAndSaveNewInformationResource(cls, project, persistentPerson, resourceTitle);
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson, String resourceTitle) {
+        // Project project = new Project();
+        // project.markUpdated(persistentPerson);
+        // project.setTitle("PROJECT " + resourceTitle);
+        // project.setDescription("test description");
+        // projectService.save(project);
+        return createAndSaveNewInformationResource(cls, null, persistentPerson, resourceTitle);
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Project project, Person persistentPerson, String resourceTitle)
-            throws InstantiationException, IllegalAccessException {
-
-        R iResource = cls.newInstance();
-        iResource.setTitle(resourceTitle);
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Project project, Person persistentPerson, String resourceTitle) {
+        R iResource = createAndSaveNewResource(cls, persistentPerson, resourceTitle);
         iResource.setDescription("test description");
-        iResource.markUpdated(persistentPerson);
         iResource.setProject(project);
         iResource.setDate(2012);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
@@ -366,30 +359,16 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected Dataset createAndSaveNewDataset() {
-        Dataset dataset = new Dataset();
-        Person testPerson = getUser();
-        dataset.setTitle("Test dataset");
+        String title = "Test dataset";
+        Dataset dataset = createAndSaveNewInformationResource(Dataset.class, null, getUser(), title);
         dataset.setDescription("Test dataset description");
-        dataset.markUpdated(testPerson);
-        // dataset.setConfidential(false);
         dataset.setDate(1999);
         datasetService.save(dataset);
         return dataset;
     }
 
-    protected Project createAndSaveNewProject() {
-        return createAndSaveNewProject("PROJECT TEST TITLE");
-    }
-
     protected Project createAndSaveNewProject(String title) {
-        Project project = new Project();
-        Person submitter = getUser();
-        project.markUpdated(submitter);
-        project.setTitle(title);
-        project.setDescription(title);
-        project.setStatus(Status.ACTIVE);
-        projectService.save(project);
-        return project;
+        return createAndSaveNewResource(Project.class, getUser(), title);
     }
 
     public <R extends Resource> R createAndSaveNewResource(Class<R> cls, Person persistentPerson, String resourceTitle) {

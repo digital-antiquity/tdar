@@ -476,7 +476,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testFilenameFound() throws InstantiationException, IllegalAccessException {
-        Document doc = generateInformationResourceWithFileAndUser();
+        Document doc = generateDocumentWithFileAndUser();
         searchIndexService.index(doc);
         firstGroup().getFilenames().add(TestConstants.TEST_DOCUMENT_NAME);
         doSearch();
@@ -960,7 +960,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     // if user gets to the results page via clicking on persons name from resource view page, querystring only contains person.id field. So before
     // rendering the 'refine your search' version of the search form the controller must inflate query components.
     public void testRefineSearchWithSparseProject() {
-        Project persisted = createAndSaveNewProject();
+        Project persisted = createAndSaveNewProject("PROJECT TEST TITLE");
         Project sparse = new Project();
         // ensure the project is in
         genericService.synchronize();

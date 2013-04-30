@@ -173,8 +173,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         String name = "test collection";
         String description = "test description";
 
-        InformationResource normal = generateInformationResourceWithFileAndUser();
-        InformationResource draft = generateInformationResourceWithFileAndUser();
+        InformationResource normal = generateDocumentWithFileAndUser();
+        InformationResource draft = generateDocumentWithFileAndUser();
         final Long normalId = normal.getId();
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
@@ -838,7 +838,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     @Test
     @Rollback
     public void testFullUser() throws Exception {
-        Dataset dataset = createAndSaveNewInformationResource(Dataset.class, false);
+        Dataset dataset = createAndSaveNewInformationResource(Dataset.class);
         Long datasetId = dataset.getId();
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.MODIFY_RECORD);
         genericService.save(dataset);
@@ -856,7 +856,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     @Test
     @Rollback
     public void testReadUser() throws Exception {
-        Dataset dataset = createAndSaveNewInformationResource(Dataset.class, false);
+        Dataset dataset = createAndSaveNewInformationResource(Dataset.class);
         Long datasetId = dataset.getId();
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.VIEW_ALL);
         genericService.save(dataset);
@@ -887,7 +887,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     @Test
     @Rollback
     public void testReadUserEmpty() throws Exception {
-        Dataset dataset = createAndSaveNewInformationResource(Dataset.class, false);
+        Dataset dataset = createAndSaveNewInformationResource(Dataset.class);
         Long datasetId = dataset.getId();
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.VIEW_ALL);
         genericService.save(dataset);
