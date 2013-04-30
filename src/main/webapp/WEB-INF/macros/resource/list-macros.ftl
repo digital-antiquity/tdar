@@ -158,8 +158,6 @@
 	                <@common.truncate _desc length />
 	            </p>
             </div>
-        <#elseif editor>
-	            <@common.cartouche resource true />          
         </#if>
 	</#if>
 </#macro>
@@ -181,7 +179,7 @@
     </#if>
     <a class="resourceLink" href="<@s.url value="/${result.urlNamespace}/${result.id?c}"/>"><#rt>
     <#if result.title?has_content>
-        ${result.title!"No Title"}<#t>
+        ${result.title!"No Title"} <#if editor && !result.active><small>[${result.status?upper_case}]</small></#if><#t>
     <#elseif result.properName?has_content>
         ${result.properName!"No Name"}<#t>
      <#else>
