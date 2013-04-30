@@ -183,7 +183,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return activeResourceCount;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public String loadAddMetadata() {
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
