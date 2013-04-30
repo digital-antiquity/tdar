@@ -354,7 +354,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             iResource.setCopyrightHolder(persistentPerson);
         }
-        informationResourceService.save(iResource);
+        informationResourceService.saveOrUpdate(iResource);
         return iResource;
     }
 
@@ -363,7 +363,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         Dataset dataset = createAndSaveNewInformationResource(Dataset.class, null, getUser(), title);
         dataset.setDescription("Test dataset description");
         dataset.setDate(1999);
-        datasetService.save(dataset);
+        datasetService.saveOrUpdate(dataset);
         return dataset;
     }
 

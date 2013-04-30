@@ -825,6 +825,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback(true)
     public void testLegacyKeywordSearch() throws Exception {
         Document doc = createAndSaveNewInformationResource(Document.class);
+        Project proj = createAndSaveNewProject("parent");
+        doc.setProject(proj);
         Set<CultureKeyword> cultureKeywords = genericKeywordService.findOrCreateByLabels(CultureKeyword.class, Arrays.asList("iamaculturekeyword"));
         Set<SiteNameKeyword> siteNames = genericKeywordService.findOrCreateByLabels(SiteNameKeyword.class, Arrays.asList("thisisasitename"));
         Set<SiteTypeKeyword> siteTypes = genericKeywordService.findOrCreateByLabels(SiteTypeKeyword.class, Arrays.asList("asitetypekeyword"));
@@ -836,15 +838,15 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         reindex();
 
         controller.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
-        assertOnlyOneResult(doc);
+        assertOnlyResultAndProject(doc);
         resetController();
 
         controller.getUncontrolledSiteTypeKeywords().add(siteTypes.iterator().next().getLabel());
-        assertOnlyOneResult(doc);
+        assertOnlyResultAndProject(doc);
         resetController();
 
         controller.getSiteNameKeywords().add(siteNames.iterator().next().getLabel());
-        assertOnlyOneResult(doc);
+        assertOnlyResultAndProject(doc);
     }
 
     @Test
@@ -971,7 +973,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertEquals("sparse project should have been inflated", persisted.getTitle(), firstGroup().getProjects().get(0).getTitle());
     }
 
-    private void assertOnlyOneResult(InformationResource informationResource) {
+    private void assertOnlyResultAndProject(InformationResource informationResource) {
         doSearch();
         assertEquals("expecting two results: doc and project", 2, controller.getResults().size());
         assertTrue("expecting resource in results", controller.getResults().contains(informationResource));
