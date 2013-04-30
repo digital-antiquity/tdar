@@ -122,7 +122,7 @@ header {
 	position: relative;
 }
 
-/*fixme: the "header input.searchbox" selector doesn't match any elements in current layout, but looks funny when we correct it ("header .searchbox input") */
+/*FIXME: this header is kludge-filled disaster that miraculously works. It, and specifically the searchbox,  needs much refactoring*/
 header input.searchbox, /* this selector works fine, however */
 .hero input.searchbox
 	{
@@ -164,6 +164,10 @@ header form input.searchbox {
     padding: 9px 10px 3px 10px;
 }
 
+.lt-ie9 .hero input.searchbox {
+    padding: 15px 0 10px 18px !important;
+}
+
 .hero input.searchbox {
     padding: 11px 0 13px 25px !important;
     background: url(/images/r4/bg-hero-search.png) 0 0 no-repeat !important;
@@ -174,10 +178,15 @@ header form input.searchbox {
     color: #7d7a77 !important;
 }
 
-.lt-ie9 .hero input.searchbox {
-    padding: 15px 0 10px 18px !important;
-}
+/*if searchbox appears in navlist,  give it the same left margin as the other li's */
+nav ul li form input {
+    margin-left: 25px;
+    margin-top: 2px;
+    font-family: "ff-tisa-web-pro", serif !important;}
 
+form.inline {
+    display:inline;
+}
 
 
 header h1 {
