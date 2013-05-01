@@ -247,7 +247,7 @@ public class AuthorityManagementService {
         // FIXME: this seems dodgy to me. replace with the slower/safer way.
         // Throw an exception if this operation touched on too many records. Here we rely upon the assumption that throwing an exception will rollback the
         // underlying transaction and all will be set back to normal. A much slower, but safer, way to go about it would be to pre-count the affected records.
-        if (affectedRecordCount > maxAffectedRecordsCount) {
+        if (dupeMode != DupeMode.MARK_DUPS_ONLY && affectedRecordCount > maxAffectedRecordsCount) {
             String fmt = "This de-dupe operation is not allowed because would affect too many records. The maximum affected record count is %s.";
             String msg = String.format(fmt, NumberFormat.getNumberInstance().format(maxAffectedRecordsCount));
             throw new TdarRecoverableRuntimeException(msg);
