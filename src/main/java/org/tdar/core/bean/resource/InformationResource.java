@@ -364,6 +364,7 @@ public abstract class InformationResource extends Resource {
         return getProject().getTitleSort();
     }
     
+    @Transient
     @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) 
     public String getProjectTitleSort() {
         return getProject().getTitleSort() + " - " + getTitle();

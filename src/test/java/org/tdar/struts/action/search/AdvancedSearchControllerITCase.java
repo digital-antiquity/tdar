@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -472,7 +474,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue(seen);
     }
 
-    
     @Test
     @Rollback(true)
     public void testFilenameFound() throws InstantiationException, IllegalAccessException {
@@ -579,6 +580,39 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         reindex();
         setSortThenCheckFirstResult("sorting by title asc", SortOption.TITLE, p.getId(), alphaId);
         setSortThenCheckFirstResult("sorting by title desc", SortOption.TITLE_REVERSE, p.getId(), omegaId);
+    }
+
+    @Test
+    @Rollback
+    public void testSortFieldProject() throws InstantiationException, IllegalAccessException {
+
+        Project project = createAndSaveNewProject("my project");
+        Project project2 = createAndSaveNewProject("my project 2");
+        Image a = createAndSaveNewInformationResource(Image.class, project, getBasicUser(), "a");
+        Image b = createAndSaveNewInformationResource(Image.class, project, getBasicUser(), "b");
+        Image c = createAndSaveNewInformationResource(Image.class, project, getBasicUser(), "c");
+
+        Image d = createAndSaveNewInformationResource(Image.class, project2, getBasicUser(), "d");
+        Image e = createAndSaveNewInformationResource(Image.class, project2, getBasicUser(), "e");
+        Image aa = createAndSaveNewInformationResource(Image.class, project2, getBasicUser(), "a");
+        List<Resource> res = Arrays.asList(project, project2, a, b, c, d, e, aa);
+
+        reindex();
+
+        controller.setQuery("");
+        controller.setSortField(SortOption.PROJECT);
+        controller.setRecordsPerPage(1000);
+        doSearch();
+        List<Resource> results = controller.getResults();
+//        assertTrue(CollectionUtils.isProperSubCollection(results, res));
+        int i = results.indexOf(project);
+        assertEquals(i+1, results.indexOf(a));
+        assertEquals(i+2, results.indexOf(b));
+        assertEquals(i+3, results.indexOf(c));
+        assertEquals(i+4, results.indexOf(project2));
+        assertEquals(i+5, results.indexOf(aa));
+        assertEquals(i+6, results.indexOf(d));
+        assertEquals(i+7, results.indexOf(e));
     }
 
     @Test
@@ -854,7 +888,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         String TEST_VALUE = "spam"; // damn vikings!
         controller.setQuery(TEST_VALUE);
         AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
-        for (int i=0;i < 10;i++) {
+        for (int i = 0; i < 10; i++) {
             logger.debug("search phrase:{}", controller.getSearchPhrase());
         }
         int occurances = controller.getSearchPhrase().split(TEST_VALUE).length;
@@ -1007,6 +1041,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     protected void reindex() {
+        genericService.synchronize();
         searchIndexService.purgeAll();
         searchIndexService.indexAll(getAdminUser(), Resource.class, Person.class, Institution.class, ResourceCollection.class);
     }
@@ -1014,7 +1049,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     protected void doSearch() {
         doSearch(false);
     }
-    
+
     protected void doSearch(Boolean b) {
         AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE, b);
         logger.info("search found: " + controller.getTotalRecords());

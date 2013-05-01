@@ -353,7 +353,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             iResource.setCopyrightHolder(persistentPerson);
         }
-        informationResourceService.save(iResource);
+        informationResourceService.saveOrUpdate(iResource);
         return iResource;
     }
 
