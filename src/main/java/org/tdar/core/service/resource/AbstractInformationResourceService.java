@@ -18,6 +18,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
@@ -98,7 +99,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             return new WorkflowResult(fileProxiesToProcess);
         }
 
-        List<FileProxy> consolidatedProxies = validateAndConsolidateProxies(fileProxiesToProcess);
+        List<FileProxy> consolidatedProxies = validateAndConsolidateProxies(resource, fileProxiesToProcess);
 
         processMedataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
         for (FileProxy proxy : consolidatedProxies) {
@@ -144,7 +145,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    protected List<FileProxy> validateAndConsolidateProxies(List<FileProxy> fileProxiesToProcess) throws Exception {
+    protected List<FileProxy> validateAndConsolidateProxies(T resource, List<FileProxy> fileProxiesToProcess) throws Exception {
         // TODO Auto-generated method stub
         // if we're dealing with a composite type; find the proxy with the primary file; add all the rest to that and pass it in
         // also validate that the thing is "right"
@@ -156,8 +157,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
          * iterate through all of the proxies and look at the ADD or REPLACE methods; for those, see if any of the "types" is a composite.
          * If one is, then treat the set as composites. If, somehow they're different types, complain.
          */
+        List<Long> replace = new ArrayList<>();
         for (FileProxy proxy : fileProxiesToProcess) {
             if (proxy.getAction().requiresWorkflowProcessing()) {
+                if (proxy.getAction() == FileAction.REPLACE) {
+                    replace.add(proxy.getFileId());
+                }
                 FileType type_ = analyzer.analyzeFile(proxy);
                 if (type == null) {
                     type = type_;
@@ -176,6 +181,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 }
             }
         }
+        /*
+         * If we do have a composite, grab the primary proxy and make all things a child of that
+         */
         if (composite) {
             if (primary == null && proxies.size() == 1) {
                 primary = proxies.get(0);
@@ -188,9 +196,25 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             Workflow workflow = analyzer.getWorkflow(primary);
             workflow.validateProxyCollection(primary);
             primary.setSupportingProxies(proxies);
-            return Arrays.asList(primary);
         }
 
+        /*
+         * Iterate through proxies and versions? to get a complete object? What happens if a user updates just one file?
+         */
+        if (CollectionUtils.isNotEmpty(replace)) {
+            for (InformationResourceFile file : resource.getInformationResourceFiles()) {
+                /*
+                 * this happens before metadata changes are reconciled, so if "un-delete" becomes a feature, this will be a problem
+                 */
+                if (!file.isDeleted() && !replace.contains(file.getId())) {
+                    primary.getSupportingProxies().add(new FileProxy(file));
+                }
+            }
+        }
+        
+        if (primary != null) {
+            return Arrays.asList(primary);
+        }
         return proxies;
     }
 
