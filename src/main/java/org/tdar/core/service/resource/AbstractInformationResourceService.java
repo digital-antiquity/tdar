@@ -101,7 +101,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
         List<FileProxy> consolidatedProxies = validateAndConsolidateProxies(resource, fileProxiesToProcess);
 
-        processMedataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
+        processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
         for (FileProxy proxy : consolidatedProxies) {
             InformationResourceFile irFile = proxy.getInformationResourceFile();
             InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
@@ -146,13 +146,15 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     @Transactional
     protected List<FileProxy> validateAndConsolidateProxies(T resource, List<FileProxy> fileProxiesToProcess) throws Exception {
-        // TODO Auto-generated method stub
         // if we're dealing with a composite type; find the proxy with the primary file; add all the rest to that and pass it in
         // also validate that the thing is "right"
         List<FileProxy> proxies = new ArrayList<FileProxy>();
         boolean composite = false;
         FileType type = null;
         FileProxy primary = null;
+
+        //        if (resource != ???. continue)
+        
         /*
          * iterate through all of the proxies and look at the ADD or REPLACE methods; for those, see if any of the "types" is a composite.
          * If one is, then treat the set as composites. If, somehow they're different types, complain.
@@ -259,7 +261,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    public void processMedataForFileProxies(InformationResource informationResource, FileProxy... proxies) throws IOException {
+    public void processMetadataForFileProxies(InformationResource informationResource, FileProxy... proxies) throws IOException {
         for (FileProxy proxy : proxies) {
             processFileProxyMetadata(informationResource, proxy);
         }
