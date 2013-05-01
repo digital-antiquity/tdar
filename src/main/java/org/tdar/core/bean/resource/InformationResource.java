@@ -358,10 +358,15 @@ public abstract class InformationResource extends Resource {
     @Transient
     @Fields({
             @Field(boost = @Boost(1.5f), name = QueryFieldNames.PROJECT_TITLE),
-            @Field(name = QueryFieldNames.PROJECT_TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
-            @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES) })
+            @Field(name = QueryFieldNames.PROJECT_TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
+            })
     public String getProjectTitle() {
         return getProject().getTitleSort();
+    }
+    
+    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) 
+    public String getProjectTitleSort() {
+        return getProject().getTitleSort() + " - " + getTitle();
     }
 
     public void setProject(Project project) {

@@ -54,9 +54,9 @@
             </#if>
             <#if sortfield?contains('PROJECT')>
                 <#if resource.project??>
-                    <#local key = resource.project.titleSort />
+                    <#local key = resource.project.title />
                 <#elseif resource.resourceType.project >
-                    <#local key = resource.titleSort />
+                    <#local key = resource.title />
                 </#if>
             </#if>
             <#-- print header and group/list tag -->
