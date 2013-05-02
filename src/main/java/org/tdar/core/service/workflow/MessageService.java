@@ -5,6 +5,7 @@ import java.io.StringReader;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.service.GenericService;
@@ -104,10 +105,11 @@ public class MessageService {
      */
     public <W extends Workflow> boolean sendFileProcessingRequest(InformationResourceFileVersion version, W w) {
         WorkflowContext ctx = workflowContextService.initializeWorkflowContext(version, w);
-        version.getInformationResourceFile().setStatus(FileStatus.QUEUED);
-        genericService.saveOrUpdate(version);
+        InformationResourceFile irf = version.getInformationResourceFile();
+        irf.setStatus(FileStatus.QUEUED);
+        genericService.saveOrUpdate(irf);
         ctx.setWorkflowClass(w.getClass());
-        genericService.detachFromSession(version);
+        genericService.detachFromSession(irf);
         // w.setWorkflowContext(ctx);
         // if (TdarConfiguration.getInstance().useExternalMessageQueue()) {
         // RabbitTemplate template = getRabbitTemplate(getFilesToProcessQueue());

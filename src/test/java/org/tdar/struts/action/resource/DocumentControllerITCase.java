@@ -76,13 +76,14 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         List<Institution> fiftyIList = genericService.findRandom(Institution.class, 50);
         for (Person person : fiftyPList) {
             ResourceCreator rc = new ResourceCreator(person, ResourceCreatorRole.CONTRIBUTOR);
-            genericService.saveOrUpdate(rc);
             project.getResourceCreators().add(rc);
+            genericService.saveOrUpdate(rc);
+            // project.getResourceCreators().add(rc);
         }
         for (Institution inst : fiftyIList) {
             ResourceCreator rc = new ResourceCreator(inst, ResourceCreatorRole.REPOSITORY);
-            genericService.saveOrUpdate(rc);
             project.getResourceCreators().add(rc);
+            genericService.saveOrUpdate(rc);
         }
         project.getCultureKeywords().addAll(genericService.findRandom(CultureKeyword.class, 10));
         project.getMaterialKeywords().addAll(genericService.findRandom(MaterialKeyword.class, 10));
@@ -97,8 +98,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
             doc.setInheritingMaterialInformation(true);
             for (Person person : genericService.findRandom(Person.class, 10)) {
                 ResourceCreator rc = new ResourceCreator(person, ResourceCreatorRole.AUTHOR);
-                genericService.saveOrUpdate(rc);
                 doc.getResourceCreators().add(rc);
+                genericService.saveOrUpdate(rc);
             }
             File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
             addFileToResource(doc, file);

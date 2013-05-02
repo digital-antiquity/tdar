@@ -34,7 +34,7 @@ public class WorkflowContext implements Serializable {
 
     private static final long serialVersionUID = -1020989469518487007L;
 
-    private Long informationResourceFileId;
+//    private Long informationResourceFileId;
     private Long informationResourceId;
     private List<InformationResourceFileVersion> versions;
     private InformationResourceFileVersion originalFile;
@@ -108,13 +108,13 @@ public class WorkflowContext implements Serializable {
         return numPages;
     }
 
-    public Long getInformationResourceFileId() {
-        return informationResourceFileId;
-    }
-
-    public void setInformationResourceFileId(Long informationResourceFileId) {
-        this.informationResourceFileId = informationResourceFileId;
-    }
+//    public Long getInformationResourceFileId() {
+//        return informationResourceFileId;
+//    }
+//
+//    public void setInformationResourceFileId(Long informationResourceFileId) {
+//        this.informationResourceFileId = informationResourceFileId;
+//    }
 
     public Long getInformationResourceId() {
         return informationResourceId;

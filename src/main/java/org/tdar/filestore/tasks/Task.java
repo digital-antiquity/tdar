@@ -75,7 +75,7 @@ public interface Task extends Serializable {
         protected InformationResourceFileVersion generateInformationResourceFileVersion(File f, VersionType type) {
             WorkflowContext ctx = getWorkflowContext();
             InformationResourceFileVersion version = new InformationResourceFileVersion(type, f.getName(), ctx.getOriginalFile().getVersion(),
-                    ctx.getInformationResourceId(), ctx.getInformationResourceFileId());
+                    ctx.getInformationResourceId(), getWorkflowContext().getOriginalFile().getId());
 
             try {
                 ctx.getFilestore().store(f, version);

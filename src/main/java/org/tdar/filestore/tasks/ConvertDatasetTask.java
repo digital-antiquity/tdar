@@ -35,7 +35,7 @@ public class ConvertDatasetTask extends AbstractTask {
         InformationResourceFileVersion versionToConvert = getWorkflowContext().getOriginalFile();
         if (versionToConvert == null || !versionToConvert.hasValidFile()) {
             // abort!
-            String msg = String.format(FILE_DOES_NOT_EXIST, versionToConvert, getWorkflowContext().getInformationResourceFileId());
+            String msg = String.format(FILE_DOES_NOT_EXIST, versionToConvert, getWorkflowContext().getOriginalFile().getId());
             getLogger().error(msg);
             throw new TdarRecoverableRuntimeException(
                     msg);

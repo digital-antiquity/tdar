@@ -62,7 +62,7 @@ public class WorkflowContextService {
         InformationResourceFileVersion orig = ctx.getOriginalFile();
 
         // Finds the irFile. We could call orig.getInformationResourceFile() but we need irFile associated w/ the current hibernate session
-        InformationResourceFile irFile = genericDao.find(InformationResourceFile.class, ctx.getInformationResourceFileId());
+        InformationResourceFile irFile = genericDao.find(InformationResourceFile.class, orig.getInformationResourceFile().getId());
         if (ctx.getNumPages() >= 0) {
             irFile.setNumberOfParts(ctx.getNumPages());
         }
@@ -140,7 +140,7 @@ public class WorkflowContextService {
         ctx.setResourceType(version.getInformationResourceFile().getInformationResource().getResourceType());
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
         ctx.setInformationResourceId(version.getInformationResourceId());
-        ctx.setInformationResourceFileId(version.getInformationResourceFileId());
+//        ctx.setInformationResourceFileId(version.getInformationResourceFileId());
         ctx.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
         ctx.setXmlService(xmlService);
         w.initializeWorkflowContext(version, ctx); // handle any special bits here

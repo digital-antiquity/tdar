@@ -163,7 +163,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private Integer numberOfParts = 0;
 
     // FIXME: cascade "delete" ?
-    @OneToMany(mappedBy = "informationResourceFile", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+    @OneToMany(mappedBy = "informationResourceFile", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
     @Sort(type = SortType.NATURAL)
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
 
