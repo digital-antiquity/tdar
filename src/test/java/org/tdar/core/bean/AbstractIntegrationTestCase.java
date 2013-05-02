@@ -311,7 +311,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             e.printStackTrace();
             fail(e.getMessage());
         }
-        ir = genericService.find(ir.getClass(), ir.getId());
+        genericService.refresh(ir);// = genericService.find(ir.getClass(), ir.getId());
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             assertTrue(irf.getId() != null);
             for (InformationResourceFileVersion irfv : irf.getInformationResourceFileVersions()) {
