@@ -105,7 +105,25 @@ public class WorkflowContextService {
             // setting transient context for evaluation
 
             orig.setInformationResourceFile(irFile);
+
+            // Grab the new derivatives from the context and persist them.
+            for (InformationResourceFileVersion version : ctx.getVersions()) {
+                // if the derivative's ID is null, we know that it hasn't been persisted yet, so we save.
+                if (version.getInformationResourceFileId().equals(irFile.getId())) {
+                    version.setInformationResourceFile(irFile);
+                    irFile.addFileVersion(version);
+                }
+            }
+            logger.debug("irFile: {} ", irFile);
+            // }
+            orig.setInformationResourceFile(irFile);
+            // genericDao.saveOrUpdate(orig);
+            irFile.setInformationResource(genericDao.find(InformationResource.class, ctx.getInformationResourceId()));
+            genericDao.merge(irFile);
+            irFile.setWorkflowContext(ctx);
+
             if (ctx.isProcessedSuccessfully()) {
+                logger.info("clearing status?: {}", irFile.getStatus());
                 irFile.clearQueuedStatus();
             } else {
                 if (ctx.isErrorFatal()) {
@@ -115,20 +133,8 @@ public class WorkflowContextService {
                 }
                 irFile.setErrorMessage(ctx.getExceptionAsString());
             }
-
-            // Grab the new derivatives from the context and persist them.
-            for (InformationResourceFileVersion version : ctx.getVersions()) {
-                // if the derivative's ID is null, we know that it hasn't been persisted yet, so we save.
-                version.setInformationResourceFile(irFile);
-                irFile.addFileVersion(version);
-            }
-            logger.debug("irFile: {} ", irFile);
-            // }
-            orig.setInformationResourceFile(irFile);
-            // genericDao.saveOrUpdate(orig);
-            irFile.setInformationResource(genericDao.find(InformationResource.class, ctx.getInformationResourceId()));
-            genericDao.merge(irFile);
-            irFile.setWorkflowContext(ctx);
+            genericDao.saveOrUpdate(irFile);
+            logger.info("end status: {}", irFile.getStatus());
         }
         try {
             logger.debug(ctx.toXML());

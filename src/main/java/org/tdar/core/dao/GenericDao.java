@@ -65,10 +65,10 @@ public class GenericDao {
         logger.trace("object: {}", obj);
         return obj;
     }
-    
+
     public <E> List<E> findAllWithProfile(Class<E> class1, List<Long> ids, String profileName) {
         getCurrentSession().enableFetchProfile(profileName);
-        List<E> ret = findAll(class1,ids);
+        List<E> ret = findAll(class1, ids);
         getCurrentSession().disableFetchProfile(profileName);
         return ret;
     }
@@ -82,15 +82,12 @@ public class GenericDao {
         return query.setParameterList("ids", ids).list();
     }
 
-    
     @SuppressWarnings("unchecked")
-    public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status ... statuses) {
+    public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status... statuses) {
         Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_STATUS, persistentClass.getName()));
         return query.setParameterList("statuses", statuses).list();
     }
 
-    
-    
     @SuppressWarnings("unchecked")
     public <E> List<Long> findAllIds(Class<E> persistentClass) {
         return getCurrentSession().createQuery("select id from " + persistentClass.getName()).list();
@@ -460,6 +457,12 @@ public class GenericDao {
 
     public void refresh(Object object) {
         getCurrentSession().refresh(object);
+    }
+
+    public void refreshAll(Collection<?> objects) {
+        for (Object object : objects) {
+            getCurrentSession().refresh(object);
+        }
     }
 
     public void markReadOnly(Object obj) {

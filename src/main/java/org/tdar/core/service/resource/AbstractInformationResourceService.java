@@ -102,6 +102,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         // List<FileProxy> consolidatedProxies = validateAndConsolidateProxies(resource, fileProxiesToProcess);
         processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
         List<InformationResourceFileVersion> filesToProcess = new ArrayList<>();
+        List<InformationResourceFile> irFiles = new ArrayList<>();
         for (FileProxy proxy : fileProxiesToProcess) {
             InformationResourceFile irFile = proxy.getInformationResourceFile();
             InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
@@ -139,6 +140,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         WorkflowResult result = new WorkflowResult(fileProxiesToProcess);
         result.addActionErrorsAndMessages(listener);
 
+        genericDao.refreshAll(resource.getInformationResourceFiles());
         /*
          * FIXME: Should I purge regardless of errors??? Really???
          */
