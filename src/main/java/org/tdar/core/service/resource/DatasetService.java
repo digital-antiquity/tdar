@@ -168,7 +168,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
             fileProxy.setRestriction(file.getRestriction());
             fileProxy.setFileId(file.getId());
-            processMedataForFileProxies(dataset, fileProxy);
+            processMetadataForFileProxies(dataset, fileProxy);
             irFile = fileProxy.getInformationResourceFile();
         } catch (IOException exception) {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);

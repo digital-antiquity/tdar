@@ -507,7 +507,7 @@ public class DataIntegrationService {
                     VersionType.UPLOADED);
             fileProxy.addVersion(new FileProxy(baseFileName + ".txt", FileProxy.createTempFileFromString(csvText), VersionType.UPLOADED_TEXT));
 
-            informationResourceService.processMedataForFileProxies(codingSheet, fileProxy);
+            informationResourceService.processMetadataForFileProxies(codingSheet, fileProxy);
         } catch (Exception e) {
             logger.debug("could not process coding sheet", e);
         }

@@ -316,7 +316,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         FileProxy proxy = new FileProxy("test.pdf", new File(TestConstants.TEST_DOCUMENT_DIR, "/t2/test.pdf"), VersionType.UPLOADED_ARCHIVAL);
         proxy.setAction(FileAction.REPLACE);
         proxy.setFileId(file.getId());
-        informationResourceService.processMedataForFileProxies(doc, proxy);
+        informationResourceService.processMetadataForFileProxies(doc, proxy);
         ResourceEvaluator re4 = new ResourceEvaluator(model);
         logger.info("files {} ", doc.getInformationResourceFiles());
         re4.evaluateResources(doc);
