@@ -54,10 +54,10 @@ public class ExcelConverter extends DatasetConverter.Base {
     public ExcelConverter() {
     }
 
-    public ExcelConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
+    public ExcelConverter(TargetDatabase targetDatabase, InformationResourceFileVersion ... version) {
         setTargetDatabase(targetDatabase);
-        this.setInformationResourceFileVersion(version);
-        this.setFilename(version.getFilename());
+        this.setInformationResourceFileVersion(version[0]);
+        this.setFilename(version[0].getFilename());
     }
 
     protected void openInputDatabase()

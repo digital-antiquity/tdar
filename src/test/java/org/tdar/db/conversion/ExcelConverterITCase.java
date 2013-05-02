@@ -1,5 +1,9 @@
 package org.tdar.db.conversion;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -9,7 +13,6 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -21,8 +24,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ExcelConverter;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-
-import static org.junit.Assert.*;
 
 public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
 
@@ -38,7 +39,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testBlankExceedingRows() throws IOException {
         InformationResourceFileVersion weirdColumnsDataset = makeFileVersion("Pundo faunal remains.xls", 509);
-        ExcelConverter converter = new ExcelConverter(weirdColumnsDataset, tdarDataImportDatabase);
+        ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         converter.execute();
         Set<DataTable> dataTables = converter.getDataTables();
         assertEquals(1, dataTables.size());
@@ -56,7 +57,8 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testBlankExceedingRowsAndExtraColumnAtEnd() throws IOException {
-        importSpreadsheetAndConfirmExceptionIsThrown("Pundo_degenerate.xls", "row #49 has more columns (6) than this sheet has column names (5) - Appendix 8 (2)");
+        importSpreadsheetAndConfirmExceptionIsThrown("Pundo_degenerate.xls",
+                "row #49 has more columns (6) than this sheet has column names (5) - Appendix 8 (2)");
     }
 
     @Test
@@ -67,12 +69,12 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
 
     private void importSpreadsheetAndConfirmExceptionIsThrown(String spreadsheetName, String expectedErrorMessage) throws IOException {
         InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(spreadsheetName, 529);
-        ExcelConverter converter = new ExcelConverter(weirdColumnsDataset, tdarDataImportDatabase);
+        ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         try {
             converter.execute();
             assertTrue("Should never get to this point in the code.", false);
         } catch (TdarRecoverableRuntimeException e) {
-            assertTrue(e.getMessage() ,e.getMessage().contains(expectedErrorMessage));
+            assertTrue(e.getMessage(), e.getMessage().contains(expectedErrorMessage));
         }
     }
 
@@ -80,26 +82,26 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testArtifactDatasetFromFilemaker() throws IOException {
         InformationResourceFileVersion weirdColumnsDataset = makeFileVersion("fmp_artifacts.xlsx", 505);
-        ExcelConverter converter = new ExcelConverter(weirdColumnsDataset, tdarDataImportDatabase);
+        ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         converter.execute();
         Set<DataTable> dataTables = converter.getDataTables();
         assertEquals(1, dataTables.size());
         DataTable dataTable = dataTables.iterator().next();
-//        assertNotNull(dataTable.getColumnByDisplayName("Period"));
-//        assertNotNull(dataTable.getColumnByDisplayName("SumOfNo"));
-//        assertNotNull(dataTable.getColumnByDisplayName("1.00"));
-//        assertNotNull(dataTable.getColumnByDisplayName("ABC"));
-//        assertNotNull(dataTable.getColumnByName("period"));
-//        assertNotNull(dataTable.getColumnByName("sumofno"));
-//        assertNotNull(dataTable.getColumnByName("c1_00"));
-//        assertNotNull(dataTable.getColumnByName("abc"));
+        // assertNotNull(dataTable.getColumnByDisplayName("Period"));
+        // assertNotNull(dataTable.getColumnByDisplayName("SumOfNo"));
+        // assertNotNull(dataTable.getColumnByDisplayName("1.00"));
+        // assertNotNull(dataTable.getColumnByDisplayName("ABC"));
+        // assertNotNull(dataTable.getColumnByName("period"));
+        // assertNotNull(dataTable.getColumnByName("sumofno"));
+        // assertNotNull(dataTable.getColumnByName("c1_00"));
+        // assertNotNull(dataTable.getColumnByName("abc"));
     }
 
     @Test
     @Rollback
     public void testColumnNameFormatIssues() throws IOException {
         InformationResourceFileVersion weirdColumnsDataset = makeFileVersion("weird_column_headings.xlsx", 502);
-        ExcelConverter converter = new ExcelConverter(weirdColumnsDataset, tdarDataImportDatabase);
+        ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         converter.execute();
         Set<DataTable> dataTables = converter.getDataTables();
         assertEquals(1, dataTables.size());
@@ -121,7 +123,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         File storedFile = filestore.retrieveFile(datasetTextOnly);
         assertTrue("text file exists", storedFile.exists());
 
-        ExcelConverter converter = new ExcelConverter(datasetTextOnly, tdarDataImportDatabase);
+        ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, datasetTextOnly);
         converter.execute();
         DataTable table = converter.getDataTables().iterator().next();
         assertTrue("table created", table.getName().indexOf("dataset_all_text") > 0);

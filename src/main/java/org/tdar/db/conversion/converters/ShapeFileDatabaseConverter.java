@@ -4,7 +4,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -52,9 +55,12 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
     public ShapeFileDatabaseConverter() {
     }
 
-    public ShapeFileDatabaseConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
+    private List<InformationResourceFileVersion> versions = new ArrayList<>();
+    
+    public ShapeFileDatabaseConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
         setTargetDatabase(targetDatabase);
-        setInformationResourceFileVersion(version);
+        setInformationResourceFileVersion(versions[0]);
+        this.versions = Arrays.asList(versions);
     }
 
     protected void openInputDatabase() throws IOException {
@@ -62,12 +68,11 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
 
         File workingDir = new File(TdarConfiguration.getInstance().getTempDirectory(), getDatabaseFile().getName());
         workingDir.mkdir();
-        FileUtils.copyFileToDirectory(getDatabaseFile(), workingDir);
-        File workingOriginal = new File(workingDir, getDatabaseFile().getName());
-        for (InformationResourceFileVersion version : getInformationResourceFileVersion().getSupportingFiles()) {
+        for (InformationResourceFileVersion version : versions) {
             FileUtils.copyFileToDirectory(version.getFile(), workingDir);
+            File workingOriginal = new File(workingDir, getDatabaseFile().getName());
+            setDatabaseFile(workingOriginal);
         }
-        setDatabaseFile(workingOriginal);
         this.setIrFileId(getInformationResourceFileVersion().getId());
         this.setFilename(getDatabaseFile().getName());
     }

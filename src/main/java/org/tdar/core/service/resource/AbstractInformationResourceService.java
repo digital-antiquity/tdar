@@ -99,38 +99,43 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             return new WorkflowResult(fileProxiesToProcess);
         }
 
-        List<FileProxy> consolidatedProxies = validateAndConsolidateProxies(resource, fileProxiesToProcess);
-
+        // List<FileProxy> consolidatedProxies = validateAndConsolidateProxies(resource, fileProxiesToProcess);
         processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
-        for (FileProxy proxy : consolidatedProxies) {
+        List<InformationResourceFileVersion> filesToProcess = new ArrayList<>();
+        for (FileProxy proxy : fileProxiesToProcess) {
             InformationResourceFile irFile = proxy.getInformationResourceFile();
             InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
             logger.info("version: {} proxy: {} ", version, proxy);
-
-            if (CollectionUtils.isNotEmpty(proxy.getSupportingProxies())) {
-                List<InformationResourceFileVersion> supporting = proxy.getInformationResourceFileVersion().getSupportingFiles();
-                for (FileProxy proxy_ : proxy.getSupportingProxies()) {
-                    supporting.add(proxy_.getInformationResourceFileVersion());
-                }
-            }
 
             if (proxy.getAction().requiresWorkflowProcessing()) {
                 switch (version.getFileVersionType()) {
                     case UPLOADED:
                     case UPLOADED_ARCHIVAL:
                         irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
-                        try {
-                            analyzer.processFile(proxy.getInformationResourceFileVersion());
-                        } catch (Exception e) {
-                            logger.warn("caught exception {} while analyzing file {}", e, proxy.getFilename());
-                        }
+                        filesToProcess.add(version);
                         break;
                     default:
                         logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
                 }
             }
-
         }
+        if (resource.isCompositeFilesEnabled()) {
+            try {
+                analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
+            } catch (Exception e) {
+                logger.warn("caught exception {} while analyzing file {}", e, filesToProcess);
+            }
+        } else {
+            for (InformationResourceFileVersion version : filesToProcess) {
+                try {
+                    analyzer.processFile(version);
+                } catch (Exception e) {
+                    logger.warn("caught exception {} while analyzing file {}", e, version);
+                }
+
+            }
+        }
+
         WorkflowResult result = new WorkflowResult(fileProxiesToProcess);
         result.addActionErrorsAndMessages(listener);
 
@@ -153,8 +158,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         FileType type = null;
         FileProxy primary = null;
 
-        //        if (resource != ???. continue)
-        
+        // if (resource != ???. continue)
+
         /*
          * iterate through all of the proxies and look at the ADD or REPLACE methods; for those, see if any of the "types" is a composite.
          * If one is, then treat the set as composites. If, somehow they're different types, complain.
@@ -191,7 +196,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 primary = proxies.get(0);
                 proxies.clear();
             }
-            
+
             if (primary == null) {
                 throw new TdarRecoverableRuntimeException("what to do?");
             }
@@ -213,7 +218,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 }
             }
         }
-        
+
         if (primary != null) {
             return Arrays.asList(primary);
         }

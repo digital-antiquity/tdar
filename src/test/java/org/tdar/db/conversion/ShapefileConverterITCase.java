@@ -41,18 +41,19 @@ public class ShapefileConverterITCase extends AbstractDataIntegrationTestCase {
         String name = "Occ_3l";
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
+        wc.getOriginalFiles().add(originalFile);
         for (String ext : new String[] { ".dbf", ".sbn", ".sbx", ".shp.xml", ".shx", ".xml" }) {
-            originalFile.getSupportingFiles().add(generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
+            wc.getOriginalFiles().add(generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
 
         }
         DatasetConverter converter = DatasetConversionFactory.getConverter(originalFile, tdarDataImportDatabase);
         converter.execute();
 
-//        wc.setOriginalFile(originalFile);
-//        task.setWorkflowContext(wc);
-//        task.run();
-//
-//        DatasetConverter converter = convertDatabase("az-paleoindian-point-survey.mdb", 1129L);
+        // wc.setOriginalFile(originalFile);
+        // task.setWorkflowContext(wc);
+        // task.run();
+        //
+        // DatasetConverter converter = convertDatabase("az-paleoindian-point-survey.mdb", 1129L);
         for (DataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }

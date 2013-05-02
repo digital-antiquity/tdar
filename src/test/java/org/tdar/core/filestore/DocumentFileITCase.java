@@ -47,7 +47,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileType.DOCUMENT, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(PDFWorkflow.class, workflow.getClass());
-        boolean result = messageService.sendFileProcessingRequest(originalVersion, workflow);
+        boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
         assertFalse(result);
@@ -66,12 +66,14 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileType.DOCUMENT, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(GenericDocumentWorkflow.class, workflow.getClass());
-        boolean result = messageService.sendFileProcessingRequest(originalVersion, workflow);
+        logger.info("{}", originalVersion);
+        boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
         assertTrue(result);
         assertEquals(null, informationResourceFile.getStatus());
         InformationResourceFileVersion indexableVersion = informationResourceFile.getIndexableVersion();
+        logger.info("version: {}" , indexableVersion);
         String text = FileUtils.readFileToString(indexableVersion.getFile());
         logger.info(text);
         assertTrue(text.toLowerCase().contains("have fun digging"));

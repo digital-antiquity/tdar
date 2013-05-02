@@ -21,48 +21,49 @@ public class ConvertDatasetTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        File file = getWorkflowContext().getOriginalFile().getFile();
-        if (getWorkflowContext().getResourceType() != ResourceType.DATASET) {
-            getLogger().info("This is not actually a dataset (probably a coding sheet), returning");
-            return;
+        for (InformationResourceFileVersion versionToConvert : getWorkflowContext().getOriginalFiles()) {
+            File file = versionToConvert.getFile();
+            if (getWorkflowContext().getResourceType() != ResourceType.DATASET) {
+                getLogger().info("This is not actually a dataset (probably a coding sheet), returning");
+                return;
+            }
+
+            if (file == null) {
+                getLogger().warn("No datasetFile specified, returning");
+                return;
+            }
+
+            if (versionToConvert == null || !versionToConvert.hasValidFile()) {
+                // abort!
+                String msg = String.format(FILE_DOES_NOT_EXIST, versionToConvert, versionToConvert.getId());
+                getLogger().error(msg);
+                throw new TdarRecoverableRuntimeException(
+                        msg);
+            }
+
+            // drop this dataset's actual data tables from the tdardata database - we'll delete the actual hibernate metadata entities later after
+            // performing reconciliation so we can preserve as much column-level metadata as possible
+            getLogger().info(String.format("dropping tables %s", getWorkflowContext().getDataTablesToCleanup()));
+            for (String table : getWorkflowContext().getDataTablesToCleanup()) {
+                getWorkflowContext().getTargetDatabase().dropTable(table);
+            }
+
+            Dataset transientDataset = new Dataset();
+            transientDataset.setStatus(Status.FLAGGED);
+            getWorkflowContext().setTransientResource(transientDataset);
+            DatasetConverter databaseConverter = DatasetConversionFactory.getConverter(versionToConvert, getWorkflowContext().getTargetDatabase());
+            // returns the set of transient POJOs from the incoming dataset.
+
+            Set<DataTable> tablesToPersist = databaseConverter.execute();
+            File indexedContents = databaseConverter.getIndexedContentsFile();
+            getLogger().trace("FILE:**** : " + indexedContents);
+
+            if (indexedContents != null && indexedContents.length() > 0) {
+                addDerivativeFile(versionToConvert, indexedContents, VersionType.INDEXABLE_TEXT);
+            }
+            transientDataset.getDataTables().addAll(tablesToPersist);
+            transientDataset.getRelationships().addAll(databaseConverter.getRelationships());
         }
-
-        if (file == null) {
-            getLogger().warn("No datasetFile specified, returning");
-            return;
-        }
-
-        InformationResourceFileVersion versionToConvert = getWorkflowContext().getOriginalFile();
-        if (versionToConvert == null || !versionToConvert.hasValidFile()) {
-            // abort!
-            String msg = String.format(FILE_DOES_NOT_EXIST, versionToConvert, getWorkflowContext().getOriginalFile().getId());
-            getLogger().error(msg);
-            throw new TdarRecoverableRuntimeException(
-                    msg);
-        }
-
-        // drop this dataset's actual data tables from the tdardata database - we'll delete the actual hibernate metadata entities later after
-        // performing reconciliation so we can preserve as much column-level metadata as possible
-        getLogger().info(String.format("dropping tables %s", getWorkflowContext().getDataTablesToCleanup()));
-        for (String table : getWorkflowContext().getDataTablesToCleanup()) {
-            getWorkflowContext().getTargetDatabase().dropTable(table);
-        }
-
-        Dataset transientDataset = new Dataset();
-        transientDataset.setStatus(Status.FLAGGED);
-        getWorkflowContext().setTransientResource(transientDataset);
-        DatasetConverter databaseConverter = DatasetConversionFactory.getConverter(versionToConvert, getWorkflowContext().getTargetDatabase());
-        // returns the set of transient POJOs from the incoming dataset.
-
-        Set<DataTable> tablesToPersist = databaseConverter.execute();
-        File indexedContents = databaseConverter.getIndexedContentsFile();
-        getLogger().trace("FILE:**** : " + indexedContents);
-
-        if (indexedContents != null && indexedContents.length() > 0) {
-            addDerivativeFile(indexedContents, VersionType.INDEXABLE_TEXT);
-        }
-        transientDataset.getDataTables().addAll(tablesToPersist);
-        transientDataset.getRelationships().addAll(databaseConverter.getRelationships());
     }
 
     @Override

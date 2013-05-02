@@ -99,17 +99,18 @@ public class MessageService {
      * This is the beginning of the message process, it takes files that have just been uploaded and creates a workflow context for them, and sends them
      * on the MessageQueue
      * 
-     * @param version
-     * @param w
+     * @param informationResourceFileVersions
+     * @param workflow2
      * @return
      */
-    public <W extends Workflow> boolean sendFileProcessingRequest(InformationResourceFileVersion version, W w) {
-        WorkflowContext ctx = workflowContextService.initializeWorkflowContext(version, w);
-        InformationResourceFile irf = version.getInformationResourceFile();
-        irf.setStatus(FileStatus.QUEUED);
-        genericService.saveOrUpdate(irf);
-        ctx.setWorkflowClass(w.getClass());
-        genericService.detachFromSession(irf);
+    public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResourceFileVersion ... informationResourceFileVersions) {
+        WorkflowContext ctx = workflowContextService.initializeWorkflowContext(workflow, informationResourceFileVersions);
+        for (InformationResourceFileVersion version : informationResourceFileVersions) {
+            InformationResourceFile irf = version.getInformationResourceFile();
+            irf.setStatus(FileStatus.QUEUED);
+            genericService.saveOrUpdate(irf);
+            genericService.detachFromSession(irf);
+        }
         // w.setWorkflowContext(ctx);
         // if (TdarConfiguration.getInstance().useExternalMessageQueue()) {
         // RabbitTemplate template = getRabbitTemplate(getFilesToProcessQueue());
@@ -118,13 +119,13 @@ public class MessageService {
         // } else {
         boolean success = false;
         try {
-            Workflow workflow = ctx.getWorkflowClass().newInstance();
+            Workflow workflow_ = ctx.getWorkflowClass().newInstance();
             ctx.setXmlService(xmlService);
-            success = workflow.run(ctx);
+            success = workflow_.run(ctx);
             workflowContextService.processContext(ctx);
         } catch (Exception e) {
             // trying to get a more useful debug message...
-            logger.warn("Unhandled exception while processing file: " + version, e);
+            logger.warn("Unhandled exception while processing file: " + informationResourceFileVersions, e);
         }
         // }
         return success;

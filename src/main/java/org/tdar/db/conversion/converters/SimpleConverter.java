@@ -29,9 +29,9 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
     public SimpleConverter() {
     }
 
-    public SimpleConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
+    public SimpleConverter(TargetDatabase targetDatabase, InformationResourceFileVersion ... versions) {
         setTargetDatabase(targetDatabase);
-        setInformationResourceFileVersion(version);
+        setInformationResourceFileVersion(versions[0]);
     }
 
     protected abstract void openInputDatabase() throws IOException;

@@ -67,7 +67,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(FileType.FILE_ARCHIVE, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(FileArchiveWorkflow.class, workflow.getClass());
-        messageService.sendFileProcessingRequest(originalVersion, workflow);
+        messageService.sendFileProcessingRequest(workflow, originalVersion);
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
 

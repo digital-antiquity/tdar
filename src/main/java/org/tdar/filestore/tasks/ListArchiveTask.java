@@ -26,7 +26,7 @@ public class ListArchiveTask extends AbstractTask {
     private static final long serialVersionUID = 5392550508417818439L;
 
     private long effectiveSize = 0l;
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -34,24 +34,26 @@ public class ListArchiveTask extends AbstractTask {
      */
     @Override
     public void run() throws Exception {
-        File f_ = getWorkflowContext().getOriginalFile().getFile();
-        // take the file
-        getLogger().debug("listing contents of: " + f_.getName());
-        File f = new File(getWorkflowContext().getWorkingDirectory(), f_.getName() + ".contents.txt");
-        StringBuilder archiveContents = new StringBuilder();
+        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+            File f_ = version.getFile();
+            // take the file
+            getLogger().debug("listing contents of: " + f_.getName());
+            File f = new File(getWorkflowContext().getWorkingDirectory(), f_.getName() + ".contents.txt");
+            StringBuilder archiveContents = new StringBuilder();
 
-        // list all of the contents
-        // http://blog.msbbc.co.uk/2011/09/java-getting-started-with-truezip-api.html
-        TConfig.get().setArchiveDetector(TArchiveDetector.ALL);
-        TFile archiveFile = new TFile(f_, TArchiveDetector.ALL);
+            // list all of the contents
+            // http://blog.msbbc.co.uk/2011/09/java-getting-started-with-truezip-api.html
+            TConfig.get().setArchiveDetector(TArchiveDetector.ALL);
+            TFile archiveFile = new TFile(f_, TArchiveDetector.ALL);
 
-        listFiles(archiveContents, archiveFile, archiveFile);
+            listFiles(archiveContents, archiveFile, archiveFile);
 
-        // write that to a file with a known format (one file per line)
-        FileUtils.writeStringToFile(f, archiveContents.toString());
-        InformationResourceFileVersion version = generateInformationResourceFileVersion(f, VersionType.TRANSLATED);
-        getWorkflowContext().getOriginalFile().setUncompressedSizeOnDisk(getEffectiveSize());
-        getWorkflowContext().addVersion(version);
+            // write that to a file with a known format (one file per line)
+            FileUtils.writeStringToFile(f, archiveContents.toString());
+            InformationResourceFileVersion version_ = generateInformationResourceFileVersionFromOriginal(version, f, VersionType.TRANSLATED);
+            version.setUncompressedSizeOnDisk(getEffectiveSize());
+            getWorkflowContext().addVersion(version_);
+        }
     }
 
     public void listFiles(StringBuilder archiveContents, File archiveFile, File originalFile) {

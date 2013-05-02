@@ -2,6 +2,7 @@ package org.tdar.filestore;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -84,28 +85,36 @@ public class FileAnalyzer {
         return null;
     }
 
-    public Workflow getWorkflow(HasExtension irFileVersion) throws Exception {
-        return fileExtensionToWorkflowMap.get(irFileVersion.getExtension());
+    public Workflow getWorkflow(HasExtension... irFileVersion) throws Exception {
+        return fileExtensionToWorkflowMap.get(irFileVersion[0].getExtension());
     }
 
-    public boolean processFile(InformationResourceFileVersion irFileVersion) throws Exception {
-        Workflow workflow = getWorkflow(irFileVersion);
+    public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws Exception {
+        Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null)
             return false; // could argue that this is true
-        if (irFileVersion == null) {
+        if (informationResourceFileVersions == null) {
             throw new TdarRecoverableRuntimeException("File version was null, this should not happen");
         }
+        checkFilesExist(informationResourceFileVersions);
 
-        File file = irFileVersion.getFile();
-
-        if (file == null) {
-            throw new FileNotFoundException(irFileVersion + " -- file does not exist");
-        }
-        if (!file.exists()) {
-            throw new FileNotFoundException(file.getCanonicalPath() + " does not exist");
-        }
         logger.debug("using workflow: {}", workflow);
-        return messageService.sendFileProcessingRequest(irFileVersion, workflow);
+        return messageService.sendFileProcessingRequest(workflow, informationResourceFileVersions);
+    }
+
+    private void checkFilesExist(InformationResourceFileVersion[] informationResourceFileVersions) throws FileNotFoundException, IOException {
+        for (InformationResourceFileVersion version : informationResourceFileVersions) {
+            File file = version.getFile();
+
+            if (file == null) {
+                throw new FileNotFoundException(version + " -- file does not exist");
+            }
+            if (!file.exists()) {
+                throw new FileNotFoundException(file.getCanonicalPath() + " does not exist");
+            }
+
+        }
+
     }
 
     public boolean processFile(InformationResourceFile irFile) throws Exception {
@@ -132,7 +141,7 @@ public class FileAnalyzer {
         List<String> extensions = primaryExtensionList.get(type);
         if (CollectionUtils.isNotEmpty(extensions) && extensions.contains(proxy.getExtension())) {
             return true;
-        } 
+        }
         return false;
     }
 }

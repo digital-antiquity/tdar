@@ -72,10 +72,11 @@ public interface Task extends Serializable {
             f.delete();
         }
 
-        protected InformationResourceFileVersion generateInformationResourceFileVersion(File f, VersionType type) {
+        protected InformationResourceFileVersion generateInformationResourceFileVersionFromOriginal(InformationResourceFileVersion originalVersion, File f,
+                VersionType type) {
             WorkflowContext ctx = getWorkflowContext();
-            InformationResourceFileVersion version = new InformationResourceFileVersion(type, f.getName(), ctx.getOriginalFile().getVersion(),
-                    ctx.getInformationResourceId(), getWorkflowContext().getOriginalFile().getId());
+            InformationResourceFileVersion version = new InformationResourceFileVersion(type, f.getName(), originalVersion.getVersion(),
+                    ctx.getInformationResourceId(), originalVersion.getInformationResourceFileId());
 
             try {
                 ctx.getFilestore().store(f, version);
@@ -98,18 +99,18 @@ public interface Task extends Serializable {
             return new File(outputFile.getParent());
         }
 
-        void addDerivativeFile(File file, String extension, String text, VersionType type) throws Exception {
+        void addDerivativeFile(InformationResourceFileVersion originalVersion, File file, String extension, String text, VersionType type) throws Exception {
             if (StringUtils.isNotBlank(text)) {
                 File f = new File(getWorkflowContext().getWorkingDirectory(), file.getName() + "." + extension);
                 FileUtils.writeStringToFile(f, text);
-                addDerivativeFile(f, type);
+                addDerivativeFile(originalVersion, f, type);
             }
         }
 
-        void addDerivativeFile(File f, VersionType type) throws IOException {
+        void addDerivativeFile(InformationResourceFileVersion orginalVersion, File f, VersionType type) throws IOException {
             if (f.length() > 0) {
                 getLogger().info("Writing file: " + f);
-                InformationResourceFileVersion version = generateInformationResourceFileVersion(f, type);
+                InformationResourceFileVersion version = generateInformationResourceFileVersionFromOriginal(orginalVersion, f, type);
                 getWorkflowContext().addVersion(version);
             } else {
                 logger.warn("writing empty file ... skipping " + f.getName());

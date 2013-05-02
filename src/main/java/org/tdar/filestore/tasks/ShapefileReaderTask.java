@@ -2,8 +2,6 @@ package org.tdar.filestore.tasks;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +10,6 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.geotools.GML;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.DataUtilities;
@@ -29,8 +26,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
-import com.vividsolutions.jtsexample.io.gml2.KMLReaderExample;
-
 public class ShapefileReaderTask extends AbstractTask {
 
     /**
@@ -40,13 +35,13 @@ public class ShapefileReaderTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        File file = getWorkflowContext().getOriginalFile().getFile();
+        File file = getWorkflowContext().getOriginalFiles().get(0).getFile();
         // http://stackoverflow.com/questions/2044876/does-anyone-know-of-a-library-in-java-that-can-parse-esri-shapefiles
         File workingDir = new File(getWorkflowContext().getWorkingDirectory(), file.getName());
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
         File workingOriginal = new File(workingDir, file.getName());
-        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFile().getSupportingFiles()) {
+        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
             FileUtils.copyFileToDirectory(version.getFile(), workingDir);
         }
 
@@ -100,19 +95,19 @@ public class ShapefileReaderTask extends AbstractTask {
                     getLogger().debug("{}", dataStore.getNames());
                     SimpleFeatureType TYPE = DataUtilities.createType("location", "geom:Point,name:String");
 
-//                    File locationFile = new File("location.xsd");
-//                    locationFile = locationFile.getCanonicalFile();
-//                    locationFile.createNewFile();
-//
-//                    URL locationURL = locationFile.toURI().toURL();
-//                    URL baseURL = locationFile.getParentFile().toURI().toURL();
-//
-//                    FileOutputStream xsd = new FileOutputStream(locationFile);
-//
-//                    GML encode = new GML(GML.Version.GML2);
-//                    encode.setBaseURL(baseURL);
-//                    encode.setNamespace("location", locationURL.toExternalForm());
-//                    FeatureIterator featureIterator = collection.features();
+                    // File locationFile = new File("location.xsd");
+                    // locationFile = locationFile.getCanonicalFile();
+                    // locationFile.createNewFile();
+                    //
+                    // URL locationURL = locationFile.toURI().toURL();
+                    // URL baseURL = locationFile.getParentFile().toURI().toURL();
+                    //
+                    // FileOutputStream xsd = new FileOutputStream(locationFile);
+                    //
+                    // GML encode = new GML(GML.Version.GML2);
+                    // encode.setBaseURL(baseURL);
+                    // encode.setNamespace("location", locationURL.toExternalForm());
+                    // FeatureIterator featureIterator = collection.features();
                 } catch (Throwable e) {
                     getLogger().error("exception", e);
                 } finally {
@@ -121,7 +116,7 @@ public class ShapefileReaderTask extends AbstractTask {
                 break;
             case "kml":
                 Parser parser = new Parser(new KMLConfiguration());
-                SimpleFeature f = (SimpleFeature) parser.parse( new FileInputStream(file));
+                SimpleFeature f = (SimpleFeature) parser.parse(new FileInputStream(file));
                 Collection placemarks = (Collection) f.getAttribute("Feature");
                 for (Object mark : placemarks) {
                     getLogger().info("{}", mark);

@@ -37,9 +37,9 @@ public class CsvConverter extends SimpleConverter {
     public CsvConverter() {
     };
 
-    public CsvConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
+    public CsvConverter(TargetDatabase targetDatabase,InformationResourceFileVersion ... versions) {
         setTargetDatabase(targetDatabase);
-        setInformationResourceFileVersion(version);
+        setInformationResourceFileVersion(versions[0]);
     }
 
     protected void openInputDatabase()

@@ -36,8 +36,8 @@ public class WorkflowContext implements Serializable {
 
 //    private Long informationResourceFileId;
     private Long informationResourceId;
-    private List<InformationResourceFileVersion> versions;
-    private InformationResourceFileVersion originalFile;
+    private List<InformationResourceFileVersion> versions = new ArrayList<>();
+    private List<InformationResourceFileVersion> originalFiles = new ArrayList<>();
     private File workingDirectory = TdarConfiguration.getInstance().getTempDirectory();
     private int numPages = -1;
     private transient Filestore filestore;
@@ -62,6 +62,8 @@ public class WorkflowContext implements Serializable {
     /*
      * All of the derivative versions of the file
      */
+    @XmlElementWrapper(name = "versions")
+    @XmlElement(name = "informationResourceFileVersion")
     public List<InformationResourceFileVersion> getVersions() {
         if (versions == null)
             versions = new ArrayList<InformationResourceFileVersion>();
@@ -74,15 +76,17 @@ public class WorkflowContext implements Serializable {
         this.versions.add(version);
     }
 
-    public InformationResourceFileVersion getOriginalFile() {
-        return originalFile;
+    @XmlElementWrapper(name = "originalFiles")
+    @XmlElement(name = "informationResourceFileVersion")
+    public List<InformationResourceFileVersion> getOriginalFiles() {
+        return originalFiles;
     }
 
     /*
      * Get the Original File
      */
-    public void setOriginalFile(InformationResourceFileVersion originalFile) {
-        this.originalFile = originalFile;
+    public void setOriginalFiles(List<InformationResourceFileVersion> originalFile) {
+        this.originalFiles = originalFile;
     }
 
     /*
@@ -107,14 +111,6 @@ public class WorkflowContext implements Serializable {
     public int getNumPages() {
         return numPages;
     }
-
-//    public Long getInformationResourceFileId() {
-//        return informationResourceFileId;
-//    }
-//
-//    public void setInformationResourceFileId(Long informationResourceFileId) {
-//        this.informationResourceFileId = informationResourceFileId;
-//    }
 
     public Long getInformationResourceId() {
         return informationResourceId;

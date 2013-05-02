@@ -1,8 +1,10 @@
 package org.tdar.core.service.workflow;
 
 import java.io.File;
+import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +34,8 @@ import org.tdar.filestore.WorkflowContext;
 @Service
 public class WorkflowContextService {
 
-    public static final Logger logger = Logger.getLogger(WorkflowContextService.class);
+    public final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private TargetDatabase tdarDataImportDatabase;
     @Autowired
@@ -47,6 +50,7 @@ public class WorkflowContextService {
     private OntologyService ontologyService;
     @Autowired
     private CodingSheetService codingSheetService;
+
     /**
      * This method takes a workflow context once it's been generated and persists it back into tDAR. It will remove all existing derivatives, then
      * rehydrate all of the objects associated with the context, and then save them back into the database
@@ -57,97 +61,101 @@ public class WorkflowContextService {
     public void processContext(WorkflowContext ctx) {
         // Delete the old, existing derivatives on current IRFile. That is, any derivatives that have previously been persisted.
         // FIXME: only delete the derivatives for the CURRENT VERSON, not ALL VERSIONS
-        informationResourceFileVersionService.deleteDerivatives(ctx.getOriginalFile());
-        // gets the uploaded IRFileVersion
-        InformationResourceFileVersion orig = ctx.getOriginalFile();
 
-        // Finds the irFile. We could call orig.getInformationResourceFile() but we need irFile associated w/ the current hibernate session
-        InformationResourceFile irFile = genericDao.find(InformationResourceFile.class, orig.getInformationResourceFile().getId());
-        if (ctx.getNumPages() >= 0) {
-            irFile.setNumberOfParts(ctx.getNumPages());
-        }
+        for (InformationResourceFileVersion orig : ctx.getOriginalFiles()) {
+            informationResourceFileVersionService.deleteDerivatives(orig);
+            // gets the uploaded IRFileVersion
+            // InformationResourceFileVersion orig = ctx.getOriginalFile();
 
-        Resource resource = genericDao.find(ctx.getResourceType().getResourceClass(), ctx.getInformationResourceId());
-        switch (ctx.getResourceType()) {
-            case DATASET:
-                Dataset dataset = (Dataset) resource;
-                if (ctx.getTransientResource() == null) {
-                    break;
-                }
-                genericDao.detachFromSession(ctx.getTransientResource());
-                logger.info(ctx.getTransientResource());
-                logger.info(((Dataset) ctx.getTransientResource()).getDataTables());
-                datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
-                genericDao.saveOrUpdate(dataset);
-                break;
-            case ONTOLOGY:
-                Ontology ontology = (Ontology) resource;
-                // should we pass in the context?
-                ontologyService.shred(ontology);
-                ontologyService.saveOrUpdate(ontology);
-                break;
-            case CODING_SHEET:
-                CodingSheet codingSheet = (CodingSheet) resource;
-                codingSheetService.ingestCodingSheet(codingSheet,ctx);
-                ontologyService.saveOrUpdate(codingSheet);
-                datasetService.refreshAssociatedDataTables(codingSheet);
-                break;
-            default:
-                break;
-
-        }
-        // setting transient context for evaluation
-
-        orig.setInformationResourceFile(irFile);
-        if (ctx.isProcessedSuccessfully()) {
-            irFile.clearQueuedStatus();
-        } else {
-            if (ctx.isErrorFatal()) {
-                irFile.setStatus(FileStatus.PROCESSING_ERROR);
-            } else {
-                irFile.setStatus(FileStatus.PROCESSING_WARNING);
+            // Finds the irFile. We could call orig.getInformationResourceFile() but we need irFile associated w/ the current hibernate session
+            InformationResourceFile irFile = genericDao.find(InformationResourceFile.class, orig.getInformationResourceFile().getId());
+            if (ctx.getNumPages() >= 0) {
+                irFile.setNumberOfParts(ctx.getNumPages());
             }
-            irFile.setErrorMessage(ctx.getExceptionAsString());
-        }
-        logger.debug(irFile);
 
-        // Grab the new derivatives from the context and persist them.
-        for (InformationResourceFileVersion version : ctx.getVersions()) {
-            // if the derivative's ID is null, we know that it hasn't been persisted yet, so we save.
-            version.setInformationResourceFile(irFile);
-            irFile.addFileVersion(version);
-        }
+            Resource resource = genericDao.find(ctx.getResourceType().getResourceClass(), ctx.getInformationResourceId());
+            switch (ctx.getResourceType()) {
+                case DATASET:
+                    Dataset dataset = (Dataset) resource;
+                    if (ctx.getTransientResource() == null) {
+                        break;
+                    }
+                    genericDao.detachFromSession(ctx.getTransientResource());
+                    logger.info("resource: ", ctx.getTransientResource());
+                    logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
+                    datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
+                    genericDao.saveOrUpdate(dataset);
+                    break;
+                case ONTOLOGY:
+                    Ontology ontology = (Ontology) resource;
+                    // should we pass in the context?
+                    ontologyService.shred(ontology);
+                    ontologyService.saveOrUpdate(ontology);
+                    break;
+                case CODING_SHEET:
+                    CodingSheet codingSheet = (CodingSheet) resource;
+                    codingSheetService.ingestCodingSheet(codingSheet, ctx);
+                    ontologyService.saveOrUpdate(codingSheet);
+                    datasetService.refreshAssociatedDataTables(codingSheet);
+                    break;
+                default:
+                    break;
 
+            }
+            // setting transient context for evaluation
+
+            orig.setInformationResourceFile(irFile);
+            if (ctx.isProcessedSuccessfully()) {
+                irFile.clearQueuedStatus();
+            } else {
+                if (ctx.isErrorFatal()) {
+                    irFile.setStatus(FileStatus.PROCESSING_ERROR);
+                } else {
+                    irFile.setStatus(FileStatus.PROCESSING_WARNING);
+                }
+                irFile.setErrorMessage(ctx.getExceptionAsString());
+            }
+
+            // Grab the new derivatives from the context and persist them.
+            for (InformationResourceFileVersion version : ctx.getVersions()) {
+                // if the derivative's ID is null, we know that it hasn't been persisted yet, so we save.
+                version.setInformationResourceFile(irFile);
+                irFile.addFileVersion(version);
+            }
+            logger.debug("irFile: {} ", irFile);
+            // }
+            orig.setInformationResourceFile(irFile);
+            // genericDao.saveOrUpdate(orig);
+            irFile.setInformationResource(genericDao.find(InformationResource.class, ctx.getInformationResourceId()));
+            genericDao.merge(irFile);
+            irFile.setWorkflowContext(ctx);
+        }
         try {
             logger.debug(ctx.toXML());
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("XMLException: {}", e);
         }
-        orig.setInformationResourceFile(irFile);
-        // genericDao.saveOrUpdate(orig);
-        irFile.setInformationResource(genericDao.find(InformationResource.class, ctx.getInformationResourceId()));
-        genericDao.merge(irFile);
-        irFile.setWorkflowContext(ctx);
     }
 
     /*
      * given any InformationResourceFileVersion (for an uploaded file) this will create a workflow context
      */
-    public WorkflowContext initializeWorkflowContext(InformationResourceFileVersion version, Workflow w) {
+    public WorkflowContext initializeWorkflowContext(Workflow w, InformationResourceFileVersion... versions) {
         WorkflowContext ctx = new WorkflowContext();
-        ctx.setOriginalFile(version);
+        ctx.getOriginalFiles().addAll(Arrays.asList(versions));
         ctx.setTargetDatabase(tdarDataImportDatabase);
-        ctx.setResourceType(version.getInformationResourceFile().getInformationResource().getResourceType());
+        ctx.setResourceType(versions[0].getInformationResourceFile().getInformationResource().getResourceType());
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
-        ctx.setInformationResourceId(version.getInformationResourceId());
-//        ctx.setInformationResourceFileId(version.getInformationResourceFileId());
+        ctx.setInformationResourceId(versions[0].getInformationResourceId());
+        ctx.setWorkflowClass(w.getClass());
+        // ctx.setInformationResourceFileId(version.getInformationResourceFileId());
         ctx.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
         ctx.setXmlService(xmlService);
-        w.initializeWorkflowContext(version, ctx); // handle any special bits here
+        w.initializeWorkflowContext(ctx, versions); // handle any special bits here
         try {
             logger.trace(ctx.toXML());
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("XML Exception: {}", e);
         }
         return ctx;
     }

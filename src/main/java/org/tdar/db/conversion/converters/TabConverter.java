@@ -26,9 +26,9 @@ public class TabConverter extends SimpleConverter {
    
     public TabConverter() {};
     
-    public TabConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
+    public TabConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
         setTargetDatabase(targetDatabase);
-        setInformationResourceFileVersion(version);
+        setInformationResourceFileVersion(versions[0]);
     }
 
     @Override

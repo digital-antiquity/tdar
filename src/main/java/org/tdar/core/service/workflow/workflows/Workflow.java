@@ -47,8 +47,8 @@ public interface Workflow {
 
     public abstract static class BaseWorkflow implements Workflow {
 
-        private Map<String,List<String>> requiredExtensions = new HashMap<>();
-        private Map<String,List<String>> suggestedExtensions = new HashMap<>();
+        private Map<String, List<String>> requiredExtensions = new HashMap<>();
+        private Map<String, List<String>> suggestedExtensions = new HashMap<>();
 
         private Map<WorkflowPhase, List<Class<? extends Task>>> workflowPhaseToTasks = new HashMap<WorkflowPhase, List<Class<? extends Task>>>();
         // this appears to be a folded version of resourceTypeToExtensions.values() ?
@@ -152,34 +152,33 @@ public interface Workflow {
             return logger;
         }
 
-        public void initializeWorkflowContext(InformationResourceFileVersion version, WorkflowContext ctx) {
+        public void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] version) {
             return;
         }
 
-        
         public boolean validateProxyCollection(FileProxy primary) {
             return true;
         }
 
-        public Map<String,List<String>> getSuggestedExtensions() {
+        public Map<String, List<String>> getSuggestedExtensions() {
             return suggestedExtensions;
         }
 
-        public void setSuggestedExtensions(Map<String,List<String>> suggestedExtensions) {
+        public void setSuggestedExtensions(Map<String, List<String>> suggestedExtensions) {
             this.suggestedExtensions = suggestedExtensions;
         }
 
-        public Map<String,List<String>> getRequiredExtensions() {
+        public Map<String, List<String>> getRequiredExtensions() {
             return requiredExtensions;
         }
 
-        public void setRequiredExtensions(Map<String,List<String>> requiredExtensions) {
+        public void setRequiredExtensions(Map<String, List<String>> requiredExtensions) {
             this.requiredExtensions = requiredExtensions;
         }
 
     }
 
-    public void initializeWorkflowContext(InformationResourceFileVersion version, WorkflowContext ctx);
+    public void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] versions);
 
     public boolean validateProxyCollection(FileProxy primary);
 

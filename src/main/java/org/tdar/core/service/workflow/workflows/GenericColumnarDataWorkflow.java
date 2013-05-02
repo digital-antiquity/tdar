@@ -87,8 +87,8 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
     }
 
     @Override
-    public void initializeWorkflowContext(InformationResourceFileVersion version, WorkflowContext ctx) {
-        InformationResource resource = version.getInformationResourceFile().getInformationResource();
+    public void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] version) {
+        InformationResource resource = version[0].getInformationResourceFile().getInformationResource();
         if (resource instanceof Dataset) {
             Dataset dataset = (Dataset) resource;
             for (DataTable table : dataset.getDataTables()) {

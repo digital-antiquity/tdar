@@ -3,7 +3,6 @@ package org.tdar.core.bean.resource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -102,8 +101,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     private File file;
 
     private transient boolean viewable = false;
-
-    private transient List<InformationResourceFileVersion> supportingFiles = new ArrayList<InformationResourceFileVersion>();
 
     /*
      * This constructor exists only for Hibernate ... another constructor should
@@ -477,14 +474,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     public void setUncompressedSizeOnDisk(Long actualSizeOnDisk) {
         this.uncompressedSizeOnDisk = actualSizeOnDisk;
-    }
-
-    public List<InformationResourceFileVersion> getSupportingFiles() {
-        return supportingFiles;
-    }
-
-    public void setSupportingFiles(List<InformationResourceFileVersion> supportingFiles) {
-        this.supportingFiles = supportingFiles;
     }
 
     public boolean isPrimaryFile() {

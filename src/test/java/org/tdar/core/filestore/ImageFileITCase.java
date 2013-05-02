@@ -87,7 +87,7 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileType.IMAGE, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(ImageWorkflow.class, workflow.getClass());
-        boolean result = messageService.sendFileProcessingRequest(originalVersion, workflow);
+        boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
         assertFalse(result);

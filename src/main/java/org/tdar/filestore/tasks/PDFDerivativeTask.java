@@ -35,9 +35,9 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         ctx.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
         task.setWorkflowContext(ctx);
         InformationResourceFileVersion vers = new InformationResourceFileVersion(VersionType.UPLOADED, origFile.getName(), 1, -1L, -1L);
-        ctx.setOriginalFile(vers);
+        ctx.getOriginalFiles().add(vers);
         try {
-            task.run(origFile);
+            task.run(vers);
         } catch (Throwable e) {
             throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, e);
         }
@@ -45,27 +45,30 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
     @Override
     public void run() throws Exception {
-        // unify the various "run" commands between main and inline
-        run(getWorkflowContext().getOriginalFile().getFile());
+        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+            run(version);
+        }
     }
 
     @Override
-    public void run(File originalFile) throws Exception {
+    public void run(InformationResourceFileVersion version) throws Exception {
+        File originalFile = version.getFile();
         try {
             PDDocument document = openPDF("", originalFile);
-            File imageFile = new File(extractPage(1, originalFile, document));
+            File imageFile = new File(extractPage(1, version, document));
             // extractText(originalFile, document);
             closePDF(document);
             if (imageFile.exists()) {
-                processImage(imageFile);
+                processImage(version, imageFile);
             }
         } catch (Throwable t) {
             throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, t);
         }
     }
 
-    protected String extractPage(int pageNum, File pdfFile, PDDocument document) {
+    protected String extractPage(int pageNum, InformationResourceFileVersion originalFile, PDDocument document) {
         // File pdfFile = new File(sourceFile);
+        File pdfFile = originalFile.getFile();
         String imageFormat = "jpg";
         String color = "rgb";
         int resolution;
@@ -75,7 +78,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             resolution = 96;
         }
 
-        String fn = getWorkflowContext().getOriginalFile().getFilename();
+        String fn = originalFile.getFilename();
         String outputPrefix = fn.substring(0, fn.lastIndexOf('.'));
         outputPrefix = new File(getWorkflowContext().getWorkingDirectory(), outputPrefix).toString();
 
