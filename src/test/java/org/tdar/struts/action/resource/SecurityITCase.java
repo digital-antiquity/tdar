@@ -260,16 +260,6 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         assertEquals(DownloadController.SUCCESS, controller.thumbnail());
     }
     
-    // FIXME: not sure where this belongs, it was in DatasetControllerITCase originally
-    @Test
-    @Rollback
-    public void testAuthorizedUserInEquality() {
-        //with the equals and hashCode of AuthorizedUser, this is now never going to be true
-        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
-        AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
-        // if we're using equality Fields, then these should be equal
-        assertEquals(authorizedUser, authorizedUser2);
-    }
 
     /*
      * (non-Javadoc)

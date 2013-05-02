@@ -1,14 +1,17 @@
 package org.tdar.struts.action.resource;
 
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -44,7 +46,7 @@ import org.tdar.struts.action.CollectionController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.BrowseController;
-
+//import static org.hamcrest.MatcherAssert.assertThat;
 public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 {
 
@@ -490,19 +492,30 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals(rc.getName(), rc2.getName());
         assertEquals("2 redundant authusers should have been normalized", 2, rc2.getAuthorizedUsers().size());
 
-        // fails because HashCode changed
-        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
-        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
-        assertEquals("1234", user2.getTest());
-        List<Long> extractIds = Persistable.Base.extractIds(rc2.getAuthorizedUsers());
-        assertTrue("only the modifier & admin authusers should remain", extractIds.contains(user1Modifier.getId()));
-        assertTrue("only the modifier & admin authusers should remain", extractIds.contains(user2.getId()));
-
-        genericService.refresh(rc2);
-        assertEquals("1234", user2.getTest());
-        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
-        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
-
+        assertEquals("size should be 2", 2, rc2.getAuthorizedUsers().size());
+        
+        //if this list is truly normalized,  each queue should be length 1
+        HashMap<Long, GeneralPermissions> map = new HashMap<Long, GeneralPermissions>();
+        for( AuthorizedUser authuser : rc2.getAuthorizedUsers() ) {
+            map.put(authuser.getUser().getId(), authuser.getGeneralPermission());
+        }
+        assertEquals("user 1 should have best permission", GeneralPermissions.MODIFY_METADATA, map.get(user1Modifier.getUser().getId()));
+        assertNotNull("only the modifier & admin authusers should remain", map.get(user2.getUser().getId()));
+    }
+    
+    @Test
+    @Rollback
+    public void testNormalizeAuthorizedUsers() {
+        // Add three authusers. two of the authusers are redundant and should be normalized to the user with
+        // the best permissions.
+        AuthorizedUser user1Viewer = createAuthUser(GeneralPermissions.VIEW_ALL);
+        AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
+        AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_GROUP);
+        List<AuthorizedUser> authusers = new ArrayList<AuthorizedUser>(Arrays.asList(user1Viewer, user1Modifier, user2));
+        int origCount = authusers.size();
+        ResourceCollection.normalizeAuthorizedUsers(authusers);
+        int newCount = authusers.size();
+        assertThat(newCount, lessThan(origCount));
     }
 
     private AuthorizedUser createAuthUser(GeneralPermissions permissions) {
