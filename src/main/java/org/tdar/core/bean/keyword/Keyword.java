@@ -70,13 +70,13 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
                 @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) })
         private String label;
 
-        @Override
-        public java.util.List<?> getEqualityFields() {
-            // don't need keyword type because we're differentiating on class
-            List<String> asList = Arrays.asList(label);
-//            logger.info("list: {}", asList);
-            return asList;
-        };
+//        @Override
+//        public java.util.List<?> getEqualityFields() {
+//            // don't need keyword type because we're differentiating on class
+//            List<String> asList = Arrays.asList(label);
+////            logger.info("list: {}", asList);
+//            return asList;
+//        };
 
         @Lob
         @Type(type = "org.hibernate.type.StringClobType")

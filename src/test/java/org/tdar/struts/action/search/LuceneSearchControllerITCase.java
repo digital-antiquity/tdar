@@ -245,6 +245,8 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         String searchPhrase = controller.getSearchPhrase();
         assertTrue("search phrase shouldn't be blank:", StringUtils.isNotBlank(searchPhrase));
         logger.debug("search phrase: {}", searchPhrase);
+        logger.debug("keyword1:      {}", keyword1.getLabel());
+        logger.debug("keyword2:      {}", keyword2.getLabel());
         assertTrue(searchPhrase.contains(ResourceType.DOCUMENT.getLabel()));
         assertTrue(searchPhrase.contains(ResourceType.IMAGE.getLabel()));
         assertTrue(searchPhrase.contains(keyword1.getLabel()));
