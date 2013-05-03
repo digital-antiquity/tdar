@@ -1115,27 +1115,11 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Override
     public boolean equals(Object candidate) {
-        if (this == candidate) {
-            return true;
-        }
-        if (candidate == null) {
-            return false;
-        }
-        try {
-            return Persistable.Base.isEqual(this,
-                    Resource.class.cast(candidate));
-        } catch (ClassCastException e) {
-            logger.debug("{} <==> {} ", candidate.getClass(), getClass());
-            logger.debug("{}", e);
-            return false;
-        }
+        return Persistable.Base.isEqual(this, (Persistable)candidate);
     }
 
     @Override
     public int hashCode() {
-        if (isTransient()) {
-            return super.hashCode();
-        }
         return Persistable.Base.toHashCode(this);
     }
 

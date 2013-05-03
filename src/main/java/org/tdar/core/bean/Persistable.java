@@ -178,7 +178,7 @@ public interface Persistable extends Serializable {
              * result: final equality false b/c of class class org.tdar.core.bean.resource.Document != class
              * org.tdar.core.bean.resource.Document_$$_javassist_62
              */
-            if (!(a.getClass().isAssignableFrom(b.getClass()))) {
+            if (!(a.getClass().isAssignableFrom(b.getClass()) || b.getClass().isAssignableFrom(a.getClass()))) {
                 logger.trace("false b/c of class {} != {} ", a.getClass(), b.getClass());
                 return false;
             }
