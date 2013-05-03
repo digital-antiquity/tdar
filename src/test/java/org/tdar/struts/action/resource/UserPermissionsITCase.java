@@ -86,7 +86,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
-    @Rollback(value = true)
+    @Rollback
     public void testUserRemovingCollectionWithTheirRights() throws Exception {
         final Person p = createAndSaveNewPerson();
 
@@ -136,59 +136,28 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         genericService.synchronize();
 
         // Now p comes back, expecting to be able to edit this image. The system should not allow this request.
-         imageController = generateNewController(ImageController.class);
-         init(imageController, p);
-         imageController.setId(imgId);
-         imageController.prepare();
-         boolean exceptionOccured = false;
-         String result = null;
-         try {
-         result = imageController.edit();
-         logger.debug("action error count:{}, they are:{}", imageController.getActionErrors().size(), imageController.getActionErrors());
-         // logger.debug("brace yourself: \n\n\n\n{} \n\n\n", xmlService.convertToXML(image));
-        
-         } catch (TdarActionException e) {
-         exceptionOccured = true;
-         }
+        imageController = generateNewController(ImageController.class);
+        init(imageController, p);
+        imageController.setId(imgId);
+        imageController.prepare();
+        boolean exceptionOccured = false;
+        String result = null;
+        try {
+            result = imageController.edit();
+            logger.debug("action error count:{}, they are:{}", imageController.getActionErrors().size(), imageController.getActionErrors());
+            // logger.debug("brace yourself: \n\n\n\n{} \n\n\n", xmlService.convertToXML(image));
 
-        final Long pid = p.getId();
-        // setVerifyTransactionCallback(new TransactionCallback<String>() {
-        // public String doInTransaction(TransactionStatus status) {
-        // ImageController imcon = generateNewController(ImageController.class);
-        // Person otherPerson = genericService.find(Person.class, pid);
-        // init(imcon, otherPerson);
-        // imcon.setId(imgId);
-        // imcon.prepare();
-        // boolean excep = false;
-        // try {
-        // String result = imcon.edit();
-        // logger.debug("result of image edit was: {}", result);
-        // } catch (TdarActionException e) {
-        // excep = true;
-        // }
-        //
-        // if(!excep) fail("was expecting an exception but none happened");
-        //
-        // if(otherPerson != null) genericService.delete(otherPerson);
-        // if(imcon.getImage() != null) genericService.delete(imcon.getImage());
-        // logger.debug("done after callback");
-        // return "okay";
-        // }
-        // });
+        } catch (TdarActionException e) {
+            exceptionOccured = true;
+        }
 
-        // setVerifyTransactionCallback(new TransactionCallback<Resource>() {
-        // public Resource doInTransaction(TransactionStatus arg0) {
-        // InformationResource normal = informationResourceService.find(normalId);
-        // InformationResource draft = informationResourceService.find(draftId);
-        // }
-        // });
+        Long pid = p.getId();
 
-         logger.debug("authusers on view: {}  result: {}", imageController.getAuthorizedUsers(), result);
-         //we should have received an exception.
-         if(!exceptionOccured) {
-         fail("controller action was expected to throw an exception, but didn't");
-         }
-
+        logger.debug("authusers on view: {}  result: {}", imageController.getAuthorizedUsers(), result);
+        // we should have received an exception.
+        if (!exceptionOccured) {
+            fail("controller action was expected to throw an exception, but didn't");
+        }
     }
 
     /*
