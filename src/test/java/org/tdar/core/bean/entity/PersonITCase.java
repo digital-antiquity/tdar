@@ -1,21 +1,21 @@
 package org.tdar.core.bean.entity;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
@@ -68,20 +68,6 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         Person findOrSaveCreator3 = entityService.findOrSaveCreator(person3);
         logger.info("person: {} {}", findOrSaveCreator3, findOrSaveCreator3.getId());
         assertEquals(8608L , findOrSaveCreator3.getId().longValue());
-    }
-
-    @Test
-    @Rollback(true)
-    public void testFindDup() {
-        
-        Person person = createAndSaveNewPerson();
-        Person person2 = createAndSaveNewPerson("test@test.com","1");
-        person.getSynonyms().add(person2);
-        person2.setStatus(Status.DUPLICATE);
-        genericService.saveOrUpdate(person);
-        genericService.saveOrUpdate(person2);
-        genericService.synchronize();
-        assertEquals(person, entityService.findAuthorityFromDuplicate(person2));
     }
 
     @Test
@@ -174,4 +160,74 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         assertNotNull("should have a date created", person.getDateCreated());
     }
 
+    @Test
+    @Rollback(true)
+    /**
+     * 
+     * This test makes various assertions based on our expectations of our implementation of hashCode() and equals(). How we think it works: 
+     *  - If object.id == -1,  hashcode is object.id.hashCode()
+     *  - If object.id != -1,  hashcode is based on object.equalityFields
+     *  - we cache an object's hashCode() value to avoid "hiding" set/map items by modifying their contents (e.g. saving an object in a set)
+     *  
+     */
+    // FIXME This test currently fails because it violates the hashCode contract {@link java.lang.Object#hashCode()}.
+    public void testPersonEqualsHashCode() {
+        final String emailPrefix = "uniquely";
+        LinkedHashSet<Person> personSet = new LinkedHashSet<Person>();
+        ArrayList<Long> ids = new ArrayList<Long>();
+        int numberOfPersonsToCreate = 10;
+        for (int i = 0; i < numberOfPersonsToCreate; i++) {
+            Person person = createAndSaveNewPerson(emailPrefix + i + TestConstants.DEFAULT_EMAIL, "");
+            ids.add(person.getId());
+            personSet.add(person);
+        }
+
+        assertEquals(numberOfPersonsToCreate, personSet.size());
+        ArrayList<Person> personList = new ArrayList<Person>(personSet);
+        for (int i = 0; i < numberOfPersonsToCreate; i++) {
+            Person persistedPerson = personList.get(i);
+
+            //person equality based on db identity.  so the two person records should not be equal
+            Person person = new Person();
+            person.setEmail(persistedPerson.getEmail());
+            person.setRegistered(persistedPerson.isRegistered());
+            person.setLastName(persistedPerson.getLastName());
+            person.setFirstName(persistedPerson.getFirstName());
+            person.setPhone(persistedPerson.getPhone());
+            assertNotEquals(persistedPerson, person);
+
+            //the person record is 'transient'.  
+            assertTrue(Persistable.Base.isTransient(person));
+            //if we simulate a save by giving it an ID, they are unequal
+            person.setId(persistedPerson.getId() + 15L);
+            assertNotEquals("these should still be equal even after save", persistedPerson, person);
+            
+            //now we set the id's to be the same.  so they should be considered 'equal' dispite different field values
+            person.setId(persistedPerson.getId());
+            assertEquals("these should still be equal even after save", persistedPerson, person);
+            assertEquals("therefore hashcodes should be the same", persistedPerson.hashCode(), person.hashCode());
+
+
+            assertTrue ("person should be found in set", personSet.contains(person));
+        }
+    }
+
+    @Test
+    @Rollback
+    // this test is a bit more academic, but is another examlple of where our hashcode/equals implementation fails.
+    // per java docs: if A == B is true, and B==C is true, then A == C should be true
+    public void testPersonTransitiveEquality() {
+        Person a = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
+        Person b = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
+        Person c = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
+        genericService.save(b);
+        a.setId(b.getId());
+        c.setId(b.getId());
+        
+        boolean eq = a.equals(b);
+        logger.debug("a == b: {}", eq);
+        assertEquals("a should equal b", a, b);
+        assertEquals("b should equal c", b, c);
+        assertEquals("a should equal c", a, c);
+    }
 }

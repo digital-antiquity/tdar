@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource.sensory;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.persistence.Column;

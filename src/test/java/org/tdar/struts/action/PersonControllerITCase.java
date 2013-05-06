@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Image;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.entity.PersonController;
 
@@ -181,20 +182,31 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void editAddressDelete() throws TdarActionException {
-        Long presonId = addAddressToNewPerson();
+        final Long presonId = addAddressToNewPerson();
         Person person = genericService.find(Person.class, presonId);
-        controller = generateNewInitializedController(PersonController.class);
-        controller.setAddressId(person.getAddresses().iterator().next().getId());
-        controller.setId(presonId);
+        Long addressId =  person.getAddresses().iterator().next().getId();
+        // this seems hokey
+        genericService.detachFromSession(person);
         person = null;
+        controller = generateNewInitializedController(PersonController.class);
+        controller.setAddressId(addressId);
+        controller.setId(presonId);
         controller.prepare();
         controller.setServletRequest(getServletPostRequest());
+        logger.info("hi");
         String saveAddress = controller.deleteAddress();
         assertEquals(PersonController.SUCCESS, saveAddress);
         controller = null;
-
-        person = genericService.find(Person.class, presonId);
-        assertEquals(0, person.getAddresses().size());
+//        genericService.synchronize();
+//        setVerifyTransactionCallback(new TransactionCallback<Person>() {
+//            @Override
+//            public Person doInTransaction(TransactionStatus status) {
+                Person person_ = genericService.find(Person.class, presonId);
+                assertEquals(0, person_.getAddresses().size());
+                genericService.delete(person_);
+//                return null;
+//            }
+//        });
     }
 
     private Long addAddressToNewPerson() throws TdarActionException {

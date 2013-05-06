@@ -1,5 +1,6 @@
 package org.tdar.core.bean.entity;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.persistence.Column;

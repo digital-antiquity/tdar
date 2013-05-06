@@ -58,9 +58,9 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @Transient
     private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "dateCreated", "description", "dateUpdated", "url",
-            "location", "parentInstitution", "parentinstitution_id", "synonyms", "status"  };
+            "location", "parentInstitution", "parentinstitution_id", "synonyms", "status" };
 
-    @OneToMany(orphanRemoval = true,cascade=CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")
     private Set<Institution> synonyms = new HashSet<Institution>();
 
@@ -154,11 +154,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     }
 
     @Override
-    public List<?> getEqualityFields() {
-        return Arrays.asList(getId());
-    }
-
-    @Override
     protected String[] getIncludedJsonProperties() {
         return JSON_PROPERTIES;
     }
@@ -188,7 +183,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     public void setSynonyms(Set<Institution> synonyms) {
         this.synonyms = synonyms;
     }
-    
+
     public boolean hasNoPersistableValues() {
         if (StringUtils.isBlank(getName())) {
             return true;

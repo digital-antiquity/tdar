@@ -6,6 +6,8 @@
  */
 package org.tdar.core.bean.entity;
 
+import java.util.Arrays;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -128,5 +130,15 @@ public class AuthorizedUser extends Base implements Persistable {
     public Integer getEffectiveGeneralPermission() {
         return effectiveGeneralPermission;
     }
+    
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
+    private transient String test = "";
 
 }

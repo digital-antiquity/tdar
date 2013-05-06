@@ -153,6 +153,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         // go back to the edit page
         genericService.detachFromSession(controller.getResource());
         controller = generateNewInitializedController(ProjectController.class);
+        controller.setAsync(false);
         controller.setId(id);
         loadResourceFromId(controller, id);
         Assert.assertEquals("the fourth annotation was incomplete and should not have saved", 3, controller.getProject().getResourceAnnotations().size());

@@ -152,6 +152,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (Person person : people) {
             names.add(person.getProperName());
             Person p = new Person();
+            // this will likely fail because skeleton people are being put into a set further down the chain... 
             p.setId(person.getId());
             ResourceCreator rc = new ResourceCreator(p, null);
             firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(rc));
@@ -761,6 +762,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Person person = new Person("Bob", "Loblaw", null);
         genericService.save(person);
         Resource resource = constructActiveResourceWithCreator(person, ResourceCreatorRole.AUTHOR);
+        logger.info("resource: {}", resource);
         reindex();
         logger.debug("user:{}   id:{}", person, person.getId());
         assertTrue("person id should be set - id:" + person.getId(), person.getId() != 1L);
@@ -768,7 +770,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(person, ResourceCreatorRole.AUTHOR));
 
         doSearch();
-
+        logger.info("{}", controller.getResults());
         assertTrue(String.format("expecting %s in results", resource), controller.getResults().contains(resource));
         assertEquals("should be one and only one result", 1, controller.getResults().size());
     }
