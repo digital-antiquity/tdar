@@ -1,8 +1,11 @@
 package org.tdar.struts.action;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -37,7 +40,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     private DedupeableType entityType;
     private Set<Long> selectedDupeIds = new HashSet<Long>();
     private Long authorityId;
-    private Set<Dedupable<?>> selectedDuplicates = new HashSet<Dedupable<?>>();
+    private Map<Long, Dedupable<?>> selectedDuplicates = new HashMap<Long, Dedupable<?>>();
 
     public static String ERROR_NOT_ENOUGH_DUPLICATES = "No Duplicates selected. Please select at least two duplicates.";
     public static String ERROR_NO_DUPLICATES = "Please select at least two duplicates.";
@@ -88,7 +91,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         if (hasActionErrors())
             return INPUT;
 
-        if (authorityManagementService.countProtectedRecords(selectedDuplicates) > 1) {
+        if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 1) {
             addActionError(ERROR_TOO_MANY_PROTECTED_RECORDS);
             return INPUT;
         }
@@ -103,7 +106,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         // populate the list of selected items
         for (Long id : selectedDupeIds) {
             Dedupable<?> p = (Dedupable<?>) getGenericService().find(entityType.getType(), id);
-            selectedDuplicates.add(p);
+            selectedDuplicates.put(id, p);
         }
     }
 
@@ -121,9 +124,9 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         selectedDuplicates.remove(authority);
         selectedDupeIds.remove(authorityId);
 
-        if (authorityManagementService.countProtectedRecords(selectedDuplicates) > 0) {
+        if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 0) {
             addActionError(ERROR_CANNOT_DEDUPE_PROTECTED_RECORDS);
-            selectedDuplicates.add(authority);
+            selectedDuplicates.put(authority.getId(), authority);
             return INPUT;
         }
 
@@ -166,8 +169,8 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         return Arrays.asList(DedupeableType.values());
     }
 
-    public Set<Dedupable<?>> getSelectedDuplicates() {
-        return selectedDuplicates;
+    public Collection<Dedupable<?>> getSelectedDupeValues() {
+        return selectedDuplicates.values();
     }
 
     public int getDupeListMaxSize() {

@@ -265,7 +265,7 @@ public class AuthorityManagementService {
 
     // return number "protected" items in the dupe list. Duplicates may not be de-duped
     @SuppressWarnings("rawtypes")
-    public <T extends Dedupable> int countProtectedRecords(Set<T> dupes) {
+    public <T extends Dedupable> int countProtectedRecords(Collection<T> dupes) {
         int count = 0;
         for (Dedupable d : dupes) {
             if (!d.isDedupable()) {
