@@ -295,7 +295,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         try {
             file = TdarConfiguration.getInstance().getFilestore().retrieveFile(this);
         } catch (FileNotFoundException e) {
-            logger.warn("No file found in store with ID: " + getFilename() + " and path:" + path + " (" + getId() + ")");
+            logger.trace("No file found in store with ID: " + getFilename() + " and path:" + path + " (" + getId() + ")");
         }
         return file;
     }
@@ -434,18 +434,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         }
         logger.trace("result: " + comparison);
         return comparison;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.bean.Persistable.Base#getEqualityFields()
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<?> getEqualityFields() {
-        // ab probably okay as it includes Id
-        return Arrays.asList(getInformationResourceFileId(), version, fileVersionType, getId());
     }
 
     public boolean hasValidFile() {

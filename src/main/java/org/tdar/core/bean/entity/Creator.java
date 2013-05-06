@@ -1,7 +1,10 @@
 package org.tdar.core.bean.entity;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -218,12 +221,6 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     @Override
     public boolean equals(Object candidate) {
-        if (this == candidate) {
-            return true;
-        }
-        if (this == null || candidate == null) {
-            return false;
-        }
         try {
             return Persistable.Base.isEqual(this, Creator.class.cast(candidate));
         } catch (ClassCastException e) {
@@ -231,30 +228,34 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
             return false;
         }
     }
-    private transient int hashCode = -1;
+
+    // private transient int hashCode = -1;
 
     /*
      * copied from Persistable.Base.hashCode() (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
     public int hashCode() {
         Logger logger = LoggerFactory.getLogger(getClass());
-        Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
-        if (hashCode == -1) {
-            if (Persistable.Base.isNullOrTransient(this)) {
-                hashCode = super.hashCode();
-            } else {
-                hashCode = Persistable.Base.toHashCode(this);
-            }
-
-            logger.trace("setting hashCode to {} ({}) {}", obj);
+        int hashCode = -1;
+        if (Persistable.Base.isNullOrTransient(this)) {
+            hashCode = super.hashCode();
         } else {
-            logger.trace("returning existing hashCode to {} ({}) {}", obj);
+            hashCode = Persistable.Base.toHashCode(this);
         }
+
+        Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
+        logger.trace("setting hashCode to {} ({}) {}", obj);
         return hashCode;
     }
 
+    @XmlTransient
+    public List<?> getEqualityFields() {
+        return Collections.emptyList();
+    }
+    
     /**
      * @param description
      *            the description to set

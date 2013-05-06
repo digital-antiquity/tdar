@@ -279,6 +279,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
         }
 
+        logger.info("collections to remove: {}", toRemove);
         for (ResourceCollection collection : toRemove) {
             current.remove(collection);
             resource.getResourceCollections().remove(current);
@@ -309,9 +310,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     save(collectionToAdd);
                 }
                 // I think something in the next two lines is duplicitive
-                current.add(collectionToAdd);
-                collectionToAdd.getResources().add(resource);
+                // current.add(collectionToAdd);
 
+                // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
+                collectionToAdd.getResources().add(resource);
                 resource.getResourceCollections().add(collectionToAdd);
             } else {
                 if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {

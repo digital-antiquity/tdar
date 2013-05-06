@@ -1,5 +1,7 @@
 package org.tdar.core.bean.citation;
 
+import java.util.Arrays;
+
 import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
@@ -38,6 +40,12 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     private String text;
+    
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(text);
+    };
+
 
     @Field
     public String getText() {

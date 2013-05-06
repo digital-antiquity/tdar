@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -24,6 +25,21 @@ public class ResourceCreatorRoleTestCase {
         assertNotNull(ResourceCreatorRole.getAll());
         assertEquals("getAll should return 20 roles", ROLE_COUNT_ALL, roles.size());
         logger.debug("all roles: " + roles);
+    }
+
+    @Test
+    public void testWhatever() {
+        HashSet<Person> personSet = new HashSet<Person>();
+        for (int i = 1; i < 3; i++) {
+            Person person = new Person();
+            Long lng = new Long(i);
+            person.setId(lng);
+            personSet.add(person);
+        }
+        //Person equality will always be based on equalityFields, and so the personset should only contain one instance.
+        // changing to work with skeleton model
+        assertEquals(2, personSet.size());
+        logger.info(personSet);
     }
 
     @Test

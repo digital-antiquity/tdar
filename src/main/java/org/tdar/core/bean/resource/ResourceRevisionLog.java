@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -50,7 +51,6 @@ public class ResourceRevisionLog extends Persistable.Base {
     @Type(type = "org.hibernate.type.StringClobType")
     @Column(name="payload", nullable=true)
     private String payload;
-    
     
     public Resource getResource() {
         return resource;

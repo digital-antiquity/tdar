@@ -363,6 +363,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @XmlTransient
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();
 
+    //FIXME: do we really want cascade all here? even delete?
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
@@ -1110,32 +1111,16 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Override
     public List<?> getEqualityFields() {
-        return Arrays.asList(getId());
+        return Collections.emptyList();
     }
 
     @Override
     public boolean equals(Object candidate) {
-        if (this == candidate) {
-            return true;
-        }
-        if (candidate == null) {
-            return false;
-        }
-        try {
-            return Persistable.Base.isEqual(this,
-                    Resource.class.cast(candidate));
-        } catch (ClassCastException e) {
-            logger.debug("{} <==> {} ", candidate.getClass(), getClass());
-            logger.debug("{}", e);
-            return false;
-        }
+        return Persistable.Base.isEqual(this, (Persistable)candidate);
     }
 
     @Override
     public int hashCode() {
-        if (isTransient()) {
-            return super.hashCode();
-        }
         return Persistable.Base.toHashCode(this);
     }
 

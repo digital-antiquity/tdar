@@ -2,8 +2,8 @@ package org.tdar.core.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.lucene.analysis.KeywordAnalyzer;
@@ -46,6 +45,7 @@ import org.tdar.search.query.QueryFieldNames;
 public interface Persistable extends Serializable {
 
     public Long getId();
+
     public static final long ONE_MB = 1048576L;
 
     public void setId(Long number);
@@ -122,7 +122,7 @@ public interface Persistable extends Serializable {
             return false;
         }
 
-        private transient int hashCode = -1;
+        // private transient int hashCode = -1;
 
         /**
          * Returns a sensible hashCode() for persisted objects. For transient/unsaved objects, uses
@@ -131,17 +131,10 @@ public interface Persistable extends Serializable {
         @Override
         public int hashCode() {
             Logger logger = LoggerFactory.getLogger(getClass());
-            Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
-            if (hashCode == -1) {
-                if (isNullOrTransient(this)) {
-                    hashCode = super.hashCode();
-                } else {
-                    hashCode = toHashCode(this);
-                }
-
+            int hashCode = toHashCode(this);
+            if (logger.isTraceEnabled()) {
+                Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
                 logger.trace("setting hashCode to {} ({}) {}", obj);
-            } else {
-                logger.trace("returning existing hashCode to {} ({}) {}", obj);
             }
             return hashCode;
         }
@@ -166,35 +159,45 @@ public interface Persistable extends Serializable {
          * @return
          */
         public static boolean isEqual(Persistable a, Persistable b) {
-
-            if (a == null || b == null) {
-                return false;
-            }
-
             Logger logger = LoggerFactory.getLogger(a.getClass());
-
-            if (isTransient(a) && isTransient(b)) {
-                // if both objects are transient then these two objects aren't safely comparable outside of
-                // object pointer equality, which should already have been tested via equals(Object).
+            //null is never equal to anything
+            if (a == null || b == null) {
+                logger.trace("false b/c one is null");
                 return false;
             }
-
-            // short-circuit when ids are equal.
-            if (ObjectUtils.equals(a.getId(), b.getId())) {
+            
+            //objects  that are the same are equal
+            if (a == b) {
+                logger.trace("object equality");
                 return true;
+            }
+            
+            /*
+             * Some tests are failing b/c javaasist subclass? or bytecode manipulation of tDAR classes:
+             * eg: AdvancedSearchControllerITCase.testResourceCreatorPerson:
+             * result: final equality false b/c of class class org.tdar.core.bean.resource.Document != class
+             * org.tdar.core.bean.resource.Document_$$_javassist_62
+             */
+            if (!(a.getClass().isAssignableFrom(b.getClass()) || b.getClass().isAssignableFrom(a.getClass()))) {
+                logger.trace("false b/c of class {} != {} ", a.getClass(), b.getClass());
+                return false;
             }
 
             EqualsBuilder equalsBuilder = new EqualsBuilder();
-            List<?> selfEqualityFields = a.getEqualityFields();
-            List<?> candidateEqualityFields = b.getEqualityFields();
-            logger.trace(String.format("comparing %s with %s", selfEqualityFields, candidateEqualityFields));
-            if (CollectionUtils.isEmpty(selfEqualityFields) || selfEqualityFields.size() != candidateEqualityFields.size()) {
-                logger.warn("empty or mismatched equivalence fields for " + a.getClass() + ": " + selfEqualityFields + "<-->" + candidateEqualityFields);
-                return false;
+
+            if(a.getEqualityFields().isEmpty()) {
+                if(isTransient(a) || isTransient(b)) {
+                    return false;
+                } else {
+                    equalsBuilder.append(a.getId(), b.getId());
+                }
+            } else {
+                Object[] selfEqualityFields = a.getEqualityFields().toArray();
+                Object[] candidateEqualityFields = b.getEqualityFields().toArray();
+                logger.trace("comparing equality fields {} != {} ", selfEqualityFields, candidateEqualityFields);
+                equalsBuilder.append(selfEqualityFields, candidateEqualityFields);
             }
-            for (int i = 0; i < selfEqualityFields.size(); i++) {
-                equalsBuilder.append(selfEqualityFields.get(i), candidateEqualityFields.get(i));
-            }
+            
             return equalsBuilder.isEquals();
         }
 
@@ -209,19 +212,31 @@ public interface Persistable extends Serializable {
         }
 
         public static int toHashCode(Persistable persistable) {
+            // since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
+            if (persistable == null)
+                return 0;
             HashCodeBuilder builder = new HashCodeBuilder(23, 37);
-            builder.append(persistable.getEqualityFields().toArray());
-            // FIXME: make sure this doesn't break the contract wrt equals.
+
+            if (CollectionUtils.isEmpty(persistable.getEqualityFields())) {
+                if (isTransient(persistable)) {
+                    return System.identityHashCode(persistable);
+                } else {
+                    builder.append(persistable.getId());
+                }
+            } else {
+                builder.append(persistable.getEqualityFields().toArray());
+            }
+
             return builder.toHashCode();
         }
 
         /**
-         * By default, use only the database ID as the implementation
+         * By default, base the hashcode off of object's inherent hashcode.
          */
         @Override
         @XmlTransient
         public List<?> getEqualityFields() {
-            return Arrays.asList(getId());
+            return Collections.emptyList();
         }
 
         /*
@@ -313,7 +328,6 @@ public interface Persistable extends Serializable {
             return (long) Math.floor(divideBy(number1, number2));
         }
 
-
         public static double divideBy(Number number1, Number number2) {
             double n1 = 0;
             double n2 = 0;
@@ -372,7 +386,6 @@ public interface Persistable extends Serializable {
                 sequenceNumber++;
             }
         }
-
     }
 
 }

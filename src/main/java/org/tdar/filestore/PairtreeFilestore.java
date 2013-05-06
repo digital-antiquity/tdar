@@ -165,7 +165,7 @@ public class PairtreeFilestore extends BaseFilestore {
      */
     public File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException {
         File file = new File(getAbsoluteFilePath(version));
-        logger.debug("file requested: {}", file);
+        logger.trace("file requested: {}", file);
         if (!file.isFile())
             throw new FileNotFoundException("Could not find file: " + file.getAbsolutePath());
         return file;

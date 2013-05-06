@@ -1,5 +1,7 @@
 package org.tdar.core.bean.resource;
 
+import java.util.Arrays;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -44,6 +46,11 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     @Column(name = "note_type")
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     private ResourceNoteType type;
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(type, note);
+    };
 
     public ResourceNote() {
     }
