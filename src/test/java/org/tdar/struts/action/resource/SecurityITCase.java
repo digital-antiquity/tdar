@@ -186,7 +186,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDownloadControllerEmbargoed() throws InstantiationException, IllegalAccessException {
+    public void testDownloadControllerEmbargoed() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupEmbargoedDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getUploadedVersion(1).getId());
@@ -195,7 +195,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDownloadControllerConfidential() throws InstantiationException, IllegalAccessException {
+    public void testDownloadControllerConfidential() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = (Document) generateInformationResourceWithFile();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         DownloadController controller = generateNewInitializedController(DownloadController.class);
@@ -205,7 +205,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDownloadControllerBadReadUser() throws InstantiationException, IllegalAccessException {
+    public void testDownloadControllerBadReadUser() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupBadReadUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getLatestUploadedVersion().getId());
@@ -214,7 +214,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDownloadControllerBadFullUser() throws InstantiationException, IllegalAccessException {
+    public void testDownloadControllerBadFullUser() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupBadFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getLatestUploadedVersion().getId());
@@ -223,7 +223,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDownloadControllerReadUser() throws InstantiationException, IllegalAccessException {
+    public void testDownloadControllerReadUser() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupReadUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getLatestUploadedVersion().getId());
@@ -232,7 +232,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDownloadControllerFullUser() throws InstantiationException, IllegalAccessException {
+    public void testDownloadControllerFullUser() throws InstantiationException, IllegalAccessException , TdarActionException{
         Document doc = setupFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getLatestUploadedVersion().getId());
@@ -241,7 +241,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testThumbnailControllerInvalid() throws InstantiationException, IllegalAccessException {
+    public void testThumbnailControllerInvalid() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupBadFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         InformationResourceFileVersion currentVersion = doc.getInformationResourceFiles().iterator().next()
@@ -253,7 +253,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testThumbnailController() throws InstantiationException, IllegalAccessException {
+    public void testThumbnailController() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next()
