@@ -29,6 +29,7 @@ import org.tdar.core.service.AccountService;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
+import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericKeywordService;
@@ -96,6 +97,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    private transient DownloadService downloadService;
     @Autowired
     private transient ProjectService projectService;
     @Autowired
@@ -468,6 +471,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public AccountService getAccountService() {
         return accountService;
+    }
+
+    public DownloadService getDownloadService() {
+        return downloadService;
     }
 
     public StatisticService getStatisticService() {
