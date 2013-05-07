@@ -184,7 +184,7 @@ TDAR.uri = function(path) {
                         </#if>
                         <li><a href="<@s.url value='/logout'/>">Logout</a></li>
                         <#else>
-                        <li><a href="<@s.url value='/login'/>">Login</a></li>
+                        <li><a href="<@s.url value='/login'><s.param name="returnUrl" value="${currentUrl}"/></@s.url>">Login</a></li>
                         </#if>
                         <li class="dropdown">  
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help
@@ -826,7 +826,7 @@ this bit of freemarker is voodoo:
  </#if>
         <#if !(authenticatedUser??) > 
                 <li><a href="<@s.url value="/account/new" />" class="button">Sign Up</a></li>
-                <li><a href="<@s.url value="/login" />" class="button">Log In</a></li>
+                <li><a href="<@s.url value='/login'><@s.param name="url">${currentUrl}</@s.param></@s.url>" class="button">Log In</a></li>
         <#else>
                 <li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>
         </#if>                        

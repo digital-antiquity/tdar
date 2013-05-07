@@ -134,9 +134,9 @@ logger.info("IRFILE {}",irFile);
                 irFile.setErrorMessage(ctx.getExceptionAsString());
             }
             genericDao.saveOrUpdate(irFile);
-            logger.info("end status: {}", irFile.getStatus());
+//            logger.info("end status: {}", irFile.getStatus());
             irFile = genericDao.merge(irFile);
-            logger.info("end status: {}", irFile.getStatus());
+//            logger.info("end status: {}", irFile.getStatus());
         }
         try {
             logger.debug(ctx.toXML());

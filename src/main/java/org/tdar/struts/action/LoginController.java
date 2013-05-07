@@ -95,9 +95,12 @@ public class LoginController extends AuthenticationAware.Base {
         }
 
         if (getSessionData().getReturnUrl() != null || !StringUtils.isEmpty(url)) {
-            setReturnUrl(UrlUtils.urlDecode(url));
+            if (StringUtils.isNotBlank(getSessionData().getReturnUrl())) {
+                setReturnUrl(getSessionData().getReturnUrl());
+            } else {
+                setReturnUrl(UrlUtils.urlDecode(url));
+            }
             logger.info("url {} ", getReturnUrl());
-            setReturnUrl(getSessionData().getReturnUrl());
             if (getReturnUrl().contains("filestore/")) {
                 if (getReturnUrl().endsWith("/get")) {
                     setReturnUrl(getReturnUrl().replace("/get", "/confirm"));
