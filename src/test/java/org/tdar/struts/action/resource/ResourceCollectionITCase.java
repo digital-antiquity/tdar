@@ -354,7 +354,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertNotNull(controller.getPersistable());
         assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(AbstractPersistableController.DELETE_CONSTANT);
+        controller.setDelete(AbstractPersistableController.DELETE);
         controller.delete();
 
         // now load our resource collection again. the resources should be gone.
@@ -377,7 +377,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
         // resourceCollection.setParent(parent)
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(AbstractPersistableController.DELETE_CONSTANT);
+        controller.setDelete(AbstractPersistableController.DELETE);
         controller.delete();
         genericService.synchronize();
         assertEquals(0, controller.getDeleteIssues().size());
@@ -431,7 +431,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
         assertTrue("user list should not be empty", !controller.getPersistable().getAuthorizedUsers().isEmpty());
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(AbstractPersistableController.DELETE_CONSTANT);
+        controller.setDelete(AbstractPersistableController.DELETE);
         controller.delete();
 
         // now load our resource collection again. the resources should be gone.
@@ -446,7 +446,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertNotNull(controller.getPersistable());
         assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(AbstractPersistableController.DELETE_CONSTANT);
+        controller.setDelete(AbstractPersistableController.DELETE);
         controller.delete();
         genericService.synchronize();
         assertEquals(0, controller.getDeleteIssues().size());
@@ -959,7 +959,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         projectController.setServletRequest(getServletPostRequest());
         projectController.setId(pid);
         projectController.prepare();
-        projectController.setDelete(AbstractPersistableController.DELETE_CONSTANT);
+        projectController.setDelete(AbstractPersistableController.DELETE);
         projectController.delete();
         searchIndexService.flushToIndexes();
 

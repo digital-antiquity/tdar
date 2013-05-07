@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -21,9 +20,7 @@ import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -37,11 +34,9 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
-import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
@@ -63,6 +58,9 @@ import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 @HttpOnlyIfUnauthenticated
 public class BrowseController extends AbstractLookupController {
 
+    public static final String CREATORS = "creators";
+    public static final String COLLECTIONS = "collections";
+    public static final String EXPLORE = "explore";
     private static final String ALL_TDAR_COLLECTIONS = "All Collections";
     private static final long serialVersionUID = -128651515783098910L;
     private Creator creator;
@@ -83,7 +81,7 @@ public class BrowseController extends AbstractLookupController {
 
     // private Keyword keyword;
 
-    @Action("explore")
+    @Action(EXPLORE)
     public String explore() {
         setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
         setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
@@ -99,8 +97,8 @@ public class BrowseController extends AbstractLookupController {
     public Creator getAuthorityForDup() {
         return getEntityService().findAuthorityFromDuplicate(creator);
     }
-    
-    @Action("collections")
+
+    @Action(COLLECTIONS)
     public String browseCollections() throws ParseException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
         qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
@@ -120,11 +118,11 @@ public class BrowseController extends AbstractLookupController {
         return SUCCESS;
     }
 
-    @Action(value = "creators", results = { @Result(location = "results.ftl") })
+    @Action(value = CREATORS, results = { @Result(location = "results.ftl") })
     public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator,getAuthenticatedUser());
+            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser());
 
             if (isEditor() && creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
                 try {
@@ -159,7 +157,6 @@ public class BrowseController extends AbstractLookupController {
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
     }
-
 
     // @Action(value = "materials", results = { @Result(location = "results.ftl") })
     // public String browseMaterialTypes() {

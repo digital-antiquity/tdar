@@ -26,7 +26,7 @@ import org.tdar.utils.DeleteOnCloseFileInputStream;
 @ParentPackage("secured")
 @Namespace("/filestore/{informationResourceFileId}")
 @Results({
-            @Result(name = "success", type = "stream",
+            @Result(name = TdarActionSupport.SUCCESS, type = "stream",
                     params = {
                             "contentType", "${contentType}",
                             "inputName", "inputStream",
@@ -34,14 +34,15 @@ import org.tdar.utils.DeleteOnCloseFileInputStream;
                             "contentLength", "${contentLength}"
                     }
             ),
-        @Result(name = "error", type = "httpheader", params = { "error", "404" }),
-        @Result(name = "forbidden", type = "httpheader", params = { "error", "403" })
+        @Result(name = TdarActionSupport.ERROR, type = "httpheader", params = { "error", "404" }),
+        @Result(name = TdarActionSupport.FORBIDDEN, type = "httpheader", params = { "error", "403" })
 
 })
 @Component
 @Scope("prototype")
 public class DownloadController extends AuthenticationAware.Base {
 
+    public static final String GET = "get";
     private static final long serialVersionUID = 7548544212676661097L;
     private transient InputStream inputStream;
     private String contentType;
@@ -59,7 +60,7 @@ public class DownloadController extends AuthenticationAware.Base {
     @Autowired
     private PdfService pdfService;
 
-    @Action(value = "confirm", results = { @Result(name = "confirm", location = "/WEB-INF/content/confirm-download.ftl") })
+    @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-download.ftl") })
     public String confirm() {
         //FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
         String status = execute();
@@ -69,7 +70,7 @@ public class DownloadController extends AuthenticationAware.Base {
         return "confirm";
     }
 
-    @Action(value = "get")
+    @Action(value = GET)
     public String execute() {
         InformationResourceFileVersion irFileVersion = null;
         if (informationResourceFileId == null)
@@ -88,7 +89,7 @@ public class DownloadController extends AuthenticationAware.Base {
         return handleDownload(irFileVersion);
     }
 
-    @Action(value = "thumbnail", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    @Action(value = THUMBNAIL, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     public String thumbnail() {
         InformationResourceFileVersion irFileVersion = null;
         if (informationResourceFileId == null)

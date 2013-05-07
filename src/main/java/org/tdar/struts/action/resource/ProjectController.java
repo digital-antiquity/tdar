@@ -79,11 +79,11 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     // FIXME: this belongs in the abstractResourcController, and there should be an abstract method that returns gives hints to json() on which fields to
     // serialize
-    @Action(value = "json",
+    @Action(value = JSON,
             results = { @Result(
                     name = SUCCESS,
                     location = "json.ftl",
-                    params = { "contentType", "application/json" },
+                    params = {  "contentType", "application/json" },
                     type = "freemarker"
                     ) }
             )

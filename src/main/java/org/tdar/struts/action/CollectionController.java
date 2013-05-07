@@ -188,9 +188,9 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     @SkipValidation
-    @Action(value = "edit", results = {
+    @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = INPUT, location = "add", type = "redirect")
+            @Result(name = INPUT, location = ADD, type = REDIRECT)
     })
     public String edit() throws TdarActionException {
         String result = super.edit();

@@ -29,6 +29,8 @@ import org.tdar.struts.interceptor.HttpsOnly;
 @Namespace("/entity/person")
 public class PersonController extends AbstractCreatorController<Person> {
 
+    public static final String MYPROFILE = "myprofile";
+
     private static final long serialVersionUID = 1L;
 
     private String institutionName;
@@ -42,7 +44,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Autowired
     ObfuscationService obfuscationService;
 
-    @Action(value = "myprofile", results = {
+    @Action(value = MYPROFILE, results = {
             @Result(name = SUCCESS, location = "edit.ftl")
     })
     @HttpsOnly

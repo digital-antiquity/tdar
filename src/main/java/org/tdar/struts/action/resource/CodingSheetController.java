@@ -14,6 +14,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -44,6 +45,9 @@ import org.tdar.struts.data.FileProxy;
 @Scope("prototype")
 @Namespace("/coding-sheet")
 public class CodingSheetController extends AbstractSupportingInformationResourceController<CodingSheet> {
+
+    public static final String SAVE_MAPPING = "save-mapping";
+    public static final String MAPPING = "mapping";
 
     private static final long serialVersionUID = 377533801938016848L;
 
@@ -90,9 +94,9 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     }
 
     @SkipValidation
-    @Action(value = "mapping", results = {
+    @Action(value = MAPPING, results = {
             @Result(name = SUCCESS, location = "mapping.ftl"),
-            @Result(name = INPUT, type = "redirect", location = "view?id=${resource.id}")
+            @Result(name = INPUT, type = "redirect", location = URLConstants.VIEW_RESOURCE_ID)
     })
     public String loadOntologyMappedColumns() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -111,8 +115,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     @WriteableSession
     @SkipValidation
-    @Action(value = "save-mapping", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}"),
+    @Action(value = SAVE_MAPPING, results = {
+            @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
             @Result(name = INPUT, location = "mapping.ftl") })
     public String saveValueOntologyNodeMapping() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);

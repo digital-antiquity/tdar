@@ -85,6 +85,10 @@ import edu.asu.lib.mods.ModsDocument;
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
+    public static final String ADMIN = "admin";
+    public static final String DC = "dc";
+    public static final String MODS = "mods";
+
     public static final String THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS = "this record is in draft and is only available to authorized users";
 
     private static final long serialVersionUID = 8620875853247755760L;
@@ -731,8 +735,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @SkipValidation
-    @Action(value = "mods", interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = "success", type = "jaxbdocument", params = { "documentName", "modsDocument", "formatOutput", "true" })
+    @Action(value = MODS, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+            @Result(name = SUCCESS, type = "jaxbdocument", params = { "documentName", "modsDocument", "formatOutput", "true" })
     })
     public String viewMods() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
@@ -748,8 +752,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @SkipValidation
-    @Action(value = "dc", interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = "success", type = "jaxbdocument", params = { "documentName", "dcDocument", "formatOutput", "true" })
+    @Action(value = DC, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+            @Result(name = SUCCESS, type = "jaxbdocument", params = { "documentName", "dcDocument", "formatOutput", "true" })
     })
     public String viewDc() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
@@ -963,7 +967,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @SkipValidation
-    @Action(value = "admin", results = {
+    @Action(value = ADMIN, results = {
             @Result(name = SUCCESS, location = "../resource-admin.ftl")
     })
     public String viewAdmin() throws TdarActionException {

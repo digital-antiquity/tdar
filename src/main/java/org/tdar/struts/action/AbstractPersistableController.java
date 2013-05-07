@@ -49,9 +49,7 @@ import com.opensymphony.xwork2.Preparable;
  */
 public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P> {
 
-    public static final String BILLING = "BILLING";
-    public static final String CONFIRM = "confirm";
-    public static final String DELETE_CONSTANT = "delete";
+    public static final String LIST = "list";
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String delete;
@@ -132,7 +130,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @SkipValidation
     @HttpOnlyIfUnauthenticated
-    @Action(value = "view",
+    @Action(value = VIEW,
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, location = "view.ftl"),
@@ -157,11 +155,11 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = DELETE_CONSTANT, results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
+    @Action(value = DELETE, results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
             @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl") })
     @WriteableSession
     public String delete() throws TdarActionException {
-        if (isPostRequest() && DELETE_CONSTANT.equals(getDelete())) {
+        if (isPostRequest() && DELETE.equals(getDelete())) {
             try {
                 checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
                 if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
@@ -187,13 +185,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = "list")
+    @Action(value = LIST)
     public String list() {
         loadListData();
         return SUCCESS;
     }
 
-    @Action(value = "save", results = {
+    @Action(value = SAVE, results = {
             @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${saveSuccessPath}?id=${persistable.id}"),
             @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
             @Result(name = INPUT, location = "edit.ftl")
@@ -323,9 +321,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = "add", results = {
+    @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = BILLING, type=TYPE_REDIRECT, location = "/cart/add")
+            @Result(name = BILLING, type=TYPE_REDIRECT, location = URLConstants.CART_ADD)
     })
     @HttpsOnly
     public String add() throws TdarActionException {
@@ -346,7 +344,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = "edit", results = {
+    @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = "edit.ftl")
     })
     @HttpsOnly

@@ -12,6 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryType;
@@ -32,6 +33,9 @@ import org.tdar.utils.Pair;
 
 public abstract class AbstractDatasetController<R extends InformationResource> extends AbstractInformationResourceController<R> {
 
+    public static final String RETRANSLATE = "retranslate";
+    public static final String COLUMNS = "columns";
+    public static final String REIMPORT = "reimport";
     private static final long serialVersionUID = 6368347724977529964L;
     public static final String SAVE_VIEW = "SAVE_VIEW";
     public static final String SAVE_MAP_THIS = "SAVE_MAP_THIS";
@@ -105,7 +109,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     private Long dataTableId;
 
-    @Action(value = "reimport", results = { @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}") })
+    @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
     @WriteableSession
     public String reimport() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -118,7 +122,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
      * Retranslates the given dataset.
      * XXX: does this need a WritableSession?
      */
-    @Action(value = "retranslate", results = { @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}") })
+    @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
     @WriteableSession
     public String retranslate() throws TdarActionException {
         // note this ignores the quota changes -- it's on us
@@ -131,7 +135,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     }
 
     @SkipValidation
-    @Action(value = "columns", results = { @Result(name = SUCCESS, location = "edit-column-metadata.ftl") })
+    @Action(value = COLUMNS, results = { @Result(name = SUCCESS, location = "edit-column-metadata.ftl") })
     public String editColumnMetadata() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
@@ -170,8 +174,8 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     @SkipValidation
     @WriteableSession
     @Action(value = "save-column-metadata", results = {
-            @Result(name = SAVE_VIEW, type = "redirect", location = "view?id=${resource.id}"),
-            @Result(name = SAVE_MAP_THIS, type = "redirect", location = "columns?id=${resource.id}"),
+            @Result(name = SAVE_VIEW, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
+            @Result(name = SAVE_MAP_THIS, type = REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
             @Result(name = INPUT_COLUMNS, location = "edit-column-metadata.ftl")
     })
     /**

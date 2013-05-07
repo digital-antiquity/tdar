@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
 
 /**
@@ -25,7 +26,7 @@ import org.tdar.struts.data.FileProxy;
 @Component
 @Scope("prototype")
 @Namespace("/dataset")
-@Result(name = "input", location = "edit.ftl")
+@Result(name = TdarActionSupport.INPUT, location = "edit.ftl")
 public class DatasetController extends AbstractDatasetController<Dataset> {
 
     private static final long serialVersionUID = 2874916865886637108L;

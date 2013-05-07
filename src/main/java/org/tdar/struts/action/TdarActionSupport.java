@@ -74,13 +74,25 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private static final long serialVersionUID = 7084489869489013998L;
 
     // result name constants
+    public static final String REDIRECT = "redirect";
     public static final String WAIT = "wait";
+    public static final String THUMBNAIL = "thumbnail";
+    public static final String FORBIDDEN = "forbidden";
     public static final String SUCCESS_ASYNC = "SUCCESS_ASYNC";
     public static final String NOT_FOUND = "not_found";
     public static final String UNAUTHORIZED = "unauthorized";
     public static final String AUTHENTICATED = "authenticated";
     public static final String GONE = "gone";
     public static final String BAD_REQUEST = "badrequest";
+    public static final String SAVE = "save";
+    public static final String ADD = "add";
+    public static final String VIEW = "view";
+    public static final String EDIT = "edit";
+    public static final String JSON = "json";
+    public static final String BILLING = "BILLING";
+    public static final String CONFIRM = "confirm";
+    public static final String DELETE = "delete";
+    public static final String NEW = "new";
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
