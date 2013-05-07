@@ -14,9 +14,11 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
@@ -35,6 +37,7 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
+    @Transactional
     public void test() throws InterruptedException, InstantiationException, IllegalAccessException, IOException {
         // List<File>;
         final PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
@@ -46,20 +49,26 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon_mac.tif"));
 
         for (File version : versions) {
-            irversions.add(generateAndStoreVersion(Image.class, version.getName(), version, store));
+            InformationResourceFileVersion irfv = generateAndStoreVersion(Image.class, version.getName(), version, store);
+            irversions.add(irfv);
+            genericService.saveOrUpdate(irfv.getInformationResourceFile());
+
         }
-        genericService.saveOrUpdate(irversions);
-        
+        genericService.synchronize();
         AsynchTester[] testers = new AsynchTester[versions.size()];
+        final FileAnalyzer analyzer = fileAnalyzer;
+        final GenericService gs = genericService;
         for (int i = 0; i < versions.size(); i++) {
             testers[i] = new AsynchTester(new Runnable() {
 
-                
                 @Override
                 public void run() {
                     InformationResourceFileVersion irversion = irversions.remove(0);
                     try {
-                        boolean result = fileAnalyzer.processFile(irversion);
+                        InformationResource ir = irversion.getInformationResourceFile().getInformationResource();
+                        ir = gs.merge(ir);
+//                        irversion = gs.merge(irversion.getInformationResourceFile()).getLatestUploadedVersion();
+                        boolean result = analyzer.processFile(irversion);
                         if (!result) {
                             throw new TdarRecoverableRuntimeException("should not see this, file processing error");
                         }

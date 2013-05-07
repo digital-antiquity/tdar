@@ -111,7 +111,7 @@ TDAR.uri = function(path) {
 
 
 <#macro loginButton class="">
- <a class="${class}" href="<@s.url value='/login'><#if currentUrl?has_content && currentUrl != '' && currentUrl != '/'><@s.param name="url">${currentUrl}</@s.param></#if></@s.url>">Login</a>
+ <a class="${class}" href="<@s.url value='/login'><#if currentUrl?has_content && currentUrl != '' && currentUrl != '/'><@s.param name="url">${currentUrl}</@s.param></#if></@s.url>">Log In</a>
 </#macro>
 
 <#macro bootstrapNavbar>
