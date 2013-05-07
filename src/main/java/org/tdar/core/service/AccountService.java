@@ -56,11 +56,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     /*
      * Find all accounts for user: return accounts that are active and have not met their quota
      */
-    public Set<Account> listAvailableAccountsForUser(Person user) {
+    public Set<Account> listAvailableAccountsForUser(Person user, Status ... statuses) {
         if (Persistable.Base.isNullOrTransient(user)) {
             return Collections.emptySet();
         }
-        return getDao().findAccountsForUser(user);
+        return getDao().findAccountsForUser(user, statuses);
     }
 
     /*

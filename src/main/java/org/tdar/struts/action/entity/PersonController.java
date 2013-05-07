@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -223,7 +224,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     public List<Account> getAccounts() {
         if (accounts == null) {
             accounts = new ArrayList<Account>();
-            accounts.addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+            accounts.addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         }
         return accounts;
     }

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
@@ -39,11 +40,15 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Account> findAccountsForUser(Person user) {
+    public Set<Account> findAccountsForUser(Person user, Status ... statuses) {
+        if (ArrayUtils.isEmpty(statuses)) {
+            statuses = new Status[1];
+            statuses[0] = Status.ACTIVE;
+        }
         Set<Account> accountGroups = new HashSet<Account>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personId", user.getId());
-        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE));
+        query.setParameterList("statuses", statuses);
         accountGroups.addAll(query.list());
         for (AccountGroup group : findAccountGroupsForUser(user)) {
             accountGroups.addAll(group.getAccounts());

@@ -76,7 +76,7 @@ public class DashboardController extends AuthenticationAware.Base {
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);
         Collections.sort(sharedResourceCollections);
-        getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         for (Account account : getAccounts()) {
             if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                 overdrawnAccounts.add(account);
