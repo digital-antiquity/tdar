@@ -99,11 +99,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         List<InformationResourceFileVersion> filesToProcess = new ArrayList<>();
 
         for (FileProxy proxy : fileProxiesToProcess) {
-            InformationResourceFile irFile = proxy.getInformationResourceFile();
-            InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
-            logger.info("version: {} proxy: {} ", version, proxy);
-            getDao().saveOrUpdate(irFile);
             if (proxy.getAction().requiresWorkflowProcessing()) {
+                InformationResourceFile irFile = proxy.getInformationResourceFile();
+                InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
+                logger.info("version: {} proxy: {} ", version, proxy);
+                getDao().saveOrUpdate(irFile);
                 switch (version.getFileVersionType()) {
                     case UPLOADED:
                     case UPLOADED_ARCHIVAL:

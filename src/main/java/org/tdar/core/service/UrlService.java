@@ -1,5 +1,7 @@
 package org.tdar.core.service;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.Addressable;
@@ -57,5 +59,24 @@ public class UrlService {
 
     public String getPairedSchemaUrl() {
         return String.format("%s/schema/current schema.xsd", getBaseUrl());
+    }
+
+    public static String getCurrentAbsoluteUrlPath(HttpServletRequest servletRequest) {
+        String activePage = "";
+        // using getAttribute allows us to get the orginal url out of the page when a forward has taken place.
+        String queryString = "?"+servletRequest.getAttribute("javax.servlet.forward.query_string");
+        String requestURI = ""+servletRequest.getAttribute("javax.servlet.forward.request_uri");
+        if(requestURI == "null") {
+            // using getAttribute allows us to get the orginal url out of the page when a include has taken place.
+            queryString = "?"+servletRequest.getAttribute("javax.servlet.include.query_string");
+            requestURI = ""+servletRequest.getAttribute("javax.servlet.include.request_uri");
+        }
+        if(requestURI == "null") {
+            queryString = "?"+servletRequest.getQueryString();
+            requestURI = servletRequest.getRequestURI();
+        }
+        if(queryString.equals("?null")) queryString = "";
+        activePage = requestURI+queryString;
+        return activePage;
     }
 }

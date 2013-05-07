@@ -531,7 +531,7 @@ public abstract class InformationResource extends Resource {
                 InformationResourceFileVersion indexableVersion = irFile.getIndexableVersion();
                 if (indexableVersion.getFile().exists()) {
                     fileURIs.add(indexableVersion.getFile().toURI());
-                    logger.debug("getting indexed content for " + getId() + ": length:" + ("" + indexableVersion.getIndexableContent()).length());
+                    logger.trace("getting indexed content for " + getId() + ": length:" + ("" + indexableVersion.getIndexableContent()).length());
                 }
             } catch (Exception e) {
                 logger.trace("an exception occured while reading file: {} ", e);

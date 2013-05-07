@@ -36,10 +36,10 @@ public class WorkflowResult implements Serializable {
                             setFatalErrors(Boolean.TRUE);
                         }
                         getExceptions().addAll(context.getExceptions());
-                        logger.warn("EXCEPTIONS: {}", context.getExceptions());
                     }
                 }
             }
+            logger.warn("EXCEPTIONS: {}", getExceptions());
         }
     }
 

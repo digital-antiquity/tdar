@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -363,7 +362,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @XmlTransient
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();
 
-    //FIXME: do we really want cascade all here? even delete?
+    // FIXME: do we really want cascade all here? even delete?
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
@@ -1116,7 +1115,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Override
     public boolean equals(Object candidate) {
-        return Persistable.Base.isEqual(this, (Persistable)candidate);
+        return Persistable.Base.isEqual(this, (Persistable) candidate);
     }
 
     @Override
@@ -1609,7 +1608,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         if (CollectionUtils.isNotEmpty(getActiveSiteNameKeywords()) || CollectionUtils.isNotEmpty(getActiveCultureKeywords()) ||
                 CollectionUtils.isNotEmpty(getActiveSiteTypeKeywords()) || CollectionUtils.isNotEmpty(getActiveMaterialKeywords()) ||
                 CollectionUtils.isNotEmpty(getActiveInvestigationTypes()) || CollectionUtils.isNotEmpty(getActiveOtherKeywords()) ||
-                CollectionUtils.isNotEmpty(getActiveTemporalKeywords()) || CollectionUtils.isNotEmpty(getActiveGeographicKeywords()) ) {
+                CollectionUtils.isNotEmpty(getActiveTemporalKeywords()) || CollectionUtils.isNotEmpty(getActiveGeographicKeywords())) {
             return true;
         }
         return false;
