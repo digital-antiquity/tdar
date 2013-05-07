@@ -11,7 +11,6 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
@@ -23,7 +22,6 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.dao.resource.ResourceDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -59,16 +57,13 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     @Autowired
     private FileAnalyzer analyzer;
-    @Autowired
-    @Qualifier("genericDao")
-    private GenericDao genericDao;
 
     @Transactional(readOnly = false)
     private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
         incrementVersionNumber(irFile);
         // genericDao.saveOrUpdate(resource);
-        genericDao.saveOrUpdate(resource);
+        getDao().saveOrUpdate(resource);
         irFile.setInformationResource(resource);
         proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(irFile, proxy));
         setInformationResourceFileMetadata(irFile, proxy);
@@ -76,14 +71,14 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             logger.debug("Creating new version {}", additionalVersion);
             createVersionMetadataAndStore(irFile, additionalVersion);
         }
-        genericDao.saveOrUpdate(irFile);
+        getDao().saveOrUpdate(irFile);
         resource.add(irFile);
         logger.debug("all versions for {}", irFile);
     }
 
     @Transactional(readOnly = true)
     private InformationResourceFile findInformationResourceFile(FileProxy proxy) {
-        InformationResourceFile irFile = genericDao.find(InformationResourceFile.class, proxy.getFileId());
+        InformationResourceFile irFile = getDao().find(InformationResourceFile.class, proxy.getFileId());
         if (irFile == null) {
             logger.error("{} had no findable InformationResourceFile.id set on it", proxy);
             // FIXME: throw an exception?
@@ -102,12 +97,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         // List<FileProxy> consolidatedProxies = validateAndConsolidateProxies(resource, fileProxiesToProcess);
         processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
         List<InformationResourceFileVersion> filesToProcess = new ArrayList<>();
-        List<InformationResourceFile> irFiles = new ArrayList<>();
+
         for (FileProxy proxy : fileProxiesToProcess) {
             InformationResourceFile irFile = proxy.getInformationResourceFile();
             InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
             logger.info("version: {} proxy: {} ", version, proxy);
-
+            getDao().saveOrUpdate(irFile);
             if (proxy.getAction().requiresWorkflowProcessing()) {
                 switch (version.getFileVersionType()) {
                     case UPLOADED:
@@ -140,7 +135,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         WorkflowResult result = new WorkflowResult(fileProxiesToProcess);
         result.addActionErrorsAndMessages(listener);
 
-        genericDao.refreshAll(resource.getInformationResourceFiles());
+//        getDao().refreshAll(resource.getInformationResourceFiles());
         /*
          * FIXME: Should I purge regardless of errors??? Really???
          */
@@ -244,7 +239,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             case MODIFY_METADATA:
                 // set sequence number and confidentiality
                 setInformationResourceFileMetadata(irFile, proxy);
-                genericDao.update(irFile);
+                getDao().update(irFile);
                 break;
             case REPLACE:
                 // explicit fall through to ADD after loading the existing irFile to be replaced.
@@ -256,7 +251,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 break;
             case DELETE:
                 irFile.markAsDeleted();
-                genericDao.update(irFile);
+                getDao().update(irFile);
                 break;
             case NONE:
                 logger.debug("Taking no action on {} with proxy {}", informationResource, proxy);
@@ -317,7 +312,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 }
             }
             // this is a known case where we need to purge the session
-            genericDao.synchronize();
+            getDao().synchronize();
             try {
                 analyzer.processFile(original);
             } catch (Exception e) {
@@ -335,13 +330,13 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
         InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, irFile);
         if (irFile.isTransient()) {
-            genericDao.saveOrUpdate(irFile);
+            getDao().saveOrUpdate(irFile);
         }
 
         irFile.addFileVersion(version);
         filestore.store(fileProxy.getFile(), version);
-        genericDao.save(version);
-        genericDao.saveOrUpdate(irFile);
+        getDao().save(version);
+        getDao().saveOrUpdate(irFile);
         return version;
     }
 

@@ -1,6 +1,8 @@
 package org.tdar.core.service.workflow;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.workflow.workflows.Workflow;
@@ -28,7 +31,7 @@ public class MessageService {
     @Autowired
     private WorkflowContextService workflowContextService;
     @Autowired
-    private GenericService genericService;
+    private GenericDao genericDao;
 
     @Autowired
     private XmlService xmlService;
@@ -103,13 +106,18 @@ public class MessageService {
      * @param workflow2
      * @return
      */
-    public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResourceFileVersion ... informationResourceFileVersions) {
+    public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResourceFileVersion... informationResourceFileVersions) {
         WorkflowContext ctx = workflowContextService.initializeWorkflowContext(workflow, informationResourceFileVersions);
+        List<Long> irfIds = new ArrayList<>();
         for (InformationResourceFileVersion version : informationResourceFileVersions) {
             InformationResourceFile irf = version.getInformationResourceFile();
-            irf.setStatus(FileStatus.QUEUED);
-            genericService.saveOrUpdate(irf);
-            genericService.detachFromSession(irf);
+            if (!irfIds.contains(irf.getId())) {
+                irf.setStatus(FileStatus.QUEUED);
+                genericDao.saveOrUpdate(irf);
+                // FIXME: when we reimplement the message queue, this will need to be adjusted to do a flush here, otherwise, we cannot guarantee that the save
+                // will happen before the evict
+                // genericDao.detachFromSession(irf);
+            }
         }
         // w.setWorkflowContext(ctx);
         // if (TdarConfiguration.getInstance().useExternalMessageQueue()) {

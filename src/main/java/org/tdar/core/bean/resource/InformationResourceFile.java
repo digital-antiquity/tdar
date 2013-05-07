@@ -468,7 +468,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     public String toString() {
-        return String.format("(%d, %s) %s: %s", getId(), status, getLatestVersion(), getInformationResourceFileVersions());
+        return String.format("(%d, %s) v#:%s: %s (%s versions)", getId(), status, getLatestVersion(), restriction, CollectionUtils.size(informationResourceFileVersions));
     }
 
     public void clearQueuedStatus() {
