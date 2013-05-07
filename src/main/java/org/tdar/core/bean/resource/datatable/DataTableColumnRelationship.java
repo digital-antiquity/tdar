@@ -1,7 +1,5 @@
 package org.tdar.core.bean.resource.datatable;
 
-import java.util.Arrays;
-
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;

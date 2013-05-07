@@ -1,7 +1,5 @@
 package org.tdar.core.bean.entity;
 
-import java.util.Arrays;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -47,7 +45,6 @@ public class Address extends Base implements Persistable, Validatable {
     @Column(name = "type")
     @NotNull
     private AddressType type;
-
 
     public String getStreet1() {
         return street1;

@@ -29,6 +29,7 @@ import org.tdar.core.bean.resource.ResourceAnnotationKey;
 
 public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
 
+    
     @Test
     public void testSkeletonPersonRetentionInSet() {
         HashSet<Person> personSet = new HashSet<Person>();
@@ -78,7 +79,6 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
         assertNotEquals(authorizedUser, authorizedUser2);
     }
 
-
     @Test
     @Rollback(true)
     /**
@@ -89,7 +89,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
      *  - we cache an object's hashCode() value to avoid "hiding" set/map items by modifying their contents (e.g. saving an object in a set)
      *  
      */
-    //FIXME This test currently fails because it violates the hashCode contract {@link java.lang.Object#hashCode()}.
+    // FIXME This test currently fails because it violates the hashCode contract {@link java.lang.Object#hashCode()}.
     public void testPersonEqualsHashCode() {
         final String emailPrefix = "uniquely";
         LinkedHashSet<Person> personSet = new LinkedHashSet<Person>();
@@ -100,67 +100,51 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             ids.add(person.getId());
             personSet.add(person);
         }
-        
+
         assertEquals(numberOfPersonsToCreate, personSet.size());
         ArrayList<Person> personList = new ArrayList<Person>(personSet);
         for (int i = 0; i < numberOfPersonsToCreate; i++) {
             Person persistedPerson = personList.get(i);
+
+            //person equality based on db identity.  so the two person records should not be equal
             Person person = new Person();
-            person.setFirstName(TestConstants.DEFAULT_FIRST_NAME);
-            person.setLastName(TestConstants.DEFAULT_LAST_NAME);
-            person.setEmail(emailPrefix + i + TestConstants.DEFAULT_EMAIL);
-            assertFalse(persistedPerson.equals(person));
-            //setting the ID should now make this person 'equal' to one of the person objects in the set,  per our definition of equality
+            person.setEmail(persistedPerson.getEmail());
+            person.setRegistered(persistedPerson.isRegistered());
+            person.setLastName(persistedPerson.getLastName());
+            person.setFirstName(persistedPerson.getFirstName());
+            person.setPhone(persistedPerson.getPhone());
+            assertNotEquals(persistedPerson, person);
+
+            //the person record is 'transient'.  
+            assertTrue(Persistable.Base.isTransient(person));
+            //if we simulate a save by giving it an ID, they are unequal
+            person.setId(persistedPerson.getId() + 15L);
+            assertNotEquals("these should still be equal even after save", persistedPerson, person);
+            
+            //now we set the id's to be the same.  so they should be considered 'equal' dispite different field values
             person.setId(persistedPerson.getId());
-            
-            //now that we set the id, it's safe to lock down the hashcode
-            int hashcode1 = person.hashCode();
-            logger.debug("locking down person.hashCode() to: {}", hashcode1);
+            assertEquals("these should still be equal even after save", persistedPerson, person);
+            assertEquals("therefore hashcodes should be the same", persistedPerson.hashCode(), person.hashCode());
 
-            //hashcode should be locked down, changing the id should not effect hashcode
-            person.setId(person.getId()  + 15L);
-            assertEquals(hashcode1, person.hashCode());
-            
-            //okay now set ID back to original value
-            person.setId(person.getId() - 15L);
-            
-            assertEquals(persistedPerson, person);
-            if(!personSet.contains(person)) {
-                logger.error("hashset.contains() should be true for {} but was false", person); 
-                int[] hashcodes = new int[personSet.size()];
-                int j= 0;
-                for(Person peep : personSet) {
-                    hashcodes[j++] = peep.hashCode();
-                }
-                logger.error("personset hashcodes: {}", hashcodes);
-                logger.error("    person hashcode: {}", person.hashCode());
-                
-                String expectation = "If two objects are equal according to the equals(Object) method, then calling the hashCode method on each of the two " +
-                        "objects must produce the same integer result.";
-                assertEquals(expectation, persistedPerson, person);
-                assertEquals(expectation, persistedPerson.hashCode(), person.hashCode());
-            }
-            //assertTrue(personSet + " should contain " + person, personSet.contains(person));
-            assertEquals(persistedPerson.hashCode(), person.hashCode());
-            assertTrue(personSet.contains(person));
-            assertEquals(persistedPerson, person);
 
-            person.setId(ids.get(i));
-            assertTrue(personSet.contains(person));
-            assertEquals(personList.get(i), person);
-            assertEquals(persistedPerson.hashCode(), person.hashCode());
+            assertTrue ("person should be found in set", personSet.contains(person));
         }
     }
 
     @Test
     @Rollback
-    //this test is a bit more academic, but is another examlple of where our hashcode/equals implementation fails.
-    //per java docs: if A == B is true, and B==C is true, then A == C should be true
+    // this test is a bit more academic, but is another examlple of where our hashcode/equals implementation fails.
+    // per java docs: if A == B is true, and B==C is true, then A == C should be true
     public void testPersonTransitiveEquality() {
         Person a = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
         Person b = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
         Person c = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
         genericService.save(b);
+        a.setId(b.getId());
+        c.setId(b.getId());
+        
+        boolean eq = a.equals(b);
+        logger.debug("a == b: {}", eq);
         assertEquals("a should equal b", a, b);
         assertEquals("b should equal c", b, c);
         assertEquals("a should equal c", a, c);
@@ -202,6 +186,21 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
         set.add(a1);
         set.add(a2);
         Assert.assertEquals("set should have two items in it", 2, set.size());
+    }
+
+    @Test
+    public void testPersonSet() {
+        HashSet<Person> personSet = new HashSet<Person>();
+        for (int i = 1; i < 3; i++) {
+            Person person = new Person();
+            Long lng = new Long(i);
+            person.setId(lng);
+            personSet.add(person);
+        }
+        //Person equality will always be based on equalityFields, and so the personset should only contain one instance.
+        // changing to work with skeleton model
+        assertEquals(2, personSet.size());
+        logger.info("{}", personSet);
     }
 
 }

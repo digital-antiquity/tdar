@@ -1,6 +1,5 @@
 package org.tdar.core.bean.entity;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;

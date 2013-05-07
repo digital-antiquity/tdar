@@ -12,7 +12,6 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -96,7 +95,6 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     // an malformed file should take you back to save.action and contain an action error
     @Test
-    @Ignore("ignoring b/c not failing due to issues related to HashCode")
     public void testMalformedAttachmentDisplaysError() {
         
         // create a new dataset resource w/o a file

@@ -1,7 +1,5 @@
 package org.tdar.core.bean.billing;
 
-import java.util.Arrays;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;

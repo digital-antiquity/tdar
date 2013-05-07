@@ -1,7 +1,5 @@
 package org.tdar.core.bean.entity;
 
-import java.util.Arrays;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

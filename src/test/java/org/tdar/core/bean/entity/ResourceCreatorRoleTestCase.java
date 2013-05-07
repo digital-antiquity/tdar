@@ -28,21 +28,6 @@ public class ResourceCreatorRoleTestCase {
     }
 
     @Test
-    public void testWhatever() {
-        HashSet<Person> personSet = new HashSet<Person>();
-        for (int i = 1; i < 3; i++) {
-            Person person = new Person();
-            Long lng = new Long(i);
-            person.setId(lng);
-            personSet.add(person);
-        }
-        //Person equality will always be based on equalityFields, and so the personset should only contain one instance.
-        // changing to work with skeleton model
-        assertEquals(2, personSet.size());
-        logger.info(personSet);
-    }
-
-    @Test
     public void testGetPersonRoles() {
         List<ResourceCreatorRole> roles = ResourceCreatorRole.getPersonRoles();
         assertNotNull(roles);

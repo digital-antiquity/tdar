@@ -1,7 +1,6 @@
 package org.tdar.core.bean.billing;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
