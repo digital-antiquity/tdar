@@ -55,8 +55,8 @@ public class HttpsInterceptor implements Interceptor {
             newPort = config.getHttpsPort();
         }
 
-        String baseUrl = String.format("%s://%s%s", protocol, config.getHostName(), config.getPort() == 80 ? "" : ":" + newPort,
-                UrlService.getCurrentAbsoluteUrlPath(request));
+        String port = config.getPort() == 80 ? "" : ":" + newPort;
+        String baseUrl = String.format("%s://%s%s%s", protocol, config.getHostName(), port, UrlService.getCurrentAbsoluteUrlPath(request));
         if (request.getServletPath().equals("/about")) {
             baseUrl = baseUrl.replace("/about", "/");
         }

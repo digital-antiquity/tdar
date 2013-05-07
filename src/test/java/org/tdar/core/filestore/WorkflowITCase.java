@@ -14,7 +14,6 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Image;
@@ -37,7 +36,6 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    @Transactional
     public void test() throws InterruptedException, InstantiationException, IllegalAccessException, IOException {
         // List<File>;
         final PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
@@ -67,7 +65,6 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
                     try {
                         InformationResource ir = irversion.getInformationResourceFile().getInformationResource();
                         ir = gs.merge(ir);
-//                        irversion = gs.merge(irversion.getInformationResourceFile()).getLatestUploadedVersion();
                         boolean result = analyzer.processFile(irversion);
                         if (!result) {
                             throw new TdarRecoverableRuntimeException("should not see this, file processing error");

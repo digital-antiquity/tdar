@@ -41,7 +41,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testDegenerateFileProxy() throws Exception {
-        DocumentController controller = generateNewInitializedController(DocumentController.class,getBasicUser());
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.prepare();
         controller.add();
         Document document = getNewDocument(controller);
@@ -56,7 +56,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.getFileProxies().get(0).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertEquals(TdarActionSupport.SUCCESS,save);
+        assertEquals(TdarActionSupport.SUCCESS, save);
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);
@@ -69,16 +69,16 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
             }
         }
     }
-    
+
     @Test
     @Rollback
     public void testSameFileName() throws Exception {
-        DocumentController controller = generateNewInitializedController(DocumentController.class,getBasicUser());
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.prepare();
         controller.add();
         Document document = getNewDocument(controller);
         List<File> fileList = new ArrayList<File>();
-        for (String subdir: Arrays.asList("t1", "t2", "t3")) {
+        for (String subdir : Arrays.asList("t1", "t2", "t3")) {
             File file = new File(TestConstants.TEST_DOCUMENT_DIR + subdir, "test.pdf");
             assertTrue(file.exists());
             fileList.add(file);
@@ -90,7 +90,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.getFileProxies().get(0).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertEquals(TdarActionSupport.SUCCESS,save);
+        assertEquals(TdarActionSupport.SUCCESS, save);
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);
@@ -228,7 +228,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         document.setDate(1234);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             Creator copyrightHolder = genericService.find(Person.class, 1L);
-            document.setCopyrightHolder(copyrightHolder );
+            document.setCopyrightHolder(copyrightHolder);
         }
         return document;
     }
