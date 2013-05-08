@@ -47,11 +47,9 @@ public class SensoryData extends InformationResource {
     private String surveyLocation; // FIXME: remove this field
 
     @Column(name = "survey_date_begin")
-    @Length(max = 255)
     private Date surveyDateBegin;
 
     @Column(name = "survey_date_end")
-    @Length(max = 255)
     private Date surveyDateEnd;
 
     @Column(name = "survey_conditions")
