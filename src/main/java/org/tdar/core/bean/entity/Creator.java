@@ -149,17 +149,14 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         setDateUpdated(new Date());
     }
 
-    @Column(length = 64)
-    @Length(max = 64)
+    @Column(length = 255)
+    @Length(max = 255)
     private String url;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = true, name = "creator_id")
     @NotNull
     private Set<Address> addresses = new LinkedHashSet<Address>();
-
-    @Length(max = 255)
-    private String location;
 
     private transient Float score = -1f;
     private transient Explanation explanation;
@@ -210,14 +207,6 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public abstract CreatorType getCreatorType();

@@ -63,6 +63,9 @@ label.error {display:block;}
         </#if>
             
         <#if RPAEnabled><@s.textfield  cssClass="input-xlarge" label="RPA Number" name="person.rpaNumber"  maxlength=255 /></#if>
+
+        <@s.textfield name="person.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
+
         <@s.textfield  label="Phone" cssClass="phoneUS input-xlarge" name="person.phone"  maxlength=255 />
         
         <#if privacyControlsEnabled>

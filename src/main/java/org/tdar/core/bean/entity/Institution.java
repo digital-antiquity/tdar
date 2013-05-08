@@ -59,7 +59,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @Transient
     private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "dateCreated", "description", "dateUpdated", "url",
-            "location", "parentInstitution", "parentinstitution_id", "synonyms", "status" };
+            "parentInstitution", "parentinstitution_id", "synonyms", "status" };
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")
@@ -69,12 +69,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @BulkImportField(label = "Institution Name", comment = BulkImportField.CREATOR_INSTITUTION_DESCRIPTION, order = 10)
     @Length(max = 255)
     private String name;
-
-    @Length(max = 255)
-    private String url;
-
-    @Length(max = 255)
-    private String location;
 
     public int compareTo(Institution candidate) {
         return name.compareTo(candidate.name);
@@ -112,11 +106,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         this.name = name;
     }
 
-    @Override
-    public String getUrl() {
-        return url;
-    }
-
     @Transient
     @Field(name = "acronym", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     public String getAcronym() {
@@ -126,18 +115,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
             return m.group(1);
         }
         return null;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public String toString() {

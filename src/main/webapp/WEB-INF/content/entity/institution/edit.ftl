@@ -32,9 +32,13 @@
         </div>
 		</#if>
 
-        <br /><@s.textfield name="institution.location" label="Location" id="txtLocation" cssClass="input-xlarge"  maxlength=255 />
         <br /><@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
         <br /><@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge" />
+
+		<h3>Address List</h3>
+		<@common.listAddresses institution />
+
+
     </div>
     <@edit.submit "Save" false />    
 
