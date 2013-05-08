@@ -30,6 +30,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
@@ -55,6 +56,52 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         init(dc, getUser());
         List<Status> statuses = controller.getStatuses();
         assertFalse(statuses.isEmpty());
+    }
+
+    @Test
+    @Rollback
+    public void testSubmitterChangeRights() throws TdarActionException {
+        //setup document
+        Person newUser = createAndSaveNewPerson();
+        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.prepare();
+        Document doc = dc.getDocument();
+        doc.setTitle("test");
+        doc.setDate(1234);
+        doc.setDescription("my description");
+        dc.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+
+        // change the submitter to the admin
+        Long id = doc.getId();
+        doc = null;
+        dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.setId(id);
+        dc.prepare();
+        dc.edit();
+        dc.setSubmitter(newUser);
+        dc.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+
+        // try to edit as basic user -- should fail
+        dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.setId(id);
+        dc.prepare();
+        try {
+            assertNotEquals(TdarActionSupport.SUCCESS, dc.edit());
+        } catch (TdarActionException e) {
+            assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
+        }
+        assertNotEmpty(dc.getActionErrors());
+        setIgnoreActionErrors(true);
+        
+        // try to edit as new user, should work
+        doc = null;
+        dc = generateNewInitializedController(DocumentController.class, newUser);
+        dc.setId(id);
+        dc.prepare();
+        assertEquals(TdarActionSupport.SUCCESS, dc.edit());
+
     }
 
     @Ignore("Ignoring because this is an internal performance test, not really a unit-test")
