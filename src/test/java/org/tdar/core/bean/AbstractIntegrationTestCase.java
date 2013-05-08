@@ -30,6 +30,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.hibernate.SessionFactory;
@@ -383,7 +384,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             }
             genericService.save(resource);
         } catch (Exception e) {
-            Assert.fail("failed to create/save test" + cls.getSimpleName() + " record");
+            logger.error("failed: ", e);
+            Assert.fail("failed to create/save test" + cls.getSimpleName() + " record: " + e.getMessage() + " \n " + ExceptionUtils.getFullStackTrace(e));
         }
 
         return resource;

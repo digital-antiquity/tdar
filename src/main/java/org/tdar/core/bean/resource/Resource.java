@@ -229,22 +229,19 @@ public class Resource extends JsonModel.Base implements Persistable,
     private String url;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "resource_type")
+    @Column(name = "resource_type", length=255)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
-    @Length(max = 255)
     private ResourceType resourceType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", length=50)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
-    @Length(max = 50)
     private Status status = Status.ACTIVE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "previous_status")
-    @Length(max = 50)
+    @Column(name = "previous_status", length= 50)
     private Status previousStatus = Status.ACTIVE;
 
     // @Boost(.5f)

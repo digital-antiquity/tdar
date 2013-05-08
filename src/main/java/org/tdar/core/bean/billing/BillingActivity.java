@@ -43,8 +43,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     private Long numberOfFiles = 0L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "activity_type")
-    @Length(max = 25)
+    @Column(name = "activity_type", length = 25)
     private BillingActivityType activityType = BillingActivityType.PRODUCTION;
 
     @Column(name = "sort_order")
@@ -90,8 +89,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     private Boolean enabled = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "groupName")
-    @Length(max = 255)
+    @Column(name = "groupName", length = 255)
     private TdarGroup group;
 
     public Integer getNumberOfHours() {

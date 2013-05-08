@@ -154,8 +154,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private Boolean partOfComposite = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "general_type")
-    @Length(max = 255)
+    @Column(name = "general_type", length = 255)
     private FileType informationResourceFileType;
 
     @Column(name = "latest_version")
@@ -170,7 +169,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
 
     @Enumerated(EnumType.STRING)
-    @Length(max = 50)
+    @Column(length = 50)
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
 
     @Lob
@@ -185,7 +184,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private Date dateMadePublic;
 
     @Enumerated(EnumType.STRING)
-    @Length(max = 32)
+    @Column(length = 32)
     private FileStatus status;
 
     @XmlElement(name = "informationResourceRef")

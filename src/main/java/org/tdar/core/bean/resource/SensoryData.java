@@ -203,9 +203,8 @@ public class SensoryData extends InformationResource {
     @JoinColumn(nullable = false, updatable = false, name = "sensory_data_id")
     private Set<SensoryDataImage> sensoryDataImages = new LinkedHashSet<SensoryDataImage>();
     
-    @Column(name = "scanner_technology")
+    @Column(name = "scanner_technology", length = 255)
     @Enumerated(EnumType.STRING)
-    @Length(max = 255)
     private ScannerTechnologyType scannerTechnology;
     
 

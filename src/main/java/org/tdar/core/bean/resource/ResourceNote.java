@@ -45,9 +45,8 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     private String note;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "note_type")
+    @Column(name = "note_type", length = 255)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Length(max = 255)
     private ResourceNoteType type;
 
     @Override

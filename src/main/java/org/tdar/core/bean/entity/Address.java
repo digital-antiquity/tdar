@@ -49,9 +49,8 @@ public class Address extends Base implements Persistable, Validatable {
     private String country;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type")
+    @Column(name = "type", length = 255)
     @NotNull
-    @Length(max = 255)
     private AddressType type;
 
     public String getStreet1() {

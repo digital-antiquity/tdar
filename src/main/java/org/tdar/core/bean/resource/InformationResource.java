@@ -151,22 +151,19 @@ public abstract class InformationResource extends Resource {
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Length(max = 100)
-    @Column(name = "metadata_language")
+    @Column(name = "metadata_language", length = 100)
     private Language metadataLanguage;
 
     @BulkImportField(label = "Resource Language", comment = BulkImportField.RESOURCE_LANGAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "resource_language")
-    @Length(max = 100)
+    @Column(name = "resource_language", length = 100)
     private Language resourceLanguage;
 
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "license_type")
+    @Column(name = "license_type", length = 128)
     @BulkImportField(label = BulkImportField.LICENSE_TYPE, required = true)
-    @Length(max = 128)
     private LicenseType licenseType;
 
     @Column(name = "license_text")
@@ -246,10 +243,10 @@ public abstract class InformationResource extends Resource {
     private boolean inheritingCollectionInformation;
 
     @ManyToOne(optional = true)
-    @Length(max = 255)
     private DataTableColumn mappedDataKeyColumn;
 
     @Column
+    @Length(max = 255)
     private String mappedDataKeyValue;
 
     @Transient

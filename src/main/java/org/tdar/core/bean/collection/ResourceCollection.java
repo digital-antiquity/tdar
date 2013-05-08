@@ -147,20 +147,17 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sort_order")
-    @Length(max = 25)
+    @Column(name = "sort_order", length = 25)
     private SortOption sortBy = SortOption.TITLE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "orientation")
-    @Length(max = 50)
+    @Column(name = "orientation", length = 50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Field(name = QueryFieldNames.COLLECTION_TYPE)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Enumerated(EnumType.STRING)
-    @Column(name = "collection_type")
-    @Length(max = 255)
+    @Column(name = "collection_type", length = 255)
     private CollectionType type;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

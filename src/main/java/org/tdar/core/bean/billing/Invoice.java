@@ -108,8 +108,7 @@ public class Invoice extends Base implements Updatable {
     private String transactionId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_type")
-    @Length(max = 50)
+    @Column(name = "transaction_type", length = 255)
     private PaymentMethod paymentMethod;
 
     private Long billingPhone;
@@ -157,7 +156,7 @@ public class Invoice extends Base implements Updatable {
     private String otherReason;
 
     @Enumerated(EnumType.STRING)
-    @Length(max = 25)
+    @Column(name = "transactionstatus", length = 25)
     private TransactionStatus transactionStatus = TransactionStatus.PREPARED;
 
     /**

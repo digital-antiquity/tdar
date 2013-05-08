@@ -50,8 +50,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     @Enumerated(EnumType.STRING)
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
-    @Column(name = "date_type")
-    @Length(max = 255)
+    @Column(name = "date_type", length = 255)
     private CoverageType dateType;
 
     @Column(name = "start_aprox", nullable = false)

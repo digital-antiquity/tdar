@@ -89,7 +89,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @Column(nullable = false)
     @Length(max = 255)
     private String name;
-    
+
     @Column(nullable = false, name = "display_name")
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
@@ -101,13 +101,11 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "column_data_type")
-    @Length(max = 255)
+    @Column(nullable = false, name = "column_data_type", length = 255)
     private DataTableColumnType columnDataType = DataTableColumnType.VARCHAR;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "column_encoding_type")
-    @Length(max = 25)
+    @Column(name = "column_encoding_type", length = 25)
     private DataTableColumnEncodingType columnEncodingType;
 
     @ManyToOne
@@ -123,8 +121,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private CodingSheet defaultCodingSheet;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "measurement_unit")
-    @Length(max = 25)
+    @Column(name = "measurement_unit", length = 25)
     private MeasurementUnit measurementUnit;
 
     @Column(columnDefinition = "boolean default FALSE")

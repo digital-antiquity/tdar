@@ -40,8 +40,7 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     @Length(max = 255)
     private String scanNotes;
 
-    @Column(name = "scanner_technology")
-    @Length(max = 255)
+    @Column(name = "scanner_technology", length = 255)
     @Enumerated(EnumType.STRING)
     private ScannerTechnologyType scannerTechnology;
 

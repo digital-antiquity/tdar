@@ -42,15 +42,13 @@ public class AuthorizedUser extends Base implements Persistable {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "general_permission")
-    @Length(max = 50)
+    @Column(name = "general_permission", length = 50)
     private GeneralPermissions generalPermission;
 
     @Column(name = "general_permission_int")
     private Integer effectiveGeneralPermission;
     @Enumerated(EnumType.STRING)
-    @Column(name = "admin_permission")
-    @Length(max = 255)
+    @Column(name = "admin_permission", length = 255)
     private AdminPermissions adminPermission;
 
     @ManyToOne(optional = false)
@@ -131,7 +129,7 @@ public class AuthorizedUser extends Base implements Persistable {
     public Integer getEffectiveGeneralPermission() {
         return effectiveGeneralPermission;
     }
-    
+
     public String getTest() {
         return test;
     }

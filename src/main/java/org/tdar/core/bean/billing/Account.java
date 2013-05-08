@@ -65,8 +65,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    @Length(max = 25)
+    @Column(name = "status", length = 25)
     private Status status = Status.ACTIVE;
 
     @NotNull

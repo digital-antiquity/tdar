@@ -74,10 +74,9 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         private String definition;
 
         @Enumerated(EnumType.STRING)
-        @Column(name = "status")
+        @Column(name = "status", length = 25)
         @Field(norms = Norms.NO, store = Store.YES)
         @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
-        @Length(max = 25)
         private Status status = Status.ACTIVE;
 
         @Field

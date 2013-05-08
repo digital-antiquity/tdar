@@ -47,17 +47,15 @@ public class Document extends InformationResource {
     private static final long serialVersionUID = 7895887664126751989L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "document_type")
+    @Column(name = "document_type", length = 255)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Document Type")
-    @Length(max = 255)
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "degree")
+    @Column(name = "degree", length = 50)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Degree")
-    @Length(max = 50)
     private DegreeType degree;
 
     @BulkImportField(label = "Series Name")
@@ -88,7 +86,7 @@ public class Document extends InformationResource {
     @Length(max = 255)
     @Column(name = "book_title")
     @Field
-//    @Boost(1.5f)
+    // @Boost(1.5f)
     private String bookTitle;
 
     @BulkImportField(label = "ISSN")

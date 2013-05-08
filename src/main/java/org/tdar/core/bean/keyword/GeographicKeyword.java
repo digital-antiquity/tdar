@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -13,7 +14,6 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.hibernate.search.annotations.Indexed;
-import org.hibernate.validator.constraints.Length;
 
 /**
  * $Id$
@@ -64,7 +64,7 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
     }
 
     @Enumerated(EnumType.STRING)
-    @Length(max = 50)
+    @Column(length = 50)
     private Level level;
 
     /**

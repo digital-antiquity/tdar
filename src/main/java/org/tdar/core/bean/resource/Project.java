@@ -119,13 +119,11 @@ public class Project extends Resource implements Sortable {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sort_order", columnDefinition = "varchar(50) default 'RESOURCE_TYPE'")
-    @Length(max = 50)
+    @Column(name = "sort_order", columnDefinition = "varchar(50) default 'RESOURCE_TYPE'", length = 50)
     private SortOption sortBy = SortOption.RESOURCE_TYPE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "orientation")
-    @Length(max = 50)
+    @Column(name = "orientation", length = 50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Override

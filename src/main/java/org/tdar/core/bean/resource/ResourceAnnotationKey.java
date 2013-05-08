@@ -45,16 +45,14 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     private final static String[] JSON_PROPERTIES = { "id", "key", "label" };
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "resource_annotation_type")
-    @Length(max = 255)
+    @Column(name = "resource_annotation_type", length=255)
     private ResourceAnnotationType resourceAnnotationType;
 
     // FIXME: convert to enum for control? if we want to eventually add
     // format strings then we need to capture that format string, e.g., "###-###-####" for phone numbers
     // or "xxx-xx" for arbitrary strings... maybe we can avoid this entirely.
     @Enumerated(EnumType.STRING)
-    @Column(name = "annotation_data_type")
-    @Length(max = 255)
+    @Column(name = "annotation_data_type", length = 255)
     private ResourceAnnotationDataType annotationDataType;
 
     @Column(length = 128, unique = true,nullable=false)
