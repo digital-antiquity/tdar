@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +49,6 @@ import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
@@ -114,7 +112,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public static final String TITLE_BY_TDAR_ID = "Search by TDAR ID";
     public static final String TITLE_TAG_KEYWORD_PHRASE = "Referred Query from the Transatlantic Archaeology Gateway";
 
-    private DisplayOrientation orientation = DisplayOrientation.LIST;
+    private DisplayOrientation orientation;
     // error message of last resort. User entered something we did not
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
@@ -188,7 +186,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @Action(value = "collections", results = {
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
-    public String searchCollections() throws TdarActionException{
+    public String searchCollections() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(ResourceCollection.class));
         try {
             return collectionSearch();
@@ -215,7 +213,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @Action(value = "people", results = {
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
-    public String searchPeople() throws TdarActionException{
+    public String searchPeople() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Person.class));
         setMinLookupLength(0);
         try {
@@ -287,9 +285,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             search();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
             setSearchDescription(TdarConfiguration.getInstance().getSiteAcronym() + " search results: " + StringEscapeUtils.escapeXml(getSearchPhrase()));
-//            if (getAuthenticatedUser() == null) {
-//                geoMode = GeoRssMode.NONE;
-//            }
+            // if (getAuthenticatedUser() == null) {
+            // geoMode = GeoRssMode.NONE;
+            // }
             if (!isReindexing()) {
                 setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
             } else {
@@ -332,6 +330,10 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         LatitudeLongitudeBox latLong = getParsedLatLongBox();
         if (latLong != null) {
             setMap(latLong);
+        }
+
+        if (getMap() != null && getOrientation() == null) {
+            setOrientation(DisplayOrientation.MAP);
         }
         
         // legacy search by keyword
