@@ -6,7 +6,6 @@
 <@edit.title />
 
 <meta name="lastModifiedDate" content="$Date$"/>
-
 </head>
 <body>
 <@edit.sidebar />
@@ -46,7 +45,6 @@
         window.fv = fv;
     });
 </script>
-
 
 </body>
 </#escape>

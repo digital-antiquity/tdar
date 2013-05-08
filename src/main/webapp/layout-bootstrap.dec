@@ -3,8 +3,10 @@
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<#global _foobar = 'foobar'>
 <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
 <#import "/WEB-INF/macros/header.ftl" as header>
+<#global qunit = (Parameters.qunit)??  && !production>
 
     <head>
         <title>${title!siteName}</title>
@@ -28,14 +30,17 @@
         <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'>
         <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet">
         <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-print.css"/>" rel="stylesheet" media="print">
+        <#if qunit>
+            <link rel="stylesheet" href="/css/qunit-1.11.0.css" type="text/css">
+        </#if>
         
         <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
         <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
         <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
 
         <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
-        <#--end maps support -->
         <#include "${themeDir}/head.dec" />
+        
 
 
     <#assign uri = request.requestURI />
@@ -52,6 +57,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>">
+    <#if qunit>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+    </#if>
     <div class="container">
         <div class="row">
             <header class="span12">
@@ -265,8 +274,18 @@ ${_stacktrace?html}
     TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
     </script>
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
-    <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor)>
+    <#if qunit>
+        <script src="/includes/qunit-1.11.0.js"></script>
+    </#if>
+    
+    <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
 		<script type="text/javascript" src="${jiraScriptLink}"></script>
 	</#if>
+    
+    <#if qunit>
+        <#-- close the test fixture div -->
+        </div>
+    </#if>
+	
     </body>
 </html>
