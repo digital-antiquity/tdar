@@ -29,9 +29,9 @@
 --DONT-PROCESS-- SET SESSION AUTHORIZATION DEFAULT;
 --DONT-PROCESS-- set constraints all deferred;
 
---DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, location, url) VALUES (12088, NULL, NULL, NULL, NULL);
---DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, location, url) VALUES (8092, NULL, NULL, NULL, NULL);
---DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, location, url) VALUES (8093, NULL, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (12088, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8092, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8093, NULL, NULL, NULL);
 
 --DONT-PROCESS-- INSERT INTO institution(id,  "name") values (12088, 'University of TEST');
 --DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8092, true, 'test@tdar.org', 'test', 'user', true, NULL, '', NULL, 12088);
