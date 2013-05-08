@@ -17,7 +17,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -55,6 +54,8 @@ public class AuthorizedUser extends Base implements Persistable {
     @JoinColumn(nullable = false, name = "user_id")
     private Person user;
 
+    private transient boolean enabled = false;
+    
     /**
      * @param person
      * @param modifyRecord
@@ -136,6 +137,14 @@ public class AuthorizedUser extends Base implements Persistable {
 
     public void setTest(String test) {
         this.test = test;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     private transient String test = "";

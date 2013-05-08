@@ -125,7 +125,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         genericService.refresh(image);
         logger.debug("resource collections: {}", image.getResourceCollections());
 
-        authUsers = resourceCollectionService.getAuthorizedUsersForResource(image);
+        authUsers = resourceCollectionService.getAuthorizedUsersForResource(image, p);
         assertEquals("expecting authuser list should be empty now", 0, authUsers.size());
         assertEquals("we should have cleared the collections list should be empty now", 0, image.getSharedResourceCollections().size());
 

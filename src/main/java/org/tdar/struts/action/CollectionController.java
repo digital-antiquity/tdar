@@ -176,7 +176,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public String loadEditMetadata() throws TdarActionException {
         super.loadEditMetadata();
-        getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
+        getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
         // FIXME: this could be replaced with a load that's a skeleton object (title, resourceType, date)
         resources.addAll(getPersistable().getResources());
         // for (Resource resource : getPersistable().getResources()) {
@@ -238,7 +238,8 @@ public class CollectionController extends AbstractPersistableController<Resource
             List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollectionsRecursive(getPersistable(),
                     CollectionType.SHARED));
             collectionIds.add(getId());
-            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
+            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null,
+                    Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 
         if (getPersistable() != null) {

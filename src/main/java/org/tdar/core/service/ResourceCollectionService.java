@@ -135,7 +135,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // }
     }
 
-    public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource) {
+    public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource, Person authenticatedUser) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<AuthorizedUser>();
 
         for (ResourceCollection collection : resource.getResourceCollections()) {
@@ -144,7 +144,21 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
         }
 
+        boolean canModify = authenticationAndAuthorizationService.canUploadFiles(authenticatedUser, resource);
+
+        applyTransientEnabledPermission(authenticatedUser, authorizedUsers, canModify);
+
         return authorizedUsers;
+    }
+
+    private void applyTransientEnabledPermission(Person authenticatedUser, List<AuthorizedUser> authorizedUsers, boolean canModify) {
+        for (AuthorizedUser au : authorizedUsers) {
+            if (au.equals(authenticatedUser) || !canModify) {
+                au.setEnabled(false);
+            } else {
+                au.setEnabled(true);
+            }
+        }
     }
 
     /**
@@ -352,6 +366,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     public List<Resource> findAllResourcesWithStatus(ResourceCollection persistable, Status... statuses) {
         return getDao().findAllResourcesWithStatus(persistable, statuses);
+    }
+
+    public List<AuthorizedUser> getAuthorizedUsersForCollection(ResourceCollection persistable, Person authenticatedUser) {
+        List<AuthorizedUser> users = new ArrayList<>(persistable.getAuthorizedUsers());
+        applyTransientEnabledPermission(authenticatedUser, users, !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, persistable));
+        return users;
     }
 
 }
