@@ -20,6 +20,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -45,6 +46,7 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
@@ -149,6 +151,7 @@ public abstract class InformationResource extends Resource {
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    @Length(max = 100)
     @Column(name = "metadata_language")
     private Language metadataLanguage;
 
@@ -156,17 +159,20 @@ public abstract class InformationResource extends Resource {
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "resource_language")
+    @Length(max = 100)
     private Language resourceLanguage;
 
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "license_type")
     @BulkImportField(label = BulkImportField.LICENSE_TYPE, required = true)
+    @Length(max = 128)
     private LicenseType licenseType;
 
     @Column(name = "license_text")
     @BulkImportField(label = BulkImportField.LICENSE_TEXT)
     @Type(type = "org.hibernate.type.StringClobType")
+    @Lob
     private String licenseText;
 
     @Column(name = "external_reference", nullable = true)
@@ -175,6 +181,7 @@ public abstract class InformationResource extends Resource {
 
     @BulkImportField(label = "Copy Located At", comment = BulkImportField.COPY_LOCATION_DESCRIPTION)
     @Column(name = "copy_location")
+    @Length(max = 255)
     private String copyLocation;
 
     @Column(name = "last_uploaded")
@@ -208,6 +215,7 @@ public abstract class InformationResource extends Resource {
 
     @BulkImportField(label = "Publisher Location")
     @Column(name = "publisher_location")
+    @Length(max = 255)
     private String publisherLocation;
 
     @JoinColumn(name = "copyright_holder_id")
@@ -238,6 +246,7 @@ public abstract class InformationResource extends Resource {
     private boolean inheritingCollectionInformation;
 
     @ManyToOne(optional = true)
+    @Length(max = 255)
     private DataTableColumn mappedDataKeyColumn;
 
     @Column

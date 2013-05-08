@@ -53,6 +53,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.HasName;
@@ -131,6 +132,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
             @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
             , @Field(name = QueryFieldNames.COLLECTION_NAME) })
     // @Boost(1.5f)
+    @Length(max = 255)
     private String name;
 
     @Lob
@@ -146,16 +148,19 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sort_order")
+    @Length(max = 25)
     private SortOption sortBy = SortOption.TITLE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "orientation")
+    @Length(max = 50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Field(name = QueryFieldNames.COLLECTION_TYPE)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Enumerated(EnumType.STRING)
     @Column(name = "collection_type")
+    @Length(max = 255)
     private CollectionType type;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

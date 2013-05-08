@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.core.bean.util.bulkUpload;
+package org.tdar.utils.bulkUpload;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

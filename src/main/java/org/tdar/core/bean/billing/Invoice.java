@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasLabel;
@@ -56,11 +57,11 @@ public class Invoice extends Base implements Updatable {
         TRANSACTION_CANCELLED("Transaction Cancelled");
 
         private String label;
-        
+
         private TransactionStatus(String label) {
             this.label = label;
         }
-        
+
         public boolean isComplete() {
             switch (this) {
                 case PENDING_TRANSACTION:
@@ -79,7 +80,7 @@ public class Invoice extends Base implements Updatable {
                     return false;
             }
         }
-        
+
         public String getLabel() {
             return this.label;
         }
@@ -108,10 +109,13 @@ public class Invoice extends Base implements Updatable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type")
+    @Length(max = 50)
     private PaymentMethod paymentMethod;
 
     private Long billingPhone;
+
     @Column(name = "account_type")
+    @Length(max = 50)
     private String accountType;
 
     @Column(name = "transaction_date")
@@ -146,10 +150,14 @@ public class Invoice extends Base implements Updatable {
 
     private Float total;
 
+    @Length(max = 25)
     private String invoiceNumber;
+
+    @Length(max = 255)
     private String otherReason;
 
     @Enumerated(EnumType.STRING)
+    @Length(max = 25)
     private TransactionStatus transactionStatus = TransactionStatus.PREPARED;
 
     /**

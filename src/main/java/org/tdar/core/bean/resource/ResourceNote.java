@@ -15,6 +15,7 @@ import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -40,11 +41,13 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
 
     @Column(length = 5000)
     @Field
+    @Length(max = 5000)
     private String note;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "note_type")
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    @Length(max = 255)
     private ResourceNoteType type;
 
     @Override

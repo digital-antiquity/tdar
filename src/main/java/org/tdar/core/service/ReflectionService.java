@@ -47,10 +47,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.util.bulkUpload.CellMetadata;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.Pair;
+import org.tdar.utils.bulkUpload.CellMetadata;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;

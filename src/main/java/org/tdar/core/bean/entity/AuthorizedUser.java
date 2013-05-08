@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -42,12 +43,14 @@ public class AuthorizedUser extends Base implements Persistable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "general_permission")
+    @Length(max = 50)
     private GeneralPermissions generalPermission;
 
     @Column(name = "general_permission_int")
     private Integer effectiveGeneralPermission;
     @Enumerated(EnumType.STRING)
     @Column(name = "admin_permission")
+    @Length(max = 255)
     private AdminPermissions adminPermission;
 
     @ManyToOne(optional = false)

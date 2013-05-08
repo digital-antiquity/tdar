@@ -34,6 +34,7 @@ import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
@@ -154,6 +155,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     @Enumerated(EnumType.STRING)
     @Column(name = "general_type")
+    @Length(max = 255)
     private FileType informationResourceFileType;
 
     @Column(name = "latest_version")
@@ -168,6 +170,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
 
     @Enumerated(EnumType.STRING)
+    @Length(max = 50)
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
 
     @Lob
@@ -182,6 +185,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private Date dateMadePublic;
 
     @Enumerated(EnumType.STRING)
+    @Length(max = 32)
     private FileStatus status;
 
     @XmlElement(name = "informationResourceRef")

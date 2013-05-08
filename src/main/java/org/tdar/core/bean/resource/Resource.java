@@ -67,6 +67,7 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.slf4j.Logger;
@@ -208,6 +209,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
     @NotNull
     @Column(length = 512)
+    @Length(max = 512)
     private String title;
 
     @BulkImportField(label = BulkImportField.DESCRIPTION_LABEL, required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
@@ -223,22 +225,26 @@ public class Resource extends JsonModel.Base implements Persistable,
     @DateBridge(resolution = Resolution.DAY)
     private Date dateCreated;
 
+    @Length(max = 255)
     private String url;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_type")
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @Length(max = 255)
     private ResourceType resourceType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @Length(max = 50)
     private Status status = Status.ACTIVE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "previous_status")
+    @Length(max = 50)
     private Status previousStatus = Status.ACTIVE;
 
     // @Boost(.5f)
@@ -379,6 +385,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     private transient boolean updated = false;
 
     @Column(name = "external_id")
+    @Length(max = 255)
     private String externalId;
 
     private transient Float score = -1f;

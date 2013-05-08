@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
@@ -30,20 +31,27 @@ public class Address extends Base implements Persistable, Validatable {
     private static final long serialVersionUID = 3179122792715811371L;
 
     @NotNull
+    @Length(max = 255)
     private String street1;
+    @Length(max = 255)
     private String street2;
     @NotNull
+    @Length(max = 255)
     private String city;
     @NotNull
+    @Length(max = 255)
     private String state;
     @NotNull
+    @Length(max = 255)
     private String postal;
     @NotNull
+    @Length(max = 255)
     private String country;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     @NotNull
+    @Length(max = 255)
     private AddressType type;
 
     public String getStreet1() {

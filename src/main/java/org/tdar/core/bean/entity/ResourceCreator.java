@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
@@ -46,6 +47,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @Enumerated(EnumType.STRING)
     @Field
     @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
+    @Length(max = 255)
     private ResourceCreatorRole role;
 
     public ResourceCreator(Creator creator, ResourceCreatorRole role) {

@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -50,16 +51,20 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     private static final long serialVersionUID = -7579426625034598257L;
 
     @Column(nullable = false)
+    @Length(max = 255)
     private String name;
 
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @Length(max = 255)
     private String label;
 
+    @Length(max = 255)
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Length(max = 255)
     private CategoryType type;
 
     @ManyToOne

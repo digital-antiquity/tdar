@@ -27,6 +27,7 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
@@ -66,10 +67,13 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @Column(nullable = false, unique = true)
     @BulkImportField(label = "Institution Name", comment = BulkImportField.CREATOR_INSTITUTION_DESCRIPTION, order = 10)
+    @Length(max = 255)
     private String name;
 
+    @Length(max = 255)
     private String url;
 
+    @Length(max = 255)
     private String location;
 
     public int compareTo(Institution candidate) {

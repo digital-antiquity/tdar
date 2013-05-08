@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -86,11 +87,13 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private DataTable dataTable;
 
     @Column(nullable = false)
+    @Length(max = 255)
     private String name;
     
     @Column(nullable = false, name = "display_name")
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @Length(max = 255)
     private String displayName;
 
     @Lob
@@ -99,10 +102,12 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "column_data_type")
+    @Length(max = 255)
     private DataTableColumnType columnDataType = DataTableColumnType.VARCHAR;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "column_encoding_type")
+    @Length(max = 25)
     private DataTableColumnEncodingType columnEncodingType;
 
     @ManyToOne
@@ -119,12 +124,14 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     @Enumerated(EnumType.STRING)
     @Column(name = "measurement_unit")
+    @Length(max = 25)
     private MeasurementUnit measurementUnit;
 
     @Column(columnDefinition = "boolean default FALSE")
     private boolean mappingColumn = false;
 
     @Column
+    @Length(max = 4)
     private String delimiterValue;
 
     @Column(columnDefinition = "boolean default TRUE")

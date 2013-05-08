@@ -59,9 +59,6 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.bulkUpload.BulkManifestProxy;
-import org.tdar.core.bean.util.bulkUpload.BulkUploadTemplate;
-import org.tdar.core.bean.util.bulkUpload.CellMetadata;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -73,6 +70,9 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
+import org.tdar.utils.bulkUpload.BulkManifestProxy;
+import org.tdar.utils.bulkUpload.BulkUploadTemplate;
+import org.tdar.utils.bulkUpload.CellMetadata;
 
 /**
  * @author Adam Brin

@@ -37,14 +37,14 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.util.bulkUpload.BulkManifestProxy;
-import org.tdar.core.bean.util.bulkUpload.BulkUploadTemplate;
-import org.tdar.core.bean.util.bulkUpload.CellMetadata;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.ExcelUnit;
+import org.tdar.utils.bulkUpload.BulkManifestProxy;
+import org.tdar.utils.bulkUpload.BulkUploadTemplate;
+import org.tdar.utils.bulkUpload.CellMetadata;
 
 /**
  * @author Adam Brin

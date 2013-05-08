@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * $Id$
@@ -63,6 +64,7 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
     }
 
     @Enumerated(EnumType.STRING)
+    @Length(max = 50)
     private Level level;
 
     /**

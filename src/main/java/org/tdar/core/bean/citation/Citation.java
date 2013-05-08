@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
@@ -39,6 +40,7 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
+    @Length(max = 1024)
     private String text;
     
     @Override

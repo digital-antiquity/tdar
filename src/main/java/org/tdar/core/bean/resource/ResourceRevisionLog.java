@@ -14,6 +14,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 
@@ -41,6 +42,7 @@ public class ResourceRevisionLog extends Persistable.Base {
     
     // the action taken 
     @Column(name="log_message", length=512)
+    @Length(max = 512)
     private String logMessage;
     
     @ManyToOne(optional=false)

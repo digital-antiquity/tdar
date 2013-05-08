@@ -42,6 +42,7 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
@@ -136,6 +137,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Column(name = "status")
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @Length(max = 25)
     private Status status = Status.ACTIVE;
 
     @Lob
@@ -148,6 +150,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     }
 
     @Column(length = 64)
+    @Length(max = 64)
     private String url;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -155,6 +158,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @NotNull
     private Set<Address> addresses = new LinkedHashSet<Address>();
 
+    @Length(max = 255)
     private String location;
 
     private transient Float score = -1f;
