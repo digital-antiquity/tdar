@@ -34,6 +34,9 @@
 	<p>Alternate Names: <#list creator.synonyms as syn> <#if syn_index !=0>,</#if>${syn.properName}</#list>
 	</p>
 	</#if>
+	<#if creator.url?has_content>
+		<a href="${creator.url?html}">${creator.url?html}</a>
+	</#if>
     <br/>
         <#if creator.creatorType == 'PERSON'>
            <#if authenticated && (editor ||  id == authenticatedUser.id ) >
