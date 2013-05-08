@@ -60,6 +60,7 @@
 
                     <p id="welcome-menu" class="welcome no-print ">
                         Welcome back, <a href="">${authenticatedUser.properName}</a>
+                        <i class="caret drop-down"></i>
                     </p>
     
                     <div class="welcome-drop no-print ">
