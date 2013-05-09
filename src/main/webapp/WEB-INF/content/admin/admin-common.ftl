@@ -12,6 +12,7 @@
     <h3>Statistics Menu</h3>
     <table cellpadding=4>
     <tr>
+        <td><a href="<@s.url value="/admin/"/>">Admin Home</a> </td>
         <td><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a> </td>
         <td><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a> </td>
         <td><a href="<@s.url value="/admin/user"/>">User Statistics</a> </td>
