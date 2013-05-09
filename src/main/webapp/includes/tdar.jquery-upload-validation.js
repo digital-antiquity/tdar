@@ -77,15 +77,16 @@ var FileuploadValidator;
         },
 
         validate: function() {
+            var self = this;
             console.log("validating %s   rulecount:%s", this.fileupload, this.rules.length);
             var files = this.helper.validFiles();
             for(var i = 0; i < this.rules.length; i++) {
                 var rule = this.rules[i];
                 var method = rule.method;
                 var message = rule.message;
-                var self = this;
                 this.suggestions = [];
-                this.errors = $.map(files, function(file, idx) {
+                this.errors = [];
+                $.each(files, function(idx, file) {
                     var valid = method(file, files, rule.settings);
                     console.log("validate  rule:%s   method:%s   valid:%s", rule, typeof method, valid);
                     if(!valid) {
@@ -94,6 +95,7 @@ var FileuploadValidator;
                             "file": file,
                             "message": message(file.filename, file.base, file.ext, idx)
                         };
+                        console.dir(error);
                         self.errors.push(error);
                         if(rule.suggestion) {
                             self.suggestions.push(error);
