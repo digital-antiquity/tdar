@@ -34,6 +34,8 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
 
     private static final long serialVersionUID = 9120049059501138213L;
 
+    public static final String INHERITANCE_TOGGLE = "inheriting_spatial_information";
+
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
     private Set<GeographicKeyword> synonyms = new HashSet<GeographicKeyword>();

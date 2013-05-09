@@ -33,6 +33,7 @@ import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
+import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.PersonAnalysisProcess;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
@@ -170,7 +171,16 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
         pap.execute();
     }
+
+    @Autowired
+    OccurranceStatisticsUpdateProcess ocur;
     
+    @Test
+    @Rollback(true)
+    public void testOccurranceStats() throws InstantiationException, IllegalAccessException {
+        ocur.execute();
+    }
+
     
     @SuppressWarnings("deprecation")
     @Test

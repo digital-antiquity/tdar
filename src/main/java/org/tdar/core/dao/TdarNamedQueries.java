@@ -149,4 +149,9 @@ public interface TdarNamedQueries {
     public static final String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from resource res where res.id in (%s) ";
     public static final String QUERY_SQL_RESOURCES_BY_YEAR = "select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc";
     public static final String DISTINCT_SUBMITTERS = "SELECT DISTINCT submitter_id from resource";
+
+    public static final String UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT= "update %1$s set occurrance =0";
+    public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE = "update %1$s set occurrance =  (select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id and resource_id in (select project_id from information_resource where %2$s is true) group by %1$s_id)";
+    public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT= "update %1$s set occurrance =  occurance + (select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id group by %1$s_id)";
+
 }

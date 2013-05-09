@@ -221,19 +221,19 @@ public abstract class InformationResource extends Resource {
     private Creator copyrightHolder;
 
     // downward inheritance sections
-    @Column(name = "inheriting_investigation_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = InvestigationType.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingInvestigationInformation;
-    @Column(name = "inheriting_site_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = SiteNameKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSiteInformation;
-    @Column(name = "inheriting_material_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = MaterialKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingMaterialInformation;
-    @Column(name = "inheriting_other_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = OtherKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingOtherInformation;
-    @Column(name = "inheriting_cultural_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = CultureKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingCulturalInformation;
-    @Column(name = "inheriting_spatial_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSpatialInformation;
-    @Column(name = "inheriting_temporal_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = TemporalKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingTemporalInformation;
     @Column(name = "inheriting_note_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingNoteInformation;
@@ -362,15 +362,15 @@ public abstract class InformationResource extends Resource {
     @Transient
     // @Boost(1.5f)
     @Fields({
-            @Field( name = QueryFieldNames.PROJECT_TITLE),
+            @Field(name = QueryFieldNames.PROJECT_TITLE),
             @Field(name = QueryFieldNames.PROJECT_TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
-            })
+    })
     public String getProjectTitle() {
         return getProject().getTitleSort();
     }
-    
+
     @Transient
-    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) 
+    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getProjectTitleSort() {
         return getProject().getTitleSort() + " - " + getTitle();
     }

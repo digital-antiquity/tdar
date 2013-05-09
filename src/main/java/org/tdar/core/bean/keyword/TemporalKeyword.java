@@ -27,6 +27,8 @@ public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
 
     private static final long serialVersionUID = -626136232824053935L;
 
+    public static final String INHERITANCE_TOGGLE = "inheriting_temporal_information";
+
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
     private Set<TemporalKeyword> synonyms = new HashSet<TemporalKeyword>();

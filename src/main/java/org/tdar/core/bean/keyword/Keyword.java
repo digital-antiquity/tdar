@@ -51,7 +51,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
     public String getKeywordType();
 
     public void setDefinition(String definition);
-
+    
     @MappedSuperclass
     @XmlType(name = "kwdbase")
     public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus, Comparable<T> {
