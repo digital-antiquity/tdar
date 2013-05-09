@@ -20,6 +20,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.web.SessionData;
@@ -81,6 +82,8 @@ public class UserRegistrationITCase<E> extends AbstractControllerITCase {
 
     }
 
+    
+    
     @Test
     @Rollback
     public void testDuplicateEmail() {
@@ -117,6 +120,58 @@ public class UserRegistrationITCase<E> extends AbstractControllerITCase {
 
         boolean deleteUser = authService.getAuthenticationProvider().deleteUser(p);
         assertTrue("could not delete user", deleteUser);
+    }
+
+
+    @Test
+    @Rollback
+    public void testExistingDraftUserWithoutLogin() {
+        String email = "tiffany.clark@asu.edu";
+        Person p = testCreatePerson(email, Status.ACTIVE, TdarActionSupport.SUCCESS);
+        assertEquals(Status.ACTIVE, p.getStatus());
+        
+        p = testCreatePerson(email, Status.DRAFT, TdarActionSupport.SUCCESS);
+        assertEquals(Status.ACTIVE, p.getStatus());
+        
+        p = testCreatePerson(email, Status.DELETED, TdarActionSupport.ERROR);
+        assertEquals(Status.DELETED, p.getStatus());
+
+        p = testCreatePerson(email, Status.FLAGGED, TdarActionSupport.ERROR);
+        assertEquals(Status.FLAGGED, p.getStatus());
+}
+
+
+    private Person testCreatePerson(String email, Status status, String success) {
+        Person p = new Person();
+        p.setEmail(email);
+        p.setUsername(email);
+        p.setFirstName("Tiffany");
+        p.setLastName("Clark");
+
+        Person findByEmail = entityService.findByEmail(email);
+        findByEmail.setStatus(status);
+        findByEmail.setUsername(null);
+        findByEmail.setRegistered(false);
+        genericService.saveOrUpdate(findByEmail);
+        genericService.synchronize();
+        findByEmail = null;
+        // cleanup crowd if we need to...
+        authService.getAuthenticationProvider().deleteUser(p);
+
+        controller.setPassword("password");
+        controller.setPerson(p);
+        controller.setServletRequest(getServletPostRequest());
+        controller.setServletResponse(getServletResponse());
+        String execute = controller.create();   
+        assertEquals(success, execute);
+        
+        findByEmail = entityService.findByEmail(email);
+        genericService.refresh(findByEmail);
+
+        boolean deleteUser = authService.getAuthenticationProvider().deleteUser(p);
+        assertTrue("could not delete user", deleteUser);
+
+        return findByEmail;
     }
 
     @Test

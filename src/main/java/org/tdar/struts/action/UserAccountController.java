@@ -274,11 +274,22 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     private void reconcilePersonWithTransient(Person person_, String error) {
         if (person_ != null && Persistable.Base.isNullOrTransient(person)) {
+            
             if (person_.isRegistered()) {
                 throw new TdarRecoverableRuntimeException(error);
             }
+
+            if (person_.getStatus() != Status.FLAGGED && person_.getStatus() != Status.DELETED && person_.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) {
+                person.setStatus(Status.ACTIVE);
+                person_.setStatus(Status.ACTIVE);
+            } else {
+                logger.error("user is not valid");
+                throw new TdarRecoverableRuntimeException(error);
+            }
+
             person.setId(person_.getId());
             person = getEntityService().merge(person);
+
         }
     }
 
