@@ -252,9 +252,9 @@ ${_stacktrace?html}
             $(document).click(function(){  
               $('.welcome-drop').hide();
             });
-        });
         
-        applyWatermarks($('.searchheader, .searchbox'));
+	        applyWatermarks($('form.searchheader, form[name=searchheader]'));
+        });
         </script>
     <@header.scripts production />
     <script type="text/javascript">
