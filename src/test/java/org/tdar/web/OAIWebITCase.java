@@ -28,7 +28,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class OAIWebITCase extends AbstractWebTestCase {
+public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Autowired
     SearchIndexService indexService;
@@ -39,11 +39,12 @@ public class OAIWebITCase extends AbstractWebTestCase {
     private String firstInstitutionIdentifier;
     private String firstResourceIdentifier;
 
+    
     @Before
     public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException {
-        // reindex
-        indexService.indexAll(getAdminUser());
+        reindex();
 
+        gotoPage("/logout");
         // establish namespace bindings for the XPath tests
         HashMap<String, String> namespaceBindings = new HashMap();
         namespaceBindings.put("oai", "http://www.openarchives.org/OAI/2.0/");
