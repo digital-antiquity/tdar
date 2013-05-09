@@ -27,7 +27,6 @@
 </div>
 -->
 <hr>
-<!--
 <#if payPerIngestEnabled >
 <div class="row">
 <div class="span12 pricing">
@@ -55,7 +54,7 @@
 </div></div></div>
 <hr>
 </#if>
--->
+
 <div class="row">
         <#include "featured.ftl" />
 </div>
@@ -84,6 +83,7 @@
             </li>
             </#list>
         </ul>
+        <p class="pull-right"><a href="/news/">Older News &raquo;</a></p>
         </#if>
     </div>
 </div>
