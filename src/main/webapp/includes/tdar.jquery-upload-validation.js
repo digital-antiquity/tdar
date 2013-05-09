@@ -176,7 +176,7 @@ var FileuploadValidator;
         },
 
         //create a $.validator method and rule  which returns false if any fileupload validation errors exist
-        registerValidiatorMethod: function() {
+        registerValidiatorMethod: function () {
             var self = this;
             $.validator.addMethod(
                 "fileuploadErrors",

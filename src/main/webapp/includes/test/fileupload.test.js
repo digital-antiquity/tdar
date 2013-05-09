@@ -19,7 +19,9 @@ QUnit.done = function() {
 }
 
 
+//basic setup, teardown
 var basic = {
+
     setup: function() {
         var helper = TDAR.fileupload.registerUpload({
            informationResourceId: -1, 
@@ -27,22 +29,43 @@ var basic = {
            formSelector:"#uploadform",
            inputSelector: '#fileAsyncUpload'
         });
+        basic.helper = helper;
 
-        ok(helper, "helper defined");
-
-        ok($(helper.context).fileupload('option'), "fileupload widget defined");
 
     },
 
     teardown: function() {
+        $(basic.helper.context).fileupload("destroy");
         console.log("hi mom");
     }
 };
 
+//the first test asserts that our basic setup/teardown works
+test("basic.setup", function() {
+    basic.setup();
+    ok(basic.helper, "helper defined");
+    ok($(basic.helper.context).fileupload('option'), "fileupload widget defined");
+    basic.teardown();
+});
+
+test("basic.teardown", function() {
+    basic.setup();
+    basic.teardown();
+    var options = null;
+    //exception expected here
+    try {
+        options = $(basic.helper.context).fileupload('option');
+    } catch(err) {}
+    equal(options, null, "fileupload widget should be destroyed after teardown");
+});
+
+
 module("basic", basic);
 
-test("sample test", function() {
-    ok( 1==1, "this test does nothing");
+test("required file rule", function() {
+    var fv = new  FileuploadValidator("uploadform", {registerJqueryValidateMethod: false});
+    ok(fv, "validator exists");
+
 });
 
 
