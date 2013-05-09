@@ -3,7 +3,9 @@ package org.tdar.web;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,7 +41,6 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     private String firstInstitutionIdentifier;
     private String firstResourceIdentifier;
 
-    
     @Before
     public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException {
         reindex();
@@ -89,7 +90,8 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
      * @throws XpathException
      * @throws NumberFormatException
      */
-    private int listIdentifiersOrRecords(String verb, String metadataPrefix) throws SAXException, IOException, ParserConfigurationException,
+    private int listIdentifiersOrRecords(String verb, String metadataPrefix, List<String> identifiers) throws SAXException, IOException,
+            ParserConfigurationException,
             NumberFormatException, XpathException {
         int totalRecordCount = 0;
         int pageCount = 0;
@@ -102,6 +104,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             Document response = getPageDOM();
             // count the number of records returned in this page
             int recordCount = Integer.valueOf(xpathEngine.evaluate("count(oai:OAI-PMH/oai:" + verb + "/*)", response));
+            identifiers.add(xpathEngine.evaluate("//oai:identifier", response));
             // must be > 0 (otherwise, repository is empty, or else the repository issued us with an unnecessary resumptionToken
             Assert.assertTrue(requestURI + " response returned > 0 records", (recordCount > 0));
             totalRecordCount += recordCount;
@@ -116,15 +119,28 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testHarvest() throws NumberFormatException, XpathException, SAXException, IOException, ParserConfigurationException {
         // harvest all records using ListRecords and ListIdentifiers, in all 3 formats
-        int tdarIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "tdar");
-        int tdarRecords = listIdentifiersOrRecords("ListRecords", "tdar");
-        int modsIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "mods");
-        int modsRecords = listIdentifiersOrRecords("ListRecords", "mods");
-        int dcIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "oai_dc");
-        int dcRecords = listIdentifiersOrRecords("ListRecords", "oai_dc");
+        List<String> identifiers = new ArrayList<>();
+        int tdarIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "tdar", identifiers);
+        identifiers.clear();
+        int tdarRecords = listIdentifiersOrRecords("ListRecords", "tdar", identifiers);
+        identifiers.clear();
+        int modsIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "mods", identifiers);
+        List<String> modsIdentifiersList = new ArrayList<>(identifiers);
+        logger.info("mods identifiers: {}", identifiers);
+        identifiers.clear();
+        int modsRecords = listIdentifiersOrRecords("ListRecords", "mods", identifiers);
+        List<String> modsRecordsList = new ArrayList<>(identifiers);
+        logger.info("mods records: {}", identifiers);
+        identifiers.clear();
+        int dcIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "oai_dc", identifiers);
+        identifiers.clear();
+        int dcRecords = listIdentifiersOrRecords("ListRecords", "oai_dc", identifiers);
+        identifiers.clear();
         // check that the numbers make sense
         Assert.assertEquals("Number of identifiers matches number of records for tDAR format", tdarIdentifiers, tdarRecords);
-        Assert.assertEquals("Number of identifiers matches number of records for MODS format", modsIdentifiers, modsRecords);
+        Assert.assertEquals(
+                String.format("Number of identifiers matches number of records for MODS format \n[%s] vs. \n[%s]", modsIdentifiersList, modsRecordsList),
+                modsIdentifiers, modsRecords);
         Assert.assertEquals("Number of identifiers matches number of records for DC format", dcIdentifiers, dcRecords);
         Assert.assertEquals("Number of identifiers for tDAR format matches number of identifiers for DC format", tdarIdentifiers, dcIdentifiers);
         // NB people and institutions are not disseminated in MODS, so the number should be smaller
