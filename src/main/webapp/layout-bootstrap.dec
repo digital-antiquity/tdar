@@ -254,11 +254,7 @@ ${_stacktrace?html}
             });
         });
         
-        if(!Modernizr.input.placeholder) {
-            $('header').find('.searchbox').each(function() {
-                $(this).watermark(this.placeholder);
-            })
-        }
+        applyWatermarks($('.searchheader, .searchbox'));
         </script>
     <@header.scripts production />
     <script type="text/javascript">
