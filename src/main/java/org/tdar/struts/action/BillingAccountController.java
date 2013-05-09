@@ -21,6 +21,7 @@ import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -62,7 +63,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         if (!getAuthenticationAndAuthorizationService().canAssignInvoice(invoice, getAuthenticatedUser())) {
             throw new TdarRecoverableRuntimeException(RIGHTS_TO_ASSIGN_THIS_INVOICE);
         }
-        setAccounts(getAccountService().listAvailableAccountsForUser(invoice.getOwner()));
+        setAccounts(getAccountService().listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             return SUCCESS;
         }
@@ -90,7 +91,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         } else {
             getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
         }
-        
+
         if (Persistable.Base.isNotNullOrTransient(invoiceId)) {
             Invoice invoice = getInvoice();
             logger.info("attaching invoice: {} ", invoice);
@@ -116,15 +117,15 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     protected void delete(Account persistable) {
         // TODO Auto-generated method stub
     }
-    
+
     @SkipValidation
     @WriteableSession
     @Action(value = UPDATE_QUOTAS, results = {
             @Result(name = SUCCESS, location = "view?id=${id}", type = REDIRECT)
     })
     public String updateQuotas() {
-            getAccountService().updateQuota(getAccount(), getAccount().getResources());
-            return TdarActionSupport.SUCCESS;
+        getAccountService().updateQuota(getAccount(), getAccount().getResources());
+        return TdarActionSupport.SUCCESS;
     }
 
     @Override

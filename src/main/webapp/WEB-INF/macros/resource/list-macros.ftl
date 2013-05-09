@@ -54,9 +54,9 @@
             </#if>
             <#if sortfield?contains('PROJECT')>
                 <#if resource.project??>
-                    <#local key = resource.project.titleSort />
+                    <#local key = resource.project.title />
                 <#elseif resource.resourceType.project >
-                    <#local key = resource.titleSort />
+                    <#local key = resource.title />
                 </#if>
             </#if>
             <#-- print header and group/list tag -->
@@ -179,7 +179,7 @@
     </#if>
     <a class="resourceLink" href="<@s.url value="/${result.urlNamespace}/${result.id?c}"/>"><#rt>
     <#if result.title?has_content>
-        ${result.title!"No Title"}<#t>
+        ${result.title!"No Title"} <#if result.status?has_content && editor && !result.active ><small>[${result.status?upper_case}]</small></#if><#t>
     <#elseif result.properName?has_content>
         ${result.properName!"No Name"}<#t>
      <#else>

@@ -122,28 +122,59 @@ header {
 	position: relative;
 }
 
-/*fixme: the "header input.searchbox" selector doesn't match any elements in current layout, but looks funny when we correct it ("header .searchbox input") */
-header input.searchbox, /* this selector works fine, however */ .hero input.searchbox
+/*FIXME: this header is kludge-filled disaster that miraculously works. It, and specifically the searchbox,  needs much refactoring*/
+header input.searchbox, /* this selector works fine, however */
+.hero input.searchbox
 	{
 	background-color: white;
 	border: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
 	box-shadow: none;
-	-webkit-transition: none;
-	-moz-transition: none;
-	-o-transition: color 0 ease-in;
-	transition: none;
 	display: inline-block;
-	height: auto;
 	padding: 0;
 	margin-bottom: 0;
 	color: inherit;
-	-webkit-border-radius: none;
-	-moz-border-radius: none;
-	border-radius: none;
 	line-height: inherit;
+    font-style: italic;
 }
+
+.hero input.searchbox {
+    padding: 11px 0 13px 25px !important;
+    background: url(/images/r4/bg-hero-search.png) 0 0 no-repeat !important;
+    font-size: 16px !important;
+    line-height: 16px !important;
+	height: auto;
+}
+
+header form input.searchbox {
+    width: 200px;
+    padding: 3px 10px;
+    margin: 0 0 5px 35px;
+    font-size: 13px;
+    line-height: 13px;
+    border: 1px solid #dedede;
+    background: url(/images/r4/bg-search.png) 195px 50% no-repeat;
+    
+}
+
+.lt-ie9 header form input.searchbox {
+    padding: 9px 10px 3px 10px;
+}
+
+.lt-ie9 .hero input.searchbox {
+    padding: 15px 0 10px 18px !important;
+}
+ 
+/* class  applied on elements elements for browsers that do not have native watermark support */
+.searchbox.watermark {
+        color: #7d7a77;
+}
+
+form.inline {
+    display:inline;
+}
+
 
 header h1 {
 	margin: 20px 0 0 0;
@@ -208,24 +239,6 @@ header nav li.button a {
 	margin: 45px -10px 0 25px;
 }
 
-header form input.searchbox {
-	width: 200px;
-	padding: 6px 10px;
-	margin: 40px 0 0 35px;
-	font-size: 13px;
-	line-height: 13px;
-	color: #7d7a77; 
-	font-style: italic;
-	border: 1px solid #dedede !important;
-	-webkit-border-radius: 2px;
-	border-radius: 2px;
-	background: url(/images/r4/bg-search.png) 195px 50% no-repeat;
-}
-
-.lt-ie9 header form input.searchbox {
-	padding: 9px 10px 3px 10px;
-}
-
 header .welcome {
 	position: absolute;
 	top: 11px;
@@ -241,7 +254,7 @@ header .welcome {
 
 header .welcome a {
 	padding-right: 13px;
-	background: url(/images/r4/bg-welcome.png) right 3px no-repeat;
+	// background: url(/images/r4/bg-welcome.png) right 3px no-repeat;
 }
 
 header .welcome-drop {
@@ -289,19 +302,6 @@ header .welcome-drop ul {
 	line-height: 24px;
 }
 
-.hero input.searchbox {
-	padding: 11px 0 13px 25px !important;
-	background: url(/images/r4/bg-hero-search.png) 0 0 no-repeat !important;
-	border: none; 
-	font-style: italic;
-	font-size: 16px !important;
-	line-height: 16px !important;
-	color: #7d7a77 !important;
-}
-
-.lt-ie9 .hero input.searchbox {
-	padding: 15px 0 10px 18px !important;
-}
 
 .hero ul,.hero li {
 	margin: 0;
@@ -1101,11 +1101,6 @@ footer a:hover {
 	opacity: .9;
 }
 
-.searchbox {
-	margin-top: 43px;
-	margin-left: 40px;
-}
-
 header nav {
 	position: absolute !important;
 	right: 0px;
@@ -1293,4 +1288,10 @@ vertical-align: middle;
 
 .strikethrough {
 	text-decoration: line-through;
+}
+
+.caret.drop-down {
+	margin-top: 7px;
+	margin-left: 5px;
+	border-top-color: #7a1501 !important;
 }

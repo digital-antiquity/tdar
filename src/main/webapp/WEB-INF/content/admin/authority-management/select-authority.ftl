@@ -20,7 +20,7 @@
             </tr>
         </thead>
         <tbody>
-        <#list selectedDuplicates as dupe >
+        <#list selectedDupeValues as dupe >
             <tr>
                 <td class="datatable-cell-unstyled"><@inputTags dupe/></td>
                 <td>${dupe.name!}</td>
@@ -42,7 +42,7 @@
             </tr>
         </thead>
         <tbody>
-        <#list selectedDuplicates as dupe >
+        <#list selectedDupeValues as dupe >
             <tr>
                 <td class="datatable-cell-unstyled"><@inputTags dupe/></td>
                 <td>${dupe.name!}</td>
@@ -61,7 +61,7 @@
             </tr>
         </thead>
         <tbody>
-        <#list selectedDuplicates as dupe >
+        <#list selectedDupeValues as dupe >
             <tr>
                 <td class="datatable-cell-unstyled"><@inputTags dupe/></td>
                 <td>${dupe.label!}</td>

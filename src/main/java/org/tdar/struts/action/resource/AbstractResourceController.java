@@ -184,7 +184,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return activeResourceCount;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public String loadAddMetadata() {
         if (Persistable.Base.isNotNullOrTransient(getResource())) {
@@ -398,6 +397,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Set<String> toAdd = new HashSet<String>();
         while (iter.hasNext()) {
             String keyword = iter.next();
+            if (StringUtils.isBlank(keyword))
+                continue;
+
             if (keyword.contains(delim)) {
                 for (String sub : StringUtils.split(keyword, delim)) {
                     sub = StringUtils.trim(sub);

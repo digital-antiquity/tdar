@@ -27,7 +27,7 @@ public class CreatePdfATask extends AbstractTask {
         cmdLine.addArgument("${file}");
         HashMap map = new HashMap();
         map.put("file", new File("invoice.pdf"));
-        commandLine.setSubstitutionMap(map);
+        cmdLine.setSubstitutionMap(map);
 
         DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
 

@@ -69,6 +69,7 @@
 
                     <p id="welcome-menu" class="welcome no-print ">
                         Welcome back, <a href="">${authenticatedUser.properName}</a>
+                        <i class="caret drop-down"></i>
                     </p>
     
                     <div class="welcome-drop no-print ">
@@ -106,13 +107,15 @@
                         <#include "${themeDir}/nav-items.dec" />
                         <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
                         <li class="button hidden-phone"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li>
+                        <li>
+                        <#if bodyid != 'home'>
+                            <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform hidden-phone hidden-tablet no-print">
+                                <input type="text" name="query" class="searchbox" placeholder="Search..." >
+                            </form>
+                        </#if>
+                        </li>
                     </ul>
     
-                    <#if bodyid != 'home'>
-                        <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchbox hidden-phone hidden-tablet no-print">
-                            <input type="text" name="query" placeholder="Search..." >
-                        </form>
-                    </#if>
                 </nav>
             </header>
     </div> 
@@ -263,6 +266,8 @@ ${_stacktrace?html}
             $(document).click(function(){  
               $('.welcome-drop').hide();
             });
+        
+	        applyWatermarks($('form.searchheader, form[name=searchheader]'));
         });
         </script>
     <@header.scripts production />
