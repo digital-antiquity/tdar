@@ -20,13 +20,19 @@ public class CreatePdfATask extends AbstractTask {
     @Override
     public void run() throws Exception {
 
-        
-        CommandLine cmdLine = new CommandLine("AcroRd32.exe");
-        cmdLine.addArgument("/p");
-        cmdLine.addArgument("/h");
+//gs -dPDFA -dBATCH  -dUseCIEColor -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=$file.pdfa $file      
+        CommandLine cmdLine = new CommandLine("gs");
+        cmdLine.addArgument("-dPDFA");
+        cmdLine.addArgument("-dBATCH");
+        cmdLine.addArgument("-dNOPAUSE");
+        cmdLine.addArgument("-sProcessColorModel=DeviceCMYK");
+        cmdLine.addArgument("-sDEVICE=pdfwrite");
+        cmdLine.addArgument("-dPDFACompatibilityPolicy=1");
+        cmdLine.addArgument("-sOutputFile=${outFile}");
         cmdLine.addArgument("${file}");
         HashMap map = new HashMap();
         map.put("file", new File("invoice.pdf"));
+        map.put("outFile", new File("invoice.pdfa"));
         cmdLine.setSubstitutionMap(map);
 
         DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
