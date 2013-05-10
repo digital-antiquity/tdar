@@ -59,6 +59,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.AggregateDownloadStatistic;
@@ -87,6 +88,7 @@ import edu.asu.lib.mods.ModsDocument;
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
+    public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
     public static final String ADMIN = "admin";
     public static final String DC = "dc";
     public static final String MODS = "mods";
@@ -219,10 +221,22 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return accounts;
     }
 
+
+    
+    @Action(value = SAVE, results = {
+            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH ),
+            @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
+            @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
+    })
+    @WriteableSession
+    @HttpsOnly
+    public String save() throws TdarActionException {
+        return super.save();
+    }
     
     @SkipValidation
     @Action(value = ADD, results = {
-            @Result(name = SUCCESS, location = "../resource/edit-template.ftl"),
+            @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
             @Result(name = BILLING, type=TYPE_REDIRECT, location = URLConstants.CART_ADD)
     })
     @HttpsOnly
@@ -232,7 +246,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     
     @SkipValidation
     @Action(value = EDIT, results = {
-            @Result(name = SUCCESS, location = "../resource/edit-template.ftl")
+            @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE)
     })
     @HttpsOnly
     @Override

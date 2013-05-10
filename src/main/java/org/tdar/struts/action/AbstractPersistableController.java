@@ -49,6 +49,7 @@ import com.opensymphony.xwork2.Preparable;
  */
 public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P> {
 
+    public static final String SAVE_SUCCESS_PATH = "${saveSuccessPath}?id=${persistable.id}";
     public static final String LIST = "list";
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
@@ -192,7 +193,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @Action(value = SAVE, results = {
-            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${saveSuccessPath}?id=${persistable.id}"),
+            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
             @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
             @Result(name = INPUT, location = "edit.ftl")
     })

@@ -1,8 +1,7 @@
 <#escape _untrusted as _untrusted?html>
-<#global itemPrefix="codingSheet"/>
-<#global itemLabel="coding-sheet"/>
+<#global itemPrefix="ontology"/>
+<#global itemLabel="ontology"/>
 <#global inheritanceEnabled=true />
-<#global multipleUpload=false />
 <#global hideAuthors=true/>
 <#global hideRelatedCollections=true/>
 <#global hideKeywordsAndIdentifiersSection=true/>

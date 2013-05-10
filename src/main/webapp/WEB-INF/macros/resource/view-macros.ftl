@@ -26,6 +26,7 @@ View freemarker macros
 </#macro>
 
 <#macro ontology sectionTitle="Parsed Ontology Nodes" previewSize=10 triggerSize=15>
+<#if resource.sortedOntologyNodesByImportOrder?has_content>
 <#local allNodes = resource.sortedOntologyNodesByImportOrder />
 <#local previewNodes = allNodes />
 <#local collapsedNodes = [] />
@@ -65,6 +66,7 @@ View freemarker macros
     </script>
     </#if>
 
+</#if>
 </#if>
 </#macro>
 
