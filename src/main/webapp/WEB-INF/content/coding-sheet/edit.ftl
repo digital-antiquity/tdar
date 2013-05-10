@@ -1,28 +1,23 @@
 <#escape _untrusted as _untrusted?html>
+<#global itemPrefix="codingSheet"/>
+<#global itemLabel="coding-sheet"/>
+<#global inheritanceEnabled=true />
+<#global multipleUpload=false />
+<#global hideAuthors=true/>
+<#global hideRelatedCollections=true/>
+<#global hideKeywordsAndIdentifiersSection=true/>
+
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/${themeDir}/local-helptext.ftl" as  helptext>
 
-<head>
-<@edit.title />
 
-<meta name="lastModifiedDate" content="$Id$"/>
-
-</head>
-<body>
-<@edit.sidebar />
-<@edit.subNavMenu>
-            <li><a href="#enter-data">Coding Rules</a></li>
-</@edit.subNavMenu>
-
-<@edit.resourceTitle />
-
-<@s.form name='resourceRegistrationForm' id='resourceRegistrationForm' method='post' enctype='multipart/form-data' action='save' cssClass="form-horizontal">
+<#macro subNavMenu>
+    <li><a href="#enter-data">Coding Rules</a></li>
+</#macro>
 
 
-<@edit.basicInformation "coding sheet" "codingSheet"/>
-<@edit.allCreators 'Coding Sheet Creators' authorshipProxies 'authorship' />
-<@edit.citationInfo "codingSheet" />
+<#macro beforeUpload>
 
     <span class="hidden" id="ontologyToolTip">
         If you would like to link this column to a ${siteAcronym} ontology, make that selection here. This is important if you (or other researchers) intend to integrate this dataset with other datasets using the ${siteAcronym} data integration tool. 
@@ -64,9 +59,9 @@
                 </div>
              </div>
     </div>
+</#macro>
 
-
-
+<#macro localSection>
 
 <div class="">
 <@view.codingRules />
@@ -129,6 +124,7 @@
         </#if>
 
 </@edit.manualTextInput>
+</#macro>
 
 <@edit.organizeResourceSection />
 
@@ -138,11 +134,8 @@
 <@edit.fullAccessRights />
 
 <@edit.submit  fileReminder=false  />
-</@s.form>
 
-
-<@edit.resourceJavascript formSelector="#resourceRegistrationForm" selPrefix="#resourceRegistration" includeInheritance=true>
-    $(function() {
+<#macro localJavascript>
         var $form = $("#resourceRegistrationForm");
         setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
         applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
@@ -159,10 +152,7 @@
         });
     }
     </#if>
-
-    });
-       
-</@edit.resourceJavascript>
+</#macro>
 
 </body>
 </#escape>

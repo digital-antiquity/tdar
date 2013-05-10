@@ -20,6 +20,7 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Sequence;
 import org.tdar.core.bean.Sequenceable;
@@ -65,6 +66,7 @@ import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.interceptor.HttpsOnly;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 
@@ -217,6 +219,27 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return accounts;
     }
 
+    
+    @SkipValidation
+    @Action(value = ADD, results = {
+            @Result(name = SUCCESS, location = "../resource/edit-template.ftl"),
+            @Result(name = BILLING, type=TYPE_REDIRECT, location = URLConstants.CART_ADD)
+    })
+    @HttpsOnly
+    public String add() throws TdarActionException {
+        return super.add();
+    }
+    
+    @SkipValidation
+    @Action(value = EDIT, results = {
+            @Result(name = SUCCESS, location = "../resource/edit-template.ftl")
+    })
+    @HttpsOnly
+    @Override
+    public String edit() throws TdarActionException {
+        return super.edit();
+    }
+    
     @Override
     public String loadEditMetadata() throws TdarActionException {
         loadAddMetadata();
@@ -970,7 +993,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @SkipValidation
     @Action(value = ADMIN, results = {
-            @Result(name = SUCCESS, location = "../resource-admin.ftl")
+            @Result(name = SUCCESS, location = "../resource/admin.ftl")
     })
     public String viewAdmin() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ADMIN_INFO);

@@ -30,7 +30,6 @@ $(function(){
         <ul class="nav">
         	<li class="alwaysHidden"><a href="#top">top</a></li>
             <li class="active"><a href="#basicInformationSection">Basic</a></li>
-            <li><a href="#authorshipSection">Authors</a></li>
             <li><a href="#divAccessRights">Rights</a></li>
             <li><a href="#divResourcesSesction">Resources</a></li>
         </ul>

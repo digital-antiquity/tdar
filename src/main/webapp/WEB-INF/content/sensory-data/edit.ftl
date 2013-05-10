@@ -1,93 +1,20 @@
 <#escape _untrusted as _untrusted?html>
+<#global itemPrefix="sensoryData"/>
+<#global itemLabel="sensoryData"/>
+<#global inheritanceEnabled=true />
+<#global multipleUpload=true />
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<head>
-<@edit.title />
-<meta name="lastModifiedDate" content="$Id$"/>
-</head>
-<body>
-<@edit.sidebar /> 
-<@edit.subNavMenu />
 
-<@edit.resourceTitle />
 
-<@s.form name='resourceMetadataForm' id='frmSensoryData'  cssClass="form-horizontal" method='post' action='save' enctype='multipart/form-data'>
-<@edit.basicInformation "sensory object" "sensoryData">
+<#macro basicInformation>
     <div tiplabel="Object / Monument Number" tooltipcontent="The ID number or code, if applicable, of the object or monument">
     <@s.textfield maxLength="255" name="sensoryData.monumentNumber" cssClass="input-xxlarge" label="Object / Monument #" labelposition="left" />
     </div>
-</@edit.basicInformation>
-<@edit.citationInfo "sensoryData" />
+</#macro>
 
 
-<@edit.allCreators 'Sensory Data Creators' authorshipProxies 'authorship' />
-
-<div id="divSurveyInfo">
-    <h2>Survey Information</h2>
-    <div class='control-group' tiplabel="Survey Date(s)" tooltipcontent="Date of survey, or date range of survey.">
-    <@s.textfield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" cssClass="shortfield date formatUS" placeholder="mm/dd/yyyy" />
-    <@s.textfield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" cssClass="right-shortfield date formatUS" placeholder="mm/dd/yyyy" />
-<#-- FIXME: need to convert surveyDateEnd and surveyDateBegin to short forms when editing existing sensory data
-value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateEnd /></#if>"
--->
-    <!-- FIXME: why is this commented out?
-    <div tiplabel="" tooltipcontent=""><@s.textfield maxLength="255" name="sensoryData.surveyLocation" cssClass="input-xxlarge" label="Survey Location" labelposition="left" title="Survey Location" /></div>
-    -->
-    <@s.textfield maxLength="255" name="sensoryData.surveyConditions" 
-        tiplabel="Survey Conditions" tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)"
-        cssClass="input-xxlarge" label="Conditions" labelposition="left" />
-    <div tiplabel="Scanner Details" tooltipcontent="Details of the instrument(s) with serial number(s) and scan units">
-    <@s.textfield maxLength="255" name="sensoryData.scannerDetails" cssClass="input-xxlarge" label="Scanner Details" labelposition="left" />
-    </div>
-    <div tiplabel="Company / Operator Name" tooltipcontent="Details of company and scan operator name">
-    <@s.textfield maxLength="255" name="sensoryData.companyName" cssClass="input-xxlarge" label="Company Name" labelposition="left" />
-    </div>
-    <div tiplabel="Estimated Data Resolution" tooltipcontent="The estimated average data resolution across the monument or object">
-    <@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" label="Average Data Resolution" labelposition="left" />
-    </div>
-    <div tiplabel="Total Number of Scans in Project" tooltipcontent="Total number of scans">
-    <@s.textfield maxLength="255" name="sensoryData.totalScansInProject" cssClass="right-shortfield number" label="# Scans" labelposition="left" />
-    </div>
-    <div tiplabel="Turntable used" tooltipcontent="Check this box if a turntable was used for this survey.">
-        <@s.checkbox  label="Turntable Used" name="sensoryData.turntableUsed"  id="cbTurntableUsed"  />
-    </div>
-    <div tiplabel="Planimetric Map Filename" tooltipcontent="If applicable, then provide the image name.">
-    <@s.textfield maxLength="255" name="sensoryData.planimetricMapFilename" cssClass="reallyinput-xxlarge" label="Planimetric Map Filename" labelposition="top" />
-    </div>
-    <div tiplabel="Control Data Filename" tooltipcontent="If control data was collected, enter the control data filename.">
-    <@s.textfield maxLength="255" name="sensoryData.controlDataFilename" cssClass="reallyinput-xxlarge" label="Control Data Filename" labelposition="top" />
-    </div>
-    <div tiplabel='RGB Data Capture Information' tooltipcontent="Please specify it is (1) internal or external and (2) describe any additional lighting systems used if applicable">
-    <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="RGB Data Capture Information" labelposition="top" rows="5" />
-    </div>
-    <div tiplabel="Description of Final Datasets for Archive" tooltipcontent="What datasets will be archived (include file names if possible).">
-        <@s.textarea name="sensoryData.finalDatasetDescription" cssClass="resizable input-xxlarge" label="Description of Final Datasets for Archive" labelposition="top" rows="5" />
-    </div>
-    </div>
-</div>
-
-<style>
- #registeredDatasetDiv, #polygonalMeshDatasetDiv, #divScanInfo,#divImageInfo  {
- display:none;
- visbility: hidden;
- }
- </style>
-
-
-<@s.radio name='sensoryData.scannerTechnology' emptyOption='false' listValue="label"  
-            list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
-
-<div class="well">
-	<h3>Metadata Template</h3>
-	<p>Due to the variability and complexity of sensory data scans, we're providing a template you can use to include the details of how your scan was captured and composed.  Please download.</p>
-	
-	<p><a class="btn btn-success">DOWNLOAD TEMPLATE</a></p>
-	<br/>
-	<@s.file label="Completed Metadata Template" cssClass="validateFileType" labelposition='top' name='uploadedFiles' size='40'/>
-</div>
-
-<@edit.asyncFileUpload "Sensory Data Files" true />
-
+<#macro localSection>
 
 
 <div id="divScanInfo">
@@ -317,16 +244,73 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     </div>
 </div>
 
+<div id="divSurveyInfo">
+    <h2>Survey Information</h2>
+    <div class='control-group' tiplabel="Survey Date(s)" tooltipcontent="Date of survey, or date range of survey.">
+    <@s.textfield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" cssClass="shortfield date formatUS" placeholder="mm/dd/yyyy" />
+    <@s.textfield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" cssClass="right-shortfield date formatUS" placeholder="mm/dd/yyyy" />
+<#-- FIXME: need to convert surveyDateEnd and surveyDateBegin to short forms when editing existing sensory data
+value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateEnd /></#if>"
+-->
+    <!-- FIXME: why is this commented out?
+    <div tiplabel="" tooltipcontent=""><@s.textfield maxLength="255" name="sensoryData.surveyLocation" cssClass="input-xxlarge" label="Survey Location" labelposition="left" title="Survey Location" /></div>
+    -->
+    <@s.textfield maxLength="255" name="sensoryData.surveyConditions" 
+        tiplabel="Survey Conditions" tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)"
+        cssClass="input-xxlarge" label="Conditions" labelposition="left" />
+    <div tiplabel="Scanner Details" tooltipcontent="Details of the instrument(s) with serial number(s) and scan units">
+    <@s.textfield maxLength="255" name="sensoryData.scannerDetails" cssClass="input-xxlarge" label="Scanner Details" labelposition="left" />
+    </div>
+    <div tiplabel="Company / Operator Name" tooltipcontent="Details of company and scan operator name">
+    <@s.textfield maxLength="255" name="sensoryData.companyName" cssClass="input-xxlarge" label="Company Name" labelposition="left" />
+    </div>
+    <div tiplabel="Estimated Data Resolution" tooltipcontent="The estimated average data resolution across the monument or object">
+    <@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" label="Average Data Resolution" labelposition="left" />
+    </div>
+    <div tiplabel="Total Number of Scans in Project" tooltipcontent="Total number of scans">
+    <@s.textfield maxLength="255" name="sensoryData.totalScansInProject" cssClass="right-shortfield number" label="# Scans" labelposition="left" />
+    </div>
+    <div tiplabel="Turntable used" tooltipcontent="Check this box if a turntable was used for this survey.">
+        <@s.checkbox  label="Turntable Used" name="sensoryData.turntableUsed"  id="cbTurntableUsed"  />
+    </div>
+    <div tiplabel="Planimetric Map Filename" tooltipcontent="If applicable, then provide the image name.">
+    <@s.textfield maxLength="255" name="sensoryData.planimetricMapFilename" cssClass="reallyinput-xxlarge" label="Planimetric Map Filename" labelposition="top" />
+    </div>
+    <div tiplabel="Control Data Filename" tooltipcontent="If control data was collected, enter the control data filename.">
+    <@s.textfield maxLength="255" name="sensoryData.controlDataFilename" cssClass="reallyinput-xxlarge" label="Control Data Filename" labelposition="top" />
+    </div>
+    <div tiplabel='RGB Data Capture Information' tooltipcontent="Please specify it is (1) internal or external and (2) describe any additional lighting systems used if applicable">
+    <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="RGB Data Capture Information" labelposition="top" rows="5" />
+    </div>
+    <div tiplabel="Description of Final Datasets for Archive" tooltipcontent="What datasets will be archived (include file names if possible).">
+        <@s.textarea name="sensoryData.finalDatasetDescription" cssClass="resizable input-xxlarge" label="Description of Final Datasets for Archive" labelposition="top" rows="5" />
+    </div>
+    </div>
+</div>
 
-<@edit.sharedFormComponents prefix="sensoryData"/>
+<style>
+ #registeredDatasetDiv, #polygonalMeshDatasetDiv, #divScanInfo,#divImageInfo  {
+ display:none;
+ visbility: hidden;
+ }
+ </style>
 
 
-</@s.form>
- 
-<@edit.asyncUploadTemplates />
-<@edit.resourceJavascript formSelector="#frmSensoryData" selPrefix="#sensoryData" includeAsync=true includeInheritance=true />
-<script>
-$(function() {
+<@s.radio name='sensoryData.scannerTechnology' emptyOption='false' listValue="label"  
+            list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
+
+<div class="well">
+	<h3>Metadata Template</h3>
+	<p>Due to the variability and complexity of sensory data scans, we're providing a template you can use to include the details of how your scan was captured and composed.  Please download.</p>
+	
+	<p><a class="btn btn-success">DOWNLOAD TEMPLATE</a></p>
+	<br/>
+	<@s.file label="Completed Metadata Template" cssClass="validateFileType" labelposition='top' name='uploadedFiles' size='40'/>
+</div>
+
+</#macro>
+
+<#macro localJavascript>
     $('#sensoryDataScans').bind('repeatrowadded', function(e, parent, newRow) {
         scanAdded(newRow);
     });
@@ -337,9 +321,7 @@ $(function() {
             $(scannerTechElem).change(function(){showScannerTechFields(scannerTechElem);});
         }
     );
-});
 
-$(function() {
     $('.scannerTechnology').rules("add", {
         valueRequiresAsyncUpload: {
             possibleValues: ["TIME_OF_FLIGHT", "PHASE_BASED", "TRIANGULATION"],
@@ -348,10 +330,7 @@ $(function() {
         messages: {
             valueRequiresAsyncUpload: "Please include a scan manifest file when choosing this scan type"}
     });
-});
-
-
-</script>
+</#macro>
  
 </body>
 </#escape>

@@ -1,19 +1,12 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#global itemPrefix="document"/>
+<#global itemLabel="document"/>
+<#global inheritanceEnabled=true />
+<#global multipleUpload=true />
+<#global hideRelatedCollections=true/>
 
-<head>
-<@edit.title />
 
-<meta name="lastModifiedDate" content="$Date$"/>
-</head>
-<body class="resource">
-<@edit.sidebar />
-<@edit.subNavMenu />
-
-<@edit.resourceTitle />
-
-<@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="form-horizontal">
-<@edit.basicInformation 'document' 'document' >
+<#macro basicInformation>
     <#if linkedInformationResource??>
     <div class='help-block'>
     This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformationResource.title}</b>
@@ -21,12 +14,9 @@
     <@s.hidden name='linkedResourceId' value='${linkedInformationResource.id?c}'/>
     </div>
     </#if>
+</#macro>
 
-</@edit.basicInformation>
-
-<@edit.allCreators "Authors / Editors" authorshipProxies 'authorship' />
-
-<@edit.citationInfo "document">
+<#macro citationInformation>
     <div tiplabel="Document Type"  tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
         <@s.radio name='document.documentType' emptyOption='false' listValue="label"  
             list='%{documentTypes}' label="Document Type" theme="bootstrap" />
@@ -96,23 +86,10 @@
     <div id="t-issn" placeholder="XXXX-XXXX" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications." class="journal_article doctypeToggle">
         <@s.textfield labelposition='left' id='issn' title="please add a valid ISSN" label='ISSN' name='document.issn' cssClass="issn journal_article"  maxlength=25 />
     </div>
+</#macro>
 
-
-</@edit.citationInfo>
-
-<@edit.asyncFileUpload "Attach Document Files" true />
-
-<@edit.sharedFormComponents />
-</@s.form>
-
-
-<@edit.asyncUploadTemplates />
-<@edit.resourceJavascript includeAsync=true  includeInheritance=true/>
-<script>
-$(function(){
-    'use strict';
+<#macro localJavascript>
 setupDocumentEditForm();
-});
-</script>
-</body>
+</#macro>
+
 </#escape>

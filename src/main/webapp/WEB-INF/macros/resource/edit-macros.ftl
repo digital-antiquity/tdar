@@ -1120,55 +1120,7 @@ jquery validation hooks?)
     </#if>
 </#macro>
 
-<#macro sharedFormComponents showInherited=true fileReminder=true prefix="${resource.resourceType.label?lower_case}">
-    <@organizeResourceSection />
-    <#if !resource.resourceType.project>
-      <@resourceProvider showInherited />
-      <#if licensesEnabled?? && licensesEnabled >
-          <@edit.license />
-      </#if>
-      <#if copyrightEnabled??>
-          <@edit.copyrightHolders "Copyright Holders" copyrightHolderProxies />
-      </#if>
-    </#if>
-    <@resourceCreators 'Individual and Institutional Roles' creditProxies 'credit'  />
-	<@helptext.resourceCreator />
-    <@identifiers showInherited />
 
-    <@spatialContext showInherited />
-    <@temporalContext showInherited />
-
-    <@investigationTypes showInherited />
-    
-    <@materialTypes showInherited />
-
-    <@culturalTerms showInherited />
-
-    <@siteKeywords showInherited />
-    
-    <@generalKeywords showInherited />
-
-    <@resourceNoteSection showInherited />
-
-
-
-    <#if !resource.resourceType.document>
-      <@relatedCollections showInherited />
-    </#if>
-    
-    <@edit.fullAccessRights />
-    
-    <#if !resource.resourceType.project>
-      <@edit.submit fileReminder=((resource.id == -1) && fileReminder) />
-    <#else>
-      <@edit.submit fileReminder=false />
-    </#if>
-</#macro>
-
-<#macro resourceTitle>
-<#assign newTitle>New <#noescape>${resource.resourceType.label}</#noescape></#assign>
-<h1><#if resource.id == -1>Creating<#else>Editing</#if>:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
-</#macro>
 
 <#macro title>
 <#-- expose pageTitle so edit pages can use it elsewhere -->
