@@ -1,1 +1,6 @@
-This is your geospatial data.  marvel at it's geosptiality.
+<#escape _untrusted as _untrusted?html>
+<#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+
+<#-- include dataset stuff -->
+
+</#escape>

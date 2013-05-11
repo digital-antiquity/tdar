@@ -598,7 +598,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  <#if id?has_content>id="${id}"</#if>>
 </#macro>
 
-<#macro resourceJavascript formSelector="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false>
+<#macro resourceJavascript formSelector="#metadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false>
 <#noescape>
 <script type='text/javascript'>
 
@@ -645,8 +645,8 @@ applyInheritance(project, formSelector);
 </#if>    
     
     
-});
 <#nested>
+});
 </#noescape>
 </script>
   

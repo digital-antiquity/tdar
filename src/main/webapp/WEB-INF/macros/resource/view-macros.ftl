@@ -27,46 +27,46 @@ View freemarker macros
 
 <#macro ontology sectionTitle="Parsed Ontology Nodes" previewSize=10 triggerSize=15>
 <#if resource.sortedOntologyNodesByImportOrder?has_content>
-<#local allNodes = resource.sortedOntologyNodesByImportOrder />
-<#local previewNodes = allNodes />
-<#local collapsedNodes = [] />
-<#local shouldCollapse = (allNodes?size > triggerSize) />
-<#if shouldCollapse >
-    <#local previewNodes = allNodes[0..(previewSize-1)] />
-    <#local collapsedNodes = allNodes[previewSize..] />
-</#if>
-
-<#if (allNodes?size>0)>
-    <h2>${sectionTitle}</h2>
-    <div class="ontology-nodes-container">
-    <div id="ontology-nodes-part1">
-    <#list previewNodes as ontologyNode>
-        <@displayNode ontologyNode />
-    </#list>
-    </div>
-    <#if shouldCollapse>
-    <div id="ontology-nodes-part2" style="display:none">
-    <#list collapsedNodes as ontologyNode>
-        <@displayNode ontologyNode />
-    </#list>
-    </div>
-    
-    <div id='divOntologyShowMore' class="alert">
-        <span>Showing first ${previewSize?c} ontology nodes.</span>
-        <button type="button" class="btn btn-small" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
-    </div>
-    <script type="text/javascript">
-    $(function(){
-        $('#btnOntologyShowMore').click(function() {
-            $('#divOntologyShowMore').hide();
-            $('#ontology-nodes-part2').show();
-            return(false);
-        });
-    });
-    </script>
-    </#if>
-
-</#if>
+	<#local allNodes = resource.sortedOntologyNodesByImportOrder />
+	<#local previewNodes = allNodes />
+	<#local collapsedNodes = [] />
+	<#local shouldCollapse = (allNodes?size > triggerSize) />
+	<#if shouldCollapse >
+	    <#local previewNodes = allNodes[0..(previewSize-1)] />
+	    <#local collapsedNodes = allNodes[previewSize..] />
+	</#if>
+	
+	<#if (allNodes?size>0)>
+	    <h2>${sectionTitle}</h2>
+	    <div class="ontology-nodes-container">
+		    <div id="ontology-nodes-part1">
+		    <#list previewNodes as ontologyNode>
+		        <@displayNode ontologyNode />
+		    </#list>
+		    </div>
+		    <#if shouldCollapse>
+			    <div id="ontology-nodes-part2" style="display:none">
+			    <#list collapsedNodes as ontologyNode>
+			        <@displayNode ontologyNode />
+			    </#list>
+			    </div>
+			    
+			    <div id='divOntologyShowMore' class="alert">
+			        <span>Showing first ${previewSize?c} ontology nodes.</span>
+			        <button type="button" class="btn btn-small" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
+			    </div>
+			    <script type="text/javascript">
+				    $(function(){
+				        $('#btnOntologyShowMore').click(function() {
+				            $('#divOntologyShowMore').hide();
+				            $('#ontology-nodes-part2').show();
+				            return(false);
+				        });
+				    });
+			    </script>
+		    </#if>
+		</#if>
+		</div>
 </#if>
 </#macro>
 
@@ -525,13 +525,6 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 <#macro basicInformation>
-<head>
-<script>
-    $(document).ready(function() {
-    TDAR.common.initializeView();
-    });
-</script>
-</head>
 
 
 <@pageStatusCallout />
@@ -631,19 +624,21 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 <#macro infoResourceBasicInformation>
-<#local files = resource.filesWithFatalProcessingErrors />
-<#if editor>
-	<#local files = resource.filesWithProcessingErrors />
+<#if resource.informationResourceFiles?has_content>
+	<#local files = resource.filesWithFatalProcessingErrors />
+	<#if editor>
+		<#local files = resource.filesWithProcessingErrors />
+	</#if>
+	<#if (files?size > 0 ) && authenticatedUser??  && (administrator || editable) >
+	<div class="alert alert-error">
+	<h3>The following Files have Processing Errors</h3>
+	<ul>	<#list files as file>
+		<li>${file.fileName} - ${file.errorMessage!""}</li>
+		</#list>
+	</ul>
+	<br/>
+	</div>
 </#if>
-<#if (files?size > 0 ) && authenticatedUser??  && (administrator || editable) >
-<div class="alert alert-error">
-<h3>The following Files have Processing Errors</h3>
-<ul>	<#list files as file>
-	<li>${file.fileName} - ${file.errorMessage!""}</li>
-	</#list>
-</ul>
-<br/>
-</div>
 </#if>
 
 <@basicInformation>
@@ -875,7 +870,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
                 <p>
 
                 <ul class="unstyled-list">
-                    <@view.resourceProvider />
+                    <@resourceProvider />
                     <#if resource.seriesName?has_content>
                     <li><strong>Series name</strong><br>${resource.seriesName}</li>
                     </#if>
@@ -1007,17 +1002,9 @@ ${_date?string('MM/dd/yyyy')}<#t>
     </#if>
 </#macro>
 
-<#macro datatableChild>
-<div id="datatable-child" style="display:none">
-    <p class="">
-        You have successfully updated the page that opened this window.  What would you like to do now?
-    </p>
-</div>
-</#macro>
 
 <#macro datatableChildJavascript>
-<script type="text/javascript">
-$(function() {
+//$(function() {
     if(window.opener && window.opener.TDAR.common.adhocTarget)  {
         window.opener.populateTarget({
             id:${resource.id?c},
@@ -1025,7 +1012,7 @@ $(function() {
        });
 
 
-    $(function() {
+//    $(function() {
         $( "#datatable-child" ).dialog({
             resizable: false,
             modal: true,
@@ -1040,10 +1027,9 @@ $(function() {
                 }
             }
         });
-    });
+//    });
     }
-});
-</script> 
+//});
 </#macro>
 
 <#macro firstThumbnail resource_ forceAddSchemeHostAndPort=true>

@@ -1,39 +1,18 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 
-<@view.htmlHeader resourceType="ontology">
-<meta name="lastModifiedDate" content="$Date$"/>
-<style type='text/css'>
-  #infovis {
-      height:300px;
-      overflow:hidden;
-  }
-</style>
-<!-- JIT Library File --> 
-<@view.datatableChildJavascript />
-<@view.googleScholar />
-</@view.htmlHeader>
-<@view.toolbar "${resource.urlNamespace}" "view" />
+<#macro afterBasicInfo>
+	<h3>Ontology</h3>
+	
+	<div id="infovis" class="img-polaroid ">
+	</div>
 
+	<div id="divHints">
+	<em>click and drag to pan across the ontology, darker nodes contain more children, click on a node to expand children</em>
+	</div>
+	<@view.ontology />
+</#macro>
 
-<@view.projectAssociation resourceType="ontology" />
-
-<@view.infoResourceBasicInformation />
-
-<h3>Ontology</h3>
-
-
-<@view.datatableChild />
-
-<div id="infovis" class="img-polaroid ">
-</div>
-<!--</fieldset> -->
-<div id="divHints">
-<em>click and drag to pan across the ontology, darker nodes contain more children, click on a node to expand children</em>
-</div>
-<@view.ontology />
-
-<@view.sharedViewComponents resource />
 
 
 <#macro makeNode node_>
@@ -46,7 +25,10 @@
 </#macro>
 
 
-<script>
+<#macro localJavascript>
+<!-- JIT Library File --> 
+<@view.datatableChildJavascript />
+
  <#if rootElements?size == 1>
    var json =     <@s.iterator value="rootElements" var="root_" status="stat">
       <@makeNode root_ />
@@ -60,7 +42,7 @@
    ]};
  </#if>
 
-jQuery(document).ready(function($){
+
 
 //Create a new ST instance  
 var st = new $jit.ST({  
@@ -181,6 +163,5 @@ st.compute();
 //st.geom.translate(new $jit.Complex(-200, 0), "current");  
 //emulate a click on the root node.  
 st.onClick(st.root);  
-});
-</script>
+</#macro>
 </#escape>

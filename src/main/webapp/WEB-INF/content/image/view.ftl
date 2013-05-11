@@ -1,17 +1,13 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<@view.htmlHeader resourceType="image">
-<meta name="lastModifiedDate" content="$Date$"/>
 
-<@view.googleScholar />
-</@view.htmlHeader>
-<@view.toolbar "${resource.urlNamespace}" "view" />
-
-
-<@view.projectAssociation resourceType="image" />
-<@view.infoResourceBasicInformation>
-</@view.infoResourceBasicInformation>
-<@view.showcase />
-<br/>
-<hr/>
-
-<@view.sharedViewComponents image />
+	<#macro afterBasicInfo>
+		<@view.showcase />
+		<br/>
+		<hr/>
+	</#macro>
+	
+	<#macro localJavascript>
+	    <@view.datatableChildJavascript />
+	</#macro>
+</#escape>

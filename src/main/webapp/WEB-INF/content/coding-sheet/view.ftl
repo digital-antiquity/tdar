@@ -1,28 +1,23 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<@view.htmlHeader resourceType="coding sheet">
-    <meta name="lastModifiedDate" content="$Date$"/>
-    <@view.googleScholar />
+
+<#macro toolbarAdditions>
+	<#if editable>
+		<#assign disabled = !resource.defaultOntology?? />
+		<@view.makeLink "coding-sheet" "mapping" "map ontology" "mapping"   current true disabled />
+	</#if>
+</#macro>
+
+<#macro afterBasicInfo>
+	<@view.codingRules>
+		<#if codingSheet.defaultOntology?has_content>
+			<p><b>Ontology:</b> <a href='<@s.url value="/${codingSheet.defaultOntology.absoluteUrl}"/>'>${codingSheet.defaultOntology.title}</a></p>
+		</#if>
+		<@view.categoryVariables />
+	</@view.codingRules>
+</#macro>
+
+<#macro localJavascript>
     <@view.datatableChildJavascript />
-</@view.htmlHeader>
-
-<@view.toolbar resource.urlNamespace "view">
-<#if editable>
-<#assign disabled = !resource.defaultOntology?? />
-<@view.makeLink "coding-sheet" "mapping" "map ontology" "mapping"   current true disabled />
-</#if>
-</@view.toolbar>
-
-<@view.datatableChild />
-
-<@view.projectAssociation resourceType="coding sheet" />
-
-<@view.infoResourceBasicInformation />
-
-<@view.codingRules>
-<#if codingSheet.defaultOntology?has_content>
-<p><b>Ontology:</b> <a href='<@s.url value="/${codingSheet.defaultOntology.absoluteUrl}"/>'>${codingSheet.defaultOntology.title}</a></p>
-</#if>
-<@view.categoryVariables />
-</@view.codingRules>
-
-<@view.sharedViewComponents resource />
+</#macro>
+</#escape>

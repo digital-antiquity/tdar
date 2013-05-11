@@ -142,7 +142,6 @@ $(function(){
 </#if>
 	
 <@edit.resourceJavascript formSelector="#metadataForm" selPrefix="#${itemLabel}" includeInheritance=inheritanceEnabled >
-    $(function() {
 
     <#if validFileExtensions??>
     var validate = $('.validateFileType');
@@ -159,7 +158,6 @@ $(function(){
     <#if local_.localJavascript?? && local_.localJavascript?is_macro>
 	<@local_.localJavascript />
 	</#if>
-    });
     
 </@edit.resourceJavascript>
 </body>

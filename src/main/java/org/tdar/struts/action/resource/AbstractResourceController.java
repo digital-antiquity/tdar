@@ -67,6 +67,7 @@ import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.HttpsOnly;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
@@ -235,6 +236,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
     
     @SkipValidation
+    @HttpOnlyIfUnauthenticated
+    @Action(value = VIEW,
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, location = "../resource/view-template.ftl"),
+                    @Result(name = INPUT, type = "httpheader", params = { "error", "404" }),
+                    @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
+            })
+    public String view() throws TdarActionException {
+        return super.view();
+    }
+    
+    @SkipValidation
     @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
             @Result(name = BILLING, type=TYPE_REDIRECT, location = URLConstants.CART_ADD)
@@ -390,7 +404,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // don't judge me I hate this code too.
         if (getResource().isDraft()) {
             logger.trace("resource not viewable because it is draft: {}", getPersistable());
-            throw new TdarActionException(StatusCode.OK.withResultName("draft"), THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS);
+            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT), THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS);
         }
 
         return false;

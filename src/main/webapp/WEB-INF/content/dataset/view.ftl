@@ -1,21 +1,17 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<@view.htmlHeader resourceType="dataset">
-<meta name="lastModifiedDate" content="$Date$"/>
-<@view.googleScholar />
-</@view.htmlHeader>
-<@view.toolbar resource.urlNamespace "view">
+
+
+<#macro toolbarAdditions>
     <#if editable>
     <#assign disabled = resource.dataTables?size==0 />
     <@view.makeLink "dataset" "columns" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
     <@view.makeLink "dataset" "columns" "metadata" "columns" current true disabled "hidden-desktop"/>
     </#if>
-</@view.toolbar>
+</#macro>
 
-<@view.projectAssociation resourceType="dataset" />
-<@view.infoResourceBasicInformation />
-<@view.sharedViewComponents resource>
 
+<#macro afterBasicInfo>
 <#if (dataset.dataTables?has_content)>
 
 <#if authenticatedUser??  && ((resource.latestUploadedVersion?? && resource.latestUploadedVersion.informationResourceFile.public) || allowedToViewConfidentialFiles)>
@@ -41,46 +37,6 @@
     </div>
 </div>
 
-<script>
-$(document).ready(function() {
-    jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages =3;
-        $.extend( $.fn.dataTableExt.oStdClasses, {
-        "sWrapper": "dataTables_wrapper form-inline"
-    } );
-    
-//        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
-    var options = { 
-        "sAjaxDataProp":"results.results",
-          "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
-        "bProcessing": true,
-        "bServerSide":true,
-        "bScrollInfinite": false,
-        "bScrollCollapse": true,
-        tableSelector: '#dataTable',
-        sPaginationType:"bootstrap",
-        sScrollX: "100%",  
-        //turn off vertical scrolling since we're paging (feels weird to advance through records using two mechanisms)
-        "sScrollY": "",
-        "aoColumns":[
-        
-                 <#list dataTable.dataTableColumns?sort_by("sequenceNumber") as column>
-                    <#if column.visible?? && column.visible>
-                    { "bSortable": false,
-                       "sName" : "${column.jsSimpleName?js_string}", 
-                       "sTitle" : "${column.displayName?js_string}",
-                       "fnRender": function(obj){
-                           var val = obj.aData[${column_index?c}];
-                           var str = htmlEncode(val);
-                           return str;
-                       }  }<#if column_has_next >,</#if>
-                     </#if>
-                 </#list>
-           ],
-           "sAjaxSource": "<@s.url value="/datatable/browse?id=${dataTable.id?c}" />"
-    };
-    registerLookupDataTable(options);    
-} );
-</script>
 
 </#if>
 
@@ -144,6 +100,46 @@ $(document).ready(function() {
  
 </#list>
 </#if>
+</#macro>
 
-</@view.sharedViewComponents>
+<#macro localJavascript>
+	<#if (dataset.dataTables?size > 1)>
+    jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages =3;
+        $.extend( $.fn.dataTableExt.oStdClasses, {
+        "sWrapper": "dataTables_wrapper form-inline"
+    } );
+    
+//        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
+    var options = { 
+        "sAjaxDataProp":"results.results",
+          "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
+        "bProcessing": true,
+        "bServerSide":true,
+        "bScrollInfinite": false,
+        "bScrollCollapse": true,
+        tableSelector: '#dataTable',
+        sPaginationType:"bootstrap",
+        sScrollX: "100%",  
+        //turn off vertical scrolling since we're paging (feels weird to advance through records using two mechanisms)
+        "sScrollY": "",
+        "aoColumns":[
+        
+                 <#list dataTable.dataTableColumns?sort_by("sequenceNumber") as column>
+                    <#if column.visible?? && column.visible>
+                    { "bSortable": false,
+                       "sName" : "${column.jsSimpleName?js_string}", 
+                       "sTitle" : "${column.displayName?js_string}",
+                       "fnRender": function(obj){
+                           var val = obj.aData[${column_index?c}];
+                           var str = htmlEncode(val);
+                           return str;
+                       }  }<#if column_has_next >,</#if>
+                     </#if>
+                 </#list>
+           ],
+           "sAjaxSource": "<@s.url value="/datatable/browse?id=${dataTable.id?c}" />"
+    };
+    registerLookupDataTable(options);    
+</#if>
+</#macro>
 </#escape>

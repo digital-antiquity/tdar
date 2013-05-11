@@ -1,21 +1,13 @@
+<#escape _untrusted as _untrusted?html>
+
+<#global includeRssAndSearchLinks=true>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-<@view.htmlHeader resourceType="project">
-<meta name="lastModifiedDate" content="$Date$"/>
-<@view.googleScholar />
-<#assign rssUrl>/search/rss?groups[0].fieldTypes[0]=PROJECT&groups[0].projects[0].id=${project.id?c}&groups[0].projects[0].name=${(project.name!"untitled")?url}</#assign>
-<@search.rssUrlTag url=rssUrl />
-
-</@view.htmlHeader>
- <@search.headerLinks includeRss=false />
-
-<@view.toolbar "${resource.urlNamespace}" "view" />
-
-<@view.basicInformation />
-<@view.sharedViewComponents project />
 
 
+
+<#macro footer>
 <#if (totalRecords > 0)>
 
 <br/>
@@ -35,4 +27,5 @@
 <#else>
     No resources have been associated with this project.
 </#if>
-
+</#macro>
+</#escape>

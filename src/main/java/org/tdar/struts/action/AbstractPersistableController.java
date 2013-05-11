@@ -51,6 +51,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public static final String SAVE_SUCCESS_PATH = "${saveSuccessPath}?id=${persistable.id}";
     public static final String LIST = "list";
+    public static final String DRAFT = "draft";
+
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String delete;
@@ -136,7 +138,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             results = {
                     @Result(name = SUCCESS, location = "view.ftl"),
                     @Result(name = INPUT, type = "httpheader", params = { "error", "404" }),
-                    @Result(name = "draft", location = "/WEB-INF/content/errors/resource-in-draft.ftl")
+                    @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
             })
     public String view() throws TdarActionException {
         String resultName = SUCCESS;
