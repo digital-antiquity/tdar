@@ -231,12 +231,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     })
     @WriteableSession
     @HttpsOnly
+    @Override
     public String save() throws TdarActionException {
         return super.save();
     }
     
     @SkipValidation
     @HttpOnlyIfUnauthenticated
+    @Override
     @Action(value = VIEW,
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
@@ -254,6 +256,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             @Result(name = BILLING, type=TYPE_REDIRECT, location = URLConstants.CART_ADD)
     })
     @HttpsOnly
+    @Override
     public String add() throws TdarActionException {
         return super.add();
     }

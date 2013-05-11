@@ -9,7 +9,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#import "/${themeDir}/settings.ftl" as settings>
 <#include "navigation-macros.ftl">
 
-<#macro basicInformation itemTypeLabel="file" itemPrefix="resource" isBulk=false>
+<#macro basicInformation itemTypeLabel="file" itemPrefix="resource">
 <div class="well-alt" id="basicInformationSection">
     <h2>Basic Information</h2>
 
@@ -28,7 +28,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
     
         <@helptext.status />
-<#if isBulk>
+<#if bulkUpload?? >
 
     <@s.hidden labelposition='left' id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
     <@s.hidden labelposition='left' id='dateCreated' placeholder='YYYY' label='Year Created' name='image.date' cssClass="" value="-100"/>
@@ -247,7 +247,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro resourceTypeLabel>
-<#if bulkUpload>
+<#if bulkUpload??>
 	Resource
 <#else>
 <#noescape>${resource.resourceType.label}</#noescape>

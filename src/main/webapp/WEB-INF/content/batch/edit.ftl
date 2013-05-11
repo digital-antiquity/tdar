@@ -3,6 +3,7 @@
 <#global itemLabel="image"/>
 <#global inheritanceEnabled=true />
 <#global multipleUpload=true />
+<#global bulkUpload=true />
 <#import "batch-common.ftl" as batchCommon>
 
 <head>
