@@ -29,4 +29,7 @@
         window.fv = fv;
 </#macro>
 
+<#macro footer>
+
+</#macro>
 </#escape>

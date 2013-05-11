@@ -63,9 +63,11 @@ $(function(){
 		<@local_.citationInformation />
 	</#if>
 </@edit.citationInfo>
-	<#if local_.beforeUpload?? && local_.beforeUpload?is_macro>
-		<@local_.beforeUpload />
-	</#if>
+
+
+<#if local_.beforeUpload?? && local_.beforeUpload?is_macro>
+	<@local_.beforeUpload />
+</#if>
 
 
 <#if multipleUpload??>
@@ -76,9 +78,9 @@ $(function(){
 	</#if>
 </#if>
 
-	<#if local_.localSection?? && local_.localSection?is_macro>
-		<@local_.localSection />
-	</#if>
+<#if local_.localSection?? && local_.localSection?is_macro>
+	<@local_.localSection />
+</#if>
 
 
     <@edit.organizeResourceSection />

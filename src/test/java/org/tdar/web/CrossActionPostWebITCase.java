@@ -36,7 +36,7 @@ public class CrossActionPostWebITCase extends AbstractAuthenticatedWebTestCase {
         String docPath = "/document/" + documentId;
         // go to the edit page, change the action, change the title and hit submit
         gotoPage(docPath + "/edit");
-        HtmlElement form = getHtmlPage().getElementByName("resourceMetadataForm");
+        HtmlElement form = getHtmlPage().getElementByName("metadataForm");
         assertNotNull("should have found the resource metadata form", form);
         form.setAttribute("action", docPath);
         String testTitle = "this is another test";
@@ -56,7 +56,7 @@ public class CrossActionPostWebITCase extends AbstractAuthenticatedWebTestCase {
         String newDocPath = "/document/" + TestConstants.TEST_DOCUMENT_ID;
         // go to the edit page, change the action, change the title and hit submit
         gotoPage(docPath + "/edit");
-        HtmlElement form = getHtmlPage().getElementByName("resourceMetadataForm");
+        HtmlElement form = getHtmlPage().getElementByName("metadataForm");
         assertNotNull("should have found the resource metadata form", form);
         form.setAttribute("action", docPath);
 

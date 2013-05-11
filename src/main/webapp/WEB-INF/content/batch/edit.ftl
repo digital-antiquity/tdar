@@ -20,7 +20,7 @@
 </#macro>
 
 
-<#macro beforeFileUpload>
+<#macro beforeUpload>
 	<@batchCommon.printTemplate />
 	
 	<div>
