@@ -83,7 +83,7 @@
             </li>
             </#list>
         </ul>
-        <p class="pull-right"><a href="/news/">Older News &raquo;</a></p>
+        <p class="pull-right"><a href="${newsUrl}">Older News &raquo;</a></p>
         </#if>
     </div>
 </div>

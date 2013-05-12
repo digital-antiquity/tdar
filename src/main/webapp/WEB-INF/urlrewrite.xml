@@ -21,7 +21,7 @@
 	<name>deal with annoying fishing excursions...</name>
 	<from>/(wp|wordpress|old|blog|wp-admin|signup)/?.*</from>
 	<to>/page-not-found</to>
-	<set status="404" />
+	<!--  this does not work in Tomcat for some reason <set status="404" /> -->
 	</rule>
 	
 	<rule>
