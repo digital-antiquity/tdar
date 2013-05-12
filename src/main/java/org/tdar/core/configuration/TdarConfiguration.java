@@ -493,6 +493,10 @@ public class TdarConfiguration {
         return assistant.getStringProperty("news.rssFeed", "http://www.tdar.org/feed/");
     }
 
+    public String getNewsUrl() {
+        return assistant.getStringProperty("news.url", "http://www.tdar.org/news/");
+    }
+
     public int getEmbargoPeriod() {
         return assistant.getIntProperty("embargo.period", 5);
     }

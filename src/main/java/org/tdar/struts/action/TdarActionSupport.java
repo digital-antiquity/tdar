@@ -519,7 +519,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public Integer getHttpsPort() {
         return getTdarConfiguration().getHttpsPort();
     }
-    
+
+    public String getNewsUrl() {
+        return getTdarConfiguration().getNewsUrl();
+    }
+
     public boolean isPayPerIngestEnabled() {
         return getTdarConfiguration().isPayPerIngestEnabled();
     }
