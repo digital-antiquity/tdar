@@ -857,10 +857,10 @@ this bit of freemarker is voodoo:
 </#if>
 </#macro>
 
-<#macro listAddresses person=person  choiceField="" addressId=-1>
+<#macro listAddresses entity=person entityType="person" choiceField="" addressId=-1>
 
 <div class="row">
-	<#list person.addresses  as address>
+	<#list entity.addresses  as address>
 	    <div class="span3">
 	    <#local label = ""/>
 	    <#if address.type?has_content>
@@ -873,7 +873,7 @@ this bit of freemarker is voodoo:
 	
 	</#if>
 	    
-	    <@printAddress  address=address creatorId=person.id modifiable=true showLabel=false >
+	    <@printAddress  address=address creatorId=entity.id modifiable=true showLabel=false >
 	        <b><#if address.type?has_content>${address.type.label!""}</#if></b>
 	        </label><br/>
 	    </@printAddress>
@@ -881,7 +881,7 @@ this bit of freemarker is voodoo:
 	</#list>
     <div class="span3">
     <#local retUrl><@s.url includeParams="all"/></#local>
-	    <a class="button btn btn-primary submitButton" href="/entity/person/${person.id?c}/address?returnUrl=${retUrl?url}">Add Address</a>
+	    <a class="button btn btn-primary submitButton" href="/entity/${entityType}/${entity.id?c}/address?returnUrl=${retUrl?url}">Add Address</a>
     </div>
 </div>
 </#macro>

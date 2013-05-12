@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html >
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <head>
     <#if ((institution.id)?has_content && institution.id > 0 )>
@@ -36,7 +37,7 @@
         <br /><@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge" />
 
 		<h3>Address List</h3>
-		<@common.listAddresses institution />
+		<@common.listAddresses entity=institution entityType="institution" />
 
 
     </div>

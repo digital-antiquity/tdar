@@ -152,8 +152,10 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Override
     public String loadViewMetadata() {
         // nothing to do here, the person record was already loaded by prepare()
-        if (isEditor()) {
-            getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(getPerson()));
+        try {
+            getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) getPersistable()));
+        } catch (Throwable e) {
+            logger.error("problem communicating with crowd getting user info for {} ", getPersistable(), e);
         }
         return SUCCESS;
     }
