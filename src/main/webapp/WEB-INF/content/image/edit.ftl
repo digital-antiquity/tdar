@@ -1,6 +1,5 @@
 <#escape _untrusted as _untrusted?html>
 <#global itemPrefix="image"/>
-<#global itemLabel="image"/>
 <#global inheritanceEnabled=true />
 <#global multipleUpload=true />
 

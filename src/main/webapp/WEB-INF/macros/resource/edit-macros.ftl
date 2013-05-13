@@ -10,60 +10,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#include "navigation-macros.ftl">
 
 <#macro basicInformation itemTypeLabel="file" itemPrefix="resource">
-<div class="well-alt" id="basicInformationSection">
-    <h2>Basic Information</h2>
 
-  <#if resource.id?? &&  resource.id != -1>
-      <@s.hidden name="id"  value="${resource.id?c}" />
-  </#if>
-  
-  <@s.hidden name="startTime" value="${currentTime?c}" />
-
-        <div id="spanStatus" tooltipcontent="#spanStatusToolTip" class="control-group">
-            <label class="control-label">Status</label>
-            <div class="controls">
-                <@s.select theme="tdar" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
-                <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
-            </div>  
-        </div>
-    
-        <@helptext.status />
-<#if bulkUpload >
-
-    <@s.hidden labelposition='left' id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
-    <@s.hidden labelposition='left' id='dateCreated' placeholder='YYYY' label='Year Created' name='image.date' cssClass="" value="-100"/>
-    <@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
-
-<#else>
-    <div tiplabel="Title"
-    tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
-        <@s.textfield label="Title" id="resourceRegistrationTitle"  
-            title="A title is required for all ${itemTypeLabel}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
-    </div>
-    <#if resource.resourceType != 'PROJECT'>
-    <div tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
-        <#local dateVal = ""/>
-        <#if resource.date?? && resource.date != -1>
-        <#local dateVal = resource.date?c />
-        </#if>
-        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini" required=true
-          maxlength=7 title="Please enter the year this ${itemTypeLabel} was created" />
-    </div>
-    </#if>
-</#if>
-    <#nested>
-    <#if editor>
-        <div class="control-group" id="divSubmitter">
-            <label class="control-label">Submitter</label>
-            <div class="controls controls-row">
-		    <@registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber='' 
-		       prefix="submitter" includeRights=false includeRepeatRow=false />
-	       </div>
-       </div>
-     </#if>
-</div>
-
-<@accountSection />
 </#macro>
 
 <#macro abstractSection itemPrefix="resource">
@@ -74,20 +21,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         tooltipcontent="Short description of the <@resourceTypeLabel />.">
             <@s.textarea id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
     </div>
-</div>
-</#macro>
-
-<#macro organizeResourceSection>
-<div class="" id="organizeSection">
-    <#if !resource.resourceType.project>
-    <h2>${siteAcronym} Collections &amp; Project</h2>
-    <h4>Add to a Collection</h4>
-    <@edit.resourceCollectionSection />
-    <@chooseProjectSection />
-    <#else>
-    <h2>${siteAcronym} Collections</h2>
-    <@edit.resourceCollectionSection />
-    </#if>   
 </div>
 </#macro>
 
@@ -598,61 +531,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  <#if id?has_content>id="${id}"</#if>>
 </#macro>
 
-<#macro resourceJavascript formSelector="#metadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false>
-<#noescape>
-<script type='text/javascript'>
-
-var formSelector = "${formSelector}";
-var includeInheritance = ${includeInheritance?string("true", "false")};
-var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;
-/*
-
- * FIXME: move to common.js
- */
-$(function(){
-    'use strict';
-    var form = $(formSelector)[0];
-    
-    <#if includeAsync>
-    //init fileupload
-    var id = $('input[name=id]').val();
-    <#if ableToUploadFiles>
-	    TDAR.fileupload.registerUpload({
-	       informationResourceId: id, 
-	       acceptFileTypes: acceptFileTypes, 
-	       formSelector:"${formSelector}",
-	       inputSelector: '#fileAsyncUpload'
-	       });
-    </#if>
-    </#if>
-
-    TDAR.common.initEditPage(form);
-    
-    //register maps, if any
-    if($('#divSpatialInformation').length) {
-        $(function() {
-            //fixme: implicitly init when necessary
-            TDAR.maps.initMapApi();
-            var mapdiv = $('#editmapv3')[0];
-            var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
-            TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
-        });
-    }
-    
-<#if includeInheritance>
-var project = ${projectAsJson};
-applyInheritance(project, formSelector);
-</#if>    
-    
-    
-<#nested>
-});
-</#noescape>
-</script>
-  
-</#macro>
-
-
 
 <#macro parentContextHelp element="div" resourceType="resource" valueType="values">
 <${element} tiplabel="Inherited Values" tooltipcontent="The parent project for this ${resourceType} defines ${valueType} for this section.  You may also define your own, but note that they will not override the values defined by the parent.">
@@ -814,9 +692,6 @@ applyInheritance(project, formSelector);
 </#macro>
 
 
-<#macro allCreators sectionTitle proxies prefix inline=false showInherited=false>
-    <@resourceCreators sectionTitle proxies prefix  />
-</#macro>
 
 <#macro resourceCreators sectionTitle proxies prefix>
 <#local _proxies = proxies >
@@ -1086,41 +961,6 @@ jquery validation hooks?)
     </tr>
 </#if>
 </#macro>
-
-<#macro citationInfo prefix="resource" includeAbstract=true >
-     <#if !resource.resourceType.codingSheet && !resource.resourceType.ontology>
-<div id="citationInformation" class="well-alt"> 
-    <h2>Additional Citation Information</h2>
-
-    <#if resource.resourceType != 'PROJECT'>
-    <div tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)">
-        <span id="publisher-hints"  book="Publisher" book_section="Publisher" journal_article="Publisher"  conference_presentation="Conference" thesis="Institution" other="Publisher">
-            <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
-        </span>
-
-        <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc." conference_presentation="Location"  thesis="Department" other="Publisher Loc.">
-            <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
-        </span>
-    </div>
-    </#if>
-    <#nested />
-
-    <div id="divUrl" tiplabel="URL" tooltipcontent="Website address for this resource, if applicable">
-        <@s.textfield name="${prefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
-    </div>
-    
-</div>
-    </#if>
-    <#if includeAbstract>
-        <@abstractSection "${prefix}" />
-    </#if>
-
-    <#if resource.resourceType.label?lower_case != 'project'>
-        <@copyrightHolders 'Primary Copyright Holder' copyrightHolderProxies />
-    </#if>
-</#macro>
-
-
 
 <#macro title>
 <#-- expose pageTitle so edit pages can use it elsewhere -->

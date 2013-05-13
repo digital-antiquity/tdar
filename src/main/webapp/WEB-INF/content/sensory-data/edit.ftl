@@ -1,6 +1,5 @@
 <#escape _untrusted as _untrusted?html>
 <#global itemPrefix="sensoryData"/>
-<#global itemLabel="sensoryData"/>
 <#global inheritanceEnabled=true />
 <#global multipleUpload=true />
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>

@@ -1,6 +1,5 @@
 <#escape _untrusted as _untrusted?html>
 <#global itemPrefix="document"/>
-<#global itemLabel="document"/>
 <#global inheritanceEnabled=true />
 <#global multipleUpload=true />
 <#global hideRelatedCollections=true/>

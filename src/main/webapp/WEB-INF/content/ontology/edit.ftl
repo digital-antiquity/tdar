@@ -1,6 +1,5 @@
 <#escape _untrusted as _untrusted?html>
 <#global itemPrefix="ontology"/>
-<#global itemLabel="ontology"/>
 <#global inheritanceEnabled=true />
 <#global hideAuthors=true/>
 <#global hideRelatedCollections=true/>

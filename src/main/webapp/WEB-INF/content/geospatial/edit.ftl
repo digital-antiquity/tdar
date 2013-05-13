@@ -1,6 +1,5 @@
 <#escape _untrusted as _untrusted?html>
 <#global itemPrefix="geospatial"/>
-<#global itemLabel="geospatial"/>
 <#global inheritanceEnabled=true />
 <#global multipleUpload=true />
 <#global hideRelatedCollections=true/>

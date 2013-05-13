@@ -1,6 +1,5 @@
 <#escape _untrusted as _untrusted?html>
 <#global itemPrefix="dataset"/>
-<#global itemLabel="dataset"/>
 <#global inheritanceEnabled=true />
 <#global multipleUpload=false />
 
