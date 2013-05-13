@@ -200,7 +200,7 @@ TDAR.namespace("supersecret");
 
 TDAR.supersecret.registerSplittables = function(rootSelector) {
     var cloneSection = TDAR.repeatrow.cloneSection;
-    $(rootSelector).bind("change", ".splittable", function(evt) {
+    $(rootSelector).on("change", ".splittable", function(evt) {
         if(!evt.target.value) return;
         var inputElem = evt.target;
         var $inputElem = $(inputElem);
@@ -213,13 +213,15 @@ TDAR.supersecret.registerSplittables = function(rootSelector) {
         }
         $.each(vals, function(idx, val){
             var $clone = cloneSection($lastRow[0]);
+            //FIXME: I don't actually enter value
             $clone.find(".splittable").val($.trim(val));
         });
     });
 };
-
+/*
 $(function() {
-    $('#resourceMetadataForm_temporalKeywords_0_').addClass("splittable");
+    $('#metadataForm_temporalKeywords_0_').addClass("splittable");
     TDAR.supersecret.registerSplittables('body');
 });
 
+*/
