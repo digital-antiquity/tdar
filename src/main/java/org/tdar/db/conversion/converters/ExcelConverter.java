@@ -54,7 +54,7 @@ public class ExcelConverter extends DatasetConverter.Base {
     public ExcelConverter() {
     }
 
-    public ExcelConverter(TargetDatabase targetDatabase, InformationResourceFileVersion ... version) {
+    public ExcelConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... version) {
         setTargetDatabase(targetDatabase);
         this.setInformationResourceFileVersion(version[0]);
         this.setFilename(version[0].getFilename());
@@ -224,9 +224,7 @@ public class ExcelConverter extends DatasetConverter.Base {
                     if (StringUtils.isEmpty(cellValue)) {
                         cellValue = null;
                     }
-                    valueColumnMap.put(
-                            dataTable.getDataTableColumns().get(columnIndex),
-                            cellValue);
+                    valueColumnMap.put(dataTable.getDataTableColumns().get(columnIndex), cellValue);
                     statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(columnIndex), cellValue);
                 }
             }
