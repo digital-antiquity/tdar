@@ -393,7 +393,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <#if authorizedUser??>
            	    <div class="controls-row repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
                	    <div class="span6">
-                        <@registeredUserRow person=authorizedUser.user isDisabled=authorizedUser.enabled _indexNumber=authorizedUser_index  _personPrefix="user" 
+                        <@registeredUserRow person=authorizedUser.user isDisabled=!authorizedUser.enabled _indexNumber=authorizedUser_index  _personPrefix="user" 
                            prefix="authorizedUsers" includeRights=true includeRepeatRow=false />
                     </div>
                     <div class="span1">
