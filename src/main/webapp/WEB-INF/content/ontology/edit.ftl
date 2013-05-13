@@ -51,16 +51,16 @@
 	        
 	        <p class="help-block">For lithic form, the following would be a simple ontology:</p>
 	        <pre>
-	Tool
-	    Projectile Point
-	    Scraper (Grattoir)
-	        End Scraper
-	        Side Scraper
-	    Other Tool
-	Flake (Debris, Debitage)
-	    Utilized
-	    Unutilized
-	Core
+Tool
+    Projectile Point
+    Scraper (Grattoir)
+        End Scraper
+        Side Scraper
+    Other Tool
+Flake (Debris, Debitage)
+    Utilized
+    Unutilized
+Core
 	        </pre>
 	    </#if>
 	</@edit.manualTextInput>

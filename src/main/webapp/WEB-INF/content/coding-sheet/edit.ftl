@@ -125,15 +125,6 @@
 </@edit.manualTextInput>
 </#macro>
 
-<@edit.organizeResourceSection />
-
-<@edit.resourceNoteSection />
-<@helptext.resourceCreator />
-
-<@edit.fullAccessRights />
-
-<@edit.submit  fileReminder=false  />
-
 <#macro localJavascript>
         var $form = $("#resourceRegistrationForm");
         setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
