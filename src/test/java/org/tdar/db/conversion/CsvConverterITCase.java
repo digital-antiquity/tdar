@@ -1,5 +1,6 @@
 package org.tdar.db.conversion;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,6 +25,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.db.model.PostgresDatabase;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
@@ -106,6 +108,24 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
                 .getColumnByName("siteno22"));
         assertEquals(1, findAllDistinctValues.size());
         assertEquals("1", findAllDistinctValues.get(0));
+    }
+    
+    @Test
+    @Rollback(true)
+    public void testCsvWithTooManyColumns()
+            throws Exception {
+        InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion("too_many_columns.tab", 504);
+        File storedFile = filestore.retrieveFile(accessDatasetFileVersion);
+        assertTrue("text file exists", storedFile.exists());
+        DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
+        Exception ex = null;
+        try {
+        converter.execute();
+        } catch (Exception e) {
+            ex = e;
+        }
+        assertNotNull(ex);
+        assertTrue(ex.getMessage().equals(PostgresDatabase.DATATABLE_TOO_LONG));
     }
 
     @Test
