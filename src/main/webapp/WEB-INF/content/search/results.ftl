@@ -57,7 +57,10 @@
 	        <ul class="tools media-list">
 	                <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">LIST</@s.param>
-	                </@s.url>"><i class="pull-left search-list-icon-red"></i>List</a></li>
+	                </@s.url>"><i class="pull-left search-list-icon-red"></i>List (Title)</a></li>
+	                <li class="media"><a href="<@s.url includeParams="all">
+	                    <@s.param name="orientation">LIST_FULL</@s.param>
+	                </@s.url>"><i class="pull-left search-list-icon-red"></i>List (Expanded)</a></li>
 	                <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">GRID</@s.param>
 	                </@s.url>"><i class="pull-left search-grid-icon-red"></i>Grid</a></li>
@@ -115,7 +118,7 @@
     <div class="tdarresults">
 <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
     <#--fixme: replace explicit map sizes with css names -->
-    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+    <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
 <#else>
 	<#assign indx = 0/>
 	<#list results as result>

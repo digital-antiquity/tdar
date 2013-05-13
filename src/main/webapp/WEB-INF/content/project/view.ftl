@@ -14,7 +14,7 @@
 <h3>There are ${paginationHelper.totalNumberOfItems?c} Resources within this Project</h3>
 
     <#if ( results?has_content )>
-              <@rlist.listResources resourcelist=results expanded=true listTag="ol" headerTag="h4" titleTag="h5" 
+              <@rlist.listResources resourcelist=results listTag="ol" headerTag="h4" titleTag="h5" 
               sortfield=project.sortBy  orientation=project.orientation mapPosition="left" />
     </#if>
 

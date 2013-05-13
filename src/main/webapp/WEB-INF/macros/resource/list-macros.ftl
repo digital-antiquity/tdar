@@ -3,7 +3,7 @@
 <#import "view-macros.ftl" as view>
 <#import "common.ftl" as common>
 <#assign DEFAULT_SORT = 'PROJECT' />
-<#assign DEFAULT_ORIENTATION = 'LIST' />
+<#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
     <#macro printTag tagName className closing>
         <#if tagName?has_content>
             <<#if closing>/</#if>${tagName} class="${className}" <#nested><#rt/>>
@@ -13,7 +13,7 @@
 <#--fixme:  with at least three presentation style (list/grid/map/custom), this macro has become *extremely* hard to modify, 
     let alone comprehend. Consider replacing w/ @listResources, @listResourcesMap, and @listResourcesGrid -->
 <#macro listResources resourcelist sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated itemsPerRow=4
-    expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
+    listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
   <#local showProject = false />
   <#local prev =""/>
   <#local first = true/>
@@ -104,7 +104,7 @@
             </#if>
             <@searchResultTitleSection resource titleTag />
             <@printLuceneExplanation  resource />
-            <@printDescription resource=resource expanded=expanded orientation=orientation length=500 showProject=showProject/>
+            <@printDescription resource=resource orientation=orientation length=500 showProject=showProject/>
 
             </${itemTag_}>
         <#local first=false/>
@@ -129,7 +129,7 @@
 </#macro>
 
 
-<#macro printDescription resource=resource expanded=false orientation=DEFAULT_ORIENTATION length=80 showProject=false>
+<#macro printDescription resource=resource orientation=DEFAULT_ORIENTATION length=80 showProject=false>
 	<#if resource?has_content>
 		<#local _desc = "Description not available"/>
 		<#if (resource.description)?has_content >
@@ -143,7 +143,7 @@
 			<#local _rid = "C${resource.id?c}" >
 		</#if>
 	
-        <#if expanded && orientation != 'GRID'>
+        <#if orientation == 'LIST_FULL'>
             <div class="listItemPart">
 	            <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
 		            <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>

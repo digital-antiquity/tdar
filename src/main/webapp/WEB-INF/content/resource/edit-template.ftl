@@ -148,36 +148,36 @@ $(function(){
 
 
 
-<#if local_.beforeUpload?? && local_.beforeUpload?is_macro>
-	<@local_.beforeUpload />
-</#if>
-
-
-<#if multipleUpload??>
-	<#if multipleUpload>
-		<@edit.asyncFileUpload  uploadLabel="Attach ${resource.resourceType.label} Files" showMultiple=multipleUpload />
-	<#else>
-		<@edit.upload "${resource.resourceType.label} file" />
+	<#if local_.beforeUpload?? && local_.beforeUpload?is_macro>
+		<@local_.beforeUpload />
 	</#if>
-</#if>
-
-<#if local_.localSection?? && local_.localSection?is_macro>
-	<@local_.localSection />
-</#if>
-
-
-
-<div class="" id="organizeSection">
-    <#if !resource.resourceType.project>
-    <h2>${siteAcronym} Collections &amp; Project</h2>
-    <h4>Add to a Collection</h4>
-    <@edit.resourceCollectionSection />
-    <@edit.chooseProjectSection />
-    <#else>
-    <h2>${siteAcronym} Collections</h2>
-    <@edit.resourceCollectionSection />
-    </#if>   
-</div>
+	
+	
+	<#if multipleUpload??>
+		<#if multipleUpload>
+			<@edit.asyncFileUpload  uploadLabel="Attach ${resource.resourceType.label} Files" showMultiple=multipleUpload />
+		<#else>
+			<@edit.upload "${resource.resourceType.label} file" />
+		</#if>
+	</#if>
+	
+	<#if local_.localSection?? && local_.localSection?is_macro>
+		<@local_.localSection />
+	</#if>
+	
+	
+	
+	<div class="" id="organizeSection">
+	    <#if !resource.resourceType.project>
+	    <h2>${siteAcronym} Collections &amp; Project</h2>
+	    <h4>Add to a Collection</h4>
+	    <@edit.resourceCollectionSection />
+	    <@edit.chooseProjectSection />
+	    <#else>
+	    <h2>${siteAcronym} Collections</h2>
+	    <@edit.resourceCollectionSection />
+	    </#if>   
+	</div>
 
     <#if !resource.resourceType.project>
       <@edit.resourceProvider inheritanceEnabled />
