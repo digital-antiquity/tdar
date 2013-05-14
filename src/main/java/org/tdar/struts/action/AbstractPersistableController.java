@@ -503,10 +503,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @return boolean whether the user can VIEW this resource
      * @throws TdarActionException
      */
+    @Override
     public boolean isViewable() throws TdarActionException {
         return true;
     }
 
+    @Override
     public boolean isCreatable() throws TdarActionException {
         return true;
     }
@@ -517,6 +519,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @return boolean whether the user can EDIT this resource
      * @throws TdarActionException
      */
+    @Override
     public boolean isEditable() throws TdarActionException {
         return false;
     }
@@ -527,6 +530,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @return boolean whether the user can DELETE this resource (default calls isEditable)
      * @throws TdarActionException
      */
+    @Override
     public boolean isDeleteable() throws TdarActionException {
         return isEditable();
     }
@@ -537,6 +541,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @return boolean whether the user can SAVE this resource (default is TRUE for NEW resources, calls isEditable for existing)
      * @throws TdarActionException
      */
+    @Override
     public boolean isSaveable() throws TdarActionException {
         if (isNullOrNew()) {
             return true;
@@ -565,6 +570,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return delete;
     }
 
+    @Override
     public P getPersistable() {
         return persistable;
     }
@@ -581,11 +587,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.id = id;
     }
 
-    /*
+    /**
      * This method is invoked when the paramsPrepareParamsInterceptor stack is
      * applied. It allows us to fetch an entity from the database based on the
      * incoming resourceId param, and then re-apply params on that resource.
+     * @see <a href="http://blog.mattsch.com/2011/04/14/things-discovered-in-struts-2/">Things discovered in Struts 2</a> 
      */
+    @Override
     public void prepare() {
 
         if (isPersistableIdSet()) {
@@ -608,6 +616,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return Persistable.Base.isNotNullOrTransient(getPersistable());
     }
 
+    @Override
     public abstract Class<P> getPersistableClass();
 
     public void setPersistableClass(Class<P> persistableClass) {
