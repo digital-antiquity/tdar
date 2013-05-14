@@ -224,13 +224,13 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         for (String key : docMultiValMap.keySet()) {
             setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
         }
+        logger.info(getPageCode());
         submitForm();
 
         String path = internalPage.getUrl().getPath().toLowerCase();
-        logger.info(getPageText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
-        logger.trace(getPageText());
+        logger.info(getPageText());
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just
             // the top of the lat/long

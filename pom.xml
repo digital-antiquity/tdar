@@ -1244,6 +1244,73 @@
 				</executions>
 			</plugin>
 
+
+
+			<!-- this section defines the goal for running Substeps feature tests. 
+				It currently doesn't work, mostly because the tests themselves are bogus 
+				(they were copied form the substeps example) but also because I can't figure 
+				out how to perform the other integration-test tasks such as initializing 
+				the database and firing up jetty -->
+			<!-- experimental substeps goals end -->
+			<plugin>
+				<groupId>com.technophobia.substeps</groupId>
+				<artifactId>substeps-maven-plugin</artifactId>
+
+				<executions>
+					<execution>
+						<id>SubSteps Test</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>run-features</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<configuration>
+
+					<runTestsInForkedVM>false</runTestsInForkedVM>
+
+					<executionConfigs>
+
+						<!-- One or more 'execution configurations', use multiple configs for 
+							different test initialisation, phases of project, etc -->
+
+						<executionConfig>
+							<description>Self Test Features</description> <!-- This appears at the root of the results report -->
+
+							<tags>@non-visual</tags>  <!-- optional - If the feature or scenario has this tag, then it will be 
+								included, otherwise it won't, tags are space separated -->
+
+							<fastFailParseErrors>false</fastFailParseErrors> <!-- optional - if true any parse errors will fail the build immediately, 
+								rather than attempting to execute as much as possible and fail those tests 
+								that can't be parsed -->
+							<featureFile>${basedir}/target/test-classes/features</featureFile> <!-- path to the feature file, or directory containing the feature files -->
+							<subStepsFileName>${basedir}/target/test-classes/substeps</subStepsFileName> <!-- path to directory of substep files, or a single substep file -->
+
+
+							<stepImplementationClassNames>
+								<param>com.technophobia.webdriver.substeps.impl.BaseWebdriverSubStepImplementations</param>
+								<!-- <param>com.technophobia.webdriver.substeps.example.ExampleCustomWebdriverStepImplementations</param> -->
+							</stepImplementationClassNames>
+						</executionConfig>
+					</executionConfigs>
+
+					<!-- Default HTML report builder -->
+					<executionReportBuilder
+						implementation="com.technophobia.substeps.report.DefaultExecutionReportBuilder">
+						<!-- The directory in which the test execution report will be written 
+							to -->
+						<outputDirectory>${project.build.directory}</outputDirectory>
+						<!-- report title is used in the HTML test report -->
+						<reportTitle>Webdriver Substeps Example Report -
+							${project.version}</reportTitle>
+					</executionReportBuilder>
+
+				</configuration>
+			</plugin>
+			<!-- experimental substeps goals end -->
+
+
 			<plugin>
 				<!-- <repository> <id>maven.org</id> <url>http://repo2.maven.org/maven2</url> 
 					</repository> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-maven-plugin</artifactId> 
@@ -1399,70 +1466,6 @@
 				</configuration>
 			</plugin>
 
-
-			<!-- this section defines the goal for running Substeps feature tests. 
-				It currently doesn't work, mostly because the tests themselves are bogus 
-				(they were copied form the substeps example) but also because I can't figure 
-				out how to perform the other integration-test tasks such as initializing 
-				the database and firing up jetty -->
-			<!-- experimental substeps goals end -->
-			<plugin>
-				<groupId>com.technophobia.substeps</groupId>
-				<artifactId>substeps-maven-plugin</artifactId>
-
-				<executions>
-					<execution>
-						<id>SubSteps Test</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>run-features</goal>
-						</goals>
-					</execution>
-				</executions>
-
-				<configuration>
-
-					<runTestsInForkedVM>false</runTestsInForkedVM>
-
-					<executionConfigs>
-
-						<!-- One or more 'execution configurations', use multiple configs for 
-							different test initialisation, phases of project, etc -->
-
-						<executionConfig>
-							<description>Self Test Features</description> <!-- This appears at the root of the results report -->
-
-							<tags>@non-visual</tags>  <!-- optional - If the feature or scenario has this tag, then it will be 
-								included, otherwise it won't, tags are space separated -->
-
-							<fastFailParseErrors>false</fastFailParseErrors> <!-- optional - if true any parse errors will fail the build immediately, 
-								rather than attempting to execute as much as possible and fail those tests 
-								that can't be parsed -->
-							<featureFile>${basedir}/target/test-classes/features</featureFile> <!-- path to the feature file, or directory containing the feature files -->
-							<subStepsFileName>${basedir}/target/test-classes/substeps</subStepsFileName> <!-- path to directory of substep files, or a single substep file -->
-
-
-							<stepImplementationClassNames>
-								<param>com.technophobia.webdriver.substeps.impl.BaseWebdriverSubStepImplementations</param>
-								<!-- <param>com.technophobia.webdriver.substeps.example.ExampleCustomWebdriverStepImplementations</param> -->
-							</stepImplementationClassNames>
-						</executionConfig>
-					</executionConfigs>
-
-					<!-- Default HTML report builder -->
-					<executionReportBuilder
-						implementation="com.technophobia.substeps.report.DefaultExecutionReportBuilder">
-						<!-- The directory in which the test execution report will be written 
-							to -->
-						<outputDirectory>${project.build.directory}</outputDirectory>
-						<!-- report title is used in the HTML test report -->
-						<reportTitle>Webdriver Substeps Example Report -
-							${project.version}</reportTitle>
-					</executionReportBuilder>
-
-				</configuration>
-			</plugin>
-			<!-- experimental substeps goals end -->
 
 		</plugins>
 		<pluginManagement>
