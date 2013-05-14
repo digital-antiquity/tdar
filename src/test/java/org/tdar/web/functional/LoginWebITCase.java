@@ -7,7 +7,12 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
-public class LoginWebITCase extends AbstractFunctionalWebTestCase{
+/**
+ * This is a rewrite of org.tdar.web.LoginWebITCase.  
+ * @author jimdevos
+ *
+ */
+public class LoginWebITCase extends FunctionalWebTestCase{
 
     @Before
     public void setup() {
