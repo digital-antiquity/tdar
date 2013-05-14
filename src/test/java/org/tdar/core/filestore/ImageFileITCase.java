@@ -53,7 +53,15 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
         InformationResourceFile informationResourceFile = testFileProcessing(filename);
         assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
     }
-    
+
+    @Test
+    @Rollback
+    public void testGPSImageStatus() throws Exception {
+        String filename = "gps_photo.jpg";
+        InformationResourceFile informationResourceFile = testFileProcessing(filename);
+        assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
+    }
+
     @Test
     @Rollback
     public void testImageFormatMissingStatus() throws Exception {

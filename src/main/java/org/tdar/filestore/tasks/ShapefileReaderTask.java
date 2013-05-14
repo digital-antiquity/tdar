@@ -36,7 +36,6 @@ public class ShapefileReaderTask extends AbstractTask {
     @Override
     public void run() throws Exception {
         File file = getWorkflowContext().getOriginalFiles().get(0).getFile();
-        // http://stackoverflow.com/questions/2044876/does-anyone-know-of-a-library-in-java-that-can-parse-esri-shapefiles
         File workingDir = new File(getWorkflowContext().getWorkingDirectory(), file.getName());
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
@@ -78,6 +77,7 @@ public class ShapefileReaderTask extends AbstractTask {
                 break;
             case "shp":
                 DataStore dataStore = null;
+                // http://stackoverflow.com/questions/2044876/does-anyone-know-of-a-library-in-java-that-can-parse-esri-shapefiles
                 try {
                     Map connect = new HashMap();
                     connect.put("url", workingOriginal.toURL());

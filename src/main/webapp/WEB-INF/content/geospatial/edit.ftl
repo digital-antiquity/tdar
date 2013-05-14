@@ -14,7 +14,7 @@
 
 </#macro>
 
-<#global validFileExtensions = ['aaa', 'bbb', 'ccc', 'jpg', 'jpeg', 'tif', 'tiff']>
+<#-- global validFileExtensions = ['aaa', 'bbb', 'ccc', 'jpg', 'jpeg', 'tif', 'tiff'] -->
 
 
 <#macro localJavascript>
