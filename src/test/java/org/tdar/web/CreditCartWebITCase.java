@@ -20,7 +20,7 @@ import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Autowired

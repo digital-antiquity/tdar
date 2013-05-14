@@ -72,7 +72,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
     public void testTemplate() throws FileNotFoundException, IOException {
         HSSFWorkbook workbook = bulkUploadService.createExcelTemplate();
         File file = File.createTempFile("templateTest", ".xls", TdarConfiguration.getInstance().getTempDirectory());

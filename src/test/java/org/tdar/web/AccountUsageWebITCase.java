@@ -22,7 +22,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 public class AccountUsageWebITCase extends AbstractWebTestCase {
 
 

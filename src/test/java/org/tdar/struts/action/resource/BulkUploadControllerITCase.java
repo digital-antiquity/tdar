@@ -467,7 +467,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.ahad.properties" })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testCloneImageWithLicencesEnabled() {
         Image expected = new Image();
         expected.setLicenseType(LicenseType.CREATIVE_COMMONS_ATTRIBUTION);
@@ -479,7 +479,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.ahad.properties" })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testCloneImageWithLicencesEnabledOtherLicenceType() {
         Image expected = new Image();
         expected.setLicenseType(LicenseType.OTHER);
@@ -491,7 +491,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.ahad.properties" })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testCloneImageWithCopyrightEnabled() {
         Image expected = new Image();
         Creator copyrightHolder = entityService.find(getAdminUserId());

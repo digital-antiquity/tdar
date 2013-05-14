@@ -20,7 +20,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
     private static final String DESCRIPTION = "descriptionthisisauniquetest";
     private static final String TITLE = "title of a test document";
@@ -38,7 +38,6 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         docValMap.put("document.date", "1923");
         docValMap.put("status", "DRAFT");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            // docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             docValMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         for (String key : docValMap.keySet()) {

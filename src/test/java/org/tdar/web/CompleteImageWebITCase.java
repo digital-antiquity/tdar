@@ -29,7 +29,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxies.person.firstName";

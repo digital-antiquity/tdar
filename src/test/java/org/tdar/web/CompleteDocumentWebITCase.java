@@ -32,7 +32,7 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
