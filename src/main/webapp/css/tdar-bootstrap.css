@@ -1089,6 +1089,99 @@ h3.collection-mid-red::before {
 	margin-bottom: -2px;
 }
 
+
+
+h3.document-mid-black::before {
+	background: url(/images/r4/tdar-sprites.gif) -39px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.dataset-mid-black::before {
+	background: url(/images/r4/tdar-sprites.gif) -76px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.coding_sheet-mid-black::before {
+	background: url(/images/r4/tdar-sprites.gif) -115px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.ontology-mid-black::before {
+	background: url(/images/r4/tdar-sprites.gif) -152px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.image-mid-black::before {
+	background: url(/images/r4/tdar-sprites.gif) -271px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.video-mid-black::before {
+	background: url(/images/r4/tdar-sprites.gif) -313px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.sensory_data-mid-black::before {
+	background: url(/images/r4/tdar-sprites.gif) -233px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.geospatial-mid-black::before {
+	background: url(/images/r4/tdar-sprites.gif) -191px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.project-mid-black::before {
+	background: url(/images/r4/tdar-sprites.gif) -391px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.collection-mid-black::before {
+	background: url(/images/r4/tdar-sprites.gif) -349px -487px no-repeat;
+	display: inline-block;
+	width: 40px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+
 .small {
 	font-size: 70%;
 }
