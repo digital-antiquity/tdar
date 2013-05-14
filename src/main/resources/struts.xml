@@ -46,7 +46,9 @@
         <interceptor-ref name="checkbox"/>
         <interceptor-ref name="multiselect"/>
         <interceptor-ref name="params">
-	        <!-- Mirror changes to the second entry below as well... -->
+          <!-- Mirror changes to the second entry below as well... -->
+          <!-- The '-' is because when jQuery Ajax call is made with 'cache: false' we get a _=timestamp with each request -->
+          <!-- As we don't have a property named '_' in our actions we get an error logged in development mode. Excluding '-' removes the error -->
           <param name="excludeParams">_,dojo\..*,^struts\..*</param>
         </interceptor-ref>
         <interceptor-ref name="servletConfig"/>
