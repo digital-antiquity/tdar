@@ -12,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -204,6 +205,9 @@ public class SensoryData extends InformationResource {
     @Column(name = "scanner_technology", length = 255)
     @Enumerated(EnumType.STRING)
     private ScannerTechnologyType scannerTechnology;
+
+    
+    transient private InformationResourceFile scannerInformationResourceFile;
     
 
     public SensoryData() {
@@ -579,5 +583,16 @@ public class SensoryData extends InformationResource {
     public void setScannerTechnology(ScannerTechnologyType scannerTechnology) {
         this.scannerTechnology = scannerTechnology;
     }
+    
+    @Transient
+    public InformationResourceFile getScannerInformationResourceFile() {
+        return scannerInformationResourceFile;
+    }
+    
+    public void setScannerInformationResourceFile(InformationResourceFile irfile) {
+        scannerInformationResourceFile = irfile;
+    }
+    
+    
     
 }

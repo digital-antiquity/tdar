@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
@@ -48,6 +49,16 @@ public class SensoryDataController extends AbstractInformationResourceController
          sensoryDataImages = new ArrayList<SensoryDataImage>(getPersistable().getSensoryDataImages());
          Collections.sort(sensoryDataImages);
          Collections.sort(sensoryDataScans);
+         loadScannerInformationResourceFile();
+    }
+    
+    private void loadScannerInformationResourceFile() {
+        for(InformationResourceFile irfile : getSensoryData().getInformationResourceFiles()) {
+            if(irfile.getFileName().endsWith("xls") || irfile.getFileName().endsWith("xlsx")) {
+                getSensoryData().setScannerInformationResourceFile(irfile);
+                break;
+            }
+        }
     }
 
     /**

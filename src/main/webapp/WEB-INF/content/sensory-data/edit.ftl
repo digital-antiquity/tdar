@@ -12,11 +12,8 @@
     </div>
 </#macro>
 
-
 <#macro localSection>
-
-
-<div id="divScanInfo">
+<div id="divScanInfo" style="display:none">
     <#assign _scans=sensoryDataScans />
     <#if _scans.isEmpty()>
     <#assign _scans=blankSensoryDataScan />
@@ -86,7 +83,7 @@
         </#list>
     </div>
 </div>
-<div id="divImageInfo" tooltipcontent='#imageInfoTooltip'>
+<div id="divImageInfo" tooltipcontent='#imageInfoTooltip' style="display:none">
     <#assign _images=sensoryDataImages />
     <#if _images.isEmpty()>
     <#assign _images=blankSensoryDataImage />
@@ -122,7 +119,7 @@
 
 
 
-<div id="registeredDatasetDiv">
+<div id="registeredDatasetDiv" style="display:none">
     <h2>Level 2: Registered Dataset</h2>
     <div tiplabel="Name of Registered Dataset" tooltipcontent="Filename for the dataset, a suggested naming structure for registered dataset for archiving: ProjectName_GR.txt">
         <@s.textfield maxLength="255" name="sensoryData.registeredDatasetName" label="Dataset Name" cssClass="input-xxlarge" labelposition="left" />
@@ -140,7 +137,7 @@
     </div>
 </div>
 
-<div id="polygonalMeshDatasetDiv">
+<div id="polygonalMeshDatasetDiv" style="display:none">
     <h2>Level 3: Polygonal Mesh Dataset</h2>
 
     <h4>Pre-mesh</h4>
@@ -287,14 +284,6 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     </div>
 </div>
 
-<style>
- #registeredDatasetDiv, #polygonalMeshDatasetDiv, #divScanInfo,#divImageInfo  {
- display:none;
- visbility: hidden;
- }
- </style>
-
-
 <@s.radio name='sensoryData.scannerTechnology' emptyOption='false' listValue="label"  
             list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
 
@@ -310,9 +299,34 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
 </#macro>
 
 <#macro localJavascript>
+    //return true if any form field in this div are populated  
+    TDAR.namespace("sensorydata");
+     
+    function hasContent(div) {
+        var found = false;
+        var $div = $(div);
+        $div.find("input[type=text],textarea").each(function(idx, elem){
+            if($.trim(elem.value).length >0) {
+                found = true;
+                return false;
+            } 
+        });
+        return found;
+    }
+    TDAR.sensorydata.hasContent = hasContent;
+    
+    //show legacy edit fields if they have content
+    $('#registeredDatasetDiv, #polygonalMeshDatasetDiv, #divScanInfo,#divImageInfo').each(function(idx, div){
+        if(hasContent(div)) {
+            $(div).show();
+        }
+    });
+    
+
     $('#sensoryDataScans').bind('repeatrowadded', function(e, parent, newRow) {
         scanAdded(newRow);
     });
+    
     $('.scannerTechnology').each(
         function(i,elem){
             var scannerTechElem = elem;
