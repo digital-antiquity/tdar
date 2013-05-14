@@ -53,7 +53,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     }
 
     @Test
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.cc.properties" })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR,  RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUpload() throws MalformedURLException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {

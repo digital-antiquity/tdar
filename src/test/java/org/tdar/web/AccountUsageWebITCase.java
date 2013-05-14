@@ -18,7 +18,7 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 public class AccountUsageWebITCase extends AbstractWebTestCase {
 
     private static float BYTES_PER_MEGABYTE = 1048576F;

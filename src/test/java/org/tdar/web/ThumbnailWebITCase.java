@@ -24,7 +24,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
 
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public static HashMap<String, String> docValMap = new HashMap<String, String>();

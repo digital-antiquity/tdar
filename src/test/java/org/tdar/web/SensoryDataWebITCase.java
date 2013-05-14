@@ -15,7 +15,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = {RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     String SDOC_TITLE = "a sensory document";

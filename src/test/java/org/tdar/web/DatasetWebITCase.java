@@ -32,7 +32,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
  * 
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     //FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.   
