@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +23,7 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.filestore.tasks.Task.AbstractTask;
+import org.tdar.utils.ExceptionWrapper;
 
 /**
  * @author Adam Brin
@@ -30,6 +33,7 @@ import org.tdar.filestore.tasks.Task.AbstractTask;
 public class IndexableTextExtractionTask extends AbstractTask {
 
     private static final long serialVersionUID = -5207578211297342261L;
+    public static final String GPS_MESSAGE = "The image you uploaded appears to have GPS Coordinate in it, please make sure you mark it as confidential if the exact location data is important to protect (%s)";
 
     @Override
     public void run() throws Exception {
@@ -66,10 +70,15 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 addDerivativeFile(version, indexFile, VersionType.INDEXABLE_TEXT);
             }
 
+            List<String> gpsValues = new ArrayList<>();
+            
             for (String name : metadata.names()) {
                 StringWriter sw = new StringWriter();
                 if (StringUtils.isNotBlank(metadata.get(name))) {
                     sw.append(name).append(":");
+                    if (name.matches("(?i).*(latitude|longitude|gps).*")) {
+                        gpsValues.add(name);
+                    }
                     if (metadata.isMultiValued(name)) {
                         sw.append(StringUtils.join(metadata.getValues(name), "|"));
                     } else {
@@ -79,6 +88,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
                     IOUtils.write(sw.toString(), metadataOutputStream);
                 }
             }
+            getWorkflowContext().getExceptions().add(new ExceptionWrapper(String.format(GPS_MESSAGE, gpsValues), null));
         } catch (Throwable t) {
             // Marking this as a "warn" as it's a derivative
             getLogger().warn("a tika indexing exception happend ", t);
