@@ -1,22 +1,28 @@
 package org.tdar.web.functional;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 /**
  * This is a rewrite of org.tdar.web.LoginWebITCase.  
  * @author jimdevos
  *
  */
-public class LoginWebITCase extends FunctionalWebTestCase{
+public class LoginFunctionalITCase extends FunctionalWebTestCase{
 
     @Before
     public void setup() {
         login();
+    }
+    
+    @After
+    public void teardown() {
+        logout();
     }
     
     @Test
@@ -30,7 +36,6 @@ public class LoginWebITCase extends FunctionalWebTestCase{
         assertTrue(textContains("Featured Content"));
     }
 
-    
     @Test
     public void testInvalidLogin() {
         logout();

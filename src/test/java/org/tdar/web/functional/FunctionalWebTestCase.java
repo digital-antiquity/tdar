@@ -107,7 +107,7 @@ public abstract class FunctionalWebTestCase{
     }
 
     public String url(String path) {
-        return String.format("%s/%s", DEFAULT_BASE_URL, path);
+        return String.format("%s%s", DEFAULT_BASE_URL, path);
     }
     
     public void gotoPage(String path) {
@@ -127,9 +127,14 @@ public abstract class FunctionalWebTestCase{
         return result;
     }
     
-    public List<WebElement> find(String selector) {
-        driver.findElements(By.cssSelector(selector));
-        return Collections.emptyList();
+    public WebElementSelection find(String selector) {
+        WebElementSelection selection = new WebElementSelection(driver.findElements(By.cssSelector(selector)));
+        logger.debug("selector:{}\t size:{}", selector, selection.size());
+        return selection;
+    }
+    
+    public WebElement findOne(String selector) {
+        return find(selector).iterator().next();
     }
     
     public void assertSelector(String selector) {
@@ -137,8 +142,6 @@ public abstract class FunctionalWebTestCase{
             fail("could not find content on page with selector:" + selector);
         }
     }
-   
-    
     
     public WebDriver getDriver() {
         return driver;
@@ -149,29 +152,20 @@ public abstract class FunctionalWebTestCase{
     }
     
     public void login(String username, String password) {
-        fail("not implemented");
+        gotoPage("/login");
+        find("#loginUsername").sendKeys(username);
+        find("#loginPassword").sendKeys(password);
+        find("#btnLogin").click();
     }
     
     public void logout() {
-        fail("not implemented");
+        gotoPage("/logout");
     }
     
-    //Get concatentation of all elemnet innertext.  (not the same as the 'text version'  of the dom)
-    public String getText() {
-        StringBuilder sb = new StringBuilder();
-        for(WebElement elem : find("*")) {
-            sb.append(elem.getText());
-            sb.append(' ');
-        }
-        return sb.toString();
-    }
-    
-    //case-insensitive check for expected text in DOM.  This is much slower than checking the source
+    //case-insensitive search for body.innerText.
     public boolean textContains(String expected) {
-        String text = getText().toLowerCase();
+        String text = find("body").getText().toLowerCase();
         String _expected = expected.toLowerCase();
         return text.contains(_expected);
     }
-    
-    
 }
