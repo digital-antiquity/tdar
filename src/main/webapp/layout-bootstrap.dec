@@ -247,9 +247,11 @@ ${_stacktrace?html}
     </footer>
         <#if production>
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>        
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.min.js"></script>        
         <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
         <#else>
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>        
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.js"></script>        
         <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.js"></script>
         </#if>
         
