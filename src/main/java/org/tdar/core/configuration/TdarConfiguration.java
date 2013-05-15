@@ -448,6 +448,10 @@ public class TdarConfiguration {
         return assistant.getStringProperty("help.url.site", "http://dev.tdar.org/confluence/display/TDAR/Site+Types");
     }
 
+    public String getMobileImportURL() {
+        return assistant.getStringProperty("mobile.upload.url", "/");
+    }
+    
     /*
      * Returns the collectionId to use for finding featured resources within
      * 
@@ -527,6 +531,10 @@ public class TdarConfiguration {
 
     public String getJiraScriptLink() {
         return assistant.getStringProperty("jira.link", JIRA_LINK);
+    }
+    
+    public boolean isViewRowSupported() {
+        return assistant.getBooleanProperty("view.row.suppported", false);
     }
 
     public File getFremarkerTemplateDirectory() {

@@ -236,6 +236,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getSiteTypesHelpUrl() {
         return getTdarConfiguration().getSiteTypesHelpURL();
     }
+    
+    public String getMobileImportURL() {
+        return getTdarConfiguration().getMobileImportURL();
+    }
 
     public String getGoogleMapsApiKey() {
         return getTdarConfiguration().getGoogleMapsApiKey();
@@ -461,6 +465,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         super.addActionError(message);
     }
 
+    @Override
     public List<String> getStackTraces() {
         return stackTraces;
     }
@@ -485,6 +490,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return servletRequest;
     }
 
+    @Override
     public void setServletRequest(HttpServletRequest servletRequest) {
         this.servletRequest = servletRequest;
     }
@@ -493,6 +499,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return servletResponse;
     }
 
+    @Override
     public void setServletResponse(HttpServletResponse servletResponse) {
         this.servletResponse = servletResponse;
     }
@@ -564,5 +571,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     
     public String getCurrentUrl() {
         return UrlService.getCurrentAbsoluteUrlPath(servletRequest);
+    }
+    
+    public boolean isViewRowSupported() {
+        return getTdarConfiguration().isViewRowSupported();
     }
 }
