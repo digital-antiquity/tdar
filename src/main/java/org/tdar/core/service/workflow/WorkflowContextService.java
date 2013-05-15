@@ -124,7 +124,7 @@ logger.info("IRFILE {}",irFile);
 
             if (ctx.isProcessedSuccessfully()) {
                 logger.info("clearing status?: {}", irFile.getStatus());
-                irFile.clearQueuedStatus();
+                irFile.setStatus(FileStatus.PROCESSED);
             } else {
                 if (ctx.isErrorFatal()) {
                     irFile.setStatus(FileStatus.PROCESSING_ERROR);
