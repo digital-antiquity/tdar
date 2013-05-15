@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.data.FileProxy;
 
 /**
@@ -69,7 +70,7 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(getPersistable().getResourceType());
+        return analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET, ResourceType.IMAGE);
     }
 
 }
