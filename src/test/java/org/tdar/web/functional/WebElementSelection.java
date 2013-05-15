@@ -8,6 +8,7 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -172,5 +173,14 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
     
     public WebElement get(int i) {
         return elements.get(i);
+    }
+    
+    //return the dom html (not to be confused with the html source) 'inside' of the first selected webElement
+    public String getHtml() {
+        //there is no attribute named "innerHTML",  we just happen to know that it will work for most browsers.   if it fails,  do this:
+        //String contents = (String)((JavascriptExecutor)driver).executeScript("return arguments[0].innerHTML;", first());
+        //note that we'll need to pull in the WebDriver from the constructor to do this
+        String contents = first().getAttribute("innerHTML");
+        return contents;
     }
 }   

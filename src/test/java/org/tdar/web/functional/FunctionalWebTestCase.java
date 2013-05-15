@@ -120,6 +120,8 @@ public abstract class FunctionalWebTestCase {
         gotoPage("/logout");
     }
 
+    //TODO: jtd, instead of textContains, sourceContains, sourceContains,  maybe just getText, getSource, getDom.  There are junit matchers for text containment.
+    
     /*
      * Test TextContains
      */
@@ -129,4 +131,16 @@ public abstract class FunctionalWebTestCase {
         String _expected = expected.toLowerCase();
         return text.contains(_expected);
     }
+    
+    //case-sensitive search for body.innerHtml
+    public boolean domContains(String expected) {
+        String dom = find("body").getHtml();
+        return dom.contains(expected);
+    }
+    
+    //case-sensitive search in page source
+    public boolean sourceContains(String expected) {
+        return driver.getPageSource().contains(expected);
+    }
+    
 }

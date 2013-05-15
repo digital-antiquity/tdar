@@ -101,8 +101,7 @@ public class SensoryDataController extends AbstractInformationResourceController
     @Override
     public Collection<String> getValidFileExtensions() {
         List<String> validExtensions = new ArrayList<String>();
-        validExtensions.addAll(analyzer.getExtensionsForType(ResourceType.SENSORY_DATA));
-        validExtensions.addAll(Arrays.asList("csv", "xls", "xlsx"));
+        validExtensions.addAll(analyzer.getExtensionsForTypes(ResourceType.SENSORY_DATA, ResourceType.CODING_SHEET));
         return validExtensions;
     }
 
