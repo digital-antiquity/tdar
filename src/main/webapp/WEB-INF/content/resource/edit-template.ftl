@@ -184,9 +184,6 @@ $(function(){
       <#if licensesEnabled?? && licensesEnabled >
           <@edit.license />
       </#if>
-      <#if copyrightEnabled??>
-          <@edit.copyrightHolders "Copyright Holders" copyrightHolderProxies />
-      </#if>
     </#if>
 
 
