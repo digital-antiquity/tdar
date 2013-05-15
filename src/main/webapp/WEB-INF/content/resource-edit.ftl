@@ -59,9 +59,6 @@ $(function(){
       <#if licensesEnabled?? && licensesEnabled >
           <@edit.license />
       </#if>
-      <#if copyrightEnabled??>
-          <@edit.copyrightHolders "Copyright Holders" copyrightHolderProxies />
-      </#if>
     </#if>
     <@edit.resourceCreators 'Individual and Institutional Roles' creditProxies 'credit'  />
 	<@helptext.resourceCreator />
