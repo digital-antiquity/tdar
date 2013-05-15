@@ -4,18 +4,17 @@ import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -30,15 +29,20 @@ public abstract class FunctionalWebTestCase {
     @Before
     public void before() throws MalformedURLException {
         /*
-        DesiredCapabilities abilities = DesiredCapabilities.firefox();
-//        abilities.setCapability("version", "16");
-//        abilities.setCapability("platform", Platform.WINDOWS);
-        abilities.setCapability("name", "Testing Selenium-2 Remote WebDriver");
- 
-        driver = new RemoteWebDriver( new URL("http://localhost:4444/wd/hub"), abilities);
-//        driver =  new RemoteWebDriver(remoteAddress, desiredCapabilities) 
- */
-        driver = new FirefoxDriver();
+         * DesiredCapabilities abilities = DesiredCapabilities.firefox();
+         * // abilities.setCapability("version", "16");
+         * // abilities.setCapability("platform", Platform.WINDOWS);
+         * abilities.setCapability("name", "Testing Selenium-2 Remote WebDriver");
+         * 
+         * driver = new RemoteWebDriver( new URL("http://localhost:4444/wd/hub"), abilities);
+         * // driver = new RemoteWebDriver(remoteAddress, desiredCapabilities)
+         */
+        FirefoxBinary fb = new FirefoxBinary();
+        String xvfbPropsFile = System.getProperty("display.port");
+        if (StringUtils.isNotBlank(xvfbPropsFile)) {
+            fb.setEnvironmentProperty("display.port", xvfbPropsFile);
+        }
+        driver = new FirefoxDriver(fb, new FirefoxProfile());
     }
 
     /*
