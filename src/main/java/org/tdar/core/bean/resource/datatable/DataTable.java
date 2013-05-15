@@ -111,6 +111,7 @@ public class DataTable extends Persistable.Base {
      */
     public List<DataTableColumn> getSortedDataTableColumns() {
         return getSortedDataTableColumns(new Comparator<DataTableColumn>() {
+            @Override
             public int compare(DataTableColumn a, DataTableColumn b) {
                 int comparison = a.compareTo(b);
                 if (comparison == 0) {
@@ -211,6 +212,7 @@ public class DataTable extends Persistable.Base {
         return description;
     }
 
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder(name).append(" - ").append(getId() == null ? -1 : getId());
         return builder.toString();
