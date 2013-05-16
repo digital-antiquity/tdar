@@ -9,27 +9,28 @@ import org.junit.Test;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 
 /**
- * This is a rewrite of org.tdar.web.LoginWebITCase.  
+ * This is a rewrite of org.tdar.web.LoginWebITCase.
+ * 
  * @author jimdevos
- *
+ * 
  */
-public class LoginFunctionalITCase extends FunctionalWebTestCase{
-    
+public class LoginFunctionalITCase extends FunctionalWebTestCase {
+
     @Before
     public void setup() {
         login();
     }
-    
+
     @After
     public void teardown() {
         logout();
     }
-    
+
     @Test
     public void testAbstractLogin() {
-        assertTrue(textContains("Welcome back,"));   
+        assertTrue(textContains("Welcome back,"));
     }
-    
+
     @Test
     public void testSecondLogin() {
         gotoPage("/login");
@@ -39,11 +40,11 @@ public class LoginFunctionalITCase extends FunctionalWebTestCase{
     @Test
     public void testInvalidLogin() {
         logout();
-        login("BAD USERNAME","BAD PASSWORD");
+        login("BAD USERNAME", "BAD PASSWORD");
         assertTrue(textContains(AuthenticationResult.INVALID_PASSWORD.getMessage()));
         assertFalse(textContains("Your submitted projects"));
     }
-    
+
     @Test
     public void testLogout() {
         logout();
