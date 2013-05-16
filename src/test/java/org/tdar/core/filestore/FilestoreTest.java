@@ -127,9 +127,10 @@ public class FilestoreTest {
         StorageMethod rotate = StorageMethod.ROTATE;
         rotate.setRotations(5);
         store.storeAndRotate(f, version, rotate);
+        version.setTransientFile(f);
         store.storeAndRotate(f, version, rotate);
 
-        File tmpFile = version.getTransientFile();
+        File tmpFile = store.retrieveFile(version);
         assertTrue(tmpFile.exists());
         File rotated = new File(tmpFile.getParentFile(), String.format("%s.1.%s", FilenameUtils.getBaseName(tmpFile.getName()),
                 FilenameUtils.getExtension(tmpFile.getName())));
