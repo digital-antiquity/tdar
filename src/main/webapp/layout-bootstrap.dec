@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<#global _foobar = 'foobar'>
+<#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
+<#import "/WEB-INF/macros/header.ftl" as header>
+<#global qunit = (Parameters.qunit)??  && !production>
+
+    <head>
+        <title>${title!siteName}</title>
+        <#if authenticatedUser??>
+	        <!-- logged-in-as: ${sessionData.person.email} -->
+        </#if>
+		<!-- BEGIN-PAGE-HEADER -->        
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+        <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
+        <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}"> 
+
+		<#-- dev only 
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
+        -->
+		<script src="/includes/modernizr-custom-2.6.2.min.js"></script>
+        
+		<link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet">
+		<!--[if gt IE 8]><!--> <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen"> <!--<![endif]-->
+		
+
+        <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'>
+        <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet">
+        <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-print.css"/>" rel="stylesheet" media="print">
+        <#if qunit>
+            <link rel="stylesheet" href="/css/qunit-1.11.0.css" type="text/css">
+        </#if>
+        
+        <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
+        <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+        <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
+
+        <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
+        <#include "${themeDir}/head.dec" />
+        
+
+
+    <#assign uri = request.requestURI />
+    <#assign bodyid = 'home' />
+    <#if (uri != '' && uri != '/about')>
+        <#assign bodyid = "alt" />
+    </#if>
+    <@header.css production />
+        
+    ${head}
+
+    <@common.globalJavascript />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>">
+    <#if qunit>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+    </#if>
+    <div class="container">
+        <div class="row">
+            <header class="span12">
+                <#include "${themeDir}/header.dec" />
+                <#if (authenticatedUser??) > 
+
+                    <p id="welcome-menu" class="welcome no-print ">
+                        Welcome back, <a href="">${authenticatedUser.properName}</a>
+                        <i class="caret drop-down"></i>
+                    </p>
+    
+                    <div class="welcome-drop no-print ">
+    
+                        <p>${authenticatedUser.properName}</p>
+    
+                        <ul>
+                            <li><a href="<@s.url value="/resource/add"/>">Upload a resource</a></li>
+                            <li><a href="<@s.url value="/project/add"/>">Create a project</a></li>
+                            <li><a href="<@s.url value="/collection/add"/>">Create a collection</a></li>
+                            <li><a href="<@s.url value="/dashboard"/>">View my dashboard</a></li>
+                            <li><a href="<@s.url value="/dashboard#bookmarks"/>">Bookmarks</a></li>
+                        </ul>
+    
+                        <ul>
+                            <li><a href="<@s.url value='/entity/person/myprofile'/>">My Profile</a></li>
+                            <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">Contact Us</a></li>
+                            <li><a href="<@s.url value="/logout"/>">Sign Out</a></li>
+                        </ul>
+                        
+                        <#if administrator>
+                        <ul>
+                            <li>Administrator Options</li>
+                            <li><a href="<@s.url value='/admin'/>">Admin main</a></li>
+                            <li><a href="<@s.url value='/admin/system/activity'/>">System activity</a></li>
+                            <li><a href="<@s.url value='/admin/searchindex/build'/>">reindex</a></li>
+                        </ul>
+                        </#if>
+                        
+                    </div>
+                </#if>
+
+                <nav >
+                    <ul class="hidden-phone-portrait">
+                        <#include "${themeDir}/nav-items.dec" />
+                        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
+                        <li class="button hidden-phone"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li>
+                        <li>
+                        <#if bodyid != 'home'>
+                            <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform hidden-phone hidden-tablet no-print">
+                                <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; " >
+                            </form>
+                        </#if>
+                        </li>
+                    </ul>
+    
+                </nav>
+            </header>
+    </div> 
+<#if bodyid == 'home'>
+        <div class="row">
+            <div class="hero">
+            <#include "${themeDir}/homepage-banner.dec" />
+                <@common.loginMenu true/>
+            </div>
+            <ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>
+       </div>
+            
+            
+            <#include "${themeDir}/homepage-column-one.dec" />
+    
+<#else>
+<div class="row">
+    <div class="span12 subnav">
+        <ul class="subnav-lft">
+            <li><a href="<@s.url value="/search"/>">Search</a></li>
+            <li><a href="<@s.url value="/search/results"/>">Browse</a></li>
+            <li><a href="<@s.url value="/browse/explore"/>">Explore</a></li>
+              <#if sessionData?? && sessionData.authenticated>
+	              <li><a href="<@s.url value="/dashboard"/>">Dashboard</a></li>
+                  <li><a href="<@s.url value="/workspace/select-tables"/>">Integrate</a></li>
+                <#if editor>
+                    <li><a href="<@s.url value="/admin"/>">Admin</a></li>
+                </#if>
+            </#if>
+        </ul>
+        <@common.loginMenu true />
+    </div>
+</div>
+<!-- BEGIN-TDAR-CONTENT -->
+
+
+
+</#if>
+    <#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
+    	<!-- toolbar -->
+    	<div class="row">
+        ${page.properties["div.toolbars"]}
+        </div>
+    </#if>
+    
+
+    <div class="row">
+    <!-- action errors  fix me only show if visible -->
+        <div class="span12">
+            <#if  page.properties["div.messages"]?? && page.properties["div.messages"] != "">
+                ${page.properties["div.messages"]}
+            </#if>
+            <@common.actionmessage />
+            <#if ((actionErrors![])?size > 0)>
+            <h3>${siteAcronym} encountered the following problems with your submission</h3>
+				<#-- fixme -- @s.actionerrors need to be here, but in some cases, it duplicates errors -->
+            	<@s.actionerror theme="bootstrap" cssClass="action-errors" />
+            <#if ((stackTraces![])?size > 0)>
+            <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggleClass('hidden');return false;" class="btn btn-mini btn-warning btn-invert">Show/Hide Details</a>
+            <div id="stackTraceList" class="<#if production>hidden</#if>">
+                <#list stackTraces as _stacktrace>
+<#--don't indent this pre section  -->
+<pre class="pre-scrollable">
+<em>Stacktrace ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
+${_stacktrace?html}
+</pre>
+                </#list>
+            </div>
+            </#if>
+            </#if>
+            <@s.fielderror theme="bootstrap" />
+        </div>
+    </div>
+
+    <#assign part="" />
+    <#assign spanSize = 12/>
+    <#if  page.properties["div.sidebar-left"]?has_content ||  page.properties["div.sidebar-right"]?has_content >
+        <#assign part="cols" />
+        <#assign spanSize = 9/>
+    <#elseif page.properties["div.sidebar-left"]?has_content && page.properties["div.sidebar-right"]?has_content >
+        <#assign part="cols" />
+        <#assign spanSize = 6/>
+    </#if> 
+
+    <#--FIXME: need a better way to hint to layout that we are rendering search results, or perhaps just use a separate layout file  -->
+    <#if (lookupSource?? || actionName=='collections') ><#assign part="searchresults" /></#if>
+    
+    <#if page.properties["div.titlebar"]?has_content>
+        ${page.properties["div.titlebar"]}
+    </#if>
+
+    <section class="row ${part}">
+
+        <#if page.properties["div.sidebar-left"]?has_content>
+            <aside class="span3">
+            ${page.properties["div.sidebar-left"]}
+           </aside>
+        </#if>
+
+        <article class="span${spanSize} results" id="articleBody">
+            <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
+            <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
+            ${body}
+        </article> 
+
+        <#if page.properties["div.sidebar-right"]?has_content>
+            <aside class="span3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
+            ${page.properties["div.sidebar-right"]}
+           </aside>
+        </#if>
+    </section>
+
+
+</div>
+    <!-- BEGIN-TDAR-FOOTER -->
+    <footer>
+        <div class="container">
+            <#include "${themeDir}/footer.dec" />
+            <div>
+                <p><small>
+                    build #: ${common.tdarBuildId}
+                    <#if authenticatedUser??>
+                       - logged in as: <a href="<@s.url value="/browse/creators/${sessionData.person.id?c}"/>">${sessionData.person.email}</a>
+                    </#if>
+                </small></p>
+            </div>
+        </div>
+
+    </footer>
+        <#if production>
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>        
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.min.js"></script>        
+        <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+        <#else>
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>        
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.js"></script>        
+        <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.js"></script>
+        </#if>
+        
+
+        <script type="text/javascript">
+        //functionality for "welcome back, so-and-so!" (pulled from main.js)
+        //FIXME: needs refactoring
+        $(function(){
+            $("#welcome-menu a").click(function(){
+                $(".welcome-drop").toggle();
+                return false;
+            });
+            
+            $(document).click(function(){  
+              $('.welcome-drop').hide();
+            });
+        
+	        applyWatermarks($('form.searchheader, form[name=searchheader]'));
+        });
+        </script>
+    <@header.scripts production />
+    <script type="text/javascript">
+    //this is temporary - our localhost v2 api key apparently incompatible with v3 api key.
+    TDAR.maps.googleApiKey = "AIzaSyB532T66Gm5utEfPxiexOWhDc9tr2kyzsI";
+    TDAR.maps.defaults.center.lat = ${mapDefaultLat};
+    TDAR.maps.defaults.center.lng = ${mapDefaultLng};
+    TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
+    </script>
+    <div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
+    <#if qunit>
+        <script src="/includes/qunit-1.11.0.js"></script>
+    </#if>
+    
+    <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
+		<script type="text/javascript" src="${jiraScriptLink}"></script>
+	</#if>
+    
+    <#if qunit>
+        <#-- close the test fixture div -->
+        </div>
+    </#if>
+	
+    </body>
+</html>
