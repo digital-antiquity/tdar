@@ -103,7 +103,7 @@
 </#macro>
 
 <#macro localJavascript>
-	<#if (dataset.dataTables?size > 1)>
+	<#if (dataset.dataTables?has_content)>
     jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages =3;
         $.extend( $.fn.dataTableExt.oStdClasses, {
         "sWrapper": "dataTables_wrapper form-inline"
@@ -140,6 +140,6 @@
            "sAjaxSource": "<@s.url value="/datatable/browse?id=${dataTable.id?c}" />"
     };
     registerLookupDataTable(options);    
-</#if>
+    </#if>
 </#macro>
 </#escape>
