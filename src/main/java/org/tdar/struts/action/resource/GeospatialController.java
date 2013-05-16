@@ -31,17 +31,15 @@ import org.tdar.struts.data.FileProxy;
 @Result(name = "input", location = "edit.ftl")
 public class GeospatialController extends AbstractDatasetController<Geospatial> {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 6576781526708737335L;
 
     @Override
     protected String save(Geospatial persistable) {
         super.saveBasicResourceMetadata();
 
         super.saveInformationResourceProperties();
-        getDatasetService().saveOrUpdate(persistable);
+//        getDatasetService().saveOrUpdate(persistable);
         // HACK: implicitly cache fullUsers via call to getProjectAsJson() as workaround for TDAR-1162. This is the software equivalent of turning the radio up
         // to mask weird sounds your engine is making
 
@@ -64,13 +62,36 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
         return Geospatial.class;
     }
 
-    public Dataset getGeospatial() {
+    public Geospatial getGeospatial() {
         return getPersistable();
+    }
+
+    public void setGeospatial(Geospatial dataset) {
+        setPersistable(dataset);
     }
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET, ResourceType.IMAGE);
+        Set<String> extensionsForTypes = analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET, ResourceType.IMAGE);
+        extensionsForTypes.add("shx");
+        extensionsForTypes.add("shp.xml");
+        extensionsForTypes.add("sbx");
+        extensionsForTypes.add("xml");
+        extensionsForTypes.add("dbf");
+        extensionsForTypes.add("sbn");
+        return extensionsForTypes;
     }
 
+    @Override
+    public Geospatial getResource() {
+        if (getPersistable() == null)
+            setPersistable(createPersistable());
+        return getPersistable();
+    }
+
+
+    @Override
+    public boolean isMultipleFileUploadEnabled() {
+        return true;
+    }
 }

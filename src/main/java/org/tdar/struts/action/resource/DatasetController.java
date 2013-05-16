@@ -47,7 +47,7 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
         super.saveBasicResourceMetadata();
 
         super.saveInformationResourceProperties();
-//        getDatasetService().saveOrUpdate(dataset);
+        // getDatasetService().saveOrUpdate(dataset);
         // HACK: implicitly cache fullUsers via call to getProjectAsJson() as workaround for TDAR-1162. This is the software equivalent of turning the radio up
         // to mask weird sounds your engine is making
 
