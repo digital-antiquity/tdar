@@ -12,7 +12,8 @@
     </div>
 </#macro>
 
-<#macro localSection>
+<#macro localSection cols=9>
+<#local spanall  = "span${cols}">
 <div id="divScanInfo" style="display:none">
     <#assign _scans=sensoryDataScans />
     <#if _scans.isEmpty()>
@@ -284,17 +285,27 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     </div>
 </div>
 
-<@s.radio name='sensoryData.scannerTechnology' emptyOption='false' listValue="label"  
+<@s.select name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"  headerKey="" headerValue="Not Specified"
             list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
-
-<div class="well">
-	<h3>Metadata Template</h3>
-	<p>Due to the variability and complexity of sensory data scans, we're providing a template you can use to include the details of how your scan was captured and composed.  Please download.</p>
-	
-	<p><a class="btn btn-success">DOWNLOAD TEMPLATE</a></p>
-	<br/>
-	<@s.file label="Completed Metadata Template" cssClass="validateFileType" labelposition='top' name='uploadedFiles' size='40'/>
+            
+<div id="scantypeFileReminder" style="display:none">
+    <div class="well">
+        <h4>Scan Metadata Templates</h4>
+        <p>Due to the variability and complexity of sensory data scans, we're providing templates you can use to include the details of how your scan was captured and composed.</p>
+        <h5>Available Templates</h5>
+        <div class="well">
+          <ul>
+              <li><a target="_blank" href="/includes/sensory-data/scan_metadata_tof_phase.xlsx"><i class="icon-file"></i> scan_metadata_tof.xlsx</a>
+                    best for time-of-flight and phase-based scans</li>
+              <li><a target="_blank"  href="/includes/sensory-data/scan_metadata_triangulation.xlsx" ><i class="icon-file"></i> scan_metadata_triangulation.xlsx</a>
+                    best for triangulation scans</li>
+              <li><a target="_blank"  href="/includes/sensory-data/scan_metadata_combined.xlsx" ><i class="icon-file"></i> scan_metadata_combined.xlsx</a>
+                    best for scans that involve multiple scan technologies</li>
+          </ul>
+        </div>
+    </div>
 </div>
+
 
 </#macro>
 
@@ -343,6 +354,14 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
         messages: {
             valueRequiresAsyncUpload: "Please include a scan manifest file when choosing this scan type"}
     });
+    
+    $('#selScannerTechnology').change( function() {
+        if($(this).val()) {
+            $('#scantypeFileReminder').show();
+        } else {
+            $('#scantypeFileReminder').hide();
+        }
+    }).change();
 </#macro>
  
 </body>
