@@ -304,7 +304,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <div id="siteSection" tooltipcontent="#siteinfohelp">
     <h2>${divTitle}</h2>
     <@inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
-    <div id="divSiteInformation" \>
+    <div id="divSiteInformation" >
         <@keywordRows "Site Name" siteNameKeywords 'siteNameKeywords' />
         
         <div class="control-group">
@@ -1559,7 +1559,7 @@ $(function() {
                     <@s.select theme="tdar" name="${strutsPrefix}.role" listValue='label' list=relevantInstitutionRoles cssClass="creator-role-select span2" />
                     <#else>
                     <#-- is includeRole ever false?  if not we should ditch the parm entirely, perhaps the entire macro. -->
-                    <div class="span2">&nbsp</div>
+                    <div class="span2">&nbsp;</div>
                     </#if>
                 </div>
     </div>

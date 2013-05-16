@@ -40,7 +40,8 @@ public abstract class FunctionalWebTestCase {
         FirefoxBinary fb = new FirefoxBinary();
         String xvfbPropsFile = System.getProperty("display.port");
         if (StringUtils.isNotBlank(xvfbPropsFile)) {
-            fb.setEnvironmentProperty("display.port", xvfbPropsFile);
+            fb.setEnvironmentProperty("DISPLAY", xvfbPropsFile);
+//            fb.set
         }
         driver = new FirefoxDriver(fb, new FirefoxProfile());
     }

@@ -66,6 +66,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         // docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
+                //     authorizedUsers[0].user.id
         docValMap.put("authorizedUsers[0].user.id", "121");
         docValMap.put("authorizedUsers[1].user.id", "5349");
         docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());

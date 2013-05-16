@@ -74,8 +74,7 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 <#macro geo>
     <div style="display:none" id="geoHelpDiv">
     Identify the approximate region of this resource by clicking on &quot;Select Region&quot; and drawing a bounding box on the map.
-                    <br/>Note: to protect site security, ${siteAcronym} obfuscates all bounding boxes, bounding boxes smaller than 1 mile, especially.  This 'edit' view 
-                    will always show the exact coordinates.
+    <br/>Note: to protect site security, ${siteAcronym} obfuscates all bounding boxes, bounding boxes smaller than 1 mile, especially.  This 'edit' view will always show the exact coordinates.
     </div>
 </#macro>
 
@@ -92,7 +91,6 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
             </ul>
             <aside><p><strong>Note:</strong> to protect site security, ${siteAcronym} obfuscates all bounding boxes, bounding boxes smaller than 1 mile.  This 'edit' view will 
             always show the exact coordinates.</p></aside>
-                           
          </div>
     </div>
 </#macro>

@@ -71,7 +71,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
         assertTrue(result);
-        assertEquals(null, informationResourceFile.getStatus());
+        assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
         InformationResourceFileVersion indexableVersion = informationResourceFile.getIndexableVersion();
         logger.info("version: {}" , indexableVersion);
         String text = FileUtils.readFileToString(indexableVersion.getFile());

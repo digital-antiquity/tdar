@@ -1802,7 +1802,7 @@
 		<profile>
 			<id>start-x-server</id>
 			<properties>
-				<display.port>20</display.port>
+				<display.port>:20</display.port>
 			</properties>
 			<build>
 				<plugins>
