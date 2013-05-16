@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -184,7 +185,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         // of these files for both text input and file uploads
         for (InformationResourceFileVersion version : getPersistable().getLatestVersions(VersionType.UPLOADED_TEXT)) {
             try {
-                return FileUtils.readFileToString(version.getFile());
+                return FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
             } catch (Exception e) {
                 logger.debug("an error occurred when trying to load the text version of a file", e);
             }

@@ -445,7 +445,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
             InformationResourceFile translatedFile = datasetService.createTranslatedFile(dataset);
             ExcelUnit excelUnit = new ExcelUnit();
-            excelUnit.open(translatedFile.getTranslatedFile().getFile());
+            excelUnit.open(translatedFile.getTranslatedFile().getTransientFile());
             assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
         } catch (OutOfMemoryError oem) {
             logger.debug("Well, guess I ran out of memory...", oem);

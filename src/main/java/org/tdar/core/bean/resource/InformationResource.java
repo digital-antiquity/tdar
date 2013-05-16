@@ -528,23 +528,20 @@ public abstract class InformationResource extends Resource {
     // @Boost(0.5f)
     @XmlTransient
     @JSONTransient
-    public List<URI> getContent() {
+    public List<InformationResourceFileVersion> getContent() {
         logger.trace("getContent");
         List<InformationResourceFile> files = getPublicFiles();
         if (CollectionUtils.isEmpty(files)) {
             return null;
         }
         // List<InputStream> streams = new ArrayList<InputStream>();
-        List<URI> fileURIs = new ArrayList<URI>();
+        List<InformationResourceFileVersion> fileURIs = new ArrayList<InformationResourceFileVersion>();
         for (InformationResourceFile irFile : files) {
             try {
                 if (irFile.getRestriction().isRestricted())
                     continue;
                 InformationResourceFileVersion indexableVersion = irFile.getIndexableVersion();
-                if (indexableVersion.getFile().exists()) {
-                    fileURIs.add(indexableVersion.getFile().toURI());
-                    logger.trace("getting indexed content for " + getId() + ": length:" + ("" + indexableVersion.getIndexableContent()).length());
-                }
+                fileURIs.add(indexableVersion);
             } catch (Exception e) {
                 logger.trace("an exception occured while reading file: {} ", e);
             }

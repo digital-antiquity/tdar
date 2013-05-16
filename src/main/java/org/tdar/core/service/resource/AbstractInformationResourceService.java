@@ -255,6 +255,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
         irFile.addFileVersion(version);
         filestore.store(fileProxy.getFile(), version);
+        version.setTransientFile(fileProxy.getFile());
         getDao().save(version);
         getDao().saveOrUpdate(irFile);
         return version;

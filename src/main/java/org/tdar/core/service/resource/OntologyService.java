@@ -2,6 +2,8 @@ package org.tdar.core.service.resource;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -43,11 +45,15 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.OntologyDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.parser.OwlApiHierarchyParser;
 import org.tdar.utils.Pair;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * Transactional service providing persistence access to OntologyS as well as
@@ -228,6 +234,31 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         }
     }
 
+    
+    public OntModel toOntModel(Ontology ontology) throws FileNotFoundException {
+        Collection<InformationResourceFileVersion> files = ontology.getLatestVersions();
+        if (files.size() != 1) {
+            throw new TdarRecoverableRuntimeException("expected only one IRFileVersion, but found: " + files.size());
+        }
+        for (InformationResourceFileVersion irFile : files) {
+            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFile);
+            if (file.exists()) {
+                OntModel ontologyModel = ModelFactory.createOntologyModel();
+                String url = ontology.getUrl();
+                if (url == null)
+                    url = "";
+                try {
+                    ontologyModel.read(new FileReader(file), url);
+                    return ontologyModel;
+                } catch (FileNotFoundException exception) {
+                    // this should never happen since we're explicitly checking file.exists()...
+                    throw new RuntimeException(exception);
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * @param file
      * @return
@@ -236,7 +267,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         File tempFile = null;
         Document ontologyXML = null;
         try {
-            ontologyXML = DocumentHelper.parseText(FileUtils.readFileToString(file.getFile()));
+            ontologyXML = DocumentHelper.parseText(FileUtils.readFileToString(file.getTransientFile()));
         } catch (Exception e) {
             logger.debug("cannot store import order:", e);
 
@@ -277,13 +308,14 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     }
 
     public OWLOntology toOwlOntology(InformationResourceFileVersion file) {
-        if (file != null && file.getFile().exists()) {
+        File transientFile = file.getTransientFile();
+        if (file != null && transientFile.exists()) {
             File tempFile = storeImportOrder(file);
             if (tempFile != null) {
                 IRI iri = IRI.create(tempFile);
                 return loadFromIRI(iri);
             } else {
-                IRI iri = IRI.create(file.getFile());
+                IRI iri = IRI.create(transientFile);
                 return loadFromIRI(iri);
             }
             // IRI iri = IRI.create(file.getFile());

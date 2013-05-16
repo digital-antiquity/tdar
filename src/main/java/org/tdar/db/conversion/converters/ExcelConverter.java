@@ -66,7 +66,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             logger.warn("Received null information resource file.");
             return;
         }
-        File excelFile = informationResourceFileVersion.getFile();
+        File excelFile = informationResourceFileVersion.getTransientFile();
         if (excelFile == null) {
             logger.error("InformationResourceFile's file was null, this should never happen.");
             return;
@@ -119,7 +119,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             numberOfActualSheets++;
             try {
                 if (numberOfActualSheets == 1 && sheetName.equals(DEFAULT_SHEET_NAME)) {
-                    sheetName = FilenameUtils.getBaseName(informationResourceFileVersion.getFile().getName());
+                    sheetName = FilenameUtils.getBaseName(informationResourceFileVersion.getTransientFile().getName());
                 }
                 processSheet(currentSheet, sheetName);
             } catch (Exception e) {

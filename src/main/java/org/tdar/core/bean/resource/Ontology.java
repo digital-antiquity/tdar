@@ -80,29 +80,6 @@ public class Ontology extends InformationResource implements SupportsResource {
         setResourceType(ResourceType.ONTOLOGY);
     }
 
-    public OntModel toOntModel() {
-        Collection<InformationResourceFileVersion> files = getLatestVersions();
-        if (files.size() != 1) {
-            throw new TdarRecoverableRuntimeException("expected only one IRFileVersion, but found: " + files.size());
-        }
-        for (InformationResourceFileVersion irFile : files) {
-            File file = irFile.getFile();
-            if (file.exists()) {
-                OntModel ontologyModel = ModelFactory.createOntologyModel();
-                String url = getUrl();
-                if (url == null)
-                    url = "";
-                try {
-                    ontologyModel.read(new FileReader(file), url);
-                    return ontologyModel;
-                } catch (FileNotFoundException exception) {
-                    // this should never happen since we're explicitly checking file.exists()...
-                    throw new RuntimeException(exception);
-                }
-            }
-        }
-        return null;
-    }
 
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;

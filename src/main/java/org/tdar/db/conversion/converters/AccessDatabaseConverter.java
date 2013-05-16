@@ -66,7 +66,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
 
     protected void openInputDatabase()
             throws IOException {
-        File databaseFile = getInformationResourceFileVersion().getFile();
+        File databaseFile = getInformationResourceFileVersion().getTransientFile();
         // if we use ReadOnly Mode here we have the ability to open older files... http://jira.pentaho.com/browse/PDI-5111
         setDatabase(Database.open(databaseFile, true));
         this.setIrFileId(getInformationResourceFileVersion().getId());

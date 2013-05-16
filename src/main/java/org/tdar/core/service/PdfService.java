@@ -155,7 +155,8 @@ public class PdfService implements Serializable {
                 template = createCoverPage(submitter, template, document);
 
                 // merge the two PDFs
-                return mergePDFs(template, version.getFile());
+                
+                return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
             } else {
                 throw new TdarRecoverableRuntimeException("file type was not valid or file was null");
             }

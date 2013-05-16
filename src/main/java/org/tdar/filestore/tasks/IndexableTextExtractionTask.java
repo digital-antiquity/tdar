@@ -44,7 +44,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
     }
 
     public void run(InformationResourceFileVersion version) throws Exception {
-        File file = version.getFile();
+        File file = version.getTransientFile();
         FileOutputStream metadataOutputStream = null;
         FileInputStream stream = null;
         File metadataFile = new File(getWorkflowContext().getWorkingDirectory(), file.getName() + ".metadata");

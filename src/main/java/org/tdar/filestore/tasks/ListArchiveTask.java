@@ -35,7 +35,7 @@ public class ListArchiveTask extends AbstractTask {
     @Override
     public void run() throws Exception {
         for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
-            File f_ = version.getFile();
+            File f_ = version.getTransientFile();
             // take the file
             getLogger().debug("listing contents of: " + f_.getName());
             File f = new File(getWorkflowContext().getWorkingDirectory(), f_.getName() + ".contents.txt");

@@ -75,7 +75,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         for (InformationResourceFileVersion version : informationResourceFile.getLatestVersions()) {
             logger.info(version);
             if (version.isTranslated()) {
-                String contents = FileUtils.readFileToString(version.getFile());
+                String contents = FileUtils.readFileToString(version.getTransientFile());
                 assertTrue(contents.contains("Ark_HM_Headpot_01.txt"));
                 assertTrue(contents.contains("Ark_HM_Headpot_mtrx_01.txt"));
                 seen = true;

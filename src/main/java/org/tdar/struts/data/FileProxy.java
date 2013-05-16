@@ -91,7 +91,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
      * @param version
      */
     public FileProxy(InformationResourceFileVersion version) throws IOException {
-        this(version.getFilename(), version.getFile(), VersionType.UPLOADED, FileAction.ADD);
+        this(version.getFilename(), version.getTransientFile(), VersionType.UPLOADED, FileAction.ADD);
         setFileId(version.getInformationResourceFileId());
     }
 

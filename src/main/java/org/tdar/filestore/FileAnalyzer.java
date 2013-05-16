@@ -111,7 +111,7 @@ public class FileAnalyzer {
 
     private void checkFilesExist(InformationResourceFileVersion[] informationResourceFileVersions) throws FileNotFoundException, IOException {
         for (InformationResourceFileVersion version : informationResourceFileVersions) {
-            File file = version.getFile();
+            File file = version.getTransientFile();
 
             if (file == null) {
                 throw new FileNotFoundException(version + " -- file does not exist");

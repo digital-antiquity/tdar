@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -54,7 +55,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     private PdfService pdfService;
 
     @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-download.ftl") })
-    public String confirm() throws TdarActionException {
+    public String confirm() throws TdarActionException, FileNotFoundException {
         // FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
         String status = execute();
         if (status != SUCCESS) {
@@ -85,7 +86,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     }
 
     @Action(value = THUMBNAIL, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
-    public String thumbnail() throws TdarActionException {
+    public String thumbnail() throws TdarActionException  {
         InformationResourceFileVersion irFileVersion = null;
         if (informationResourceFileId == null)
             return ERROR;

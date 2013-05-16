@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.TdarActionException;
@@ -71,7 +72,7 @@ public class DownloadService {
         Collection<File> files = new LinkedList<File>();
 
         for (InformationResourceFileVersion version : resource.getLatestVersions()) {
-            files.add(version.getFile());
+            files.add(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
         }
     }
 
@@ -80,47 +81,52 @@ public class DownloadService {
     }
 
     @Transactional
-    public void handleDownload(Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion ... irFileVersions) throws TdarActionException {
-        if (ArrayUtils.isEmpty((irFileVersions)) || irFileVersions.length > 1  ) {
+    public void handleDownload(Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion... irFileVersions) throws TdarActionException {
+        if (ArrayUtils.isEmpty((irFileVersions)) || irFileVersions.length > 1) {
             throw new TdarRecoverableRuntimeException("unsupported action");
         }
         InformationResourceFileVersion irFileVersion = irFileVersions[0];
-            File resourceFile = irFileVersion.getFile();
-            dh.setFileName(irFileVersion.getFilename());
-            if (resourceFile == null || !resourceFile.exists()) {
+        File resourceFile = null;
+        try {
+            resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFileVersion);
+        } catch (FileNotFoundException e1) {
+            throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
+        }
+        dh.setFileName(irFileVersion.getFilename());
+        if (resourceFile == null || !resourceFile.exists()) {
+            throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
+        }
+
+        // If it's a PDF, add the cover page if we can, if we fail, just send the original file
+        if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
+            try {
+                resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
+                dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
+            } catch (Exception e) {
+                logger.error("Error occured while merging cover page onto " + irFileVersion, e);
+            }
+        }
+        try {
+            logger.debug("downloading file:" + resourceFile.getCanonicalPath());
+        } catch (IOException e) {
+            // Note: this was being "eaten" ... so not sure if we should throw exception here or not
+            logger.error("{}", e);
+        }
+        dh.setContentLength(resourceFile.length());
+        dh.setContentType(irFileVersion.getMimeType());
+        if (dh.getInputStream() == null) {
+            try {
+                dh.setInputStream(new FileInputStream(resourceFile));
+            } catch (FileNotFoundException e) {
                 throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
             }
-
-            // If it's a PDF, add the cover page if we can, if we fail, just send the original file
-            if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
-                try {
-                    resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
-                    dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
-                } catch (Exception e) {
-                    logger.error("Error occured while merging cover page onto " + irFileVersion, e);
-                }
-            }
-            try {
-                logger.debug("downloading file:" + resourceFile.getCanonicalPath());
-            } catch (IOException e) {
-                //Note: this was being "eaten" ... so not sure if we should throw exception here or not
-                logger.error("{}", e);
-            }
-            dh.setContentLength(resourceFile.length());
-            dh.setContentType(irFileVersion.getMimeType());
-            if (dh.getInputStream() == null) {
-                try {
-                    dh.setInputStream(new FileInputStream(resourceFile));
-                } catch (FileNotFoundException e) {
-                    throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
-                }
-            }
-            if (!irFileVersion.isDerivative()) {
-                InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
-                FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
-                genericService.save(stat);
-                initDispositionPrefix(irFile.getInformationResourceFileType(), dh);
-            }
+        }
+        if (!irFileVersion.isDerivative()) {
+            InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
+            FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
+            genericService.save(stat);
+            initDispositionPrefix(irFile.getInformationResourceFileType(), dh);
+        }
     }
 
     // indicate in the header whether the file should be received as an attachment (e.g. give user download prompt)

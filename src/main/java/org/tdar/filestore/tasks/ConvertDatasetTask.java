@@ -1,8 +1,11 @@
 package org.tdar.filestore.tasks;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
@@ -21,19 +24,41 @@ public class ConvertDatasetTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        for (InformationResourceFileVersion versionToConvert : getWorkflowContext().getOriginalFiles()) {
-            File file = versionToConvert.getFile();
-            if (!getWorkflowContext().getResourceType().hasDataTables()) {
-                getLogger().info("This is not actually a dataset (probably a coding sheet), returning");
-                return;
+        if (!getWorkflowContext().getResourceType().hasDataTables()) {
+            getLogger().info("This is not actually a dataset (probably a coding sheet), returning");
+            return;
+        }
+
+        List<InformationResourceFileVersion> filesToProcess = new ArrayList<>(getWorkflowContext().getOriginalFiles());
+        
+        File file = getWorkflowContext().getOriginalFiles().get(0).getTransientFile();
+        File workingDir = new File(getWorkflowContext().getWorkingDirectory(), file.getName());
+        workingDir.mkdir();
+        FileUtils.copyFileToDirectory(file, workingDir);
+        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+            FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
+            version.setTransientFile(new File(workingDir, version.getFilename()));
+        }
+
+        
+        if (getWorkflowContext().getResourceType() == ResourceType.GEOSPATIAL) {
+            for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+                if (version.getExtension().equals("shp")) {
+                    filesToProcess.clear();
+                    filesToProcess.add(version);
+                }
             }
+        }
+
+        for (InformationResourceFileVersion versionToConvert : filesToProcess) {
+            file = versionToConvert.getTransientFile();
 
             if (file == null) {
                 getLogger().warn("No datasetFile specified, returning");
                 return;
             }
 
-            if (versionToConvert == null || !versionToConvert.hasValidFile()) {
+            if (versionToConvert == null || !versionToConvert.getTransientFile().exists()) {
                 // abort!
                 String msg = String.format(FILE_DOES_NOT_EXIST, versionToConvert, versionToConvert.getId());
                 getLogger().error(msg);

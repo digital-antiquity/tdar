@@ -103,7 +103,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         Set<String> duplicates = new HashSet<String>();
         List<CodingRule> incomingCodingRules = new ArrayList<CodingRule>();
         try {
-            stream = new FileInputStream(version.getFile());
+            stream = new FileInputStream(version.getTransientFile());
             incomingCodingRules.addAll(getCodingSheetParser(version.getFilename()).parse(codingSheet, stream));
             Set<String> uniqueSet = new HashSet<String>();
             for (CodingRule rule : incomingCodingRules) {

@@ -35,13 +35,14 @@ public class ShapefileReaderTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        File file = getWorkflowContext().getOriginalFiles().get(0).getFile();
+        File file = getWorkflowContext().getOriginalFiles().get(0).getTransientFile();
         File workingDir = new File(getWorkflowContext().getWorkingDirectory(), file.getName());
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
         File workingOriginal = new File(workingDir, file.getName());
         for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
-            FileUtils.copyFileToDirectory(version.getFile(), workingDir);
+            FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
+            version.setTransientFile(new File(workingDir, version.getFilename()));
         }
 
         String extension = FilenameUtils.getExtension(file.getName());

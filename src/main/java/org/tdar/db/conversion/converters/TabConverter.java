@@ -39,7 +39,7 @@ public class TabConverter extends SimpleConverter {
             logger.warn("Received null information resource file.");
             return;
         }
-        File csvFile = informationResourceFileVersion.getFile();
+        File csvFile = informationResourceFileVersion.getTransientFile();
         if (csvFile == null) {
             logger.error("InformationResourceFile's file was null, this should never happen.");
             return;

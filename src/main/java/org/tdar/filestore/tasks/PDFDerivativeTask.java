@@ -52,7 +52,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
     @Override
     public void run(InformationResourceFileVersion version) throws Exception {
-        File originalFile = version.getFile();
+        File originalFile = version.getTransientFile();
         try {
             PDDocument document = openPDF("", originalFile);
             File imageFile = new File(extractPage(1, version, document));
@@ -68,7 +68,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
     protected String extractPage(int pageNum, InformationResourceFileVersion originalFile, PDDocument document) {
         // File pdfFile = new File(sourceFile);
-        File pdfFile = originalFile.getFile();
+        File pdfFile = originalFile.getTransientFile();
         String imageFormat = "jpg";
         String color = "rgb";
         int resolution;

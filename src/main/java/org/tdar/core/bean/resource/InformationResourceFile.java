@@ -249,14 +249,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return getVersion(getLatestVersion(), VersionType.INDEXABLE_TEXT);
     }
 
-    @Transient
-    public File getFile(VersionType type, int version) {
-        for (InformationResourceFileVersion irfv : getVersions(version)) {
-            if (irfv.getFileVersionType() == type)
-                return irfv.getFile();
-        }
-        return null;
-    }
+//    @Transient
+//    public File getFile(VersionType type, int version) {
+//        for (InformationResourceFileVersion irfv : getVersions(version)) {
+//            if (irfv.getFileVersionType() == type)
+//                return irfv.getFile();
+//        }
+//        return null;
+//    }
 
     public void addFileVersion(InformationResourceFileVersion version) {
         getInformationResourceFileVersions().add(version);

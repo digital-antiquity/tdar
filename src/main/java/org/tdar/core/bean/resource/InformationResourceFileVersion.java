@@ -1,11 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,13 +15,11 @@ import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
-import org.tdar.core.configuration.TdarConfiguration;
 
 @Entity
 // making the assumption formally that there can only be one version of any type
@@ -38,6 +32,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     private static final long serialVersionUID = 3768354809654162949L;
 
+    private transient File transientFile;
     @ManyToOne()
     // optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "information_resource_file_id")
@@ -290,26 +285,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.path = path;
     }
 
-    @Transient
-    // Ultimately, this may need to be converted into a URI, or something that can be converted directly
-    // into a reader due to the indexing requirment.
-    // FIXME: consider injecting this as a transient variable when loaded
-    // instead of doing a lookup using the TdarConfiguration singleton's Filestore. Otherwise
-    // we will have difficulty converting TdarConfiguration + Filestore into spring managed beans
-    public File getFile() {
-        if (file != null) {
-            return file;
-        }
-
-        if (filestoreId == null && path == null)
-            return null;
-        try {
-            file = TdarConfiguration.getInstance().getFilestore().retrieveFile(this);
-        } catch (FileNotFoundException e) {
-            logger.trace("No file found in store with ID: " + getFilename() + " and path:" + path + " (" + getId() + ")");
-        }
-        return file;
-    }
 
     @Transient
     public boolean isTranslated() {
@@ -360,24 +335,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         return (getFileVersionType() == VersionType.INDEXABLE_TEXT);
     }
 
-    /**
-     * @return
-     */
-    @XmlTransient
-    public String getIndexableContent() {
-        String toReturn = "";
-        if (!isIndexable()) {
-            return "";
-        }
-        try {
-            toReturn = FileUtils.readFileToString(getFile());
-        } catch (FileNotFoundException e) {
-            logger.error("Information resource File: " + getFilename() + " (" + getId() + ") does not exist");
-        } catch (IOException io) {
-            logger.error("an io exception occurred when trying to read file:" + getFilename(), io);
-        }
-        return toReturn;
-    }
 
     /**
      * @param informationResourceFileId
@@ -447,10 +404,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         return comparison;
     }
 
-    public boolean hasValidFile() {
-        return getFile() != null && getFile().exists();
-    }
-
     public boolean isViewable() {
         return viewable;
     }
@@ -484,6 +437,14 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     public void setPrimaryFile(boolean primaryFile) {
         this.primaryFile = primaryFile;
+    }
+
+    public File getTransientFile() {
+        return transientFile;
+    }
+
+    public void setTransientFile(File transientFile) {
+        this.transientFile = transientFile;
     }
 
 }

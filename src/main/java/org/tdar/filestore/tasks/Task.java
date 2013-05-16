@@ -80,6 +80,7 @@ public interface Task extends Serializable {
 
             try {
                 ctx.getFilestore().store(f, version);
+                version.setTransientFile(f);
             } catch (IOException e) {
                 getLogger().warn("cannot store version", e);
             }

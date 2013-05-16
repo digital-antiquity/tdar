@@ -66,7 +66,7 @@ public class ImageThumbnailTask extends AbstractTask {
     }
 
     public void run(InformationResourceFileVersion version) throws Exception {
-        processImage(version, version.getFile());
+        processImage(version, version.getTransientFile());
     }
 
     public void prepare() {

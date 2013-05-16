@@ -64,12 +64,12 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
     }
 
     protected void openInputDatabase() throws IOException {
-        setDatabaseFile(getInformationResourceFileVersion().getFile());
+        setDatabaseFile(getInformationResourceFileVersion().getTransientFile());
 
         File workingDir = new File(TdarConfiguration.getInstance().getTempDirectory(), getDatabaseFile().getName());
         workingDir.mkdir();
         for (InformationResourceFileVersion version : versions) {
-            FileUtils.copyFileToDirectory(version.getFile(), workingDir);
+            FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
             File workingOriginal = new File(workingDir, getDatabaseFile().getName());
             setDatabaseFile(workingOriginal);
         }

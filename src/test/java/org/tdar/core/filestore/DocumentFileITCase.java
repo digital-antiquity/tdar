@@ -74,7 +74,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
         InformationResourceFileVersion indexableVersion = informationResourceFile.getIndexableVersion();
         logger.info("version: {}" , indexableVersion);
-        String text = FileUtils.readFileToString(indexableVersion.getFile());
+        String text = FileUtils.readFileToString(indexableVersion.getTransientFile());
         logger.info(text);
         assertTrue(text.toLowerCase().contains("have fun digging"));
     }
