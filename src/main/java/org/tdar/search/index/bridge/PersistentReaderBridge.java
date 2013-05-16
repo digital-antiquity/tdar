@@ -40,7 +40,7 @@ public class PersistentReaderBridge implements FieldBridge {
     @Override
     public void set(String name, Object value, Document document, LuceneOptions luceneOptions) {
         // TODO Auto-generated method stub
-        if(name.equals("informationResources.content")) {
+        if (name.equals("informationResources.content")) {
             logger.trace("not indexing {}", name);
             return;
         }
@@ -51,10 +51,14 @@ public class PersistentReaderBridge implements FieldBridge {
                     continue;
                 }
                 try {
-                    logger.info("indexing file ... {}", version);
+                    logger.trace("indexing file ... {}", version);
                     input.add(TdarConfiguration.getInstance().getFilestore().retrieveFile(version).toURI());
                 } catch (FileNotFoundException e) {
-                    logger.warn("File does not exist",e);
+                    if (TdarConfiguration.getInstance().isProductionEnvironment()) {
+                        logger.error("File does not exist", e);
+                    } else {
+                        logger.trace("File does not exist", e);
+                    }
                 }
             }
             LazyReaderField field = new LazyReaderField(name, input, luceneOptions.getStore(), luceneOptions.getIndex(), luceneOptions.getBoost());

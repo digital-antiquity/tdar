@@ -47,6 +47,10 @@ import com.opensymphony.xwork2.Preparable;
 @Result(name = "new", type = "redirect", location = "new")
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
 
+    public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@.]{5,20}$";
+
+    public static final String USERNAME_INVALID = "Username invalid, usernames must be at least 5 characters and can only have letters and numbers";
+
     private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
 
     private static final long serialVersionUID = 1147098995283237748L;
@@ -274,7 +278,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     private void reconcilePersonWithTransient(Person person_, String error) {
         if (person_ != null && Persistable.Base.isNullOrTransient(person)) {
-            
+
             if (person_.isRegistered()) {
                 throw new TdarRecoverableRuntimeException(error);
             }
@@ -313,6 +317,11 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 logger.info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
                 person.setUsername(normalizedUsername);
             }
+            
+            if (!person.getUsername().matches(USERNAME_VALID_REGEX)) {
+                addActionError(USERNAME_INVALID);
+            }
+
         }
 
         if (StringUtils.length(person.getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
@@ -327,6 +336,8 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         if (StringUtils.isBlank(person.getLastName())) {
             addActionError("Please enter your last name");
         }
+
+
         // validate email + confirmation
         if (isUsernameRegistered(person.getUsername())) {
             logger.debug("username was already registered: ", person.getUsername());
