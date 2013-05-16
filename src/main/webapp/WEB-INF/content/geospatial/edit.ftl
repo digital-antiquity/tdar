@@ -18,6 +18,7 @@
 
 
 <#macro localJavascript>
+/*
         var fv = new  FileuploadValidator("geospatialMetadataForm");
         fv.addMethod("must-have-foo", function(file, files) {
             return file.filename.indexOf("foo") > -1;
@@ -26,7 +27,8 @@
          
         //expose global for debug;
         window.fv = fv;
-</#macro>
+
+*/</#macro>
 
 <#macro footer>
 

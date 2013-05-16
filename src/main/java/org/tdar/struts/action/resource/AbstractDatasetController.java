@@ -21,7 +21,6 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
@@ -214,24 +213,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         }
     };
 
-    @Override
-    protected String save(R persistable) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void delete(R persistable) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public Class getPersistableClass() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public List<DataTableColumn> getOntologyMappedColumns() {
         if (ontologyMappedColumns == null) {
             ontologyMappedColumns = getDataTableService().findOntologyMappedColumns(getDataResource());
@@ -347,11 +328,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         }
         logger.trace("{}", ontologyMappedColumnStatus);
         return ontologyMappedColumnStatus;
-    }
-
-    @Override
-    public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(ResourceType.DATASET);
     }
 
     public List<MeasurementUnit> getAllMeasurementUnits() {
