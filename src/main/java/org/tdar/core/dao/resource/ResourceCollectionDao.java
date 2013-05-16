@@ -83,7 +83,6 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         query.setString("name", collection.getName());
         @SuppressWarnings("unchecked")
         List<ResourceCollection> list = (List<ResourceCollection>) query.list();
-        logger.info("{}", list);
         if (CollectionUtils.isNotEmpty(list)) {
             return list.get(0);
         }

@@ -134,7 +134,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     }
 
     @SkipValidation
-    @Action(value = COLUMNS, results = { @Result(name = SUCCESS, location = "edit-column-metadata.ftl") })
+    @Action(value = COLUMNS, results = { @Result(name = SUCCESS, location = "../dataset/edit-column-metadata.ftl") })
     public String editColumnMetadata() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
@@ -175,7 +175,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     @Action(value = "save-column-metadata", results = {
             @Result(name = SAVE_VIEW, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
             @Result(name = SAVE_MAP_THIS, type = REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
-            @Result(name = INPUT_COLUMNS, location = "edit-column-metadata.ftl")
+            @Result(name = INPUT_COLUMNS, location = "../dataset/edit-column-metadata.ftl")
     })
     /**
      * Saves column metadata for each column in a given DataTable (set on the controller and retrievable via getDataTable()).

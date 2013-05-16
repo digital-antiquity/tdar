@@ -134,7 +134,7 @@ View freemarker macros
         <#assign extensionMap = { 'pdf':'page-white-acrobat', 'doc':'page-white-word','docx':'page-white-word' ,'DOCUMENT','page-white-text',
                         'mdb':'page-white-key','mdbx':'page-white-key','accdb':'page-white-key',
                         'xls':'page-excel','xlsx':'page-excel','DATASET':'page-white-text','CODING_SHEET':'page-white-text',
-                        'IMAGE':'page-white-picture','SENSORY_DATA':'page-white-picture','ONTOLOGY','page-white-text'
+                        'IMAGE':'page-white-picture','SENSORY_DATA':'page-white-picture','ONTOLOGY','page-white-text','GEOSPATIAL':'page-white-picture'
           } />
 
         <#local showAll = ""/>

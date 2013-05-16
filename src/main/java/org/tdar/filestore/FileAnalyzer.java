@@ -93,13 +93,23 @@ public class FileAnalyzer {
     }
 
     public Workflow getWorkflow(HasExtension... irFileVersion) throws Exception {
-        return fileExtensionToWorkflowMap.get(irFileVersion[0].getExtension());
+        Workflow wf = null;
+        for (HasExtension ex :  irFileVersion) {
+            Workflow w = fileExtensionToWorkflowMap.get(ex.getExtension());
+            if (wf == null) {
+                wf = w;
+            } else if (w != null && wf.getClass() != w.getClass()) {
+                throw new TdarRecoverableRuntimeException("cannot use two separate workflows");
+            }
+        }
+        return wf;
     }
 
     public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws Exception {
         Workflow workflow = getWorkflow(informationResourceFileVersions);
-        if (workflow == null)
-            return false; // could argue that this is true
+        if (workflow == null) {
+            throw new TdarRecoverableRuntimeException(String.format("no workflow could be found for these files %s", informationResourceFileVersions));
+        }
         if (informationResourceFileVersions == null) {
             throw new TdarRecoverableRuntimeException("File version was null, this should not happen");
         }

@@ -76,6 +76,7 @@ logger.info("IRFILE {}",irFile);
 
             Resource resource = genericDao.find(ctx.getResourceType().getResourceClass(), ctx.getInformationResourceId());
             switch (ctx.getResourceType()) {
+                case GEOSPATIAL:
                 case DATASET:
                     Dataset dataset = (Dataset) resource;
                     if (ctx.getTransientResource() == null) {

@@ -98,7 +98,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             if (proxy.getAction().requiresWorkflowProcessing()) {
                 InformationResourceFile irFile = proxy.getInformationResourceFile();
                 InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
-                logger.info("version: {} proxy: {} ", version, proxy);
+                logger.trace("version: {} proxy: {} ", version, proxy);
                 getDao().saveOrUpdate(irFile);
                 switch (version.getFileVersionType()) {
                     case UPLOADED:

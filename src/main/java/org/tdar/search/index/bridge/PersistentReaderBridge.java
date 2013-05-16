@@ -47,7 +47,11 @@ public class PersistentReaderBridge implements FieldBridge {
         if (value != null) {
             input = new ArrayList<>();
             for (InformationResourceFileVersion version : (List<InformationResourceFileVersion>) value) {
+                if (version == null) {
+                    continue;
+                }
                 try {
+                    logger.info("indexing file ... {}", version);
                     input.add(TdarConfiguration.getInstance().getFilestore().retrieveFile(version).toURI());
                 } catch (FileNotFoundException e) {
                     logger.warn("File does not exist",e);
