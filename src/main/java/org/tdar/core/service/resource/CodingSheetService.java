@@ -113,7 +113,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
                 }
             }
         } catch (Exception e) {
-            throw new TdarRecoverableRuntimeException(ERROR_PARSE_UNKNOWN);
+            throw new CodingSheetParserException(ERROR_PARSE_UNKNOWN);
         } finally {
             if (stream != null)
                 IOUtils.closeQuietly(stream);

@@ -111,6 +111,7 @@ public class PairtreeFilestore extends BaseFilestore {
                 version.setChecksumType(digest.getAlgorithm());
                 version.setChecksum(formatDigest(digest));
             }
+            version.setTransientFile(outFile);
             return outFile.getCanonicalPath();
         } catch (IOException iox) {
             // this exception may be swallowed if our finally block itself throws an exception, so we log it here first

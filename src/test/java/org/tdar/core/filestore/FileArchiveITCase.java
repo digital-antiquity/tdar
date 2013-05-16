@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
 import org.tdar.core.service.workflow.workflows.Workflow;
@@ -74,8 +75,9 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         boolean seen = false;
         for (InformationResourceFileVersion version : informationResourceFile.getLatestVersions()) {
             logger.info(version);
+            
             if (version.isTranslated()) {
-                String contents = FileUtils.readFileToString(version.getTransientFile());
+                String contents = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
                 assertTrue(contents.contains("Ark_HM_Headpot_01.txt"));
                 assertTrue(contents.contains("Ark_HM_Headpot_mtrx_01.txt"));
                 seen = true;
