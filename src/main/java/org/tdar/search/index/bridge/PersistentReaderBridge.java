@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.filestore.Filestore;
 import org.tdar.search.index.field.LazyReaderField;
 
 /**
@@ -39,20 +40,21 @@ public class PersistentReaderBridge implements FieldBridge {
     @SuppressWarnings("unchecked")
     @Override
     public void set(String name, Object value, Document document, LuceneOptions luceneOptions) {
-        // TODO Auto-generated method stub
+
         if (name.equals("informationResources.content")) {
             logger.trace("not indexing {}", name);
             return;
         }
         if (value != null) {
             input = new ArrayList<>();
+            Filestore filestore = TdarConfiguration.getInstance().getFilestore();
             for (InformationResourceFileVersion version : (List<InformationResourceFileVersion>) value) {
                 if (version == null) {
                     continue;
                 }
                 try {
                     logger.trace("indexing file ... {}", version);
-                    input.add(TdarConfiguration.getInstance().getFilestore().retrieveFile(version).toURI());
+                    input.add(filestore.retrieveFile(version).toURI());
                 } catch (FileNotFoundException e) {
                     if (TdarConfiguration.getInstance().isProductionEnvironment()) {
                         logger.error("File does not exist", e);
