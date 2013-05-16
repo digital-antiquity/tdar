@@ -235,12 +235,12 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         String path = internalPage.getUrl().getPath().toLowerCase();
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
-        try {
-            FileUtils.writeStringToFile(new File("post-save.html"), getPageCode());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        try {
+//            FileUtils.writeStringToFile(new File("post-save.html"), getPageCode());
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
 
         logger.info(getPageText());
         for (String key : docValMap.keySet()) {
@@ -280,12 +280,12 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         clickLinkWithText("edit");
         logger.debug("----now on edit page----");
         logger.trace(getPageText());
-        try {
-            FileUtils.writeStringToFile(new File("pre-save.html"), getPageCode());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        try {
+//            FileUtils.writeStringToFile(new File("pre-save.html"), getPageCode());
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
 
         for (String key : docValMap.keySet()) {
             String val = docValMap.get(key);
