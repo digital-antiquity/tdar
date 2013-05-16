@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.Tika;
@@ -71,7 +72,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
             }
 
             List<String> gpsValues = new ArrayList<>();
-            
+
             for (String name : metadata.names()) {
                 StringWriter sw = new StringWriter();
                 if (StringUtils.isNotBlank(metadata.get(name))) {
@@ -88,7 +89,9 @@ public class IndexableTextExtractionTask extends AbstractTask {
                     IOUtils.write(sw.toString(), metadataOutputStream);
                 }
             }
-            getWorkflowContext().getExceptions().add(new ExceptionWrapper(String.format(GPS_MESSAGE, gpsValues), null));
+            if (CollectionUtils.isNotEmpty(gpsValues)) {
+                getWorkflowContext().getExceptions().add(new ExceptionWrapper(String.format(GPS_MESSAGE, gpsValues), null));
+            }
         } catch (Throwable t) {
             // Marking this as a "warn" as it's a derivative
             getLogger().warn("a tika indexing exception happend ", t);

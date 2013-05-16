@@ -257,6 +257,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
     }
 
+    public void assertPageTitleContains(String expectedTitle) {
+        if (internalPage instanceof HtmlPage) {
+            HtmlPage page = (HtmlPage) internalPage;
+            assertTrue(page.getTitleText().toLowerCase().contains(expectedTitle.toLowerCase()));
+        }
+        else {
+            Assert.fail(String.format("was looking for <title>%s</title> but server response was not a valid html page", expectedTitle));
+        }
+    }
+
     public HtmlElement getInput(String name) {
         HtmlPage page = (HtmlPage) internalPage;
         try {
