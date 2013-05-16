@@ -121,6 +121,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         version.setId(id);
         File file = new File(getTestFilePath() + "/" + name);
         filestore.store(file, version);
+        version.setTransientFile(file);
         return version;
     }
 

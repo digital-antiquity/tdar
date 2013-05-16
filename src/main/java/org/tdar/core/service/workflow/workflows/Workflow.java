@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.LoggingTask;
 import org.tdar.filestore.tasks.Task;
@@ -69,6 +70,11 @@ public interface Workflow {
             boolean successful = true;
             // this may be more complex than it needs to be, but it may be useful in debugging later; or organizationally.
             // by default tasks are processed in the order they are added within the phase that they're part of.
+            
+            for (InformationResourceFileVersion version : workflowContext.getOriginalFiles()) {
+                version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+            }
+            
             for (WorkflowPhase phase : WorkflowPhase.values()) {
                 List<Class<? extends Task>> phaseTasks = workflowPhaseToTasks.get(phase);
                 if (CollectionUtils.isEmpty(phaseTasks)) {

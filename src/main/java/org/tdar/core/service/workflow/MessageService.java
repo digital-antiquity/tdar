@@ -11,7 +11,6 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.WorkflowContext;
