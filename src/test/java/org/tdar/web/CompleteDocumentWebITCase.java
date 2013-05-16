@@ -10,12 +10,16 @@ import static org.junit.Assert.assertTrue;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
@@ -67,12 +71,12 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
                 //     authorizedUsers[0].user.id
-        docValMap.put("authorizedUsers[0].user.id", "121");
-        docValMap.put("authorizedUsers[1].user.id", "5349");
-        docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("authorizedUsers[0].user.properName", "Michelle Elliott");
-        docValMap.put("authorizedUsers[1].user.properName", "Joshua Watts");
+        docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
+        docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
+        docUnorderdValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+        docUnorderdValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
+        docUnorderdValMap.put("authorizedUsers[0].user.properName", "Michelle Elliott");
+        docUnorderdValMap.put("authorizedUsers[1].user.properName", "Joshua Watts");
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
@@ -225,11 +229,18 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         for (String key : docMultiValMap.keySet()) {
             setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
         }
-        logger.info(getPageCode());
+
         submitForm();
 
         String path = internalPage.getUrl().getPath().toLowerCase();
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
+
+//        try {
+//            FileUtils.writeStringToFile(new File("post-save.html"), getPageCode());
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
 
         logger.info(getPageText());
         for (String key : docValMap.keySet()) {
@@ -269,6 +280,12 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         clickLinkWithText("edit");
         logger.debug("----now on edit page----");
         logger.trace(getPageText());
+//        try {
+//            FileUtils.writeStringToFile(new File("pre-save.html"), getPageCode());
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
 
         for (String key : docValMap.keySet()) {
             String val = docValMap.get(key);

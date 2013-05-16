@@ -55,7 +55,7 @@ public class AuthorizedUser extends Base implements Persistable {
     private Person user;
 
     private transient boolean enabled = false;
-    
+
     /**
      * @param person
      * @param modifyRecord
@@ -140,6 +140,9 @@ public class AuthorizedUser extends Base implements Persistable {
     }
 
     public boolean isEnabled() {
+        if (Persistable.Base.isNullOrTransient(this) && Persistable.Base.isNullOrTransient(user)) {
+            return true;
+        }
         return enabled;
     }
 
