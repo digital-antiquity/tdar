@@ -28,8 +28,8 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
 	public void testInvalidLogin() {
 		logout();
 		login("BAD USERNAME","BAD PASSWORD",true);
-		assertTextPresentInPage(AuthenticationResult.INVALID_PASSWORD.getMessage());
-		assertTextNotPresentInPage("Your submitted projects");
+		assertTextPresent(AuthenticationResult.INVALID_PASSWORD.getMessage());
+		assertTextNotPresent("Your submitted projects");
 	}
 	
 	@Test
