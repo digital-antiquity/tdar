@@ -101,7 +101,7 @@
                         <li>
                         <#if bodyid != 'home'>
                             <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform hidden-phone hidden-tablet no-print">
-                                <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &ellipsis;" >
+                                <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip;" >
                             </form>
                         </#if>
                         </li>
