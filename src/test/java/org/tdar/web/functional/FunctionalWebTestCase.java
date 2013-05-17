@@ -85,11 +85,19 @@ public abstract class FunctionalWebTestCase {
     }
 
     /*
-     * Find All?  
+     * abrin:Find All?  
+     * 
+     * jtd:I concede your it is inconsistent (e.g. with Dao#find),  but I want the most frequently used functions to be the easiest to type. 
+     * 
+     * jtd: perhaps select()?
      */
     public WebElementSelection find(String selector) {
-        WebElementSelection selection = new WebElementSelection(driver.findElements(By.cssSelector(selector)));
-        logger.debug("selector:{}\t size:{}", selector, selection.size());
+        return find(By.cssSelector(selector));
+    }
+    
+    public WebElementSelection find(By by) {
+        WebElementSelection selection = new WebElementSelection(driver.findElements(by));
+        logger.debug("criteria:{}\t  size:{}", by, selection.size());
         return selection;
     }
 
@@ -100,6 +108,7 @@ public abstract class FunctionalWebTestCase {
         return find(selector).iterator().next();
     }
 
+    
     public WebDriver getDriver() {
         return driver;
     }

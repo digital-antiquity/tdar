@@ -7,6 +7,7 @@
 
 package org.tdar.web.functional;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
@@ -19,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -27,8 +30,10 @@ import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
 
-//    @RunWith(MultipleTdarConfigurationRunner.class)
-//    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+//TODO: implement a workaround for file uploads, including tricking fileupload ui to render new file proxy rows   
+//TODO: click on 'add row' buttons to create the element names referenced in the docValMap. 
+//TODO: refactor the block-of-doom on near line 220.  
+
 public class CompleteFunctionalITCase extends FunctionalWebTestCase {
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
@@ -136,7 +141,8 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
 
     @Test
     public void testCreateDocumentEditSavehasResource() {
-
+        WebElement form = find("#metadataForm");
+        
         gotoPage("/document/add");
 
         HashMap<String, String> docValMap2 = new HashMap<String, String>();
@@ -153,11 +159,11 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
         docValMap2.put("coverageDates[0].dateType", CoverageType.CALENDAR_DATE.name());
 
         for (String key : docValMap2.keySet()) {
-            setInput(key, docValMap2.get(key));
+            find(By.name(key)).val(docValMap2.get(key));
         }
 
-        submitForm();
-
+        form.submit();
+        
         String path = getDriver().getCurrentUrl();
         logger.info(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));
@@ -167,8 +173,8 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
 
         clickLinkWithText("edit");
         String NEW_START_DATE = "100";
-        setInput(COVERAGE_START, NEW_START_DATE);
-        submitForm();
+        find(By.name(COVERAGE_START)).val(NEW_START_DATE);
+        form.submit();
 
         path = getDriver().getCurrentUrl();
         logger.info(find("body").getText());
@@ -188,19 +194,25 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
         uploadFileToPersonalFilestore(ticketId, TEST_DOCUMENT);
 
         gotoPage("/document/add");
-        setInput("ticketId", ticketId);
+        //setInput("ticketId", ticketId);
         addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, TEST_DOCUMENT_NAME);
 
         docValMap.putAll(docUnorderdValMap);
 
-        for (String key : docValMap.keySet()) {
-            setInput(key, docValMap.get(key));
+        //fill in various text fields
+        for(Map.Entry<String, String> entry : docValMap.entrySet()) {
+            find(By.name(entry.getKey())).val(entry.getValue());
         }
+                
+        //check various keyword checkboxes
         for (String key : docMultiValMap.keySet()) {
-            setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
+            for(String val : docMultiValMap.get(key)) {
+                find(By.name(key)).val(val);
+            }
         }
+        
         logger.info(getDriver().getPageSource());
-        submitForm();
+        find("#metadataForm").submit();
 
         String path = getDriver().getCurrentUrl();
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));
@@ -250,15 +262,15 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
                 continue;
 
             if (docUnorderdValMap.containsKey(key)) {
-                assertTrue(textContains(docValMap.get(key)));
+                assertTrue(textContains(val));
             } else {
-                assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
+                assertEquals(find(By.name("key")).val(), val);
             }
         }
 
         for (String key : docMultiValMap.keySet()) {
             for (String val : docMultiValMap.get(key)) {
-                assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
+                assertEquals(find(By.name("key")).val(), val);
             }
         }
 
@@ -270,39 +282,24 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
 
     }
 
-    private boolean checkInput(String key, String val) {
-        // TODO Auto-generated method stub
-        return false;
-    }
 
-    private void setInput(String key, String[] array) {
-        // TODO Auto-generated method stub
-
-    }
-
+//    private void setInput(String key, String[] array) {
+//        // TODO Auto-generated method stub
+//    }
+//    
+    
+    
     private void addFileProxyFields(int i, FileAccessRestriction confidential, String testDocumentName) {
         // TODO Auto-generated method stub
-
     }
 
     private void uploadFileToPersonalFilestore(String ticketId, String testDocument) {
         // TODO Auto-generated method stub
-
     }
 
     private String getPersonalFilestoreTicketId() {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    private void submitForm() {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void setInput(String key, String string) {
-        // TODO Auto-generated method stub
-
     }
 
     // this will be somewhat tricky to do in selenium... if possible use find("xyz").click()

@@ -1,6 +1,7 @@
 package org.tdar.web.functional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,14 +9,15 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WebElementSelection implements WebElement, Iterable<WebElement>{
     final List<WebElement> elements;
     public final Logger logger = LoggerFactory.getLogger(getClass());
+    
     
     public WebElementSelection(List<WebElement>webElements) {
         elements = new ArrayList<WebElement>();
@@ -159,18 +161,35 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
         return first().getCssValue(propertyName);
     }
 
+    /**
+     * convert selection to list of webelement objects
+     * @return 
+     */
     public List<WebElement> toList() {
         return elements;
     }
     
+    /**
+     * return the number of elements in this selection
+     * @return
+     */
     public int size() {
         return elements.size();
     }
     
+    /**
+     * returns true if selection matched zero elements
+     * @return true if selection empty, otherwise false
+     */
     public boolean isEmpty() {
         return elements.isEmpty();
     }
     
+    /**
+     * return the element at the specified index
+     * @param idx index of the element to retreive
+     * @return element at idx
+     */
     public WebElement get(int i) {
         return elements.get(i);
     }
@@ -183,4 +202,87 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
         String contents = first().getAttribute("innerHTML");
         return contents;
     }
+    
+    /**
+     * return value of the value attribute of the first element.  For select elements, return a list of the values 
+     * of the selected options.
+     * @return  List<String> containing value attribute of first element, or list of selected option values
+     */
+    public List<String> vals() {
+        List<String> vals = new ArrayList<>();
+        String val = first().getAttribute("value");
+        if(val != null) {
+            vals.add(val);
+        } 
+        else if(first().getTagName().equals("select")) {
+            for(WebElement opt: first().findElements(By.cssSelector("option:checked"))) {
+                vals.add(opt.getAttribute("value"));
+            }
+        }
+        return vals;
+    }
+    
+    /**
+     * return value of the value attribute of the first element in selection.  If element is a select element, 
+     * return the value of the first selected option child element
+     * @return
+     */
+    public String val() {
+        List<String> vals = vals();
+        return vals.isEmpty() ? null : vals.get(0);
+    }
+    
+    /**
+     * set the value attribute for any editable elements in selection. 
+     * @param val
+     */
+    public void val(String val) {
+        for(WebElement elem : this) {
+            String tag = elem.getTagName();
+            String type = elem.getAttribute("type");
+            if(isFormElement(elem)) {
+                //shunt these tags into "type" so we can deal with them in upcoming switch
+                if(Arrays.asList("button", "textarea", "select").contains(tag)) {
+                    type = tag;
+                }
+                
+                switch(type) {
+                    case "text":
+                    case "textarea":
+                    case "file": 
+                    case "password":
+                        elem.sendKeys(val);
+                        break;
+                    case "button":
+                    case "radio":
+                    case "checkbox":
+                        //special handling for checkbox/radio/button.  We don't set the value, but click the element if it's value == val
+                        if(elem.getAttribute("value").equals(val) && !elem.isSelected()) {
+                            elem.click();
+                        }
+                        break;
+                    case "select":
+                        if(elem.isEnabled()) {
+                            Select sel = new Select(elem);
+                            sel.deselectAll();
+                            sel.selectByValue(val);
+                        }
+                        break;
+                    case "hidden":
+                        logger.warn("ignoring hidden field: {}", elem);
+                        break;
+                    default:
+                        //TODO: this will work for most html5 types except for "range"
+                        elem.sendKeys(val);
+                        break;
+                }
+            }
+        }
+    }
+
+    private boolean isFormElement(WebElement elem) {
+        return Arrays.asList("input", "textarea", "button", "select").contains(elem.getTagName());
+    }
+    
+    
 }   
