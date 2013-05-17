@@ -103,8 +103,8 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                 Arrays.asList(cultureIds));
         submitForm("Search");
         // logger.debug(getPageText());
-        assertTextPresent("Archeological Survey and Architectural Study of Montezuma Castle National Monument");
-        assertTextPresent("2008 New Philadelphia Archaeology Report");
+        assertTextPresentInPage("Archeological Survey and Architectural Study of Montezuma Castle National Monument");
+        assertTextPresentInPage("2008 New Philadelphia Archaeology Report");
     }
 
     @Test
@@ -126,7 +126,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         createTextInput("groups[0].uncontrolledSiteTypes[0]", keyword);
         logger.debug("page code\n\n {}\n\n", getPageCode());
         submitForm("Search");
-        assertTextPresent(title);
+        assertTextPresentInPage(title);
     }
 
     @Test
@@ -155,9 +155,9 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testLatLongSearch() {
         gotoPage(SEARCH_RESULTS_BASE_URL + "?groups%5B0%5D.operator=AND&groups%5B0%5D.fieldTypes%5B0%5D=ALL_FIELDS&groups%5B0%5D.allFields%5B0%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLongitude=-85.078125&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLatitude=38.341656192795924&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLongitude=-92.373046875&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLatitude=43.58039085560786&");
-        assertTextPresent("Philadelphia");
+        assertTextPresentInPage("Philadelphia");
         gotoPage(SEARCH_RESULTS_BASE_URL + "?latLongBox=-92.373046875,38.341656192795924,-85.078125,43.58039085560786&");
-        assertTextPresent("Philadelphia");
+        assertTextPresentInPage("Philadelphia");
     }
 
 @Test
@@ -216,7 +216,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             String href = element.getAttribute("href");
             if (!element.getAttribute("href").toLowerCase().contains("bookmark")) {
                 gotoPage("/search/results" + href);
-                assertTextNotPresent("greater than total");
+                assertTextNotPresentInPage("greater than total");
                 if (href.contains("25")) {
                     logger.info(getPageBodyCode());
                 }
@@ -238,7 +238,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testRangeSearch() {
         gotoPage(SEARCH_RESULTS_BASE_URL
                 + ".action?&groups%5B0%5D.fieldTypes%5B1%5D=DATE_CREATED&groups%5B0%5D.createdDates%5B1%5D.start=2007&groups%5B0%5D.createdDates%5B1%5D.end=2009&__multiselect_includedStatuses=");
-        assertTextPresent("Value is between 2007 and 2009");
+        assertTextPresentInPage("Value is between 2007 and 2009");
     }
 
     @Test
@@ -1029,7 +1029,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         createTextInput("groups[0].titles[0]", testTitle);
         submitForm("Search");
         assertNoErrorTextPresent();
-        assertTextPresent(testTitle);
+        assertTextPresentInPage(testTitle);
     }
 
     @Test
@@ -1046,7 +1046,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // assert isn't failing... basically we should not be on the INPUT page
         // at this
         // point
-        assertTextNotPresent("id=\"searchGroups\"");
+        assertTextNotPresentInPage("id=\"searchGroups\"");
     }
 
     @Test

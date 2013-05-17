@@ -43,12 +43,12 @@ public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestC
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitFormWithoutErrorCheck("Save");
-        assertTextPresent("Please enter your coding rules in the text area below.");
+        assertTextPresentInPage("Please enter your coding rules in the text area below.");
         assertTextPresentInCode("action-error");
         // we should be dumped back to the edit page with (at least) an error
         // message re: the blank coding rules
         logger.info(getPageText());
-        // assertTextPresent(ERROR_MESSAGE_BLANK_CODING_RULES);
+        // assertTextPresentInPage(ERROR_MESSAGE_BLANK_CODING_RULES);
         assertTrue("nothing to see here... everything works just fine.", true);
 
     }

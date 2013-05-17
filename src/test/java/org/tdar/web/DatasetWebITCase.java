@@ -94,7 +94,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Long codingSheetId = testCodingSheetCreation(ontologyId);
 
         gotoPage("/dataset/" + datasetId);
-        assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
+        assertTextPresentInPage(RESTRICTED_ACCESS_TEXT,false);
         
         clickLinkWithText(TABLE_METADATA);
 
@@ -116,10 +116,10 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertFalse(internalPage.getUrl().toString().contains("save-column-metadata"));
 
         assertTrue(internalPage.getUrl().toString().endsWith("/dataset/" + datasetId));
-        assertTextPresentIgnoreCase("translated");
+        assertTextPresentInPage("translated",false);
         
         //ensure that changing column metadata didn't implicitly change file access rights
-        assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
+        assertTextPresentInPage(RESTRICTED_ACCESS_TEXT,false);
     }
     
     @Test
@@ -172,7 +172,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
         for (String key : docMultiValMapLab.keySet()) {
             for (String val : docMultiValMapLab.get(key)) {
-                assertTextPresent(val);
+                assertTextPresentInPage(val);
             }
         }
 
@@ -193,7 +193,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
 
         for (String val : unorderedCheck) {
-            assertTextPresent(val);
+            assertTextPresentInPage(val);
         }
 
         for (String key : docMultiValMap.keySet()) {
@@ -240,20 +240,20 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                 assertTextPresentInPage(codingMap.get(key), false);
             }
         }
-        assertTextPresent(NEW_YORK_1);
-        assertTextPresent("Architecture");
-        assertTextPresent("Style/Type");
-        assertTextPresent(WASHINGTON_3);
-        assertTextPresent(SAN_FRANCISCO_2);
-        assertTextPresent("NY");
-        assertTextPresent("CA");
-        assertTextPresent("DC");
-        assertTextNotPresentIgnoreCase("translated");
+        assertTextPresentInPage(NEW_YORK_1);
+        assertTextPresentInPage("Architecture");
+        assertTextPresentInPage("Style/Type");
+        assertTextPresentInPage(WASHINGTON_3);
+        assertTextPresentInPage(SAN_FRANCISCO_2);
+        assertTextPresentInPage("NY");
+        assertTextPresentInPage("CA");
+        assertTextPresentInPage("DC");
+        assertTextNotPresentInPage("translated");
 
         clickLinkOnPage("map ontology");
 
-//        assertTextPresent(EAST_COAST_CITIES);
-//        assertTextPresent(WEST_COAST_CITIES);
+//        assertTextPresentInPage(EAST_COAST_CITIES);
+//        assertTextPresentInPage(WEST_COAST_CITIES);
 
         int indexOfOntology = getPageCode().indexOf("var ontology");
         String ontologyNodeInfo = getPageCode().substring(indexOfOntology, getPageCode().indexOf("];", indexOfOntology));
@@ -278,11 +278,11 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("codingRules[2].ontologyNode.id", ontologyMap.get(WASHINGTON_3).toString(), false);
         submitForm("Save");
 
-//        assertTextPresent(EAST_COAST_CITIES);
-//        assertTextPresent(WEST_COAST_CITIES);
-        assertTextPresent(NEW_YORK_1);
-        assertTextPresent(WASHINGTON_3);
-        assertTextPresent(SAN_FRANCISCO_2);
+//        assertTextPresentInPage(EAST_COAST_CITIES);
+//        assertTextPresentInPage(WEST_COAST_CITIES);
+        assertTextPresentInPage(NEW_YORK_1);
+        assertTextPresentInPage(WASHINGTON_3);
+        assertTextPresentInPage(SAN_FRANCISCO_2);
         return extractTdarIdFromCurrentURL();
     }
 
@@ -321,10 +321,10 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                 continue;
             assertTextPresentInPage(codingMap.get(key), false);
         }
-        assertTextPresent(NEW_YORK_1);
-        assertTextPresent(WASHINGTON_3);
-        assertTextPresent(SAN_FRANCISCO_2);
-        assertTextNotPresentIgnoreCase("translated");
+        assertTextPresentInPage(NEW_YORK_1);
+        assertTextPresentInPage(WASHINGTON_3);
+        assertTextPresentInPage(SAN_FRANCISCO_2);
+        assertTextNotPresentInPage("translated");
 
         Long tdarId = extractTdarIdFromCurrentURL();
 

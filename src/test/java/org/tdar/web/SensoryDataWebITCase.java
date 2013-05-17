@@ -143,7 +143,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
                 continue;
 
             if (key.contains("[0]") || key.contains("[1]")) {
-                assertTextPresent(sensoryHash.get(key));
+                assertTextPresentInPage(sensoryHash.get(key));
                 continue;
             }
             assertTrue("element:" + key + " is set to:" + val, checkInput(key, val));
@@ -204,8 +204,8 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         logger.debug("path is:" + path);
         assertTrue("expecting to be on view page. Actual path:" + path, path.matches(REGEX_SENSORY_DATA_VIEW));
 
-        assertTextNotPresent(removedName);
-        assertTextPresent("some titlea");
+        assertTextNotPresentInPage(removedName);
+        assertTextPresentInPage("some titlea");
         // confirm we landed on the view page
     }
 }

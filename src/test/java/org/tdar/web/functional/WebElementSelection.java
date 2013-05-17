@@ -75,6 +75,7 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
 
     @Override
     public void submit() {
+        //throw error if multiple forms in "selection"?
         for(WebElement elem : this) {
             elem.submit();
         }
@@ -90,7 +91,20 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
 
     
     @Override
+    /**
+     * calls WebElement.clear() on all inputs in selection
+     * 
+     * If this element is a text entry element, this will clear the value. Has no effect on other
+     * elements. Text entry elements are INPUT and TEXTAREA elements.
+     *
+     * Note that the events fired by this event may not be as you'd expect.  In particular, we don't
+     * fire any keyboard or mouse events.  If you want to ensure keyboard events are fired, consider
+     * using something like {@link #sendKeys(CharSequence...)} with the backspace key.  To ensure
+     * you get a change event, consider following with a call to {@link #sendKeys(CharSequence...)}
+     * with the tab key.
+     */
     public void clear() {
+        // clear values or clear iteraotr?
         for(WebElement elem : this) {
             elem.clear();
         }
@@ -208,12 +222,16 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
      * of the selected options.
      * @return  List<String> containing value attribute of first element, or list of selected option values
      */
-    public List<String> vals() {
+    private List<String> valsForFirstElement() {
         List<String> vals = new ArrayList<>();
+        // may not work in cases:
+        // 2. things with a value attribute that aren't inputs
+        // 3. textareas
         String val = first().getAttribute("value");
         if(val != null) {
             vals.add(val);
         } 
+        // don't implement for multi-selects because we don't use them in tDAR
         else if(first().getTagName().equals("select")) {
             for(WebElement opt: first().findElements(By.cssSelector("option:checked"))) {
                 vals.add(opt.getAttribute("value"));
@@ -223,12 +241,14 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
     }
     
     /**
+     * This works like JQuery does, it returns all value attributes not just selected ones.
+     * 
      * return value of the value attribute of the first element in selection.  If element is a select element, 
      * return the value of the first selected option child element
      * @return
      */
     public String val() {
-        List<String> vals = vals();
+        List<String> vals = valsForFirstElement();
         return vals.isEmpty() ? null : vals.get(0);
     }
     

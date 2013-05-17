@@ -53,8 +53,8 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("invoice.numberOfMb", "0");
         setInput("invoice.numberOfFiles", "100");
         submitForm();
-        assertTextPresent("50-500:100:$31:$3,100");
-        assertTextPresent("total:$3,100");
+        assertTextPresentInPage("50-500:100:$31:$3,100");
+        assertTextPresentInPage("total:$3,100");
         setInput("invoice.paymentMethod", "CREDIT_CARD");
         testAccountPollingResponse("310000", TransactionStatus.TRANSACTION_SUCCESSFUL);
 
@@ -66,8 +66,8 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("invoice.numberOfMb", "100");
         setInput("invoice.numberOfFiles", "0");
         submitForm();
-        assertTextPresent("100 mb:1:$50:$50");
-        assertTextPresent("total:$50");
+        assertTextPresentInPage("100 mb:1:$50:$50");
+        assertTextPresentInPage("total:$50");
         setInput("invoice.paymentMethod", "CREDIT_CARD");
         testAccountPollingResponse("5000", TransactionStatus.TRANSACTION_SUCCESSFUL);
     }
@@ -79,9 +79,9 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("invoice.numberOfFiles", "10");
         submitForm();
 
-        assertTextPresent("100 mb:19:$50:$950");
-        assertTextPresent("5- 19:10:$40:$400");
-        assertTextPresent("total:$1,350");
+        assertTextPresentInPage("100 mb:19:$50:$950");
+        assertTextPresentInPage("5- 19:10:$40:$400");
+        assertTextPresentInPage("total:$1,350");
         setInput("invoice.paymentMethod", "CREDIT_CARD");
         testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
     }
@@ -118,12 +118,12 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         String account = addInvoiceToNewAccount(invoiceId2, accountId, null);
         assertEquals(account, accountId);
-        assertTextPresent("10,020");
-        assertTextPresent("2,000");
-        assertTextPresent("10");
-        assertTextPresent("12");
-        assertTextPresent("$5,430");
-        assertTextPresent("$1,350");
+        assertTextPresentInPage("10,020");
+        assertTextPresentInPage("2,000");
+        assertTextPresentInPage("10");
+        assertTextPresentInPage("12");
+        assertTextPresentInPage("$5,430");
+        assertTextPresentInPage("$1,350");
         logger.trace(getPageText());
 
     }
@@ -148,12 +148,12 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         String accountName2 = "test account 2";
         String account = addInvoiceToNewAccount(invoiceId2, null, accountName2);
-        assertTextPresent(accountName2);
-        assertTextNotPresent(accountName);
+        assertTextPresentInPage(accountName2);
+        assertTextNotPresentInPage(accountName);
         assertNotEquals(account, accountId);
         gotoPage(URLConstants.DASHBOARD);
-        assertTextPresent(accountName);
-        assertTextPresent(accountName2);
+        assertTextPresentInPage(accountName);
+        assertTextPresentInPage(accountName2);
         logger.info(getPageText());
 
     }
@@ -167,9 +167,9 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
 
         submitForm();
 
-        assertTextPresent("100 mb:19:$50:$950");
-        assertTextPresent("5- 19:10:$40:$400");
-        assertTextPresent("total:$1,405.21");
+        assertTextPresentInPage("100 mb:19:$50:$950");
+        assertTextPresentInPage("5- 19:10:$40:$400");
+        assertTextPresentInPage("total:$1,405.21");
         setInput("invoice.paymentMethod", "CREDIT_CARD");
         testAccountPollingResponse("140521", TransactionStatus.TRANSACTION_FAILED);
     }
@@ -183,9 +183,9 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
 
         submitForm();
 
-        assertTextPresent("100 mb:19:$50:$950");
-        assertTextPresent("5- 19:10:$40:$400");
-        assertTextPresent("total:$1,405.31");
+        assertTextPresentInPage("100 mb:19:$50:$950");
+        assertTextPresentInPage("5- 19:10:$40:$400");
+        assertTextPresentInPage("total:$1,405.31");
         setInput("invoice.paymentMethod", "CREDIT_CARD");
         testAccountPollingResponse("140531", TransactionStatus.TRANSACTION_FAILED);
     }
@@ -219,9 +219,9 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
 
         submitForm();
 
-        assertTextPresent("100 mb:19:$50:$950");
-        assertTextPresent("5- 19:10:$40:$400");
-        assertTextPresent("total:$1,405.11");
+        assertTextPresentInPage("100 mb:19:$50:$950");
+        assertTextPresentInPage("5- 19:10:$40:$400");
+        assertTextPresentInPage("total:$1,405.11");
         setInput("invoice.paymentMethod", "CREDIT_CARD");
         testAccountPollingResponse("140511", TransactionStatus.TRANSACTION_FAILED);
     }

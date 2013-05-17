@@ -28,7 +28,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "us24");
         testLogin(personmap, true);
-        assertTextPresent("Create a new project");
+        assertTextPresentInPage("Create a new project");
 
         gotoPage("/cart/add");
         setInput("invoice.numberOfMb", "20");
@@ -42,9 +42,9 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         createDocumentAndUploadFile("my first document");
         createDocumentAndUploadFile("my second document");
         gotoPage("/document/add");
-        assertTextPresent("What would you like to put into tDAR");
+        assertTextPresentInPage("What would you like to put into tDAR");
         gotoPage("/resource/add");
-        assertTextPresent("What would you like to put into tDAR");
+        assertTextPresentInPage("What would you like to put into tDAR");
         logger.info(getPageText());
         gotoPage("/logout");
     }
@@ -74,7 +74,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         login(TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_PASSWORD);
 
         gotoPage("/document/" + docid + "/edit");
-        assertTextPresent(accountName);
+        assertTextPresentInPage(accountName);
     }
 
     @Test
@@ -145,7 +145,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
 
         // make sure were not flagged.
         String flaggedText = "Flagged for account overage";
-        assertTextNotPresent(flaggedText);
+        assertTextNotPresentInPage(flaggedText);
     }
 
 }

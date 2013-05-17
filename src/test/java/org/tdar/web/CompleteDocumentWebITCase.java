@@ -191,8 +191,8 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         logger.info(getPageText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
-        assertTextPresent(ORIGINAL_START_DATE);
-        assertTextPresent(ORIGINAL_END_DATE);
+        assertTextPresentInPage(ORIGINAL_START_DATE);
+        assertTextPresentInPage(ORIGINAL_END_DATE);
 
         clickLinkWithText("edit");
         String NEW_START_DATE = "100";
@@ -202,9 +202,9 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         path = internalPage.getUrl().getPath().toLowerCase();
         logger.info(getPageText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
-        assertTextPresent(NEW_START_DATE);
-        assertTextNotPresent(ORIGINAL_START_DATE);
-        assertTextPresent(ORIGINAL_END_DATE);
+        assertTextPresentInPage(NEW_START_DATE);
+        assertTextNotPresentInPage(ORIGINAL_START_DATE);
+        assertTextPresentInPage(ORIGINAL_END_DATE);
         logger.trace(getPageText());
     }
 
@@ -261,16 +261,16 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
             }
         }
         for (String alt : alternateTextLookup) {
-            assertTextPresent(alt);
+            assertTextPresentInPage(alt);
         }
         for (String alt : alternateCodeLookup) {
             assertTextPresentInCode(alt);
         }
 
-        assertTextNotPresent("embargo");
+        assertTextNotPresentInPage("embargo");
         for (String key : docMultiValMapLab.keySet()) {
             for (String val : docMultiValMapLab.get(key)) {
-                assertTextPresent(val);
+                assertTextPresentInPage(val);
             }
         }
 
@@ -295,7 +295,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
                 continue;
 
             if (docUnorderdValMap.containsKey(key)) {
-                assertTextPresent(docValMap.get(key));
+                assertTextPresentInPage(docValMap.get(key));
             } else {
                 assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
             }

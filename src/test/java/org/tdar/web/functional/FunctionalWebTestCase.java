@@ -1,6 +1,5 @@
 package org.tdar.web.functional;
 
-import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
 import java.net.MalformedURLException;
@@ -29,19 +28,12 @@ public abstract class FunctionalWebTestCase {
     @Before
     public void before() throws MalformedURLException {
         /*
-         * DesiredCapabilities abilities = DesiredCapabilities.firefox();
-         * // abilities.setCapability("version", "16");
-         * // abilities.setCapability("platform", Platform.WINDOWS);
-         * abilities.setCapability("name", "Testing Selenium-2 Remote WebDriver");
-         * 
-         * driver = new RemoteWebDriver( new URL("http://localhost:4444/wd/hub"), abilities);
-         * // driver = new RemoteWebDriver(remoteAddress, desiredCapabilities)
+         * We define a specific binary so when running "headless" we can specify a PORT
          */
         FirefoxBinary fb = new FirefoxBinary();
         String xvfbPropsFile = System.getProperty("display.port");
         if (StringUtils.isNotBlank(xvfbPropsFile)) {
             fb.setEnvironmentProperty("DISPLAY", xvfbPropsFile);
-//            fb.set
         }
         driver = new FirefoxDriver(fb, new FirefoxProfile());
     }
@@ -50,7 +42,7 @@ public abstract class FunctionalWebTestCase {
      * Shutdown Selenium
      */
     @After
-    public void after() {
+    public final void shutdownSelenium() {
         logger.debug("after");
         try {
             driver.close();
@@ -63,14 +55,14 @@ public abstract class FunctionalWebTestCase {
     /*
      * createObsoluteUrl
      */
-    public String url(String path) {
+    public String absoluteUrl(String path) {
         return String.format("%s%s", DEFAULT_BASE_URL, path);
     }
 
     public void gotoPage(String path) {
-        String url = url(path);
+        String url = absoluteUrl(path);
         logger.debug("going to {}", url);
-        driver.get(url(path));
+        driver.get(absoluteUrl(path));
     }
 
     // TODO: find out if this is necessary for repeatrow buttons. Supposedly selenium will wait until domready is complete.
@@ -84,31 +76,21 @@ public abstract class FunctionalWebTestCase {
         return result;
     }
 
-    /*
-     * abrin:Find All?  
-     * 
-     * jtd:I concede your it is inconsistent (e.g. with Dao#find),  but I want the most frequently used functions to be the easiest to type. 
-     * 
-     * jtd: perhaps select()?
-     */
+
     public WebElementSelection find(String selector) {
         return find(By.cssSelector(selector));
     }
-    
+
     public WebElementSelection find(By by) {
         WebElementSelection selection = new WebElementSelection(driver.findElements(by));
         logger.debug("criteria:{}\t  size:{}", by, selection.size());
         return selection;
     }
 
-    /*
-     * Find First?
-     */
-    public WebElement findOne(String selector) {
+    public WebElement findFirst(String selector) {
         return find(selector).iterator().next();
     }
 
-    
     public WebDriver getDriver() {
         return driver;
     }
@@ -131,11 +113,11 @@ public abstract class FunctionalWebTestCase {
     public String getSource() {
         return driver.getPageSource();
     }
-    
+
     public String getDom() {
         return find("body").getHtml();
     }
-    
+
     public String getText() {
         return find("body").getText();
     }

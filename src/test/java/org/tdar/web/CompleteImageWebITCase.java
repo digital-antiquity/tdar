@@ -153,7 +153,7 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
                 assertTextPresentInPage(docValMap.get(key).substring(0, docValMap.get(key).indexOf(".")));
                 // these are displayed by "type" or not "displayed"
             } else if(key.equals("resource.licenseType")) {
-                assertTextPresent(LicenseType.CREATIVE_COMMONS_NONCOMMERCIAL.getLicenseName());
+                assertTextPresentInPage(LicenseType.CREATIVE_COMMONS_NONCOMMERCIAL.getLicenseName());
             } else if (key.equals("resourceLanguage")) {
                 assertTextPresentInPage(docValMap.get(key), false);
             } else if (!key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
@@ -163,10 +163,10 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
                 assertTextPresentInPage(docValMap.get(key), false);
             }
         }
-        assertTextPresent("will be released");
+        assertTextPresentInPage("will be released");
         for (String key : docMultiValMapLab.keySet()) {
             for (String val : docMultiValMapLab.get(key)) {
-                assertTextPresent(val);
+                assertTextPresentInPage(val);
             }
         }
 
@@ -197,7 +197,7 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         }
 
         for (String val : unorderedCheck) {
-            assertTextPresent(val);
+            assertTextPresentInPage(val);
         }
 
         logger.info(getPageCode());

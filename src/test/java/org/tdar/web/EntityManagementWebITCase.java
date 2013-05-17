@@ -19,7 +19,7 @@ public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase 
 
         // assert the logged in user can go to the person view page
         gotoPage(personViewUrl);
-        assertTextPresent("Last Login");
+        assertTextPresentInPage("Last Login");
 
         // assert that the person logged in can see the person view page
         clickLinkWithText("edit");
@@ -30,7 +30,7 @@ public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase 
     @Test 
     public void testViewMyProfilePage() {
         gotoPage("/entity/person/myprofile");
-        assertTextPresent(getUser().getProperName());
+        assertTextPresentInPage(getUser().getProperName());
     }
     
 
@@ -43,7 +43,7 @@ public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase 
         logout();
         gotoPage(personViewUrl);
         // this text should only be present when you are logged in and you are a)an editor or b)looking at yourself
-        assertTextNotPresent("Last Login");
+        assertTextNotPresentInPage("Last Login");
 
         gotoPage(personEditUrl);
         String path = internalPage.getUrl().getPath().toLowerCase();

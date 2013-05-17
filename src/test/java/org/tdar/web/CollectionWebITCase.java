@@ -42,12 +42,12 @@ public class CollectionWebITCase  extends AbstractAdminAuthenticatedWebTestCase{
         String desc = "description goes here";
         List<? extends Resource> someResources = getSomeResources();
         createTestCollection(name, desc, someResources);
-        assertTextPresent(name);
-        assertTextPresent(desc);
+        assertTextPresentInPage(name);
+        assertTextPresentInPage(desc);
         logger.trace(getHtmlPage().asText());
         String currentUrlPath = getCurrentUrlPath();
         for(Resource resource : someResources) {
-            assertTextPresent(resource.getTitle());
+            assertTextPresentInPage(resource.getTitle());
         }
         
         //now go back to the edit page, add some users and remove some of the resources
@@ -80,18 +80,18 @@ public class CollectionWebITCase  extends AbstractAdminAuthenticatedWebTestCase{
         logger.trace("page contents: {}", getPageText());
         //assert all the added names are on the view page
         for(Person user : registeredUsers) {
-            assertTextPresent(user.getProperName()); //let's assume the view page uses tostring to format the user names.
+            assertTextPresentInPage(user.getProperName()); //let's assume the view page uses tostring to format the user names.
         }
         
         //assert the removed resources are *not* present on the view page
         for(Resource resource : removedResources) {
-            assertTextNotPresent(resource.getTitle());
+            assertTextNotPresentInPage(resource.getTitle());
         }
         
         logout();
         
         gotoPage(currentUrlPath);
-        assertTextNotPresent("collection is not accessible");
+        assertTextNotPresentInPage("collection is not accessible");
     }
     
     //assign a parent collection, then go back to dashboard
@@ -203,9 +203,9 @@ public class CollectionWebITCase  extends AbstractAdminAuthenticatedWebTestCase{
         assertFalse("expecting to be on the view page", getCurrentUrlPath().contains("/collection/add"));
         assertFalse("expecting to be on the view page", getCurrentUrlPath().contains("/collection/save.action"));
         
-        assertTextPresent("my fancy collection");
+        assertTextPresentInPage("my fancy collection");
         for(Person person: nonUsers) {
-            assertTextNotPresent(person.getLastName());
+            assertTextNotPresentInPage(person.getLastName());
         }
         
     }

@@ -84,7 +84,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         super.testDatasetView(); // back to view page, then to citations
         // clickLinkWithText("manage citations");
         // assertTextPresentInPage("Managing citation information for");
-        assertTextNotPresent("internal error");
+        assertTextNotPresentInPage("internal error");
         super.testDatasetView(); // back to view page, then to column mapping
         clickLinkWithText(TABLE_METADATA);
         assertTextPresentInPage("Table Metadata for ");
@@ -116,7 +116,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // we should still be on the edit page
         assertTextPresentInPage("Editing Dataset");
         // we should have an action error
-        assertTextPresent("has more columns");
+        assertTextPresentInPage("has more columns");
         assertTextPresentInCode("action-errors");
     }
     

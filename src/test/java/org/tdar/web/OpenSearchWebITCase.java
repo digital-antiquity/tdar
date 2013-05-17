@@ -29,11 +29,11 @@ public class OpenSearchWebITCase extends AbstractWebTestCase {
     @Test
     public void testPropertiesAreReadIntoTemplate() {
         gotoPage("/opensearch.xml");
-        assertTextPresent(shortNameElementText());
-        assertTextPresent(descriptionElementText());
-        assertTextPresent(contactElementText());
-        assertTextPresent(searchUrlElementText());
-        assertTextPresent(atomUrlElementText());
+        assertTextPresentInPage(shortNameElementText());
+        assertTextPresentInPage(descriptionElementText());
+        assertTextPresentInPage(contactElementText());
+        assertTextPresentInPage(searchUrlElementText());
+        assertTextPresentInPage(atomUrlElementText());
     }
 
     private String contactElementText() {

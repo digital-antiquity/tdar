@@ -45,17 +45,17 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput(key, docValMap.get(key));
         }
         submitForm();
-        assertTextPresent(TESTCOLLECTIONNAME);
+        assertTextPresentInPage(TESTCOLLECTIONNAME);
         clickLinkWithText(TESTCOLLECTIONNAME);
-        assertTextPresent(TITLE);
+        assertTextPresentInPage(TITLE);
         gotoPage("/search/results?query=" + DESCRIPTION);
-        assertTextPresent(TITLE);
-        assertTextPresent(DESCRIPTION); // should be in the "search description"
+        assertTextPresentInPage(TITLE);
+        assertTextPresentInPage(DESCRIPTION); // should be in the "search description"
         logout();
         gotoPageWithoutErrorCheck("/search/results?includedStatuses=DRAFT&useSubmitterContext=true&query=" + DESCRIPTION);
-        assertTextNotPresent(TITLE);
+        assertTextNotPresentInPage(TITLE);
         assertErrorsPresent();
-        assertTextPresent(DESCRIPTION);
+        assertTextPresentInPage(DESCRIPTION);
 
     }
 
