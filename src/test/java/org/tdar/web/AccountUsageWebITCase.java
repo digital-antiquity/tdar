@@ -12,26 +12,21 @@ import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
-
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
 public class AccountUsageWebITCase extends AbstractWebTestCase {
-
 
     private static float BYTES_PER_MEGABYTE = 1048576F;
 
     @Test
     public void testCartWithAccountFilling() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "user124");
+        setupBasicUser(personmap, "us24");
         testLogin(personmap, true);
         assertTextPresent("Create a new project");
 
@@ -43,7 +38,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
         assertTrue(accountId != "-1");
-        
+
         createDocumentAndUploadFile("my first document");
         createDocumentAndUploadFile("my second document");
         gotoPage("/document/add");
@@ -53,8 +48,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         logger.info(getPageText());
         gotoPage("/logout");
     }
-    
-    
+
     @Test
     public void testAccountListWhenEditingAsAdmin() throws Exception {
         Map<String, String> personmap = new HashMap<String, String>();
@@ -69,16 +63,16 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         String accountName = "loblaw account";
         String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
-        
+
         createDocumentAndUploadFile("my first document");
-        logger.debug("page url is: {}",  internalPage.getUrl());
-        
+        logger.debug("page url is: {}", internalPage.getUrl());
+
         Long docid = extractTdarIdFromCurrentURL();
-        String viewUrl = internalPage.getUrl().getPath(); 
+        String viewUrl = internalPage.getUrl().getPath();
         gotoPage("/logout");
-        
+
         login(TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_PASSWORD);
-        
+
         gotoPage("/document/" + docid + "/edit");
         assertTextPresent(accountName);
     }
@@ -90,26 +84,27 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
      * even if the billing account has plenty of space remaining.
      * @throws Exception
      */
-    public void testUploadOnSecondEditProperAccountDecriment() throws Exception{
-        //create 2 accounts w/ 10 files & 4x the MB that we need
+    public void testUploadOnSecondEditProperAccountDecriment() throws Exception {
+        // create 2 accounts w/ 10 files & 4x the MB that we need
         File file = new File(TestConstants.TEST_DOCUMENT);
-        int spaceNeeded = (int)Math.ceil((file.length() / BYTES_PER_MEGABYTE) * 4);
+        int spaceNeeded = (int) Math.ceil((file.length() / BYTES_PER_MEGABYTE) * 4);
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw234");
         testLogin(personmap, true);
-        
-        //the 2nd account is not used.  We only add it to ensure the edit renders a select dropdown which more faithfully recreates the precondition described in the ticket
+
+        // the 2nd account is not used. We only add it to ensure the edit renders a select dropdown which more faithfully recreates the precondition described
+        // in the ticket
         int acct1Id = createNewAccountWithInvoice("test account one", 10, spaceNeeded);
         int acct2Id = createNewAccountWithInvoice("test account two", 10, spaceNeeded);
         assertTrue(acct1Id > 0);
         assertTrue(acct2Id > 0);
-        
-        createDocumentThenUploadFile("document one", acct1Id, TestConstants.TEST_DOCUMENT_NAME );
-        createDocumentThenUploadFile("document two", acct1Id, TestConstants.TEST_DOCUMENT_NAME );
-        createDocumentThenUploadFile("document three", acct1Id, TestConstants.TEST_DOCUMENT_NAME );
+
+        createDocumentThenUploadFile("document one", acct1Id, TestConstants.TEST_DOCUMENT_NAME);
+        createDocumentThenUploadFile("document two", acct1Id, TestConstants.TEST_DOCUMENT_NAME);
+        createDocumentThenUploadFile("document three", acct1Id, TestConstants.TEST_DOCUMENT_NAME);
     }
 
-    public int createNewAccountWithInvoice(String accountName, int files, int mb) throws Exception{
+    public int createNewAccountWithInvoice(String accountName, int files, int mb) throws Exception {
         gotoPage("/cart/add");
         setInput("invoice.numberOfMb", files);
         setInput("invoice.numberOfFiles", mb);
@@ -119,7 +114,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
         return Integer.parseInt(accountId);
     }
-    
+
     public void createDocumentThenUploadFile(String title, int accountId, String filename) {
         gotoPage("/document/add");
         assertTextPresentInPage("Create a new Document");
@@ -134,7 +129,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("status", Status.DRAFT);
         submitForm();
         String url = getCurrentUrlPath();
-        
+
         String ticketId = getPersonalFilestoreTicketId();
         uploadFileToPersonalFilestore(ticketId, filename);
         gotoPage(url);
@@ -148,12 +143,9 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         assertPageTitleContains(title);
         assertTextPresentInPage(filename);
 
-        //make sure were not flagged.
+        // make sure were not flagged.
         String flaggedText = "Flagged for account overage";
         assertTextNotPresent(flaggedText);
     }
-    
-    
 
-    
 }

@@ -47,7 +47,7 @@ import com.opensymphony.xwork2.Preparable;
 @Result(name = "new", type = "redirect", location = "new")
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
 
-    public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@.]{5,20}$";
+    public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@.]{5,40}$";
 
     public static final String USERNAME_INVALID = "Username invalid, usernames must be at least 5 characters and can only have letters and numbers";
 
