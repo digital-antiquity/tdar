@@ -16,31 +16,31 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     @Test
     public void testOntologyView() {
         super.testOntologyView();
-        assertTextNotPresentInPage("edit metadata");
+        assertTextNotPresent("edit metadata");
     }
 
     @Test
     public void testCodingSheetView() {
         super.testCodingSheetView();
-        assertTextNotPresentInPage("edit metadata");
+        assertTextNotPresent("edit metadata");
     }
 
     @Test
     public void testProjectView() {
         super.testProjectView();
-        assertTextNotPresentInPage("edit metadata");
+        assertTextNotPresent("edit metadata");
     }
 
     @Test
     public void testDocumentView() {
         super.testDocumentView();
-        assertTextNotPresentInPage("edit metadata");
+        assertTextNotPresent("edit metadata");
     }
 
     @Test
     public void testDatasetView() {
         super.testDatasetView();
-        assertTextNotPresentInPage("edit metadata");
+        assertTextNotPresent("edit metadata");
     }
 
     
@@ -80,13 +80,13 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
         // if you make more than 9999999 test records this test won't work anymore. so don't.
         int statusCode = gotoPageWithoutErrorCheck("/dataset/9999999");
         assertEquals("expecting 404 error", HttpStatus.SC_NOT_FOUND, statusCode);
-        assertTextPresentInPage("Sorry, the page you requested cannot be found");
+        assertTextPresent("Sorry, the page you requested cannot be found");
     }
 
     @Test
     public void testViewErrorBadRequest() {
         int statusCode = gotoPageWithoutErrorCheck("/dataset/view?id=pay_no_attention_to_this_url");
-        assertTextPresentInPage("Sorry, the page you requested cannot be found");
+        assertTextPresent("Sorry, the page you requested cannot be found");
         // FIXME: status code will be 200 instead, see http://dev.tdar.org/jira/browse/TDAR-1842 for more details
         // assertEquals("invalid id should 404: ", HttpStatus.SC_NOT_FOUND, statusCode);
         // assertEquals("expecting bad request error", HttpStatus.SC_BAD_REQUEST, statusCode);

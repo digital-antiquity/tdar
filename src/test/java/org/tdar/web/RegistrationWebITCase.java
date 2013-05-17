@@ -20,7 +20,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         setupBasicUser(personmap, "user");
         personmap.put("requestingContributorAccess", "false");
         testLogin(personmap, true);
-        assertTextNotPresentInPage("Create a new project");
+        assertTextNotPresent("Create a new project");
         gotoPage("/logout");
     }
 
@@ -29,7 +29,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "contributor");
         testLogin(personmap, true);
-        assertTextPresentInPage("Create a new project");
+        assertTextPresent("Create a new project");
         clickLinkWithText("UPLOAD");
         gotoPage("/account/view?personId=1");
         assertPageTitleEquals("Page not found");

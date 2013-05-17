@@ -15,17 +15,17 @@ public class ViewStatisticsWebITCase extends AbstractAuthenticatedWebTestCase {
         String docUrl = pageCode.substring(pageCode.indexOf("/filestore/"));
         docUrl = docUrl.substring(0, docUrl.indexOf("\""));
         logger.info(docUrl);
-        assertTextPresentInPage("1 time");
+        assertTextPresent("1 time");
         URL url = internalPage.getUrl();
         gotoPage(url.toString());
-        assertTextPresentInPage("2 time(s)");
+        assertTextPresent("2 time(s)");
 
         gotoPage(docUrl);
         gotoPage(url.toString());
-        assertTextPresentInPage("downloaded 1 time");
+        assertTextPresent("downloaded 1 time");
         gotoPage(docUrl);
         gotoPage(url.toString());
-        assertTextPresentInPage("downloaded 2 times");
+        assertTextPresent("downloaded 2 times");
     }
 
 }

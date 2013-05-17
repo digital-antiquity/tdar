@@ -27,6 +27,6 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         //get the id of the new resource
         
         gotoPage("/project/" + TestConstants.PARENT_PROJECT_ID);
-        assertTextPresentInPage(resourceName);
+        assertTextPresent(resourceName);
     }
 }

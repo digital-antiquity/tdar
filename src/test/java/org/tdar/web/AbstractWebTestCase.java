@@ -232,6 +232,20 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         elementByName.getParentNode().appendChild(clone);
     }
 
+    public void assertTextPresent(String text) {
+        assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl() + "\n" + getPageText(), internalPage.getWebResponse().getContentAsString()
+                .contains(text));
+    }
+
+    public void assertTextPresentIgnoreCase(String text) {
+        assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl() + "\n" + getPageText(),
+                StringUtils.containsIgnoreCase(internalPage.getWebResponse().getContentAsString(), text));
+    }
+
+    public void assertTextNotPresentIgnoreCase(String text) {
+        assertFalse("looking for [" + text + "] in page:" + internalPage.getUrl() + "\n" + getPageText(),
+                StringUtils.containsIgnoreCase(internalPage.getWebResponse().getContentAsString(), text));
+    }
 
     public void assertPageTitleEquals(String expectedTitle) {
         if (internalPage instanceof HtmlPage) {
@@ -512,10 +526,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void assertErrorsPresent() {
-        assertTextPresentInPage("the following problems with your submission");
+        assertTextPresent("the following problems with your submission");
     }
 
-    public void assertTextNotPresentInPage(String text) {
+    public void assertTextNotPresent(String text) {
         String contents = "";
         if (internalPage instanceof HtmlPage) {
             HtmlPage page = (HtmlPage) internalPage;
@@ -535,10 +549,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      * Assert that the page is not an error page and does or contain any inline stacktraces
      */
     public void assertNoErrorTextPresent() {
-        assertTextNotPresentInPage("Exception stack trace: " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
+        assertTextNotPresent("Exception stack trace: " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
                                                                                                      // rendering)
-        assertTextPresentInPage("HTTP ERROR");
-        assertTextNotPresentInPage("Exception " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
+        assertTextNotPresentIgnoreCase("HTTP ERROR");
+        assertTextNotPresentIgnoreCase("Exception " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
                                                                                                   // rendering)
         assertFalse("page shouldn't contain action errors " + getCurrentUrlPath() + ":" + getPageText(), getPageCode().contains("class=\"action-error\""));
     }
@@ -1000,12 +1014,12 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected void assertAccountPageCorrect(List<Person> users, List<Long> userIds, String title) {
-        assertTextPresentInPage(title);
-        assertTextPresentInPage(THIS_IS_A_TEST_DESCIPTION);
+        assertTextPresent(title);
+        assertTextPresent(THIS_IS_A_TEST_DESCIPTION);
         for (int i = 0; i < userIds.size(); i++) {
-            assertTextPresentInPage(users.get(i).getProperName());
+            assertTextPresent(users.get(i).getProperName());
         }
-        assertTextPresentInPage(getSessionUser().getProperName());
+        assertTextPresent(getSessionUser().getProperName());
     }
 
     public void login(String user, String pass) {

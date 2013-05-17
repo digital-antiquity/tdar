@@ -33,7 +33,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         clickLinkOnPage("delete");
         submitForm("delete");
         gotoPage(URLConstants.DASHBOARD);
-        assertTextNotPresentInPage(docTitle);
+        assertTextNotPresent(docTitle);
 
         // have an admin undelete the resource
         logout();

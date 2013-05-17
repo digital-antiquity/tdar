@@ -44,7 +44,7 @@ public class CrossActionPostWebITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         gotoPage(docPath);
         logger.debug("TITLE TEXT: " + getHtmlPage().getTitleText());
-        assertTextNotPresentInPage(testTitle);
+        assertTextNotPresent(testTitle);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class CrossActionPostWebITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         gotoPage(newDocPath);
         logger.debug("TITLE TEXT: " + getHtmlPage().getTitleText());
-        assertTextNotPresentInPage(testTitle);
+        assertTextNotPresent(testTitle);
     }
 
 }
