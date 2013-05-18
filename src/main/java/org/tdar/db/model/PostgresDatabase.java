@@ -72,6 +72,7 @@ import org.tdar.utils.Pair;
  */
 public class PostgresDatabase implements TargetDatabase, RowOperations {
 
+    public static final String DATATABLE_TOO_LONG = "This data table contains more columns that is allowed, please simplify the dataset before archiving";
     public static final int MAX_VARCHAR_LENGTH = 500;
     private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
     private static final String SELECT_ALL_FROM_TABLE_WITH_ORDER = "SELECT %s FROM %s order by " + TargetDatabase.TDAR_ID_COLUMN;
@@ -96,7 +97,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     private static final String CREATE_TABLE = "CREATE TABLE %1$s (" + TDAR_ID_COLUMN + " bigserial, %2$s)";
     private static final String CREATE_TEMPORARY_TABLE = "CREATE TEMPORARY TABLE %1$s (" + TDAR_ID_COLUMN + " bigserial, %2$s)";
     private static final String SQL_ALTER_TABLE = "ALTER TABLE \"%1$s\" ALTER \"%2$s\" TYPE %3$s USING \"%2$s\"::%3$s";
-    private static final HashSet<String> RESERVED_COLUMN_NAMES = new HashSet<String>(
+    public static final HashSet<String> RESERVED_COLUMN_NAMES = new HashSet<String>(
             Arrays.asList("all", "analyse", "analyze", "and", "any", "array", "as", "asc", "asymmetric", "both", "case", "cast",
                     "check", "collate", "column", "constraint", "create", "current_date", "current_role", "current_time", "current_timestamp", "current_user",
                     "default", "deferrable", "desc", "distinct", "do", "double", "else", "end", "except", "for", "foreign", "from", "grant", "group", "having",
@@ -109,10 +110,11 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                     "inner",
                     "is", "isnull", "join", "left", "like", "natural", "notnull", "outer", "overlaps", "right", "similar", "verbose")
             );
-    private static final String DEFAULT_TYPE = "text";
-    private static final String SCHEMA_NAME = "public";
-    private static final int BATCH_SIZE = 5000;
-    private static final int MAX_NAME_SIZE = 63;
+    public static final String DEFAULT_TYPE = "text";
+    public static final String SCHEMA_NAME = "public";
+    public static final int BATCH_SIZE = 5000;
+    public static final int MAX_NAME_SIZE = 63;
+    public static final int MAX_ALLOWED_COLUMNS = 500;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -418,6 +420,10 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         Set<String> columnNames = new HashSet<String>();
         Iterator<DataTableColumn> iterator = dataTable.getDataTableColumns().iterator();
         int i = 1;
+        if (dataTable.getDataTableColumns().size() > MAX_ALLOWED_COLUMNS) {
+            throw new TdarRecoverableRuntimeException(DATATABLE_TOO_LONG);
+        }
+
         while (iterator.hasNext()) {
             DataTableColumn column = iterator.next();
             if (columnNames.contains(column.getName())) {
