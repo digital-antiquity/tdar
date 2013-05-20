@@ -6,7 +6,10 @@
     <#assign pageTitle = "Add a new User">
     
     <#if (person.id > 0 )>
+        <#assign pageTitle = "Editing: ${person.properName!'n/a'}">
+    	<#if person.id == authenticatedUser.id>
         <#assign pageTitle = "Your Profile: ${person.properName!'n/a'}">
+        </#if>
     </#if>
     <title>${pageTitle}</title>
     
@@ -41,14 +44,14 @@ label.error {display:block;}
             </div>  
         </div>
 		</#if>    
-        
+	<#if person.registered>        
         <div class="control-group">
             <label class="control-label">Username</label>
             <div class="controls">
 		        <span class="uneditable-input input-xlarge"> ${person.username}</span>
             </div>
         </div>
-    
+    </#if>
         <@s.hidden name="id" />
         <@s.textfield cssClass="required input-xlarge"        label="Last Name"   name="person.lastName"  maxlength="255"  title="A last name is required" /> 
 

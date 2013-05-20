@@ -45,7 +45,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
         // during a save request, struts will have potentially modified the fields of the persistable. This has the potential cause hibernate
         // to throw exceptions (e.g. uniqueconstraint) even if we don't ultimately save the modified record. So we detach the persistable here,
         // before struts modifies any fields, so that hibernate won't freak out at us.
-        getGenericService().detachFromSession(getPersistable());
+//        getGenericService().detachFromSession(getPersistable());
     }
 
     @Override

@@ -41,6 +41,10 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
         login(getAdminUsername(), getAdminPassword());
     }
 
+    public void loginEditor() {
+        login("editor@tdar.org","editor");
+    }
+
     public static String getAdminUsername() {
         return ADMIN_USERNAME;
     }
