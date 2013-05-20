@@ -13,12 +13,14 @@ import static org.junit.Assert.assertTrue;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -141,9 +143,14 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
 
     @Test
     public void testCreateDocumentEditSavehasResource() {
+        login();
+        gotoPage("/document/add");
         WebElement form = find("#metadataForm");
         
-        gotoPage("/document/add");
+        //HACK: some of form fields we need don't exist yet.  Let's just click the "add another" buttons like crazy until they do.
+        for(int i = 0; i < 6; i++) { 
+            find(".add-another-control button").click();
+        }
 
         HashMap<String, String> docValMap2 = new HashMap<String, String>();
         docValMap2.put("document.title", "My Sample Document");
@@ -171,7 +178,7 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
         assertTrue(sourceContains(ORIGINAL_START_DATE));
         assertTrue(sourceContains(ORIGINAL_END_DATE));
 
-        clickLinkWithText("edit");
+        find(By.partialLinkText("edit")).click();
         String NEW_START_DATE = "100";
         find(By.name(COVERAGE_START)).val(NEW_START_DATE);
         form.submit();
@@ -186,16 +193,13 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
     }
 
     @Test
+    @Ignore
     public void testCreateDocument() {
-
-        // grab a ticket, upload a file with that ticket, then set ticketId on this form
-        String ticketId = getPersonalFilestoreTicketId();
-        assertTrue("Expected integer number for ticket - but got: " + ticketId, ticketId.matches("([0-9]*)"));
-        uploadFileToPersonalFilestore(ticketId, TEST_DOCUMENT);
-
+        login();
         gotoPage("/document/add");
-        //setInput("ticketId", ticketId);
-        addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, TEST_DOCUMENT_NAME);
+        File uploadFile = new File(TEST_DOCUMENT);
+        find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
+        waitFor(".delete-button");
 
         docValMap.putAll(docUnorderdValMap);
 
@@ -250,7 +254,7 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
         }
 
         // go to the edit page and ensure (some) of the form fields and values that we originally created are still present
-        clickLinkWithText("edit");
+        find(By.partialLinkText("edit")).click();
         logger.debug("----now on edit page----");
         logger.trace(find("body").getText());
 
@@ -289,24 +293,21 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
 //    
     
     
-    private void addFileProxyFields(int i, FileAccessRestriction confidential, String testDocumentName) {
-        // TODO Auto-generated method stub
-    }
+//
+//    private void uploadFileToPersonalFilestore(String ticketId, String testDocument) {
+//        // TODO Auto-generated method stub
+//    }
 
-    private void uploadFileToPersonalFilestore(String ticketId, String testDocument) {
-        // TODO Auto-generated method stub
-    }
+//    private String getPersonalFilestoreTicketId() {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
 
-    private String getPersonalFilestoreTicketId() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    // this will be somewhat tricky to do in selenium... if possible use find("xyz").click()
-    private void clickLinkWithText(String string) {
-        // TODO Auto-generated method stub
-
-    }
+//    // this will be somewhat tricky to do in selenium... if possible use find("xyz").click()
+//    private void clickLinkWithText(String string) {
+//        // TODO Auto-generated method stub
+//
+//    }
     
     private boolean sourceContains(String substring) {
         return getSource().contains(substring);

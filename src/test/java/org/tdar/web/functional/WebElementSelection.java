@@ -66,6 +66,9 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
         return this.iterator().next();
     }
 
+    /**
+     * click on every item in the selection
+     */
     @Override
     public void click() {
         for(WebElement elem : this) {
@@ -305,6 +308,4 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
     private boolean isFormElement(WebElement elem) {
         return Arrays.asList("input", "textarea", "button", "select").contains(elem.getTagName());
     }
-    
-    
 }   
