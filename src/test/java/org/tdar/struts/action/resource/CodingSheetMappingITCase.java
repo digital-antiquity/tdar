@@ -1,0 +1,613 @@
+/**
+ * $Id$
+ * 
+ * @author $Author$
+ * @version $Revision$
+ */
+package org.tdar.struts.action.resource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.junit.Test;
+import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.CodingRule;
+import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.data.ResultMetadataWrapper;
+import org.tdar.utils.ExcelUnit;
+
+/**
+ * @author Adam Brin
+ * 
+ */
+public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
+
+    private static final String TEST_DATA_SET_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + "total-number-of-bones-per-period.xlsx";
+
+    private static final File TEST_DATASET_FILE = new File(TEST_DATA_SET_FILE_PATH);
+    private static final String EXCEL_FILE_NAME = "periods-modified-sm-01182011.xlsx";
+    private static final String EXCEL_FILE_NAME2 = "periods-modified-sm-01182011-2.xlsx";
+    private static final String EXCEL_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + EXCEL_FILE_NAME;
+    private static final String EXCEL_FILE_PATH2 = TestConstants.TEST_DATA_INTEGRATION_DIR + EXCEL_FILE_NAME2;
+    private String codingSheetFileName = "/coding sheet/csvCodingSheetText.csv";
+
+    private InformationResourceFile tranlatedIRFile;
+
+    private static final String DOUBLE_CODING = "double_coding_key.csv";
+    private static final String DOUBLE_DATASET = "double_translation_test_dataset.xlsx";
+    private static final String BASIC_CSV = "csvCodingSheetText.csv";
+
+    // TEST ME: http://dev.tdar.org/jira/browse/TDAR-587
+    // TEST ME: http://dev.tdar.org/jira/browse/TDAR-581
+
+    private static final String PATH = TestConstants.TEST_CODING_SHEET_DIR;
+
+    @Test
+    @Rollback
+    /**
+     * @return
+     * @throws TdarActionException
+     */
+    public void testInvalidCodingSheet() throws TdarActionException {
+        CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
+        codingSheetController.prepare();
+        CodingSheet codingSheet = codingSheetController.getCodingSheet();
+        codingSheet.setTitle("test coding sheet");
+        codingSheet.setDescription("test description");
+        codingSheetController.setFileInputMethod("text");
+        codingSheetController.setFileTextInput("a,");
+        codingSheetController.setServletRequest(getServletPostRequest());
+        codingSheetController.save();
+        Long codingId = codingSheet.getId();
+        assertNotNull(codingId);
+        assertTrue(codingSheet.getCodingRules().isEmpty());
+        assertFalse(codingSheetController.getActionErrors().size() == 0);
+        setIgnoreActionErrors(true);
+
+    }
+
+    @Test
+    @Rollback
+    public void testSimpleDelete() throws Exception {
+        CodingSheet codingSheet = setupAndLoadResource(BASIC_CSV, CodingSheet.class);
+        Set<CodingRule> oldCodingRules = new HashSet<CodingRule>(codingSheet.getCodingRules());
+
+        CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
+        controller.setId(codingSheet.getId());
+        controller.prepare();
+        String text = (IOUtils.toString(getClass().getResourceAsStream(codingSheetFileName))).trim();
+        text = text.substring(0, text.lastIndexOf("\n"));
+        controller.setFileInputMethod("text");
+        assertNotNull(text);
+        assertFalse(text.contains("D, Don't"));
+        controller.setFileTextInput(text);
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        Set<CodingRule> newCodingRules = controller.getCodingSheet().getCodingRules();
+        logger.info("text was: " + text);
+        logger.info("{}", oldCodingRules);
+        logger.info("{}", newCodingRules);
+        assertFalse(newCodingRules.equals(oldCodingRules));
+        for (CodingRule rule : newCodingRules) {
+            if (rule.getCode().equals("D")) {
+                fail("Should not have found a 'D'");
+            }
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testDegenerateCodingSheetWithTabs() throws IOException {
+        getControllers().clear();
+        CodingSheet codingSheet = setupAndLoadResource("tab_as_csv.csv", CodingSheet.class);
+        assertEquals(FileStatus.PROCESSING_ERROR, codingSheet.getFirstInformationResourceFile().getStatus());
+        setIgnoreActionErrors(true);
+        assertTrue(CollectionUtils.isNotEmpty(getControllers().get(0).getActionErrors()));
+    }
+
+    @Test
+    @Rollback
+    public void testDoubleCoding() {
+        CodingSheet codingSheet = setupAndLoadResource(DOUBLE_CODING, CodingSheet.class);
+        Dataset dataset = setupAndLoadResource(DOUBLE_DATASET, Dataset.class);
+        DataTable firstTable = dataset.getDataTables().iterator().next();
+        assertNotNull(firstTable);
+        DataTableColumn column = firstTable.getColumnByDisplayName("double");
+        assertFalse(column.getName().equals(column.getDisplayName()));
+        assertEquals(DataTableColumnEncodingType.UNCODED_VALUE, column.getColumnEncodingType());
+        assertEquals(DataTableColumnType.DOUBLE, column.getColumnDataType());
+        column.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
+        column.setDefaultCodingSheet(codingSheet);
+        datasetService.save(column);
+        datasetService.translate(column, codingSheet);
+
+        ResultMetadataWrapper resultsWrapper = datasetService.selectAllFromDataTable(firstTable, 0, 100, true, false);
+        List<List<String>> selectAllFromDataTable = resultsWrapper.getResults();
+        assertEquals(6, selectAllFromDataTable.size());
+        HashMap<Integer, String> map = new HashMap<Integer, String>();
+        int idRow = -1;
+        int colRow = -1;
+        for (int i = 0; i < resultsWrapper.getFields().size(); i++) {
+            if (resultsWrapper.getFields().get(i).equals(DataTableColumn.TDAR_ROW_ID)) {
+                idRow = i;
+            }
+            if (resultsWrapper.getFields().get(i).equals(column)) {
+                colRow = i;
+            }
+        }
+        assertFalse(colRow == -1);
+        assertTrue("id row is hidden and should be -1", idRow == -1);
+
+        idRow = 1;
+        for (List<String> row : selectAllFromDataTable) {
+            map.put(idRow, row.get(colRow));
+            logger.info("{}: {}", idRow, row.get(colRow));
+            idRow++;
+        }
+        assertEquals("elephant", map.get(1));
+        assertEquals("elephant", map.get(2));
+        assertEquals("elephant", map.get(3));
+        assertEquals("marble", map.get(4));
+        assertEquals("watercolor", map.get(5));
+        assertEquals("watercolor", map.get(6));
+    }
+
+    @Test
+    @Rollback
+    public void testTabDelimitedCodingSheetUpload() throws Exception {
+        CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
+        controller.prepare();
+        CodingSheet codingSheet = controller.getCodingSheet();
+        codingSheet.setTitle("test coding sheet");
+        codingSheet.setDescription("test description");
+        controller.setFileInputMethod("text");
+        String codingText = IOUtils.toString(getClass().getResourceAsStream(codingSheetFileName));
+        assertNotNull(codingText);
+        controller.setFileTextInput(codingText);
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        Long codingId = codingSheet.getId();
+        assertNotNull(codingId);
+        assertFalse(0 == codingSheet.getCodingRules().size());
+        HashMap<String, CodingRule> ruleMap = new HashMap<String, CodingRule>();
+        for (CodingRule rule : codingSheet.getCodingRules()) {
+            ruleMap.put(rule.getCode(), rule);
+        }
+        assertTrue(ruleMap.get("a") != null);
+        assertTrue(ruleMap.get("b") != null);
+        assertTrue(ruleMap.get("1") != null);
+        assertTrue(ruleMap.get("D") != null);
+        assertEquals("test description", ruleMap.get("a").getDescription());
+        assertEquals("Aardvark", ruleMap.get("a").getTerm());
+        assertEquals("Bird", ruleMap.get("b").getTerm());
+        assertEquals("numeric", ruleMap.get("1").getTerm());
+        assertEquals("Don't", ruleMap.get("D").getTerm());
+
+        Collection<InformationResourceFileVersion> latestVersions = codingSheet.getLatestVersions();
+
+        controller = generateNewInitializedController(CodingSheetController.class);
+        controller.setId(codingId);
+        controller.prepare();
+        controller.loadBasicMetadata();
+        controller.loadCustomMetadata();
+        controller.setFileInputMethod("text");
+        assertNotNull(controller.getFileTextInput());
+        assertEquals(codingText, controller.getFileTextInput());
+
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        codingSheet = genericService.find(CodingSheet.class, codingId);
+        // FIXME: brittle, use
+        assertEquals(latestVersions, codingSheet.getLatestVersions());
+
+        controller = generateNewInitializedController(CodingSheetController.class);
+        controller.setId(codingId);
+        controller.prepare();
+        controller.loadBasicMetadata();
+        controller.loadCustomMetadata();
+        controller.setFileInputMethod("text");
+        controller.setFileTextInput(codingText + "abd ");
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        codingSheet = genericService.find(CodingSheet.class, codingId);
+        genericService.merge(codingSheet);
+        assertFalse(latestVersions.equals(codingSheet.getLatestVersions()));
+    }
+
+    @Test
+    @Rollback
+    public void testFakeCodingSheetWithDataTable() throws Exception {
+        CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
+        controller.prepare();
+        CodingSheet codingSheet = controller.getCodingSheet();
+        codingSheet.setTitle("test coding sheet");
+        codingSheet.setDescription("test description");
+        controller.setFileInputMethod("text");
+        String codingText = IOUtils.toString(getClass().getResourceAsStream(codingSheetFileName));
+        assertNotNull(codingText);
+        controller.setFileTextInput(codingText);
+        codingSheet.setDate(1243);
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+
+        Set<CodingRule> exitingCodingRules = new HashSet<CodingRule>(codingSheet.getCodingRules());
+        controller = generateNewInitializedController(CodingSheetController.class);
+        controller.setId(codingSheet.getId());
+        controller.prepare();
+        codingSheet = controller.getCodingSheet();
+        codingSheet.setTitle("test coding sheet");
+        codingSheet.setDescription("test description");
+        controller.setFileInputMethod("text");
+        codingText = IOUtils.toString(getClass().getResourceAsStream(codingSheetFileName));
+        assertNotNull(codingText);
+        controller.setFileTextInput(codingText);
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+
+        Long codingId = codingSheet.getId();
+        assertNotNull(codingId);
+        assertFalse(0 == codingSheet.getCodingRules().size());
+        HashMap<String, CodingRule> ruleMap = new HashMap<String, CodingRule>();
+        for (CodingRule rule : codingSheet.getCodingRules()) {
+            ruleMap.put(rule.getCode(), rule);
+        }
+        logger.debug("existing:" + exitingCodingRules);
+        logger.debug("new:" + codingSheet.getCodingRules());
+        for (CodingRule existing : exitingCodingRules) {
+            assertEquals("expecting matching ids for key:" + existing.getCode(), existing.getId(), ruleMap.get(existing.getCode()).getId());
+        }
+        assertTrue(ruleMap.get("a") != null);
+        assertTrue(ruleMap.get("b") != null);
+        assertTrue(ruleMap.get("1") != null);
+        assertTrue(ruleMap.get("D") != null);
+        assertEquals("test description", ruleMap.get("a").getDescription());
+        assertEquals("Aardvark", ruleMap.get("a").getTerm());
+        assertEquals("Bird", ruleMap.get("b").getTerm());
+        assertEquals("numeric", ruleMap.get("1").getTerm());
+        assertEquals("Don't", ruleMap.get("D").getTerm());
+
+    }
+
+    @Test
+    @Rollback
+    public void testXLSCodingSheetUpload() throws Exception {
+        CodingSheet codingSheet = setupCodingSheet();
+
+        HashMap<String, CodingRule> ruleMap = new HashMap<String, CodingRule>();
+        for (CodingRule rule : codingSheet.getCodingRules()) {
+            ruleMap.put(rule.getCode(), rule);
+        }
+        assertTrue(ruleMap.get("12") != null);
+        assertTrue(ruleMap.get("6") != null);
+        assertEquals("g", ruleMap.get("12").getTerm());
+        assertEquals("m", ruleMap.get("6").getTerm());
+    }
+
+    @Test
+    @Rollback
+    public void testXLSCodingSheetUploadDoesNotGoThroughDatasetWorkflow() throws Exception {
+        CodingSheet codingSheet = setupCodingSheet("semidegen.xlsx", TestConstants.TEST_CODING_SHEET_DIR + "semidegen.xlsx", null);
+        for (InformationResourceFile file : codingSheet.getInformationResourceFiles()) {
+            Dataset transientDataset = (Dataset) file.getWorkflowContext().getTransientResource();
+            logger.info("file: {} ", file);
+            logger.info("dataset: {} ", transientDataset);
+            assertTrue(transientDataset == null || CollectionUtils.isEmpty(transientDataset.getDataTables()));
+            assertTrue(CollectionUtils.isEmpty(file.getWorkflowContext().getExceptions()));
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testCodingSheetMappingReplace() throws Exception {
+        CodingSheet codingSheet = setupCodingSheet();
+        CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
+        codingSheetController.setId(codingSheet.getId());
+        codingSheetController.prepare();
+        List<File> uploadedFiles = new ArrayList<File>();
+        List<String> uploadedFileNames = new ArrayList<String>();
+        uploadedFiles.add(new File(EXCEL_FILE_PATH2));
+        uploadedFileNames.add(EXCEL_FILE_NAME2);
+        codingSheetController.setUploadedFilesFileName(uploadedFileNames);
+        codingSheetController.setUploadedFiles(uploadedFiles);
+        codingSheetController.setServletRequest(getServletPostRequest());
+        codingSheetController.save();
+        Long codingId = codingSheet.getId();
+        assertNotNull(codingId);
+        Set<CodingRule> rules = codingSheet.getCodingRules();
+        assertFalse(rules.isEmpty());
+        boolean found = false;
+        for (CodingRule rule : rules) {
+            if (rule.getCode().equals("0")) {
+                assertEquals("aaaa", rule.getTerm());
+                assertEquals("1234", rule.getDescription());
+                found = true;
+            }
+        }
+        // need to add ontology nodes to the mix
+        assertTrue(found);
+    }
+
+    @Test
+    @Rollback
+    public void testCodingSheetMapping() throws Exception {
+        CodingSheet codingSheet = setupCodingSheet();
+
+        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+        datasetController.prepare();
+        Dataset dataset = datasetController.getDataset();
+        dataset.setTitle("test dataset");
+        dataset.setDescription("test description");
+        List<File> uploadedFiles = new ArrayList<File>();
+        List<String> uploadedFileNames = new ArrayList<String>();
+        uploadedFileNames.add(TEST_DATASET_FILE.getName());
+        uploadedFiles.add(TEST_DATASET_FILE);
+        datasetController.setUploadedFiles(uploadedFiles);
+        datasetController.setUploadedFilesFileName(uploadedFileNames);
+        datasetController.setServletRequest(getServletPostRequest());
+        datasetController.save();
+        Long datasetId = dataset.getId();
+        assertNotNull(datasetId);
+        DataTableColumn period_ = dataset.getDataTables().iterator().next().getColumnByDisplayName("Period");
+        datasetController = generateNewInitializedController(DatasetController.class);
+        datasetController.setId(datasetId);
+        datasetController.prepare();
+        datasetController.editColumnMetadata();
+        period_.setDefaultCodingSheet(codingSheet);
+        datasetController.saveColumnMetadata();
+        dataset = null;
+        dataset = genericService.find(Dataset.class, datasetId);
+        for (DataTable table : dataset.getDataTables()) {
+            for (DataTableColumn dtc : table.getDataTableColumns()) {
+                logger.debug(dtc.getName());
+                if (dtc.getName().equals("Period")) {
+                    assertEquals(dtc.getDefaultCodingSheet().getId(), codingSheet.getId());
+                }
+            }
+        }
+        tranlatedIRFile = datasetService.createTranslatedFile(dataset);
+    }
+
+    @Test
+    @Rollback
+    /*
+     * NOTE THIS TEST CAN BE BRITTLE ... MAINLY DUE TO MEMORY CONSTRAINTS
+     * The following config currently works: -Xmx4096m -XX:PermSize=64m -XX:MaxPermSize=2048m
+     * long megs = Runtime.getRuntime().maxMemory() / 1024 / 1024;
+     * Assert.assertTrue("Expected more memory to run this test. Current heapspace:" + megs + "M", megs / 1024 >= 2);
+     */
+    public void testBigDatasetSpansSheets() throws InstantiationException, IllegalAccessException, TdarActionException, FileNotFoundException {
+        try {
+            // setup coding sheet
+            CodingSheet codingSheet = createAndSaveNewInformationResource(CodingSheet.class);
+            Set<CodingRule> rules = codingSheet.getCodingRules();
+            rules.add(createRule("1", "one", codingSheet));
+            rules.add(createRule("2", "two", codingSheet));
+            rules.add(createRule("3", "three", codingSheet));
+            genericService.save(codingSheet);
+
+            File bigFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
+
+            DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+            datasetController.prepare();
+            Dataset dataset = datasetController.getDataset();
+            dataset.setTitle("test dataset");
+            dataset.setDescription("test description");
+            List<File> uploadedFiles = new ArrayList<File>();
+            List<String> uploadedFileNames = new ArrayList<String>();
+            uploadedFileNames.add(bigFile.getName());
+            uploadedFiles.add(bigFile);
+            datasetController.setUploadedFiles(uploadedFiles);
+            datasetController.setUploadedFilesFileName(uploadedFileNames);
+            datasetController.setServletRequest(getServletPostRequest());
+            datasetController.save();
+            Long datasetId = dataset.getId();
+            assertNotNull(datasetId);
+            DataTableColumn num = dataset.getDataTableByGenericName("ds1").getColumnByDisplayName("num");
+            assertNotNull(num);
+            datasetController = generateNewInitializedController(DatasetController.class);
+            datasetController.setId(datasetId);
+            datasetController.prepare();
+            datasetController.editColumnMetadata();
+            num.setDefaultCodingSheet(codingSheet);
+            datasetController.saveColumnMetadata();
+            dataset = null;
+            dataset = genericService.find(Dataset.class, datasetId);
+
+            InformationResourceFile translatedFile = datasetService.createTranslatedFile(dataset);
+            ExcelUnit excelUnit = new ExcelUnit();
+            excelUnit.open(TdarConfiguration.getInstance().getFilestore().retrieveFile(translatedFile.getTranslatedFile()));
+            assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
+        } catch (OutOfMemoryError oem) {
+            logger.debug("Well, guess I ran out of memory...", oem);
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testExcelOutput() throws Exception {
+        testCodingSheetMapping();
+        assertNotNull("file proxy was null", tranlatedIRFile);
+        ExcelUnit excelUnit = new ExcelUnit();
+        File retrieveFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(tranlatedIRFile.getTranslatedFile());
+        excelUnit.open(retrieveFile);
+
+        excelUnit.selectSheet("total_number_of_bones_per_perio");
+        excelUnit.assertCellEquals(0, 0, "Row Id");
+        excelUnit.assertCellEquals(0, 1, "Period");
+        excelUnit.assertCellEquals(0, 2, "SumOfNo");
+        Cell cell = excelUnit.getCell(0, 0);
+        excelUnit.assertCellIsSizeInPoints(cell, (short) 11);
+
+        // header should be bold
+        excelUnit.assertCellIsBold(cell);
+
+        excelUnit.assertRowNotEmpty(13);
+        excelUnit.assertCellNotBold(excelUnit.getCell(13, 0));
+        excelUnit.assertRowIsEmpty(15);
+    }
+
+    private CodingRule createRule(String code, String term, CodingSheet codingSheet) {
+        CodingRule codingRule = new CodingRule(codingSheet, code, term, term);
+        return codingRule;
+    }
+
+    @Test
+    @Rollback
+    public void testDatasetMappingPreservation() throws Exception {
+        CodingSheet codingSheet = setupCodingSheet();
+        Dataset dataset = setupIntegrationDataset(TEST_DATASET_FILE, "Test Dataset");
+        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+        Long datasetId = dataset.getId();
+        DataTable table = dataset.getDataTables().iterator().next();
+        datasetController.setId(datasetId);
+        DataTableColumn period_ = table.getColumnByDisplayName("Period");
+        assertFalse(period_.getColumnEncodingType().isSupportsCodingSheet());
+        datasetController.prepare();
+        datasetController.editColumnMetadata();
+        period_.setDefaultCodingSheet(codingSheet);
+        datasetController.setDataTableColumns(Arrays.asList(period_));
+        datasetController.saveColumnMetadata();
+        DataTableColumn periodColumn = null;
+        DataTableColumn period = genericService.find(DataTableColumn.class, period_.getId());
+        logger.info("{}", period.getDefaultCodingSheet());
+        logger.info("{}", codingSheet.getId());
+        assertNotNull(period.getDefaultCodingSheet());
+        assertTrue(period.getColumnEncodingType().isSupportsCodingSheet());
+        // FIXME: this assertion no longer holds, we set the column encoding type to CODED_VALUE automatically if we set a default coding sheet on the
+        // column.
+        assertNotNull("coding sheet should exist", period.getDefaultCodingSheet());
+
+        datasetController = generateNewInitializedController(DatasetController.class);
+        table = dataset.getDataTables().iterator().next();
+        datasetController.setId(datasetId);
+        period_ = table.getColumnByDisplayName("Period");
+        datasetController.prepare();
+        datasetController.editColumnMetadata();
+        period_.setDefaultCodingSheet(codingSheet);
+        period_.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
+        datasetController.setDataTableColumns(Arrays.asList(period_));
+        datasetController.saveColumnMetadata();
+        periodColumn = null;
+        period = genericService.find(DataTableColumn.class, period_.getId());
+        assertEquals(period.getDefaultCodingSheet().getId(), codingSheet.getId());
+        datasetService.createTranslatedFile(dataset);
+
+        Dataset newDataset = setupIntegrationDataset(TEST_DATASET_FILE, "Test Dataset", datasetId);
+
+        for (DataTable incomingDataTable : newDataset.getDataTables()) {
+            for (DataTableColumn incomingColumn : incomingDataTable.getDataTableColumns()) {
+                if (incomingColumn.getName().equals("Period")) {
+                    // default id equality
+                    assertEquals(incomingColumn, periodColumn);
+                    assertEquals(incomingColumn.getDefaultCodingSheet().getId(), codingSheet.getId());
+                }
+            }
+        }
+    }
+
+    public Dataset setupIntegrationDataset(File file, String datasetTitle) throws TdarActionException {
+        return setupIntegrationDataset(file, datasetTitle, null);
+    }
+
+    public Dataset setupIntegrationDataset(File file, String datasetTitle, Long datasetId) throws TdarActionException {
+        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
+        logger.info("setting resource id: " + datasetId);
+        if (datasetId != null) {
+            datasetController.setId(datasetId);
+        }
+        datasetController.prepare();
+
+        Dataset dataset = datasetController.getDataset();
+        dataset.setTitle(datasetTitle);
+        dataset.setDescription("test description");
+        List<File> uploadedFiles = new ArrayList<File>();
+        List<String> uploadedFileNames = new ArrayList<String>();
+        uploadedFileNames.add(file.getName());
+        uploadedFiles.add(file);
+        datasetController.setUploadedFiles(uploadedFiles);
+        datasetController.setUploadedFilesFileName(uploadedFileNames);
+        datasetController.setServletRequest(getServletPostRequest());
+        datasetController.save();
+        assertNotNull(dataset.getId());
+        assertEquals("controller shouldn't have action errors", 0, datasetController.getActionErrors().size());
+        return dataset;
+    }
+
+    /**
+     * @return
+     * @throws TdarActionException
+     */
+    private CodingSheet setupCodingSheet() throws TdarActionException {
+        return setupCodingSheet(EXCEL_FILE_NAME, EXCEL_FILE_PATH, null);
+    }
+
+    private CodingSheet setupCodingSheet(String fileName, String filePath, Ontology ontology) throws TdarActionException {
+        CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
+        codingSheetController.prepare();
+        CodingSheet codingSheet = codingSheetController.getCodingSheet();
+        codingSheet.setTitle("test coding sheet");
+        codingSheet.setDescription("test description");
+
+        List<File> uploadedFiles = new ArrayList<File>();
+        List<String> uploadedFileNames = new ArrayList<String>();
+        uploadedFiles.add(new File(filePath));
+        codingSheet.setDefaultOntology(ontology);
+        uploadedFileNames.add(fileName);
+        codingSheetController.setUploadedFilesFileName(uploadedFileNames);
+        codingSheetController.setUploadedFiles(uploadedFiles);
+        codingSheetController.setServletRequest(getServletPostRequest());
+        codingSheetController.save();
+        Long codingId = codingSheet.getId();
+        assertNotNull(codingId);
+        assertFalse(codingSheet.getCodingRules().isEmpty());
+        return codingSheet;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
+     */
+    @Override
+    protected TdarActionSupport getController() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected String getTestFilePath() {
+        return PATH;
+    }
+
+}
