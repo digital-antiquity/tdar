@@ -103,9 +103,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @Transient
     private Long informationResourceFileId;
 
-    @Transient
-    private File file;
-
     private transient boolean viewable = false;
 
     /*
@@ -285,7 +282,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.path = path;
     }
 
-
     @Transient
     public boolean isTranslated() {
         return (getFileVersionType() == VersionType.TRANSLATED);
@@ -334,7 +330,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     public boolean isIndexable() {
         return (getFileVersionType() == VersionType.INDEXABLE_TEXT);
     }
-
 
     /**
      * @param informationResourceFileId

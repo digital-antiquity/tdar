@@ -4,7 +4,6 @@
 package org.tdar.core.filestore;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,15 +77,16 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
     }
 
-//    @Test
-//    @Rollback
-//    public void testImageLZW() throws Exception {
-//        String filename = "grandcanyon_lzw.tif";
-//        InformationResourceFile informationResourceFile = testFileProcessing(filename);
-//        assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
-//    }
+    // @Test
+    // @Rollback
+    // public void testImageLZW() throws Exception {
+    // String filename = "grandcanyon_lzw.tif";
+    // InformationResourceFile informationResourceFile = testFileProcessing(filename);
+    // assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
+    // }
 
-    private InformationResourceFile testFileProcessing(String filename, boolean successful) throws InstantiationException, IllegalAccessException, IOException, Exception {
+    private InformationResourceFile testFileProcessing(String filename, boolean successful) throws InstantiationException, IllegalAccessException, IOException,
+            Exception {
         File f = new File(TestConstants.TEST_IMAGE_DIR + "/sample_image_formats/", filename);
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
 
