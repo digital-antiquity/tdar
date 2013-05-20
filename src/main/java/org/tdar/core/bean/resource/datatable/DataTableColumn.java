@@ -249,6 +249,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return description;
     }
 
+    @Override
     public String toString() {
         return String.format("%s - %s %s", name, columnDataType, getId());
     }
