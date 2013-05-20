@@ -3,10 +3,12 @@ package org.tdar.web.functional;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -56,7 +58,19 @@ public abstract class FunctionalWebTestCase {
      * createObsoluteUrl
      */
     public String absoluteUrl(String path) {
-        return String.format("%s%s", DEFAULT_BASE_URL, path);
+        String currentUrl = driver.getCurrentUrl();
+        logger.debug("current url: {}", currentUrl);
+        if(currentUrl.length() == 0 || StringUtils.equalsIgnoreCase("about:blank", currentUrl)) {
+            currentUrl = DEFAULT_BASE_URL;
+        }
+        URL url = null;
+        try {
+            url = new URL(currentUrl);
+        } catch (MalformedURLException e) {
+            Assert.fail("could not go to url: " + currentUrl);
+        }
+        String absoluteUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + path;
+        return absoluteUrl;
     }
 
     public void gotoPage(String path) {

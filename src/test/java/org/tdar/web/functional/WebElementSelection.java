@@ -284,7 +284,9 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
                     case "select":
                         if(elem.isEnabled()) {
                             Select sel = new Select(elem);
-                            sel.deselectAll();
+                            if(sel.isMultiple()) {
+                                sel.deselectAll();
+                            }
                             sel.selectByValue(val);
                         }
                         break;
