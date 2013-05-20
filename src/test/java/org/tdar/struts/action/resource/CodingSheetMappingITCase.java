@@ -151,7 +151,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         datasetService.save(column);
         datasetService.translate(column, codingSheet);
 
-        ResultMetadataWrapper resultsWrapper = datasetService.selectAllFromDataTable(firstTable, 0, 100, true);
+        ResultMetadataWrapper resultsWrapper = datasetService.selectAllFromDataTable(firstTable, 0, 100, true, false);
         List<List<String>> selectAllFromDataTable = resultsWrapper.getResults();
         assertEquals(6, selectAllFromDataTable.size());
         HashMap<Integer, String> map = new HashMap<Integer, String>();
