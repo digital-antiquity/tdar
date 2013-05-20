@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -487,7 +488,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     @Transactional
-    public ResultMetadataWrapper selectAllFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated) {
+    public ResultMetadataWrapper selectAllFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated, final boolean returnRowId) {
         final ResultMetadataWrapper wrapper = new ResultMetadataWrapper();
         wrapper.setRecordsPerPage(page);
         wrapper.setStartRecord(start);
@@ -498,7 +499,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 List<List<String>> results = new ArrayList<List<String>>();
                 int rowNum = 1;
                 while (rs.next()) {
-                    Map<DataTableColumn, String> result = convertResultSetRowToDataTableColumnMap(dataTable, rs);
+                    Map<DataTableColumn, String> result = convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
                     if (rs.isFirst()) {
                         wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
                     }
@@ -506,9 +507,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                     if (rowNum > start && rowNum <= start + page) {
                         ArrayList<String> values = new ArrayList<String>();
                         for (DataTableColumn col : wrapper.getFields()) {
-                            if (col.isVisible()) {
+                           // if (col.isVisible()) {
                                 values.add(result.get(col));
-                            }
+                            //}
                         }
                         results.add(values);
                     }
@@ -528,6 +529,25 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated));
         }
         return wrapper;
+    }
+    
+    
+    @Transactional
+    public Map<DataTableColumn, String> selectRowFromDataTable(final DataTable dataTable, final Long rowId, final boolean returnRowId) {
+        ResultSetExtractor <Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor <Map<DataTableColumn, String>>() {
+
+            @Override
+            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                Map<DataTableColumn, String> result = new HashMap<>() ;
+                while (rs.next()) {
+                    result = convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
+                }
+                return result;
+            }
+            
+        };
+        return tdarDataImportDatabase.selectRowFromTable(dataTable, resultSetExtractor, rowId);
+        
     }
 
     @Transactional
@@ -810,15 +830,17 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
     }
 
-    /*
-     * Return a HashMap that maps data table columns to values
-     * FIXME: where should this really live
-     */
-    public static Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs) throws SQLException {
-        Map<DataTableColumn, String> results = new HashMap<DataTableColumn, String>();
+    static Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs, boolean returnRowId) throws SQLException {
+        Map<DataTableColumn, String> results = new LinkedHashMap<>();
+        if (returnRowId) {
+            // we want this to be the very first entry in the linked hash map
+            DataTableColumn col = table.getColumnByName(TargetDatabase.TDAR_ID_COLUMN);
+            results.put(col, null);
+        }
         for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
             DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
-            if (col != null && col.isVisible()) { // ignore if null (non translated version of translated)
+            // ignore if null (non translated version of translated)
+            if (col != null && col.isVisible()) { 
                 results.put(col, null);
             }
         }
@@ -831,6 +853,14 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             results.put(key, val);
         }
         return results;
+    }
+    
+    /**
+     * Return a HashMap that maps data table columns to values
+     * FIXME: where should this really live
+     */
+    public static Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs) throws SQLException {
+       return convertResultSetRowToDataTableColumnMap(table, rs, false);
     }
 
     @Transactional

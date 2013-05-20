@@ -112,7 +112,7 @@
 //        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
     var options = { 
         "sAjaxDataProp":"results.results",
-          "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
+        "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
         "bProcessing": true,
         "bServerSide":true,
         "bScrollInfinite": false,
@@ -123,23 +123,34 @@
         //turn off vertical scrolling since we're paging (feels weird to advance through records using two mechanisms)
         "sScrollY": "",
         "aoColumns":[
-        
+                 <#assign offset=0>
+                 <#if viewRowSupported>
+                      { "bSortable" : false,
+                        "sName" : "id_row_tdar", 
+                        "sTitle" : '<i class="icon-eye-open  icon-white"></i>',
+                        "fnRender": function(obj) {
+                           return '<a href="/datatable/view-row?id=${dataTable.id?c}&rowId=' + obj.aData[${offset}] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
+                         } 
+                      },
+                      <#assign offset=1>
+                 </#if>
                  <#list dataTable.dataTableColumns?sort_by("sequenceNumber") as column>
                     <#if column.visible?? && column.visible>
                     { "bSortable": false,
                        "sName" : "${column.jsSimpleName?js_string}", 
                        "sTitle" : "${column.displayName?js_string}",
-                       "fnRender": function(obj){
-                           var val = obj.aData[${column_index?c}];
+                       "fnRender": function(obj) {
+                           var val = obj.aData[${column_index?c} + ${offset}];
                            var str = htmlEncode(val);
                            return str;
-                       }  }<#if column_has_next >,</#if>
+                           }  
+                     }<#if column_has_next >,</#if>
                      </#if>
                  </#list>
            ],
            "sAjaxSource": "<@s.url value="/datatable/browse?id=${dataTable.id?c}" />"
     };
     registerLookupDataTable(options);    
-    </#if>
+</#if>
 </#macro>
 </#escape>
