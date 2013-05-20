@@ -23,7 +23,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
@@ -147,7 +146,13 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
          */
         if (latestUploadedFile.getExtension().contains("owl")) {
             getLogger().debug("examining file: {}", latestUploadedFile);
-            OwlApiHierarchyParser parser = new OwlApiHierarchyParser(ontology, toOwlOntology(latestUploadedFile));
+            OwlApiHierarchyParser parser;
+            try {
+                parser = new OwlApiHierarchyParser(ontology, toOwlOntology(latestUploadedFile));
+            } catch (FileNotFoundException e) {
+                logger.warn("file not found: {}", e);
+                throw new TdarRecoverableRuntimeException(String.format("file not found %s", latestUploadedFile.getFilename()), e);
+            }
             List<OntologyNode> incomingOntologyNodes = parser.generate();
             getLogger().debug("created {} ontology nodes from {}", incomingOntologyNodes.size(), latestUploadedFile.getFilename());
             // start reconciliation process
@@ -234,7 +239,6 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         }
     }
 
-    
     public OntModel toOntModel(Ontology ontology) throws FileNotFoundException {
         Collection<InformationResourceFileVersion> files = ontology.getLatestVersions();
         if (files.size() != 1) {
@@ -267,7 +271,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         File tempFile = null;
         Document ontologyXML = null;
         try {
-            ontologyXML = DocumentHelper.parseText(FileUtils.readFileToString(file.getTransientFile()));
+            ontologyXML = DocumentHelper.parseText(FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(file)));
         } catch (Exception e) {
             logger.debug("cannot store import order:", e);
 
@@ -307,8 +311,8 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return tempFile;
     }
 
-    public OWLOntology toOwlOntology(InformationResourceFileVersion file) {
-        File transientFile = file.getTransientFile();
+    public OWLOntology toOwlOntology(InformationResourceFileVersion file) throws FileNotFoundException {
+        File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(file);
         if (file != null && transientFile.exists()) {
             File tempFile = storeImportOrder(file);
             if (tempFile != null) {
@@ -370,7 +374,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     public String toOwlXml(Long ontologyId, String inputString) {
         if (StringUtils.isBlank(inputString))
             return "";
-        
+
         String startStr = String.format(ONTOLOGY_START_STRING_FORMAT, ontologyId, ontologyId);
 
         // XXX: rough guesstimate that XML verbosity will increase input string

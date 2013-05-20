@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -405,7 +406,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
      * long megs = Runtime.getRuntime().maxMemory() / 1024 / 1024;
      * Assert.assertTrue("Expected more memory to run this test. Current heapspace:" + megs + "M", megs / 1024 >= 2);
      */
-    public void testBigDatasetSpansSheets() throws InstantiationException, IllegalAccessException, TdarActionException {
+    public void testBigDatasetSpansSheets() throws InstantiationException, IllegalAccessException, TdarActionException, FileNotFoundException {
         try {
             // setup coding sheet
             CodingSheet codingSheet = createAndSaveNewInformationResource(CodingSheet.class);
@@ -445,7 +446,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
             InformationResourceFile translatedFile = datasetService.createTranslatedFile(dataset);
             ExcelUnit excelUnit = new ExcelUnit();
-            excelUnit.open(translatedFile.getTranslatedFile().getTransientFile());
+            excelUnit.open(TdarConfiguration.getInstance().getFilestore().retrieveFile(translatedFile.getTranslatedFile()));
             assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
         } catch (OutOfMemoryError oem) {
             logger.debug("Well, guess I ran out of memory...", oem);
