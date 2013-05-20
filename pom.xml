@@ -7,7 +7,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
-		<struts2.version>2.3.12</struts2.version>
+		<struts2.version>2.3.14</struts2.version>
 		<hibernate.version>4.1.12.Final</hibernate.version>
 		<hibernate.search.version>4.2.0.Final</hibernate.search.version>
 		<spring.framework.version>3.2.2.RELEASE</spring.framework.version>
@@ -15,7 +15,7 @@
 		<spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
 		<postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
 		<!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
-		<apache.cxf.version>2.7.4</apache.cxf.version>
+		<apache.cxf.version>2.7.5</apache.cxf.version>
 		<clover.version>3.1.7</clover.version>
 		<!-- /end managed versions -->
 		<jvm.args>-Xms256m -Xmx2560m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
@@ -27,12 +27,12 @@
 		<jetty.stop.port>12919</jetty.stop.port>
 		<use.test.classpath>false</use.test.classpath>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<geotools.version>9.1</geotools.version>
+		<geotools.version>9.2</geotools.version>
 		<tika.version>1.3</tika.version>
 		<batik.version>1.7</batik.version>
 		<odata4j.version>0.7.0</odata4j.version>
 		<jersey.version>1.17.1</jersey.version>
-		<jackson.version>2.2.0</jackson.version>
+		<jackson.version>2.2.1</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<truezip.version>7.7.1</truezip.version>
 		<http-components.version>4.2.2</http-components.version>
@@ -229,7 +229,7 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.47n</version>
+			<version>1.47q</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.media.jai</groupId>
@@ -641,7 +641,8 @@
 			<!-- needed by spring for @Transactional calls -->
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
-			<version>3.0</version>
+			<!-- seems to be somewhat incompatible with jetty 8 -->
+			<version>2.2</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -677,7 +678,7 @@
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>1.2.10</version>
+			<version>1.2.12</version>
 		</dependency>
 		<!-- OpenCSV -->
 		<dependency>
@@ -695,6 +696,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
 			<version>3.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-exec</artifactId>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -929,6 +935,7 @@
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
 			<version>2.32.0</version>
+			<scope>test</scope>
 		</dependency>
 
 
