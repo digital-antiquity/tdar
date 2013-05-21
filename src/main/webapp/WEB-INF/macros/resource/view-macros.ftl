@@ -414,7 +414,6 @@ No coding rules have been entered for this coding sheet yet.
         </dl>
     </div>
 
-    ${effectiveResourceCollections}
     <#nested>
     <@resourceCollectionsRights collections=effectiveResourceCollections owner=resource.submitter />
     </#if>

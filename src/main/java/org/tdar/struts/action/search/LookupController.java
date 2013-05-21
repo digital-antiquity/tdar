@@ -304,7 +304,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     public void setProjectId(Long projectId) {
+        if (projectId != null) {
         this.projectId = projectId.toString();
+        }
     }
 
     /**

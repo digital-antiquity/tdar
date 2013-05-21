@@ -117,7 +117,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public synchronized List<Person> getCurrentlyActiveUsers() {
         return new ArrayList<Person>(groupMembershipCache.keySet());
     }
-    
+
     // return all of the resource statuses that a user is allowed to view in a search.
     public Set<Status> getAllowedSearchStatuses(Person person) {
         // assumption: ACTIVE always allowed.
@@ -322,7 +322,11 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      * @return
      */
     public boolean canViewConfidentialInformation(Person person, Resource resource) {
-        return canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, GeneralPermissions.VIEW_ALL);
+        if (resource instanceof InformationResource) {
+            return ((InformationResource) resource).isPublicallyAccessible()
+                    || canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, GeneralPermissions.VIEW_ALL);
+        }
+        return true;
     }
 
     public boolean canUploadFiles(Person person, Resource resource) {
@@ -493,7 +497,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
                 // username was in Crowd but not in tDAR? Redirect them to the account creation page
                 return AuthenticationStatus.NEW;
             }
-            
+
             if (!person.isActive()) {
                 throw new TdarRecoverableRuntimeException("Cannot authenticate deleted user");
             }
@@ -532,6 +536,5 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public Collection<String> getGroupMembership(Person person) {
         return Arrays.asList(getAuthenticationProvider().findGroupMemberships(person));
     }
-
 
 }

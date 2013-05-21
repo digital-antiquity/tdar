@@ -1050,7 +1050,7 @@ jquery validation hooks?)
     <div class="row">
         <div class="span8">
             <label for="query">Title</label>
-            <@s.textfield theme="tdar" name="query" id="query" cssClass='span8' 
+            <@s.textfield theme="tdar" name="_tdar.query" id="query" cssClass='span8' 
                     placeholder="Enter a full or partial title to filter results" />
         </div>
     </div>
@@ -1058,7 +1058,7 @@ jquery validation hooks?)
     <div class="row">
         <div class="span4">
             <label class="" for="project-selector">Project</label>
-            <select id="project-selector" class="input-block-level">
+            <select id="project-selector" name="_tdar.project" class="input-block-level">
               <option value="" selected='selected'>All Editable Projects</option>
               <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
               <optgroup label="Your Projects">
@@ -1079,7 +1079,7 @@ jquery validation hooks?)
         <div class="span4">
             <label class="" for="collection-selector">Collection</label>
             <div class="">
-                <select id="collection-selector" class="input-block-level">
+                <select name="_tdar.collection" id="collection-selector" class="input-block-level">
                     <option value="" selected='selected'>All Collections</option>
                     <@s.iterator value='resourceCollections' var='rc'>
                         <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
@@ -1095,13 +1095,13 @@ jquery validation hooks?)
 
         <div class="span4">
             <label class="">Status</label>
-            <@s.select theme="tdar" id="statuses" headerKey="" headerValue="Any" name='status'  emptyOption='false' listValue='label' 
+            <@s.select theme="tdar" id="statuses" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label' 
                         list='%{statuses}' cssClass="input-block-level"/>
         </div>
         
         <div class="span4"> 
         <label class="">Resource Type</label>
-        <@s.select theme="tdar" id="resourceTypes" name='resourceType'  headerKey="" headerValue="All" emptyOption='false' 
+        <@s.select theme="tdar" id="resourceTypes" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false' 
                     listValue='label' list='%{resourceTypes}' cssClass="input-block-level"/>
         </div>
         
@@ -1111,7 +1111,7 @@ jquery validation hooks?)
         <div class="span4">
             <label class="">Sort  by</label>
             <div class="">
-                <@s.select theme="tdar" emptyOption='false' name='sortBy' listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
+                <@s.select theme="tdar" emptyOption='false' name='_tdar.sortBy' listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
                             value="ID_REVERSE" cssClass="input-block-level"/>
              </div>
         </div>

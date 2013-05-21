@@ -22,9 +22,13 @@ import org.tdar.struts.action.AuthenticationAware.Base;
 public class DataTableViewRowController extends Base {
 
     private static final long serialVersionUID = 9050899110159727873L;
+    // rename dataTableId
     private Long id;
+
     private Long rowId;
+    // remove and replace with dataset reference private Dataset dataset;
     private String datasetName;
+    // remove and replace with dataset reference private Dataset dataset;
     private String datasetDescription;
     private Map<DataTableColumn, String> dataTableRowAsMap;
 
@@ -35,13 +39,14 @@ public class DataTableViewRowController extends Base {
      * 
      * @return com.opensymphony.xwork2.SUCCESS if able to find the table, com.opensymphony.xwork2.ERROR if not.
      */
+    // not sure "location parameter is needed if @Action matches location
     @Action(value = "view-row",
-            results = { @Result(name = "success", location = "view-row.ftl", type = "freemarker") })
+            results = { @Result(name = SUCCESS, location = "view-row.ftl", type = "freemarker") })
     public String getDataResultsRow() {
         if (!isViewRowSupported()) {
             return ERROR;
         }
-            
+
         dataTableRowAsMap = new HashMap<>();
         datasetName = "";
         datasetDescription = "";
@@ -53,16 +58,14 @@ public class DataTableViewRowController extends Base {
             return ERROR;
         }
         Dataset dataset = dataTable.getDataset();
-        if (userCanView(dataset)) {
+        // refactored to make check more logical on controller
+        if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
             datasetDescription = dataset.getDescription();
             datasetName = dataset.getName();
             dataTableRowAsMap = getDatasetService().selectRowFromDataTable(dataTable, rowId, true);
         }
+        // move up into IF statement and RETURN ERROR 
         return SUCCESS;
-    }
-
-    private boolean userCanView(Dataset dataset) {
-        return dataset.isPublicallyAccessible() || getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), dataset);
     }
 
     /**

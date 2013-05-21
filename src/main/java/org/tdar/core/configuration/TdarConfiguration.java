@@ -534,7 +534,7 @@ public class TdarConfiguration {
     }
     
     public boolean isViewRowSupported() {
-        return assistant.getBooleanProperty("view.row.suppported", false);
+        return assistant.getBooleanProperty("view.row.suppported", true);
     }
 
     public File getFremarkerTemplateDirectory() {
