@@ -24,7 +24,7 @@ public class ConvertDatasetTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        if (!getWorkflowContext().getResourceType().hasDataTables()) {
+        if (!getWorkflowContext().getResourceType().isDataTableSupported()) {
             getLogger().info("This is not actually a dataset (probably a coding sheet), returning");
             return;
         }

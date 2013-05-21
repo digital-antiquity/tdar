@@ -94,4 +94,12 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
     public boolean isMultipleFileUploadEnabled() {
         return true;
     }
+    
+    public Geospatial getDataset() {
+        return getPersistable();
+    }
+
+    public void setDataset(Geospatial geospatial) {
+        setGeospatial(geospatial);
+    }
 }

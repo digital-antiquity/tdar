@@ -216,7 +216,7 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
         }
     }
 
-    public boolean hasDataTables() {
+    public boolean isDataTableSupported() {
         switch (this) {
             case DATASET:
             case GEOSPATIAL: //?
