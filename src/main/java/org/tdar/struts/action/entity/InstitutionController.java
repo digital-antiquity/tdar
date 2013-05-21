@@ -40,6 +40,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
 
         
         //getGenericService().detachFromSession(getPersistable());
+        //FIXME: add "name" field to contrller and use that for saving the name, but check if name exists already to properly handle unique constraint
     }
 
     @Override
