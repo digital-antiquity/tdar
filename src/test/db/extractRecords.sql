@@ -32,10 +32,12 @@
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (12088, NULL, NULL, NULL);
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8092, NULL, NULL, NULL);
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8093, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8094, NULL, NULL, NULL);
 
 --DONT-PROCESS-- INSERT INTO institution(id,  "name") values (12088, 'University of TEST');
 --DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8092, true, 'test@tdar.org', 'test', 'user', true, NULL, '', NULL, 12088);
 --DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8093, true, 'admin@tdar.org', 'admin', 'user', true, NULL, '', NULL, 12088);
+--DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8094, true, 'editor@tdar.org', 'editor', 'user', true, NULL, '', NULL, 12088);
 
 
 --DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, 8093, NULL);
