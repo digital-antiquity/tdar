@@ -53,7 +53,7 @@ public class ResourceEvaluator implements Serializable {
      * IOC putting all of the logic in one place
      */
     public boolean accountHasMinimumForNewResource(Account account, ResourceType resourceType) {
-        logger.info("f: {} s: {} r: {}", new Object[] {account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb(), account.getAvailableResources()});
+        logger.info("f: {} s: {} r: {}", new Object[] { account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb(), account.getAvailableResources() });
         if (evaluatesNumberOfResources()) {
             if (!getUncountedResourceTypes().contains(resourceType) && account.getAvailableResources() <= 0) {
                 return false;
@@ -91,7 +91,7 @@ public class ResourceEvaluator implements Serializable {
                 resource.setCountedInBillingEvaluation(false);
                 continue;
             }
-            
+
             resourcesUsed++;
             long filesUsed_ = 0;
             long spaceUsed_ = 0;
@@ -101,7 +101,12 @@ public class ResourceEvaluator implements Serializable {
                     if (file.isDeleted() && !includeDeletedFilesInCounts) {
                         continue;
                     }
-                    filesUsed_++;
+                    if (informationResource.getResourceType().isCompositeFilesEnabled()) {
+                        filesUsed = 1;
+                    } else {
+                        filesUsed_++;
+                    }
+                    
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         // we use version 1 because it's the original uploaded version
                         if (!includeAllVersionsInCounts && !version.getVersion().equals(1) || !version.isUploaded()) {
@@ -197,7 +202,6 @@ public class ResourceEvaluator implements Serializable {
         setFilesUsed(getFilesUsed() - initialEvaluation.getFilesUsed());
         setResourcesUsed(getResourcesUsed() - initialEvaluation.getResourcesUsed());
     }
-
 
     public boolean evaluatesSpace() {
         return model.getCountingSpace();
