@@ -4,7 +4,7 @@
 <#global multipleUpload=true />
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-
+<#assign customUploadPlacement=true>
 
 <#macro basicInformation>
     <div tiplabel="Object / Monument Number" tooltipcontent="The ID number or code, if applicable, of the object or monument">
@@ -12,8 +12,44 @@
     </div>
 </#macro>
 
-<#macro localSection cols=9>
-<#local spanall  = "span${cols}">
+
+<#macro divImageInfo>
+<div id="divImageInfo" tooltipcontent='#imageInfoTooltip'>
+    <#assign _images=sensoryDataImages />
+    <#if _images.isEmpty()>
+    <#assign _images=blankSensoryDataImage />
+    </#if>  
+    <h2>Image Information</h2>
+    <div id="sensoryDataImagesDiv" class="repeatLastRow" addAnother="add another image">
+        <#list _images as _image>
+        <div id="sensoryDataImagesRow_${_image_index}_" class='repeat-row'>
+            <@s.hidden name="sensoryDataImages[${_image_index}].id" />
+            <div class='control-group'>
+                <div class='controls controls-row'>
+                <@s.textfield theme='simple' placeholder='Filename' maxLength="255" name="sensoryDataImages[${_image_index}].filename"  />
+                <@s.textfield theme='simple' placeholder='Description' maxLength="255" name="sensoryDataImages[${_image_index}].description" /></td>
+                <@edit.clearDeleteButton id="sensoryDataImagesRow" />
+                </div>
+            </div>
+        </div>
+        </#list>
+    </div>
+</div>
+<div id="imageInfoTooltip" class="hide">
+    <h2>Image Information</h2>
+    <div>
+        Use this section to specify information about reference images included in with this resource.
+        <dl>
+            <dt>Name</dt>
+            <dd>The filename of the reference image</dd>
+            <dt>Description</dt>
+            <dd>Description of the image</dd>
+        </dl>
+    </div>    
+</div>
+</#macro>
+
+<#macro divScanInfo>
 <div id="divScanInfo" style="display:none">
     <#assign _scans=sensoryDataScans />
     <#if _scans.isEmpty()>
@@ -84,42 +120,9 @@
         </#list>
     </div>
 </div>
-<div id="divImageInfo" tooltipcontent='#imageInfoTooltip' style="display:none">
-    <#assign _images=sensoryDataImages />
-    <#if _images.isEmpty()>
-    <#assign _images=blankSensoryDataImage />
-    </#if>  
-    <h2>Image Information</h2>
-    <div id="sensoryDataImagesDiv" class="repeatLastRow" addAnother="add another image">
-        <#list _images as _image>
-        <div id="sensoryDataImagesRow_${_image_index}_" class='repeat-row'>
-            <@s.hidden name="sensoryDataImages[${_image_index}].id" />
-            <div class='control-group'>
-                <div class='controls controls-row'>
-                <@s.textfield theme='simple' placeholder='Filename' maxLength="255" name="sensoryDataImages[${_image_index}].filename"  />
-                <@s.textfield theme='simple' placeholder='Description' maxLength="255" name="sensoryDataImages[${_image_index}].description" /></td>
-                <@edit.clearDeleteButton id="sensoryDataImagesRow" />
-                </div>
-            </div>
-        </div>
-        </#list>
-    </div>
-</div>
-<div id="imageInfoTooltip" class="hide">
-    <h2>Image Information</h2>
-    <div>
-        Use this section to specify information about reference images included in with this resource.
-        <dl>
-            <dt>Name</dt>
-            <dd>The filename of the reference image</dd>
-            <dt>Description</dt>
-            <dd>Description of the image</dd>
-        </dl>
-    </div>    
-</div>
+</#macro>
 
-
-
+<#macro registeredDatasetDiv>
 <div id="registeredDatasetDiv" style="display:none">
     <h2>Level 2: Registered Dataset</h2>
     <div tiplabel="Name of Registered Dataset" tooltipcontent="Filename for the dataset, a suggested naming structure for registered dataset for archiving: ProjectName_GR.txt">
@@ -137,7 +140,9 @@
         <@s.textfield maxLength="255" name="sensoryData.finalRegistrationPoints" cssClass="right-shortfield number" label="# Points in File" labelposition="left" />
     </div>
 </div>
+</#macro>
 
+<#macro polygonalMeshDatasetDiv>
 <div id="polygonalMeshDatasetDiv" style="display:none">
     <h2>Level 3: Polygonal Mesh Dataset</h2>
 
@@ -240,10 +245,12 @@
     <@s.checkbox name="sensoryData.rgbPreservedFromOriginal" cssClass="indent" label="RGB Color Included" labelposition="right" />
     </div>
 </div>
+</#macro>
 
+<#macro divSurveyInfo>
 <div id="divSurveyInfo">
     <h2>Survey Information</h2>
-    <@s.select name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"  headerKey="" headerValue="Not Specified"
+    <@s.radio name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"
                 list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
                 
     <div id="scantypeFileReminder" style="display:none">
@@ -317,7 +324,19 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     </div>
     </div>
 </div>
+</#macro>
 
+<#macro beforeUpload>
+<@divSurveyInfo />
+</#macro>
+
+<#macro localSection cols=9>
+<#local spanall  = "span${cols}">
+
+<@divImageInfo />
+<@divScanInfo />
+<@polygonalMeshDatasetDiv />
+<@registeredDatasetDiv />
 
 
 </#macro>
@@ -340,7 +359,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     TDAR.sensorydata.hasContent = hasContent;
     
     //show legacy edit fields if they have content
-    $('#registeredDatasetDiv, #polygonalMeshDatasetDiv, #divScanInfo,#divImageInfo').each(function(idx, div){
+    $('#registeredDatasetDiv, #polygonalMeshDatasetDiv, #divScanInfo').each(function(idx, div){
         if(hasContent(div)) {
             $(div).show();
         }
