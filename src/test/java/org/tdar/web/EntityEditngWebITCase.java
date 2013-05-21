@@ -40,6 +40,15 @@ public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCas
     }
 
     @Test
+    public void testInstitutionEditKeyIssue() {
+        String url = String.format(ENTITY_INSTITUTION_EDIT, 12517);
+        gotoPage(url);
+        setInput("institution.name", UNIVERSITY_OF_TEST);
+        submitForm();
+        assertTextNotPresent(UNIVERSITY_OF_TEST);
+    }
+
+    @Test
     public void testInstitutionEditYourInstitution() {
         String url = String.format(ENTITY_INSTITUTION_EDIT, 12088);
         gotoPage(url);
