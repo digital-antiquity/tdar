@@ -1038,7 +1038,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput("loginPassword", pass);
         if (expectingErrors) {
             webClient.setThrowExceptionOnFailingStatusCode(false);
-            submitFormWithoutErrorCheck("Login");
+            submitFormWithoutErrorCheck("_tdar.Login");
             webClient.setThrowExceptionOnFailingStatusCode(true);
         } else {
             clickElementWithId("btnLogin");
