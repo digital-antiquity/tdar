@@ -31,7 +31,7 @@ public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCas
         gotoPage(url);
         assertTextPresent(UNIVERSITY_OF_TEST);
         String newUrl = "http://www.test.com";
-        setInput("institution.url", newUrl);
+        setInput("institution.description", newUrl);
         submitForm();
         assertTextPresent(UNIVERSITY_OF_TEST);
         assertTextPresent(newUrl);
@@ -64,7 +64,7 @@ public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCas
         String url = String.format(ENTITY_INSTITUTION_EDIT, 12517);
         gotoPage(url);
         assertTextPresent("Unknown");
-        String newName = "another university";
+        String newName = "another_university";
         setInput("institution.name", newName);
         submitForm();
         assertTextPresent(newName);
