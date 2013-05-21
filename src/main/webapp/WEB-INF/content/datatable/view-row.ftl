@@ -1,9 +1,11 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<h2>Row Level Page</h2>
+<h1 class="view-page-title">Row Level Page</h1>
+<!-- changed to h1, should this page have a "sidebar" like the dataset does? -- size of h1 would change to be right size if it did -->
 <#if authenticatedUser??>
   <#if dataTableRowAsMap??>
   <!-- replace with reference to dataset -->
     <p><strong>Parent Dataset:</strong> ${datasetName}</p>
+    <!-- possibly add data table info, like name? -->
     <p><strong>Parent Description:</strong> ${datasetDescription}</p>
     <table class="table table-striped">
         <thead>  
