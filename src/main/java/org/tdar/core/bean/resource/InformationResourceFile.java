@@ -1,6 +1,5 @@
 package org.tdar.core.bean.resource;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +33,6 @@ import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
-import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
@@ -150,6 +148,13 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     private transient Long transientDownloadCount;
 
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
+    private String description;
+    
+    @Column(name="file_created_date")
+    private Date fileCreatedDate;
+    
     @Column(name = "part_of_composite")
     private Boolean partOfComposite = Boolean.FALSE;
 
@@ -249,14 +254,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return getVersion(getLatestVersion(), VersionType.INDEXABLE_TEXT);
     }
 
-//    @Transient
-//    public File getFile(VersionType type, int version) {
-//        for (InformationResourceFileVersion irfv : getVersions(version)) {
-//            if (irfv.getFileVersionType() == type)
-//                return irfv.getFile();
-//        }
-//        return null;
-//    }
+    // @Transient
+    // public File getFile(VersionType type, int version) {
+    // for (InformationResourceFileVersion irfv : getVersions(version)) {
+    // if (irfv.getFileVersionType() == type)
+    // return irfv.getFile();
+    // }
+    // return null;
+    // }
 
     public void addFileVersion(InformationResourceFileVersion version) {
         getInformationResourceFileVersions().add(version);
@@ -471,7 +476,8 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     public String toString() {
-        return String.format("(%d, %s) v#:%s: %s (%s versions)", getId(), status, getLatestVersion(), restriction, CollectionUtils.size(informationResourceFileVersions));
+        return String.format("(%d, %s) v#:%s: %s (%s versions)", getId(), status, getLatestVersion(), restriction,
+                CollectionUtils.size(informationResourceFileVersions));
     }
 
     public void clearQueuedStatus() {
@@ -556,6 +562,22 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public void setPartOfComposite(boolean partOfComposite) {
         this.partOfComposite = partOfComposite;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getFileCreatedDate() {
+        return fileCreatedDate;
+    }
+
+    public void setFileCreatedDate(Date fileCreatedDate) {
+        this.fileCreatedDate = fileCreatedDate;
     }
 
 }

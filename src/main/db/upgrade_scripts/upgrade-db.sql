@@ -28,3 +28,6 @@ alter table other_keyword add column occurrance bigint;
 alter table temporal_keyword add column occurrance bigint;
 alter table site_name_keyword add column occurrance bigint;
 alter table site_type_keyword add column occurrance bigint;
+
+alter table information_resource_file add column description text;
+alter table information_resource_file add column file_created_date date;

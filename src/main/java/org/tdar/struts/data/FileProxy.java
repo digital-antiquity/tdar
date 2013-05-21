@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -40,6 +41,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private VersionType versionType = VersionType.UPLOADED;
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
     private Integer sequenceNumber = 0;
+    private String description;
+    private Date fileCreatedDate;
     private InformationResourceFile informationResourceFile;
     private InformationResourceFileVersion informationResourceFileVersion;
 
@@ -239,6 +242,22 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
 
     public void setSupportingProxies(List<FileProxy> supportingProxies) {
         this.supportingProxies = supportingProxies;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getFileCreatedDate() {
+        return fileCreatedDate;
+    }
+
+    public void setFileCreatedDate(Date fileCreatedDate) {
+        this.fileCreatedDate = fileCreatedDate;
     }
 
 }

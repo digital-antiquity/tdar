@@ -16,6 +16,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -202,6 +203,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         } else {
             irFile.setDateMadePublic(null);
         }
+
+        if (fileProxy.getAction() == FileAction.MODIFY_METADATA || fileProxy.getAction() == FileAction.ADD) {
+            irFile.setDescription(fileProxy.getDescription());
+            irFile.setFileCreatedDate(fileProxy.getFileCreatedDate());
+        }
+        
         if (sequenceNumber == null) {
             logger.warn("No sequence number set on file proxy {}, existing sequence number was {}", fileProxy, irFile.getSequenceNumber());
         }
