@@ -250,9 +250,10 @@
 <#macro divSurveyInfo>
 <div id="divSurveyInfo">
     <h2>Survey Information</h2>
-    <@s.radio name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"
-                list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
-                
+    <div id="divScannerTechnologyOptions">
+        <@s.radio name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"
+                    list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
+    </div>
     <div id="scantypeFileReminder" style="display:none">
         <div class="well">
             <h4>Scan Metadata Templates</h4>
@@ -387,8 +388,8 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
             valueRequiresAsyncUpload: "Please include a scan manifest file when choosing this scan type"}
     });
     
-    $('#selScannerTechnology').change( function() {
-        var val = $(this).val();
+    $('#divScannerTechnologyOptions').click( function() {
+        var val = $('#divScannerTechnologyOptions input[type=radio]:checked').val();
         if(val) {
             $('#scantypeFileReminder').show();
             var $ul = $('#ulTemplateList');
