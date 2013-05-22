@@ -1,12 +1,9 @@
 package org.tdar.core.service.processes;
 
-import javax.persistence.Table;
-
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
@@ -34,33 +31,25 @@ public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<Hom
     public void execute() {
         run = true;
 
-        for (Class<?> cls : LookupSource.KEYWORD.getClasses()) {
-            try {
-                Object field = FieldUtils.readStaticField(cls, "INHERITANCE_TOGGLE");
-                Object value = AnnotationUtils.getValue(AnnotationUtils.getAnnotation(cls, Table.class), "name");
-                logger.info("{} {} ", field, value);
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
+        genericKeywordService.updateOccurranceValues();
+        entityService.updateOcurrances();
+        Person person = new Person();
+        person.setFirstName("system");
+        person.setLastName("user");
+        genericKeywordService.detachFromSession(person);
+        searchIndexService.indexAll(person, LookupSource.KEYWORD.getClasses());
+        searchIndexService.indexAll(person, LookupSource.PERSON.getClasses());
+        searchIndexService.indexAll(person, LookupSource.INSTITUTION.getClasses());
     }
 
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public String getDisplayName() {
-        return "Weekly Aggregate System Statistics Task";
-    }
-
-    @Override
-    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
-        return null;
+        return "Weekly Ocurrence Count Info";
     }
 
     @Override
@@ -71,6 +60,11 @@ public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<Hom
     @Override
     public boolean isSingleRunProcess() {
         return false;
+    }
+
+    @Override
+    public Class<HomepageGeographicKeywordCache> getPersistentClass() {
+        return null;
     }
 
 }

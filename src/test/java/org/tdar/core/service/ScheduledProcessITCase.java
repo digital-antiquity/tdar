@@ -53,6 +53,17 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     private ScheduledProcessService scheduledProcessService;
     private static final int MOCK_NUMBER_OF_IDS = 2000;
 
+
+    @Autowired
+    private SitemapGeneratorProcess sitemap;
+
+    @Autowired
+    WeeklyStatisticsLoggingProcess processingTask;
+
+    
+    @Autowired
+    PersonAnalysisProcess pap;
+    
     private class MockScheduledProcess extends ScheduledBatchProcess<Dataset> {
 
         private static final long serialVersionUID = 1L;
@@ -127,9 +138,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertFalse("ScheduledBatchProcess should be reset now", mock.isCompleted());
     }
 
-    @Autowired
-    private SitemapGeneratorProcess sitemap;
-
     @Test
     public void testSitemapGen() {
         sitemap.execute();
@@ -156,13 +164,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     }
 
-    @Autowired
-    WeeklyStatisticsLoggingProcess processingTask;
-
-    
-    @Autowired
-    PersonAnalysisProcess pap;
-    
     @Test
     @Rollback(true)
     public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {

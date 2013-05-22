@@ -4,10 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Table;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -19,10 +24,14 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.search.index.LookupSource;
 import org.tdar.utils.Pair;
 
 @Component("genericKeywordDao")
 public class GenericKeywordDao extends GenericDao {
+
+    public static final String NAME = "name";
+    public static final String INHERITANCE_TOGGLE_FIELDNAME = "INHERITANCE_TOGGLE";
 
     public <K extends HierarchicalKeyword<K>> List<K> findAllDescendants(Class<K> cls,K keyword) {
         String index = keyword.getIndex();
@@ -95,6 +104,22 @@ public class GenericKeywordDao extends GenericDao {
     
     public List<Pair<TemporalKeyword, Integer>> getTemporalKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_TEMPORAL_KEYWORD);
+    }
+
+    public void updateOccuranceValues() {
+        for (Class<?> cls : LookupSource.KEYWORD.getClasses()) {
+            try {
+                String inheritanceField = (String)FieldUtils.readStaticField(cls, INHERITANCE_TOGGLE_FIELDNAME);
+                String tableName = (String)AnnotationUtils.getValue(AnnotationUtils.getAnnotation(cls, Table.class), NAME);
+                Session session = getCurrentSession();
+                logger.info("{} {} ", inheritanceField, tableName);
+                session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT, tableName)).executeUpdate();
+                session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT, tableName)).executeUpdate();
+                session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE, tableName, inheritanceField)).executeUpdate();
+            } catch (IllegalAccessException e) {
+                logger.error("could not update keywords",e);
+            }
+        }
     }
     
 }

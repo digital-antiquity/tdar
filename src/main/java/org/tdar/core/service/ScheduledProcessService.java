@@ -34,6 +34,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
+import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
@@ -73,6 +74,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "12 0 0 * * SUN")
     public void generateWeeklyStats() {
         queue(scheduledProcessMap.get(WeeklyStatisticsLoggingProcess.class));
+        queue(scheduledProcessMap.get(OccurranceStatisticsUpdateProcess.class));
     }
 
     @Scheduled(fixedDelay = FIVE_MIN_MS)

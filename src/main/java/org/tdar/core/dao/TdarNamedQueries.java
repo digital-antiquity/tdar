@@ -150,8 +150,13 @@ public interface TdarNamedQueries {
     public static final String QUERY_SQL_RESOURCES_BY_YEAR = "select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc";
     public static final String DISTINCT_SUBMITTERS = "SELECT DISTINCT submitter_id from resource";
 
-    public static final String UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT= "update %1$s set occurrance =0";
-    public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE = "update %1$s set occurrance =  (select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id and resource_id in (select project_id from information_resource where %2$s is true) group by %1$s_id)";
-    public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT= "update %1$s set occurrance =  occurance + (select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id group by %1$s_id)";
-
+    public static final String UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT= "update %1$s set occurrance=0";
+    public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE = "update %1$s set occurrance = occurrance + (select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id and resource_id in (select project_id from information_resource where %2$s is true) group by %1$s_id)";
+    public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT= "update %1$s set occurrance =  occurrance + (select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id group by %1$s_id)";
+    public static final String UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT = "update creator set occurrance=0";
+    public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER = "update creator set occurance=occurrance + (select count(information_resource.id) from information_resource where publisher_id=creator.id group by publisher_id)";
+    public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER = "update creator set occurance=occurrance + (select count(information_resource.id) from information_resource where provider_institution_id=creator.id group by provider_institution_id)";
+    public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT = "update creator set occurance=occurrance + (select count(information_resource.id) from information_resource where copyright_holder_id=creator.id group by copyright_holder_id) ";
+    public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER = "update creator set occurance=occurrance + (select count(resource.id) from resource where submitter_id=creator.id group by submitter_id)";
+    public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE = "update creator set occurrance = occurrance+ (select count(resource_id) from resource_creator where creator_id=creator.id group by creator_id) ";
 }
