@@ -507,9 +507,11 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                     if (rowNum > start && rowNum <= start + page) {
                         ArrayList<String> values = new ArrayList<String>();
                         for (DataTableColumn col : wrapper.getFields()) {
-                           // if (col.isVisible()) {
+                           // the following check is deliberate repetition: 
+                           // we really, really want to make sure only visible columns or the ID column are returned 
+                           if (col.isVisible() || (returnRowId && TargetDatabase.TDAR_ID_COLUMN.equals(col.getName()))) {
                                 values.add(result.get(col));
-                            //}
+                           }
                         }
                         results.add(values);
                     }
@@ -834,8 +836,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         Map<DataTableColumn, String> results = new LinkedHashMap<>();
         if (returnRowId) {
             // we want this to be the very first entry in the linked hash map
-            DataTableColumn col = table.getColumnByName(TargetDatabase.TDAR_ID_COLUMN);
-            results.put(col, null);
+            results.put(table.getColumnByName(TargetDatabase.TDAR_ID_COLUMN), null);
         }
         for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
             DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
