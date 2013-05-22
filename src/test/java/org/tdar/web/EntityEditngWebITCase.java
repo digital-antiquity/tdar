@@ -43,9 +43,10 @@ public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCas
     public void testInstitutionEditKeyIssue() {
         String url = String.format(ENTITY_INSTITUTION_EDIT, 12517);
         gotoPage(url);
-        setInput("institution.name", UNIVERSITY_OF_TEST);
+        setInput("name", UNIVERSITY_OF_TEST);
         submitForm();
-        assertTextNotPresent(UNIVERSITY_OF_TEST);
+//        assertTextNotPresent(UNIVERSITY_OF_TEST);
+        assertTextPresent("Cannot rename institution");
     }
 
     @Test
@@ -54,7 +55,7 @@ public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCas
         gotoPage(url);
         assertTextPresent(UNIVERSITY_OF_TEST);
         String newName = "University of anotehr test";
-        setInput("institution.name", newName);
+        setInput("name", newName);
         submitForm();
         assertTextNotPresent(UNIVERSITY_OF_TEST);
         assertTextPresent(newName);
@@ -62,7 +63,7 @@ public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCas
     
         gotoPage(url);
         assertTextPresent(newName);
-        setInput("institution.name", UNIVERSITY_OF_TEST);
+        setInput("name", UNIVERSITY_OF_TEST);
         submitForm();
         assertTextPresent(UNIVERSITY_OF_TEST);
         assertTextNotPresent(newName);
@@ -73,8 +74,8 @@ public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCas
         String url = String.format(ENTITY_INSTITUTION_EDIT, 12517);
         gotoPage(url);
         assertTextPresent("Unknown");
-        String newName = "another_university";
-        setInput("institution.name", newName);
+        String newName = "anotheruniversity";
+        setInput("name", newName);
         submitForm();
         assertTextPresent(newName);
     }
