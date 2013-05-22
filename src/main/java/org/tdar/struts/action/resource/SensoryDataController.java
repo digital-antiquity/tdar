@@ -14,6 +14,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.bean.resource.SensoryData.RgbCapture;
 import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
@@ -161,4 +162,7 @@ public class SensoryDataController extends AbstractInformationResourceController
         return getPersistable();
     }
 
+    public List<RgbCapture> getRgbCaptureOptions() {
+        return Arrays.asList(RgbCapture.values());
+    }
 }

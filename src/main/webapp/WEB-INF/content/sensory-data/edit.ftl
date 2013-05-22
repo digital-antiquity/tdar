@@ -296,7 +296,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <@s.textfield maxLength="255" name="sensoryData.surveyConditions" 
         tiplabel="Survey Conditions" tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)"
         cssClass="input-xxlarge" label="Conditions" labelposition="left" />
-    <div tiplabel="Scanner Details" tooltipcontent="Details of the instrument(s) with serial number(s) and scan units">
+    <div class="conditional-scantype combined phase_based time_of_flight triangulation" tiplabel="Scanner Details" tooltipcontent="Details of the instrument(s) with serial number(s) and scan units">
     <@s.textfield maxLength="255" name="sensoryData.scannerDetails" cssClass="input-xxlarge" label="Scanner Details" labelposition="left" />
     </div>
     <div tiplabel="Company / Operator Name" tooltipcontent="Details of company and scan operator name">
@@ -308,17 +308,20 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <div tiplabel="Total Number of Scans in Project" tooltipcontent="Total number of scans">
     <@s.textfield maxLength="255" name="sensoryData.totalScansInProject" cssClass="right-shortfield number" label="# Scans" labelposition="left" />
     </div>
-    <div tiplabel="Turntable used" tooltipcontent="Check this box if a turntable was used for this survey.">
+    <div class="conditional-scantype combined triangulation" tiplabel="Turntable used" tooltipcontent="Check this box if a turntable was used for this survey.">
         <@s.checkbox  label="Turntable Used" name="sensoryData.turntableUsed"  id="cbTurntableUsed"  />
     </div>
-    <div tiplabel="Planimetric Map Filename" tooltipcontent="If applicable, then provide the image name.">
-    <@s.textfield maxLength="255" name="sensoryData.planimetricMapFilename" cssClass="reallyinput-xxlarge" label="Planimetric Map Filename" labelposition="top" />
+    <div class="conditional-scantype combined phase_based time_of_flight" tiplabel="Planimetric Map Filename" tooltipcontent="If applicable, then provide the image name.">
+    <@s.textfield maxLength="255" name="sensoryData.planimetricMapFilename" cssClass="input-xxlarge" label="Planimetric Map Filename" labelposition="top" />
     </div>
-    <div tiplabel="Control Data Filename" tooltipcontent="If control data was collected, enter the control data filename.">
-    <@s.textfield maxLength="255" name="sensoryData.controlDataFilename" cssClass="reallyinput-xxlarge" label="Control Data Filename" labelposition="top" />
+    <div class="conditional-scantype combined phase_based time_of_flight" tiplabel="Control Data Filename" tooltipcontent="If control data was collected, enter the control data filename.">
+    <@s.textfield maxLength="255" name="sensoryData.controlDataFilename" cssClass="input-xxlarge" label="Control Data Filename" labelposition="top" />
     </div>
-    <div tiplabel='RGB Data Capture Information' tooltipcontent="Please specify it is (1) internal or external and (2) describe any additional lighting systems used if applicable">
-    <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="RGB Data Capture Information" labelposition="top" rows="5" />
+    <div class="conditional-scantype combined phase_based time_of_flight triangulation" tiplabel='RGB Data Capture Information' tooltipcontent="Please specify it is (1) internal or external and (2) describe any additional lighting systems used if applicable">
+    <@s.radio name='sensoryData.rgbCapture'  listValue="label"
+                list='%{rgbCaptureOptions}' label="RGB Capture" theme="bootstrap" />
+    <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="phase_based time_of_flight resizable input-xxlarge" label="Lighting Setup Information" labelposition="top" rows="5" />
+    
     </div>
     <div tiplabel="Description of Final Datasets for Archive" tooltipcontent="What datasets will be archived (include file names if possible).">
         <@s.textarea name="sensoryData.finalDatasetDescription" cssClass="resizable input-xxlarge" label="Description of Final Datasets for Archive" labelposition="top" rows="5" />
@@ -343,9 +346,42 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
 </#macro>
 
 <#macro localJavascript>
+    function showLegacyScannerTechFields(elemScannerTech) {
+        // get the parent element of the scanner tech field
+        console.debug("showing scanner tech fields for:");
+        console.debug(elemScannerTech);
+        // determine which div to show based on the value of the scanner tech
+        var divmap = {
+            'TIME_OF_FLIGHT' : '.scantech-fields-tof',
+            'PHASE_BASED' : '.scantech-fields-phase',
+            'TRIANGULATION' : '.scantech-fields-tri'
+        };
+        var parent = $(elemScannerTech).parents('.scantech-fields');
+        parent.find('.scantech-field').addClass('hide');
+        var scannerTechnologyValue = $(elemScannerTech).val();
+        if (scannerTechnologyValue) {
+            var targetClass = divmap[scannerTechnologyValue];
+            console.log("showing all elements of class: " + targetClass);
+            parent.find(targetClass).removeClass('hide');
+    //        $(elemScannerTech).siblings(targetClass).removeClass('hide');
+            // $(elemScannerTech).parent().find('.scantech-fields-tof');
+        }
+    
+    }
+    
+    function scanAdded(rowElem) {
+        // get the select element
+        var scannerTechElem = $('.scannerTechnology', rowElem);
+        // the scanner type changed to blank, so we hide the scanner-tech-specific
+        // fields, and bind to the select change
+        showScannerTechFields(scannerTechElem);
+        $(scannerTechElem).change(function() {
+            var elem = this;
+            showScannerTechFields(elem);
+        });
+    }
+
     //return true if any form field in this div are populated  
-    TDAR.namespace("sensorydata");
-     
     function hasContent(div) {
         var found = false;
         var $div = $(div);
@@ -357,12 +393,20 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
         });
         return found;
     }
-    TDAR.sensorydata.hasContent = hasContent;
     
     //show legacy edit fields if they have content
     $('#registeredDatasetDiv, #polygonalMeshDatasetDiv, #divScanInfo').each(function(idx, div){
         if(hasContent(div)) {
             $(div).show();
+
+            $('.scannerTechnology').each(
+                function(i,elem){
+                    var scannerTechElem = elem;
+                    showScannerTechFields(scannerTechElem);
+                    $(scannerTechElem).change(function(){showLegacyScannerTechFields(scannerTechElem);});
+                }
+            );
+            
         }
     });
     
@@ -371,13 +415,6 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
         scanAdded(newRow);
     });
     
-    $('.scannerTechnology').each(
-        function(i,elem){
-            var scannerTechElem = elem;
-            showScannerTechFields(scannerTechElem);
-            $(scannerTechElem).change(function(){showScannerTechFields(scannerTechElem);});
-        }
-    );
 
     $('.scannerTechnology').rules("add", {
         valueRequiresAsyncUpload: {
@@ -388,6 +425,8 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
             valueRequiresAsyncUpload: "Please include a scan manifest file when choosing this scan type"}
     });
     
+    
+    //show/hide content that is conditional on the value of the Scanner Technology field
     $('#divScannerTechnologyOptions').click( function() {
         var val = $('#divScannerTechnologyOptions input[type=radio]:checked').val();
         if(val) {
@@ -400,7 +439,23 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
         } else {
             $('#scantypeFileReminder').hide();
         }
-    }).change();
+        showRelevantSurveyFields(val);
+    }).click();
+
+
+    //show relevant fields based on scan type value.
+    function showRelevantSurveyFields(scanType) {
+    
+        var $conditionalElems = $('.conditional-scantype').hide(); 
+        if(scanType) {
+            //show the relevent fields, e.g. if scantype was TOF,  the element
+            var cssClass = "." + scanType.toLowerCase();
+            $conditionalElems.filter(cssClass).show()
+        }
+    }
+  
+    //HACK: remove this
+    $(form).FormNavigate("clean");
 </#macro>
  
 </body>

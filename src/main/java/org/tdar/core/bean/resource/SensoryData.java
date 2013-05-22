@@ -1,7 +1,9 @@
 package org.tdar.core.bean.resource;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -12,7 +14,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -32,6 +33,7 @@ import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 @Table(name = "sensory_data")
 @XmlRootElement(name = "sensoryData")
 public class SensoryData extends InformationResource {
+    
 
     /**
      * 
@@ -95,6 +97,23 @@ public class SensoryData extends InformationResource {
     @Length(max = 255)
     @Column(name = "control_data_filename")
     private String controlDataFilename;
+    
+    
+    public static enum RgbCapture {
+        NA("Not Specified"),
+        INTERNAL("Internal"),
+        EXTERNAL("External");
+        String label;
+        RgbCapture(String label) {
+            this.label = label;
+        }
+        public String getLabel() {
+            return label;
+        }
+    }
+    @Column(name = "rgb_capture", length = 255)
+    @Enumerated(EnumType.STRING)
+    private RgbCapture rgbCapture;
 
     /** registration metadata **/
     // TODO: determine if this is actually one-to-many relationship. the xls from angie suggests this, but only one registration record is present in any of the
@@ -592,7 +611,12 @@ public class SensoryData extends InformationResource {
     public void setScannerInformationResourceFile(InformationResourceFile irfile) {
         scannerInformationResourceFile = irfile;
     }
-    
-    
-    
+
+    public RgbCapture getRgbCapture() {
+        return rgbCapture;
+    }
+
+    public void setRgbCapture(RgbCapture rgbCapture) {
+        this.rgbCapture = rgbCapture;
+    }
 }
