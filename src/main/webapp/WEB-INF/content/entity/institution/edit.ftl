@@ -21,7 +21,7 @@
     <div class="glide">
         <h1>Institution Information for: ${institution.name}</h1>
         <@s.hidden name="id" />
-        <@s.textfield name="institution.name" required=true label="Name" id="txtInstitutionName" cssClass="input-xlarge"  maxlength=255 />
+        <@s.textfield name="name" required=true label="Name" id="txtInstitutionName" cssClass="input-xlarge"  maxlength=255 />
 
 		<#if editor>    
         <div id="spanStatus" tooltipcontent="#spanStatusToolTip" class="control-group">
