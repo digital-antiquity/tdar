@@ -20,14 +20,15 @@ alter table institution drop column url;
 alter table institution drop column status; -- should only be in creator
 
 
-alter table culture_keyword add column occurrance bigint;
-alter table geographic_keyword add column occurrance bigint;
-alter table investigation_type add column occurrance bigint;
-alter table material_keyword add column occurrance bigint;
-alter table other_keyword add column occurrance bigint;
-alter table temporal_keyword add column occurrance bigint;
-alter table site_name_keyword add column occurrance bigint;
-alter table site_type_keyword add column occurrance bigint;
+alter table culture_keyword add column occurrence bigint;
+alter table geographic_keyword add column occurrence bigint;
+alter table investigation_type add column occurrence bigint;
+alter table material_keyword add column occurrence bigint;
+alter table other_keyword add column occurrence bigint;
+alter table temporal_keyword add column occurrence bigint;
+alter table site_name_keyword add column occurrence bigint;
+alter table site_type_keyword add column occurrence bigint;
+alter table creator add column occurrence bigint;
 
 alter table information_resource_file add column description text;
 alter table information_resource_file add column file_created_date date;

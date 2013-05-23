@@ -85,6 +85,8 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         public String getKeywordType() {
             return getClass().getSimpleName();
         }
+        
+        private Long occurrence = 0L;
 
         private transient Float score = -1f;
         private transient Explanation explanation;
@@ -192,6 +194,14 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         @Override
         public boolean isDuplicate() {
             return status == Status.DUPLICATE;
+        }
+
+        public Long getOccurrence() {
+            return occurrence;
+        }
+
+        public void setOccurrence(Long occurrence) {
+            this.occurrence = occurrence;
         }
 
     }

@@ -108,6 +108,8 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         }
     }
 
+    private Long occurrence = 0L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
@@ -246,7 +248,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     public List<?> getEqualityFields() {
         return Collections.emptyList();
     }
-    
+
     /**
      * @param description
      *            the description to set
@@ -394,6 +396,14 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Override
     public boolean isDuplicate() {
         return status == Status.DUPLICATE;
+    }
+
+    public Long getOccurrence() {
+        return occurrence;
+    }
+
+    public void setOccurrence(Long occurrence) {
+        this.occurrence = occurrence;
     }
 
 }
