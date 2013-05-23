@@ -31,6 +31,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -215,21 +216,17 @@ public class ResourceService extends GenericService {
 
     @Transactional
     public void processManagedKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes) {
-        List<String> ignoreProperties = new ArrayList<String>();
         // needed in cases like the APIController where the collection is not properly initialized
         if (resource.getManagedGeographicKeywords() == null) {
             resource.setManagedGeographicKeywords(new LinkedHashSet<GeographicKeyword>());
         }
 
         Set<GeographicKeyword> kwds = new HashSet<GeographicKeyword>();
-        ignoreProperties.add("approved");
-        ignoreProperties.add("selectable");
-        ignoreProperties.add("level");
         for (LatitudeLongitudeBox latLong : allLatLongBoxes) {
             Set<GeographicKeyword> managedKeywords = geoSearchService.extractAllGeographicInfo(latLong);
             logger.debug(resource.getId() + " :  " + managedKeywords + " " + managedKeywords.size());
             kwds.addAll(
-                    getGenericDao().findByExamples(GeographicKeyword.class, managedKeywords, ignoreProperties, FindOptions.FIND_FIRST_OR_CREATE));
+                    getGenericDao().findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS), FindOptions.FIND_FIRST_OR_CREATE));
         }
         Persistable.Base.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
     }

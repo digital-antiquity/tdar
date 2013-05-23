@@ -53,7 +53,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Transient
     private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated", "registered",
-            "contributor", "totalLogins", "lastLogin", "penultimateLogin", "emailPublic", "phonePublic", "status", "synonyms" };
+            "contributor", "totalLogins", "lastLogin", "penultimateLogin", "emailPublic", "phonePublic", "status", "synonyms", "occurrence" };
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")

@@ -42,6 +42,9 @@ import org.tdar.search.query.QueryFieldNames;
 @SuppressWarnings("rawtypes")
 public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
+    @Transient
+    public static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "approved", "selectable", "level", "occurrence" }; //fixme: should ID be here too?
+
     public String getLabel();
 
     public void setLabel(String label);
@@ -51,7 +54,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
     public String getKeywordType();
 
     public void setDefinition(String definition);
-    
+
     @MappedSuperclass
     @XmlType(name = "kwdbase")
     public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus, Comparable<T> {
@@ -85,18 +88,17 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         public String getKeywordType() {
             return getClass().getSimpleName();
         }
-        
+
         private Long occurrence = 0L;
 
         private transient Float score = -1f;
         private transient Explanation explanation;
         private transient boolean readyToIndex = true;
 
-//        @Column(name = "date_created")
-//        @NotNull
-//        private Date dateCreated;
+        // @Column(name = "date_created")
+        // @NotNull
+        // private Date dateCreated;
 
-        
         @Transient
         @XmlTransient
         public boolean isReadyToIndex() {
