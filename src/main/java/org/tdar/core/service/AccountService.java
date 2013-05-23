@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
@@ -42,6 +44,8 @@ import org.tdar.utils.AccountEvaluationHelper;
 @Service
 public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
 
+    private static final String COUPON_ALREADY_APPLIED = "Coupon already applied";
+    private static final String CANNOT_REDEEM_COUPON = "Cannot redeem coupon";
     public static final String ACCOUNT_IS_NULL = "account is null";
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
@@ -242,6 +246,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             account.setSpaceUsedInBytes(0L);
             account.setFilesUsed(0L);
             account.initTotals();
+            
+            for (Coupon coupon : account.getCoupons()) {
+                account.setFilesUsed(coupon.getNumberOfFiles() + account.getFilesUsed());
+                account.setSpaceUsedInBytes(coupon.getNumberOfMb() * Coupon.ONE_MB + account.getSpaceUsedInBytes());
+            }
+
+            
             helper = new AccountEvaluationHelper(account, getLatestActivityModel());
             logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
             processResourcesChronologically(helper, resourcesToEvaluate);
@@ -613,6 +624,26 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 return getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
         }
         return null;
+    }
+
+    @Transactional
+    public void redeemCode(Invoice persistable, Person user, String code) {
+        Coupon coupon = locateRedeemableCoupon(code, user);
+        if (coupon == null) {
+            throw new TdarRecoverableRuntimeException(CANNOT_REDEEM_COUPON);
+        }
+        if (coupon != persistable.getCoupon()) {
+            throw new TdarRecoverableRuntimeException(COUPON_ALREADY_APPLIED);
+        }
+        if (persistable.getCoupon().getCode().equals(code)) {
+            return;
+        }
+        persistable.setCoupon(coupon);
+    }
+
+    @Transactional(readOnly=true)
+    public Coupon locateRedeemableCoupon(String code, Person user) {
+        return getDao().findCoupon(code, user);
     }
 
 }

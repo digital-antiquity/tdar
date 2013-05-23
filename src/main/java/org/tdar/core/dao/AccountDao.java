@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
+import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
@@ -40,7 +41,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Account> findAccountsForUser(Person user, Status ... statuses) {
+    public Set<Account> findAccountsForUser(Person user, Status... statuses) {
         if (ArrayUtils.isEmpty(statuses)) {
             statuses = new Status[1];
             statuses[0] = Status.ACTIVE;
@@ -132,20 +133,33 @@ public class AccountDao extends Dao.HibernateBase<Account> {
                 totalSpaceInBytes = ((Long) obj[1]).longValue();
             }
         }
+        for (Coupon coupon : account.getCoupons()) {
+            totalFiles += coupon.getNumberOfFiles();
+            totalSpaceInBytes += coupon.getNumberOfMb() * Coupon.ONE_MB;
+        }
         account.setFilesUsed(totalFiles);
         account.setSpaceUsedInBytes(totalSpaceInBytes);
     }
 
-    public List findUnassignedInvoicesForUser(Person user) {
+    @SuppressWarnings("unchecked")
+    public List<Invoice> findUnassignedInvoicesForUser(Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.UNASSIGNED_INVOICES_FOR_PERSON);
         query.setParameter("personId", user.getId());
         query.setParameterList("statuses", Arrays.asList(TransactionStatus.TRANSACTION_SUCCESSFUL));
         return query.list();
     }
 
-    public List findInvoicesForUser(Person user) {
+    @SuppressWarnings("unchecked")
+    public List<Invoice> findInvoicesForUser(Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.INVOICES_FOR_PERSON);
         query.setParameter("personId", user.getId());
         return query.list();
+    }
+
+    public Coupon findCoupon(String code, Person user) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACTIVE_COUPON);
+        query.setParameter("code", code);
+        query.setParameter("ownerId", user.getId());
+        return (Coupon) query.uniqueResult();
     }
 }

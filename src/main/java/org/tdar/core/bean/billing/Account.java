@@ -90,6 +90,10 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Invoice> invoices = new HashSet<Invoice>();
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = true, updatable = true, name = "account_id")
+    private Set<Coupon> coupons = new HashSet<Coupon>();
+
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "account_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "user_id") })
@@ -224,15 +228,24 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
             totalFiles += invoice.getTotalNumberOfFiles();
             totalSpaceInBytes += invoice.getTotalSpaceInBytes();
         }
+        
+//        for (Coupon coupon : getCoupons()) {
+//            totalFiles -= coupon.getNumberOfFiles();
+//            totalSpaceInBytes -= coupon.getNumberOfMb() * ONE_MB;
+//        }
         logger.trace(String.format("Totals: %s r %s f %s b", totalResources, totalFiles, totalSpaceInBytes));
     }
 
-    public void reEvaluateTotalSpaceUsed(ResourceEvaluator re) {
-        re.evaluateResources(resources);
-        setFilesUsed(re.getFilesUsed());
-        setSpaceUsedInBytes(re.getSpaceUsedInBytes());
-        setResourcesUsed(re.getResourcesUsed());
-    }
+//    public void reEvaluateTotalSpaceUsed(ResourceEvaluator re) {
+//        re.evaluateResources(resources);
+//        setFilesUsed(re.getFilesUsed());
+//        for (Coupon coupon : getCoupons()) {
+//            setFilesUsed(coupon.getNumberOfFiles() + getFilesUsed());
+//            setSpaceUsedInBytes(coupon.getNumberOfMb() * Coupon.ONE_MB + getSpaceUsedInBytes());
+//        }
+//        setSpaceUsedInBytes(re.getSpaceUsedInBytes());
+//        setResourcesUsed(re.getResourcesUsed());
+//    }
 
     public void resetTransientTotals() {
         totalFiles = 0L;
@@ -463,5 +476,13 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @Override
     public boolean isDuplicate() {
         return status == Status.DUPLICATE;
+    }
+
+    public Set<Coupon> getCoupons() {
+        return coupons;
+    }
+
+    public void setCoupons(Set<Coupon> coupons) {
+        this.coupons = coupons;
     }
 }

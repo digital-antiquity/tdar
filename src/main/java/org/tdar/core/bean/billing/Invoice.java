@@ -56,11 +56,11 @@ public class Invoice extends Base implements Updatable {
         TRANSACTION_CANCELLED("Transaction Cancelled");
 
         private String label;
-        
+
         private TransactionStatus(String label) {
             this.label = label;
         }
-        
+
         public boolean isComplete() {
             switch (this) {
                 case PENDING_TRANSACTION:
@@ -79,7 +79,7 @@ public class Invoice extends Base implements Updatable {
                     return false;
             }
         }
-        
+
         public String getLabel() {
             return this.label;
         }
@@ -121,6 +121,11 @@ public class Invoice extends Base implements Updatable {
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
     private Person owner;
+
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @JoinColumn(nullable = false, name = "coupon_id")
+    @NotNull
+    private Coupon coupon;
 
     @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     private BillingTransactionLog response;
@@ -244,23 +249,42 @@ public class Invoice extends Base implements Updatable {
 
     private void initTotals() {
         if (!initialized) {
+            // if (coupon != null) {
+            // calculatedCost -= coupon.getNumberOfDollars();
+            // }
+            Long discountedSpace = coupon.getNumberOfMb();
+            Long discountedFiles = coupon.getNumberOfFiles();
+
             for (BillingItem item : getItems()) {
-                Long numberOfFiles = item.getActivity().getNumberOfFiles();
-                Long space = item.getActivity().getNumberOfMb();
-                Long numberOfResources = item.getActivity().getNumberOfResources();
+                BillingActivity activity = item.getActivity();
+                Long numberOfFiles = activity.getNumberOfFiles();
+                Long space = activity.getNumberOfMb();
+                Long numberOfResources = activity.getNumberOfResources();
+
+                if (activity.getNumberOfFiles() > 0 && discountedFiles > 0) {
+                    calculatedCost -= activity.getPrice() * discountedFiles;
+                    discountedFiles = 0L;
+                }
+
+                if (activity.getNumberOfMb() > 0 && discountedSpace > 0) {
+                    calculatedCost -= activity.getPrice() * discountedSpace;
+                    discountedSpace = 0L;
+                }
+                long quantity = item.getQuantity().longValue();
                 if (numberOfFiles != null) {
-                    totalFiles += numberOfFiles * item.getQuantity().longValue();
+                    totalFiles += numberOfFiles * quantity;
                 }
                 if (space != null) {
-                    totalSpaceInMb += space * item.getQuantity().longValue();
+                    totalSpaceInMb += space * quantity;
                 }
                 if (numberOfResources != null) {
-                    totalResources += numberOfResources * item.getQuantity().longValue();
+                    totalResources += numberOfResources * quantity;
                 }
                 calculatedCost += item.getSubtotal();
-                logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [$%s]", numberOfFiles, totalFiles, space, totalSpaceInMb,
-                        numberOfResources, totalResources, calculatedCost));
+                logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [$%s] %s", numberOfFiles, totalFiles, space, totalSpaceInMb,
+                        numberOfResources, totalResources, calculatedCost, coupon));
             }
+
             initialized = true;
         }
     }
@@ -409,6 +433,14 @@ public class Invoice extends Base implements Updatable {
 
     public Date getDateUpdated() {
         return dateCreated;
+    }
+
+    public Coupon getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(Coupon coupon) {
+        this.coupon = coupon;
     }
 
 }
