@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxBinary;
@@ -26,7 +27,7 @@ public abstract class FunctionalWebTestCase {
 
     WebDriver driver;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-
+        
     @Before
     public void before() throws MalformedURLException {
         /*
@@ -37,8 +38,15 @@ public abstract class FunctionalWebTestCase {
         if (StringUtils.isNotBlank(xvfbPropsFile)) {
             fb.setEnvironmentProperty("DISPLAY", xvfbPropsFile);
         }
-        driver = new FirefoxDriver(fb, new FirefoxProfile());
+        
+        
+        driver = new FirefoxDriver(fb, newFirefoxProfile());
     }
+    
+    protected FirefoxProfile newFirefoxProfile() {
+        return new FirefoxProfile();
+    }
+    
 
     /*
      * Shutdown Selenium
@@ -134,5 +142,21 @@ public abstract class FunctionalWebTestCase {
 
     public String getText() {
         return find("body").getText();
+    }
+    
+        
+    @SuppressWarnings("unchecked") //this is a convenience so that caller's don't have to cast. It's probably a bad idea.
+    /**
+     * execute a snippet of javascript in an anonymous function.  if your snippet returns a value, Selenium will attempt to cast the most "appropriate"
+     * java type (String, Double, Integer, etc)  or a WebElement if you return a DOM node.  
+     * @param functionBody
+     * @param arguments arguments applied to the anonymous function. you can reference them in your snippet using  javascript's 
+     * contextual <code>arguments</code> object.
+     * @return selenium's best approximation of the value returned by your snippet, if it exists.
+     */
+    public <T> T executeJavascript(String functionBody, Object...arguments) {
+        JavascriptExecutor executor = (JavascriptExecutor)getDriver();
+        Object result = executor.executeScript(functionBody, arguments);
+        return (T)result;
     }
 }
