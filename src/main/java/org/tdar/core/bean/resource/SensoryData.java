@@ -223,10 +223,9 @@ public class SensoryData extends InformationResource {
     @Enumerated(EnumType.STRING)
     private ScannerTechnologyType scannerTechnology;
 
+    @Column(name = "camera_details", length = 255)
+    private String cameraDetails;
     
-    transient private InformationResourceFile scannerInformationResourceFile;
-    
-
     public SensoryData() {
         setResourceType(ResourceType.SENSORY_DATA);
     }
@@ -601,20 +600,19 @@ public class SensoryData extends InformationResource {
         this.scannerTechnology = scannerTechnology;
     }
     
-    @Transient
-    public InformationResourceFile getScannerInformationResourceFile() {
-        return scannerInformationResourceFile;
-    }
-    
-    public void setScannerInformationResourceFile(InformationResourceFile irfile) {
-        scannerInformationResourceFile = irfile;
-    }
-
     public RgbCapture getRgbCapture() {
         return rgbCapture;
     }
 
     public void setRgbCapture(RgbCapture rgbCapture) {
         this.rgbCapture = rgbCapture;
+    }
+
+    public String getCameraDetails() {
+        return cameraDetails;
+    }
+
+    public void setCameraDetails(String cameraDetails) {
+        this.cameraDetails = cameraDetails;
     }
 }

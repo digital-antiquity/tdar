@@ -35,3 +35,4 @@ alter table information_resource_file add column file_created_date date;
 
 --2013-05-22
 alter table sensory_data add column rgb_capture character varying(255);
+alter table sensory_data add column camera_details character varying(255);

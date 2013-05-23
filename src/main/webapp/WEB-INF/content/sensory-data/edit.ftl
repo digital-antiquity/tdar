@@ -284,9 +284,10 @@
         </div>
     </div>
     
-    <div class='control-group' tiplabel="Survey Date(s)" tooltipcontent="Date of survey, or date range of survey.">
+    <div tiplabel="Survey Date(s)" tooltipcontent="Date of survey, or date range of survey.">
     <@s.textfield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" cssClass="shortfield date formatUS" placeholder="mm/dd/yyyy" />
     <@s.textfield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" cssClass="right-shortfield date formatUS" placeholder="mm/dd/yyyy" />
+    </div>
 <#-- FIXME: need to convert surveyDateEnd and surveyDateBegin to short forms when editing existing sensory data
 value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateEnd /></#if>"
 -->
@@ -320,13 +321,17 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <div class="conditional-scantype combined phase_based time_of_flight triangulation" tiplabel='RGB Data Capture Information' tooltipcontent="Please specify it is (1) internal or external and (2) describe any additional lighting systems used if applicable">
     <@s.radio name='sensoryData.rgbCapture'  listValue="label"
                 list='%{rgbCaptureOptions}' label="RGB Capture" theme="bootstrap" />
-    <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="phase_based time_of_flight resizable input-xxlarge" label="Lighting Setup Information" labelposition="top" rows="5" />
-    
+    <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="Lighting Setup Information" labelposition="top" rows="5" />
     </div>
     <div tiplabel="Description of Final Datasets for Archive" tooltipcontent="What datasets will be archived (include file names if possible).">
         <@s.textarea name="sensoryData.finalDatasetDescription" cssClass="resizable input-xxlarge" label="Description of Final Datasets for Archive" labelposition="top" rows="5" />
     </div>
-    </div>
+    
+    <div class="conditional-scantype combined phase_based time_of_flight triangulation" 
+        tiplabel="Camera Details"  tooltipcontent="If applicable, provide the make/model/lense for the external camera that is is used to capture images for color mapping onto the scanned object">
+        <@s.textarea name="sensoryData.cameraDetails" id="rgbDataCaptureInfo" cssClass="phase_based time_of_flight resizable input-xxlarge" label="Camera Details" labelposition="top" rows="5" />
+    </iv>
+    
 </div>
 </#macro>
 
