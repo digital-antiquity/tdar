@@ -21,7 +21,6 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
-import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.configuration.JSONTransient;

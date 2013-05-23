@@ -3,12 +3,6 @@ package org.tdar.core.bean;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.tdar.core.bean.entity.Person;

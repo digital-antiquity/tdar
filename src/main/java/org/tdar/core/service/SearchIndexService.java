@@ -33,7 +33,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
-import org.tdar.core.service.resource.DatasetService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.activity.Activity;
 

@@ -11,7 +11,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Image;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.entity.PersonController;
 

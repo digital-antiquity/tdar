@@ -15,7 +15,6 @@ import javax.xml.bind.annotation.XmlElementRef;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;

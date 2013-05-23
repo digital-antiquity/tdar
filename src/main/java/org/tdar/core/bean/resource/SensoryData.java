@@ -1,9 +1,7 @@
 package org.tdar.core.bean.resource;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;

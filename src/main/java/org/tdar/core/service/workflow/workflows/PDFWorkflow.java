@@ -6,7 +6,6 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.workflow.workflows.Workflow.BaseWorkflow;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
 import org.tdar.filestore.tasks.PDFDerivativeTask;
-import org.tdar.struts.data.FileProxy;
 
 /**
  * $Id$

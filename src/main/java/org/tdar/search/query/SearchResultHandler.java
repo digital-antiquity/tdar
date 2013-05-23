@@ -5,9 +5,7 @@ import java.util.List;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Facetable;
-import org.tdar.core.service.ActivityManager;
 import org.tdar.struts.data.FacetGroup;
-import org.tdar.utils.activity.Activity;
 
 /* further abstracting some of the functions of the search result handler 
  * so it can be pushed into the service layer. HibernateSearch handles the request by pulling field info

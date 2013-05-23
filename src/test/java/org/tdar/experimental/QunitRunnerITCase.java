@@ -2,8 +2,6 @@ package org.tdar.experimental;
 
 import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
-import static org.tdar.TestConstants.DEFAULT_PORT;
-
 import java.util.Collections;
 import java.util.List;
 

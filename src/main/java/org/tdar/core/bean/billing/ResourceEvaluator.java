@@ -106,7 +106,7 @@ public class ResourceEvaluator implements Serializable {
                     } else {
                         filesUsed_++;
                     }
-                    
+
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         // we use version 1 because it's the original uploaded version
                         if (!includeAllVersionsInCounts && !version.getVersion().equals(1) || !version.isUploaded()) {

@@ -11,7 +11,6 @@ import java.util.Set;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;

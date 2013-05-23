@@ -6,8 +6,6 @@ import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.tdar.TestConstants;
 
-import com.gargoylesoftware.htmlunit.util.NameValuePair;
-
 public class UploadITWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
