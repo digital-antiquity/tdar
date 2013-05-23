@@ -52,7 +52,6 @@ import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
@@ -199,7 +198,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @Action(value = "collections", results = {
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
-    public String searchCollections() throws TdarActionException{
+    public String searchCollections() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(ResourceCollection.class));
         try {
             return collectionSearch();
@@ -226,7 +225,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @Action(value = "people", results = {
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
-    public String searchPeople() throws TdarActionException{
+    public String searchPeople() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Person.class));
         setMinLookupLength(0);
         try {
@@ -292,15 +291,17 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             "contentLength", "${contentLength}", "contentEncoding", "UTF-8" }) })
     public String viewRss() throws TdarActionException {
         try {
-            setSortField(SortOption.ID_REVERSE);
-            setSecondarySortField(SortOption.TITLE);
+            if (getSortField() == null) {
+                setSortField(SortOption.ID_REVERSE);
+                setSecondarySortField(SortOption.TITLE);
+            }
             setMode("rss");
             search();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
             setSearchDescription(TdarConfiguration.getInstance().getSiteAcronym() + " search results: " + StringEscapeUtils.escapeXml(getSearchPhrase()));
-//            if (getAuthenticatedUser() == null) {
-//                geoMode = GeoRssMode.NONE;
-//            }
+            // if (getAuthenticatedUser() == null) {
+            // geoMode = GeoRssMode.NONE;
+            // }
             if (!isReindexing()) {
                 setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
             } else {

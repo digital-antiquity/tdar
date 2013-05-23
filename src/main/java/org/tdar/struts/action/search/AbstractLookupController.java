@@ -109,9 +109,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     public SortOption getSortField() {
-        if (sortField == null) {
-            sortField = SortOption.RELEVANCE;
-        }
+        // if (sortField == null) {
+        // sortField = SortOption.RELEVANCE;
+        // }
         return sortField;
     }
 
