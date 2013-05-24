@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;

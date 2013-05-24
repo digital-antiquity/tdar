@@ -158,7 +158,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
 
     public Coupon findCoupon(String code, Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACTIVE_COUPON);
-        query.setParameter("code", code);
+        query.setParameter("code", code.toLowerCase());
         query.setParameter("ownerId", user.getId());
         return (Coupon) query.uniqueResult();
     }

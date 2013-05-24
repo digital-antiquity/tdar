@@ -9,7 +9,7 @@ import javax.naming.directory.Attributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.AuthenticationException;
@@ -320,7 +320,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
                 ldapTemplate.modifyAttributes(groupContext);
             } catch (Exception e) {
                 logger.debug("Could not add person: " + person + " to group: " + groupName);
-                logger.debug("Exception: ",e);
+                logger.debug("Exception: ", e);
             }
         }
 
@@ -372,7 +372,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
 
                 return groups.toArray(new String[0]);
             } catch (Exception e) {
-                logger.debug("Could not find membership for person: " + uid,e);
+                logger.debug("Could not find membership for person: " + uid, e);
             }
 
             return new String[0];

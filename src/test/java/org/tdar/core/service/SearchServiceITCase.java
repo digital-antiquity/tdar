@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.ComparatorUtils;
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.hibernate.search.FullTextQuery;
 import org.junit.Before;
