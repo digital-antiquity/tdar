@@ -83,14 +83,6 @@ public class Coupon extends Base {
         this.dateExpires = dateExpires;
     }
 
-    // public Float getNumberOfDollars() {
-    // return numberOfDollars;
-    // }
-    //
-    // public void setNumberOfDollars(Float numberOfDollars) {
-    // this.numberOfDollars = numberOfDollars;
-    // }
-
     @Override
     public String toString() {
         return String.format("coupon[f=%s s=%s c=%s]", numberOfFiles, numberOfMb, code);

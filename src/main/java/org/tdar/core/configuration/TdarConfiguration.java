@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -48,6 +50,8 @@ public class TdarConfiguration {
     private Filestore filestore;
 
     private Set<String> stopWords = new HashSet<String>();
+    private List<String> couponCodes = new ArrayList<String>();
+
     private String configurationFile;
 
     private final static TdarConfiguration INSTANCE = new TdarConfiguration();
@@ -66,6 +70,7 @@ public class TdarConfiguration {
         initPersonalFilestorePath();
         testQueue();
         initializeStopWords();
+        intializeCouponCodes();
     }
 
     public String getConfigurationFile() {
@@ -84,6 +89,14 @@ public class TdarConfiguration {
             stopWords.addAll(Arrays.asList(
                     "the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
                     "but", "with", "are", "have", "be", "at", "or", "as", "was", "so", "if", "out", "not"));
+        }
+    }
+
+    private void intializeCouponCodes() {
+        try {
+            couponCodes.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("coupon.codes.file"))));
+        } catch (Exception e) {
+            couponCodes.addAll(Arrays.asList("acheulean", "acropolis", "agora", "alidade", "alloy", "alluvial", "amphora", "anthropology", "antiquarian", "archaeoastronomy", "archaeology", "archaeozoology", "archaic", "aristocracy", "artifact", "assemblage", "association", "balk", "benchmark", "biface", "cache", "ceramics", "chert", "citadel", "column", "conchoidal", "conservation", "context", "coprolite", "core", "cortex", "crm", "culture", "cuneiform", "datum", "debitage", "dendrochronology", "diffusion", "ecofacts", "egyptology", "epigrapher", "ethnography", "excavation", "fabric", "feature", "flake", "flint", "flotation", "geoarchaeology", "glaze", "grid", "harris", "hieroglyphs", "hominid", "hominin", "hypostyle", "iconography", "ideogram", "insitu", "inorganic", "knapping", "levallois", "lineara", "linearb", "lintel", "lithic", "locus", "looter", "matrix", "mesolithic", "microlith", "midden", "mousterian", "neolithic", "nomads", "obsidian", "oldowan", "oligarchy", "organic", "osteology", "paleobotany", "paleolithic", "paleontology", "palynology", "papyrus", "pedology", "petrology", "pictogram", "pithos", "polis", "prehistory", "profile", "provenance", "provenience", "quem", "radiocarbon", "radiometric", "reconnaissance", "sediments", "seriation", "settlement", "sherd", "site", "slip", "soils", "square", "stela", "stele", "stratigraphy", "style", "stylus", "surface", "survey", "tell", "temper", "terminus", "test", "thermoluminescence", "transit", "trench", "tufa", "tumulus", "type", "typology", "varves", "ware", "ziggurat", "zone", "adovasio", "aharoni", "akbar", "akurgal", "alarcão", "albright", "alcock", "allen", "alp", "amiran", "anderson", "andronicos", "archaeologist", "artamonov", "arık", "aston", "atkinson", "australian", "aveni", "avigad", "azarnoush", "babington", "bahn", "bailey", "bandelier", "bandinelli", "bandyopadhyay", "baqir", "barkay", "barker", "bateman", "batres", "beech", "belzoni", "berger", "bersu", "beule", "bey", "bicknell", "biddle", "biglari", "binford", "bingham", "biondo", "biran", "black", "blegen", "bliss", "boni", "bordes", "borhegyi", "bourbourg", "bradley", "breasted", "breuer", "bringmans", "brothwell", "brumfiel", "burl", "butzer", "calvert", "canina", "carr", "carter", "carver", "casey", "caso", "ceram", "chakrabarti", "champe", "champollion", "chang", "chase", "cherry", "childe", "cicognara", "clark", "clarke", "clay", "cline", "coben", "cole", "coles", "collier", "collis", "conkey", "connah", "corvinus", "cowgill", "crawford", "cribb", "croissier", "cumming", "cunliffe", "cunnington", "curle", "curtius", "dales", "dani", "daniel", "dark", "davies", "dawkins", "deacon", "deetz", "delgado", "denon", "dent", "deraniyagala", "desnoyers", "dežman", "didron", "dillehay", "dinçol", "dixon", "dobres", "dobson", "dovdoi", "dragendorff", "dunnell", "dörpfeld", "emre", "enzheng", "erim", "evans", "fabricius", "fagan", "faklaris", "faussett", "fazioli", "fea", "feinman", "fellows", "fernow", "fewkes", "finkelstein", "finlayson", "fischer", "fitzhugh", "flannery", "ford", "forman", "foucher", "fox", "frankell", "frison", "fritz", "frost", "funari", "gabrovec", "galland", "gamble", "gann", "gardin", "gardner", "garfinkel", "garrod", "gell", "george", "gerhard", "gero", "ghasidian", "gibbon", "gilbert", "gimbutas", "gjerstad", "goggin", "goodyear", "gopher", "goren", "graham", "grakov", "greaves", "greene", "greenwell", "griffin", "grimes", "grote", "grube", "guarini", "hall", "hamed", "hanks", "hansen", "harding", "harland", "harrington", "hasel", "haury", "hawass", "hawkes", "heizer", "hewett", "heydari", "heyne", "higgs", "hinton", "hirschfeld", "hoare", "hodder", "hodge", "hoffman", "holdaway", "hole", "holliday", "horsley", "horváth", "hourany", "hume", "huot", "imamović", "isaac", "jahn", "jaubert", "jefferson", "jennings", "jewitt", "johanson", "johnson", "jones", "jorge", "joyce", "judge", "kallee", "kamminga", "kamphaus", "kansu", "keeler", "kelley", "kelly", "kenyon", "kessler", "kidder", "kircher", "klein", "kloner", "kober", "koldewey", "korfmann", "kossinna", "koşay", "kristiansen", "kuzman", "lanzi", "lape", "larcher", "lathrap", "lauer", "lawergren", "lawrence", "layard", "leakey", "lenormant", "leone", "letronne", "lewis", "lhuillier", "lhuyd", "lipe", "littauer", "loeschcke", "longacre", "loret", "loring", "lubbock", "lukis", "macalister", "macenery", "macneish", "maeir", "majidzadeh", "mallory", "mallowan", "manley", "manyas", "marcus", "mariette", "marinatos", "marshall", "martinez", "mashkour", "mason", "maspero", "massiera", "mathiassen", "mau", "maudslay", "mazar", "mazor", "mcburney", "mcghee", "mcguire", "mckern", "meggers", "mellars", "mengjia", "menon", "mercati", "milanich", "milisauskas", "miller", "millon", "minnis", "minns", "montelius", "montet", "moore", "moorehead", "morley", "morse", "mortimer", "moscati", "muckelroy", "muftarević", "mulvaney", "murray", "mérimée", "naderi", "negahban", "nelson", "netzer", "neustupný", "newton", "noblecourt", "oakley", "oberlin", "olsen", "orser", "paranavithana", "pauketat", "pearsall", "pearson", "pengelly", "peregrine", "perino", "perowne", "perthes", "petrie", "phillips", "piggott", "pinkerton", "piperno", "platon", "polosmak", "poole", "posener", "possehl", "potter", "pour", "pryor", "quicherat", "rahtz", "ramsay", "rathje", "rebay", "renfrew", "renouf", "reuvens", "richards", "rivers", "rochette", "rodriguez", "roe", "roebroeks", "rogers", "rostovtzeff", "rouge", "routledge", "royal", "rule", "rutar", "ryan", "sakellarakis", "salisbury", "sandweiss", "sarianidi", "saulcy", "schaden", "schaeffer", "schiffer", "schliemann", "schmerling", "schrire", "scipone", "shanks", "shaw", "shidrang", "sim", "smith", "snape", "south", "spector", "spence", "springs", "spurrell", "srinivasan", "stanhope", "steen", "stein", "stekelis", "stephan", "stern", "stoddart", "strong", "sukenik", "sweden", "sümegi", "tarragon", "tarzi", "taylor", "tello", "thom", "thomas", "thompson", "thomsen", "thurman", "thurston", "tilley", "tozzer", "trigger", "tuck", "tylecote", "ucko", "ugolini", "ussishkin", "valera", "vaux", "vazeilles", "vinatié", "vince", "vinski", "visy", "voigt", "waelkens", "warren", "watson", "webb", "wedel", "wegner", "welcker", "wendorf", "wettlaufer", "wheeler", "whitlow", "whittle", "wiegand", "willey", "williams", "winckelmann", "woolley", "worsaae", "wurster", "wylie", "wymer", "yadin", "yoffee", "zeitlin", "ziffer", "zimmerman", "zimmermann", "zuidema", "zvelebil"));
         }
     }
 
@@ -143,7 +156,7 @@ public class TdarConfiguration {
     public static TdarConfiguration getInstance() {
         return INSTANCE;
     }
-    
+
     public String getSitemapDir() {
         return String.format("%s/%s", getPersonalFileStoreLocation(), "sitemap");
     }
@@ -342,11 +355,12 @@ public class TdarConfiguration {
         return dir;
     }
 
-    /**
-     * @return
-     */
     public Set<String> getStopWords() {
         return stopWords;
+    }
+
+    public List<String> getCouponCodes() {
+        return couponCodes;
     }
 
     public String getRecaptchaUrl() {
@@ -517,11 +531,14 @@ public class TdarConfiguration {
     public Boolean getShowJiraLink() {
         return assistant.getBooleanProperty("jira.link.show", true);
     }
-    
+
     public String getJiraScriptLink() {
-        return assistant.getStringProperty("jira.link", "https://dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3");
+        return assistant
+                .getStringProperty(
+                        "jira.link",
+                        "https://dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3");
     }
-    
+
     public File getFremarkerTemplateDirectory() {
         return new File(assistant.getStringProperty("freemarker.templatedir", "includes/email/"));
     }

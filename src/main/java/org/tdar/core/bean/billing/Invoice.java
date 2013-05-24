@@ -122,9 +122,8 @@ public class Invoice extends Base implements Updatable {
     @NotNull
     private Person owner;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
-    @JoinColumn(nullable = false, name = "coupon_id")
-    @NotNull
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @JoinColumn(nullable = true, name = "coupon_id")
     private Coupon coupon;
 
     @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
@@ -252,8 +251,13 @@ public class Invoice extends Base implements Updatable {
             // if (coupon != null) {
             // calculatedCost -= coupon.getNumberOfDollars();
             // }
-            Long discountedSpace = coupon.getNumberOfMb();
-            Long discountedFiles = coupon.getNumberOfFiles();
+
+            Long discountedSpace = 0L;
+            Long discountedFiles = 0L;
+            if (coupon != null) {
+                coupon.getNumberOfFiles();
+                coupon.getNumberOfMb();
+            }
 
             for (BillingItem item : getItems()) {
                 BillingActivity activity = item.getActivity();

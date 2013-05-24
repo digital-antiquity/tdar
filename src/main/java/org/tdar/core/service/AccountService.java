@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.auth.TdarGroup;
@@ -44,6 +46,7 @@ import org.tdar.utils.AccountEvaluationHelper;
 @Service
 public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
 
+    public static final String CANNOT_GENERATE_A_COUPON_FOR_NOTHING = "cannot generate a coupon for nothing";
     private static final String COUPON_ALREADY_APPLIED = "Coupon already applied";
     private static final String CANNOT_REDEEM_COUPON = "Cannot redeem coupon";
     public static final String ACCOUNT_IS_NULL = "account is null";
@@ -60,7 +63,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     /*
      * Find all accounts for user: return accounts that are active and have not met their quota
      */
-    public Set<Account> listAvailableAccountsForUser(Person user, Status ... statuses) {
+    public Set<Account> listAvailableAccountsForUser(Person user, Status... statuses) {
         if (Persistable.Base.isNullOrTransient(user)) {
             return Collections.emptySet();
         }
@@ -218,7 +221,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
         /* check if any of the resources have been modified (ie. resource.markUpdated() has been called */
         boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
-        
+
         /* update the account info in the database */
         getDao().updateAccountInfo(account);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
@@ -246,17 +249,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             account.setSpaceUsedInBytes(0L);
             account.setFilesUsed(0L);
             account.initTotals();
-            
+
             for (Coupon coupon : account.getCoupons()) {
                 account.setFilesUsed(coupon.getNumberOfFiles() + account.getFilesUsed());
                 account.setSpaceUsedInBytes(coupon.getNumberOfMb() * Coupon.ONE_MB + account.getSpaceUsedInBytes());
             }
 
-            
             helper = new AccountEvaluationHelper(account, getLatestActivityModel());
             logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
             processResourcesChronologically(helper, resourcesToEvaluate);
-            
+
             status = updateResourceStatusesAndReconcileAccountStatus(helper, status);
             overdrawn = account.isOverdrawn(getResourceEvaluator());
             if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
@@ -265,7 +267,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             } else {
                 account.setStatus(Status.ACTIVE);
             }
-            
+
             saveOrUpdateAll(resourcesToEvaluate);
             helper.updateAccount();
             updateAccountInfo(account);
@@ -628,6 +630,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     @Transactional
     public void redeemCode(Invoice persistable, Person user, String code) {
+        if (StringUtils.isEmpty(code)) {
+            return;
+        }
         Coupon coupon = locateRedeemableCoupon(code, user);
         if (coupon == null) {
             throw new TdarRecoverableRuntimeException(CANNOT_REDEEM_COUPON);
@@ -641,9 +646,36 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         persistable.setCoupon(coupon);
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Coupon locateRedeemableCoupon(String code, Person user) {
         return getDao().findCoupon(code, user);
     }
 
+    @Transactional
+    public Coupon generateCouponCode(Long numberOfFiles, Long numberOfMb, Date dateExpires, Boolean oneTimeUse) {
+        Coupon coupon = new Coupon();
+        coupon.setDateCreated(new Date());
+        coupon.setDateExpires(dateExpires);
+        if (Persistable.Base.isNotNullOrTransient(numberOfFiles)) {
+            coupon.setNumberOfFiles(numberOfFiles);
+        }
+        if (Persistable.Base.isNotNullOrTransient(numberOfMb)) {
+            coupon.setNumberOfMb(numberOfMb);
+        }
+        if (numberOfFiles == numberOfMb && numberOfFiles == null) {
+            throw new TdarRecoverableRuntimeException(CANNOT_GENERATE_A_COUPON_FOR_NOTHING);
+        }
+
+        coupon.setOneTimeUse(oneTimeUse);
+        StringBuilder code = new StringBuilder();
+        List<String> codes = TdarConfiguration.getInstance().getCouponCodes();
+        for (int i = 0; i < 5; i++) {
+            code.append(codes.get((int) (Math.random() * (double) codes.size())));
+            code.append("-");
+        }
+        genericDao.save(coupon);
+        code.append(coupon.getId());
+        coupon.setCode(code.toString());
+        return coupon;
+    }
 }
