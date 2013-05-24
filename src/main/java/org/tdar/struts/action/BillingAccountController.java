@@ -49,6 +49,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private List<Person> authorizedMembers = new ArrayList<Person>();
     private Long accountGroupId;
     private String name;
+    private Integer quantity = 1;
     private String description;
 
     private Long numberOfFiles = 0L;
@@ -79,8 +80,9 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             @Result(name = SUCCESS, location = VIEW_ID, type = "redirect")
     })
     public String createCouponCode() {
-        getAccountService().generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
-
+        for (int i = 0; i < quantity; i++) {
+            getAccountService().generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
+        }
         return SUCCESS;
     }
 
@@ -287,6 +289,14 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public void setExipres(Date exipres) {
         this.exipres = exipres;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
 }

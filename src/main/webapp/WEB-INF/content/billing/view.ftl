@@ -94,25 +94,26 @@
 </table>
 
 
-
-<h3>Coupon Codes</h3>
-<table class="tableFormat table">
-    <tr>
-		<th>files</th>
-		<th>space</th>
-		<th>expires</th>
-        <th>code</th>
-    </tr>
-<#list account.coupons as coupon>
-	<#assign extraClass=""/>
-    <tr class="">
-        <td>${coupon.numberOfFiles}</td>
-        <td>${coupon.numberOfMb}</td>
-        <td>${coupon.dateExpires}</td>
-        <td>${coupon.code}</td>
-    </tr>
-</#list>
-</table>
+<#if editor>
+	<h3>Coupon Codes</h3>
+	<table class="tableFormat table">
+	    <tr>
+			<th>files</th>
+			<th>space</th>
+			<th>expires</th>
+	        <th>code</th>
+	    </tr>
+	<#list account.coupons as coupon>
+		<#assign extraClass=""/>
+	    <tr class="">
+	        <td>${coupon.numberOfFiles}</td>
+	        <td>${coupon.numberOfMb}</td>
+	        <td>${coupon.dateExpires}</td>
+	        <td>${coupon.code}</td>
+	    </tr>
+	</#list>
+	</table>
+</#if>
 
 <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
     <@s.hidden name="id" value="${account.id?c!-1}" />    
