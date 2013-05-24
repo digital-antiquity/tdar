@@ -5,6 +5,7 @@ import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
@@ -209,7 +210,21 @@ public abstract class FunctionalWebTestCase {
         setStyle(input, "cursor", "auto");
     }
     
+    public boolean hasIndexedName(WebElement elem) {
+        String indexedNamePattern = "(.+)\\[(\\d+)\\](\\..+)?";
+        return elem.getAttribute("name").matches(indexedNamePattern);
+    }
     
+    public WebElement getZerothElement(WebElement elem) {
+        String indexedNamePattern = "(.+)\\[(\\d+)\\](\\..+)?";
+        String zerothFieldName = elem.getAttribute("name").replaceAll(indexedNamePattern, "$1[0]$3");
+        WebElementSelection selection = find(By.name(zerothFieldName));
+        if(selection.isEmpty()) {
+            return null;
+        } else {
+            return selection.first();
+        }
+    }
     
     
 }
