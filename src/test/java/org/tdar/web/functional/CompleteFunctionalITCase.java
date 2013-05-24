@@ -192,11 +192,12 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
     }
 
     @Test
-    @Ignore
     public void testCreateDocument() {
         login();
         gotoPage("/document/add");
         File uploadFile = new File(TEST_DOCUMENT);
+        
+        clearFileInputStyles();
         find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
         waitFor(".delete-button");
 
@@ -291,6 +292,11 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
 //    }
 //    
     
+    public boolean setValue(String fieldName, String value) {
+        return false;
+        
+        
+    }
     
 //
 //    private void uploadFileToPersonalFilestore(String ticketId, String testDocument) {

@@ -46,30 +46,5 @@ public class FileUploadITCase extends FunctionalWebTestCase {
         logger.debug("document text \n\n {} \n\n", getText());
     }
     
-    private void clearFileInputStyles() {
-        WebElement input = find("#fileAsyncUpload").first();
-        setStyle(input, "position", "static");
-        setStyle(input, "top", "auto");
-        setStyle(input, "right", "auto");
-        setStyle(input, "margin", 0);
-        setStyle(input, "opacity", 1);
-        setStyle(input, "transform", "none");
-        setStyle(input, "direction", "ltr");
-        setStyle(input, "cursor", "auto");
-    }
-    
-    //FIXME: extend this to any webelement value, e.g. setPropVal(elem, "style", "display", "none")  or setPropVal(elem, "disabled", false);
-    private void setStyle(WebElement elem, String property, Object value){
-        executeJavascript("arguments[0].style[arguments[1]]=arguments[2]", elem, property, value);
-    }
-    
-    //the nuclear option:  disable all CSS so that the real file input control is visible
-    //http://stackoverflow.com/questions/3526361/firefoxdriver-how-to-disable-javascript-css-and-make-sendkeys-type-instantly
-    protected FirefoxProfile _newFirefoxProfile() {
-        FirefoxProfile profile = new FirefoxProfile();
-        profile.setPreference("permissions.default.stylesheet", 2);
-        //profile.setPreference("permissions.default.image", 2);
-        return profile;
-    }
 }
 

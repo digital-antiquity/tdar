@@ -26,7 +26,7 @@ import org.tdar.TestConstants;
 public abstract class FunctionalWebTestCase {
 
     WebDriver driver;
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected Logger logger = LoggerFactory.getLogger(getClass());
         
     @Before
     public void before() throws MalformedURLException {
@@ -43,8 +43,19 @@ public abstract class FunctionalWebTestCase {
         driver = new FirefoxDriver(fb, newFirefoxProfile());
     }
     
-    protected FirefoxProfile newFirefoxProfile() {
+    public FirefoxProfile newFirefoxProfile() {
         return new FirefoxProfile();
+    }
+    
+    /**
+     * @return firefox profile that has CSS rendering disabled.  
+     */
+    public final FirefoxProfile firefoxProfileNoCss() {
+        //http://stackoverflow.com/questions/3526361/firefoxdriver-how-to-disable-javascript-css-and-make-sendkeys-type-instantly
+        FirefoxProfile profile = new FirefoxProfile();
+        profile.setPreference("permissions.default.stylesheet", 2);
+        //profile.setPreference("permissions.default.image", 2);
+        return profile;
     }
     
 
@@ -145,7 +156,7 @@ public abstract class FunctionalWebTestCase {
     }
     
         
-    @SuppressWarnings("unchecked") //this is a convenience so that caller's don't have to cast. It's probably a bad idea.
+    @SuppressWarnings("unchecked") //this is a convenience so that callers don't have to cast. It's probably a bad idea.
     /**
      * execute a snippet of javascript in an anonymous function.  if your snippet returns a value, Selenium will attempt to cast the most "appropriate"
      * java type (String, Double, Integer, etc)  or a WebElement if you return a DOM node.  
@@ -159,4 +170,46 @@ public abstract class FunctionalWebTestCase {
         Object result = executor.executeScript(functionBody, arguments);
         return (T)result;
     }
+    
+    
+    //FIXME: implement someday.  the tricky part is supporting nested properties e.g. "elem.style.position", especially when property doesn't exist yet
+    public void setAttribute(WebElement elem, String property, Object value) {
+        throw new RuntimeException("no");
+    }
+    
+    public void setStyle(WebElement elem, String property, Object value){
+        executeJavascript("arguments[0].style[arguments[1]]=arguments[2]", elem, property, value);
+    }
+
+    /**
+     * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget.  Typically in selenium you "upload" a file using 
+     * the sendKeys()  method,  but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
+     * will not execute sendkeys() on elements that selenium determines to be invisible to the user.
+     */
+    public void clearFileInputStyles() {
+        WebElement input = find("#fileAsyncUpload").first();
+        clearFileInputStyles(input);
+    }
+    
+    
+    /**
+     * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget.  Typically in selenium you "upload" a file using 
+     * the sendKeys()  method,  but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
+     * will not execute sendkeys() on elements that selenium determines to be invisible to the user.
+     * @param input the actual file input element (not the div that renders the jquery file upload widget)
+     */
+    public void clearFileInputStyles(WebElement input) {
+        setStyle(input, "position", "static");
+        setStyle(input, "top", "auto");
+        setStyle(input, "right", "auto");
+        setStyle(input, "margin", 0);
+        setStyle(input, "opacity", 1);
+        setStyle(input, "transform", "none");
+        setStyle(input, "direction", "ltr");
+        setStyle(input, "cursor", "auto");
+    }
+    
+    
+    
+    
 }

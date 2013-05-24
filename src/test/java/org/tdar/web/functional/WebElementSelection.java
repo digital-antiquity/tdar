@@ -2,6 +2,7 @@ package org.tdar.web.functional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,41 +38,14 @@ public class WebElementSelection implements Iterable<WebElement>{
             elements.addAll(webElements);
         }
     }
+    
+    private WebElementSelection(WebElement elem) {
+        this(Arrays.asList(elem));
+    }
 
     @Override
     public Iterator<WebElement> iterator() {
-        Iterator<WebElement> itor = new Iterator<WebElement>() {
-            int idx = -1;
-            int size = elements.size();
-            
-            {
-                logger.debug("creating a new iterator  idx:{}  size:{}", idx, size);
-            }
-            
-            @Override
-            public boolean hasNext() {
-                boolean hasnext = idx + 1 < size;
-                logger.debug("hasnext:{}", hasnext);
-                return hasnext;
-            }
-
-            @Override
-            public WebElement next() {
-                WebElement nxt = null;
-                if(hasNext()) {
-                    idx++;
-                    nxt = elements.get(idx);
-                }
-                return nxt;
-            }
-
-            @Override
-            public void remove() {
-                elements.remove(idx);
-            }
-            
-        };
-        return itor;
+        return elements.iterator();
     }
     
     public WebElement first() {
@@ -360,4 +334,59 @@ public class WebElementSelection implements Iterable<WebElement>{
     private boolean isFormElement(WebElement elem) {
         return Arrays.asList("input", "textarea", "button", "select").contains(elem.getTagName());
     }
+    
+    
+    public void add(WebElementSelection selection) {
+        elements.addAll(selection.toList());
+    }
+    
+    /**
+     * Click every selected element zero or more times until an element is present on the page as determined by the specified By criteria.
+     * If at least one matching element does not exist on the page, this method clicks every element in the selection.  This process 
+     * repeats until the page contains at least one matching element or the method has reached the specified max number of clicks. 
+     * @param findBy the criteria to use to find a matching element on the page
+     * @param max the maximum number of times this method should click every element if a match has not been found.
+     * @return the number of clicks  performed (per selected item),  or -1 if a matching element was never found.
+     */
+    public int clickUntil(By findBy, int max) {
+        int i = 0;
+        while(find(findBy).size() == 0 && i < max) {
+            click();
+            i++;
+        }
+        return i;
+    }
+    
+    public WebElementSelection parent() {
+        return new WebElementSelection(first().findElements(By.xpath("..")));
+    }
+    
+    
+    public WebElementSelection parents() {
+        List<WebElement> lineage = new ArrayList<WebElement>();
+        WebElementSelection parent = parent();
+        while(parent.size() >0 ) {
+            lineage.add(parent.first());
+            parent = parent.parent();
+        }
+        return new WebElementSelection(lineage);
+    }
+    
+    public boolean hasClass(String cssClass) {
+        String attr = getAttribute("class");
+        if(attr == null) return false;
+        List<String> cssClasses = Arrays.asList(attr.split(" "));
+        return cssClasses.contains(cssClass);
+    }
+    
+    public WebElementSelection firstParentWithClass(String cssClass) {
+        WebElementSelection parent  =  parent();
+        if(parent.isEmpty()) return parent ;
+        if(parent.hasClass(cssClass)) return parent;
+        return parent.firstParentWithClass(cssClass);
+    }
+    
 }   
+
+
+
