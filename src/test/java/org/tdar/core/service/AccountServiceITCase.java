@@ -176,7 +176,8 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testCouponCodeGeneration() {
-        Coupon generateCouponCode = accountService.generateCouponCode(null, null, null, false);
+        Account account = setupAccountForPerson(getBasicUser());
+        Coupon generateCouponCode = accountService.generateCouponCode(account, null, null, null, false);
         logger.info("{}", generateCouponCode);
     }
 }

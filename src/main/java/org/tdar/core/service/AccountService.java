@@ -18,15 +18,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
-import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.ResourceEvaluator;
+import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
+import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -47,6 +47,7 @@ import org.tdar.utils.AccountEvaluationHelper;
 public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
 
     public static final String CANNOT_GENERATE_A_COUPON_FOR_NOTHING = "cannot generate a coupon for nothing";
+    public static final String NOT_ENOUGH_SPACE_OR_FILES = "cannot create coupon for value greater than account's current available files or MB";
     private static final String COUPON_ALREADY_APPLIED = "Coupon already applied";
     private static final String CANNOT_REDEEM_COUPON = "Cannot redeem coupon";
     public static final String ACCOUNT_IS_NULL = "account is null";
@@ -73,7 +74,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     /*
      * Find all accounts for user: return accounts that are active and have not met their quota
      */
-    @SuppressWarnings("unchecked")
     public List<Invoice> listUnassignedInvoicesForUser(Person user) {
         if (Persistable.Base.isNullOrTransient(user)) {
             return Collections.emptyList();
@@ -655,7 +655,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     @Transactional
-    public Coupon generateCouponCode(Long numberOfFiles, Long numberOfMb, Date dateExpires, Boolean oneTimeUse) {
+    public Coupon generateCouponCode(Account account, Long numberOfFiles, Long numberOfMb, Date dateExpires, Boolean oneTimeUse) {
         Coupon coupon = new Coupon();
         coupon.setDateCreated(new Date());
         coupon.setDateExpires(dateExpires);
@@ -665,8 +665,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (Persistable.Base.isNotNullOrTransient(numberOfMb)) {
             coupon.setNumberOfMb(numberOfMb);
         }
+
         if (numberOfFiles == numberOfMb && numberOfFiles == null) {
             throw new TdarRecoverableRuntimeException(CANNOT_GENERATE_A_COUPON_FOR_NOTHING);
+        }
+
+        if (account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles() && account.getAvailableSpaceInMb() < coupon.getNumberOfMb()) {
+            throw new TdarRecoverableRuntimeException(NOT_ENOUGH_SPACE_OR_FILES);
         }
 
         coupon.setOneTimeUse(oneTimeUse);

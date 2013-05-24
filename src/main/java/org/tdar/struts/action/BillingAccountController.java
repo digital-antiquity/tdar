@@ -1,6 +1,7 @@
 package org.tdar.struts.action;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.joda.time.DateTime;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -34,6 +36,7 @@ import org.tdar.struts.WriteableSession;
 @Namespace("/billing")
 public class BillingAccountController extends AbstractPersistableController<Account> {
 
+    private static final String VIEW_ID = "view?id=${id}";
     public static final String RIGHTS_TO_ASSIGN_THIS_INVOICE = "you do not have the rights to assign this invoice";
     public static final String INVOICE_IS_REQURIED = "an invoice is requried";
     private static final long serialVersionUID = 2912533895769561917L;
@@ -47,6 +50,11 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private Long accountGroupId;
     private String name;
     private String description;
+
+    private Long numberOfFiles = 0L;
+    private Long numberOfMb = 0L;
+    private Boolean singleUse = true;
+    private Date exipres = new DateTime().plusYears(1).toDate();
 
     @SkipValidation
     @Action(value = "choose", results = {
@@ -66,6 +74,15 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             return SUCCESS;
         }
         return NEW_ACCOUNT;
+    }
+
+    @Action(value = "create-code", results = {
+            @Result(name = SUCCESS, location = VIEW_ID, type = "redirect")
+    })
+    public String createCouponCode() {
+        getAccountService().generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres(), getSingleUse());
+
+        return SUCCESS;
     }
 
     public void loadListData() {
@@ -119,7 +136,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     @SkipValidation
     @WriteableSession
     @Action(value = "updateQuotas", results = {
-            @Result(name = SUCCESS, location = "view?id=${id}", type = "redirect")
+            @Result(name = SUCCESS, location = VIEW_ID, type = "redirect")
     })
     public String updateQuotas() {
         getAccountService().updateQuota(getAccount(), getAccount().getResources());
@@ -248,4 +265,37 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public void setResources(List<Resource> resources) {
         this.resources = resources;
     }
+
+    public Long getNumberOfFiles() {
+        return numberOfFiles;
+    }
+
+    public void setNumberOfFiles(Long numberOfFiles) {
+        this.numberOfFiles = numberOfFiles;
+    }
+
+    public Long getNumberOfMb() {
+        return numberOfMb;
+    }
+
+    public void setNumberOfMb(Long numberOfMb) {
+        this.numberOfMb = numberOfMb;
+    }
+
+    public Boolean getSingleUse() {
+        return singleUse;
+    }
+
+    public void setSingleUse(Boolean singleUse) {
+        this.singleUse = singleUse;
+    }
+
+    public Date getExipres() {
+        return exipres;
+    }
+
+    public void setExipres(Date exipres) {
+        this.exipres = exipres;
+    }
+
 }
