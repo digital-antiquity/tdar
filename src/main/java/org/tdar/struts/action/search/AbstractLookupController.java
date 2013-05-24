@@ -52,7 +52,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private int startRecord = DEFAULT_START;
     private List<I> results = Collections.emptyList();
     private int totalRecords;
-    private SortOption sortField = SortOption.RELEVANCE;
+    private SortOption sortField;
     private SortOption secondarySortField = SortOption.TITLE;
     private boolean debug = false;
     private ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
