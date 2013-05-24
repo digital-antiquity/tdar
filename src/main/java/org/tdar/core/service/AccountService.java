@@ -637,11 +637,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (coupon == null) {
             throw new TdarRecoverableRuntimeException(CANNOT_REDEEM_COUPON);
         }
-        if (coupon != persistable.getCoupon()) {
-            throw new TdarRecoverableRuntimeException(COUPON_ALREADY_APPLIED);
-        }
-        if (persistable.getCoupon().getCode().equals(code)) {
-            return;
+        if (Persistable.Base.isNotNullOrTransient(persistable.getCoupon())) {
+            if (Persistable.Base.isEqual(coupon, persistable.getCoupon())) {
+                return;
+            } else {
+                throw new TdarRecoverableRuntimeException(COUPON_ALREADY_APPLIED);
+            }
         }
         persistable.setCoupon(coupon);
     }
@@ -655,7 +656,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     @Transactional
-    public Coupon generateCouponCode(Account account, Long numberOfFiles, Long numberOfMb, Date dateExpires, Boolean oneTimeUse) {
+    public Coupon generateCouponCode(Account account, Long numberOfFiles, Long numberOfMb, Date dateExpires) {
         Coupon coupon = new Coupon();
         coupon.setDateCreated(new Date());
         coupon.setDateExpires(dateExpires);
@@ -666,7 +667,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             coupon.setNumberOfMb(numberOfMb);
         }
 
-        if (numberOfFiles == numberOfMb && numberOfFiles == null) {
+        if (numberOfFiles == numberOfMb && Persistable.Base.isNullOrTransient(numberOfFiles)) {
             throw new TdarRecoverableRuntimeException(CANNOT_GENERATE_A_COUPON_FOR_NOTHING);
         }
 
@@ -674,7 +675,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             throw new TdarRecoverableRuntimeException(NOT_ENOUGH_SPACE_OR_FILES);
         }
 
-        coupon.setOneTimeUse(oneTimeUse);
         StringBuilder code = new StringBuilder();
         List<String> codes = TdarConfiguration.getInstance().getCouponCodes();
         for (int i = 0; i < 5; i++) {
@@ -684,6 +684,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         genericDao.save(coupon);
         code.append(coupon.getId());
         coupon.setCode(code.toString());
+        account.getCoupons().add(coupon);
+        logger.info("adding coupon: {}  to account: {}", coupon, account);
+        genericDao.saveOrUpdate(account);
+        genericDao.saveOrUpdate(coupon);
         return coupon;
     }
 }

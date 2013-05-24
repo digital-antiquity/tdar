@@ -93,6 +93,35 @@
 </#list>
 </table>
 
+
+
+<h3>Coupon Codes</h3>
+<table class="tableFormat table">
+    <tr>
+		<th>files</th>
+		<th>space</th>
+		<th>expires</th>
+        <th>code</th>
+    </tr>
+<#list account.coupons as coupon>
+	<#assign extraClass=""/>
+    <tr class="">
+        <td>${coupon.numberOfFiles}</td>
+        <td>${coupon.numberOfMb}</td>
+        <td>${coupon.dateExpires}</td>
+        <td>${coupon.code}</td>
+    </tr>
+</#list>
+</table>
+
+<@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
+    <@s.hidden name="id" value="${account.id?c!-1}" />    
+	<@s.textfield name="numberOfFiles" cssClass="integer" label="Number of Files"/>
+	<@s.textfield name="numberOfMb" cssClass="integer" label="Number of MB"/>
+	<@s.textfield name="exipres" cssClass="date" label="Date Expires"/>
+	<@s.submit name="_tdar.submit" value="Create Coupon" />
+</@s.form>
+
 <h3>Users who can charge to this account</h3>
 <table class="tableFormat table">
     <tr>

@@ -117,6 +117,7 @@ public class Invoice extends Base implements Updatable {
     @Column(name = "transaction_date")
     private Date transactionDate;
 
+
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
@@ -245,6 +246,7 @@ public class Invoice extends Base implements Updatable {
         initTotals();
         return totalFiles;
     }
+    
 
     private void initTotals() {
         if (!initialized) {
@@ -255,8 +257,8 @@ public class Invoice extends Base implements Updatable {
             Long discountedSpace = 0L;
             Long discountedFiles = 0L;
             if (coupon != null) {
-                coupon.getNumberOfFiles();
-                coupon.getNumberOfMb();
+                discountedFiles = coupon.getNumberOfFiles();
+                discountedSpace = coupon.getNumberOfMb();
             }
 
             for (BillingItem item : getItems()) {
@@ -266,12 +268,12 @@ public class Invoice extends Base implements Updatable {
                 Long numberOfResources = activity.getNumberOfResources();
 
                 if (activity.getNumberOfFiles() > 0 && discountedFiles > 0) {
-                    calculatedCost -= activity.getPrice() * discountedFiles;
+                    couponValue += activity.getPrice() * discountedFiles;
                     discountedFiles = 0L;
                 }
 
                 if (activity.getNumberOfMb() > 0 && discountedSpace > 0) {
-                    calculatedCost -= activity.getPrice() * discountedSpace;
+                    couponValue +=  activity.getPrice() * discountedSpace;
                     discountedSpace = 0L;
                 }
                 long quantity = item.getQuantity().longValue();
@@ -288,7 +290,10 @@ public class Invoice extends Base implements Updatable {
                 logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [$%s] %s", numberOfFiles, totalFiles, space, totalSpaceInMb,
                         numberOfResources, totalResources, calculatedCost, coupon));
             }
-
+            calculatedCost -= couponValue;
+            if (calculatedCost < 0) {
+                calculatedCost = 0f;
+            }
             initialized = true;
         }
     }
@@ -298,6 +303,7 @@ public class Invoice extends Base implements Updatable {
         totalSpaceInMb = 0L;
         calculatedCost = 0F;
         totalResources = 0L;
+        couponValue = 0F;
         initialized = false;
     }
 
@@ -306,6 +312,7 @@ public class Invoice extends Base implements Updatable {
     private transient Long totalFiles = 0L;
     private transient Float calculatedCost = 0F;
     private transient boolean initialized = false;
+    private transient Float couponValue = 0f;
 
     @Override
     public void markUpdated(Person p) {
@@ -445,6 +452,14 @@ public class Invoice extends Base implements Updatable {
 
     public void setCoupon(Coupon coupon) {
         this.coupon = coupon;
+    }
+
+    public Float getCouponValue() {
+        return couponValue;
+    }
+
+    public void setCouponValue(Float couponValue) {
+        this.couponValue = couponValue;
     }
 
 }

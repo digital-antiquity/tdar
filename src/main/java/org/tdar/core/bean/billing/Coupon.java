@@ -22,10 +22,6 @@ public class Coupon extends Base {
 
     // @Column(name = "number_of_dollars")
     // private Float numberOfDollars = 0f;
-
-    @Column(name = "one_time_use")
-    private Boolean oneTimeUse = true;
-
     @Column(unique = true)
     private String code;
 
@@ -49,14 +45,6 @@ public class Coupon extends Base {
 
     public void setNumberOfFiles(Long numberOfFiles) {
         this.numberOfFiles = numberOfFiles;
-    }
-
-    public Boolean getOneTimeUse() {
-        return oneTimeUse;
-    }
-
-    public void setOneTimeUse(Boolean oneTimeUse) {
-        this.oneTimeUse = oneTimeUse;
     }
 
     public String getCode() {

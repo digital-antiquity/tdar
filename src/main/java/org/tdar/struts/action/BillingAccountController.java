@@ -53,7 +53,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     private Long numberOfFiles = 0L;
     private Long numberOfMb = 0L;
-    private Boolean singleUse = true;
     private Date exipres = new DateTime().plusYears(1).toDate();
 
     @SkipValidation
@@ -80,7 +79,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             @Result(name = SUCCESS, location = VIEW_ID, type = "redirect")
     })
     public String createCouponCode() {
-        getAccountService().generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres(), getSingleUse());
+        getAccountService().generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
 
         return SUCCESS;
     }
@@ -280,14 +279,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public void setNumberOfMb(Long numberOfMb) {
         this.numberOfMb = numberOfMb;
-    }
-
-    public Boolean getSingleUse() {
-        return singleUse;
-    }
-
-    public void setSingleUse(Boolean singleUse) {
-        this.singleUse = singleUse;
     }
 
     public Date getExipres() {
