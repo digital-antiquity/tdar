@@ -343,6 +343,8 @@ ALTER table resource add column total_space_in_bytes bigint;
 -- 2-26-13
 alter table information_resource add constraint irMappingKey Foreign key (mappeddatakeycolumn_id)  references data_table_column ;
 
+-- 2013-05-24
+
 create table pos_coupon (
     id  bigserial not null,
     code varchar(255) unique,
