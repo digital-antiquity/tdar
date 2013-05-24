@@ -54,12 +54,13 @@ public class SensoryDataController extends AbstractInformationResourceController
     }
     
     private void loadScannerInformationResourceFile() {
-        for(InformationResourceFile irfile : getSensoryData().getInformationResourceFiles()) {
-            if(irfile.getFileName().endsWith("xls") || irfile.getFileName().endsWith("xlsx")) {
-                getSensoryData().setScannerInformationResourceFile(irfile);
-                break;
-            }
-        }
+        //FIXME: compile? Needed?
+//        for(InformationResourceFile irfile : getSensoryData().getInformationResourceFiles()) {
+//            if(irfile.getFileName().endsWith("xls") || irfile.getFileName().endsWith("xlsx")) {
+//                getSensoryData().setScannerInformationResourceFile(irfile);
+//                break;
+//            }
+//        }
     }
 
     /**
