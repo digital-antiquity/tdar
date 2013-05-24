@@ -144,7 +144,7 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
     public void testCreateDocumentEditSavehasResource() {
         login();
         gotoPage("/document/add");
-        WebElement form = find("#metadataForm");
+        WebElement form = find("#metadataForm").first();
         
         //HACK: some of form fields we need don't exist yet.  Let's just click the "add another" buttons like crazy until they do.
         for(int i = 0; i < 6; i++) { 

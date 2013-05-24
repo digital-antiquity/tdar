@@ -14,7 +14,19 @@ import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WebElementSelection implements WebElement, Iterable<WebElement>{
+/**
+ *  This class represents a collection of WebElement objects, and attempts to emulate the WebElement interface while also using the jQuery convention 
+ *  of selecting, inspecting, and manipulating elements.  Some examples: <code>    
+ *   
+ *   find("#files .delete-button").click()  //click all of the delete buttons in the files section
+ *   
+ *   TODO: more examples....
+ *   
+ *   </code>
+ * @author jimdevos
+ *
+ */
+public class WebElementSelection implements Iterable<WebElement>{
     final List<WebElement> elements;
     public final Logger logger = LoggerFactory.getLogger(getClass());
     
@@ -62,29 +74,30 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
         return itor;
     }
     
-    private WebElement first() {
-        return this.iterator().next();
+    public WebElement first() {
+        return get(0);
     }
 
     /**
      * click on every item in the selection
      */
-    @Override
     public void click() {
         for(WebElement elem : this) {
             elem.click();
         }
     }
 
-    @Override
+    /**
+     * submit the form that contains the first element in the selection
+     */
     public void submit() {
-        //throw error if multiple forms in "selection"?
-        for(WebElement elem : this) {
-            elem.submit();
-        }
+        first().submit();
     }
 
-    @Override
+    /**
+     * simulate the keypresses corresponding to the provided charsequence for every element in this selection
+     * This function really only makes sense for form elements that have a text entry feature but this method check if this is the case  
+     */
     public void sendKeys(CharSequence... keysToSend) {
         for(WebElement elem : this) {
             logger.debug("{} sendKeys: {}", elem, keysToSend);
@@ -93,7 +106,6 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
     }
 
     
-    @Override
     /**
      * calls WebElement.clear() on all inputs in selection
      * 
@@ -113,28 +125,43 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
         }
     }
 
-    @Override
+    /**
+     * return the tagname of the first element in the selection
+     * @return
+     */
     public String getTagName() {
         return first().getTagName();
     }
 
-    @Override
+    /** 
+     * return the value of the specified attribute of the first elemet of the selection.
+     * @see org.openqa.selenium.WebElement#getAttribute(java.lang.String)
+     */
     public String getAttribute(String name) {
         return first().getAttribute(name);
     }
 
-    @Override
+    /** 
+     * return true if first element in selection is selected/checked
+     * @see org.openqa.selenium.WebElement#isSelected()
+     */
     public boolean isSelected() {
         return first().isSelected();
     }
 
-    @Override
+    /**
+     * return true if first element in selection is enabled
+     * @return
+     */
     public boolean isEnabled() {
         return first().isEnabled();
     }
 
-    @Override
-    //return combined text of all nodes
+    
+    /**
+     * return the concatenation of all of the textnode values for all elements in the selection. 
+     * @return the concatenation of all elements in the selection.  
+     */
     public String getText() {
         StringBuilder sb = new StringBuilder();
         for(WebElement elem : this) {
@@ -143,37 +170,62 @@ public class WebElementSelection implements WebElement, Iterable<WebElement>{
         return sb.toString();
     }
 
-    @Override
-    //treating this like jquery.find() for now
-    public List<WebElement> findElements(By by) {
+    private List<WebElement> findElements(By by) {
         LinkedList<WebElement> children = new LinkedList<WebElement>();
         for(WebElement elem: this) {
             children.addAll(elem.findElements(by));
         }
         return children;
     }
+    
+    
+    /**
+     * create a WebElementSelection of the combined results of applying findElements() to each element in the selection
+     * @see WebElement#findElements(By)
+     * @param by criteria to use for searching within the elements
+     * @return selection containing combined results of all findElements(By) from each element in the selection.
+     */
+    public WebElementSelection find(By by) {
+        return new WebElementSelection(findElements(by)); 
+    }
+    
 
-    @Override
-    public WebElement findElement(By by) {
-        return first().findElement(by);
+    /**
+     * create a WebElementSelection of the combined results of applying findElements() to each element in the selection
+     * @see WebElement#findElements(By)
+     * @param css selector
+     * @return selection containing combined results of all findElements(By) from each element in the selection.
+     */
+    public WebElementSelection find(String cssSelector) {
+        return find(By.cssSelector(cssSelector));
     }
 
-    @Override
+
+    /**
+     * @return true if first element of selection is displayed, otherwise false
+     */
     public boolean isDisplayed() {
         return first().isDisplayed();
     }
 
-    @Override
+    /**
+     * @return point representing location of the first element of the selection
+     */
     public Point getLocation() {
         return first().getLocation();
     }
 
-    @Override
+    /**
+     * @return size of the first element of the selection
+     */
     public Dimension getSize() {
         return first().getSize();
     }
 
-    @Override
+    /**
+     * @param propertyName
+     * @return value of css property
+     */
     public String getCssValue(String propertyName) {
         return first().getCssValue(propertyName);
     }
