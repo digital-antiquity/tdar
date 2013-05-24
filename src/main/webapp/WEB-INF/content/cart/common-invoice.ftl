@@ -25,6 +25,17 @@
 	    </td>
 	    </tr>
 	</#list>
+	<#if invoice.coupon?has_content>
+		<tr>
+		<td>Coupon ${invoice.coupon.code}</td>
+		<td>1</td>
+		<td></td>
+		<td>${invoice.coupon.numberOfFiles}</td>
+		<td>${invoice.coupon.numberOfMb}</td>
+		<td></td>
+		<td></td>
+		</tr>
+	</#if>
 	<tr>
 	    <th colspan=6><em>Total:</em></th><th><#if invoice.proxy && !billingManager>N/A<#else>$${invoice.calculatedCost!0}
 	    <!-- FOR testing total:$${invoice.calculatedCost!0} -->

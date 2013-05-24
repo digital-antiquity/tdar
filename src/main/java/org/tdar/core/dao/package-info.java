@@ -354,7 +354,12 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_LOGIN_STATS,
             query = "select totalLogins, count(id) from Person where totalLogins > 0 group by totalLogins order by totalLogins asc"
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name = TdarNamedQueries.FIND_ACTIVE_COUPON,
+            query = "from Coupon coupon where code=:code and (select count(*) from Invoice where coupon_id=coupon.id) = 0 and (select count(*) from Invoice where coupon_id=coupon.id and owner.id !=:ownerId) = 0"
     )
+
 
 })
 package org.tdar.core.dao;

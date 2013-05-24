@@ -29,28 +29,25 @@
 <hr>
 <#if payPerIngestEnabled >
 <div class="row">
-<div class="span12 pricing">
-<div class="span1">
+<div class="pricing">
+<div class="span1 center">
 <h3 class="document-mid-black red"></h3> 
-</div><div class="span1">
+</div><div class="span1 center">
 <h3 class="dataset-mid-red red"></h3>
-</div><div class="span1">
+</div><div class="span1 center">
  <h3 class="image-mid-black red"></h3> 
-</div><div class="span1">
+</div><div class="span1 center">
 <h3 class="sensory_data-mid-red red"></h3>
-</div><div class="span3 center" style="
-    text-align: center;
-    vertical-align: middle;
-    margin-top: 10px;
-">
+</div>
+<div class="span4 center" style="margin-top: 10px;">
  <a href="http://www.tdar.org/about/pricing/" class="button">tDAR Pricing Information</a> 
 
-</div><div class="span1">
+</div><div class="span1 center">
  <h3 class="ontology-mid-red red"></h3>
-</div><div class="span1">
+</div><div class="span1 center">
  <h3 class="coding_sheet-mid-black red"></h3> 
-</div><div class="span1"><h3 class="project-mid-red red"></h3>
-</div><div class="span1"> <h3 class="collection-mid-black red"></h3>
+</div><div class="span1 center"><h3 class="project-mid-red red"></h3>
+</div><div class="span1 center"> <h3 class="collection-mid-black red"></h3>
 </div></div></div>
 <hr>
 </#if>

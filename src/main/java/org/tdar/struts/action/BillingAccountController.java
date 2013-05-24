@@ -1,6 +1,7 @@
 package org.tdar.struts.action;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.joda.time.DateTime;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -36,6 +38,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public static final String UPDATE_QUOTAS = "updateQuotas";
     public static final String CHOOSE = "choose";
+    private static final String VIEW_ID = "view?id=${id}";
     public static final String RIGHTS_TO_ASSIGN_THIS_INVOICE = "you do not have the rights to assign this invoice";
     public static final String INVOICE_IS_REQURIED = "an invoice is requried";
     private static final long serialVersionUID = 2912533895769561917L;
@@ -48,7 +51,12 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private List<Person> authorizedMembers = new ArrayList<Person>();
     private Long accountGroupId;
     private String name;
+    private Integer quantity = 1;
     private String description;
+
+    private Long numberOfFiles = 0L;
+    private Long numberOfMb = 0L;
+    private Date exipres = new DateTime().plusYears(1).toDate();
 
     @SkipValidation
     @Action(value = CHOOSE, results = {
@@ -68,6 +76,16 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             return SUCCESS;
         }
         return NEW_ACCOUNT;
+    }
+
+    @Action(value = "create-code", results = {
+            @Result(name = SUCCESS, location = VIEW_ID, type = "redirect")
+    })
+    public String createCouponCode() {
+        for (int i = 0; i < quantity; i++) {
+            getAccountService().generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
+        }
+        return SUCCESS;
     }
 
     public void loadListData() {
@@ -250,4 +268,37 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public void setResources(List<Resource> resources) {
         this.resources = resources;
     }
+
+    public Long getNumberOfFiles() {
+        return numberOfFiles;
+    }
+
+    public void setNumberOfFiles(Long numberOfFiles) {
+        this.numberOfFiles = numberOfFiles;
+    }
+
+    public Long getNumberOfMb() {
+        return numberOfMb;
+    }
+
+    public void setNumberOfMb(Long numberOfMb) {
+        this.numberOfMb = numberOfMb;
+    }
+
+    public Date getExipres() {
+        return exipres;
+    }
+
+    public void setExipres(Date exipres) {
+        this.exipres = exipres;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
 }

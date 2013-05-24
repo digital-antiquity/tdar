@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +18,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
-import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.ResourceEvaluator;
+import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
+import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.auth.TdarGroup;
@@ -42,6 +46,10 @@ import org.tdar.utils.AccountEvaluationHelper;
 @Service
 public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
 
+    public static final String CANNOT_GENERATE_A_COUPON_FOR_NOTHING = "cannot generate a coupon for nothing";
+    public static final String NOT_ENOUGH_SPACE_OR_FILES = "cannot create coupon for value greater than account's current available files or MB";
+    private static final String COUPON_ALREADY_APPLIED = "Coupon already applied";
+    private static final String CANNOT_REDEEM_COUPON = "Cannot redeem coupon";
     public static final String ACCOUNT_IS_NULL = "account is null";
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
@@ -56,7 +64,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     /*
      * Find all accounts for user: return accounts that are active and have not met their quota
      */
-    public Set<Account> listAvailableAccountsForUser(Person user, Status ... statuses) {
+    public Set<Account> listAvailableAccountsForUser(Person user, Status... statuses) {
         if (Persistable.Base.isNullOrTransient(user)) {
             return Collections.emptySet();
         }
@@ -66,7 +74,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     /*
      * Find all accounts for user: return accounts that are active and have not met their quota
      */
-    @SuppressWarnings("unchecked")
     public List<Invoice> listUnassignedInvoicesForUser(Person user) {
         if (Persistable.Base.isNullOrTransient(user)) {
             return Collections.emptyList();
@@ -214,7 +221,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
         /* check if any of the resources have been modified (ie. resource.markUpdated() has been called */
         boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
-        
+
         /* update the account info in the database */
         getDao().updateAccountInfo(account);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
@@ -242,10 +249,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             account.setSpaceUsedInBytes(0L);
             account.setFilesUsed(0L);
             account.initTotals();
+
+            for (Coupon coupon : account.getCoupons()) {
+                account.setFilesUsed(coupon.getNumberOfFiles() + account.getFilesUsed());
+                account.setSpaceUsedInBytes(coupon.getNumberOfMb() * Coupon.ONE_MB + account.getSpaceUsedInBytes());
+            }
+
             helper = new AccountEvaluationHelper(account, getLatestActivityModel());
             logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
             processResourcesChronologically(helper, resourcesToEvaluate);
-            
+
             status = updateResourceStatusesAndReconcileAccountStatus(helper, status);
             overdrawn = account.isOverdrawn(getResourceEvaluator());
             if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
@@ -254,7 +267,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             } else {
                 account.setStatus(Status.ACTIVE);
             }
-            
+
             saveOrUpdateAll(resourcesToEvaluate);
             helper.updateAccount();
             updateAccountInfo(account);
@@ -615,4 +628,66 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return null;
     }
 
+    @Transactional
+    public void redeemCode(Invoice persistable, Person user, String code) {
+        if (StringUtils.isEmpty(code)) {
+            return;
+        }
+        Coupon coupon = locateRedeemableCoupon(code, user);
+        if (coupon == null) {
+            throw new TdarRecoverableRuntimeException(CANNOT_REDEEM_COUPON);
+        }
+        if (Persistable.Base.isNotNullOrTransient(persistable.getCoupon())) {
+            if (Persistable.Base.isEqual(coupon, persistable.getCoupon())) {
+                return;
+            } else {
+                throw new TdarRecoverableRuntimeException(COUPON_ALREADY_APPLIED);
+            }
+        }
+        persistable.setCoupon(coupon);
+    }
+
+    @Transactional(readOnly = true)
+    public Coupon locateRedeemableCoupon(String code, Person user) {
+        if (org.apache.commons.lang.StringUtils.isBlank(code) || Persistable.Base.isNullOrTransient(user)) {
+            return null;
+        }
+        return getDao().findCoupon(code, user);
+    }
+
+    @Transactional
+    public Coupon generateCouponCode(Account account, Long numberOfFiles, Long numberOfMb, Date dateExpires) {
+        Coupon coupon = new Coupon();
+        coupon.setDateCreated(new Date());
+        coupon.setDateExpires(dateExpires);
+        if (Persistable.Base.isNotNullOrTransient(numberOfFiles)) {
+            coupon.setNumberOfFiles(numberOfFiles);
+        }
+        if (Persistable.Base.isNotNullOrTransient(numberOfMb)) {
+            coupon.setNumberOfMb(numberOfMb);
+        }
+
+        if (numberOfFiles == numberOfMb && Persistable.Base.isNullOrTransient(numberOfFiles)) {
+            throw new TdarRecoverableRuntimeException(CANNOT_GENERATE_A_COUPON_FOR_NOTHING);
+        }
+
+        if (account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles() && account.getAvailableSpaceInMb() < coupon.getNumberOfMb()) {
+            throw new TdarRecoverableRuntimeException(NOT_ENOUGH_SPACE_OR_FILES);
+        }
+
+        StringBuilder code = new StringBuilder();
+        List<String> codes = TdarConfiguration.getInstance().getCouponCodes();
+        for (int i = 0; i < 5; i++) {
+            code.append(codes.get((int) (Math.random() * (double) codes.size())));
+            code.append("-");
+        }
+        genericDao.save(coupon);
+        code.append(coupon.getId());
+        coupon.setCode(code.toString());
+        account.getCoupons().add(coupon);
+        logger.info("adding coupon: {}  to account: {}", coupon, account);
+        genericDao.saveOrUpdate(account);
+        genericDao.saveOrUpdate(coupon);
+        return coupon;
+    }
 }

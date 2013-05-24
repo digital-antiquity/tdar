@@ -337,7 +337,7 @@
                         <#else>
                         Publisher
                         </#if></strong><br>
-                        	<#if resource.publisher?has_content>${resource.publisher.name!"Not Specified"}</#if> 
+                        	<#if resource.publisher?has_content><@view.browse creator=resource.publisher /></#if> 
                             <#if resource.degree?has_content>${resource.degree.label}</#if>
                             <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
                         </li>

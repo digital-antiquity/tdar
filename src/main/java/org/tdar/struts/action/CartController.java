@@ -69,6 +69,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private Person owner;
     private String callback;
     private PricingType pricingType = null;
+    private String code;
 
     @Autowired
     PaymentTransactionProcessor paymentTransactionProcessor;
@@ -119,6 +120,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
         getInvoice().setTransactedBy(getAuthenticatedUser());
         processOwner();
+        getAccountService().redeemCode(persistable, persistable.getOwner(), code);
+        
+        
         setSaveSuccessPath(SIMPLE);
 
         return getActionErrors().isEmpty() ? SUCCESS : INPUT;
@@ -308,7 +312,15 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         // finalize the cost and cache it
         getInvoice().markFinal();
         logger.info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", getInvoice().getId(), getInvoice().getTotal());
-        getInvoice().setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
+
+        // if the discount brings the total cost down to 0, then skip the credit card process
+        if (getInvoice().getTotal() <= 0 && CollectionUtils.isNotEmpty(getInvoice().getItems())) {
+            getInvoice().setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+            getGenericService().saveOrUpdate(getInvoice());
+            return SUCCESS_ADD_ACCOUNT;
+        } else {
+            getInvoice().setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
+        }
 
         switch (paymentMethod) {
             case CHECK:
@@ -598,6 +610,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setExtraItemQuantities(List<Integer> extraItemQuantities) {
         this.extraItemQuantities = extraItemQuantities;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
 }

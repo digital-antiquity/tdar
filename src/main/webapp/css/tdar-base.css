@@ -244,6 +244,7 @@ header .welcome {
 	top: 11px;
 	right: 0;
 	margin: 0;
+	margin-right:12px !important;	
 	font-weight: 700;
 	font-size: 11px;
 	color: #999;
@@ -1300,3 +1301,9 @@ vertical-align: middle;
       height:300px;
       overflow:hidden;
   }
+
+
+.center {
+	text-align: center;
+    vertical-align: middle;
+}
