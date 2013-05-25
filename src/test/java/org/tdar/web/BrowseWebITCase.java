@@ -10,11 +10,12 @@ import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
 
-    @Before
+    @BeforeClass
     public void reindexBefore() {
         reindexUnauthenticated();
     }
