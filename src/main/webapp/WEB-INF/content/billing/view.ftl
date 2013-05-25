@@ -94,7 +94,7 @@
 </table>
 
 
-<#if editor>
+<#if !editor>
 	<h3>Coupon Codes</h3>
 	<table class="tableFormat table">
 	    <tr>
@@ -102,6 +102,7 @@
 			<th>space</th>
 			<th>expires</th>
 	        <th>code</th>
+	        <th>redeemed</th>
 	    </tr>
 	<#list account.coupons as coupon>
 		<#assign extraClass=""/>
@@ -110,19 +111,29 @@
 	        <td>${coupon.numberOfMb}</td>
 	        <td>${coupon.dateExpires}</td>
 	        <td>${coupon.code}</td>
+	        <td><#if coupon.dateRedeemed?has_content>${coupon.dateRedeemed} <#if coupon.user?has_content>(${coupon.user.properName})</#if></#if></td>
 	    </tr>
 	</#list>
 	</table>
-</#if>
-
+<div class="well">
+<h3> Create Coupon</h3>
 <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
+<div class="row">
+	<div class="span4">
+	<@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" />
     <@s.hidden name="id" value="${account.id?c!-1}" />    
+	<@s.textfield name="exipres" cssClass="date" label="Date Expires"/>
+	</div>
+	<div class="span4">    
 	<@s.textfield name="numberOfFiles" cssClass="integer" label="Number of Files"/>
 	<@s.textfield name="numberOfMb" cssClass="integer" label="Number of MB"/>
-	<@s.textfield name="exipres" cssClass="date" label="Date Expires"/>
-	<@s.submit name="_tdar.submit" value="Create Coupon" />
+	</div>
+	</div>
+	<@s.submit name="_tdar.submit" value="Create Coupon" cssClass="button submit-btn btn" />
+</div>
 </@s.form>
-
+</div>
+</#if>
 <h3>Users who can charge to this account</h3>
 <table class="tableFormat table">
     <tr>

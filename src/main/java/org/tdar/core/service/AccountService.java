@@ -46,6 +46,7 @@ import org.tdar.utils.AccountEvaluationHelper;
 @Service
 public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
 
+    public static final String SPECIFY_EITHER_SPACE_OR_FILES = "Specify either Space or Files for your coupon";
     public static final String COUPON_HAS_EXPIRED = "Coupon has expired";
     public static final String CANNOT_GENERATE_A_COUPON_FOR_NOTHING = "cannot generate a coupon for nothing";
     public static final String NOT_ENOUGH_SPACE_OR_FILES = "cannot create coupon for value greater than account's current available files or MB";
@@ -673,7 +674,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (Persistable.Base.isNotNullOrTransient(numberOfMb)) {
             coupon.setNumberOfMb(numberOfMb);
         }
-
+        if (coupon.getNumberOfFiles() > 0L && coupon.getNumberOfMb() > 0L) {
+            throw new TdarRecoverableRuntimeException(SPECIFY_EITHER_SPACE_OR_FILES);
+        }
+        
         if (numberOfFiles == numberOfMb && Persistable.Base.isNullOrTransient(numberOfFiles)) {
             throw new TdarRecoverableRuntimeException(CANNOT_GENERATE_A_COUPON_FOR_NOTHING);
         }
