@@ -121,8 +121,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getInvoice().setTransactedBy(getAuthenticatedUser());
         processOwner();
         getAccountService().redeemCode(persistable, persistable.getOwner(), code);
-        
-        
+
         setSaveSuccessPath(SIMPLE);
 
         return getActionErrors().isEmpty() ? SUCCESS : INPUT;
@@ -275,15 +274,16 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     })
     public String processPayment() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        if (!getInvoice().isModifiable()) {
+        Invoice invoice = getInvoice();
+        if (!invoice.isModifiable()) {
             return SUCCESS;
         }
 
-        if (getInvoice().getTransactionStatus().isComplete()) {
+        if (invoice.getTransactionStatus().isComplete()) {
             return ERROR;
         }
         getSuccessPathForPayment(); // initialize
-        PaymentMethod paymentMethod = getInvoice().getPaymentMethod();
+        PaymentMethod paymentMethod = invoice.getPaymentMethod();
         if (paymentMethod == null) {
             throw new TdarRecoverableRuntimeException(VALID_PAYMENT_METHOD_IS_REQUIRED);
         }
@@ -297,47 +297,50 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             throw new TdarRecoverableRuntimeException(VALID_PHONE_NUMBER_IS_REQUIRED);
         }
 
-        getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
-        if (isAddressRequired() && Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
+        invoice.setAddress(getGenericService().loadFromSparseEntity(invoice.getAddress(), Address.class));
+        if (isAddressRequired() && Persistable.Base.isNullOrTransient(invoice.getAddress())) {
             throw new TdarRecoverableRuntimeException(A_BILING_ADDRESS_IS_REQUIRED);
         }
 
-        String invoiceNumber = getInvoice().getInvoiceNumber();
-        String otherReason = getInvoice().getOtherReason();
-        setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
-        getInvoice().setPaymentMethod(paymentMethod);
-        getInvoice().setOtherReason(otherReason);
-        getInvoice().setBillingPhone(phone);
-        getGenericService().saveOrUpdate(getInvoice());
+        String invoiceNumber = invoice.getInvoiceNumber();
+        String otherReason = invoice.getOtherReason();
+        setInvoice(getGenericService().loadFromSparseEntity(invoice, Invoice.class));
+        invoice.setPaymentMethod(paymentMethod);
+        invoice.setOtherReason(otherReason);
+        invoice.setBillingPhone(phone);
+        getGenericService().saveOrUpdate(invoice);
         // finalize the cost and cache it
-        getInvoice().markFinal();
-        logger.info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", getInvoice().getId(), getInvoice().getTotal());
+        invoice.markFinal();
+        logger.info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", invoice.getId(), invoice.getTotal());
 
         // if the discount brings the total cost down to 0, then skip the credit card process
-        if (getInvoice().getTotal() <= 0 && CollectionUtils.isNotEmpty(getInvoice().getItems())) {
-            getInvoice().setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
-            getGenericService().saveOrUpdate(getInvoice());
+        if (invoice.getTotal() <= 0 && CollectionUtils.isNotEmpty(invoice.getItems())) {
+            if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
+                getAccountService().redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
+            }
+            invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+            getGenericService().saveOrUpdate(invoice);
             return SUCCESS_ADD_ACCOUNT;
         } else {
-            getInvoice().setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
+            invoice.setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
         }
 
         switch (paymentMethod) {
             case CHECK:
                 break;
             case CREDIT_CARD:
-                getGenericService().saveOrUpdate(getInvoice());
+                getGenericService().saveOrUpdate(invoice);
                 try {
-                    setRedirectUrl(paymentTransactionProcessor.prepareRequest(getInvoice()));
+                    setRedirectUrl(paymentTransactionProcessor.prepareRequest(invoice));
                 } catch (URIException e) {
                     logger.warn("error happend {}", e);
                 }
                 return POLLING;
             case INVOICE:
-                getInvoice().setInvoiceNumber(invoiceNumber);
+                invoice.setInvoiceNumber(invoiceNumber);
             case MANUAL:
-                getInvoice().setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
-                getGenericService().saveOrUpdate(getInvoice());
+                invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+                getGenericService().saveOrUpdate(invoice);
                 return SUCCESS_ADD_ACCOUNT;
         }
         // validate transaction
