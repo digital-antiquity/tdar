@@ -52,4 +52,9 @@ create table pos_coupon (
     primary key (id)
 );
 
+
 alter table pos_invoice add column coupon_id int8 references pos_coupon;
+
+--2013-05-25
+alter table pos_coupon add column user_id int8 references person;
+alter table pos_coupon add column date_redeemed timestamp;>>>>>>> theirs
