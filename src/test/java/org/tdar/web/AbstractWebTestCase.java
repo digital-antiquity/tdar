@@ -1079,4 +1079,33 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
     }
 
+    public void reindexUnauthenticated() {
+        String url = getCurrentUrlPath();
+        logout();
+        login(TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_PASSWORD);
+        reindex();
+        logout();
+        gotoPage(url);
+    }
+    
+    protected void reindex() {
+        gotoPage("/admin/searchindex/build");
+        gotoPage("/admin/searchindex/checkstatus");
+        logger.info(getPageCode());
+        int count = 0;
+        while (!getPageCode().contains("\"percentDone\" : 100")) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                fail("InterruptedException during reindex.  sorry.");
+            }
+            gotoPage("/admin/searchindex/checkstatus?userId="+getAdminUserId());
+            logger.info(getPageCode());
+            if (count == 1000) {
+                fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");
+            }
+            count++;
+        }
+    }
+
 }

@@ -47,7 +47,7 @@
     <#if ((resource.viewable)!false) >
        <#local rowCount= rowCount+1 />
         <#-- handle grouping/sorting with indentation -->
-        <#if sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')>
+        <#if (sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')) && resource.resourceType?has_content>
             <#if sortfield?contains('RESOURCE_TYPE')>
                 <#local key = resource.resourceType.plural />
                 <#local defaultKeyLabel="No Resource Type"/>  
