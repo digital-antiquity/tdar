@@ -9,6 +9,7 @@ package org.tdar.web.functional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
@@ -16,11 +17,12 @@ import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
+import org.junit.After;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -35,6 +37,7 @@ import org.tdar.web.AbstractWebTestCase;
 //TODO: click on 'add row' buttons to create the element names referenced in the docValMap. 
 //TODO: refactor the block-of-doom on near line 220.  
 
+
 public class CompleteFunctionalITCase extends FunctionalWebTestCase {
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
@@ -45,6 +48,12 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
     public static List<String> alternateCodeLookup = new ArrayList<String>();
     public static String REGEX_DOCUMENT_VIEW = "\\/document\\/\\d+$";
 
+    @After
+    public void logout() {
+        gotoPage("/logout");
+    }
+    
+    
     public CompleteFunctionalITCase() {
         docValMap = new HashMap<String, String>();
         // removing inline implementation of HashMap to remove serialization warning
@@ -139,6 +148,20 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
         docUnorderdValMap.put("resourceNotes[5].note", "I'm not internationally known, but I'm known to rock a microphone.");
 
     }
+    
+    private void prepIndexedFields(Collection<String> fieldNames) {
+        for(String fieldName : fieldNames) {
+            if(isIndexedField(fieldName)) {
+                findOrCreateIndexedField(fieldName);
+            }
+        }
+    }
+    
+    private void prepIndexedFields() {
+        prepIndexedFields(docValMap.keySet());
+        prepIndexedFields(docMultiValMap.keySet());
+        prepIndexedFields(docUnorderdValMap.keySet());
+    }
 
     @Test
     public void testCreateDocumentEditSavehasResource() {
@@ -195,6 +218,7 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
     public void testCreateDocument() {
         login();
         gotoPage("/document/add");
+        prepIndexedFields();        
         File uploadFile = new File(TEST_DOCUMENT);
         
         clearFileInputStyles();
@@ -321,4 +345,22 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
     private boolean textContains(String substring) {
         return getText().contains(substring);
     }
+    
+    @Test
+    public void testAddAnotherClick() {
+        login();
+        gotoPage("/document/add");
+        String fieldName = "resourceNotes[5].note";
+        WebElementSelection elems = find(By.name(fieldName));
+
+        assertEquals(elems.size(), 0);
+        assertTrue(isIndexedField(fieldName));
+        
+        //find element, or click until found.
+        WebElement elem = findOrCreateIndexedField(fieldName);
+        assertNotNull(elem);
+        
+        assertEquals(elem.getAttribute("name"), fieldName);
+    }
+    
 }

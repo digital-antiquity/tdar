@@ -4,6 +4,7 @@ import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -39,8 +40,6 @@ public abstract class FunctionalWebTestCase {
         if (StringUtils.isNotBlank(xvfbPropsFile)) {
             fb.setEnvironmentProperty("DISPLAY", xvfbPropsFile);
         }
-        
-        
         driver = new FirefoxDriver(fb, newFirefoxProfile());
     }
     
@@ -59,7 +58,6 @@ public abstract class FunctionalWebTestCase {
         return profile;
     }
     
-
     /*
      * Shutdown Selenium
      */
@@ -110,7 +108,6 @@ public abstract class FunctionalWebTestCase {
         return result;
     }
 
-
     public WebElementSelection find(String selector) {
         return find(By.cssSelector(selector));
     }
@@ -119,6 +116,16 @@ public abstract class FunctionalWebTestCase {
         WebElementSelection selection = new WebElementSelection(driver.findElements(by));
         logger.debug("criteria:{}\t  size:{}", by, selection.size());
         return selection;
+    }
+    
+    //FIXME: select() seems more appropriate, given the ways you can select stuff.  Or, since we're aping jquery.. just $()?
+    /**
+     * Create a selection out of one or more.
+     * @param elems WebElement objects
+     * @return
+     */
+    public WebElementSelection find(WebElement ... elems) {
+        return new WebElementSelection(Arrays.asList(elems));
     }
 
     public WebElement findFirst(String selector) {
@@ -155,7 +162,6 @@ public abstract class FunctionalWebTestCase {
     public String getText() {
         return find("body").getText();
     }
-    
         
     @SuppressWarnings("unchecked") //this is a convenience so that callers don't have to cast. It's probably a bad idea.
     /**
@@ -171,7 +177,6 @@ public abstract class FunctionalWebTestCase {
         Object result = executor.executeScript(functionBody, arguments);
         return (T)result;
     }
-    
     
     //FIXME: implement someday.  the tricky part is supporting nested properties e.g. "elem.style.position", especially when property doesn't exist yet
     public void setAttribute(WebElement elem, String property, Object value) {
@@ -192,7 +197,6 @@ public abstract class FunctionalWebTestCase {
         clearFileInputStyles(input);
     }
     
-    
     /**
      * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget.  Typically in selenium you "upload" a file using 
      * the sendKeys()  method,  but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
@@ -210,14 +214,24 @@ public abstract class FunctionalWebTestCase {
         setStyle(input, "cursor", "auto");
     }
     
-    public boolean hasIndexedName(WebElement elem) {
+    /**
+     * @param fieldName
+     * @return true if fieldname follows struts indexed name convention (e.g.  person[3].id)
+     */
+    public boolean isIndexedField(String fieldName) {
         String indexedNamePattern = "(.+)\\[(\\d+)\\](\\..+)?";
-        return elem.getAttribute("name").matches(indexedNamePattern);
+        return fieldName.matches(indexedNamePattern);
     }
     
-    public WebElement getZerothElement(WebElement elem) {
+    /**
+     * @param fieldName name attribute value of field. which is expected to follow the struts naming pattern for collections
+     * @return 
+     */
+    private WebElement getZerothElement(String fieldName) {
         String indexedNamePattern = "(.+)\\[(\\d+)\\](\\..+)?";
-        String zerothFieldName = elem.getAttribute("name").replaceAll(indexedNamePattern, "$1[0]$3");
+        String zerothFieldName = fieldName.replaceAll(indexedNamePattern, "$1[0]$3");
+        logger.debug("old name:\t{}", fieldName);
+        logger.debug("new name:\t{}", zerothFieldName);
         WebElementSelection selection = find(By.name(zerothFieldName));
         if(selection.isEmpty()) {
             return null;
@@ -225,6 +239,48 @@ public abstract class FunctionalWebTestCase {
             return selection.first();
         }
     }
+    
+    /**
+     * Return a element with the specified name, which is assumed to follow tDAR's 'repeatable' element convention.  
+     * If the element doesn't exist, this method tries to locate the 'add another row' button and clicks it until an element with the specified
+     * field name exists.
+     * @param fieldName name attribute of the element to find.
+     * @return The element with the specified name attribute, or null if this method could neither find the element or implicitly create it.
+     */
+    public WebElement findOrCreateIndexedField(String fieldName) {
+        WebElement result = null;
+        WebElementSelection elem = find(By.name(fieldName));
+        if(elem.isEmpty()) {
+            WebElement zeroElem = getZerothElement(fieldName);
+            String repeatLastRowId  = find(zeroElem).parentsWithClass("repeatLastRow").getAttribute("id");
+            String buttonSelector = "#" + repeatLastRowId + " + .add-another-control button";
+            //selector for button after container (e.g. "#resourceNotesSection + .add-another-control button")
+            WebElement button = find(buttonSelector).first();
+            //FIXME: create private method that takes indexed fieldname and returns index as int (or -1 if not a valid fieldname)
+            int attempts = clickElementUntil(button, By.name(fieldName), 100);
+            result = find(By.name(fieldName)).first();
+        }else {
+            result = elem.first();
+        }
+        return result;
+    }
+    
+    /**
+     * Click an element zero or more times until another element is present on the page as determined by the specified By criteria (for example, clicking a 
+     * tdar "add another item" button until the page generates 10 blank person records)
+     * @param findBy the criteria to use to find a matching element on the page
+     * @param max the maximum number of times this method should click every element if a match has not been found.
+     * @return the number of clicks  performed (per selected item),  or -1 if a matching element was never found.
+     */
+    public int clickElementUntil(WebElement element, By findBy, int max) {
+        int i = 0;
+        while(find(findBy).size() == 0 && i < max) {
+            element.click();
+            i++;
+        }
+        return i;
+    }
+    
     
     
 }

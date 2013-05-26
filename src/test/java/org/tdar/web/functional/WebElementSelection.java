@@ -7,9 +7,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
@@ -28,7 +30,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class WebElementSelection implements Iterable<WebElement>{
-    final List<WebElement> elements;
+    private final List<WebElement> elements;
+    private static final  List<String> FORM_ELEMENT_NAMES = Arrays.asList("input", "textarea", "button", "select", "keygen", "output", "progress", "meter");
+    
     public final Logger logger = LoggerFactory.getLogger(getClass());
     
     
@@ -39,8 +43,17 @@ public class WebElementSelection implements Iterable<WebElement>{
         }
     }
     
-    private WebElementSelection(WebElement elem) {
-        this(Arrays.asList(elem));
+    private WebElementSelection() {
+        this(Collections.<WebElement>emptyList());
+    }
+    
+    private static WebElementSelection $() {
+        return new WebElementSelection();
+    }
+    
+    private static WebElementSelection $(WebElement ... elems) {
+        WebElementSelection sel = new WebElementSelection(Arrays.asList(elems));
+        return sel;
     }
 
     @Override
@@ -48,8 +61,12 @@ public class WebElementSelection implements Iterable<WebElement>{
         return elements.iterator();
     }
     
+    
+    /**
+     * @return first element of the selection, or null if this selection is empty.
+     */
     public WebElement first() {
-        return get(0);
+        return iterator().next();
     }
 
     /**
@@ -93,7 +110,6 @@ public class WebElementSelection implements Iterable<WebElement>{
      * with the tab key.
      */
     public void clear() {
-        // clear values or clear iteraotr?
         for(WebElement elem : this) {
             elem.clear();
         }
@@ -112,6 +128,7 @@ public class WebElementSelection implements Iterable<WebElement>{
      * @see org.openqa.selenium.WebElement#getAttribute(java.lang.String)
      */
     public String getAttribute(String name) {
+        if(isEmpty()) return null;
         return first().getAttribute(name);
     }
 
@@ -282,8 +299,22 @@ public class WebElementSelection implements Iterable<WebElement>{
     }
     
     /**
-     * set the value attribute for any editable elements in selection. 
-     * @param val
+     * Modify the current value all of the "form elements" in the selection. We define form elements to mean the elements which correspond to name/value pairs
+     * that the browser sends after the user submits the form The method does this by simulating the steps that a user would perform (i.e. filling in 
+     * text entry boxes, checking a checkbox, clicking on drop-down list option, etc). For example: <ul>
+     * <li> for elements with a text entry control (input=text, textarea, file), the method sets the element value via sendKeys()
+     * <li> for checkboxes,the method selects all elements if the element's value attribute is equal to the specified value.  Any checkboxes in the selection 
+     *      that have a value attribute that is <em>not equal</em> are <em>deselected</em>
+     * <li> for select elements, the method selects options whose value is equal to the specified value via {@link Select#selectByValue(String)}. 
+     * </ul>
+     * Exceptions: <ul>
+     * <li> the method performs no action on non-form elments
+     * <li> the method ignores "submit" elements, e.g. <code>input[type=submit]</code>, <code>button[type=submit]</code>, or <code>button</code> elements
+     *      with no <code>type</code> attribute.
+     * <li>multi-select elements are not supported.  This will treat mult-select elements as if they were single-selects.
+     *</ul> 
+     * 
+     * @param val the string value apply to the selected elements
      */
     public void val(String val) {
         for(WebElement elem : this) {
@@ -291,7 +322,7 @@ public class WebElementSelection implements Iterable<WebElement>{
             String type = elem.getAttribute("type");
             if(isFormElement(elem)) {
                 //shunt these tags into "type" so we can deal with them in upcoming switch
-                if(Arrays.asList("button", "textarea", "select").contains(tag)) {
+                if(Arrays.asList("textarea", "select").contains(tag)) {
                     type = tag;
                 }
                 
@@ -305,8 +336,14 @@ public class WebElementSelection implements Iterable<WebElement>{
                     case "button":
                     case "radio":
                     case "checkbox":
-                        //special handling for checkbox/radio/button.  We don't set the value, but click the element if it's value == val
-                        if(elem.getAttribute("value").equals(val) && !elem.isSelected()) {
+                        
+                        if(
+                                //click to check if element has equal value and is not currently checked,   or...
+                                (elem.getAttribute("value").equals(val) && !elem.isSelected()) ||
+                                
+                                //...click to *uncheck* if element has unequal value and is currently checked
+                                (elem.getAttribute("value").equals(val) && elem.isSelected())
+                           ) {
                             elem.click();
                         }
                         break;
@@ -331,8 +368,8 @@ public class WebElementSelection implements Iterable<WebElement>{
         }
     }
 
-    private boolean isFormElement(WebElement elem) {
-        return Arrays.asList("input", "textarea", "button", "select").contains(elem.getTagName());
+    private static boolean isFormElement(WebElement elem) {
+        return FORM_ELEMENT_NAMES.contains(elem.getTagName());
     }
     
     
@@ -340,28 +377,24 @@ public class WebElementSelection implements Iterable<WebElement>{
         elements.addAll(selection.toList());
     }
     
-    /**
-     * Click every selected element zero or more times until an element is present on the page as determined by the specified By criteria.
-     * If at least one matching element does not exist on the page, this method clicks every element in the selection.  This process 
-     * repeats until the page contains at least one matching element or the method has reached the specified max number of clicks. 
-     * @param findBy the criteria to use to find a matching element on the page
-     * @param max the maximum number of times this method should click every element if a match has not been found.
-     * @return the number of clicks  performed (per selected item),  or -1 if a matching element was never found.
-     */
-    public int clickUntil(By findBy, int max) {
-        int i = 0;
-        while(find(findBy).size() == 0 && i < max) {
-            click();
-            i++;
-        }
-        return i;
+    public void add(WebElement element) {
+        elements.add(element);
     }
     
+    /**
+     * return selection containing direct parent of first item of this selection.
+     * @return Selection containing
+     */
     public WebElementSelection parent() {
+        if(isEmpty())return this;
+        if(StringUtils.equalsIgnoreCase("body", getTagName())) return new WebElementSelection();
         return new WebElementSelection(first().findElements(By.xpath("..")));
     }
     
-    
+    /**
+     * return selection containing all parents of the first item of this selection, from the direct parent up to the &lt;body&gt element;   
+     * @return selection of parent elements
+     */
     public WebElementSelection parents() {
         List<WebElement> lineage = new ArrayList<WebElement>();
         WebElementSelection parent = parent();
@@ -372,20 +405,36 @@ public class WebElementSelection implements Iterable<WebElement>{
         return new WebElementSelection(lineage);
     }
     
+    /**
+     * return true if the first element in this selection has the specified css class (css classes are case-sensitive)
+     * @param cssClass css class name
+     * @return true if first element in selection has specified css class; false if otherwise or if selection is empty;
+     */
     public boolean hasClass(String cssClass) {
-        String attr = getAttribute("class");
+        return hasClass(first(), cssClass);
+    }
+    
+    private static boolean hasClass(WebElement elem, String cssClass) {
+        String attr = elem.getAttribute("class");  
         if(attr == null) return false;
         List<String> cssClasses = Arrays.asList(attr.split(" "));
         return cssClasses.contains(cssClass);
     }
     
-    public WebElementSelection firstParentWithClass(String cssClass) {
-        WebElementSelection parent  =  parent();
-        if(parent.isEmpty()) return parent ;
-        if(parent.hasClass(cssClass)) return parent;
-        return parent.firstParentWithClass(cssClass);
+    /**
+     * return selection containing parents of first item in selection, filtered by elements having the specified css class
+     * @param cssClass the class name filter
+     * @return filtered selection containing parent elements of this selections's first item.
+     */
+    public WebElementSelection parentsWithClass(String cssClass) {
+        WebElementSelection parents = new WebElementSelection();
+        for(WebElement parent : parents()) {
+            if(hasClass(parent, cssClass)) {
+                parents.elements.add(parent);
+            }
+        }
+        return parents;
     }
-    
 }   
 
 
