@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 
-public abstract class FunctionalWebTestCase {
+public abstract class SeleniumWebITCase {
 
     WebDriver driver;
     protected Logger logger = LoggerFactory.getLogger(getClass());

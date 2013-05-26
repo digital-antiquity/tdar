@@ -14,7 +14,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
  * @author jimdevos
  * 
  */
-public class LoginFunctionalITCase extends FunctionalWebTestCase {
+public class LoginFunctionalITCase extends SeleniumWebITCase {
 
     @Before
     public void setup() {

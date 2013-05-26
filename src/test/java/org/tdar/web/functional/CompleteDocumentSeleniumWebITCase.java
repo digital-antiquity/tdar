@@ -38,7 +38,7 @@ import org.tdar.web.AbstractWebTestCase;
 //TODO: refactor the block-of-doom on near line 220.  
 
 
-public class CompleteFunctionalITCase extends FunctionalWebTestCase {
+public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
@@ -54,7 +54,7 @@ public class CompleteFunctionalITCase extends FunctionalWebTestCase {
     }
     
     
-    public CompleteFunctionalITCase() {
+    public CompleteDocumentSeleniumWebITCase() {
         docValMap = new HashMap<String, String>();
         // removing inline implementation of HashMap to remove serialization warning
         alternateTextLookup.add(AbstractWebTestCase.RESTRICTED_ACCESS_TEXT);

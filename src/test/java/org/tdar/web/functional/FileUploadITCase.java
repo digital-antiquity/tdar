@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 
-public class FileUploadITCase extends FunctionalWebTestCase {
+public class FileUploadITCase extends SeleniumWebITCase {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     

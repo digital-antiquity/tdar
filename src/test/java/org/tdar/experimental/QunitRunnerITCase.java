@@ -22,7 +22,7 @@ public class QunitRunnerITCase {
 
     //TODO: use DI or something we wire up Firefox driver normally but PhantomJS driver when running 'headless'j
     WebDriver driver;
-    Logger logger = LoggerFactory.getLogger(FirefoxTestCase.class);
+    Logger logger = LoggerFactory.getLogger(QunitRunnerITCase.class);
 
     private String url(String path) {
         return String.format("%s/%s", DEFAULT_BASE_URL, path);
