@@ -173,11 +173,4 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         assertFalse(activeBillingActivities.contains(disabledDctivity));
     }
 
-    @Test
-    @Rollback
-    public void testCouponCodeGeneration() {
-        Account account = setupAccountForPerson(getBasicUser());
-        Coupon generateCouponCode = accountService.generateCouponCode(account, 1L, null, null);
-        logger.info("{}", generateCouponCode);
-    }
 }
