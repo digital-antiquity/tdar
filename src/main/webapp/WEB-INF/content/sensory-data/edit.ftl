@@ -330,7 +330,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <div class="conditional-scantype combined phase_based time_of_flight triangulation" 
         tiplabel="Camera Details"  tooltipcontent="If applicable, provide the make/model/lense for the external camera that is is used to capture images for color mapping onto the scanned object">
         <@s.textarea name="sensoryData.cameraDetails" id="rgbDataCaptureInfo" cssClass="phase_based time_of_flight resizable input-xxlarge" label="Camera Details" labelposition="top" rows="5" />
-    </iv>
+    </div>
     
 </div>
 </#macro>

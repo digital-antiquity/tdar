@@ -97,7 +97,7 @@ public class SensoryData extends InformationResource {
     private String controlDataFilename;
     
     
-    public static enum RgbCapture {
+    public enum RgbCapture {
         NA("Not Specified"),
         INTERNAL("Internal"),
         EXTERNAL("External");
