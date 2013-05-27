@@ -1,9 +1,9 @@
 package org.tdar.core.bean;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -43,8 +43,6 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.processes.SetupBillingAccountsProcess;
 import org.tdar.struts.data.FileProxy;
-
-import com.rabbitmq.client.GetResponse;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
 
@@ -219,8 +217,8 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Account account = setupAccountWithInvoiceForOneFile(model, getUser());
         Document resource = generateInformationResourceWithFileAndUser();
         Document resource2 = generateInformationResourceWithFileAndUser();
-//        ResourceEvaluator resourceEvaluator = accountService.getResourceEvaluator(resource, resource2);
-        
+        // ResourceEvaluator resourceEvaluator = accountService.getResourceEvaluator(resource, resource2);
+
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
 
         AccountAdditionStatus statusOk = accountService.updateQuota(account, resource);
@@ -252,7 +250,6 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
     }
 
-    
     @Test
     @Rollback
     public void testAccountUpdateQuotaWithFileOnSecondEdit() throws InstantiationException, IllegalAccessException {
@@ -268,7 +265,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         AccountAdditionStatus statusOk = accountService.updateQuota(account, resource);
         genericService.refresh(account);
         addFileToResource(resource, new File(TestConstants.TEST_DOCUMENT));
-        
+
         AccountAdditionStatus status = accountService.updateQuota(account, resource);
         genericService.refresh(account);
         Resource ok = null;

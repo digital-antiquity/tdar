@@ -53,7 +53,11 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         assertEquals("result should be success", LookupController.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         logger.info("{}", people);
-        assertEquals("person list should have exactly two items", 2, people.size());
+        assertTrue("person list should have at least two items",  people.size() >= 2);
+        for (Indexable p : controller.getResults()) {
+            Person pers = (Person)p;
+            assertTrue(pers.getInstitution().getName().contains(" "));
+        }
     }
 
     @Test

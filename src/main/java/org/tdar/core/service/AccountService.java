@@ -685,15 +685,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles() && account.getAvailableSpaceInMb() < coupon.getNumberOfMb()) {
             throw new TdarRecoverableRuntimeException(NOT_ENOUGH_SPACE_OR_FILES);
         }
+        genericDao.save(coupon);
 
         StringBuilder code = new StringBuilder();
+        code.append(coupon.getId()).append("-");
         List<String> codes = TdarConfiguration.getInstance().getCouponCodes();
         for (int i = 0; i < 5; i++) {
             code.append(codes.get((int) (Math.random() * (double) codes.size())));
             code.append("-");
         }
-        genericDao.save(coupon);
-        code.append(coupon.getId());
+        code.append((int)(Math.random() * 9999));
         coupon.setCode(code.toString());
         account.getCoupons().add(coupon);
         logger.info("adding coupon: {}  to account: {}", coupon, account);
