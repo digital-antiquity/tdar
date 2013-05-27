@@ -678,22 +678,26 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             throw new TdarRecoverableRuntimeException(SPECIFY_EITHER_SPACE_OR_FILES);
         }
         
-        if (numberOfFiles == numberOfMb && Persistable.Base.isNullOrTransient(numberOfFiles)) {
+        if ((Persistable.Base.isNullOrTransient(numberOfFiles)  || numberOfFiles < 1 ) && (Persistable.Base.isNullOrTransient(numberOfMb) || numberOfMb < 1)) {
             throw new TdarRecoverableRuntimeException(CANNOT_GENERATE_A_COUPON_FOR_NOTHING);
         }
 
-        if (account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles() && account.getAvailableSpaceInMb() < coupon.getNumberOfMb()) {
+        if (account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles() || account.getAvailableSpaceInMb() < coupon.getNumberOfMb()) {
+            logger.info("{}", account.getTotalNumberOfFiles());
+            logger.info("{} < {} " , account.getAvailableNumberOfFiles(), coupon.getNumberOfFiles());
+            logger.info("{} < {} " , account.getAvailableSpaceInMb(), coupon.getNumberOfMb());
             throw new TdarRecoverableRuntimeException(NOT_ENOUGH_SPACE_OR_FILES);
         }
+        genericDao.save(coupon);
 
         StringBuilder code = new StringBuilder();
+        code.append(coupon.getId()).append("-");
         List<String> codes = TdarConfiguration.getInstance().getCouponCodes();
         for (int i = 0; i < 5; i++) {
             code.append(codes.get((int) (Math.random() * (double) codes.size())));
             code.append("-");
         }
-        genericDao.save(coupon);
-        code.append(coupon.getId());
+        code.append((int)(Math.random() * 9999));
         coupon.setCode(code.toString());
         account.getCoupons().add(coupon);
         logger.info("adding coupon: {}  to account: {}", coupon, account);
