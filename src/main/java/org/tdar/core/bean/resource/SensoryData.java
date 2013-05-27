@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -17,6 +19,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
+import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 
@@ -76,6 +79,23 @@ public class SensoryData extends InformationResource {
 
     @Column(name = "control_data_filename")
     private String controlDataFilename;
+
+    public enum RgbCapture {
+        NA("Not Specified"),
+        INTERNAL("Internal"),
+        EXTERNAL("External");
+        String label;
+        RgbCapture(String label) {
+            this.label = label;
+        }
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    @Column(name = "rgb_capture", length = 255)
+    @Enumerated(EnumType.STRING)
+    private RgbCapture rgbCapture;
 
     /** registration metadata **/
     // TODO: determine if this is actually one-to-many relationship. the xls from angie suggests this, but only one registration record is present in any of the
@@ -172,7 +192,14 @@ public class SensoryData extends InformationResource {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "sensory_data_id")
     private Set<SensoryDataImage> sensoryDataImages = new LinkedHashSet<SensoryDataImage>();
+    
+    @Column(name = "scanner_technology", length = 255)
+    @Enumerated(EnumType.STRING)
+    private ScannerTechnologyType scannerTechnology;
 
+    @Column(name = "camera_details", length = 255)
+    private String cameraDetails;
+    
     public SensoryData() {
         setResourceType(ResourceType.SENSORY_DATA);
     }
@@ -539,4 +566,27 @@ public class SensoryData extends InformationResource {
         return true;
     }
 
+    public ScannerTechnologyType getScannerTechnology() {
+        return scannerTechnology;
+    }
+
+    public void setScannerTechnology(ScannerTechnologyType scannerTechnology) {
+        this.scannerTechnology = scannerTechnology;
+    }
+    
+    public RgbCapture getRgbCapture() {
+        return rgbCapture;
+    }
+
+    public void setRgbCapture(RgbCapture rgbCapture) {
+        this.rgbCapture = rgbCapture;
+    }
+
+    public String getCameraDetails() {
+        return cameraDetails;
+    }
+
+    public void setCameraDetails(String cameraDetails) {
+        this.cameraDetails = cameraDetails;
+    }
 }
