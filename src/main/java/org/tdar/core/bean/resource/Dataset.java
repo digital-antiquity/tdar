@@ -57,6 +57,7 @@ public class Dataset extends InformationResource {
             this.label = label;
         }
 
+        @Override
         public String getLabel() {
             return label;
         }
@@ -71,6 +72,7 @@ public class Dataset extends InformationResource {
             this.count = count;
         }
         
+        @Override
         public String getLuceneFieldName() {
             return QueryFieldNames.INTEGRATABLE;
         }
