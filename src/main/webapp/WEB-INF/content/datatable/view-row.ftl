@@ -19,7 +19,7 @@
     <!-- remove java methods and use freemarker conventions below -- entry.key.visible -->
         <#if entry.key.isVisible()>
           <tr>
-            <td>${entry.key.getDisplayName()} </td><td>${entry.value} </td>
+            <td>${entry.key.getDisplayName()} </td><td>${entry.value} <#if (entry.key.defaultOntology.id)?has_content>(<a href="<@s.url value="/ontology/${entry.key.defaultOntology.id?c}"/>">${entry.key.defaultOntology.title}</a>)</#if></td>
           </tr>
         </#if>
     </#list>

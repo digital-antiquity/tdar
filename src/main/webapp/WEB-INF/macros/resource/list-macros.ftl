@@ -2,7 +2,7 @@
 <#include "navigation-macros.ftl">
 <#import "view-macros.ftl" as view>
 <#import "common.ftl" as common>
-<#assign DEFAULT_SORT = 'PROJECT' />
+<#assign DEFAULT_SORT = 'RELEVANCE' />
 <#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
     <#macro printTag tagName className closing>
         <#if tagName?has_content>
