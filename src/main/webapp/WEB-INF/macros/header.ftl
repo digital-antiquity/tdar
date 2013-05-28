@@ -1,5 +1,3 @@
-<#global jquery_version="1.8.2">
-<#global jquery_ui_version="1.8.23">
 <#import "resource/common.ftl" as common>
 
 <#macro scripts combine=false>
