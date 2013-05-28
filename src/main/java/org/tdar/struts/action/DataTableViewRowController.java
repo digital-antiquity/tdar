@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -22,50 +21,37 @@ import org.tdar.struts.action.AuthenticationAware.Base;
 public class DataTableViewRowController extends Base {
 
     private static final long serialVersionUID = 9050899110159727873L;
-    // rename dataTableId
-    private Long id;
-
+    private Long dataTableId;
     private Long rowId;
-    // remove and replace with dataset reference private Dataset dataset;
-    private String datasetName;
-    // remove and replace with dataset reference private Dataset dataset;
-    private String datasetDescription;
+    private Dataset dataset;
     private Map<DataTableColumn, String> dataTableRowAsMap;
 
     /**
      * Used to render a row within a {@link Dataset}.
-     * The expected URL is of the form /datatable/view-row?id=5815&rowId=1 where id = data table id, and rowId is the tDAR row id within the table.
-     * Note that the method will simply set up empty fields if the user doesn't have permission to view the page....
+     * The expected URL is of the form /datatable/view-row?dataTableId=5815&rowId=1 where dataTableId = data table id, and rowId is the tDAR row id within 
+     * the table.
      * 
-     * @return com.opensymphony.xwork2.SUCCESS if able to find the table, com.opensymphony.xwork2.ERROR if not.
+     * @return com.opensymphony.xwork2.SUCCESS if able to find and display the table, com.opensymphony.xwork2.ERROR if not.
      */
-    // not sure "location parameter is needed if @Action matches location
-    @Action(value = "view-row",
-            results = { @Result(name = SUCCESS, location = "view-row.ftl", type = "freemarker") })
+    @Action(value = "view-row")
     public String getDataResultsRow() {
         if (!isViewRowSupported()) {
             return ERROR;
         }
-
         dataTableRowAsMap = new HashMap<>();
-        datasetName = "";
-        datasetDescription = "";
-        if (Persistable.Base.isNullOrTransient(id)) {
+        dataset = null;
+        if (Persistable.Base.isNullOrTransient(dataTableId)) {
             return ERROR;
         }
-        DataTable dataTable = getDataTableService().find(id);
-        if (dataTable == null) {
-            return ERROR;
+        DataTable dataTable = getDataTableService().find(dataTableId);
+        if (dataTable != null) {
+            dataset = dataTable.getDataset();
+            if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
+                dataTableRowAsMap = getDatasetService().selectRowFromDataTable(dataTable, rowId, true);
+                return SUCCESS;
+            }
         }
-        Dataset dataset = dataTable.getDataset();
-        // refactored to make check more logical on controller
-        if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
-            datasetDescription = dataset.getDescription();
-            datasetName = dataset.getName();
-            dataTableRowAsMap = getDatasetService().selectRowFromDataTable(dataTable, rowId, true);
-        }
-        // move up into IF statement and RETURN ERROR 
-        return SUCCESS;
+        return ERROR;
     }
 
     /**
@@ -91,25 +77,18 @@ public class DataTableViewRowController extends Base {
     }
 
     /**
-     * @return the datasetName
+     * @return the data set that rows are being returned from
      */
-    public String getDatasetName() {
-        return datasetName;
+    public Dataset getDataset() {
+        return dataset;
     }
 
-    /**
-     * @return the datasetDescription
-     */
-    public String getDatasetDescription() {
-        return datasetDescription;
+     public Long getDataTableId() {
+        return dataTableId;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setDataTableId(Long id) {
+        this.dataTableId = id;
     }
 
 }

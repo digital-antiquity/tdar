@@ -436,7 +436,7 @@ $(function() {
                         "sName" : "id_row_tdar", 
                         "sTitle" : '<i class="icon-eye-open  icon-white"></i>',
                         "fnRender": function(obj) {
-                           return '<a href="/datatable/view-row?id=${dataTable.id?c}&rowId=' + obj.aData[${offset}] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
+                           return '<a href="/datatable/view-row?dataTableId=${dataTable.id?c}&rowId=' + obj.aData[${offset}] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
                          } 
                       },
                       <#assign offset=1>

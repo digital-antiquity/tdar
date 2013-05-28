@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
@@ -27,8 +28,6 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
     private DataTableViewRowController controller;
     private Dataset dataset;
 
-    // public void userCannotViewRestrictedRow() ... not sure how to test this...
-
     @Before
     public void setUpController() {
         controller = generateNewInitializedController(DataTableViewRowController.class);
@@ -39,7 +38,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(dataset);
         DataTable dataTable = dataset.getDataTables().iterator().next();
         assertNotNull(dataTable);
-        controller.setId(dataTable.getId());
+        controller.setDataTableId(dataTable.getId());
     }
 
     @Test
@@ -71,7 +70,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     public void nonExistentTableIdReturnsError() {
-        controller.setId(0L);
+        controller.setDataTableId(0L);
         controller.setRowId(1L);
         assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
     }
@@ -87,6 +86,21 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         controller.setRowId(1L);
         assertEquals(TdarActionSupport.SUCCESS, controller.getDataResultsRow());
         assertTrue("A row was expected", controller.getDataTableRowAsMap().size() > 0);
+    }
+
+    @Test
+    @Rollback
+    public void userCannotViewRestrictedRow() {
+        prepareValidData();
+        
+        for (InformationResourceFile file : dataset.getInformationResourceFiles()) {
+            file.setRestriction(FileAccessRestriction.CONFIDENTIAL);
+        }
+        genericService.save(dataset);
+        Person user = createAndSaveNewPerson();
+        init(controller, user);
+        controller.setRowId(1L);
+        assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
     }
 
     @Test
