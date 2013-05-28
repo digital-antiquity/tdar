@@ -94,7 +94,7 @@
 </table>
 
 
-<#if !editor>
+<#if editor>
 	<h3>Coupon Codes</h3>
 	<table class="tableFormat table">
 	    <tr>
@@ -103,15 +103,18 @@
 			<th>expires</th>
 	        <th>code</th>
 	        <th>redeemed</th>
+	        <th>email code</th>
 	    </tr>
 	<#list account.coupons as coupon>
 		<#assign extraClass=""/>
+		<#assign suffix = "?subject=tDAR%20Coupon&body=The%20following%20coupon%20code%20is%20good%20for%20${coupon.numberOfFiles}%20Files%20and%20${coupon.numberOfMb}%20MB.%0A%0A${coupon.code?upper_case}" />
 	    <tr class="">
 	        <td>${coupon.numberOfFiles}</td>
 	        <td>${coupon.numberOfMb}</td>
 	        <td>${coupon.dateExpires}</td>
-	        <td>${coupon.code}</td>
+	        <td>${coupon.code?upper_case}</td>
 	        <td><#if coupon.dateRedeemed?has_content>${coupon.dateRedeemed} <#if coupon.user?has_content>(${coupon.user.properName})</#if></#if></td>
+	        <td><a href="mailto:user@tdar.org?${suffix}">send email</a></td>
 	    </tr>
 	</#list>
 	</table>
