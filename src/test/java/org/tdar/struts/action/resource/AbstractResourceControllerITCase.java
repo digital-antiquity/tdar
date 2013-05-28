@@ -6,13 +6,22 @@
  */
 package org.tdar.struts.action.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.BillingAccountController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 /**
@@ -55,5 +64,48 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         rcp.setRole(role);
         return rcp;
     }
+
+    public String createCouponForAccount(Long numberOfFiles, Long numberOfMb, Account account, Invoice invoice) {
+        BillingAccountController controller = setupContrllerForCoupon(account, invoice);
+        controller.setNumberOfFiles(numberOfFiles);
+        controller.setNumberOfMb(numberOfMb);
+        assertEquals(TdarActionSupport.SUCCESS,controller.createCouponCode());
+        
+        return controller.getAccount().getCoupons().iterator().next().getCode();
+    }
+
+    public BillingAccountController setupContrllerForCoupon(Account account, Invoice invoice) {
+        invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+        invoice.markFinal();
+        genericService.saveOrUpdate(invoice);
+        genericService.synchronize();
+        logger.info("{}", invoice);
+        
+        assertTrue(invoice.getNumberOfFiles() > 0);
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
+        controller.setInvoiceId(invoice.getId());
+        controller.setId(account.getId());
+        controller.setName("test");
+        controller.prepare();
+        boolean seen = false;
+        controller.setServletRequest(getServletPostRequest());
+        genericService.refresh(controller.getAccount());
+        accountService.updateQuota(controller.getAccount());
+        try {
+            logger.info("saving account");
+            assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        } catch (Exception e) {
+            logger.error("exception : {}", e);
+            seen = true;
+        }
+        assertFalse(seen);
+        controller = generateNewInitializedController(BillingAccountController.class);
+        controller.setId(account.getId());
+        controller.prepare();
+        controller.setQuantity(1);
+        controller.setServletRequest(getServletPostRequest());
+        return controller;
+    }
+
 
 }

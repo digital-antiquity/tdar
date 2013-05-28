@@ -28,12 +28,16 @@ import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
+import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 
 public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
     NelNetPaymentDao dao;
+
+    @Autowired
+    AccountService accountService;
 
     @Test
     @Rollback
@@ -56,14 +60,58 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testCartBasicValid() throws TdarActionException {
         CartController controller = generateNewInitializedController(CartController.class);
-        createAndTestInvoiceQuantity(controller, 10L);
+        createAndTestInvoiceQuantity(controller, 10L, null);
+    }
+
+    @Test
+    @Rollback
+    public void testCartCouponExact() throws TdarActionException {
+        long numFiles = 10L;
+        Invoice invoice = setupAccountWithCouponForFiles(numFiles, numFiles);
+        logger.info("{} {} ", invoice.getTotalNumberOfFiles(), invoice.getTotal());
+        assertEquals(0.0, invoice.getTotal().floatValue(), 0);
+        assertEquals(numFiles, invoice.getTotalNumberOfFiles().longValue());
+    }
+
+    @Test
+    @Rollback
+    public void testCartCouponSmallerThanAmmount() throws TdarActionException {
+        long numFilesInCoupon = 10L;
+        Invoice invoice = setupAccountWithCouponForFiles(numFilesInCoupon, 20L);
+        logger.info("{} {} ", invoice.getTotalNumberOfFiles(), invoice.getTotal());
+        assertEquals(350.0, invoice.getTotal().floatValue(), 0);
+        assertEquals(20L, invoice.getTotalNumberOfFiles().longValue());
+    }
+
+    @Test
+    @Rollback
+    public void testCartCouponLargertThanAmmount() throws TdarActionException {
+        long numFiles = 5L;
+        long numFilesForCoupon = 10L;
+        Invoice invoice = setupAccountWithCouponForFiles(numFilesForCoupon, numFiles);
+        logger.info("{} {} ", invoice.getTotalNumberOfFiles(), invoice.getTotal());
+        assertNotEquals(0.0, invoice.getTotal().floatValue());
+        assertNotEquals(numFilesForCoupon, invoice.getTotalNumberOfFiles().longValue());
+        assertEquals(0.0, invoice.getTotal().floatValue(), 0);
+        assertEquals(numFiles, invoice.getTotalNumberOfFiles().longValue());
+    }
+
+    private Invoice setupAccountWithCouponForFiles(long numFilesForCoupon, long numberOfFilesForInvoice) throws TdarActionException {
+        Account account = setupAccountWithInvoiceTenOfEach(accountService.getLatestActivityModel(), getAdminUser());
+        Invoice invoice_ = account.getInvoices().iterator().next();
+        String code = createCouponForAccount(numFilesForCoupon, 0L, account, invoice_);
+        CartController controller = generateNewInitializedController(CartController.class);
+        Long invoiceId = createAndTestInvoiceQuantity(controller, numberOfFilesForInvoice, code);
+        Invoice invoice = genericService.find(Invoice.class, invoiceId);
+        invoice.markFinal();
+        return invoice;
     }
 
     @Test
     @Rollback
     public void testCartPrematurePayment() throws TdarActionException {
         CartController controller = generateNewInitializedController(CartController.class);
-        Long invoiceId = createAndTestInvoiceQuantity(controller, 10L);
+        Long invoiceId = createAndTestInvoiceQuantity(controller, 10L, null);
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
@@ -347,7 +395,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         getUser().getAddresses().add(address);
         getUser().getAddresses().add(address2);
         genericService.save(getUser());
-        Long invoiceId = createAndTestInvoiceQuantity(controller, 10L);
+        Long invoiceId = createAndTestInvoiceQuantity(controller, 10L, null);
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
@@ -362,12 +410,15 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         return invoiceId;
     }
 
-    private Long createAndTestInvoiceQuantity(CartController controller, Long numberOfFiles) throws TdarActionException {
+    private Long createAndTestInvoiceQuantity(CartController controller, Long numberOfFiles, String code) throws TdarActionException {
         controller.prepare();
         String result = controller.add();
         assertEquals(TdarActionSupport.SUCCESS, result);
         controller = generateNewInitializedController(CartController.class);
         controller.prepare();
+        if (StringUtils.isNotBlank(code)) {
+            controller.setCode(code);
+        }
         controller.getInvoice().setNumberOfFiles(numberOfFiles);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();

@@ -83,6 +83,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         for (int i = 0; i < quantity; i++) {
             getAccountService().generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
         }
+        getAccountService().updateQuota(getAccount());
         return SUCCESS;
     }
 

@@ -848,6 +848,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
+    public Account setupAccountWithInvoiceTenOfEach(BillingActivityModel model, Person user) {
+        Account account = new Account();
+        Invoice invoice = initAccount(account, new BillingActivity("10 resource", 10f, 10, 10L, 10L, 10L, model), user);
+        /* add one resource */
+        // account.resetTransientTotals();
+        genericService.saveOrUpdate(account);
+        return account;
+    }
+
     private Invoice initAccount(Account account, BillingActivity activity, Person user) {
         account.markUpdated(user);
         Invoice invoice = setupInvoice(activity, user);
@@ -860,6 +869,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         invoice.markUpdated(user);
         genericService.saveOrUpdate(activity.getModel());
         genericService.saveOrUpdate(activity);
+        invoice.setNumberOfFiles(activity.getNumberOfFiles());
+        invoice.setNumberOfMb(activity.getNumberOfMb());
         invoice.getItems().add(new BillingItem(activity, 1));
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.markFinal();

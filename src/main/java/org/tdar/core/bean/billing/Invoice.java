@@ -117,7 +117,6 @@ public class Invoice extends Base implements Updatable {
     @Column(name = "transaction_date")
     private Date transactionDate;
 
-
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
@@ -246,7 +245,6 @@ public class Invoice extends Base implements Updatable {
         initTotals();
         return totalFiles;
     }
-    
 
     private void initTotals() {
         if (!initialized) {
@@ -273,7 +271,7 @@ public class Invoice extends Base implements Updatable {
                 }
 
                 if (activity.getNumberOfMb() > 0 && discountedSpace > 0) {
-                    couponValue +=  activity.getPrice() * discountedSpace;
+                    couponValue += activity.getPrice() * discountedSpace;
                     discountedSpace = 0L;
                 }
                 long quantity = item.getQuantity().longValue();
@@ -287,8 +285,7 @@ public class Invoice extends Base implements Updatable {
                     totalResources += numberOfResources * quantity;
                 }
                 calculatedCost += item.getSubtotal();
-                logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [$%s] %s", numberOfFiles, totalFiles, space, totalSpaceInMb,
-                        numberOfResources, totalResources, calculatedCost, coupon));
+                logger.debug("{}", this);
             }
             calculatedCost -= couponValue;
             if (calculatedCost < 0) {
@@ -460,6 +457,10 @@ public class Invoice extends Base implements Updatable {
 
     public void setCouponValue(Float couponValue) {
         this.couponValue = couponValue;
+    }
+
+    public String toString() {
+        return String.format("%s files, %s mb, %s resources [$%s] %s", totalFiles, totalSpaceInMb, totalResources, calculatedCost, coupon);
     }
 
 }
