@@ -13,35 +13,35 @@ import org.tdar.search.query.QueryFieldNames;
  * @version $Revision$
  */
 public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetable {
-    CODING_SHEET("Coding Sheet", 9, "Dataset", "unknown", CodingSheet.class),
-    DATASET("Dataset", 3, "Dataset", "unknown", Dataset.class),
-    DOCUMENT("Document", 1, "Text", "document", Document.class),
-    IMAGE("Image", 2, "Still Image", "unknown", Image.class),
-    SENSORY_DATA("3D & Sensory Data", 7, "Interactive Resource", "unknown", SensoryData.class),
-    GEOSPATIAL("GIS",6, "Dataset", "unknown", Geospatial.class),
-    ONTOLOGY("Ontology", 8, "Dataset", "unknown", Ontology.class),
-    PROJECT("Project", 5, Project.class),
-    VIDEO("Video", 4, "Moving Image", "unknown", Video.class);
+    CODING_SHEET("Coding Sheet", 9, "Dataset", "unknown", "Dataset",  CodingSheet.class),
+    DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
+    DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
+    IMAGE("Image", 2, "Still Image", "unknown", "Photograph", Image.class),
+    SENSORY_DATA("3D & Sensory Data", 7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
+    GEOSPATIAL("GIS", 6, "Dataset", "unknown", "Dataset", Geospatial.class),
+    ONTOLOGY("Ontology", 8, "Dataset", "unknown", "Dataset", Ontology.class),
+    PROJECT("Project", 5, "ItemList", Project.class),
+    VIDEO("Video", 4, "Moving Image", "unknown", "Movie", Video.class);
 
     private final String label;
     private final String dcmiTypeString;
     private final String openUrlGenre;
     private int order;
     private transient Integer count;
+    private String schema;
     private final Class<? extends Resource> resourceClass;
 
-    private ResourceType(String label, int order,
-            Class<? extends Resource> resourceClass) {
-        this(label, order, "", "unknown", resourceClass);
+    private ResourceType(String label, int order, String schema, Class<? extends Resource> resourceClass) {
+        this(label, order, "", "unknown", schema, resourceClass);
     }
 
-    private ResourceType(String label, int order, String dcmiTypeString,
-            String genre, Class<? extends Resource> resourceClass) {
+    private ResourceType(String label, int order, String dcmiTypeString, String genre, String schema, Class<? extends Resource> resourceClass) {
         this.label = label;
         this.openUrlGenre = genre;
         this.setOrder(order);
         this.dcmiTypeString = dcmiTypeString;
         this.resourceClass = resourceClass;
+        this.schema=schema;
     }
 
     public String getPlural() {
@@ -208,7 +208,7 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
     public boolean hasDemensions() {
         switch (this) {
             case IMAGE:
-            case GEOSPATIAL: //?
+            case GEOSPATIAL: // ?
             case SENSORY_DATA:
                 return true;
             default:
@@ -219,8 +219,8 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
     public boolean isDataTableSupported() {
         switch (this) {
             case DATASET:
-            case GEOSPATIAL: //?
-//            case SENSORY_DATA:
+            case GEOSPATIAL: // ?
+                // case SENSORY_DATA:
                 return true;
             default:
                 return false;
@@ -230,11 +230,19 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
     public boolean isCompositeFilesEnabled() {
         switch (this) {
             case DATASET:
-            case GEOSPATIAL: //?
-//            case SENSORY_DATA:
+            case GEOSPATIAL: // ?
+                // case SENSORY_DATA:
                 return true;
             default:
                 return false;
         }
+    }
+
+    public String getSchema() {
+        return schema;
+    }
+
+    public void setSchema(String schema) {
+        this.schema = schema;
     }
 }

@@ -1,11 +1,11 @@
 <#escape _untrusted as _untrusted?html>
+
 <#import "/WEB-INF/content/${namespace}/view.ftl" as local_ />
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 
   <head>
     <title>${resource.title}</title>
 	<meta name="lastModifiedDate" content="$Date$"/>
-	
 	<#if includeRssAndSearchLinks??>
 		<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 		<#assign rssUrl>/search/rss?groups[0].fieldTypes[0]=PROJECT&groups[0].projects[0].id=${project.id?c}&groups[0].projects[0].name=${(project.name!"untitled")?url}</#assign>
@@ -93,7 +93,7 @@
 
 <@view.pageStatusCallout />
 
-<h1 class="view-page-title">${resource.title!"No Title"}</h1>
+<h1 itemprop="name" class="view-page-title">${resource.title!"No Title"}</h1>
 <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
 <div id="subtitle"> 
@@ -119,7 +119,7 @@
 
     <#if copyrightMandatory && resource.copyrightHolder?? >
         <strong>Primary Copyright Holder:</strong>
-        <@view.browse resource.copyrightHolder />
+        <@view.browse resource.copyrightHolder "copyrightHolder" />
         </p>
     </#if>
 </p>
@@ -128,7 +128,7 @@
 <hr class="dbl">
 
 <h2>Summary</h2>
-<p>
+<p itemprop="description">
   <#assign description = resource.description!"No description specified."/>
   <#noescape>
     ${(description)?html?replace("[\r\n]++","</p><p>","r")}
@@ -138,7 +138,7 @@
 <hr />
 
 <#if resource.url! != ''>
-    <p><strong>URL:</strong><a href="${resource.url?html}" title="${resource.url?html}"><@view.truncate resource.url?html 80 /></a></p><br/>
+    <p><strong>URL:</strong><a itemprop="url" href="${resource.url?html}" title="${resource.url?html}"><@view.truncate resource.url?html 80 /></a></p><br/>
 </#if>
 
 
@@ -327,7 +327,7 @@
                     </#if>
                     </li>
                     <#if resource.edition?has_content>
-                    <li><strong>Edition</strong><br>${resource.edition}</li>
+                    <li><strong>Edition</strong><br><span itemprop="bookEdition">${resource.edition}</span></li>
                     </#if>
                     <#if ((resource.publisher.name)?has_content ||  resource.publisherLocation?has_content)>
                         <li><strong>
@@ -337,16 +337,16 @@
                         <#else>
                         Publisher
                         </#if></strong><br>
-                        	<#if resource.publisher?has_content><@view.browse creator=resource.publisher /></#if> 
+                        	<#if resource.publisher?has_content><span itemprop="publisher"><@view.browse creator=resource.publisher /></span></#if> 
                             <#if resource.degree?has_content>${resource.degree.label}</#if>
                             <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
                         </li>
                     </#if>
                     <#if resource.isbn?has_content>
-                        <li><strong>ISBN</strong><br>${resource.isbn}</li>
+                        <li><strong>ISBN</strong><br><span itemprop="isbn">${resource.isbn}</span></li>
                     </#if>
                     <#if resource.issn?has_content>
-                        <li><strong>ISSN</strong><br>${resource.issn}</li>
+                        <li><strong>ISSN</strong><br><span itemprop="issn">${resource.issn}</span></li>
                     </#if>
                     <#if resource.doi?has_content>
                         <li><strong>DOI</strong><br>${resource.doi}</li>
@@ -466,5 +466,4 @@ $(function() {
 
 });
 </script>
-
 </#escape>

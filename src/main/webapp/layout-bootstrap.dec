@@ -7,6 +7,13 @@
 <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
 <#import "/WEB-INF/macros/header.ftl" as header>
 <#global qunit = (Parameters.qunit)??  && !production>
+<#global schemaScope = ""/>
+<#if (resource.resourceType)?has_content>
+<#global schemaScope>itemscope itemtype="http://schema.org/${resource.resourceType.schema}"</#global>
+	<#if resource.documentType?has_content>
+	<#global schemaScope>itemscope itemtype="http://schema.org/${resource.documentType.schema}"</#global>
+	</#if>
+</#if>
 
     <head>
         <title>${title!siteName}</title>
@@ -61,7 +68,7 @@
     <div id="qunit"></div>
     <div id="qunit-fixture">
     </#if>
-    <div class="container">
+    <div class="container" >
         <div class="row">
             <header class="span12">
                 <#include "${themeDir}/header.dec" />
@@ -162,7 +169,7 @@
     </#if>
     
 
-    <div class="row">
+    <div class="row" >
     <!-- action errors  fix me only show if visible -->
         <div class="span12">
             <#if  page.properties["div.messages"]?? && page.properties["div.messages"] != "">
@@ -207,7 +214,7 @@ ${_stacktrace?html}
         ${page.properties["div.titlebar"]}
     </#if>
 
-    <section class="row ${part}">
+    <section ${schemaScope} class="row ${part}">
 
         <#if page.properties["div.sidebar-left"]?has_content>
             <aside class="span3">

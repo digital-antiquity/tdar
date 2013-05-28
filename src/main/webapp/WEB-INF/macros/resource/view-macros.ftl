@@ -1,4 +1,5 @@
 <#escape _untrusted as _untrusted?html>
+
 <#-- 
 $Id$ 
 View freemarker macros
@@ -345,8 +346,12 @@ No coding rules have been entered for this coding sheet yet.
   </#if>
 </#macro>
 
-<#macro browse creator><#compress>
-<#if creator??> <a href="<@s.url value="/browse/creators/${creator.id?c}"/>">${creator.properName}</a></#if>
+<#macro browse creator role=""><#compress>
+<#if creator.creator?has_content && creator.role?has_content>
+	<#local role=creator.role.label?lower_case />
+	<#local creator=creator.creator />
+</#if>
+<#if creator??> <a <#if role?has_content>itemprop="${role}"</#if> href="<@s.url value="/browse/creators/${creator.id?c}"/>">${creator.properName}</a></#if>
 </#compress>
 </#macro>
 
@@ -496,7 +501,7 @@ No coding rules have been entered for this coding sheet yet.
         <#assign contents = "" />
         <#list proxyList as proxy>
           <#if proxy.valid && proxy.role == role >
-            <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>,</#if> <@browse creator=proxy.resourceCreator.creator /><#t/></#assign>
+            <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>,</#if> <@browse creator=proxy.resourceCreator /><#t/></#assign>
           </#if>
         </#list>
         <#if contents?has_content>
