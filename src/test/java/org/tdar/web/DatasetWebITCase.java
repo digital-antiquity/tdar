@@ -35,8 +35,8 @@ import org.tdar.junit.RunWithTdarConfiguration;
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    //FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.   
-    
+    // FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.
+
     private static final String WEST_COAST_CITIES = "West Coast Cities";
     private static final String EAST_COAST_CITIES = "East Coast Cities";
     private static final String WASHINGTON_3 = "washington";
@@ -81,11 +81,28 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     @Rollback(true)
+    public void viewRowPageRender() {
+        testCreateDatasetRecordSpitalfields();
+        Long datasetId = extractTdarIdFromCurrentURL();
+        Dataset dataset = datasetService.find(datasetId);
+        DataTable datatable = dataset.getDataTables().iterator().next();
+        String browseDataUrl = "/datatable/view-row?dataTableId=" + datatable.getId() + "&rowId=1";
+        gotoPage(browseDataUrl);
+        assertTextNotPresent("Expression dataset is undefined");
+        if (TdarConfiguration.getInstance().isViewRowSupported()) {
+            assertTextPresentIgnoreCase("Row number 1");
+        } else {
+            assertTextPresentIgnoreCase("The view dataset row feature does not appear to be enabled");
+        }
+    }
+
+    @Test
+    @Rollback(true)
     public void testCreateDatasetRecord() {
-        
+
         // upload a file ahead of submitting the form
-        
-        docValMap.put("fileProxies[0].restriction",  FileAccessRestriction.CONFIDENTIAL.name());
+
+        docValMap.put("fileProxies[0].restriction", FileAccessRestriction.CONFIDENTIAL.name());
         uploadDataset();
 
         assertTextPresentInPage(TEST_DATASET_NAME);
@@ -95,7 +112,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage("/dataset/" + datasetId);
         assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
-        
+
         clickLinkWithText(TABLE_METADATA);
 
         assertTextPresentInCode(datasetId.toString());
@@ -109,7 +126,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("dataTableColumns[1].description", "column description for city", false);
         setInput("dataTableColumns[1].defaultCodingSheet.id", Long.toString(codingSheetId), false);
         setInput("dataTableColumns[1].defaultOntology.id", Long.toString(ontologyId), false);
-//        setInput("postSaveAction", "SAVE_MAP_NEXT");
+        // setInput("postSaveAction", "SAVE_MAP_NEXT");
         logger.debug("coding sheet id: {} ", codingSheetId);
         logger.debug("ontology id: {} ", ontologyId);
         submitForm("Save");
@@ -117,29 +134,29 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTrue(internalPage.getUrl().toString().endsWith("/dataset/" + datasetId));
         assertTextPresentIgnoreCase("translated");
-        
-        //ensure that changing column metadata didn't implicitly change file access rights
+
+        // ensure that changing column metadata didn't implicitly change file access rights
         assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
     }
-    
+
     @Test
     @Rollback
     public void testConfidentialDatatableView() {
         testCreateDatasetRecord();
         String viewPageUrl = internalPage.getUrl().toString();
         Long datasetId = extractTdarIdFromCurrentURL();
-        //make sure we can get the get the datatable browse content.
+        // make sure we can get the get the datatable browse content.
         Dataset dataset = datasetService.find(datasetId);
         DataTable datatable = dataset.getDataTables().iterator().next();
         String browseDataUrl = "/datatable/browse?id=" + datatable.getId();
         gotoPage(browseDataUrl);
-        //does this look like json?
+        // does this look like json?
         assertTextPresentInCode("columnEncodingType");
         assertFalse("response should be json, not html", getPageCode().contains("<html"));
-        
-        //currently logged in as user,  log out and then log in as basic user  (without view rights) 
+
+        // currently logged in as user, log out and then log in as basic user (without view rights)
         logout();
-        login(); 
+        login();
 
         gotoPage(browseDataUrl);
         assertTextPresentInCode("{}");
@@ -157,7 +174,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace(getPageText());
         submitForm();
         assertCurrentUrlContains("columns");
-        gotoPage("/dataset/" + extractTdarIdFromCurrentURL() );
+        gotoPage("/dataset/" + extractTdarIdFromCurrentURL());
         logger.trace(getPageText());
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
@@ -227,7 +244,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.info(getInput("subcategoryId").asXml());
         logger.trace(getPageText());
         submitForm();
-//         logger.info(getPageText());
+        // logger.info(getPageText());
         for (String key : codingMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
             // top of the lat/long
@@ -252,8 +269,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         clickLinkOnPage("map ontology");
 
-//        assertTextPresent(EAST_COAST_CITIES);
-//        assertTextPresent(WEST_COAST_CITIES);
+        // assertTextPresent(EAST_COAST_CITIES);
+        // assertTextPresent(WEST_COAST_CITIES);
 
         int indexOfOntology = getPageCode().indexOf("var ontology");
         String ontologyNodeInfo = getPageCode().substring(indexOfOntology, getPageCode().indexOf("];", indexOfOntology));
@@ -278,8 +295,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("codingRules[2].ontologyNode.id", ontologyMap.get(WASHINGTON_3).toString(), false);
         submitForm("Save");
 
-//        assertTextPresent(EAST_COAST_CITIES);
-//        assertTextPresent(WEST_COAST_CITIES);
+        // assertTextPresent(EAST_COAST_CITIES);
+        // assertTextPresent(WEST_COAST_CITIES);
         assertTextPresent(NEW_YORK_1);
         assertTextPresent(WASHINGTON_3);
         assertTextPresent(SAN_FRANCISCO_2);
@@ -303,7 +320,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                 "\t\t" + WEST_COAST_CITIES + "\r\n" +
                 "\t\t\t" + SAN_FRANCISCO_2;
         addCopyrightHolder(codingMap);
-        
+
         setInput("fileTextInput", ontology);
         for (String key : codingMap.keySet()) {
             setInput(key, codingMap.get(key));
