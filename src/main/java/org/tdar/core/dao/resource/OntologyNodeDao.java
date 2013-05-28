@@ -1,13 +1,16 @@
 package org.tdar.core.dao.resource;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.Dao;
+import org.tdar.core.dao.TdarNamedQueries;
 
 /**
  * $Id$
@@ -49,5 +52,14 @@ public class OntologyNodeDao extends Dao.HibernateBase<OntologyNode> {
         }
         allChildren.addAll(selectedOntologyNodes);
         return allChildren;
+    }
+
+    public List<Dataset> findDatasetsUsingNode(OntologyNode node) {
+        List<Long> ids = new ArrayList<>();
+        Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.DATASETS_USING_NODES, node.getId()));
+        for (Object obj : query.list()) {
+            ids.add(((Number) obj).longValue());
+        }
+        return findAll(Dataset.class, ids);
     }
 }

@@ -4,15 +4,21 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
 /**
  * $Id$
@@ -30,6 +36,8 @@ import org.tdar.struts.data.FileProxy;
 public class OntologyController extends AbstractSupportingInformationResourceController<Ontology> {
 
     private static final long serialVersionUID = 4320412741803278996L;
+    private String iri;
+    private List<Dataset> datasetsWithMappingsToNode;
 
     @Override
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
@@ -42,6 +50,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     /**
      * Sets the various pieces of metadata on this ontology and then saves it.
+     * 
      * @param ontology
      */
     @Override
@@ -50,7 +59,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         super.saveInformationResourceProperties();
 
         saveCategories();
-//        getOntologyService().saveOrUpdate(ontology);
+        // getOntologyService().saveOrUpdate(ontology);
         handleUploadedFiles();
         return SUCCESS;
     }
@@ -73,6 +82,19 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         return getOntologyService().getChildren(getPersistable().getOntologyNodes(), node);
     }
 
+    @SkipValidation
+    @HttpOnlyIfUnauthenticated
+    @Action(value = "node",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, location = "view-node.ftl")
+            })
+    public String node() {
+        OntologyNode node = getOntology().getNodeByIri(getIri());
+        setDatasetsWithMappingsToNode(getOntologyNodeService().listDatasetsWithMappingsToNode(node));
+        return SUCCESS;
+    }
+
     public List<OntologyNode> getChildElements(String index) {
         logger.trace("get children:" + index);
         for (OntologyNode node : getPersistable().getOntologyNodes()) {
@@ -88,6 +110,22 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     public Class<Ontology> getPersistableClass() {
         return Ontology.class;
+    }
+
+    public String getIri() {
+        return iri;
+    }
+
+    public void setIri(String iri) {
+        this.iri = iri;
+    }
+
+    public List<Dataset> getDatasetsWithMappingsToNode() {
+        return datasetsWithMappingsToNode;
+    }
+
+    public void setDatasetsWithMappingsToNode(List<Dataset> datasetsWithMappingsToNode) {
+        this.datasetsWithMappingsToNode = datasetsWithMappingsToNode;
     }
 
 }

@@ -160,4 +160,5 @@ public interface TdarNamedQueries {
     public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT = "update creator set occurrence=occurrence + (select count(information_resource.id) from information_resource where copyright_holder_id=creator.id group by copyright_holder_id) ";
     public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER = "update creator set occurrence=occurrence + (select count(resource.id) from resource where submitter_id=creator.id group by submitter_id)";
     public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE = "update creator set occurrence = occurrence+ (select count(resource_id) from resource_creator where creator_id=creator.id group by creator_id) ";
+    public static final String DATASETS_USING_NODES = "select id from resource where id in (select dataset_id from data_table where data_table.id in (select data_table_id from data_table_column, coding_rule, coding_sheet where data_table_column.default_coding_sheet_id=coding_sheet_id and coding_rule.coding_sheet_id=coding_sheet.id and  ontology_node_id=%s)) and status = 'ACTIVE'";
 }
