@@ -79,11 +79,16 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     }
 
     @Action(value = "create-code", results = {
-            @Result(name = SUCCESS, location = VIEW_ID, type = "redirect")
+            @Result(name = SUCCESS, location = VIEW_ID, type = "redirect"),
+            @Result(name=INPUT, location=VIEW_ID,type="redirect")
     })
     public String createCouponCode() {
-        for (int i = 0; i < quantity; i++) {
-            getAccountService().generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
+        try {
+            for (int i = 0; i < quantity; i++) {
+                getAccountService().generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
+            }
+        } catch (Throwable e) {
+            addActionMessage(e.getMessage());
         }
         return SUCCESS;
     }
