@@ -26,9 +26,11 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.struts.WriteableSession;
+import org.tdar.struts.interceptor.PostOnly;
 
 @Component
 @Scope("prototype")
@@ -38,7 +40,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public static final String UPDATE_QUOTAS = "updateQuotas";
     public static final String CHOOSE = "choose";
-    private static final String VIEW_ID = "view?id=${id}";
+    public static final String VIEW_ID = "view?id=${id}";
     public static final String RIGHTS_TO_ASSIGN_THIS_INVOICE = "you do not have the rights to assign this invoice";
     public static final String INVOICE_IS_REQURIED = "an invoice is requried";
     private static final long serialVersionUID = 2912533895769561917L;
@@ -80,15 +82,20 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     @Action(value = "create-code", results = {
             @Result(name = SUCCESS, location = VIEW_ID, type = "redirect"),
-            @Result(name=INPUT, location=VIEW_ID,type="redirect")
+            @Result(name = INPUT, location = VIEW_ID, type = "redirect")
     })
-    public String createCouponCode() {
+    @PostOnly
+    @WriteableSession
+    @SkipValidation
+    public String createCouponCode() throws TdarActionException {
         try {
             for (int i = 0; i < quantity; i++) {
                 getAccountService().generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExipres());
             }
+            getAccountService().updateQuota(getAccount());
         } catch (Throwable e) {
             addActionMessage(e.getMessage());
+            return INPUT;
         }
         return SUCCESS;
     }
@@ -153,6 +160,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     @Override
     public boolean isViewable() throws TdarActionException {
+        logger.info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
         if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;
         }

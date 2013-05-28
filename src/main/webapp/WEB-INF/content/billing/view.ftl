@@ -107,14 +107,14 @@
 	    </tr>
 	<#list account.coupons as coupon>
 		<#assign extraClass=""/>
-		<#assign suffix = "?subject=tDAR%20Coupon&body=The%20following%20coupon%20code%20is%20good%20for%20${coupon.numberOfFiles}%20Files%20and%20${coupon.numberOfMb}%20MB.%0A%0A${coupon.code?upper_case}" />
+		<#assign suffix = "?cc=${authenticatedUser.email}&subject=tDAR%20Coupon&body=The%20following%20coupon%20code%20is%20good%20for%20${coupon.numberOfFiles}%20Files%20and%20${coupon.numberOfMb}%20MB.%0A%0A${coupon.code?upper_case}" />
 	    <tr class="">
 	        <td>${coupon.numberOfFiles}</td>
 	        <td>${coupon.numberOfMb}</td>
 	        <td>${coupon.dateExpires}</td>
 	        <td>${coupon.code?upper_case}</td>
 	        <td><#if coupon.dateRedeemed?has_content>${coupon.dateRedeemed} <#if coupon.user?has_content>(${coupon.user.properName})</#if></#if></td>
-	        <td><a href="mailto:user@tdar.org?${suffix}">send email</a></td>
+	        <td><a href="mailto:${authenticatedUser.email}?${suffix}">send via email</a></td>
 	    </tr>
 	</#list>
 	</table>
@@ -123,17 +123,16 @@
 <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
 <div class="row">
 	<div class="span4">
-	<@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" />
-    <@s.hidden name="id" value="${account.id?c!-1}" />    
-	<@s.textfield name="exipres" cssClass="date" label="Date Expires"/>
+		<@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" />
+	    <@s.hidden name="id" value="${account.id?c!-1}" />    
+		<@s.textfield name="exipres" cssClass="date" label="Date Expires"/>
 	</div>
 	<div class="span4">    
-	<@s.textfield name="numberOfFiles" cssClass="integer" label="Number of Files"/>
-	<@s.textfield name="numberOfMb" cssClass="integer" label="Number of MB"/>
+		<@s.textfield name="numberOfFiles" cssClass="integer" label="Number of Files"/>
+		<@s.textfield name="numberOfMb" cssClass="integer" label="Number of MB"/>
 	</div>
 	</div>
 	<@s.submit name="_tdar.submit" value="Create Coupon" cssClass="button submit-btn btn" />
-</div>
 </@s.form>
 </div>
 </#if>

@@ -233,23 +233,8 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
             totalSpaceInBytes += invoice.getTotalSpaceInBytes();
         }
         
-//        for (Coupon coupon : getCoupons()) {
-//            totalFiles -= coupon.getNumberOfFiles();
-//            totalSpaceInBytes -= coupon.getNumberOfMb() * ONE_MB;
-//        }
         logger.trace(String.format("Totals: %s r %s f %s b", totalResources, totalFiles, totalSpaceInBytes));
     }
-
-//    public void reEvaluateTotalSpaceUsed(ResourceEvaluator re) {
-//        re.evaluateResources(resources);
-//        setFilesUsed(re.getFilesUsed());
-//        for (Coupon coupon : getCoupons()) {
-//            setFilesUsed(coupon.getNumberOfFiles() + getFilesUsed());
-//            setSpaceUsedInBytes(coupon.getNumberOfMb() * Coupon.ONE_MB + getSpaceUsedInBytes());
-//        }
-//        setSpaceUsedInBytes(re.getSpaceUsedInBytes());
-//        setResourcesUsed(re.getResourcesUsed());
-//    }
 
     public void resetTransientTotals() {
         totalFiles = 0L;

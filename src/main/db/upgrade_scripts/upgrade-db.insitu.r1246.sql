@@ -366,3 +366,4 @@ alter table pos_coupon add column date_redeemed timestamp;
 --2013-05-27
 alter table sensory_data add column rgb_capture character varying(255);
 alter table sensory_data add column camera_details character varying(255);
+alter table sensory_data add column scanner_technology character varying(50);
