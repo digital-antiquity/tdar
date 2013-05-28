@@ -13,11 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
-
-    @Before
-    public void reindexBefore() {
-        reindexUnauthenticated();
-    }
     
     @Test
     public void testOntologyView() {
@@ -33,6 +28,7 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
 
     @Test
     public void testProjectView() {
+        reindexUnauthenticated();
         super.testProjectView();
         assertTextNotPresent("edit metadata");
     }
@@ -52,11 +48,13 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     
     @Test
     public void testExploreView() {
+        reindexUnauthenticated();
         gotoPage("/browse/explore");
     }
 
     @Test
     public void testExploreGoogleScholar() {
+        reindexUnauthenticated();
         gotoPage("/year-2012");
     }
 
@@ -72,11 +70,13 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     
     @Test
     public void testBrowseCreators() {
+        reindexUnauthenticated();
         gotoPage("/browse/creators/1");
     }
 
     @Test
     public void testBrowseCollections() {
+        reindexUnauthenticated();
         gotoPage("/browse/collections");
     }
 
