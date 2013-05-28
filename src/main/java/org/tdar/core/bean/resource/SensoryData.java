@@ -30,7 +30,7 @@ import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 @Indexed
 @Table(name = "sensory_data")
 @XmlRootElement(name = "sensoryData")
-public class SensoryData extends InformationResource {
+public class SensoryData extends Dataset {
     
 
     /**
@@ -615,4 +615,5 @@ public class SensoryData extends InformationResource {
     public void setCameraDetails(String cameraDetails) {
         this.cameraDetails = cameraDetails;
     }
+    
 }
