@@ -23,7 +23,6 @@
 
 <@edit.allCreators 'Sensory Data Creators' authorshipProxies 'authorship' />
 
-<#macro divSurveyInfo>
 <div id="divSurveyInfo">
     <h2>Survey Information</h2>
     <div id="divScannerTechnologyOptions">
@@ -110,7 +109,6 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     
 </div>
 
-<#macro divScanInfo>
 <div id="divScanInfo" style="display:none">
     <#assign _scans=sensoryDataScans />
     <#if _scans.isEmpty()>
@@ -340,7 +338,6 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
 
 
 <@edit.sharedFormComponents prefix="sensoryData"/>
-
 
 </@s.form>
  
