@@ -454,8 +454,8 @@ $(function() {
     }
   
     //HACK: remove this
-    $(form).FormNavigate("clean");
-
+    $("#frmSensoryData").FormNavigate("clean");
+});
 </script>
  
 </body>
