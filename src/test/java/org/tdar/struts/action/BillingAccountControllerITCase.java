@@ -184,60 +184,42 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
 
     @Test
     @Rollback
-    public void testCreateCouponInvalid() {
+    public void testCreateCouponInvalid() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getUser());
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1000L);
-        boolean seen = false;
-        try {
-            String save = controller.createCouponCode();
-            Long id = controller.getAccount().getId();
-        } catch (Exception e) {
-            seen = true;
-            logger.error("error: {}", e);
-            assertTrue(e.getMessage().equals(AccountService.NOT_ENOUGH_SPACE_OR_FILES));
-        }
-        assertTrue(seen);
+        String save = controller.createCouponCode();
+        Long id = controller.getAccount().getId();
+        assertTrue(controller.getActionMessages().contains(AccountService.NOT_ENOUGH_SPACE_OR_FILES));
+        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
-    public void testCreateCouponEmpty() {
+    public void testCreateCouponEmpty() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getUser());
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
         // controller.setNumberOfFiles(1000L);
-        boolean seen = false;
-        try {
-            String save = controller.createCouponCode();
-            Long id = controller.getAccount().getId();
-        } catch (Exception e) {
-            seen = true;
-            logger.error("error: {}", e);
-            assertTrue(e.getMessage().equals(AccountService.CANNOT_GENERATE_A_COUPON_FOR_NOTHING));
-        }
-        assertTrue(seen);
+        String save = controller.createCouponCode();
+        Long id = controller.getAccount().getId();
+        assertTrue(controller.getActionMessages().contains(AccountService.CANNOT_GENERATE_A_COUPON_FOR_NOTHING));
+        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
-    public void testCreateCouponInvalidBoth() {
+    public void testCreateCouponInvalidBoth() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getUser());
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1L);
         controller.setNumberOfMb(1L);
-        boolean seen = false;
-        try {
-            String save = controller.createCouponCode();
-            Long id = controller.getAccount().getId();
-        } catch (Exception e) {
-            seen = true;
-            logger.error("error: {}", e);
-            assertTrue(e.getMessage().equals(AccountService.SPECIFY_EITHER_SPACE_OR_FILES));
-        }
-        assertTrue(seen);
+        String save = controller.createCouponCode();
+        Long id = controller.getAccount().getId();
+        assertTrue(controller.getActionMessages().contains(AccountService.SPECIFY_EITHER_SPACE_OR_FILES));
+        setIgnoreActionErrors(true);
     }
 
     @Test

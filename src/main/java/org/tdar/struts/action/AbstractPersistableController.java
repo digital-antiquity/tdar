@@ -141,9 +141,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             })
     public String view() throws TdarActionException {
         String resultName = SUCCESS;
-        // ensureValidViewRequest();
+
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
-        // checkValidRequest(UserIs.ANYONE, UsersCanModify.NONE, isViewable(), InternalTdarRights.VIEW_ANYTHING);
         resultName = loadViewMetadata();
         loadExtraViewMetadata();
         return resultName;

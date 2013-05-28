@@ -114,7 +114,7 @@
 	        <td>${coupon.dateExpires}</td>
 	        <td>${coupon.code?upper_case}</td>
 	        <td><#if coupon.dateRedeemed?has_content>${coupon.dateRedeemed} <#if coupon.user?has_content>(${coupon.user.properName})</#if></#if></td>
-	        <td><a href="mailto:${authenticatedUser.email}?${suffix}">send email</a></td>
+	        <td><a href="mailto:${authenticatedUser.email}?${suffix}">send via email</a></td>
 	    </tr>
 	</#list>
 	</table>
