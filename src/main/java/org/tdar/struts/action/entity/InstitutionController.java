@@ -42,7 +42,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
          if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
              Institution findInstitutionByName = getEntityService().findInstitutionByName(name);
              if (findInstitutionByName != null) {
-                 throw new TdarValidationException(String.format("Cannot rename institution to %s because it already exists", name));
+                 addActionError(String.format("Cannot rename institution to %s because it already exists", name));
              }
          }
      }
