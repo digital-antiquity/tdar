@@ -13,16 +13,6 @@
     </#if>
     <title>${pageTitle}</title>
     
-    <script type="text/javascript">
-        var $frmPerson;
-        $(function() {
-            $frmPerson = $('#frmPerson');
-            applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
-            initializeView();
-            TDAR.common.initEditPage($('#frmPerson')[0]);
-            //tack on the confirm-password rules
-        });
-    </script>
 <style type="text/css">
 label.error {display:block;}
 </style>
@@ -58,7 +48,7 @@ label.error {display:block;}
         <@s.textfield cssClass="required input-xlarge"        label="Last Name"   name="person.lastName"  maxlength="255"  title="A last name is required" /> 
 
         <@s.textfield cssClass="required input-xlarge"         label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
-        <@s.textfield cssClass="institutionAutocomplete" cssClass="input-xlarge"  label="Institution"       name="institutionName"     maxlength="255" value="${person.institution!}"/>
+        <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Institution"       name="institutionName"     maxlength="255" value="${person.institution!}"/>
 		<#assign registered = "" />
         <@s.textfield cssClass="input-xlarge ${(person.registered)?string('registered', '')}"  label="Email"   name="person.email"  maxlength="255"  title="An email is required" /> 
         
@@ -79,10 +69,17 @@ label.error {display:block;}
         </#if>    
         
         <@edit.boolfield label='${siteAcronym} Contributor?' name="person.contributor" id="contributor-id" value=(person.contributor!false)  />
+
+
         
         <@s.textarea label="Please briefly describe the geographical areas, time periods, or other subjects for which you would like to contribute information" 
             rows=6 cols='50' cssClass="input-xxlarge" name='person.contributorReason' id='contributorReasonId'  maxlength=512 />
         <@s.textarea label="Please provide a brief description of yourself" rows=6 cols='50' name='person.description' cssClass="input-xxlarge" id='description-id' />
+
+
+        <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Proxy Institution"       name="proxyInstitutionName"     maxlength="255" value="${person.proxyInstitution!}"/>
+
+        <@s.textarea label="Proxy Note" rows=6 cols='50' name='person.proxyNote' cssClass="input-xxlarge"  />
     </div>
 </div>
 
@@ -108,6 +105,17 @@ label.error {display:block;}
 
 </@s.form>
 <div id="error"></div>
+    <script type="text/javascript">
+        var $frmPerson;
+        $(function() {
+            $frmPerson = $('#frmPerson');
+            applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
+            initializeView();
+            TDAR.common.initEditPage($('#frmPerson')[0]);
+            //tack on the confirm-password rules
+        });
+    </script>
+
 </body>
 
 </#escape>

@@ -58,3 +58,7 @@ alter table pos_invoice add column coupon_id int8 references pos_coupon;
 --2013-05-25
 alter table pos_coupon add column user_id int8 references person;
 alter table pos_coupon add column date_redeemed timestamp;
+
+--2013-05-29
+alter table person add column proxyinstitution_id int8 references institution;
+alter table person add column proxy_note text;

@@ -35,6 +35,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     private static final long serialVersionUID = 1L;
 
     private String institutionName;
+    private String proxyInstitutionName;
     private boolean passwordResetRequested;
     private String newUsername;
     private String password;
@@ -74,6 +75,18 @@ public class PersonController extends AbstractCreatorController<Person> {
             logger.debug("setting institution to persistent: " + persistentInstitution);
             person.setInstitution(persistentInstitution);
         }
+
+        
+        if (StringUtils.isBlank(proxyInstitutionName)) {
+            person.setProxyInstitution(null);
+        }
+        else {
+            // if the user changed the person's institution, find or create it
+            Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
+            logger.debug("setting institution to persistent: " + persistentInstitution);
+            person.setProxyInstitution(persistentInstitution);
+        }
+
         getGenericService().saveOrUpdate(person);
 
         // If the user is editing their own profile, refresh the session object if needed
@@ -239,6 +252,14 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     public void setGroups(List<String> groups) {
         this.groups = groups;
+    }
+
+    public String getProxyInstitutionName() {
+        return proxyInstitutionName;
+    }
+
+    public void setProxyInstitutionName(String proxyInstitutionName) {
+        this.proxyInstitutionName = proxyInstitutionName;
     }
 
 }

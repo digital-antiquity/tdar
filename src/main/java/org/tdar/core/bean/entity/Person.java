@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -20,6 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
@@ -55,7 +57,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Transient
     private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated", "registered",
-            "contributor", "totalLogins", "lastLogin", "penultimateLogin", "emailPublic", "phonePublic", "status", "synonyms", "occurrence" };
+            "contributor", "totalLogins", "lastLogin", "penultimateLogin", "emailPublic", "phonePublic", "status", "synonyms", "occurrence",
+            "proxyInstitution", "proxyNote" };
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")
@@ -111,6 +114,15 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     // @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
     private Institution institution;
+
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, optional = true)
+    /* who to contact when owner is no longer 'reachable' */
+    private Institution proxyInstitution;
+
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
+    @Column(name = "proxy_note")
+    private String proxyNote;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_login")
@@ -329,7 +341,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.phonePublic = toggle;
     }
 
-
     @XmlTransient
     public Set<BookmarkedResource> getBookmarkedResources() {
         return bookmarkedResources;
@@ -467,5 +478,21 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @DateBridge(resolution = Resolution.MILLISECOND)
     public Date getDateUpdated() {
         return super.getDateUpdated();
+    }
+
+    public Institution getProxyInstitution() {
+        return proxyInstitution;
+    }
+
+    public void setProxyInstitution(Institution proxyInstitution) {
+        this.proxyInstitution = proxyInstitution;
+    }
+
+    public String getProxyNote() {
+        return proxyNote;
+    }
+
+    public void setProxyNote(String proxyNote) {
+        this.proxyNote = proxyNote;
     }
 }
