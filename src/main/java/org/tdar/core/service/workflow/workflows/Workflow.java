@@ -70,11 +70,17 @@ public interface Workflow {
             boolean successful = true;
             // this may be more complex than it needs to be, but it may be useful in debugging later; or organizationally.
             // by default tasks are processed in the order they are added within the phase that they're part of.
-            
-            for (InformationResourceFileVersion version : workflowContext.getOriginalFiles()) {
-                version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+
+            try {
+                for (InformationResourceFileVersion version : workflowContext.getOriginalFiles()) {
+                    version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+                }
+            } catch (Exception e) {
+                workflowContext.addException(e);
+                workflowContext.setErrorFatal(true);
+                return false;
             }
-            
+
             for (WorkflowPhase phase : WorkflowPhase.values()) {
                 List<Class<? extends Task>> phaseTasks = workflowPhaseToTasks.get(phase);
                 if (CollectionUtils.isEmpty(phaseTasks)) {
@@ -183,8 +189,9 @@ public interface Workflow {
         }
 
     }
-    
+
     public Map<String, List<String>> getRequiredExtensions();
+
     public Map<String, List<String>> getSuggestedExtensions();
 
     public void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] versions);
