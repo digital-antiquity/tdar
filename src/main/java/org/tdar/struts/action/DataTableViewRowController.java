@@ -28,7 +28,7 @@ public class DataTableViewRowController extends Base {
 
     /**
      * Used to render a row within a {@link Dataset}.
-     * The expected URL is of the form /datatable/view-row?dataTableId=5815&rowId=1 where dataTableId = data table id, and rowId is the tDAR row id within 
+     * The expected URL is of the form /datatable/view-row?dataTableId=5815&rowId=1 where dataTableId = data table id, and rowId is the tDAR row id within
      * the table.
      * 
      * @return com.opensymphony.xwork2.SUCCESS if able to find and display the table, com.opensymphony.xwork2.ERROR if not.
@@ -83,10 +83,16 @@ public class DataTableViewRowController extends Base {
         return dataset;
     }
 
-     public Long getDataTableId() {
+    /**
+     * @return the id of the table whose row is being displayed
+     */
+    public Long getDataTableId() {
         return dataTableId;
     }
 
+    /**
+     * @param id set the id of the table whose row is to be displayed
+     */
     public void setDataTableId(Long id) {
         this.dataTableId = id;
     }
