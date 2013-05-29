@@ -16,7 +16,6 @@
             <#if entry.key.visible>
               <tr>
                 <td>${entry.key.displayName}</td><td>${entry.value} <#if (entry.key.defaultOntology.id)?has_content>(<a href="<@s.url value="/ontology/${entry.key.defaultOntology.id?c}"/>">${entry.key.defaultOntology.title}</a>)</#if></td>
-                <td>${entry.key.displayName}</td><td>${entry.value}</td>
               </tr>
             </#if>
         </#list>
