@@ -302,9 +302,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     public InformationResourceFileVersion getUploadedVersion(Integer versionNumber) {
-        return getVersion(versionNumber, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED);
+        return getVersion(versionNumber, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.UPLOADED);
     }
 
+    /* Use for Ontology (or perhaps coding sheet); will need to verify that this does not break things when we have true archival version */
+    public InformationResourceFileVersion getLatestUploadedOrArchivalVersion() {
+        return getVersion(getLatestVersion(), VersionType.UPLOADED, VersionType.UPLOADED_TEXT, VersionType.UPLOADED_ARCHIVAL, VersionType.ARCHIVAL);
+    }
+    
     // FIXME: improve efficiency
     public InformationResourceFileVersion getVersion(Integer versionNumber, VersionType... types) {
         int currentVersionNumber = -1;

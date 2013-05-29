@@ -27,7 +27,7 @@
 
 <div id="infovis" class="img-polaroid ">
 </div>
-<!--</fieldset> -->
+
 <div id="divHints">
 <em>click and drag to pan across the ontology, darker nodes contain more children, click on a node to expand children</em>
 </div>

@@ -38,33 +38,33 @@ View freemarker macros
 <#if (allNodes?size>0)>
     <h2>${sectionTitle}</h2>
     <div class="ontology-nodes-container">
-    <div id="ontology-nodes-part1">
-    <#list previewNodes as ontologyNode>
-        <@displayNode ontologyNode />
-    </#list>
-    </div>
-    <#if shouldCollapse>
-    <div id="ontology-nodes-part2" style="display:none">
-    <#list collapsedNodes as ontologyNode>
-        <@displayNode ontologyNode />
-    </#list>
-    </div>
-    
-    <div id='divOntologyShowMore' class="alert">
-        <span>Showing first ${previewSize?c} ontology nodes.</span>
-        <button type="button" class="btn btn-small" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
-    </div>
-    <script type="text/javascript">
-    $(function(){
-        $('#btnOntologyShowMore').click(function() {
-            $('#divOntologyShowMore').hide();
-            $('#ontology-nodes-part2').show();
-            return(false);
-        });
-    });
-    </script>
-    </#if>
-
+	    <div id="ontology-nodes-part1">
+		    <#list previewNodes as ontologyNode>
+		        <@displayNode ontologyNode />
+		    </#list>
+	    </div>
+	    <#if shouldCollapse>
+	    <div id="ontology-nodes-part2" style="display:none">
+		    <#list collapsedNodes as ontologyNode>
+		        <@displayNode ontologyNode />
+		    </#list>
+	    </div>
+	    
+	    <div id='divOntologyShowMore' class="alert">
+	        <span>Showing first ${previewSize?c} ontology nodes.</span>
+	        <button type="button" class="btn btn-small" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
+	    </div>
+	    <script type="text/javascript">
+	    $(function(){
+	        $('#btnOntologyShowMore').click(function() {
+	            $('#divOntologyShowMore').hide();
+	            $('#ontology-nodes-part2').show();
+	            return(false);
+	        });
+	    });
+	    </script>
+	    </#if>
+	</div>
 </#if>
 </#macro>
 
@@ -139,15 +139,17 @@ View freemarker macros
         <#local visibleCount = 0>
         <#list resource.informationResourceFiles as irfile>
          <#if (visibleCount > 4)><#local showAll = "view-hidden-extra-files"/></#if>
-              <#if irfile.latestUploadedVersion??>
+              <#if irfile.latestUploadedOrArchivalVersion??>
                   <#if !irfile.deleted><#local visibleCount = 1 + visibleCount /></#if>
-                      <#local ext = extensionMap[irfile.latestUploadedVersion.extension?lower_case ]!'' />
+                      <#local ext = extensionMap[irfile.latestUploadedOrArchivalVersion.extension?lower_case ]!'' />
                       <#if !ext?has_content>
                       <#local ext = extensionMap[resource.resourceType ] />
                       </#if>
                     <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
                         <i class="iconf ${ext} pull-left"></i>
                         <div class="media-body"><@createFileLink irfile true /></div>
+				<#else>
+				${irfile}
               </#if>
               <#if irfile.latestTranslatedVersion?? && resource.resourceType == 'DATASET' >
                 <blockquote>
