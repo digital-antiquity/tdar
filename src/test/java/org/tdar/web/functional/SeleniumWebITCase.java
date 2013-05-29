@@ -40,7 +40,7 @@ public abstract class SeleniumWebITCase {
         if (StringUtils.isNotBlank(xvfbPropsFile)) {
             fb.setEnvironmentProperty("DISPLAY", xvfbPropsFile);
         }
-        Assert.fail("testing...");
+//        Assert.fail("testing...");
         driver = new FirefoxDriver(fb, newFirefoxProfile());
     }
     
