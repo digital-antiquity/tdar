@@ -47,6 +47,7 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
         stats.add(generateStatistics(StatisticType.NUM_SENSORY_DATA, resourceService.countActiveResources(ResourceType.SENSORY_DATA), ""));
         stats.add(generateStatistics(StatisticType.NUM_ONTOLOGY, resourceService.countActiveResources(ResourceType.ONTOLOGY), ""));
         stats.add(generateStatistics(StatisticType.NUM_IMAGE, resourceService.countActiveResources(ResourceType.IMAGE), ""));
+        stats.add(generateStatistics(StatisticType.NUM_GIS, resourceService.countActiveResources(ResourceType.GEOSPATIAL), ""));
 
         stats.add(generateStatistics(StatisticType.NUM_DOCUMENT_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.DOCUMENT), ""));
         stats.add(generateStatistics(StatisticType.NUM_DATASET_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.DATASET), ""));
