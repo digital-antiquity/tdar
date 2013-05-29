@@ -56,7 +56,7 @@ label.error {display:block;}
         <@s.textfield cssClass="required input-xlarge"        label="Last Name"   name="person.lastName"  maxlength="255"  title="A last name is required" /> 
 
         <@s.textfield cssClass="required input-xlarge"         label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
-        <@s.textfield cssClass="institutionAutocomplete" cssClass="input-xlarge"  label="Institution"       name="institutionName"     maxlength="255" value="${person.institution!}"/>
+        <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Institution"       name="institutionName"     maxlength="255" value="${person.institution!}"/>
 		<#assign registered = "" />
         <@s.textfield cssClass="input-xlarge ${(person.registered)?string('registered', '')}"  label="Email"   name="person.email"  maxlength="255"  title="An email is required" /> 
         
