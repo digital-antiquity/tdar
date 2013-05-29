@@ -288,6 +288,7 @@ ${_stacktrace?html}
     TDAR.maps.googleApiKey = "AIzaSyB532T66Gm5utEfPxiexOWhDc9tr2kyzsI";
     TDAR.maps.defaults.center.lat = ${mapDefaultLat};
     TDAR.maps.defaults.center.lng = ${mapDefaultLng};
+    TDAR.maps.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};
     TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
     </script>
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>

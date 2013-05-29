@@ -614,4 +614,8 @@ public class TdarConfiguration {
         }
         return userIds;
     }
+
+    public boolean isGeoLocationToBeUsed() {
+        return assistant.getBooleanProperty("is.geolocation.to.be.used", false);
+    }
 }

@@ -340,6 +340,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         latlong.setGroupingUsed(false);
         return latlong.format(getTdarConfiguration().getMapDefaultLng());
     }
+    
+    public boolean isGeoLocationToBeUsed() {
+        return getTdarConfiguration().isGeoLocationToBeUsed();
+    }
 
     protected void clearAuthenticationToken() {
         AuthenticationToken token = getSessionData().getAuthenticationToken();

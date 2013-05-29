@@ -140,7 +140,7 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
             }
         }
     }
-    
+
     @Test
     public void testTicketIdAfterValidationFail() {
         String ticketId = getPersonalFilestoreTicketId();
@@ -156,4 +156,13 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         assertEquals("ticketId should be same as original edit form", ticketId, newTicketId);
     }
 
+    @Test
+    public void testIsGeoLocationToBeUsed() {
+        gotoPage("/document/add");
+        if (TdarConfiguration.getInstance().isGeoLocationToBeUsed()) {
+            assertTextPresentInCode("TDAR.maps.defaults.isGeoLocationToBeUsed = true;");
+        } else {
+            assertTextPresentInCode("TDAR.maps.defaults.isGeoLocationToBeUsed = false;");
+        }
+    }
 }
