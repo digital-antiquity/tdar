@@ -126,9 +126,9 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
      * private Person updatedBy;
      */
     @Field(norms = Norms.NO, store = Store.YES)
+    @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_updated", nullable = true)
-    @DateBridge(resolution = Resolution.MILLISECOND)
     private Date dateUpdated;
 
     @Temporal(TemporalType.DATE)

@@ -21,11 +21,13 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
@@ -461,4 +463,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.wildcardName = wildcardName;
     }
 
+    @Field(norms = Norms.NO, store = Store.YES)
+    @DateBridge(resolution = Resolution.MILLISECOND)
+    public Date getDateUpdated() {
+        return super.getDateUpdated();
+    }
 }

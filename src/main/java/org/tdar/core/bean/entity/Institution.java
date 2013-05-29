@@ -1,5 +1,6 @@
 package org.tdar.core.bean.entity;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,10 +22,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
@@ -169,5 +172,12 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
             return true;
         }
         return false;
+    }
+
+
+    @Field(norms = Norms.NO, store = Store.YES)
+    @DateBridge(resolution = Resolution.MILLISECOND)
+    public Date getDateUpdated() {
+        return super.getDateUpdated();
     }
 }
