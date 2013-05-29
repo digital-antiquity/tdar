@@ -123,7 +123,7 @@ var data = [];
     </tr>
 <#list resource.informationResourceFiles as file>
     <tr>
-        <td colspan="2">${file.fileName}</td>
+        <td colspan="2">${file.fileName!"unnamed file"}</td>
         <td>${file.informationResourceFileType}</td>
         <td>${file.latestVersion}</td>
         <td>${file.restriction}</td>
