@@ -227,7 +227,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <br />
     <div tiplabel="Registration Error" tooltipcontent="Total RMS error from global registration in scan units.">
         <@s.textfield maxLength="255" name="sensoryData.registrationErrorUnits" cssClass="shortfield number" label="Reg. Error" labelposition="left" />
-    </span>
+    </div>
     <div tiplabel="Total Number of points In File" tooltipcontent="Total number of points in finalregistered point cloud">
         <@s.textfield maxLength="255" name="sensoryData.finalRegistrationPoints" cssClass="right-shortfield number" label="# Points in File" labelposition="left" />
     </div>
