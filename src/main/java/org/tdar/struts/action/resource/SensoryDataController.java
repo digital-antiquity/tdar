@@ -67,9 +67,10 @@ public class SensoryDataController extends AbstractInformationResourceController
      * Save basic metadata of the registering concept.
      * 
      * @param concept
+     * @throws TdarActionException 
      */
     @Override
-    protected String save(SensoryData sensoryData) {
+    protected String save(SensoryData sensoryData) throws TdarActionException {
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
 

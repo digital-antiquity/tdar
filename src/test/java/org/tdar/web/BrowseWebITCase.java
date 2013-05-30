@@ -9,11 +9,10 @@ package org.tdar.web;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.httpclient.HttpStatus;
-import org.junit.Before;
 import org.junit.Test;
 
 public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
-    
+
     @Test
     public void testOntologyView() {
         super.testOntologyView();
@@ -45,7 +44,6 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
         assertTextNotPresent("edit metadata");
     }
 
-    
     @Test
     public void testExploreView() {
         reindexUnauthenticated();
@@ -67,7 +65,7 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     public void testFeaturedItemView() {
         gotoPage("/featured");
     }
-    
+
     @Test
     public void testBrowseCreators() {
         reindexUnauthenticated();
@@ -79,7 +77,6 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
         reindexUnauthenticated();
         gotoPage("/browse/collections");
     }
-
 
     @Test
     public void testViewErrorNotFound() {

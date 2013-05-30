@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.struts.action.TdarActionException;
 
 /**
  * $Id$
@@ -29,7 +30,7 @@ public class ImageController extends AbstractInformationResourceController<Image
     private static final long serialVersionUID = 377533801938016848L;
 
     @Override
-    protected String save(Image image) {
+    protected String save(Image image) throws TdarActionException {
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
 //        getGenericService().saveOrUpdate(image);

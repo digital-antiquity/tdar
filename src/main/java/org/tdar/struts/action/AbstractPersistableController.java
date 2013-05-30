@@ -92,8 +92,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * 
      * @param resource
      * @return the String result code to use.
+     * @throws TdarActionException 
      */
-    protected abstract String save(P persistable);
+    protected abstract String save(P persistable) throws TdarActionException;
 
     /**
      * Used to instantiate and return a new specific subtype of Resource to be

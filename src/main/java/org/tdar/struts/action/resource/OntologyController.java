@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
@@ -52,9 +53,10 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
      * Sets the various pieces of metadata on this ontology and then saves it.
      * 
      * @param ontology
+     * @throws TdarActionException 
      */
     @Override
-    protected String save(Ontology ontology) {
+    protected String save(Ontology ontology) throws TdarActionException {
         super.saveBasicResourceMetadata();
         super.saveInformationResourceProperties();
 

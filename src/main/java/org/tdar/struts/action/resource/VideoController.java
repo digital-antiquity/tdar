@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Video;
+import org.tdar.struts.action.TdarActionException;
 
 /**
  * $Id$
@@ -29,7 +30,7 @@ public class VideoController extends AbstractInformationResourceController<Video
     private static final long serialVersionUID = 377533801938016848L;
 
     @Override
-    protected String save(Video video) {
+    protected String save(Video video) throws TdarActionException {
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
         getGenericService().saveOrUpdate(video);

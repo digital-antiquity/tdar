@@ -67,9 +67,10 @@ public class CodingSheetController extends AbstractSupportingInformationResource
      * Save basic metadata of the registering concept.
      * 
      * @param concept
+     * @throws TdarActionException 
      */
     @Override
-    protected String save(CodingSheet codingSheet) {
+    protected String save(CodingSheet codingSheet) throws TdarActionException {
         if (!Persistable.Base.isNullOrTransient(ontology)) {
             // load the full hibernate entity and set it back on the incoming column
             ontology = getGenericService().find(Ontology.class, ontology.getId());

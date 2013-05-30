@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 
 /**
@@ -34,7 +35,7 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
     private static final long serialVersionUID = 6576781526708737335L;
 
     @Override
-    protected String save(Geospatial persistable) {
+    protected String save(Geospatial persistable) throws TdarActionException {
         super.saveBasicResourceMetadata();
 
         super.saveInformationResourceProperties();

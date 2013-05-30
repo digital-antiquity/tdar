@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
 
@@ -41,7 +42,7 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
     }
 
     @Override
-    protected String save(Dataset dataset) {
+    protected String save(Dataset dataset) throws TdarActionException {
         getLogger().debug("Saving dataset: {}", dataset);
         // save basic metadata
         super.saveBasicResourceMetadata();

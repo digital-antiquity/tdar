@@ -18,6 +18,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -28,6 +29,7 @@ import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.filestore.FileAnalyzer;
@@ -142,15 +144,28 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * 
      * Handles text input files for coding sheets and ontologies,
      * async uploads, and single-file dataset uploads.
+     * 
+     * @throws TdarActionException
      */
-    protected void handleUploadedFiles() {
+    protected void handleUploadedFiles() throws TdarActionException {
+
         getLogger().debug("handling uploaded files for {}", getPersistable());
         List<FileProxy> proxies = getFileProxiesToProcess();
         logger.debug("Final proxy set: {}", proxies);
 
+        boolean hasChanges = false;
+        for (FileProxy proxy : proxies) {
+            if (proxy != null && proxy.getAction() != FileAction.NONE) {
+                hasChanges = true;
+            }
+        }
+        if (hasChanges && !getAuthenticationAndAuthorizationService().canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.MODIFY_RECORD)) {
+            throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
+        } 
+
+        
         try {
-            getInformationResourceService().importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this,
-                    proxies);
+            getInformationResourceService().importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this, proxies);
         } catch (Exception e) {
             addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
         }

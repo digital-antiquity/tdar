@@ -33,6 +33,7 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -222,10 +223,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return accounts;
     }
 
-
-    
     @Action(value = SAVE, results = {
-            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH ),
+            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
             @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
             @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
     })
@@ -235,7 +234,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public String save() throws TdarActionException {
         return super.save();
     }
-    
+
     @SkipValidation
     @HttpOnlyIfUnauthenticated
     @Override
@@ -249,18 +248,18 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public String view() throws TdarActionException {
         return super.view();
     }
-    
+
     @SkipValidation
     @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
-            @Result(name = BILLING, type=TYPE_REDIRECT, location = URLConstants.CART_ADD)
+            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD)
     })
     @HttpsOnly
     @Override
     public String add() throws TdarActionException {
         return super.add();
     }
-    
+
     @SkipValidation
     @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE)
@@ -270,7 +269,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public String edit() throws TdarActionException {
         return super.edit();
     }
-    
+
     @Override
     public String loadEditMetadata() throws TdarActionException {
         loadAddMetadata();
@@ -522,7 +521,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             // }
         }
 
-        getResourceCollectionService().saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource());
+        // only modify these permissions if the user has the right to
+        if (getAuthenticationAndAuthorizationService().canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
+                GeneralPermissions.MODIFY_RECORD)) {
+            getResourceCollectionService().saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource());
+        }
+        ;
         saveKeywords();
         saveTemporalContext();
         saveSpatialContext();
