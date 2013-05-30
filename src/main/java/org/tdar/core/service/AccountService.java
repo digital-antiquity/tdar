@@ -258,6 +258,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
 
             helper = new AccountEvaluationHelper(account, getLatestActivityModel());
+            // we have to evaluate everything so we can make sure that the transient boolean is set for deleted materials
+            getResourceEvaluator().evaluateResources(resourcesToEvaluate);
             logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
             processResourcesChronologically(helper, resourcesToEvaluate);
 
