@@ -52,7 +52,7 @@ $('input[type=checkbox]:checked').each(function() {
         } else {
             $progressbar.progressbar("option", "value", 100);
             document.title = "Indexing complete.";
-            $buildStatus.empty().append("Done.");
+            $buildStatus.empty().append("<span id='spanDone'>Done.</span>");
             $("#idxBtn").removeAttr('disabled');
         }
     });

@@ -27,6 +27,9 @@ import org.tdar.TestConstants;
 
 public abstract class SeleniumWebITCase {
 
+    public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
+    public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
+    
     WebDriver driver;
     protected Logger logger = LoggerFactory.getLogger(getClass());
         
@@ -98,10 +101,13 @@ public abstract class SeleniumWebITCase {
         driver.get(absoluteUrl(path));
     }
 
-    // TODO: find out if this is necessary for repeatrow buttons. Supposedly selenium will wait until domready is complete.
     public WebElement waitFor(String selector) {
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        List<WebElement> elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(selector)));
+        return waitFor(selector, 10);
+    }
+    
+    public WebElement waitFor(String cssSelector, int timeoutInSeconds) {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        List<WebElement> elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(cssSelector)));
         WebElement result = null;
         if (!elements.isEmpty()) {
             result = elements.get(0);
@@ -282,6 +288,20 @@ public abstract class SeleniumWebITCase {
         return i;
     }
     
+    public void loginAdmin() {
+        login(TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_PASSWORD);
+    }
     
+    public void reindex() {
+        loginAdmin();
+        gotoPage("/admin/searchindex/build");
+        find("#idxBtn").click();
+        waitFor("#spanDone", 120);
+        logout();
+    }
+    
+    public void submitForm() {
+        find("#submitButton").click();
+    }
     
 }

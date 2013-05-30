@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -46,7 +47,6 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
     public static Map<String, String> docUnorderdValMap = new HashMap<String, String>();
     public static List<String> alternateTextLookup = new ArrayList<String>();
     public static List<String> alternateCodeLookup = new ArrayList<String>();
-    public static String REGEX_DOCUMENT_VIEW = "\\/document\\/\\d+$";
 
     @After
     public void logout() {
@@ -165,21 +165,18 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
 
     @Test
     public void testCreateDocumentEditSavehasResource() {
+        reindex();
         login();
         gotoPage("/document/add");
         WebElement form = find("#metadataForm").first();
         
-        //HACK: some of form fields we need don't exist yet.  Let's just click the "add another" buttons like crazy until they do.
-        for(int i = 0; i < 6; i++) { 
-            find(".add-another-control button").click();
-        }
 
         HashMap<String, String> docValMap2 = new HashMap<String, String>();
         docValMap2.put("document.title", "My Sample Document");
         docValMap2.put("document.documentType", "OTHER");
         docValMap2.put("document.description", "A resource description");
         docValMap2.put("document.date", "1923");
-        docValMap2.put("projectId", "1");
+        docValMap2.put("projectId", "-1");
         String ORIGINAL_START_DATE = "1200";
         String COVERAGE_START = "coverageDates[0].startDate";
         docValMap2.put(COVERAGE_START, ORIGINAL_START_DATE);
@@ -191,19 +188,19 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
             find(By.name(key)).val(docValMap2.get(key));
         }
 
-        form.submit();
+        submitForm();
         
         String path = getDriver().getCurrentUrl();
         logger.info(find("body").getText());
-        assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));
-
-        assertTrue(sourceContains(ORIGINAL_START_DATE));
-        assertTrue(sourceContains(ORIGINAL_END_DATE));
-
-        find(By.partialLinkText("edit")).click();
+        assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));        
+        assertTrue("expected value on view page", sourceContains(ORIGINAL_START_DATE));
+        assertTrue("expected value on view page", sourceContains(ORIGINAL_END_DATE));
+        
+        assertEquals("count of edit buttons", 1, find(By.partialLinkText("EDIT")).size());
+        find(By.partialLinkText("EDIT")).click();
         String NEW_START_DATE = "100";
         find(By.name(COVERAGE_START)).val(NEW_START_DATE);
-        form.submit();
+        submitForm();
 
         path = getDriver().getCurrentUrl();
         logger.info(find("body").getText());
@@ -216,6 +213,7 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
 
     @Test
     public void testCreateDocument() {
+        reindex();
         login();
         gotoPage("/document/add");
         prepIndexedFields();        
@@ -240,7 +238,7 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
         }
         
         logger.info(getDriver().getPageSource());
-        find("#metadataForm").submit();
+        submitForm();
 
         String path = getDriver().getCurrentUrl();
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));
@@ -278,7 +276,7 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
         }
 
         // go to the edit page and ensure (some) of the form fields and values that we originally created are still present
-        find(By.partialLinkText("edit")).click();
+        find(By.partialLinkText("EDIT")).click();
         logger.debug("----now on edit page----");
         logger.trace(find("body").getText());
 
@@ -310,33 +308,9 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
 
     }
 
-
-//    private void setInput(String key, String[] array) {
-//        // TODO Auto-generated method stub
-//    }
-//    
-    
     public boolean setValue(String fieldName, String value) {
         return false;
-        
-        
     }
-    
-//
-//    private void uploadFileToPersonalFilestore(String ticketId, String testDocument) {
-//        // TODO Auto-generated method stub
-//    }
-
-//    private String getPersonalFilestoreTicketId() {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
-
-//    // this will be somewhat tricky to do in selenium... if possible use find("xyz").click()
-//    private void clickLinkWithText(String string) {
-//        // TODO Auto-generated method stub
-//
-//    }
     
     private boolean sourceContains(String substring) {
         return getSource().contains(substring);
@@ -346,7 +320,7 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
         return getText().contains(substring);
     }
     
-    @Test
+    @Test @Ignore
     public void testAddAnotherClick() {
         login();
         gotoPage("/document/add");

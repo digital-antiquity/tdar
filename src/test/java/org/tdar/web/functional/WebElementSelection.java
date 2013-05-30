@@ -316,6 +316,8 @@ public class WebElementSelection implements Iterable<WebElement>{
      * 
      * @param val the string value apply to the selected elements
      */
+    //TODO: implement convention that makes it easy choose SELECT option by index.  for example,  if val is "[0]" and tag is SELECT, extract number  and
+    //      translate to Select.selectByIndex();
     public void val(String val) {
         for(WebElement elem : this) {
             String tag = elem.getTagName();
@@ -327,12 +329,6 @@ public class WebElementSelection implements Iterable<WebElement>{
                 }
                 
                 switch(type) {
-                    case "text":
-                    case "textarea":
-                    case "file": 
-                    case "password":
-                        elem.sendKeys(val);
-                        break;
                     case "button":
                     case "radio":
                     case "checkbox":
@@ -348,6 +344,7 @@ public class WebElementSelection implements Iterable<WebElement>{
                         }
                         break;
                     case "select":
+                        logger.debug("select element  enabled:{} val:{}", elem.isEnabled(), val);
                         if(elem.isEnabled()) {
                             Select sel = new Select(elem);
                             if(sel.isMultiple()) {
@@ -359,8 +356,13 @@ public class WebElementSelection implements Iterable<WebElement>{
                     case "hidden":
                         logger.warn("ignoring hidden field: {}", elem);
                         break;
+                    case "text":
+                    case "textarea":
+                    case "file": 
+                    case "password":
                     default:
                         //TODO: this will work for most html5 types except for "range"
+                        elem.clear();
                         elem.sendKeys(val);
                         break;
                 }
