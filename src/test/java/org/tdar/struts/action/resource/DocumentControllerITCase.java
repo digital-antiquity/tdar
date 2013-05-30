@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.fileupload.FileUpload;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -30,9 +33,14 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.UploadController;
+import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
@@ -471,6 +479,88 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         ResourceCollection collection2 = controller.getResource().getSharedResourceCollections().iterator().next();
         Long collectionId2 = collection2.getId();
         assertEquals(collectionId, collectionId2);
+
+    }
+
+    
+    @Test
+    @Rollback
+    public void testUserPermIssuesUsers() throws TdarActionException {
+        //setup document
+        Person newUser = createAndSaveNewPerson();
+        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.prepare();
+        Document doc = dc.getDocument();
+        doc.setTitle("test");
+        doc.setDate(1234);
+        doc.setDescription("my description");
+        dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.MODIFY_METADATA));
+        dc.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+
+        // change the submitter to the admin
+        Long id = doc.getId();
+        doc = null;
+        dc = generateNewInitializedController(DocumentController.class, newUser);
+        dc.setId(id);
+        dc.prepare();
+        dc.edit();
+        dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.ADMINISTER_GROUP));
+        dc.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+
+        genericService.synchronize();
+
+
+    }
+    
+    
+    @Test
+    @Rollback
+    public void testUserPermIssUpload() throws TdarActionException {
+        //setup document
+        Person newUser = createAndSaveNewPerson();
+        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.prepare();
+        Document doc = dc.getDocument();
+        doc.setTitle("test");
+        doc.setDate(1234);
+        doc.setDescription("my description");
+        dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.MODIFY_METADATA));
+        dc.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+
+        // change the submitter to the admin
+        Long id = doc.getId();
+        doc = null;
+
+        genericService.synchronize();
+        UploadController uc= generateNewInitializedController(UploadController.class, newUser);
+        uc.getUploadFile().add(new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
+        uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
+        uc.upload();
+        Long ticketId = uc.getTicketId();
+        assertFalse(authenticationAndAuthorizationService.canDo(newUser, dc.getDocument(), InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.ADMINISTER_GROUP));
+        assertEquals(1,dc.getDocument().getInternalResourceCollection().getAuthorizedUsers().size() );
+        // try to edit as basic user -- should fail
+        dc = generateNewInitializedController(DocumentController.class, newUser);
+        dc.setId(id);
+        dc.prepare();
+        try {
+            dc.edit();
+            FileProxy fileProxy = new FileProxy();
+            fileProxy.setFilename(TestConstants.TEST_DOCUMENT_NAME);
+            fileProxy.setAction(FileAction.ADD);
+            fileProxy.setRestriction(FileAccessRestriction.CONFIDENTIAL);
+            dc.getFileProxies().add(fileProxy);
+            dc.setTicketId(ticketId);
+            dc.save();
+        } catch (TdarActionException e) {
+            assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), e.getStatusCode());
+        }
+        assertNotEmpty(dc.getActionErrors());
+        setIgnoreActionErrors(true);
+        
 
     }
 
