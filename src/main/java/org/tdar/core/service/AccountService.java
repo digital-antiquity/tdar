@@ -258,6 +258,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
 
             helper = new AccountEvaluationHelper(account, getLatestActivityModel());
+            getResourceEvaluator().evaluateResources(resourcesToEvaluate);
             logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
             processResourcesChronologically(helper, resourcesToEvaluate);
 
