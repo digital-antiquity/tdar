@@ -356,7 +356,11 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.FIND_ACTIVE_COUPON,
-            query = "from Coupon coupon where code=:code and (select count(*) from Invoice where coupon_id=coupon.id and transactionStatus!='TRANSACTION_PREPARED') = 0 and (select count(*) from Invoice where coupon_id=coupon.id and owner.id !=:ownerId) = 0"
+            query = "from Coupon coupon where code=:code and (select count(*) from Invoice where coupon_id=coupon.id and owner.id !=:ownerId) = 0"
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name = TdarNamedQueries.FIND_INVOICE_FOR_COUPON,
+            query = "from Invoice invoice where invoice.coupon.code=:code"
     )
 
 

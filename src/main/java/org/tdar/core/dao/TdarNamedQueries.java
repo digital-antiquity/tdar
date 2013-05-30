@@ -98,6 +98,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_SPARSE_ACTIVE_RESOURCES = "resources.active";
     public static final String INVOICES_FOR_PERSON = "invoices.forPerson";
     public static final String UNASSIGNED_INVOICES_FOR_PERSON = "invoices.unassignedForPerson";
+    public static final String FIND_INVOICE_FOR_COUPON = "invoices.coupons";
     // raw SQL/HQL queries
 
     public static final String QUERY_SQL_DASHBOARD =
