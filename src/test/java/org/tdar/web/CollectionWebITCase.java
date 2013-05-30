@@ -1,18 +1,18 @@
 package org.tdar.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;

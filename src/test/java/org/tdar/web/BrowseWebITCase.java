@@ -9,7 +9,6 @@ package org.tdar.web;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.httpclient.HttpStatus;
-import org.junit.Before;
 import org.junit.Test;
 
 public class BrowseWebITCase extends AbstractAnonymousWebTestCase {

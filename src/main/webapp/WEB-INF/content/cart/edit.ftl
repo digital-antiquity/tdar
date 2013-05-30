@@ -74,9 +74,7 @@
 						</tbody>
 						</table>
 				</div>
-				<#if editor>
 					<@s.textfield name="code" label="Redeem Code" />
-				</#if>
 			    <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" span="span4" />
 				
 			</div>

@@ -950,18 +950,21 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
         String invoiceid = getInput("id").getAttribute("value");
         submitForm();
-        assertCurrentUrlContains("process-payment-request");
-        clickLinkWithText("click here");
-        URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
-        String response = getAccountPollingRequest(polingUrl);
-        assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
-        checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
-        checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
-        // logger.info(getPageBodyCode());
-        checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
-        clickElementWithId("process-payment_0");
-        response = getAccountPollingRequest(polingUrl);
-        assertTrue(response.contains(expectedResponse.name()));
+        if (!total.equals("0")) {
+            assertCurrentUrlContains("process-payment-request");
+            clickLinkWithText("click here");
+            URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
+            String response = getAccountPollingRequest(polingUrl);
+            assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
+            checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
+            checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
+            // logger.info(getPageBodyCode());
+            checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
+            clickElementWithId("process-payment_0");
+            response = getAccountPollingRequest(polingUrl);
+            assertTrue(response.contains(expectedResponse.name()));
+        }
+        logger.info(getCurrentUrlPath());
         return invoiceid;
     }
 

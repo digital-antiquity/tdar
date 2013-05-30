@@ -94,7 +94,6 @@
 </table>
 
 
-<#if editor>
 	<h3>Voucher Codes</h3>
 	<table class="tableFormat table">
 	    <tr>
@@ -112,7 +111,7 @@
 	        <td>${coupon.numberOfFiles}</td>
 	        <td>${coupon.numberOfMb}</td>
 	        <td>${coupon.dateExpires}</td>
-	        <td>${coupon.code?upper_case}</td>
+	        <td class="voucherCode">${coupon.code?upper_case}</td>
 	        <td><#if coupon.dateRedeemed?has_content>${coupon.dateRedeemed} <#if coupon.user?has_content>(${coupon.user.properName})</#if></#if></td>
 	        <td><a href="mailto:${authenticatedUser.email}?${suffix}">send via email</a></td>
 	    </tr>
@@ -135,7 +134,7 @@
 	<@s.submit name="_tdar.submit" value="Create Coupon" cssClass="button submit-btn btn" />
 </@s.form>
 </div>
-</#if>
+
 <h3>Users who can charge to this account</h3>
 <table class="tableFormat table">
     <tr>
