@@ -49,7 +49,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         image.setDescription("test description");
         imageController.setServletRequest(getServletPostRequest());
         Person p = createAndSaveNewPerson();
-        imageController.getAuthorizedUsers().add(new AuthorizedUser(p, GeneralPermissions.MODIFY_METADATA));
+        imageController.getAuthorizedUsers().add(new AuthorizedUser(p, GeneralPermissions.MODIFY_RECORD));
 
         // create the dataset
         imageController.save();
