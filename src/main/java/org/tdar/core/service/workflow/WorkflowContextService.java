@@ -69,7 +69,7 @@ public class WorkflowContextService {
 
             // Finds the irFile. We could call orig.getInformationResourceFile() but we need irFile associated w/ the current hibernate session
             InformationResourceFile irFile = genericDao.find(InformationResourceFile.class, orig.getInformationResourceFileId());
-logger.info("IRFILE {}",irFile);
+            logger.info("IRFILE {}", irFile);
             if (ctx.getNumPages() >= 0) {
                 irFile.setNumberOfParts(ctx.getNumPages());
             }
@@ -135,9 +135,9 @@ logger.info("IRFILE {}",irFile);
                 irFile.setErrorMessage(ctx.getExceptionAsString());
             }
             genericDao.saveOrUpdate(irFile);
-//            logger.info("end status: {}", irFile.getStatus());
+            // logger.info("end status: {}", irFile.getStatus());
             irFile = genericDao.merge(irFile);
-//            logger.info("end status: {}", irFile.getStatus());
+            // logger.info("end status: {}", irFile.getStatus());
         }
         try {
             logger.debug(ctx.toXML());

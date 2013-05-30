@@ -54,6 +54,19 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    public void testKml() throws Exception {
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        ShapefileReaderTask task = new ShapefileReaderTask();
+        WorkflowContext wc = new WorkflowContext();
+        InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, "doc.kml", new File(TestConstants.TEST_KML),
+                store);
+        wc.getOriginalFiles().add(originalFile);
+        task.setWorkflowContext(wc);
+        task.run();
+    }
+
+    @Test
+    @Rollback
     public void testPolyShapeWithData() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         ShapefileReaderTask task = new ShapefileReaderTask();
@@ -89,11 +102,11 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testKML() throws Exception {
+    public void testFAIMSKML() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         ShapefileReaderTask task = new ShapefileReaderTask();
         WorkflowContext wc = new WorkflowContext();
-        String name = "doc";
+        String name = "Tracklog";
         String string = TestConstants.TEST_ROOT_DIR + TestConstants.TEST_GIS_DIR + "/kml/" + name;
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".kml", new File(string + ".kml"), store);
         // for (String ext : new String[] { ".tif.aux.xml" }) {

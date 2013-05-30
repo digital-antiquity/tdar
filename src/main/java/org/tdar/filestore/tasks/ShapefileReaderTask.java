@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -120,7 +122,9 @@ public class ShapefileReaderTask extends AbstractTask {
                 SimpleFeature f = (SimpleFeature) parser.parse(new FileInputStream(file));
                 Collection placemarks = (Collection) f.getAttribute("Feature");
                 for (Object mark : placemarks) {
-                    getLogger().info("{}", mark);
+                    SimpleFeature feature = (SimpleFeature)mark;
+                    Set<Entry<Object, Object>> entrySet = feature.getUserData().entrySet();
+                    getLogger().info("{}: {}", feature.getAttribute("name"), feature.getAttribute("description"));
                 }
                 break;
         }

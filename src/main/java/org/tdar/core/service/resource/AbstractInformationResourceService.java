@@ -91,7 +91,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             return new WorkflowResult(fileProxiesToProcess);
         }
 
-        // List<FileProxy> consolidatedProxies = validateAndConsolidateProxies(resource, fileProxiesToProcess);
         processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
         List<InformationResourceFileVersion> filesToProcess = new ArrayList<>();
 

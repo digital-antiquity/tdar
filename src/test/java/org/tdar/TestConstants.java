@@ -48,6 +48,7 @@ public interface TestConstants {
     public static String DEFAULT_EMAIL = "test@example.com";
     public static String DOCUENT_DATE_CREATED = "document.date";
     public static String TEST_DOCUMENT_ID = "4232";
+    public static String TEST_KML = TEST_ROOT_DIR +  TEST_GIS_DIR + "kml/doc.kml";
 
     public static final String DOCUMENT_FIELD_TITLE = "document.title";
     public static final String DOCUMENT_FIELD_DESCRIPTION = "document.description";
