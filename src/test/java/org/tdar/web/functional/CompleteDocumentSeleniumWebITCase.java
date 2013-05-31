@@ -41,7 +41,7 @@ import org.tdar.web.AbstractWebTestCase;
 //TODO: refactor the block-of-doom on near line 220.  
 
 
-public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
+public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();

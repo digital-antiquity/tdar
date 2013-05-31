@@ -14,7 +14,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
  * @author jimdevos
  * 
  */
-public class LoginFunctionalITCase extends SeleniumWebITCase {
+public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
 
     @Before
     public void setup() {
@@ -41,7 +41,8 @@ public class LoginFunctionalITCase extends SeleniumWebITCase {
     public void testInvalidLogin() {
         logout();
         login("BAD USERNAME", "BAD PASSWORD");
-        assertTrue(getText().contains(AuthenticationResult.INVALID_PASSWORD.getMessage()));
+        logger.info(getDom());
+        assertTrue(getDom().contains(AuthenticationResult.INVALID_PASSWORD.getMessage()));
         assertFalse(getText().contains("Your submitted projects"));
     }
 

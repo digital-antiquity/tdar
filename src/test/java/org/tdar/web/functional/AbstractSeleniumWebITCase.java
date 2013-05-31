@@ -3,7 +3,6 @@ package org.tdar.web.functional;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -15,6 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
+import org.junit.runner.Description;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
@@ -31,7 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 
-public abstract class SeleniumWebITCase {
+import com.opensymphony.xwork2.ActionSupport;
+
+public abstract class AbstractSeleniumWebITCase {
 
     public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
@@ -44,6 +48,9 @@ public abstract class SeleniumWebITCase {
         /*
          * We define a specific binary so when running "headless" we can specify a PORT
          */
+        String fmt = " ***   RUNNING TEST: {}.{}() ***";
+        logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
+
         FirefoxBinary fb = new FirefoxBinary();
         String xvfbPropsFile = System.getProperty("display.port");
         if (StringUtils.isNotBlank(xvfbPropsFile)) {
@@ -68,6 +75,9 @@ public abstract class SeleniumWebITCase {
         return profile;
     }
 
+    @Rule
+    public TestName testName = new TestName();
+
     /*
      * Shutdown Selenium
      */
@@ -85,15 +95,19 @@ public abstract class SeleniumWebITCase {
             logger.error("Could not close selenium driver: {}", ex);
         }
         driver = null;
+        String fmt = " *** COMPLETED TEST: {}.{}() ***";
+        logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
     }
 
     private void takeScreenshot() {
         try {
             File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             // Now you can do whatever you need to do with it, for example copy somewhere
-            FileUtils.copyFile(scrFile, new File("target/" + System.currentTimeMillis() +".png"));
+            File dir = new File("target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName());
+            dir.mkdirs();
+            FileUtils.copyFile(scrFile, new File(dir, System.currentTimeMillis() + ".png"));
         } catch (Exception e) {
-            logger.error("could not take screenshot" , e);
+            logger.error("could not take screenshot", e);
         }
     }
 
