@@ -443,6 +443,22 @@ public class WebElementSelection implements Iterable<WebElement>{
         }
         return parents;
     }
+    
+    /**
+     * return a selection representing a subset of this selection that contains only visible items
+     * @return
+     */
+    public WebElementSelection visibleElements() {
+        WebElementSelection subset = new WebElementSelection(elements);
+        Iterator<WebElement> iterator = subset.iterator();
+        while(iterator.hasNext()) {
+            WebElement elem = iterator.next();
+            if(!elem.isDisplayed()) {
+                iterator.remove();
+            }
+        }
+        return subset;
+    }
 }   
 
 

@@ -208,6 +208,8 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         
         assertEquals("count of edit buttons", 1, find(By.partialLinkText("EDIT")).size());
         find(By.partialLinkText("EDIT")).click();
+        expandAllTreeviews();
+
         String NEW_START_DATE = "100";
         find(By.name(COVERAGE_START)).val(NEW_START_DATE);
         submitForm();
@@ -227,6 +229,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         reindex();
         login();
         gotoPage("/document/add");
+        expandAllTreeviews();
         prepIndexedFields();        
         File uploadFile = new File(TEST_DOCUMENT);
         
@@ -288,6 +291,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
 
         // go to the edit page and ensure (some) of the form fields and values that we originally created are still present
         find(By.partialLinkText("EDIT")).click();
+        expandAllTreeviews();
         logger.debug("----now on edit page----");
         logger.trace(find("body").getText());
 
@@ -346,6 +350,18 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         assertNotNull(elem);
         
         assertEquals(elem.getAttribute("name"), fieldName);
+    }
+    
+    /**
+     * jquery treeview plugin has no method for "expand-all" because it is horrible.
+     */
+    private void expandAllTreeviews() {
+        int giveupCount = 0;
+        //yes, you really have to do this.  the api has no "expand all" method.
+        while(!find(".expandable-hitarea").visibleElements().isEmpty() && giveupCount++ < 10) {
+            find(".expandable-hitarea").visibleElements().click();
+        }
+        assertTrue("trying to expand all listview subtrees", giveupCount < 10);
     }
     
 }
