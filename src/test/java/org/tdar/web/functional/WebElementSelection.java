@@ -10,8 +10,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.Point;
-import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
@@ -327,45 +327,51 @@ public class WebElementSelection implements Iterable<WebElement>{
                 if(Arrays.asList("textarea", "select").contains(tag)) {
                     type = tag;
                 }
-                
-                switch(type) {
-                    case "button":
-                    case "radio":
-                    case "checkbox":
-                        
-                        if(
-                                //click to check if element has equal value and is not currently checked,   or...
-                                (elem.getAttribute("value").equals(val) && !elem.isSelected()) ||
-                                
-                                //...click to *uncheck* if element has unequal value and is currently checked
-                                (elem.getAttribute("value").equals(val) && elem.isSelected())
-                           ) {
-                            elem.click();
-                        }
-                        break;
-                    case "select":
-                        logger.debug("select element  enabled:{} val:{}", elem.isEnabled(), val);
-                        if(elem.isEnabled()) {
-                            Select sel = new Select(elem);
-                            if(sel.isMultiple()) {
-                                sel.deselectAll();
+                try {
+                    
+                    switch(type) {
+                        case "button":
+                        case "radio":
+                        case "checkbox":
+                            
+                            if(
+                                    //click to check if element has equal value and is not currently checked,   or...
+                                    (elem.getAttribute("value").equals(val) && !elem.isSelected()) ||
+                                    
+                                    //...click to *uncheck* if element has unequal value and is currently checked
+                                    (elem.getAttribute("value").equals(val) && elem.isSelected())
+                               ) {
+                                elem.click();
                             }
-                            sel.selectByValue(val);
-                        }
-                        break;
-                    case "hidden":
-                        logger.warn("ignoring hidden field: {}", elem);
-                        break;
-                    case "text":
-                    case "textarea":
-                    case "file": 
-                    case "password":
-                    default:
-                        //TODO: this will work for most html5 types except for "range"
-                        elem.clear();
-                        elem.sendKeys(val);
-                        break;
+                            break;
+                        case "select":
+                            logger.debug("select element  enabled:{} val:{}", elem.isEnabled(), val);
+                            if(elem.isEnabled()) {
+                                Select sel = new Select(elem);
+                                if(sel.isMultiple()) {
+                                    sel.deselectAll();
+                                }
+                                sel.selectByValue(val);
+                            }
+                            break;
+                        case "hidden":
+                            logger.warn("ignoring hidden field: {}", elem);
+                            break;
+                        case "text":
+                        case "textarea":
+                        case "file": 
+                        case "password":
+                        default:
+                            //TODO: this will work for most html5 types except for "range"
+                            elem.clear();
+                            elem.sendKeys(val);
+                            break;
+                    }
+                } catch (ElementNotVisibleException env) {
+                    logger.error("{} not visible: {}", elem.getTagName(), elem.getAttribute("name"));
+                    throw env;
                 }
+                
             }
         }
     }

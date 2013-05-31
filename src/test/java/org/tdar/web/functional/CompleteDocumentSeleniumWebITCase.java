@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import org.openqa.selenium.WebElement;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
@@ -41,12 +43,14 @@ import org.tdar.web.AbstractWebTestCase;
 
 public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
     public static HashMap<String, String> docValMap;
-    public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
-    public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
+    public static HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
+    public static HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();
     // we will assert the presence of these values, but we don't care what order they appear
     public static Map<String, String> docUnorderdValMap = new HashMap<String, String>();
     public static List<String> alternateTextLookup = new ArrayList<String>();
     public static List<String> alternateCodeLookup = new ArrayList<String>();
+    
+    
 
     @After
     public void logout() {
@@ -55,11 +59,11 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
     
     
     public CompleteDocumentSeleniumWebITCase() {
-        docValMap = new HashMap<String, String>();
+        docValMap = new LinkedHashMap<String, String>();
         // removing inline implementation of HashMap to remove serialization warning
         alternateTextLookup.add(AbstractWebTestCase.RESTRICTED_ACCESS_TEXT);
 
-        docValMap.put("projectId", "1");
+        docValMap.put("projectId", "-1");
         docValMap.put("document.title", "My Sample Document");
         docValMap.put("document.documentType", "OTHER");
         docValMap.put("authorshipProxies[0].person.firstName", "Jim");
@@ -96,9 +100,10 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
         docValMap.put("document.seriesName", "series title");
         docValMap.put("document.seriesNumber", "series number");
         docValMap.put("document.copyLocation", "copy location");
-        docValMap.put("document.bookTitle", "book title");
-        docValMap.put("document.journalName", "journal name");
-        docValMap.put("document.issn", "0002-9114");
+        //book title, journal name, issn field not relevant for OTHER documentType
+//        docValMap.put("document.bookTitle", "book title");
+//        docValMap.put("document.journalName", "journal name");
+//        docValMap.put("document.issn", "0002-9114");
         docValMap.put("document.startPage", "mcmxvii");
         docValMap.put("document.endPage", "MMMvii");
         docValMap.put("document.journalNumber", "1");
@@ -109,10 +114,15 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
         docValMap.put("otherKeywords[0]", "other");
         docValMap.put("uncontrolledCultureKeywords[0]", "German");
         docValMap.put("geographicKeywords[0]", "Georgia");
-        docValMap.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
-        docValMap.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
-        docValMap.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
-        docValMap.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
+        
+        
+        //FIXME: selenium can't manipulate these because they aren't visible.  That said,  we should do it the way a user would (e.g. 43°11′50″N)
+//        docValMap.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
+//        docValMap.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
+//        docValMap.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
+//        docValMap.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
+//        
+        
         docValMap.put("temporalKeywords[0]", "before time");
         docValMap.put("coverageDates[0].startDate", "1200");
         docValMap.put("coverageDates[0].endDate", "1500");
@@ -213,6 +223,7 @@ public class CompleteDocumentSeleniumWebITCase extends SeleniumWebITCase {
 
     @Test
     public void testCreateDocument() {
+        
         reindex();
         login();
         gotoPage("/document/add");
