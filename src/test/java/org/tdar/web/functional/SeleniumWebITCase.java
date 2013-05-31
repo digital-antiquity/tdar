@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxBinary;
@@ -70,10 +71,15 @@ public abstract class SeleniumWebITCase {
         logger.debug("after");
         try {
             driver.close();
-            driver = null;
-        } catch (Exception ex) {
+        } catch (UnhandledAlertException uae) {
+            logger.error("alert modal present when trying to close driver: {}", uae.getAlertText()); 
+            driver.switchTo().alert().dismiss();
+            driver.close();
+        }
+        catch (Exception ex) {
             logger.error("Could not close selenium driver: {}", ex);
         }
+        driver = null;
     }
 
     /*
