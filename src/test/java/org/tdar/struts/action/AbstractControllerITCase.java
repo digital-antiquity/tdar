@@ -11,10 +11,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingItem;
@@ -168,27 +170,42 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     Long uploadFile(String path, String name) {
+        String path_ = path;
+        String name_ = name;
+        if (name_.contains("src/test/")) {
+            path_ = FilenameUtils.getPath(name_);
+            name_ = FilenameUtils.getName(name_);
+        }
+        logger.info("name: {} path: {}", name_ , path_);
         UploadController controller = generateNewInitializedController(UploadController.class);
         controller.setSessionData(getSessionData());
         controller.grabTicket();
         Long ticketId = controller.getPersonalFilestoreTicket().getId();
         logger.info("ticketId {}", ticketId);
         controller = generateNewInitializedController(UploadController.class);
-        controller.setUploadFile(Arrays.asList(new File(path + "/" + name)));
-        controller.setUploadFileFileName(Arrays.asList(name));
+        controller.setUploadFile(Arrays.asList(new File(path_ + name_)));
+        controller.setUploadFileFileName(Arrays.asList(name_));
         controller.setTicketId(ticketId);
-        controller.upload();
+        String upload = controller.upload();
+        assertEquals(TdarActionSupport.SUCCESS, upload);
         return ticketId;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls) {
+        return setupAndLoadResource(filename, cls,-1L);
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) {
+        
         AbstractInformationResourceController controller = null;
         Long ticketId = -1L;
         if (cls.equals(Ontology.class)) {
             controller = generateNewInitializedController(OntologyController.class);
         } else if (cls.equals(Dataset.class)) {
             controller = generateNewInitializedController(DatasetController.class);
+            ticketId = uploadFile(getTestFilePath(), filename);
         } else if (cls.equals(Document.class)) {
             controller = generateNewInitializedController(DocumentController.class);
             ticketId = uploadFile(getTestFilePath(), filename);
@@ -201,6 +218,9 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         if (controller == null)
             return null;
 
+        if (Persistable.Base.isNotNullOrTransient(id )) {
+            controller.setId(id);
+        }
         controller.prepare();
         final Resource resource = controller.getResource();
         resource.setTitle(filename);
@@ -212,14 +232,14 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
         List<File> files = new ArrayList<File>();
         List<String> filenames = new ArrayList<String>();
-        File file = new File(getTestFilePath(), filename);
-        assertTrue("file not found:" + getTestFilePath() + "/" + filename, file.exists());
-        files.add(file);
-        filenames.add(filename);
         if (ticketId != -1) {
             controller.setTicketId(ticketId);
-            controller.setFileProxies(Arrays.asList(new FileProxy(filename, VersionType.UPLOADED, FileAccessRestriction.PUBLIC)));
+            controller.setFileProxies(Arrays.asList(new FileProxy(FilenameUtils.getName(filename), VersionType.UPLOADED, FileAccessRestriction.PUBLIC)));
         } else {
+            File file = new File(getTestFilePath(), filename);
+            assertTrue("file not found:" + getTestFilePath() + "/" + filename, file.exists());
+            files.add(file);
+            filenames.add(filename);
             controller.setUploadedFiles(files);
             controller.setUploadedFilesFileName(filenames);
         }

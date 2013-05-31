@@ -53,7 +53,9 @@ import org.tdar.utils.ExcelUnit;
  */
 public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
-    private static final String TEST_DATA_SET_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + "total-number-of-bones-per-period.xlsx";
+    private static final String TEST_DATASET_FILENAME = "total-number-of-bones-per-period.xlsx";
+
+    private static final String TEST_DATA_SET_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME;
 
     private static final File TEST_DATASET_FILE = new File(TEST_DATA_SET_FILE_PATH);
     private static final String EXCEL_FILE_NAME = "periods-modified-sm-01182011.xlsx";
@@ -363,23 +365,11 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     public void testCodingSheetMapping() throws Exception {
         CodingSheet codingSheet = setupCodingSheet();
 
-        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
-        datasetController.prepare();
-        Dataset dataset = datasetController.getDataset();
-        dataset.setTitle("test dataset");
-        dataset.setDescription("test description");
-        List<File> uploadedFiles = new ArrayList<File>();
-        List<String> uploadedFileNames = new ArrayList<String>();
-        uploadedFileNames.add(TEST_DATASET_FILE.getName());
-        uploadedFiles.add(TEST_DATASET_FILE);
-        datasetController.setUploadedFiles(uploadedFiles);
-        datasetController.setUploadedFilesFileName(uploadedFileNames);
-        datasetController.setServletRequest(getServletPostRequest());
-        datasetController.save();
+        Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME, Dataset.class);
         Long datasetId = dataset.getId();
         assertNotNull(datasetId);
         DataTableColumn period_ = dataset.getDataTables().iterator().next().getColumnByDisplayName("Period");
-        datasetController = generateNewInitializedController(DatasetController.class);
+        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
         datasetController.setId(datasetId);
         datasetController.prepare();
         datasetController.editColumnMetadata();
@@ -418,24 +408,12 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
             File bigFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
 
-            DatasetController datasetController = generateNewInitializedController(DatasetController.class);
-            datasetController.prepare();
-            Dataset dataset = datasetController.getDataset();
-            dataset.setTitle("test dataset");
-            dataset.setDescription("test description");
-            List<File> uploadedFiles = new ArrayList<File>();
-            List<String> uploadedFileNames = new ArrayList<String>();
-            uploadedFileNames.add(bigFile.getName());
-            uploadedFiles.add(bigFile);
-            datasetController.setUploadedFiles(uploadedFiles);
-            datasetController.setUploadedFilesFileName(uploadedFileNames);
-            datasetController.setServletRequest(getServletPostRequest());
-            datasetController.save();
+            Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx", Dataset.class);
             Long datasetId = dataset.getId();
             assertNotNull(datasetId);
             DataTableColumn num = dataset.getDataTableByGenericName("ds1").getColumnByDisplayName("num");
             assertNotNull(num);
-            datasetController = generateNewInitializedController(DatasetController.class);
+            DatasetController datasetController = generateNewInitializedController(DatasetController.class);
             datasetController.setId(datasetId);
             datasetController.prepare();
             datasetController.editColumnMetadata();
@@ -486,7 +464,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testDatasetMappingPreservation() throws Exception {
         CodingSheet codingSheet = setupCodingSheet();
-        Dataset dataset = setupIntegrationDataset(TEST_DATASET_FILE, "Test Dataset");
+        Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME,Dataset.class);
         DatasetController datasetController = generateNewInitializedController(DatasetController.class);
         Long datasetId = dataset.getId();
         DataTable table = dataset.getDataTables().iterator().next();
@@ -523,7 +501,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertEquals(period.getDefaultCodingSheet().getId(), codingSheet.getId());
         datasetService.createTranslatedFile(dataset);
 
-        Dataset newDataset = setupIntegrationDataset(TEST_DATASET_FILE, "Test Dataset", datasetId);
+        Dataset newDataset = setupAndLoadResource(TEST_DATASET_FILENAME,Dataset.class,datasetId);
 
         for (DataTable incomingDataTable : newDataset.getDataTables()) {
             for (DataTableColumn incomingColumn : incomingDataTable.getDataTableColumns()) {
@@ -536,33 +514,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         }
     }
 
-    public Dataset setupIntegrationDataset(File file, String datasetTitle) throws TdarActionException {
-        return setupIntegrationDataset(file, datasetTitle, null);
-    }
-
-    public Dataset setupIntegrationDataset(File file, String datasetTitle, Long datasetId) throws TdarActionException {
-        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
-        logger.info("setting resource id: " + datasetId);
-        if (datasetId != null) {
-            datasetController.setId(datasetId);
-        }
-        datasetController.prepare();
-
-        Dataset dataset = datasetController.getDataset();
-        dataset.setTitle(datasetTitle);
-        dataset.setDescription("test description");
-        List<File> uploadedFiles = new ArrayList<File>();
-        List<String> uploadedFileNames = new ArrayList<String>();
-        uploadedFileNames.add(file.getName());
-        uploadedFiles.add(file);
-        datasetController.setUploadedFiles(uploadedFiles);
-        datasetController.setUploadedFilesFileName(uploadedFileNames);
-        datasetController.setServletRequest(getServletPostRequest());
-        datasetController.save();
-        assertNotNull(dataset.getId());
-        assertEquals("controller shouldn't have action errors", 0, datasetController.getActionErrors().size());
-        return dataset;
-    }
 
     /**
      * @return
