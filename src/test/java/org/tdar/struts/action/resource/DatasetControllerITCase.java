@@ -216,15 +216,13 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testDatasetReplaceDifferentColTypes() throws TdarActionException {
         Dataset dataset = setupAndLoadResource("dataset_with_floats.xls", Dataset.class);
-        controller = generateNewInitializedController(DatasetController.class);
-        assertEquals(DataTableColumnType.DOUBLE, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
         String filename = "dataset_with_floats_to_varchar.xls";
-        controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
-        controller.setUploadedFilesFileName(Arrays.asList(filename));
-        controller.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(DataTableColumnType.DOUBLE, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
+        Long datasetId = dataset.getId();
+        dataset = null;
+        dataset = setupAndLoadResource(filename, Dataset.class, datasetId);
         assertEquals(DataTableColumnType.VARCHAR, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
+
     }
 
     @Test

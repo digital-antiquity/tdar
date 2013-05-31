@@ -193,11 +193,21 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls) {
-        return setupAndLoadResource(filename, cls,-1L);
+        return setupAndLoadResource(filename, cls,FileAccessRestriction.PUBLIC, -1L);
     }
-    
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) {
+        return setupAndLoadResource(filename, cls,permis, -1L);
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) {
+        return setupAndLoadResource(filename, cls,FileAccessRestriction.PUBLIC, id);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis,  Long id) {
         
         AbstractInformationResourceController controller = null;
         Long ticketId = -1L;
@@ -234,7 +244,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         List<String> filenames = new ArrayList<String>();
         if (ticketId != -1) {
             controller.setTicketId(ticketId);
-            controller.setFileProxies(Arrays.asList(new FileProxy(FilenameUtils.getName(filename), VersionType.UPLOADED, FileAccessRestriction.PUBLIC)));
+            controller.setFileProxies(Arrays.asList(new FileProxy(FilenameUtils.getName(filename), VersionType.UPLOADED, permis)));
         } else {
             File file = new File(getTestFilePath(), filename);
             assertTrue("file not found:" + getTestFilePath() + "/" + filename, file.exists());

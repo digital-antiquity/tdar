@@ -464,7 +464,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testDatasetMappingPreservation() throws Exception {
         CodingSheet codingSheet = setupCodingSheet();
-        Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME,Dataset.class);
+        Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME, Dataset.class);
         DatasetController datasetController = generateNewInitializedController(DatasetController.class);
         Long datasetId = dataset.getId();
         DataTable table = dataset.getDataTables().iterator().next();
@@ -500,8 +500,10 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         period = genericService.find(DataTableColumn.class, period_.getId());
         assertEquals(period.getDefaultCodingSheet().getId(), codingSheet.getId());
         datasetService.createTranslatedFile(dataset);
+        dataset = null;
+        genericService.synchronize();
 
-        Dataset newDataset = setupAndLoadResource(TEST_DATASET_FILENAME,Dataset.class,datasetId);
+        Dataset newDataset = setupAndLoadResource(TEST_DATA_SET_FILE_PATH, Dataset.class, datasetId);
 
         for (DataTable incomingDataTable : newDataset.getDataTables()) {
             for (DataTableColumn incomingColumn : incomingDataTable.getDataTableColumns()) {
@@ -513,7 +515,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             }
         }
     }
-
 
     /**
      * @return

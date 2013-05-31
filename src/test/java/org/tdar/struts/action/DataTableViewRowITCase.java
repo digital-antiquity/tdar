@@ -24,7 +24,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
 public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
-    private static final String TEST_DATASET = "../data_integration_tests/england_woods.xlsx";
+    private static final String TEST_DATASET = "src/test/resources/data_integration_tests/england_woods.xlsx";
     private DataTableViewRowController controller;
     private Dataset dataset;
 

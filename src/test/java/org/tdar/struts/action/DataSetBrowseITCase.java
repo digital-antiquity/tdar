@@ -28,8 +28,8 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
 
     private static final int RESULTS_PER_PAGE = 2;
 
-    private static final String DOUBLE_DATASET = "../coding sheet/double_translation_test_dataset.xlsx";
-    private static final String TEXT_DATASET = "../coding sheet/csvCodingSheetText.csv";
+    private static final String DOUBLE_DATASET = "src/test/resources/coding sheet/double_translation_test_dataset.xlsx";
+    private static final String TEXT_DATASET = "src/test/resources/coding sheet/csvCodingSheetText.csv";
 
     @Autowired
     private DatasetService datasetService;

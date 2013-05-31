@@ -14,21 +14,19 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
-import org.tdar.struts.data.FileProxy;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TdarActionSupport;
 
-public class DatasetConfidentialityITCase extends AbstractIntegrationTestCase {
+public class DatasetConfidentialityITCase extends AbstractControllerITCase {
 
     private static final String TEST_DATA_SET_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + "total-number-of-bones-per-period.xlsx";
-    private static final File TEST_DATASET_FILE = new File(TEST_DATA_SET_FILE_PATH);
     private static final String EXCEL_FILE_NAME = "periods-modified-sm-01182011.xlsx";
 
     Long datasetId = null;
@@ -39,28 +37,7 @@ public class DatasetConfidentialityITCase extends AbstractIntegrationTestCase {
 
         // CodingSheet codingSheet = setupCodingSheet();
 
-        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
-        datasetController.prepare();
-        Dataset dataset = datasetController.getDataset();
-        dataset.setTitle("test dataset");
-        dataset.setDescription("test description");
-        List<File> uploadedFiles = new ArrayList<File>();
-        List<String> uploadedFileNames = new ArrayList<String>();
-        uploadedFileNames.add(TEST_DATASET_FILE.getName());
-        uploadedFiles.add(TEST_DATASET_FILE);
-        datasetController.setUploadedFiles(uploadedFiles);
-        datasetController.setUploadedFilesFileName(uploadedFileNames);
-        datasetController.setServletRequest(getServletPostRequest());
-
-        // make the file confidential
-        FileProxy fileProxy = new FileProxy();
-        fileProxy.setFilename(TEST_DATASET_FILE.getName());
-        fileProxy.setAction(FileAction.ADD);
-        fileProxy.setRestriction(FileAccessRestriction.CONFIDENTIAL);
-        datasetController.getFileProxies().add(fileProxy);
-
-        // create the dataset
-        datasetController.save();
+        Dataset dataset = setupAndLoadResource(TEST_DATA_SET_FILE_PATH, Dataset.class, FileAccessRestriction.CONFIDENTIAL);
         genericService.synchronize();
         datasetId = dataset.getId();
         assertNotNull(datasetId);
@@ -72,7 +49,7 @@ public class DatasetConfidentialityITCase extends AbstractIntegrationTestCase {
         codingSheet.setDescription("test description");
         List<File> codingFiles = new ArrayList<File>();
         List<String> codingFileNames = new ArrayList<String>();
-        File codingFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR , EXCEL_FILE_NAME);
+        File codingFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, EXCEL_FILE_NAME);
         codingFiles.add(codingFile);
         codingSheet.setDefaultOntology(null);
         codingFileNames.add("periods-modified-sm-01182011-2.xlsx");
@@ -82,8 +59,6 @@ public class DatasetConfidentialityITCase extends AbstractIntegrationTestCase {
         codingSheetController.save();
         Long codingId = codingSheet.getId();
 
-        
-        
         // edit column metadata
         genericService.detachFromSession(dataset);
         dataset = null;
@@ -91,14 +66,14 @@ public class DatasetConfidentialityITCase extends AbstractIntegrationTestCase {
 
         DataTable dataTable = dataset.getDataTables().iterator().next();
         DataTableColumn period_ = dataTable.getColumnByDisplayName("Period");
-        datasetController = generateNewInitializedController(DatasetController.class);
+        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
         datasetController.setId(datasetId);
         datasetController.prepare();
         datasetController.editColumnMetadata();
         DataTableColumn cloneBean = (DataTableColumn) BeanUtils.cloneBean(period_);
         cloneBean.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
         cloneBean.setDefaultCodingSheet(codingSheet);
-        logger.info("{}" , cloneBean);
+        logger.info("{}", cloneBean);
         List<DataTableColumn> list = new ArrayList<DataTableColumn>();
         list.add(cloneBean);
         datasetController.setDataTableColumns(list);
@@ -115,5 +90,11 @@ public class DatasetConfidentialityITCase extends AbstractIntegrationTestCase {
                 return null;
             }
         });
+    }
+
+    @Override
+    protected TdarActionSupport getController() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
