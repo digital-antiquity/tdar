@@ -151,7 +151,7 @@ $(document).ready(function(){
 	<h2>Rates</h2>
 	<table class="tableFormat table">
 	    <tr>
-	        <th>Item</th>
+	        <th>Item/Service</th>
 	        <th>Cost</th>
 	    </tr>
 	    <#list activities as act>
