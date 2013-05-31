@@ -157,8 +157,10 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public WebElementSelection find(By by) {
+        logger.trace("find start: {}", by);
         WebElementSelection selection = new WebElementSelection(driver.findElements(by));
         logger.debug("criteria:{}\t  size:{}", by, selection.size());
+        logger.trace("find   end: {}", by);
         return selection;
     }
 
