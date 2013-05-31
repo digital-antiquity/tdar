@@ -11,6 +11,7 @@ import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
 
 /**
@@ -28,7 +29,7 @@ import org.tdar.struts.data.FileProxy;
 @Component
 @Scope("prototype")
 @Namespace("/geospatial")
-@Result(name = "input", location = "edit.ftl")
+@Result(name = TdarActionSupport.INPUT, location = "edit.ftl")
 public class GeospatialController extends AbstractDatasetController<Geospatial> {
 
 

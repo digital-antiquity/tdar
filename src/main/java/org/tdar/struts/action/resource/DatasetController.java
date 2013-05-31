@@ -53,14 +53,9 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
         // to mask weird sounds your engine is making
 
         handleUploadedFiles();
-        boolean fileChanged = false;
-        for (FileProxy proxy : getFileProxies()) {
-            if (proxy.getAction().equals(FileAction.ADD) || proxy.getAction().equals(FileAction.REPLACE)) {
-                fileChanged = true;
-            }
-        }
+
         // logger.debug("{}", getFileProxies());
-        if (fileChanged) {
+        if (isHasFileProxyChanges()) {
             setSaveSuccessPath("columns");
         }
         return SUCCESS;
@@ -88,8 +83,13 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
     }
 
     @Override
+    public boolean isMultipleFileUploadEnabled() {
+        return true;
+    }
+    
+    @Override
     public boolean supportsMultipleFileUpload() {
-        return false;
+        return true;
     }
 
 }

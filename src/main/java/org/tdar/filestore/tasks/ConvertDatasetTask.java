@@ -30,7 +30,7 @@ public class ConvertDatasetTask extends AbstractTask {
         }
 
         List<InformationResourceFileVersion> filesToProcess = new ArrayList<>(getWorkflowContext().getOriginalFiles());
-        
+
         File file = getWorkflowContext().getOriginalFiles().get(0).getTransientFile();
         File workingDir = new File(getWorkflowContext().getWorkingDirectory(), file.getName());
         workingDir.mkdir();
@@ -40,7 +40,6 @@ public class ConvertDatasetTask extends AbstractTask {
             version.setTransientFile(new File(workingDir, version.getFilename()));
         }
 
-        
         if (getWorkflowContext().getResourceType() == ResourceType.GEOSPATIAL) {
             for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
                 if (version.getExtension().equals("shp")) {
@@ -50,43 +49,48 @@ public class ConvertDatasetTask extends AbstractTask {
             }
         }
 
-        for (InformationResourceFileVersion versionToConvert : filesToProcess) {
-            file = versionToConvert.getTransientFile();
+        try {
+            for (InformationResourceFileVersion versionToConvert : filesToProcess) {
+                file = versionToConvert.getTransientFile();
 
-            if (file == null) {
-                getLogger().warn("No datasetFile specified, returning");
-                return;
+                if (file == null) {
+                    getLogger().warn("No datasetFile specified, returning");
+                    return;
+                }
+
+                if (versionToConvert == null || !versionToConvert.getTransientFile().exists()) {
+                    // abort!
+                    String msg = String.format(FILE_DOES_NOT_EXIST, versionToConvert, versionToConvert.getId());
+                    getLogger().error(msg);
+                    throw new TdarRecoverableRuntimeException(msg);
+                }
+
+                // drop this dataset's actual data tables from the tdardata database - we'll delete the actual hibernate metadata entities later after
+                // performing reconciliation so we can preserve as much column-level metadata as possible
+                getLogger().info(String.format("dropping tables %s", getWorkflowContext().getDataTablesToCleanup()));
+                for (String table : getWorkflowContext().getDataTablesToCleanup()) {
+                    getWorkflowContext().getTargetDatabase().dropTable(table);
+                }
+
+                Dataset transientDataset = new Dataset();
+                transientDataset.setStatus(Status.FLAGGED);
+                getWorkflowContext().setTransientResource(transientDataset);
+                DatasetConverter databaseConverter = DatasetConversionFactory.getConverter(versionToConvert, getWorkflowContext().getTargetDatabase());
+                // returns the set of transient POJOs from the incoming dataset.
+
+                Set<DataTable> tablesToPersist = databaseConverter.execute();
+                File indexedContents = databaseConverter.getIndexedContentsFile();
+                getLogger().trace("FILE:**** : " + indexedContents);
+
+                if (indexedContents != null && indexedContents.length() > 0) {
+                    addDerivativeFile(versionToConvert, indexedContents, VersionType.INDEXABLE_TEXT);
+                }
+                transientDataset.getDataTables().addAll(tablesToPersist);
+                transientDataset.getRelationships().addAll(databaseConverter.getRelationships());
             }
-
-            if (versionToConvert == null || !versionToConvert.getTransientFile().exists()) {
-                // abort!
-                String msg = String.format(FILE_DOES_NOT_EXIST, versionToConvert, versionToConvert.getId());
-                getLogger().error(msg);
-                throw new TdarRecoverableRuntimeException(msg);
-            }
-
-            // drop this dataset's actual data tables from the tdardata database - we'll delete the actual hibernate metadata entities later after
-            // performing reconciliation so we can preserve as much column-level metadata as possible
-            getLogger().info(String.format("dropping tables %s", getWorkflowContext().getDataTablesToCleanup()));
-            for (String table : getWorkflowContext().getDataTablesToCleanup()) {
-                getWorkflowContext().getTargetDatabase().dropTable(table);
-            }
-
-            Dataset transientDataset = new Dataset();
-            transientDataset.setStatus(Status.FLAGGED);
-            getWorkflowContext().setTransientResource(transientDataset);
-            DatasetConverter databaseConverter = DatasetConversionFactory.getConverter(versionToConvert, getWorkflowContext().getTargetDatabase());
-            // returns the set of transient POJOs from the incoming dataset.
-
-            Set<DataTable> tablesToPersist = databaseConverter.execute();
-            File indexedContents = databaseConverter.getIndexedContentsFile();
-            getLogger().trace("FILE:**** : " + indexedContents);
-
-            if (indexedContents != null && indexedContents.length() > 0) {
-                addDerivativeFile(versionToConvert, indexedContents, VersionType.INDEXABLE_TEXT);
-            }
-            transientDataset.getDataTables().addAll(tablesToPersist);
-            transientDataset.getRelationships().addAll(databaseConverter.getRelationships());
+        } catch (Exception e) {
+            getWorkflowContext().setErrorFatal(true);
+            throw e;
         }
     }
 

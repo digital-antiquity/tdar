@@ -21,6 +21,7 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
@@ -375,5 +376,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
      */
     public void setMappedCodingRules(List<CodingRule> mappedDataValues) {
         this.mappedCodingRules = mappedDataValues;
+    }
+
+    @Override
+    public Set<String> getValidFileExtensions() {
+     return  analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
     }
 }

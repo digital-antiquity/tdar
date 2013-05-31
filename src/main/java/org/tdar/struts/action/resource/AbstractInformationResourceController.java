@@ -139,6 +139,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(fileProxies, ticketId);
     }
 
+    private boolean hasFileProxyChanges = false;
+
     /**
      * One-size-fits-all method for handling uploaded InformationResource files.
      * 
@@ -153,13 +155,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         List<FileProxy> proxies = getFileProxiesToProcess();
         logger.debug("Final proxy set: {}", proxies);
 
-        boolean hasChanges = false;
         for (FileProxy proxy : proxies) {
             if (proxy != null && proxy.getAction() != FileAction.NONE) {
-                hasChanges = true;
+                setHasFileProxyChanges(true);
             }
         }
-        if (hasChanges && !getAuthenticationAndAuthorizationService().canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.MODIFY_RECORD)) {
+        if (isHasFileProxyChanges() && !getAuthenticationAndAuthorizationService().canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.MODIFY_RECORD)) {
             throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
         } 
 
@@ -622,6 +623,14 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             isAbleToUploadFiles = getAuthenticationAndAuthorizationService().canUploadFiles(getAuthenticatedUser(), getPersistable());
         }
         return isAbleToUploadFiles;
+    }
+
+    public boolean isHasFileProxyChanges() {
+        return hasFileProxyChanges;
+    }
+
+    public void setHasFileProxyChanges(boolean hasFileProxyChanges) {
+        this.hasFileProxyChanges = hasFileProxyChanges;
     }
 
 }
