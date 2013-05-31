@@ -74,9 +74,7 @@
 						</tbody>
 						</table>
 				</div>
-				<#if editor>
 					<@s.textfield name="code" label="Redeem Code" />
-				</#if>
 			    <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" span="span4" />
 				
 			</div>
@@ -153,7 +151,7 @@ $(document).ready(function(){
 	<h2>Rates</h2>
 	<table class="tableFormat table">
 	    <tr>
-	        <th>Item</th>
+	        <th>Item/Service</th>
 	        <th>Cost</th>
 	    </tr>
 	    <#list activities as act>

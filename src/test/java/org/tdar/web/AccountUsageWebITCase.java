@@ -26,7 +26,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     @Test
     public void testCartWithAccountFilling() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "us24");
+        setupBasicUser(personmap, "user124");
         testLogin(personmap, true);
         assertTextPresent("Create a new project");
 
@@ -46,6 +46,36 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         gotoPage("/resource/add");
         assertTextPresent("What would you like to put into tDAR");
         logger.info(getPageText());
+        gotoPage("/logout");
+    }
+
+    @Test
+    public void testCartWithCoupon() throws MalformedURLException {
+        Map<String, String> personmap = new HashMap<String, String>();
+        setupBasicUser(personmap, "user1124");
+        testLogin(personmap, true);
+        assertTextPresent("Create a new project");
+
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "20");
+        setInput("invoice.numberOfFiles", "2");
+        submitForm();
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        assertTrue(accountId != "-1");
+        logger.info(getCurrentUrlPath());
+        
+        setInput("numberOfFiles", "1");
+        submitForm("Create Coupon");
+        String code = querySelectorAll(".voucherCode").iterator().next().getFirstChild().toString();
+        logger.info("=======================================================\n" + code);
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfFiles", "1");
+        setInput("code", code);
+        submitForm();
+        invoiceId = testAccountPollingResponse("0", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        
         gotoPage("/logout");
     }
 
@@ -140,7 +170,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         submitForm();
 
         // make sure we're on the view page
-        assertPageTitleContains(title);
+        assertPageTitleEquals(title);
         assertTextPresentInPage(filename);
 
         // make sure were not flagged.

@@ -28,7 +28,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -258,16 +257,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
     }
 
-    public void assertPageTitleContains(String expectedTitle) {
-        if (internalPage instanceof HtmlPage) {
-            HtmlPage page = (HtmlPage) internalPage;
-            assertTrue(page.getTitleText().toLowerCase().contains(expectedTitle.toLowerCase()));
-        }
-        else {
-            Assert.fail(String.format("was looking for <title>%s</title> but server response was not a valid html page", expectedTitle));
-        }
-    }
-
     public HtmlElement getInput(String name) {
         HtmlPage page = (HtmlPage) internalPage;
         try {
@@ -364,7 +353,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     private String checkRadioButton(String value, List<DomElement> radioButtons) {
         List<HtmlInput> buttonsFound = new ArrayList<HtmlInput>();
         for (DomElement radioButton : radioButtons) {
-            if (radioButton.getAttribute("value").equals(value)) {
+            if (radioButton.getId().toLowerCase().endsWith(value.toLowerCase())) {
                 buttonsFound.add((HtmlInput) radioButton);
             }
         }
@@ -645,10 +634,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
         return internalPage.getWebResponse().getContentAsString();
     }
-    
-    
-    //return a fun-sized version of the response string ( title section, the error section and h1 through to the footer);
-    //FIXME:  too much expurgation!!!
+
+    // return a fun-sized version of the response string ( title section, the error section and h1 through to the footer);
+    // FIXME: too much expurgation!!!
     public String getPageBodyCode() {
         String content = getPageCode();
         String out = "";
@@ -663,7 +651,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
         return content;
     }
-   
 
     public String getPageCode() {
         String content = internalPage.getWebResponse().getContentAsString();
@@ -838,7 +825,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public String getPersonalFilestoreTicketId() {
         gotoPageWithoutErrorCheck("/upload/grab-ticket");
-        assertTrue("internalPage is not TextPage. It is: " + internalPage.getClass().getName(), internalPage instanceof TextPage);
         TextPage textPage = (TextPage) internalPage;
         String json = textPage.getContent();
         logger.debug("ticket json::" + json.trim());
@@ -862,7 +848,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         createInput("hidden", "fileProxies[" + rowNum + "].restriction", restriction.name());
         createInput("hidden", "fileProxies[" + rowNum + "].action", FileAction.ADD.name());
         createInput("hidden", "fileProxies[" + rowNum + "].fileId", "-1");
-        createInput("hidden", "fileProxies[" + rowNum + "].filename", FilenameUtils.getName(filename));
+        createInput("hidden", "fileProxies[" + rowNum + "].filename", filename);
         createInput("hidden", "fileProxies[" + rowNum + "].sequenceNumber", Integer.toString(rowNum));
     }
 
@@ -905,9 +891,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected void assertFileSizes(Page page, List<File> files) {
-        JSONObject json = (JSONObject) JSONSerializer.toJSON(page.getWebResponse().getContentAsString());
-        JSONArray jsonArray = json.getJSONArray("files");
-        logger.info(jsonArray.toString());
+        JSONArray jsonArray = (JSONArray) JSONSerializer.toJSON(page.getWebResponse().getContentAsString());
         for (int i = 0; i < files.size(); i++) {
             Assert.assertEquals("file size reported from server should be same as original", files.get(i).length(), jsonArray.getJSONObject(i).getLong("size"));
         }
@@ -947,7 +931,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput("ticketId", ticketId);
         setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
 
@@ -966,18 +950,21 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
         String invoiceid = getInput("id").getAttribute("value");
         submitForm();
-        assertCurrentUrlContains("process-payment-request");
-        clickLinkWithText("click here");
-        URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
-        String response = getAccountPollingRequest(polingUrl);
-        assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
-        checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
-        checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
-//        logger.info(getPageBodyCode());
-        checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
-        clickElementWithId("process-payment_0");
-        response = getAccountPollingRequest(polingUrl);
-        assertTrue(response.contains(expectedResponse.name()));
+        if (!total.equals("0")) {
+            assertCurrentUrlContains("process-payment-request");
+            clickLinkWithText("click here");
+            URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
+            String response = getAccountPollingRequest(polingUrl);
+            assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
+            checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
+            checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
+            // logger.info(getPageBodyCode());
+            checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
+            clickElementWithId("process-payment_0");
+            response = getAccountPollingRequest(polingUrl);
+            assertTrue(response.contains(expectedResponse.name()));
+        }
+        logger.info(getCurrentUrlPath());
         return invoiceid;
     }
 
@@ -1039,7 +1026,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput("loginPassword", pass);
         if (expectingErrors) {
             webClient.setThrowExceptionOnFailingStatusCode(false);
-            submitFormWithoutErrorCheck("_tdar.Login");
+            submitFormWithoutErrorCheck("Login");
             webClient.setThrowExceptionOnFailingStatusCode(true);
         } else {
             clickElementWithId("btnLogin");
@@ -1088,11 +1075,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // personmap.put("person.rpaNumber", "1234567890");
         personmap.put("requestingContributorAccess", "true");
     }
-    
+
     @Override
     public void onFail(Throwable e, Description description) {
-       //FIXME:  need to get this to fire *before* the @After method logs out.  otherwise the pageCode will always be the tdar login screen.
-       // logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
+        // FIXME: need to get this to fire *before* the @After method logs out. otherwise the pageCode will always be the tdar login screen.
+        // logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
     }
 
     public void reindexUnauthenticated() {

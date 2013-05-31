@@ -142,15 +142,17 @@ View freemarker macros
         <#local visibleCount = 0>
         <#list resource.informationResourceFiles as irfile>
          <#if (visibleCount > 4)><#local showAll = "view-hidden-extra-files"/></#if>
-              <#if irfile.latestUploadedVersion??>
+              <#if irfile.latestUploadedOrArchivalVersion??>
                   <#if !irfile.deleted><#local visibleCount = 1 + visibleCount /></#if>
-                      <#local ext = extensionMap[irfile.latestUploadedVersion.extension?lower_case ]!'' />
+                      <#local ext = extensionMap[irfile.latestUploadedOrArchivalVersion.extension?lower_case ]!'' />
                       <#if !ext?has_content>
                       <#local ext = extensionMap[resource.resourceType ] />
                       </#if>
                     <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
                         <i class="iconf ${ext} pull-left"></i>
                         <div class="media-body"><@createFileLink irfile true /></div>
+				<#else>
+				${irfile}
               </#if>
               <#if irfile.latestTranslatedVersion?? && resource.resourceType == 'DATASET' >
                 <blockquote>

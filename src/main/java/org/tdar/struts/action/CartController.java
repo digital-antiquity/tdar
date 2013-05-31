@@ -316,7 +316,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         // if the discount brings the total cost down to 0, then skip the credit card process
         if (invoice.getTotal() <= 0 && CollectionUtils.isNotEmpty(invoice.getItems())) {
             if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
-                getAccountService().redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
+//                getAccountService().redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
+                getAccountService().checkCouponStillValidForCheckout(invoice.getCoupon(), invoice);
             }
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
             getGenericService().saveOrUpdate(invoice);

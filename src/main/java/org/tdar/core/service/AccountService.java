@@ -633,6 +633,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     @Transactional
+    public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
+        getDao().checkCouponStillValidForCheckout(coupon, invoice);
+    }
+    
+    @Transactional
     public void redeemCode(Invoice persistable, Person user, String code) {
         if (StringUtils.isEmpty(code)) {
             return;

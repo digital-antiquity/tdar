@@ -123,7 +123,7 @@ var data = [];
     </tr>
 <#list resource.informationResourceFiles as file>
     <tr>
-        <td colspan="2"><b>${file.fileName}</b></td>
+        <td colspan="2">${file.fileName!"unnamed file"}</td>
         <td>${file.informationResourceFileType}</td>
         <td>${file.latestVersion}</td>
         <td>${file.restriction}</td>
@@ -134,6 +134,7 @@ var data = [];
         <td><#if file.errorMessage?has_content>${file.errorMessage}</#if></td>
     </tr>
 	<#list file.informationResourceFileVersions as vers>
+		<#if vers.uploaded >
 		<tr>
 			<td></td>
 	        <td>
@@ -147,6 +148,7 @@ var data = [];
 	       	<td>${vers.mimeType}</td>
 			<td></td>
 		</tr>
+		</#if>
 	</#list>
 </#list>
 </table>

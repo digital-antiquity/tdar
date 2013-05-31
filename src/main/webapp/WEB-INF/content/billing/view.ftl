@@ -94,8 +94,7 @@
 </table>
 
 
-<#if editor>
-	<h3>Coupon Codes</h3>
+	<h3>Voucher Codes</h3>
 	<table class="tableFormat table">
 	    <tr>
 			<th>files</th>
@@ -107,25 +106,25 @@
 	    </tr>
 	<#list account.coupons as coupon>
 		<#assign extraClass=""/>
-		<#assign suffix = "?cc=${authenticatedUser.email}&subject=tDAR%20Coupon&body=The%20following%20coupon%20code%20is%20good%20for%20${coupon.numberOfFiles}%20Files%20and%20${coupon.numberOfMb}%20MB.%0A%0A${coupon.code?upper_case}" />
+		<#assign suffix = "?cc=${authenticatedUser.email}&subject=tDAR%20Voucher&body=The%20following%20voucher%20code%20is%20good%20for%20${coupon.numberOfFiles}%20Files%20and%20${coupon.numberOfMb}%20MB.%0A%0A${coupon.code?upper_case}" />
 	    <tr class="">
 	        <td>${coupon.numberOfFiles}</td>
 	        <td>${coupon.numberOfMb}</td>
 	        <td>${coupon.dateExpires}</td>
-	        <td>${coupon.code?upper_case}</td>
+	        <td class="voucherCode">${coupon.code?upper_case}</td>
 	        <td><#if coupon.dateRedeemed?has_content>${coupon.dateRedeemed} <#if coupon.user?has_content>(${coupon.user.properName})</#if></#if></td>
 	        <td><a href="mailto:${authenticatedUser.email}?${suffix}">send via email</a></td>
 	    </tr>
 	</#list>
 	</table>
 <div class="well">
-<h3> Create Coupon</h3>
+<h3> Create Voucher</h3>
 <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
 <div class="row">
 	<div class="span4">
 		<@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" />
 	    <@s.hidden name="id" value="${account.id?c!-1}" />    
-		<@s.textfield name="exipres" cssClass="date" label="Date Expires"/>
+		<@s.textfield name="exipres" cssClass="date  datepicker" label="Date Expires"/>
 	</div>
 	<div class="span4">    
 		<@s.textfield name="numberOfFiles" cssClass="integer" label="Number of Files"/>
@@ -135,7 +134,7 @@
 	<@s.submit name="_tdar.submit" value="Create Coupon" cssClass="button submit-btn btn" />
 </@s.form>
 </div>
-</#if>
+
 <h3>Users who can charge to this account</h3>
 <table class="tableFormat table">
     <tr>
@@ -153,6 +152,7 @@
 
 <h3>Resources associated with this account</h3>
 <table class="tableFormat table">
+<thead>
     <tr>
         <th>Id</th>
         <th>Status</th>
@@ -161,6 +161,8 @@
         <th>Files</th>
         <th>Space (MB)</th>
     </tr>
+    <thead>
+    <tbody>
 <#list resources as resource>
 	<#assign stat = ""/>
 	<#if resource.status == 'FLAGGED_ACCOUNT_BALANCE'>
@@ -175,7 +177,16 @@
     <td>${resource.spaceUsedInMb}</td>
 </tr>
 </#list>
+</tbody>
 </table>
 
+<script>
+$(document).ready(function() {
+    $('.datepicker').datepicker({
+        dateFormat : 'm/d/y'
+    });
+
+ });
+</script>
 </body>
 </#escape>
