@@ -52,7 +52,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     @Test
     public void testCartWithCoupon() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "user124");
+        setupBasicUser(personmap, "user1124");
         testLogin(personmap, true);
         assertTextPresent("Create a new project");
 
