@@ -109,7 +109,7 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         testDatasetMapping();
         Dataset dataset = sharedDataset;
 
-        setupAndConvertDataset("tab_mapping_dataset2.tab", dataset.getId());
+        setupAndLoadResource("tab_mapping_dataset2.tab", Dataset.class, dataset.getId());
 
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override

@@ -163,8 +163,18 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     private void uploadDataset() {
-        gotoPage("/dataset/add");
         addCopyrightHolder(docValMap);
+
+        String ticketId = getPersonalFilestoreTicketId();
+        assertTrue("Expected integer number for ticket - but got: " + ticketId, ticketId.matches("([0-9]*)"));
+        String filename = docValMap.get("uploadedFiles");
+        docValMap.remove("uploadedFiles");
+        uploadFileToPersonalFilestore(ticketId, filename);
+
+        gotoPage("/dataset/add");
+        setInput("ticketId", ticketId);
+        addFileProxyFields(0, FileAccessRestriction.PUBLIC, filename);
+
         for (String key : docValMap.keySet()) {
             setInput(key, docValMap.get(key));
         }

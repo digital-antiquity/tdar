@@ -28,6 +28,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -861,7 +862,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         createInput("hidden", "fileProxies[" + rowNum + "].restriction", restriction.name());
         createInput("hidden", "fileProxies[" + rowNum + "].action", FileAction.ADD.name());
         createInput("hidden", "fileProxies[" + rowNum + "].fileId", "-1");
-        createInput("hidden", "fileProxies[" + rowNum + "].filename", filename);
+        createInput("hidden", "fileProxies[" + rowNum + "].filename", FilenameUtils.getName(filename));
         createInput("hidden", "fileProxies[" + rowNum + "].sequenceNumber", Integer.toString(rowNum));
     }
 
