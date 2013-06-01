@@ -131,7 +131,7 @@
 		<@s.textfield name="numberOfMb" cssClass="integer" label="Number of MB"/>
 	</div>
 	</div>
-	<@s.submit name="_tdar.submit" value="Create Coupon" cssClass="button submit-btn btn" />
+	<@s.submit name="_tdar.submit" value="Create Voucher" cssClass="button submit-btn btn" />
 </@s.form>
 </div>
 

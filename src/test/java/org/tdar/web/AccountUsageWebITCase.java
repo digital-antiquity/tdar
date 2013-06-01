@@ -67,7 +67,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         logger.info(getCurrentUrlPath());
         
         setInput("numberOfFiles", "1");
-        submitForm("Create Coupon");
+        submitForm("Create Voucher");
         String code = querySelectorAll(".voucherCode").iterator().next().getFirstChild().toString();
         logger.info("=======================================================\n" + code);
         gotoPage("/cart/add");
