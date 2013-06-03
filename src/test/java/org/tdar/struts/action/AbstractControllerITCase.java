@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
@@ -42,6 +44,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.struts.action.resource.CodingSheetController;
 import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.action.resource.DocumentController;
@@ -84,10 +87,10 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return account;
     }
 
-//    public Account createAccountWithOneItem(Person person) {
-//        return createA
-//    }
-    
+    // public Account createAccountWithOneItem(Person person) {
+    // return createA
+    // }
+
     public Invoice createInvoice(Person person, TransactionStatus status, BillingItem... items) {
         Invoice invoice = new Invoice();
         invoice.setItems(new ArrayList<BillingItem>());
@@ -176,7 +179,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             path_ = FilenameUtils.getPath(name_);
             name_ = FilenameUtils.getName(name_);
         }
-        logger.info("name: {} path: {}", name_ , path_);
+        logger.info("name: {} path: {}", name_, path_);
         UploadController controller = generateNewInitializedController(UploadController.class);
         controller.setSessionData(getSessionData());
         controller.grabTicket();
@@ -193,17 +196,17 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls) {
-        return setupAndLoadResource(filename, cls,FileAccessRestriction.PUBLIC, -1L);
+        return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, -1L);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) {
-        return setupAndLoadResource(filename, cls,permis, -1L);
+        return setupAndLoadResource(filename, cls, permis, -1L);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) {
-        return setupAndLoadResource(filename, cls,FileAccessRestriction.PUBLIC, id);
+        return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, id);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -248,10 +251,20 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         } else {
             File file = new File(getTestFilePath(), filename);
             assertTrue("file not found:" + getTestFilePath() + "/" + filename, file.exists());
+            if (FilenameUtils.getExtension(filename).equals("txt") && (controller instanceof AbstractSupportingInformationResourceController<?> )) {
+                AbstractSupportingInformationResourceController<?> asc = (AbstractSupportingInformationResourceController<?>) controller;
+                asc.setFileInputMethod(asc.FILE_INPUT_METHOD);
+                try {
+                asc.setFileTextInput(FileUtils.readFileToString(file));
+                } catch(Exception e) {
+                    Assert.fail(e.getMessage());
+                }
+            } else {
             files.add(file);
             filenames.add(filename);
             controller.setUploadedFiles(files);
             controller.setUploadedFilesFileName(filenames);
+            }
         }
         try {
             controller.setServletRequest(getServletPostRequest());

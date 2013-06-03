@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -181,6 +182,17 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     private void reconcile(List<OntologyNode> existingOntologyNodes, List<OntologyNode> incomingOntologyNodes) {
         getLogger().debug("existing ontology nodes: {}", existingOntologyNodes);
         getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
+
+        HashMap<String, OntologyNode> existingSet = new HashMap<>();
+        HashMap<String, OntologyNode> synonymsSet = new HashMap<>();
+        for (OntologyNode node : existingOntologyNodes) {
+            existingSet.put(node.getIri(), node);
+            for (String synonym : node.getSynonyms()) {
+                synonymsSet.put(synonym, node);
+            }
+            synonymsSet.put(node.getDisplayName(), node);
+        }
+
         for (int index = 0; index < incomingOntologyNodes.size(); index++) {
             // check to see if incoming has an equivalent in the existing nodes
             // if so, steal the ID
@@ -191,25 +203,51 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
              * A potential problem here is if synonyms have matches to multiple nodes. Look at "Other Tool/Unknown Tool" in
              * ontology test cases
              */
-            for (int existingIndex = 0; existingIndex < existingOntologyNodes.size(); existingIndex++) {
-                OntologyNode existing = existingOntologyNodes.get(existingIndex);
-                if (existing == null)
-                    continue;
-                getLogger().trace("checking {} | {} ", existing.getDisplayName(), incoming.getDisplayName());
-                if (incoming.isEquivalentTo(existing)) {
-                    Long original = existing.getId();
-                    Long in = incoming.getId();
-                    incoming = getDao().merge(incoming, existing);
-                    // incoming.setId(existing.getId());
-                    // getDao().detachFromSession(existing);
-                    // incoming = getDao().merge(incoming);
-                    getLogger().trace(in + " " + incoming.getDisplayName() + " -> " + incoming.getId() +
-                            " <--> e:" + existing.getId() + " " + existing.getDisplayName() +
-                            " ->" + original);
-                    incomingOntologyNodes.set(index, incoming);
-                    existingOntologyNodes.set(existingIndex, null);
-                }
+            OntologyNode existing = existingSet.get(incoming.getIri());
+            if (existing == null) {
+                existing = synonymsSet.get(incoming.getDisplayName());
             }
+
+            if (existing == null) {
+                continue;
+            }
+            Long original = existing.getId();
+            Long in = incoming.getId();
+            incoming = getDao().merge(incoming, existing);
+            // incoming.setId(existing.getId());
+            // getDao().detachFromSession(existing);
+            // incoming = getDao().merge(incoming);
+            getLogger().info(in + " " + incoming.getDisplayName() + " -> " + incoming.getId() +
+                    " <--> e:" + existing.getId() + " " + existing.getDisplayName() +
+                    " ->" + original);
+            incomingOntologyNodes.set(index, incoming);
+            existingOntologyNodes.remove(existing);
+            existingSet.remove(existing.getIri());
+            synonymsSet.remove(existing.getDisplayName());
+            for (String synonym : existing.getSynonyms()) {
+                synonymsSet.remove(synonym);
+            }
+            // existingOntologyNodes.set(existingIndex, null);
+            // }
+            // for (int existingIndex = 0; existingIndex < existingOntologyNodes.size(); existingIndex++) {
+            // OntologyNode existing = existingOntologyNodes.get(existingIndex);
+            // if (existing == null)
+            // continue;
+            // getLogger().trace("checking {} | {} ", existing.getDisplayName(), incoming.getDisplayName());
+            // if (incoming.isEquivalentTo(existing)) {
+            // Long original = existing.getId();
+            // Long in = incoming.getId();
+            // incoming = getDao().merge(incoming, existing);
+            // // incoming.setId(existing.getId());
+            // // getDao().detachFromSession(existing);
+            // // incoming = getDao().merge(incoming);
+            // getLogger().trace(in + " " + incoming.getDisplayName() + " -> " + incoming.getId() +
+            // " <--> e:" + existing.getId() + " " + existing.getDisplayName() +
+            // " ->" + original);
+            // incomingOntologyNodes.set(index, incoming);
+            // existingOntologyNodes.set(existingIndex, null);
+            // }
+            // }
         }
         existingOntologyNodes.removeAll(Collections.singleton(null));
         getLogger().debug("existing ontology nodes: {}", existingOntologyNodes);

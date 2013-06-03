@@ -45,7 +45,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         String filename = getPersistable().getTitle() + ".owl";
         // convert text input to OWL XML text and use that as our archival version
         String owlXml = getOntologyService().toOwlXml(getPersistable().getId(), fileTextInput);
-        getLogger().trace("owl xml is: \n{}", owlXml);
+        getLogger().info("owl xml is: \n{}", owlXml);
         return new FileProxy(filename, FileProxy.createTempFileFromString(owlXml), VersionType.UPLOADED);
     }
 

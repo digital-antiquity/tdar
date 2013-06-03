@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -568,12 +569,15 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     public void testOntologyNodeDuplicationOnReplace() throws TdarActionException, Exception {
         // 1. Load things...
         Ontology ontology = setupAndLoadResource("fauna-element-ontology.txt", Ontology.class);
-        Dataset dataset = setupAndLoadResource("src/test/resources/data_integration_tests/periods-modified-sm-01182011.xlsx", Dataset.class);
         Long ontology_id = ontology.getId();
+        genericService.refresh(ontology);
+        logger.info("nodes;{}", ontology.getOntologyNodes());
+        genericService.detachFromSession(ontology);
+        assertNotEmpty(ontology.getOntologyNodes());
+        Dataset dataset = setupAndLoadResource("src/test/resources/data_integration_tests/periods-modified-sm-01182011.xlsx", Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         dataset = null;
-        genericService.detachFromSession(ontology);
         controller.prepare();
         controller.editColumnMetadata();
 
@@ -602,30 +606,42 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         csc.prepare();
         csc.loadOntologyMappedColumns();
         List<CodingRule> rules = new ArrayList<>();
+        Map<String, Long> iriMap = new HashMap<>();
         for (CodingRule rule_ : csc.getCodingRules()) {
             CodingRule rule = (CodingRule) BeanUtils.cloneBean(rule_);
             rules.add(rule);
+            String iri = null;
             switch (rule.getCode()) {
                 case "b":
-                    rule.setOntologyNode(ontology.getNodeByIri("I2"));
+                    iri = "I2";
                     break;
                 case "c":
-                    rule.setOntologyNode(ontology.getNodeByIri("Upper_M3"));
+                    iri = "Upper_M3";
                     break;
                 case "d":
-                    rule.setOntologyNode(ontology.getNodeByIri("Molar"));
+                    iri = "Molar";
                     break;
                 default:
                     break;
+            }
+            if (iri != null) {
+                OntologyNode nodeByIri = ontology.getNodeByIri(iri);
+                rule.setOntologyNode(nodeByIri);
+                iriMap.put(iri, nodeByIri.getId());
             }
             logger.info("coding rule: {} ", rule);
         }
         csc.setCodingRules(rules);
         csc.saveValueOntologyNodeMapping();
         ontology = setupAndLoadResource("fauna-element-ontology-v2.txt", Ontology.class, ontology_id);
+        genericService.synchronize();
+        genericService.refresh(ontology);
         Set<OntologyNode> nodes = new HashSet<>(ontology.getOntologyNodes());
         assertEquals(nodes.size(), ontology.getOntologyNodes().size());
-        logger.info("nodes: {}", StringUtils.join(ontology.getOntologyNodes(), ",\r\n\t"));
+        for (String iri : iriMap.keySet()) {
+            assertEquals(iriMap.get(iri), ontology.getNodeByIri(iri).getId());
+        }
+        logger.trace("nodes: {}", StringUtils.join(ontology.getOntologyNodes(), ",\r\n\t"));
     }
 
 }
