@@ -21,9 +21,9 @@ View freemarker macros
         ${synonym}<#t>
         <#if synonym_has_next>, </#if><#t>
       </#list><#t>
-      )<#t></a>
+      )<#t>
     </#if>
-    </span><br>
+</a>    </span><br>
 </#macro>
 
 <#macro ontology sectionTitle="Parsed Ontology Nodes" previewSize=10 triggerSize=15>
