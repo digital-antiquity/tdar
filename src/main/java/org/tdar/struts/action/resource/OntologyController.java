@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
@@ -39,6 +40,9 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     private static final long serialVersionUID = 4320412741803278996L;
     private String iri;
     private List<Dataset> datasetsWithMappingsToNode;
+    private OntologyNode node;
+    private OntologyNode parentNode;
+    private List<OntologyNode> children;
 
     @Override
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
@@ -91,9 +95,15 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
             results = {
                     @Result(name = SUCCESS, location = "view-node.ftl")
             })
-    public String node() {
-        OntologyNode node = getOntology().getNodeByIri(getIri());
-        setDatasetsWithMappingsToNode(getOntologyNodeService().listDatasetsWithMappingsToNode(node));
+    public String node() throws TdarActionException {
+        setNode(getOntology().getNodeByIri(getIri()));
+        if (node == null) {
+            throw new TdarActionException(StatusCode.NOT_FOUND, "Ontology Node: " + getIri() + " does not exist");
+        }
+        setChildren(getChildElements(node));
+        setParentNode(getOntologyNodeService().getParent(node));
+        
+        setDatasetsWithMappingsToNode(getOntologyNodeService().listDatasetsWithMappingsToNode(getNode()));
         return SUCCESS;
     }
 
@@ -128,6 +138,30 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     public void setDatasetsWithMappingsToNode(List<Dataset> datasetsWithMappingsToNode) {
         this.datasetsWithMappingsToNode = datasetsWithMappingsToNode;
+    }
+
+    public OntologyNode getNode() {
+        return node;
+    }
+
+    public void setNode(OntologyNode node) {
+        this.node = node;
+    }
+
+    public List<OntologyNode> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<OntologyNode> children) {
+        this.children = children;
+    }
+
+    public OntologyNode getParentNode() {
+        return parentNode;
+    }
+
+    public void setParentNode(OntologyNode parentNode) {
+        this.parentNode = parentNode;
     }
 
 }

@@ -62,4 +62,15 @@ public class OntologyNodeDao extends Dao.HibernateBase<OntologyNode> {
         }
         return findAll(Dataset.class, ids);
     }
+
+    public OntologyNode getParentNode(OntologyNode node) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_ONTOLOGYNODE_PARENT);
+        query.setLong("ontologyId", node.getOntology().getId());
+        if (node.getIndex().indexOf(".") != -1) {
+            String index = node.getIndex().substring(0, node.getIndex().lastIndexOf("."));
+            query.setString("index", index);
+            return (OntologyNode) query.uniqueResult();
+        }
+        return null;
+    }
 }

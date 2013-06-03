@@ -18,6 +18,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY = "dataTableColumn.withDefaultOntology";
     public static final String QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME = "informationResource.findByFileName";
     public static final String QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD = "ontologyNode.allChildrenWithIndexWildcard";
+    public static final String QUERY_ONTOLOGYNODE_PARENT = "ontologyNode.parent";
     public static final String QUERY_ONTOLOGYNODE_ALL_CHILDREN = "ontologyNode.allChildren";
     public static final String QUERY_PROJECT_CODINGSHEETS = "project.codingSheets";
     public static final String QUERY_PROJECT_DATASETS = "project.datasets";

@@ -53,4 +53,8 @@ public class OntologyNodeService extends ServiceInterface.TypedDaoBase<OntologyN
     public List<Dataset> listDatasetsWithMappingsToNode(OntologyNode node) {
         return getDao().findDatasetsUsingNode(node);
     }
+
+    public OntologyNode getParent(OntologyNode node) {
+        return getDao().getParentNode(node);
+    }
 }

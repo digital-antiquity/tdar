@@ -14,14 +14,14 @@ View freemarker macros
 </#macro>
 
 <#macro displayNode ontologyNode>
-    <span style="padding-left:${ontologyNode.numberOfParents * 2}em">${ontologyNode.displayName} 
+    <span style="padding-left:${ontologyNode.numberOfParents * 2}em"><a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/${ontologyNode.iri}"/>">${ontologyNode.displayName} 
     <#if ontologyNode.synonyms?has_content>
         (<#t>
       <#list ontologyNode.synonyms as synonym><#t>
         ${synonym}<#t>
         <#if synonym_has_next>, </#if><#t>
       </#list><#t>
-      )<#t>
+      )<#t></a>
     </#if>
     </span><br>
 </#macro>

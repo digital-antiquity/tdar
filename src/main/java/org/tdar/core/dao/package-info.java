@@ -113,8 +113,11 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD,
-            query = "from OntologyNode o " +
-                    "where o.ontology.id=:ontologyId and index like :indexWildcardString"
+            query = "from OntologyNode o where o.ontology.id=:ontologyId and index like :indexWildcardString"
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name = TdarNamedQueries.QUERY_ONTOLOGYNODE_PARENT,
+            query = "from OntologyNode o where o.ontology.id=:ontologyId and index like :index"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_ONTOLOGYNODE_ALL_CHILDREN,

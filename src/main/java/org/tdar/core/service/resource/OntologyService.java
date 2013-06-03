@@ -217,7 +217,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
             // incoming.setId(existing.getId());
             // getDao().detachFromSession(existing);
             // incoming = getDao().merge(incoming);
-            getLogger().info(in + " " + incoming.getDisplayName() + " -> " + incoming.getId() +
+            getLogger().trace(in + " " + incoming.getDisplayName() + " -> " + incoming.getId() +
                     " <--> e:" + existing.getId() + " " + existing.getDisplayName() +
                     " ->" + original);
             incomingOntologyNodes.set(index, incoming);
