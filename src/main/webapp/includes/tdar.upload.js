@@ -88,7 +88,7 @@ TDAR.fileupload = function() {
                                 $("#fileProxyUploadBody").empty();
                             }
                             //fake out the fileupload widget to render our previously uploaded files by invoking it's 'uploadComplete' callback
-                            $fileupload.fileupload('option', 'done').call($fileupload[0], null, {result: files});
+                            $fileupload.fileupload('option', 'done').call($fileupload[0], null, {result: {"files":files}});
                             
                             //FIXME: the file.restriction select boxes won't have the correct state,  so as a hack we put the correct value in a data attr and reset it here
                             $filesContainer.find("select.fileProxyConfidential").each(function(){
