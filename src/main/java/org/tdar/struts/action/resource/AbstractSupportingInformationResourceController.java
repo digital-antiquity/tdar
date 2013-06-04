@@ -154,10 +154,12 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     }
 
     public List<Resource> getRelatedResources() {
-        relatedResources = new ArrayList<Resource>();
-        for (DataTable table : getDataTableService().findDataTablesUsingResource((Resource) getPersistable())) {
-            if (!table.getDataset().isDeleted()) {
-                relatedResources.add(table.getDataset());
+        if (relatedResources == null) {
+            relatedResources = new ArrayList<Resource>();
+            for (DataTable table : getDataTableService().findDataTablesUsingResource((Resource) getPersistable())) {
+                if (!table.getDataset().isDeleted()) {
+                    relatedResources.add(table.getDataset());
+                }
             }
         }
         return relatedResources;

@@ -699,6 +699,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertTextPresentInPage("Fauna Pathologies - Default Ontology Draft");
         assertTextPresentInPage("Indeterminate");
         assertTextPresentInPage("Fauna");
+        clickLinkWithText("Present (Present)");
+        assertTextPresent("Synonyms");
+        assertTextPresent("Parent");
+        assertTextPresent("Datasets that use Present");
+        clickLinkWithText("Fauna Pathologies - Default Ontology Draft (ontology root)");
     }
 
     public void testCodingSheetView() {

@@ -163,12 +163,6 @@
 	</rule>
 
 	<rule>
-		<from>^/ontology/([0-9]+)/([^\?]+)\??(.*)$</from>
-		<to>/ontology/node?id=$1&amp;iri=$2&amp;$3</to>
-	</rule>
-	
-	
-	<rule>
 		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)\??(.*)$
 		</from>
 		<to>/$1/$3?id=$2</to>
@@ -184,6 +178,12 @@
 		</from>
 		<to>/$1/$3/$2?$4</to>
 	</outbound-rule>
+
+	<rule>
+		<from>^/ontology/([0-9]+)/([^\?]+)\??(.*)$</from>
+		<to>/ontology/node?id=$1&amp;iri=$2&amp;$3</to>
+	</rule>
+	
 
 	<rule>
 		<from>^/(cart|billing)/([0-9]+)/(address|credit|simple|choose|polling|polling-check)$
