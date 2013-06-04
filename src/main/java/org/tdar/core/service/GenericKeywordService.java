@@ -150,6 +150,7 @@ public class GenericKeywordService extends GenericService {
     @Transactional
     public void updateOccurranceValues() {
         genericKeywordDao.updateOccuranceValues();
+        cache.clear();
     }
 
 }
