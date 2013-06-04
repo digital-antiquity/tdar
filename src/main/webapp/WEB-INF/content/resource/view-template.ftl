@@ -314,10 +314,13 @@
                     <li><strong>Series number</strong><br>${resource.seriesNumber}</li>
                     </#if>
                     <#if resource.journalName?has_content>
-                        <li><strong>Journal</strong><br>${resource.journalName}<#if resource.volume?has_content>, ${resource.volume}</#if>
+                        <li><strong>Journal</strong><br>${resource.journalName}
                             <!-- issue -->
                             <#if resource.journalNumber?has_content> (${resource.journalNumber}) </#if>
                         </li>
+                    </#if>
+                    <#if resource.volume?has_content>
+                    <li><strong>Volume</strong><br>${resource.volume}
                     </#if>
                       <#if resource.bookTitle?has_content>
                           <li><strong>Book Title</strong><br>${resource.bookTitle}</li>
