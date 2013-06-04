@@ -299,6 +299,17 @@ public class WebElementSelection implements Iterable<WebElement>{
     }
     
     /**
+     * @return list of strings corresponding to 'value' attribute of elements in this selection. 
+     */
+    public List<String> vals() {
+        List<String> vals = new LinkedList<String>();
+        for(WebElement elem : this) {
+            vals.add(elem.getAttribute("value"));
+        }
+        return vals;
+    }
+    
+    /**
      * Modify the current value all of the "form elements" in the selection. We define form elements to mean the elements which correspond to name/value pairs
      * that the browser sends after the user submits the form The method does this by simulating the steps that a user would perform (i.e. filling in 
      * text entry boxes, checking a checkbox, clicking on drop-down list option, etc). For example: <ul>

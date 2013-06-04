@@ -34,6 +34,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.web.AbstractWebTestCase;
 
 //TODO: implement a workaround for file uploads, including tricking fileupload ui to render new file proxy rows   
@@ -87,8 +88,8 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
 //        docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
 //        docValMap.put("authorizedUsers[0].user.properName", "Michelle Elliott");
 //        docValMap.put("authorizedUsers[1].user.properName", "Joshua Watts");
-        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
-        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
+//        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
+//        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         alternateTextLookup.add(Language.SPANISH.getLabel());
@@ -236,6 +237,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         clearFileInputStyles();
         find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
         waitFor(".delete-button");
+        find("#proxy0_conf").val(FileAccessRestriction.CONFIDENTIAL.name());
 
         docValMap.putAll(docUnorderdValMap);
 
@@ -276,16 +278,16 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
             }
         }
         for (String alt : alternateTextLookup) {
-            assertTrue(sourceContains(alt));
+            assertTrue("looking for '" + alt + "' in source", textContains(alt));
         }
         for (String alt : alternateCodeLookup) {
-            assertTrue(sourceContains(alt));
+            assertTrue("looking for '" + alt + "' in source", sourceContains(alt));
         }
 
         assertFalse(sourceContains("embargo"));
         for (String key : docMultiValMapLab.keySet()) {
             for (String val : docMultiValMapLab.get(key)) {
-                assertTrue(sourceContains(val));
+                assertTrue("looking for '" + val + "' in source" , sourceContains(val));
             }
         }
 
@@ -303,15 +305,15 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
                 continue;
 
             if (docUnorderdValMap.containsKey(key)) {
-                assertTrue(textContains(val));
+                assertTrue("looking for '" + val + "' in text", textContains(val));
             } else {
-                assertEquals(find(By.name("key")).val(), val);
+                assertEquals(find(By.name(key)).val(), val);
             }
         }
 
         for (String key : docMultiValMap.keySet()) {
             for (String val : docMultiValMap.get(key)) {
-                assertEquals(find(By.name("key")).val(), val);
+                assertTrue(String.format("key:%s  expected val:%s", key, val), find(By.name(key)).vals().contains(val));
             }
         }
 
@@ -321,10 +323,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         // make sure our 'async' file was added to the resource
         assertTrue(sourceContains(TEST_DOCUMENT_NAME));
 
-    }
-
-    public boolean setValue(String fieldName, String value) {
-        return false;
     }
     
     private boolean sourceContains(String substring) {
