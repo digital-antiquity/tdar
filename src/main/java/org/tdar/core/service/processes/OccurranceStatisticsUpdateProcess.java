@@ -37,9 +37,9 @@ public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<Hom
         person.setFirstName("system");
         person.setLastName("user");
         genericKeywordService.detachFromSession(person);
-        searchIndexService.indexAll(person, LookupSource.KEYWORD.getClasses());
-        searchIndexService.indexAll(person, LookupSource.PERSON.getClasses());
-        searchIndexService.indexAll(person, LookupSource.INSTITUTION.getClasses());
+//        searchIndexService.indexAll(person, LookupSource.KEYWORD.getClasses());
+//        searchIndexService.indexAll(person, LookupSource.PERSON.getClasses());
+//        searchIndexService.indexAll(person, LookupSource.INSTITUTION.getClasses());
     }
 
     @Override
