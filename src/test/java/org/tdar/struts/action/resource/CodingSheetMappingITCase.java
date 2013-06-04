@@ -505,7 +505,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertEquals(period.getDefaultCodingSheet().getId(), codingSheet.getId());
         datasetService.createTranslatedFile(dataset);
 
-        Dataset newDataset = setupAndLoadResource(TEST_DATASET_FILENAME, Dataset.class, datasetId);
+        Dataset newDataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME, Dataset.class, datasetId);
 
         for (DataTable incomingDataTable : newDataset.getDataTables()) {
             for (DataTableColumn incomingColumn : incomingDataTable.getDataTableColumns()) {
