@@ -156,7 +156,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
                 IOUtils.closeQuietly(writer);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("exception: {} ", e);
             }
         }
     }
@@ -337,6 +337,12 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
+    
+    @Override
+    public boolean isSingleRunProcess() {
+        return true;
+    }
+
 }

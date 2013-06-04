@@ -1,10 +1,12 @@
 package org.tdar.struts.action.search;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
@@ -27,6 +29,7 @@ import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -78,6 +81,7 @@ public class BrowseController extends AbstractLookupController {
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
+    private Object creatorXml;
 
     // private Keyword keyword;
 
@@ -124,13 +128,22 @@ public class BrowseController extends AbstractLookupController {
             creator = getGenericService().find(Creator.class, getId());
             QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser());
 
-            if (isEditor() && creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
-                try {
-                    getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) creator));
-                } catch (Throwable e) {
-                    logger.error("problem communicating with crowd getting user info for {} ", creator, e);
+            if (isEditor()) {
+                if (creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
+                    try {
+                        getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) creator));
+                    } catch (Throwable e) {
+                        logger.error("problem communicating with crowd getting user info for {} ", creator, e);
+                    }
                 }
-                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
+                try {
+                    setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
+                    File dir = new File(TdarConfiguration.getInstance().getPersonalFileStoreLocation(), "creatorInfo");
+                    setCreatorXml(FileUtils.readFileToString(new File(dir, creator.getId() + ".xml")));
+                } catch (Exception e) {
+                    logger.error("error: {}", e);
+                }
+
             }
 
             setPersistable(creator);
@@ -291,6 +304,14 @@ public class BrowseController extends AbstractLookupController {
 
     public void setGroups(List<String> groups) {
         this.groups = groups;
+    }
+
+    public Object getCreatorXml() {
+        return creatorXml;
+    }
+
+    public void setCreatorXml(Object creatorXml) {
+        this.creatorXml = creatorXml;
     }
 
 }

@@ -142,6 +142,11 @@
     </div>
 </div>
 
+<#if editor && creatorXml?has_content>
+${creatorXml?html}
+
+</#if>
+
 <div class="tdarresults">
 <@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" />
 </div>

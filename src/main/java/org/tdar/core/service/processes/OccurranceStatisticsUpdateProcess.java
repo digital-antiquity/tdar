@@ -8,7 +8,6 @@ import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
-import org.tdar.search.index.LookupSource;
 
 @Component
 public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
@@ -37,9 +36,9 @@ public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<Hom
         person.setFirstName("system");
         person.setLastName("user");
         genericKeywordService.detachFromSession(person);
-//        searchIndexService.indexAll(person, LookupSource.KEYWORD.getClasses());
-//        searchIndexService.indexAll(person, LookupSource.PERSON.getClasses());
-//        searchIndexService.indexAll(person, LookupSource.INSTITUTION.getClasses());
+        // searchIndexService.indexAll(person, LookupSource.KEYWORD.getClasses());
+        // searchIndexService.indexAll(person, LookupSource.PERSON.getClasses());
+        // searchIndexService.indexAll(person, LookupSource.INSTITUTION.getClasses());
     }
 
     @Override
