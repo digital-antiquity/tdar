@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.tdar.core.bean.HasLabel;
 
-public enum ScannerTechnologyType implements HasLabel { 
+public enum ScannerTechnologyType implements HasLabel {
+    NONE("Not Specified"),
     TIME_OF_FLIGHT("Time of Flight"),
     PHASE_BASED("Phase-based"),
     TRIANGULATION("Triangulation"),
