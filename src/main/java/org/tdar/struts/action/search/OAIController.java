@@ -348,10 +348,12 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         try {
             super.handleSearch(queryBuilder);
             total = getTotalRecords();
+            List<Long> ids = new ArrayList<>();
             for (Indexable i : getResults()) {
                 if (i instanceof Viewable && !((Viewable) i).isViewable())
                     continue;
                 OaiDcProvider resource = (OaiDcProvider) i;
+                ids.add(resource.getId());
                 // create OAI metadata for the record
                 OAIRecordProxy proxy = new OAIRecordProxy(
                         repositoryNamespaceIdentifier,
@@ -364,6 +366,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 }
                 records.add(proxy);
             }
+            logger.info("ALL IDS: {}", ids);
         } catch (TdarRecoverableRuntimeException e) {
             // this is expected as the cursor follows the "max" results for person/inst/resource so, whatever the max is
             // means that the others will throw this error.
