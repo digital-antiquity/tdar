@@ -41,11 +41,15 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     private String firstInstitutionIdentifier;
     private String firstResourceIdentifier;
 
+    private boolean indexed = false;
+
     @Before
     public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException {
-        reindex();
-
-        gotoPage("/logout");
+        if (!indexed) {
+            reindex();
+            gotoPage("/logout");
+            indexed = true;
+        }
         // establish namespace bindings for the XPath tests
         HashMap<String, String> namespaceBindings = new HashMap();
         namespaceBindings.put("oai", "http://www.openarchives.org/OAI/2.0/");
