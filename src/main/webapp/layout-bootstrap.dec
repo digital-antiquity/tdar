@@ -67,6 +67,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>">
+
     <#if qunit>
     <div id="qunit"></div>
     <div id="qunit-fixture">
@@ -303,6 +304,7 @@ ${_stacktrace?html}
     <#if qunit>
         <#-- close the test fixture div -->
         </div>
+        <script src="/test/js${namespace}/${actionName}.qunit.js"></script>
     </#if>
 	
     </body>
