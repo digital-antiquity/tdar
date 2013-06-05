@@ -71,7 +71,13 @@ public class DashboardController extends AuthenticationAware.Base {
         try {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
         if (isEditor() && indexingTask != null) {
-            String msg = String.format("%s is RE-INDEXING %s (%s)", indexingTask.getUser().getProperName(), getSiteAcronym(), indexingTask.getStartDate());
+            String properName = "unknown user";
+            try {
+                indexingTask.getUser().getProperName();
+            } catch (Exception e) {
+                logger.warn("reindexing user could not be determined");
+            }
+            String msg = String.format("%s is RE-INDEXING %s (%s)", properName, getSiteAcronym(), indexingTask.getStartDate());
             addActionMessage(msg);
         }
         } catch (Throwable t) {
