@@ -26,6 +26,8 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
 
 public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
 
@@ -60,7 +62,8 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             assertEquals(dataset, freshDataset);
             assertEquals(dataset.hashCode(), freshDataset.hashCode());
             // sanity check on other subtypes
-            for (Class<? extends Resource> resourceSubtype : new Class[] { Ontology.class, Document.class, Image.class, CodingSheet.class, Project.class }) {
+            for (Class<? extends Indexable> subtype : LookupSource.RESOURCE.getClasses()) {
+                Class<? extends Resource>resourceSubtype = (Class<? extends Resource>)subtype;
                 for (Resource r : genericService.findAll(resourceSubtype)) {
                     assertFalse(dataset.equals(r));
                     assertFalse(dataset.hashCode() == r.hashCode());
