@@ -12,7 +12,7 @@ import org.tdar.search.query.QueryFieldNames;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetable {
+public enum ResourceType implements HasLabel, Facetable<ResourceType> {
     CODING_SHEET("Coding Sheet", 9, "Dataset", "unknown", "Dataset",  CodingSheet.class),
     DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
     DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
@@ -116,6 +116,7 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
         return this == PROJECT;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -183,10 +184,12 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
         return openUrlGenre;
     }
 
+    @Override
     public Integer getCount() {
         return count;
     }
 
+    @Override
     public void setCount(Integer count) {
         this.count = count;
     }
@@ -196,6 +199,7 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
         return urlToReturn.toLowerCase().replaceAll("_", "-");
     }
 
+    @Override
     public String getLuceneFieldName() {
         return QueryFieldNames.RESOURCE_TYPE;
     }
