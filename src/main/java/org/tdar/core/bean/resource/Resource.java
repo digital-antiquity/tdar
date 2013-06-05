@@ -848,7 +848,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return resourceType.getLabel();
     }
 
-    public void setResourceType(ResourceType resourceType) {
+    public final void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
     }
 
