@@ -135,7 +135,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
 @XmlSeeAlso({ Document.class, InformationResource.class, Project.class,
-        CodingSheet.class, Dataset.class, Ontology.class, Image.class, SensoryData.class, Video.class })
+        CodingSheet.class, Dataset.class, Ontology.class, Image.class, SensoryData.class, Video.class, Geospatial.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource")
 @FetchProfiles(value = {
