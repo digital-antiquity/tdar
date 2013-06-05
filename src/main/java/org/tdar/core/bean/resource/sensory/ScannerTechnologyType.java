@@ -7,6 +7,7 @@ import org.tdar.core.bean.HasLabel;
 
 public enum ScannerTechnologyType implements HasLabel {
     //Time of Flight, Phase-based, Triangulation
+    NONE("Not Specified"),
     TIME_OF_FLIGHT("Time of Flight"),
     PHASE_BASED("Phase-based"),
     TRIANGULATION("Triangulation");

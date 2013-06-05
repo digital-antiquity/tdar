@@ -19,45 +19,11 @@
 </@edit.basicInformation>
 <@edit.citationInfo "sensoryData" />
 
-<@edit.asyncFileUpload "Sensory Data Files" true />
 
 <@edit.allCreators 'Sensory Data Creators' authorshipProxies 'authorship' />
 
 <div id="divSurveyInfo">
     <h2>Survey Information</h2>
-    <div id="divScannerTechnologyOptions">
-        <@s.radio name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"
-                    list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
-    </div>
-    <div id="scantypeFileReminder" style="display:none">
-        <div class="well">
-            <h4>Scan Metadata Templates</h4>
-            <p>Due to the variability and complexity of sensory data scans, we're providing templates you can use to include the details of how your scan was captured and composed.</p>
-            <h5>Available Templates</h5>
-            <div class="well">
-              <ul id="ulTemplateList">
-                  <li class="phase_based time_of_flight" id="liTofPhase">
-                  <span class="inlineblock">
-                      <a target="_blank" href="/includes/sensory-data/scan_metadata_tof_phase.xlsx"><i class="icon-file"></i> scan_metadata_tof.xlsx</a>
-                          best for time-of-flight and phase-based scans
-                  </span>
-                  </li>
-                  
-                  <li class="triangulation" id="liTriangulation">
-                  <span class="inlineblock">
-                      <a target="_blank"  href="/includes/sensory-data/scan_metadata_triangulation.xlsx" ><i class="icon-file"></i> scan_metadata_triangulation.xlsx</a>
-                          best for triangulation scans
-                  </span>
-                  </li>
-                  <li class="combined" id="liCombined">
-                  <span class="inlineblock"><a target="_blank"  href="/includes/sensory-data/scan_metadata_combined.xlsx" ><i class="icon-file"></i> scan_metadata_combined.xlsx</a>
-                          best for scans that involve multiple scan technologies
-                  </span>
-                  </li>
-              </ul>
-            </div>
-        </div>
-    </div>
     
     <div tiplabel="Survey Date(s)" tooltipcontent="Date of survey, or date range of survey.">
     <@s.textfield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" cssClass="shortfield date formatUS" placeholder="mm/dd/yyyy" />
@@ -72,11 +38,15 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <@s.textfield maxLength="255" name="sensoryData.surveyConditions" 
         tiplabel="Survey Conditions" tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)"
         cssClass="input-xxlarge" label="Conditions" labelposition="left" />
-    <div class="conditional-scantype combined phase_based time_of_flight triangulation" tiplabel="Scanner Details" tooltipcontent="Details of the instrument(s) with serial number(s) and scan units">
-    <@s.textfield maxLength="255" name="sensoryData.scannerDetails" cssClass="input-xxlarge" label="Scanner Details" labelposition="left" />
-    </div>
     <div tiplabel="Company / Operator Name" tooltipcontent="Details of company and scan operator name">
     <@s.textfield maxLength="255" name="sensoryData.companyName" cssClass="input-xxlarge" label="Company Name" labelposition="left" />
+    </div>
+    <div id="divScannerTechnologyOptions">
+        <@s.radio name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"
+                    list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
+    </div>
+    <div class="conditional-scantype combined phase_based time_of_flight triangulation" tiplabel="Scanner Details" tooltipcontent="Details of the instrument(s) with serial number(s) and scan units">
+        <@s.textfield maxLength="255" name="sensoryData.scannerDetails" cssClass="input-xxlarge" label="Scanner Details" labelposition="left" />
     </div>
     <div tiplabel="Estimated Data Resolution" tooltipcontent="The estimated average data resolution across the monument or object">
     <@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" label="Average Data Resolution" labelposition="left" />
@@ -108,6 +78,37 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     </div>
     
 </div>
+    <div id="scantypeFileReminder" style="display:none">
+        <div class="well">
+            <h4>Scan Metadata Templates</h4>
+            <p>Due to the variability and complexity of sensory data scans, we're providing templates you can use to include the details of how your scan was captured and composed.</p>
+            <h5>Available Templates</h5>
+            <div class="well">
+              <ul id="ulTemplateList">
+                  <li class="phase_based time_of_flight" id="liTofPhase">
+                  <span class="inlineblock">
+                      <a target="_blank" href="/includes/sensory-data/scan_metadata_tof_phase.xlsx"><i class="icon-file"></i> scan_metadata_tof.xlsx</a>
+                          best for time-of-flight and phase-based scans
+                  </span>
+                  </li>
+                  
+                  <li class="triangulation" id="liTriangulation">
+                  <span class="inlineblock">
+                      <a target="_blank"  href="/includes/sensory-data/scan_metadata_triangulation.xlsx" ><i class="icon-file"></i> scan_metadata_triangulation.xlsx</a>
+                          best for triangulation scans
+                  </span>
+                  </li>
+                  <li class="combined" id="liCombined">
+                  <span class="inlineblock"><a target="_blank"  href="/includes/sensory-data/scan_metadata_combined.xlsx" ><i class="icon-file"></i> scan_metadata_combined.xlsx</a>
+                          best for scans that involve multiple scan technologies
+                  </span>
+                  </li>
+              </ul>
+            </div>
+        </div>
+    </div>
+  
+<@edit.asyncFileUpload "Sensory Data Files" true />
 
 <div id="divScanInfo" style="display:none">
     <#assign _scans=sensoryDataScans />
