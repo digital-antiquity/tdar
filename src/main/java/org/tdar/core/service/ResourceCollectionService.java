@@ -43,6 +43,7 @@ import org.tdar.search.query.SortOption;
 @Service
 public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<ResourceCollection, ResourceCollectionDao> {
 
+    private static final String RESOURCE_COLLECTION_RIGHTS_ERROR = "You do not have the rights to add this resource to";
     @Autowired
     AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
@@ -320,6 +321,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
 
             if (collectionToAdd != null && collectionToAdd.isValid()) {
+                if (Persistable.Base.isNotNullOrTransient(collectionToAdd) && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
+                    throw new TdarRecoverableRuntimeException(RESOURCE_COLLECTION_RIGHTS_ERROR + collectionToAdd.getTitle() );
+                }
                 if (collectionToAdd.isTransient() && shouldSave) {
                     save(collectionToAdd);
                 }
