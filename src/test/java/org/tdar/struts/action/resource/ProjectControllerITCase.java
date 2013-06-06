@@ -228,6 +228,38 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     // create a new project and add it to a collection
     @Rollback
     public void testAddingToExistingCollection() throws Exception {
+        ResourceCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
+        genericService.synchronize();
+        assertNotNull(rc);
+
+        // try and fail due to rights
+        ProjectController controller = tryAndSaveCollectionToController(rc);
+        assertNotEquals(TdarActionSupport.SUCCESS, controller.save());
+        
+        rc.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.ADMINISTER_GROUP));
+        genericService.saveOrUpdate(rc);
+        genericService.synchronize();
+        // try ... and should succeed now that we add the user + permissions
+        controller = tryAndSaveCollectionToController(rc);
+        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        
+        
+        assertNotNull(controller.getProject());
+        Long id = controller.getProject().getId();
+        assertTrue("project should have been saved", id != null && id != -1L);
+        logger.info("HI!!! {}", id);
+
+        Project loadedProject = genericService.find(Project.class, id);
+        logger.info("{}", loadedProject);
+        // confirm that the controller added the list of resource collections to the project
+        assertTrue("collection list shouldn't be empty", loadedProject.getResourceCollections().size() > 0);
+
+        logger.debug("resource collection id:{}\t  {}", rc.getId(), rc);
+        genericService.synchronize();
+        setIgnoreActionErrors(true);
+    }
+
+    private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
         controller.setAsync(false);
@@ -237,11 +269,6 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         Project project = controller.getProject();
         project.setTitle("testing adding collection");
         project.setDescription("test");
-
-        ResourceCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
-        genericService.synchronize();
-        assertNotNull(rc);
-
         // controller expects incoming list of resource collections to be detached, so lets create one
         ResourceCollection detachedCollection = new ResourceCollection(rc.getType());
         detachedCollection.setName(rc.getName());
@@ -251,23 +278,11 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         detachedCollection.setSortBy(SortOption.RELEVANCE);
         detachedCollection.markUpdated(rc.getOwner());
         controller.getResourceCollections().add(detachedCollection);
-
+        assertNotEquals(getUser(), rc.getOwner());
         assertNotNull(detachedCollection.getOwner());
         assertTrue(detachedCollection.isValid());
         controller.validate();
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
-        Long id = project.getId();
-        assertTrue("project should have been saved", id != null && id != -1L);
-        logger.info("HI!!! {}", id);
-
-        assertNotNull(project);
-        Project loadedProject = genericService.find(Project.class, id);
-        logger.info("{}", loadedProject);
-        // confirm that the controller added the list of resource collections to the project
-        assertTrue("collection list shouldn't be empty", loadedProject.getResourceCollections().size() > 0);
-
-        logger.debug("resource collection id:{}\t  {}", rc.getId(), rc);
-        genericService.synchronize();
+        return controller;
     }
 
     @Test
