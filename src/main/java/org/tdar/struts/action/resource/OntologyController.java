@@ -1,6 +1,7 @@
 package org.tdar.struts.action.resource;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
@@ -40,6 +42,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     private static final long serialVersionUID = 4320412741803278996L;
     private String iri;
     private List<Dataset> datasetsWithMappingsToNode;
+    private List<CodingSheet> codingSheetsWithMappings = new ArrayList<CodingSheet>();
     private OntologyNode node;
     private OntologyNode parentNode;
     private List<OntologyNode> children;
@@ -74,6 +77,12 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         return getPersistable();
     }
 
+    @Override
+    protected void loadCustomMetadata() throws TdarActionException {
+        super.loadCustomMetadata();
+        getCodingSheetsWithMappings().addAll(getCodingSheetService().findAllUsingOntology(getOntology()));
+    }
+    
     @Override
     public Set<String> getValidFileExtensions() {
         return analyzer.getExtensionsForType(ResourceType.ONTOLOGY);
@@ -162,6 +171,14 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     public void setParentNode(OntologyNode parentNode) {
         this.parentNode = parentNode;
+    }
+
+    public List<CodingSheet> getCodingSheetsWithMappings() {
+        return codingSheetsWithMappings;
+    }
+
+    public void setCodingSheetsWithMappings(List<CodingSheet> codingSheetsWithMappings) {
+        this.codingSheetsWithMappings = codingSheetsWithMappings;
     }
 
 }

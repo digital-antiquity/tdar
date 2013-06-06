@@ -1,9 +1,14 @@
 package org.tdar.core.dao.resource;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.TdarNamedQueries;
 
 /**
@@ -28,6 +33,16 @@ public class CodingSheetDao extends ResourceDao<CodingSheet> {
         query.setParameter("codingSheet", codingSheet);
         query.setParameter("ontology", ontology);
         return query.executeUpdate();
+    }
+
+    public List<CodingSheet> findAllUsingOntology(Ontology ontology, List<Status> statuses) {
+        if (Persistable.Base.isNullOrTransient(ontology)) {
+            return Collections.EMPTY_LIST;
+        }
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY);
+        query.setParameter("ontologyId", ontology.getId());
+        query.setParameterList("statuses", statuses);
+        return query.list();
     }
 
 }

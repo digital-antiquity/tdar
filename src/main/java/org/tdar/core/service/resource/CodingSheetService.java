@@ -3,6 +3,7 @@ package org.tdar.core.service.resource;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.CodingSheetDao;
@@ -204,6 +206,11 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
                 getDao().updateDataTableColumnOntologies(codingSheet, ontology);
             }
         }
+    }
+
+    @Transactional(readOnly=true)
+    public List<CodingSheet> findAllUsingOntology(Ontology ontology) {
+        return getDao().findAllUsingOntology(ontology, Arrays.asList(Status.ACTIVE));
     }
 
 }

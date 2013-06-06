@@ -2,6 +2,14 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 
 <#macro afterBasicInfo>
+<#if codingSheetsWithMappings?has_content>
+	<h3>This Ontology is used by the following Coding Sheets</h3>
+	<ul>
+	<#list codingSheetsWithMappings as cs>
+		<li><a href="<@s.url value="/coding-sheet/${cs.id?c}"/>">${cs.title}</a></li>
+	</#list>
+	</ul>
+</#if>
 	<h3>Ontology</h3>
 	
 	<div id="infovis" class="img-polaroid ">
