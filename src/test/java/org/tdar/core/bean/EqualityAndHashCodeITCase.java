@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -17,21 +18,14 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.Image;
-import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
 
 public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
 
-    
     @Test
     public void testSkeletonPersonRetentionInSet() {
         HashSet<Person> personSet = new HashSet<Person>();
@@ -41,16 +35,16 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             person.setId(lng);
             personSet.add(person);
         }
-        logger.info("people: {}" , personSet);
+        logger.info("people: {}", personSet);
         assertEquals(2, personSet.size());
     }
 
-    
     @Test
     @Rollback(true)
     public void testEqualsHashCode() {
         List<Dataset> datasets = datasetService.findAll();
         for (Dataset dataset : datasets) {
+            // for every dataset, create a new one and make sure they're not equal
             Dataset freshDataset = createAndSaveNewDataset();
             assertFalse(dataset.equals(freshDataset));
             assertFalse(dataset.hashCode() == freshDataset.hashCode());
@@ -62,11 +56,18 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             assertEquals(dataset, freshDataset);
             assertEquals(dataset.hashCode(), freshDataset.hashCode());
             // sanity check on other subtypes
-            for (Class<? extends Indexable> subtype : LookupSource.RESOURCE.getClasses()) {
-                Class<? extends Resource>resourceSubtype = (Class<? extends Resource>)subtype;
-                for (Resource r : genericService.findAll(resourceSubtype)) {
-                    assertFalse(dataset.equals(r));
-                    assertFalse(dataset.hashCode() == r.hashCode());
+            if (dataset.getClass().equals(Dataset.class)) {
+                // only deal with datasets in this test
+                Class<? extends Indexable>[] classes = LookupSource.RESOURCE.getClasses();
+                classes = (Class<? extends Indexable>[]) ArrayUtils.removeElement(classes, Dataset.class);
+                classes = (Class<? extends Indexable>[]) ArrayUtils.removeElement(classes, Resource.class);
+                for (Class<? extends Indexable> subtype : classes) {
+                    Class<? extends Resource> resourceSubtype = (Class<? extends Resource>) subtype;
+
+                    for (Resource r : genericService.findAll(resourceSubtype)) {
+                        assertFalse(dataset.equals(r));
+                        assertFalse(dataset.hashCode() == r.hashCode());
+                    }
                 }
             }
         }
@@ -76,7 +77,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testAuthorizedUserInEquality() {
-        //with the equals and hashCode of AuthorizedUser, this is now never going to be true
+        // with the equals and hashCode of AuthorizedUser, this is now never going to be true
         AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
         AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
         assertNotEquals(authorizedUser, authorizedUser2);
@@ -109,7 +110,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
         for (int i = 0; i < numberOfPersonsToCreate; i++) {
             Person persistedPerson = personList.get(i);
 
-            //person equality based on db identity.  so the two person records should not be equal
+            // person equality based on db identity. so the two person records should not be equal
             Person person = new Person();
             person.setEmail(persistedPerson.getEmail());
             person.setRegistered(persistedPerson.isRegistered());
@@ -118,19 +119,18 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             person.setPhone(persistedPerson.getPhone());
             assertNotEquals(persistedPerson, person);
 
-            //the person record is 'transient'.  
+            // the person record is 'transient'.
             assertTrue(Persistable.Base.isTransient(person));
-            //if we simulate a save by giving it an ID, they are unequal
+            // if we simulate a save by giving it an ID, they are unequal
             person.setId(persistedPerson.getId() + 15L);
             assertNotEquals("these should still be equal even after save", persistedPerson, person);
-            
-            //now we set the id's to be the same.  so they should be considered 'equal' dispite different field values
+
+            // now we set the id's to be the same. so they should be considered 'equal' dispite different field values
             person.setId(persistedPerson.getId());
             assertEquals("these should still be equal even after save", persistedPerson, person);
             assertEquals("therefore hashcodes should be the same", persistedPerson.hashCode(), person.hashCode());
 
-
-            assertTrue ("person should be found in set", personSet.contains(person));
+            assertTrue("person should be found in set", personSet.contains(person));
         }
     }
 
@@ -145,7 +145,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
         genericService.save(b);
         a.setId(b.getId());
         c.setId(b.getId());
-        
+
         boolean eq = a.equals(b);
         logger.debug("a == b: {}", eq);
         assertEquals("a should equal b", a, b);
@@ -200,7 +200,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             person.setId(lng);
             personSet.add(person);
         }
-        //Person equality will always be based on equalityFields, and so the personset should only contain one instance.
+        // Person equality will always be based on equalityFields, and so the personset should only contain one instance.
         // changing to work with skeleton model
         assertEquals(2, personSet.size());
         logger.info("{}", personSet);
