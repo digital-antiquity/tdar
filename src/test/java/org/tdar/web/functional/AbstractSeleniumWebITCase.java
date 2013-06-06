@@ -5,6 +5,7 @@ import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -16,7 +17,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.junit.runner.Description;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
@@ -32,8 +32,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
-
-import com.opensymphony.xwork2.ActionSupport;
 
 public abstract class AbstractSeleniumWebITCase {
 
@@ -226,6 +224,20 @@ public abstract class AbstractSeleniumWebITCase {
         Object result = executor.executeScript(functionBody, arguments);
         return (T) result;
     }
+    
+    /**
+     * same as {@link #executeJavascript(String, Object...) but with exceptions suppressed}
+     * @param functionBody
+     * @param arguments
+     * @return
+     */
+    public <T> T executeJavascriptSilently(String functionBody, Object... arguments) {
+        T result = null;
+        try {
+            result = executeJavascript(functionBody, arguments);
+        } catch (Exception ignored){}
+        return result;
+    }
 
     // FIXME: implement someday. the tricky part is supporting nested properties e.g. "elem.style.position", especially when property doesn't exist yet
     public void setAttribute(WebElement elem, String property, Object value) {
@@ -358,6 +370,11 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void submitForm() {
         find("#submitButton").click();
+    }
+    
+    
+    public List<String> getJavascriptErrors() {
+        return executeJavascript("return window.__errorMessages;");
     }
 
 }
