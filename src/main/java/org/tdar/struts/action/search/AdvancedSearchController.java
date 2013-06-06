@@ -834,8 +834,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             "${contentLength}" }) })
     public String viewExcelReport() throws ParseException {
         try {
-            if (!isAuthenticated())
-                return UNAUTHORIZED;
+            if (!isAuthenticated()) {
+                throw new TdarActionException(StatusCode.FORBIDDEN, "Please log in before downloading");
+            }
             setMode("excel");
             setRecordsPerPage(200);
             search();
