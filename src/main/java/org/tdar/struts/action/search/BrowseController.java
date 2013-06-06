@@ -16,6 +16,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
@@ -81,7 +82,8 @@ public class BrowseController extends AbstractLookupController {
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
-    private Object creatorXml;
+    private String creatorXml;
+    private List<Account> accounts = new ArrayList<Account>(); 
 
     // private Keyword keyword;
 
@@ -135,6 +137,7 @@ public class BrowseController extends AbstractLookupController {
                     } catch (Throwable e) {
                         logger.error("problem communicating with crowd getting user info for {} ", creator, e);
                     }
+                    getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
                 }
                 try {
                     setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
@@ -306,12 +309,20 @@ public class BrowseController extends AbstractLookupController {
         this.groups = groups;
     }
 
-    public Object getCreatorXml() {
+    public String getCreatorXml() {
         return creatorXml;
     }
 
-    public void setCreatorXml(Object creatorXml) {
+    public void setCreatorXml(String creatorXml) {
         this.creatorXml = creatorXml;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 
 }

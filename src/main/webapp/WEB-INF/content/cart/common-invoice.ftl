@@ -46,9 +46,8 @@
 </#macro>
 
 <#macro paymentMethod includePhone=true>
-
     <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method" 
-    listValue="label"    cssClass="transactionType" emptyOption='false' />
+    listValue="label"    cssClass="transactionType fadeIfZeroed" emptyOption='false' />
 
 	<#if includePhone>
 	    <div class="typeToggle credit_card invoice manual">
@@ -77,6 +76,10 @@ $(document).ready(function() {
    $("#MetadataForm").submit(function() {
    	$("#MetadataForm_invoice_billingPhone").val($("#MetadataForm_invoice_billingPhone").val().replace(/([^\d]+)/ig,"") );
    });
+
+   if (${((invoice.calculatedCost!0) <= 0)?string}) {
+     $(".fadeIfZeroed").fadeTo('fast',.5);
+   }
 
 });
 

@@ -101,15 +101,20 @@
 
 				
                 <@common.resourceUsageInfo />
-
 				<#if (editor || id == authenticatedUser.id) >
-				<p><strong>Group Membership</strong></p>
-				<ul>
-				<#list groups as group>
-					<li>${group}</li>
-				</#list>
-				</ul>
-				
+<div class="row">
+	<div class="span6">
+	       <@common.billingAccountList accounts />
+		</div>
+		<div class="span6">
+			<h2>Group Membership</h2>
+			<ul>
+			<#list groups as group>
+				<li>${group}</li>
+			</#list>
+			</ul>
+	</div>
+</div>				
 					<#if creator.addresses?has_content >
 					<h3>Addresses</h3>
 					<div class="row">
