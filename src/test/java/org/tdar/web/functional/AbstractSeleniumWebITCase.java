@@ -5,7 +5,6 @@ import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -27,6 +26,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
+import org.openqa.selenium.support.events.WebDriverEventListener;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -37,9 +38,45 @@ public abstract class AbstractSeleniumWebITCase {
 
     public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
+    private boolean ignoreJavascriptErrors = false;
 
     WebDriver driver;
     protected Logger logger = LoggerFactory.getLogger(getClass());
+    
+    
+    //FIXME: it seems silly that you can't hook into some kind of "
+    private WebDriverEventListener eventListener = new WebDriverEventListener() {
+        public void afterNavigateTo(String url, WebDriver driver) {}
+        public void beforeNavigateBack(WebDriver driver) {}
+        public void afterNavigateBack(WebDriver driver) {}
+        public void beforeNavigateForward(WebDriver driver) {}
+        public void afterNavigateForward(WebDriver driver) {}
+        public void beforeFindBy(By by, WebElement element, WebDriver driver) {}
+        public void afterFindBy(By by, WebElement element, WebDriver driver) {}
+        public void afterClickOn(WebElement element, WebDriver driver) {}
+        public void beforeChangeValueOf(WebElement element, WebDriver driver) {}
+        public void afterChangeValueOf(WebElement element, WebDriver driver) {}
+        public void beforeScript(String script, WebDriver driver) {}
+        public void afterScript(String script, WebDriver driver) {}
+        public void onException(Throwable throwable, WebDriver driver) {}
+        
+        public void beforeClickOn(WebElement element, WebDriver driver) {
+            if(elementCausesNavigation(element)) {
+                reportJavascriptErrors();
+            }
+        }
+        
+        private boolean elementCausesNavigation(WebElement element) {
+            String tag = element.getTagName();
+            return (tag.equals("a")) 
+                    || (tag.equals("input") && "submit".equals(element.getAttribute("type")))
+                    || (tag.equals("button") && "submit".equals(element.getAttribute("type")));
+        }
+        
+        public void beforeNavigateTo(String url, WebDriver driver) {
+            reportJavascriptErrors();
+        }
+    };
 
     @Before
     public void before() throws MalformedURLException {
@@ -54,8 +91,12 @@ public abstract class AbstractSeleniumWebITCase {
         if (StringUtils.isNotBlank(xvfbPropsFile)) {
             fb.setEnvironmentProperty("DISPLAY", xvfbPropsFile);
         }
-        // Assert.fail("testing...");
-        driver = new FirefoxDriver(fb, newFirefoxProfile());
+        
+        WebDriver firefoxDriver = new FirefoxDriver(fb, newFirefoxProfile());
+        EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(firefoxDriver);
+        eventFiringWebDriver.register(eventListener);
+        
+        this.driver = eventFiringWebDriver;
     }
 
     public FirefoxProfile newFirefoxProfile() {
@@ -369,12 +410,36 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void submitForm() {
+        reportJavascriptErrors();
         find("#submitButton").click();
     }
     
     
     public List<String> getJavascriptErrors() {
         return executeJavascript("return window.__errorMessages;");
+    }
+    
+    public void setIgnoreJavascriptErrors(boolean ignoreJavascriptErrors) {
+        this.ignoreJavascriptErrors = ignoreJavascriptErrors;
+    }
+    
+    /**
+     * If any javascript errors have occured since last pageload, log them and (if ignoreJavascriptErrors==false) fail the test.
+     * 
+     * Note: most actions that cause page navigation will implicitly callreportJavascriptErrors() anyway, such as formSubmit(), gotoPage(),  and click events on 
+     *       links & buttons.  An example of when you might wish to explicitly call this method is when you expect a javascript function to modify the 
+     *       <code>Window.location</code> property, or if you call {@link WebElement#submit()} rather than submitForm();   
+     */
+    public void reportJavascriptErrors() {
+        List<String> errors = getJavascriptErrors();
+        if(errors == null) return;
+        logger.trace("javascript error report for {}", driver.getCurrentUrl());
+        for(String error : errors ) {
+            logger.error("javascript error: {}", error);
+        }
+        if(!errors.isEmpty() && !ignoreJavascriptErrors) {
+            Assert.fail("Encountered javascript errors on page: " + driver.getCurrentUrl());
+        }
     }
 
 }

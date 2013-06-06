@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 
 /**
@@ -51,5 +52,12 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
         logout();
         assertTrue(getText().contains("Log In"));
     }
+    
+    @Test
+    public void testClickSomething() {
+        find(By.linkText("edit")).first().click(); //one way of getting to a page
+        gotoPage("/dashboard");  //another way
+    }
+    
 
 }

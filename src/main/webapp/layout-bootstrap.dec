@@ -35,8 +35,6 @@
                 __errorMessages.push(msg + " url:" + url + " line:" + line);
                 return false; //dont suppress default event handler
             }
-            function __causeError() {window.foo.bar.baz = 5;}
-            __causeError();
         </script>
         </#if>
 		<#-- dev only 
