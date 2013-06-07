@@ -106,14 +106,15 @@
 	    </tr>
 	<#list account.coupons as coupon>
 		<#assign extraClass=""/>
-		<#assign suffix = "?cc=${authenticatedUser.email}&subject=tDAR%20Voucher&body=The%20following%20voucher%20code%20is%20good%20for%20${coupon.numberOfFiles}%20Files%20and%20${coupon.numberOfMb}%20MB.%0A%0A${coupon.code?upper_case}" />
+		<#assign sentence>The following voucher code is good for up to <#if (coupon.numberOfFiles?has_content && coupon.numberOfFiles > 0)>${coupon.numberOfFiles} file<#if (coupon.numberOfFiles > 1)>s</#if><#else>${coupon.numberOfMb} MB</#if>.</#assign>
+		<#assign suffix = "?cc=${authenticatedUser.email}&subject=tDAR%20Voucher&body=${sentence?url}%0A%0A${coupon.code?upper_case}" />
 	    <tr class="">
 	        <td>${coupon.numberOfFiles}</td>
 	        <td>${coupon.numberOfMb}</td>
 	        <td>${coupon.dateExpires}</td>
 	        <td class="voucherCode">${coupon.code?upper_case}</td>
 	        <td><#if coupon.dateRedeemed?has_content>${coupon.dateRedeemed} <#if coupon.user?has_content>(${coupon.user.properName})</#if></#if></td>
-	        <td><a href="mailto:${authenticatedUser.email}?${suffix}">send via email</a></td>
+	        <td><#if !coupon.dateRedeemed?has_content><a href="mailto:${authenticatedUser.email}?${suffix}">send via email</a></#if></td>
 	    </tr>
 	</#list>
 	</table>

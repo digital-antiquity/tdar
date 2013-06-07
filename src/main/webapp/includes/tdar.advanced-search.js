@@ -76,8 +76,7 @@ function initAdvancedSearch() {
         showGroupingSelectorIfNecessary($groupDiv);
     });
 
-    // register autocompletes
-    // FIXME: make our own combobox jquery plugin (or jquery ui widget)
+    // mimic combobox - show complete list when user clicks down-arrow
     $('#searchGroups').on("click", ".down-arrow", function() {
         $(this).siblings('.projectcombo, .collectioncombo').focus().autocomplete("search", "");
     });
