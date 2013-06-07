@@ -123,7 +123,7 @@ public class TdarConfiguration {
                     "george", "gerhard", "gero", "ghasidian", "gibbon", "gilbert", "gimbutas", "gjerstad", "goggin", "goodyear", "gopher", "goren", "graham",
                     "grakov", "greaves", "greene", "greenwell", "griffin", "grimes", "grote", "grube", "guarini", "hall", "hamed", "hanks", "hansen",
                     "harding", "harland", "harrington", "hasel", "haury", "hawass", "hawkes", "heizer", "hewett", "heydari", "heyne", "higgs", "hinton",
-                    "hirschfeld", "hoare", "hodder", "hodge", "hoffman", "holdaway", "hole", "holliday", "horsley", "horváth", "hourany", "hume", "huot",
+                    "hirschfeld", "hoare", "hodder", "hodge", "hoffman", "holdaway", "hole", "holliday", "horsley", "horvath", "hourany", "hume", "huot",
                     "imamovic", "isaac", "jahn", "jaubert", "jefferson", "jennings", "jewitt", "johanson", "johnson", "jones", "jorge", "joyce", "judge",
                     "kallee", "kamminga", "kamphaus", "kansu", "keeler", "kelley", "kelly", "kenyon", "kessler", "kidder", "kircher", "klein", "kloner",
                     "kober", "koldewey", "korfmann", "kossinna", "koşay", "kristiansen", "kuzman", "lanzi", "lape", "larcher", "lathrap", "lauer", "lawergren",
