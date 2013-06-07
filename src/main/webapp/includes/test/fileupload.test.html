@@ -1,0 +1,253 @@
+<!DOCTYPE HTML>
+<!-- jtd: this test harness is based off of jQuery File Upload Plugin Test 8.0. see attribution below -->
+
+<!--
+/*
+ * jQuery File Upload Plugin Test 8.0
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2010, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+-->
+<html lang="en">
+<head>
+<meta http-equiv="cache-control" content="max-age=0" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+<meta http-equiv="pragma" content="no-cache" />    
+<!-- Force latest IE rendering engine or ChromeFrame if installed -->
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
+<meta charset="utf-8">
+<title>jQuery File Upload Plugin Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet">
+<!--[if gt IE 8]><!--> <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen"> <!--<![endif]-->
+<link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/base/jquery-ui.css'>
+<link href="/css/tdar-base.css" rel="stylesheet">
+<link href="/css/tdar-print.css" rel="stylesheet" media="print">
+        
+
+
+<link rel="stylesheet" href="/css/qunit-1.11.0.css">
+<script src="/includes/qunit-1.11.0.js"></script>
+
+</head>
+<body>
+<h1 id="qunit-header">TDAR async file upload tests</h1>
+<h2 id="qunit-banner"></h2>
+<div id="qunit-testrunner-toolbar"></div>
+<h2 id="qunit-userAgent"></h2>
+<ol id="qunit-tests"></ol>
+<div id="qunit-fixture">
+    <!-- The file upload form used as target for the file upload widget -->
+    <form id="uploadform" action="../server/php/" method="POST" enctype="multipart/form-data">
+        <div id="divFileUpload" class="well-alt">
+        <input type="hidden" name="ticketId" value="865" id="ticketId">    <h2>Attach GIS Files</h2>
+          
+            <div id="fileuploadErrors" class="fileupload-error-container" style="display:none">
+                <div class="alert alert-block">
+                    <h4>We found the folllowing problems with your uploads</h4>
+                    <ul class="error-list"></ul>
+                    </div>
+            </div>
+            
+            <div class="">
+            <p><span class="label">Note:</span> To replace a file, simply upload the updated version.<br></p> 
+            </div>
+            <br>
+            <div class="row fileupload-buttonbar">
+                <div class="span2">
+                    <!-- The fileinput-button span is used to style the file input field as button -->
+                    <span class="btn btn-success fileinput-button">
+                        <i class="icon-plus icon-white"></i>
+                        <span>Add files...</span>
+                    <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" class="fileuploadErrors">
+                    </span>
+                </div>
+                <span class="help-block">
+                    Accepted file types: .aaa, .bbb, .ccc, .jpg, .jpeg, .tif, .tiff
+                </span>
+                <!-- The global progress information -->
+                <div class="span5 fileupload-progress fade">
+                    <!-- The global progress bar -->
+                    <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                        <div class="bar" style="width:0%;"></div>
+                    </div>
+                    <!-- The extended global progress information -->
+                    <div class="progress-extended">&nbsp;</div>
+                </div>
+            </div>
+            <!-- The loading indicator is shown during file processing -->
+            <div class="fileupload-loading"></div>
+            <br>
+                <!-- The table listing the files available for upload/download -->
+
+                        <div class="reorder hidden">
+                            Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  
+                        </div>
+                <table id="files" role="presentation" class="tableFormat table table-striped sortable">
+                    <thead>
+                       <tr><th><!--preview-->&nbsp;</th>
+                       <th>Name</th>
+                       <th>Size</th>
+                       <th colspan="2">Access Restrictions</th>
+                       <th colspan="2">Action</th>
+                    </tr></thead>
+                    <tbody id="fileProxyUploadBody" class="files">
+                    </tbody>
+                </table>
+            
+        </div>
+    </form>
+</div>
+
+
+
+
+
+<!-- The template to display files available for upload (uses tmpl.min.js) -->
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td class="preview"><span class="fade"></span></td>
+        <td class="name"><span>{%=file.name%}</span></td>
+        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        {% if (file.error) { %}
+            <td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
+        {% } else if (o.files.valid && !i) { %}
+            <td>
+                <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar" style="width:0%;"></div></div>
+            </td>
+            <td class="start">{% if (!o.options.autoUpload) { %}
+                <button class="btn btn-primary">
+                    <i class="icon-upload icon-white"></i>
+                    <span>Start</span>
+                </button>
+            {% } %}</td>
+        {% } else { %}
+            <td colspan="2"></td>
+        {% } %}
+        <td class="cancel">{% if (!i) { %}
+            <button class="btn btn-warning">
+                <i class="icon-ban-circle icon-white"></i>
+                <span>Cancel</span>
+            </button>
+        {% } %}</td>
+    </tr>
+{% } %}
+</script>
+
+<!-- The template to display files available for download (uses tmpl.min.js) -->
+
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+{% var idx = '' + TDAR.fileupload.getRowId();%}
+{% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
+    <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
+        {% if (file.error) { %}        
+            <td></td>
+            <td class="name"><span>{%=file.name%}</span></td>
+            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+            <td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
+        {% } else { %}
+            <td class="preview"></td>
+            <td class="name">
+                {% if (file.url) { %}        
+                <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
+                {% } else { %}
+                {%=file.name%}
+                {% } %} 
+                <span class="replacement-text"></span>
+            </td>
+            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+            <td colspan="2">
+<div class="control-group "><div class="controls">
+<select name="fileProxies[{%=idx%}].restriction" id="proxy{%=idx%}_conf" class="fileProxyConfidential" onchange="TDAR.fileupload.updateFileAction(this)" datarestriction="{%=file.restriction%}" style="padding-left: 20px;">
+    <option value="PUBLIC">Public</option>
+    <option value="EMBARGOED">Embargoed</option>
+    <option value="CONFIDENTIAL">Confidential</option>
+
+
+</select>
+</div>
+</div>
+            </td>
+        {% } %}
+        <td class="delete">
+                <button class="btn btn-danger delete-button" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
+                    <i class="icon-trash icon-white"></i>
+                    <span>Delete</span>
+                </button>
+        </td>
+        <td>
+            {%if (file.fileId) { %}
+                  <div class="btn-group">
+                    <button class="btn btn-warning disabled dropdown-toggle replace-button" disabled="disabled" data-toggle="dropdown">Replace <span class="caret"></span></button>
+                    <ul class="dropdown-menu" id="tempul">
+                      <li><a href="#">file 1</a></li>
+                      <li><a href="#">file 2</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#">cancel replace operation</a></li>
+                    </ul>
+                  </div> 
+            {% } %}
+            
+            
+
+
+            <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}"/>
+            <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}"/>
+            <input type="hidden" class="fileReplaceName" name="fileProxies[{%=idx%}].filename" value="{%=file.name%}"/>
+            <input type="hidden" class="fileSequenceNumber" name="fileProxies[{%=idx%}].sequenceNumber" value="{%=idx%}"/>
+            
+        </td>
+    </tr>
+{% } %}
+</script>
+
+<script id="template-replace-menu" type="text/x-tmpl">
+{% for(var i = 0, row; row = o.jqnewfiles[i]; i++) { %}
+   <li><a href="#" 
+            class="replace-menu-item"
+            data-action="rename"
+            data-filename="{%=$('.fileReplaceName', row).val()%}" 
+            data-target="#{%=$(row).attr('id')%}" 
+            >{%=$('.fileReplaceName', row).val()%}</a></li>
+{% } %}
+{% if(o.bReplacePending) { %}
+   <li class="divider"></li> 
+   <li><a href="#" class="cancel" >Cancel previous operation</a></li>
+{% } %}
+</script>
+
+
+
+    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+<script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+
+<script type="text/javascript" src="/includes/jquery.cookie.js"></script> 
+
+<script type="text/javascript" src="/includes/tdar.core.js"></script>
+<script type="text/javascript" src="/includes/tdar.upload.js"></script>
+<script type="text/javascript" src="/includes/tdar.formValidateExtensions.js"></script>
+<script type="text/javascript" src="/includes/tdar.jquery-upload-validation.js"></script>
+
+<script type="text/javascript" src="/includes/blueimp-javascript-templates/tmpl.min.js"></script>
+<script type="text/javascript" src="/includes/blueimp-jquery-file-upload-5.28.5/js/vendor/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="/includes/blueimp-jquery-file-upload-5.28.5/js/jquery.iframe-transport.js"></script>
+<script type="text/javascript" src="/includes/blueimp-jquery-file-upload-5.28.5/js/jquery.fileupload.js"></script>
+<script type="text/javascript" src="/includes/blueimp-jquery-file-upload-5.28.5/js/jquery.fileupload-fp.js"></script>
+<script type="text/javascript" src="/includes/blueimp-jquery-file-upload-5.28.5/js/jquery.fileupload-ui.js"></script>
+
+
+<script src="fileupload.test.js"></script>
+</body> 
+</html>
