@@ -6,11 +6,13 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 public class CharAnalyzer implements ColumnAnalyzer {
 	private int len = 0;
 
-	public DataTableColumnType getType() {
+	@Override
+    public DataTableColumnType getType() {
 		return DataTableColumnType.VARCHAR;
 	}
 
-	public boolean analyze(String value) {
+	@Override
+    public boolean analyze(String value) {
 		if (value == null)
 			return true;
 		if ("".equals(value))
@@ -24,7 +26,8 @@ public class CharAnalyzer implements ColumnAnalyzer {
 		return true;
 	}
 
-	public int getLength() {
+	@Override
+    public int getLength() {
 		return len;
 	}
 }
