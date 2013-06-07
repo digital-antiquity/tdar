@@ -376,8 +376,7 @@ function applyResourceAutocomplete($elements, type) {
     };
 
     applyGenericAutocomplete($elements, options);
-    //    var lookupUrl = getURI("lookup/resource");
-
+    $elements.autocomplete("option", "delay", 600);
 }
 
 function applyInstitutionAutocomplete($elements, newOption) {
