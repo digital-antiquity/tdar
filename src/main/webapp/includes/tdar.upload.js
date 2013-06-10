@@ -349,6 +349,16 @@ TDAR.fileupload = function() {
         return _nextRowId++;
     }
     
+    var _registerReplaceButton(formSelector) {
+        $(formSelector).bind('change', '.fileupload-replace' , function (e) {
+            $('#fileupload').fileupload('add', {
+                files: e.target.files || [{name: this.value}],
+                fileInput: $(this)
+            });
+        });
+        
+        //TODO: update the fileproxy fields in a 'done' event handler'
+    }
     
     //expose public elements
     return {

@@ -1565,5 +1565,11 @@ $(function() {
     </div>
 </#macro>
 
+<#macro fileuploadButton id="fileuploadButton" name="" label="" cssClass="">
+<span class="btn fileinput-button ${cssClass}" id="${id}Wrapper">
+    <span>${label}</span>
+    <input type="file" id="${id}" class="fileupload-replace">
+</span>
+</#macro>
 
 </#escape>
