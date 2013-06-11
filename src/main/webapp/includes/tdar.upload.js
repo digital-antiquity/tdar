@@ -49,7 +49,6 @@ TDAR.fileupload = function() {
 
         var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
         
-        $fileupload.bind("fileuploadcompleted", _updateReplaceButtons);
         $fileupload.bind("fileuploadcompleted", _updateReminder);
         //make sure the sequenceNumber field is correct after files are added (or the operation fails)
         var _updateSequenceNumbers =  function(e, data){
@@ -104,10 +103,6 @@ TDAR.fileupload = function() {
                     });
         }
         
-        //dynamically generate the replace-with dropdown list items with the the candidate replacement files
-        $fileupload.on("click", "button.replace-button", _buildReplaceDropdown);
-        
-        
         var helper = {
                 //reference back to fileupload widget's container element
                 context: $fileupload[0],
@@ -147,13 +142,17 @@ TDAR.fileupload = function() {
         
         //add reference to helper object  to form and inputFile
         $(_options.formSelector).add(_options.inputSelector).data('fileuploadHelper', helper);
-        
+
+        _registerReplaceButton(_options.formSelector);
+
         return helper;
     };
     
     
     
-    
+
+
+
     
     //update file proxy actionto indicate that the values have changed 
     var _updateFileAction = function(elemInRow) {
@@ -163,8 +162,7 @@ TDAR.fileupload = function() {
             $hdnAction.val("MODIFY_METADATA");
         }
     }
-    
-    
+
     //convert json returned from tDAR into something understood by upload-plugin, as well as fileproxy fields to send back to server
     var _translateIrFiles = function(fileProxies) {
         return $.map(fileProxies, function(proxy, i) {
@@ -211,26 +209,10 @@ TDAR.fileupload = function() {
         }[$btnDelete.data("type")] );
                
         
-        _updateReplaceButtons(e, data);
         console.log("destroy called. context:%s", data.context[0]);
     };
-    
-    
-    //if there are any newfile rows,  enable all the replace buttons
-    var _updateReplaceButtons = function(e, data) {
-        console.log("_updateReplaceButtons")
-        var $filesTable = $(data.context).closest("tbody.files");
-        var $newfileRows = $('.new-file:not(.replace-target,.deleted-file)', $filesTable);
-        
-        //if there are new files in the uploaded queue that arent already replace targets we can  enable all the replace buttons
-        if($newfileRows.length) {
-            //TODO: create simple jquery plugin .enable() and .disable()  that takes care of class + property in one shot.
-            $('button.replace-button', $filesTable).removeClass("disabled").prop("disabled", false);
-        } else {
-            $('button.replace-button', $filesTable).addClass("disabled").prop("disabled", true);
-        }
-    };
 
+    //TODO: replace this with a custom event
     var _updateReminder = function(e, data) {
         console.log("_updateReminder")
         var $filesTable = $(data.context).closest("tbody.files");
@@ -348,16 +330,38 @@ TDAR.fileupload = function() {
     var _getRowId = function() {
         return _nextRowId++;
     }
-    
-    var _registerReplaceButton(formSelector) {
-        $(formSelector).bind('change', '.fileupload-replace' , function (e) {
-            $('#fileupload').fileupload('add', {
+
+    var _registerReplaceButton = function(formSelector) {
+        console.log("registering replace button")
+
+        //invoke the fileupload widgets "add" method
+        $(formSelector).on('change', '.fileupload-replace' , function (e) {
+            console.log("triggering file upload");
+            $(formSelector).fileupload('add', {
                 files: e.target.files || [{name: this.value}],
-                fileInput: $(this)
+                fileInput: $(this),
+                $replaceTarget: $(this).closest(".existing-file")
             });
         });
-        
-        //TODO: update the fileproxy fields in a 'done' event handler'
+
+        //when the upload is complete&succesful, update file proxy fields to indicate incoming file is replacement
+        $(formSelector).bind("fileuploadcompleted", function(e, data) {
+            if(!data.$replaceTarget) return;
+            var file = data.files[0];
+            var $originalRow = data.$replaceTarget;
+            $originalRow.find(".fileReplaceName").val(file.name);
+            $originalRow.find(".fileAction").val("REPLACE");
+            $originalRow.find("td span.replacement-text").html(
+                    "<br><em>Will be replaced by:</em><br>"+
+                    file.name
+            );
+
+            //remove the new row
+            //TODO: the latest version of this fileupload allows deleting files with null data.url, use that instead
+            //FIXME: need to account for maxNumberOfFiles
+            $(data.context).remove();
+        });
+
     }
     
     //expose public elements

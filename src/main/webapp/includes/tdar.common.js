@@ -1051,7 +1051,7 @@ TDAR.common = function() {
         $("#possibleJsError").val("SAVE");
         $(form).not('.disableFormNavigate').FormNavigate({
             message:"Leaving the page will cause any unsaved data to be lost!",
-            customEvents: "repeatrowdeleted fileuploadstarted fileuploadfinished",
+            customEvents: "repeatrowdeleted fileuploadstarted",
             cleanOnSubmit: false
         });
 

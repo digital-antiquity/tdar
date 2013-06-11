@@ -1312,21 +1312,7 @@ $(function() {
         </td>
         <td>
             {%if (file.fileId) { %}
-               <#--
-                <button class="btn btn-warning disabled replace-button" disabled="disabled">
-                    <i class="icon-retweet icon-white"></i>
-                    <span>Replace</span>
-                </button>
-                -->
-                  <div class="btn-group">
-                    <button class="btn btn-warning disabled dropdown-toggle replace-button" disabled="disabled" data-toggle="dropdown">Replace <span class="caret"></span></button>
-                    <ul class="dropdown-menu" id="tempul">
-                      <li><a href="#">file 1</a></li>
-                      <li><a href="#">file 2</a></li>
-                      <li class="divider"></li>
-                      <li><a href="#">cancel replace operation</a></li>
-                    </ul>
-                  </div> 
+            <@edit.fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="fileupload-replace"/>
             {% } %}
             
             
@@ -1565,10 +1551,10 @@ $(function() {
     </div>
 </#macro>
 
-<#macro fileuploadButton id="fileuploadButton" name="" label="" cssClass="">
-<span class="btn fileinput-button ${cssClass}" id="${id}Wrapper">
+<#macro fileuploadButton id="fileuploadButton" name="" label="" cssClass="" buttonCssClass="">
+<span class="btn fileinput-button ${buttonCssClass}" id="${id}Wrapper">
     <span>${label}</span>
-    <input type="file" id="${id}" class="fileupload-replace">
+    <input type="file" name="uploadFile" id="${id}" class="${cssClass}">
 </span>
 </#macro>
 
