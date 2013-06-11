@@ -124,6 +124,16 @@
 	</outbound-rule>
 
 	<rule>
+		<from>^/filestore/(\d+)/(\w+)</from>
+		<to>/filestore/$2?informationResourceFileId=$1</to>
+	</rule>
+
+	<rule>
+		<from>^/filestore/(\d+)/?</from>
+		<to>/filestore/get?informationResourceFileId=$1</to>
+	</rule>
+
+	<rule>
 		<from>^/services//(.*)</from>
 		<to>/services/$1</to>
 	</rule>

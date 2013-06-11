@@ -6,9 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -85,7 +88,54 @@ public class DownloadService {
         if (ArrayUtils.isEmpty((irFileVersions)) || irFileVersions.length > 1) {
             throw new TdarRecoverableRuntimeException("unsupported action");
         }
-        InformationResourceFileVersion irFileVersion = irFileVersions[0];
+
+        File resourceFile = null;
+        String mimeType = null;
+        List<File> files = new ArrayList<>();
+        for (InformationResourceFileVersion irFileVersion : irFileVersions) {
+            resourceFile = getFileToDownload(authenticatedUser, dh, irFileVersion);
+            files.add(resourceFile);
+            mimeType = irFileVersion.getMimeType();
+
+            if (!irFileVersion.isDerivative()) {
+                InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
+                FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
+                genericService.save(stat);
+                if (irFileVersions.length > 1) {
+                    initDispositionPrefix(irFile.getInformationResourceFileType(), dh);
+                } else {
+                    initDispositionPrefix(FileType.FILE_ARCHIVE, dh);
+                }
+            }
+        }
+
+        try {
+        if (irFileVersions.length > 1) {
+            resourceFile = File.createTempFile("archiveDownload", "zip");
+            generateZipArchive(files, resourceFile);
+            mimeType = "application/zip";
+        }
+        } catch (Exception e) {
+            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
+        }
+        try {
+            logger.debug("downloading file:" + resourceFile.getCanonicalPath());
+        } catch (IOException e) {
+            // Note: this was being "eaten" ... so not sure if we should throw exception here or not
+            logger.error("{}", e);
+        }
+        dh.setContentLength(resourceFile.length());
+        dh.setContentType(mimeType);
+        if (dh.getInputStream() == null) {
+            try {
+                dh.setInputStream(new FileInputStream(resourceFile));
+            } catch (FileNotFoundException e) {
+                throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
+            }
+        }
+    }
+
+    private File getFileToDownload(Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion irFileVersion) throws TdarActionException {
         File resourceFile = null;
         try {
             resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFileVersion);
@@ -106,27 +156,7 @@ public class DownloadService {
                 logger.error("Error occured while merging cover page onto " + irFileVersion, e);
             }
         }
-        try {
-            logger.debug("downloading file:" + resourceFile.getCanonicalPath());
-        } catch (IOException e) {
-            // Note: this was being "eaten" ... so not sure if we should throw exception here or not
-            logger.error("{}", e);
-        }
-        dh.setContentLength(resourceFile.length());
-        dh.setContentType(irFileVersion.getMimeType());
-        if (dh.getInputStream() == null) {
-            try {
-                dh.setInputStream(new FileInputStream(resourceFile));
-            } catch (FileNotFoundException e) {
-                throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
-            }
-        }
-        if (!irFileVersion.isDerivative()) {
-            InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
-            FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
-            genericService.save(stat);
-            initDispositionPrefix(irFile.getInformationResourceFileType(), dh);
-        }
+        return resourceFile;
     }
 
     // indicate in the header whether the file should be received as an attachment (e.g. give user download prompt)

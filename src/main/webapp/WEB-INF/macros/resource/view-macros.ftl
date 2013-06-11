@@ -92,6 +92,13 @@ View freemarker macros
         <@downloadCount version />
 </#macro>
 
+<#macro createArchiveFileLink resource newline=false >
+          <a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="registerDownload('/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}', '${id?c}')" 
+          title="${resource.title}">
+              <@truncate resource.title 65 />
+          </a>
+</#macro>
+
 <#macro adminFileActions>
   <#if (resource.totalNumberOfFiles?has_content && resource.totalNumberOfFiles > 0)>
         <#if ableToReprocessDerivatives>
@@ -165,6 +172,10 @@ View freemarker macros
                     </li>
             </#if>
         </#list>
+        <li class="archiveLink media">
+        	<i class="iconf zip pull-left"></i>
+        	<div class="media-body"><@createArchiveFileLink resource=resource /></div>
+        </li>
         <#if (resource.totalNumberOfFiles == 0)>
             <li class="citationNote">This Resource is a citation<#if resource.copyLocation?has_content> a physical copy is located at ${resource.copyLocation}</#if></li>
         </#if>

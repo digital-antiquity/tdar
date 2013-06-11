@@ -2,6 +2,8 @@ package org.tdar.struts.action;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -12,13 +14,15 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.PdfService;
 import org.tdar.struts.data.DownloadHandler;
 
 @ParentPackage("secured")
-@Namespace("/filestore/{informationResourceFileId}")
+@Namespace("/filestore")
 @Results({
         @Result(name = TdarActionSupport.SUCCESS, type = "stream",
                 params = {
@@ -80,13 +84,13 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             getLogger().warn(msg);
             return FORBIDDEN;
         }
-        informationResourceId = irFileVersion.getInformationResourceId();
-        getDownloadService().handleDownload( getAuthenticatedUser(), this, irFileVersion);
+        setInformationResourceId(irFileVersion.getInformationResourceId());
+        getDownloadService().handleDownload(getAuthenticatedUser(), this, irFileVersion);
         return SUCCESS;
     }
 
     @Action(value = THUMBNAIL, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
-    public String thumbnail() throws TdarActionException  {
+    public String thumbnail() throws TdarActionException {
         InformationResourceFileVersion irFileVersion = null;
         if (informationResourceFileId == null)
             return ERROR;
@@ -108,6 +112,25 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         }
 
         getDownloadService().handleDownload(getAuthenticatedUser(), this, irFileVersion);
+        return SUCCESS;
+    }
+
+    @Action(value = "downloadAllAsZip")
+    public String zip() throws TdarActionException {
+        if (getInformationResourceId() == null)
+            return ERROR;
+
+        InformationResource ir = (InformationResource) getResourceService().find(getInformationResourceId());
+        List<InformationResourceFileVersion> versions = new ArrayList<>();
+        for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
+            if (!getAuthenticationAndAuthorizationService().canDownload(irf, getSessionData().getPerson())) {
+                getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
+                return FORBIDDEN;
+            }
+            versions.add(irf.getLatestUploadedVersion());
+        }
+
+        getDownloadService().handleDownload(getAuthenticatedUser(), this, versions.toArray(new InformationResourceFileVersion[0]));
         return SUCCESS;
     }
 
@@ -181,6 +204,10 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     @Override
     public void setDispositionPrefix(String string) {
         this.dispositionPrefix = string;
+    }
+
+    public void setInformationResourceId(Long informationResourceId) {
+        this.informationResourceId = informationResourceId;
     }
 
 }
