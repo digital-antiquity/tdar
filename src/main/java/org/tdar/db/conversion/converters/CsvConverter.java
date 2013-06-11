@@ -30,6 +30,7 @@ public class CsvConverter extends SimpleConverter {
     protected String[] headerLine;
     protected String tableName = "";
 
+    @Override
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
@@ -42,6 +43,7 @@ public class CsvConverter extends SimpleConverter {
         setInformationResourceFileVersion(versions[0]);
     }
 
+    @Override
     protected void openInputDatabase()
             throws IOException {
         if (informationResourceFileVersion == null) {
@@ -66,6 +68,7 @@ public class CsvConverter extends SimpleConverter {
      * 
      * @param targetDatabase
      */
+    @Override
     public void dumpData() throws Exception {
 
         DataTable dataTable = createDataTable(getTableName());
@@ -111,26 +114,32 @@ public class CsvConverter extends SimpleConverter {
 
     }
 
+    @Override
     public CSVReader getReader() {
         return reader;
     }
 
+    @Override
     public void setReader(CSVReader reader) {
         this.reader = reader;
     }
 
+    @Override
     public String[] getHeaderLine() {
         return headerLine;
     }
 
+    @Override
     public void setHeaderLine(String[] headerLine) {
         this.headerLine = headerLine;
     }
 
+    @Override
     public String getTableName() {
         return tableName;
     }
 
+    @Override
     public void setTableName(String tableName) {
         this.tableName = tableName;
     }
