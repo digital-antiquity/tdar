@@ -94,9 +94,10 @@ View freemarker macros
 
 <#macro createArchiveFileLink resource newline=false >
           <a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="registerDownload('/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}', '${id?c}')" 
-          title="${resource.title}">
-              <@truncate resource.title 65 />
-          </a>
+          title="download all as zip">Download All</a>
+         <#if resource.hasConfidentialFiles() >
+            <span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
+         </#if>
 </#macro>
 
 <#macro adminFileActions>
@@ -172,10 +173,12 @@ View freemarker macros
                     </li>
             </#if>
         </#list>
+        <#if (resource.informationResourceFiles?size > 1)>
         <li class="archiveLink media">
-        	<i class="iconf zip pull-left"></i>
+        	<i class="iconf page-white-zip pull-left"></i>
         	<div class="media-body"><@createArchiveFileLink resource=resource /></div>
         </li>
+        </#if>
         <#if (resource.totalNumberOfFiles == 0)>
             <li class="citationNote">This Resource is a citation<#if resource.copyLocation?has_content> a physical copy is located at ${resource.copyLocation}</#if></li>
         </#if>
