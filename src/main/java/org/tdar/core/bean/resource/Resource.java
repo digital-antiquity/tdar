@@ -1757,4 +1757,8 @@ public class Resource extends JsonModel.Base implements Persistable,
         return false;
     }
 
+    @Transient
+    public boolean isHasBrowsableImages() {
+        return false;
+    }
 }

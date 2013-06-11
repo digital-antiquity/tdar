@@ -33,4 +33,10 @@ public class Image extends InformationResource {
     public boolean isSupportsThumbnails() {
         return true;
     }
+    
+    @Override
+    @Transient
+    public boolean isHasBrowsableImages() {
+        return true;
+    }
 }

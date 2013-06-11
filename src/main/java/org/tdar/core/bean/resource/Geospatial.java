@@ -36,4 +36,10 @@ public class Geospatial extends Dataset {
     public boolean isSupportsThumbnails() {
         return true;
     }
+
+    @Override
+    @Transient
+    public boolean isHasBrowsableImages() {
+        return true;
+    }
 }

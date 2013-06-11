@@ -167,7 +167,7 @@ View freemarker macros
                   <b>Translated version</b> <@createFileLink irfile.latestTranslatedVersion /></br>
                    Data column(s) in this dataset have been associated with coding sheet(s) and translated: 
                   <#if sessionData?? && sessionData.authenticated>
-        <br/><small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> - <b>Note: this process may take some time</b>)</small>
+			        <br/><small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> - <b>Note: this process may take some time</b>)</small>
                   </#if>
                 </blockquote>
                     </li>

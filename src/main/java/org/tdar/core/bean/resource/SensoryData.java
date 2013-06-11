@@ -616,4 +616,9 @@ public class SensoryData extends Dataset {
         this.cameraDetails = cameraDetails;
     }
     
+    @Override
+    @Transient
+    public boolean isHasBrowsableImages() {
+        return true;
+    }
 }
