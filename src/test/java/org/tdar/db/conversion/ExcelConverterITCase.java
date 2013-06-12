@@ -87,7 +87,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         Set<DataTable> dataTables = converter.getDataTables();
         assertEquals(1, dataTables.size());
         DataTable dataTable = dataTables.iterator().next();
-        // assertNotNull(dataTable.getColumnByDisplayName("Period"));
+        assertNotNull(dataTable.getColumnByDisplayName("Period"));
         // assertNotNull(dataTable.getColumnByDisplayName("SumOfNo"));
         // assertNotNull(dataTable.getColumnByDisplayName("1.00"));
         // assertNotNull(dataTable.getColumnByDisplayName("ABC"));
@@ -129,7 +129,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         assertTrue("table created", table.getName().indexOf("dataset_all_text") > 0);
 
         // confirm that all the columns in the new table are varchar
-        tdarDataImportDatabase.selectAllFromTable(table,
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
                 new ResultSetExtractor<Object>() {
                     @Override
                     public Object extractData(ResultSet rs)
@@ -158,7 +158,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         assertTrue("table created", table.getName().indexOf("dataset_with_ints") > 0);
 
         // confirm that all the columns in the new table are ints
-        tdarDataImportDatabase.selectAllFromTable(table,
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
                 new ResultSetExtractor<Object>() {
                     @Override
                     public Object extractData(ResultSet rs)
@@ -185,7 +185,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         assertTrue("table created", table.getName().indexOf("dataset_with_floats") > 0);
 
         // confirm that all the columns in the new table are ints
-        tdarDataImportDatabase.selectAllFromTable(table,
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
                 new ResultSetExtractor<Object>() {
                     @Override
                     public Object extractData(ResultSet rs)
@@ -218,7 +218,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         assertNotNull("table created", dataTable);
 
         // confirm that all the columns in the new table are ints
-        tdarDataImportDatabase.selectAllFromTable(dataTable,
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable,
                 new ResultSetExtractor<Object>() {
                     @Override
                     public Object extractData(ResultSet rs)
