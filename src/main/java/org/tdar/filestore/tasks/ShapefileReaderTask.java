@@ -19,7 +19,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.gce.geotiff.GeoTiffFormat;
-import org.geotools.kml.KMLConfiguration;
+import org.geotools.kml.v22.KMLConfiguration;
 import org.geotools.xml.Parser;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -118,13 +118,15 @@ public class ShapefileReaderTask extends AbstractTask {
                 }
                 break;
             case "kml":
+                // this may be a better way to parse the KML
+                // http://gis.stackexchange.com/questions/4549/how-to-parse-kml-data-using-geotools
                 Parser parser = new Parser(new KMLConfiguration());
                 SimpleFeature f = (SimpleFeature) parser.parse(new FileInputStream(file));
                 Collection placemarks = (Collection) f.getAttribute("Feature");
                 for (Object mark : placemarks) {
                     SimpleFeature feature = (SimpleFeature)mark;
                     Set<Entry<Object, Object>> entrySet = feature.getUserData().entrySet();
-                    getLogger().info("props:{} \n attributes: {}", feature.getProperties(), feature.getAttributes());
+                    getLogger().info("props:{} \n attributes: {}\nuserData:{}", feature.getProperties(), feature.getAttributes(),feature.getUserData());
                     getLogger().info("{}: {}", feature.getAttribute("name"), feature.getAttribute("description"));
                 }
                 break;
