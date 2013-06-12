@@ -124,6 +124,7 @@ public class ShapefileReaderTask extends AbstractTask {
                 for (Object mark : placemarks) {
                     SimpleFeature feature = (SimpleFeature)mark;
                     Set<Entry<Object, Object>> entrySet = feature.getUserData().entrySet();
+                    getLogger().info("props:{} \n attributes: {}", feature.getProperties(), feature.getAttributes());
                     getLogger().info("{}: {}", feature.getAttribute("name"), feature.getAttribute("description"));
                 }
                 break;

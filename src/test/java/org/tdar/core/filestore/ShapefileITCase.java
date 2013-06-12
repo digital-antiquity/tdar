@@ -117,4 +117,22 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         task.run();
     }
 
+
+    @Test
+    @Rollback
+    public void testExtendedDataKml() throws Exception {
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        ShapefileReaderTask task = new ShapefileReaderTask();
+        WorkflowContext wc = new WorkflowContext();
+        String name = "extendedData";
+        String string = TestConstants.TEST_ROOT_DIR + TestConstants.TEST_GIS_DIR + "/kml/" + name;
+        InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".kml", new File(string + ".kml"), store);
+        // for (String ext : new String[] { ".tif.aux.xml" }) {
+        // originalFile.getSupportingFiles().add(generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
+        // }
+        wc.getOriginalFiles().add(originalFile);
+        task.setWorkflowContext(wc);
+        task.run();
+    }
+
 }
