@@ -23,6 +23,7 @@ import org.tdar.struts.action.search.SearchFieldType;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 
 /**
@@ -192,7 +193,8 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             gotoPage(SEARCH_RESULTS_BASE_URL + "?");
             clickLinkOnPage(type.getPlural());
             boolean sawSomething = false;
-            for (Element element : querySelectorAll("h3 a")) {
+            for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("h3 a")) {
+                Element element = (Element)element_;
                 String href = element.getAttribute("href");
                 if (!element.getAttribute("href").toLowerCase()
                         .contains("bookmark")) {
@@ -212,7 +214,8 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testPagination() {
         gotoPage("/search/results?recordsPerPage=2&includedStatuses=DRAFT&includedStatuses=ACTIVE&includedStatuses=DELETED");
         boolean sawSomething = false;
-        for (Element element : querySelectorAll(".pagin a")) {
+        for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll(".pagin a")) {
+            Element element = (Element)element_;
             String href = element.getAttribute("href");
             if (!element.getAttribute("href").toLowerCase().contains("bookmark")) {
                 gotoPage("/search/results" + href);

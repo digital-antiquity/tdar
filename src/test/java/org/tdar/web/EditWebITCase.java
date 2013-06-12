@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.configuration.TdarConfiguration;
 import org.w3c.dom.Element;
 
+import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
 
 
@@ -157,9 +158,9 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     
     private void assertNoFakeRoles(String editPage) {
-    	gotoPage(editPage);
-    	List<Element> selectElements = querySelectorAll(".creator-role-select option");
-    	for(Element element : selectElements) {
+        gotoPage(editPage);
+        for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll(".creator-role-select option")) {
+            Element element = (Element)element_;
     		HtmlOption option = (HtmlOption) element;
     		logger.trace("looking for fake roles in {}", option);
 			ResourceCreatorRole role = ResourceCreatorRole.valueOf(option.getValueAttribute());

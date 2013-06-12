@@ -50,7 +50,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
@@ -79,8 +78,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
-import com.google.common.collect.Lists;
-import com.threelevers.css.Selector;
 
 /**
  * @author Adam Brin
@@ -645,10 +642,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
         return internalPage.getWebResponse().getContentAsString();
     }
-    
-    
-    //return a fun-sized version of the response string ( title section, the error section and h1 through to the footer);
-    //FIXME:  too much expurgation!!!
+
+    // return a fun-sized version of the response string ( title section, the error section and h1 through to the footer);
+    // FIXME: too much expurgation!!!
     public String getPageBodyCode() {
         String content = getPageCode();
         String out = "";
@@ -663,7 +659,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
         return content;
     }
-   
 
     public String getPageCode() {
         String content = internalPage.getWebResponse().getContentAsString();
@@ -831,15 +826,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         logger.warn("No form found containing id '{}'", id);
     }
 
-    protected List<Element> querySelectorAll(String cssSelector) {
-        Iterable<Element> elements = Selector.from(documentElement).select(cssSelector);
-        List<Element> elementList = Lists.newArrayList(elements);
-        return elementList;
-    }
-
-    protected Element querySelector(String cssSelector) {
-        return Selector.from(documentElement).select(cssSelector).iterator().next();
-    }
 
     public String getPersonalFilestoreTicketId() {
         gotoPageWithoutErrorCheck("/upload/grab-ticket");
@@ -952,7 +938,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput("ticketId", ticketId);
         setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
 
@@ -971,22 +957,22 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput("invoice.paymentMethod", "CREDIT_CARD");
 
         String invoiceid = getInput("id").getAttribute("value");
-logger.info("TOTAL::: " + total);
+        logger.info("TOTAL::: " + total);
         submitForm();
-		if (!total.equals("0")) {
-	        assertCurrentUrlContains("process-payment-request");
-	        clickLinkWithText("click here");
-	        URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
-	        String response = getAccountPollingRequest(polingUrl);
-	        assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
-	        checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
-	        checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
-	//        logger.info(getPageBodyCode());
-	        checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
-	        clickElementWithId("process-payment_0");
-	        response = getAccountPollingRequest(polingUrl);
-	        assertTrue(response.contains(expectedResponse.name()));
-		}
+        if (!total.equals("0")) {
+            assertCurrentUrlContains("process-payment-request");
+            clickLinkWithText("click here");
+            URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
+            String response = getAccountPollingRequest(polingUrl);
+            assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
+            checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
+            checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
+            // logger.info(getPageBodyCode());
+            checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
+            clickElementWithId("process-payment_0");
+            response = getAccountPollingRequest(polingUrl);
+            assertTrue(response.contains(expectedResponse.name()));
+        }
         return invoiceid;
     }
 
@@ -1097,11 +1083,11 @@ logger.info("TOTAL::: " + total);
         // personmap.put("person.rpaNumber", "1234567890");
         personmap.put("requestingContributorAccess", "true");
     }
-    
+
     @Override
     public void onFail(Throwable e, Description description) {
-       //FIXME:  need to get this to fire *before* the @After method logs out.  otherwise the pageCode will always be the tdar login screen.
-       // logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
+        // FIXME: need to get this to fire *before* the @After method logs out. otherwise the pageCode will always be the tdar login screen.
+        // logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
     }
 
     public void reindexUnauthenticated() {
@@ -1112,7 +1098,7 @@ logger.info("TOTAL::: " + total);
         logout();
         gotoPage(url);
     }
-    
+
     protected void reindex() {
         gotoPage("/admin/searchindex/build");
         gotoPage("/admin/searchindex/checkstatus");
@@ -1124,7 +1110,7 @@ logger.info("TOTAL::: " + total);
             } catch (InterruptedException e) {
                 fail("InterruptedException during reindex.  sorry.");
             }
-            gotoPage("/admin/searchindex/checkstatus?userId="+getAdminUserId());
+            gotoPage("/admin/searchindex/checkstatus?userId=" + getAdminUserId());
             logger.info(getPageCode());
             if (count == 1000) {
                 fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");

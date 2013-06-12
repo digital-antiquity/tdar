@@ -489,11 +489,6 @@
 		</dependency>
 		<!-- /these are required for htmlunit 2.10 -->
 		<dependency>
-			<groupId>com.3levers.cssselectors</groupId>
-			<artifactId>cssselectors</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-core</artifactId>
 			<version>${struts2.version}</version>
