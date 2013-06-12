@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.antlr.runtime.tree.Tree;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.db.model.PostgresDatabase;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
@@ -20,9 +19,31 @@ public class DateAnalyzer implements ColumnAnalyzer {
     /**
      * <p>
      * This method is surfaced as it is important that the same date is found by both the analyzer and the method that converts the value into a timestamp in
-     * preparation for the database to convert the column into a time aware column.
+     * preparation for the database to convert the column into a time column. Not only does that avoid problems with different interpretations, but it also
+     * allows the current implementation to be swapped out or refined in this one location if it isn't good enough.
+     * <p>
+     * As a static method it offends my sensibilities, but for the time being it allows us to explore the options and trade offs.
      * <p>
      * Uses <a href="http://natty.joestelmach.com/doc.jsp">natty</a>.
+     * <p>
+     * The original code in the PostgressDatabase.java file that did the conversion read:
+     * 
+     * <pre>
+     * DateFormat dateFormat = new SimpleDateFormat();
+     * DateFormat accessDateFormat = new SimpleDateFormat(&quot;EEE MMM dd hh:mm:ss z yyyy&quot;);
+     * Date date = null;
+     * try {
+     *     java.sql.Date.valueOf(colValue);
+     *     date = dateFormat.parse(colValue);
+     * } catch (Exception e) {
+     *     logger.trace(&quot;couldn't parse &quot; + colValue, e);
+     * }
+     * try {
+     *     date = accessDateFormat.parse(colValue);
+     * } catch (Exception e) {
+     *     logger.trace(&quot;couldn't parse &quot; + colValue, e);
+     * }
+     * </pre>
      * 
      * @param value
      *            A string that is to be inspected to see if it contains a date
