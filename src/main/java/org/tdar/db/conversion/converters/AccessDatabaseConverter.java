@@ -193,7 +193,6 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                             // logger.info("data: {} ", data);
                         }
                         sb.append(currentObjectAsString).append(" ");
-
                         valueColumnMap.put(currentColumn, currentObjectAsString);
                         j++;
                     }

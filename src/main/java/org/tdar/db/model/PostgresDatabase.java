@@ -517,6 +517,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     private void setPreparedStatementValue(PreparedStatement preparedStatement, int i, DataTableColumn column, String colValue) throws SQLException {
         // not thread-safe
+        DateFormat dateFormat = new SimpleDateFormat();
+        DateFormat accessDateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy");
         if (!StringUtils.isEmpty(colValue)) {
             switch (column.getColumnDataType()) {
                 case BOOLEAN:
@@ -533,7 +535,25 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                     break;
                 case DATE:
                 case DATETIME:
-                    Date date = DateAnalyzer.convertValue(colValue);
+
+                    Date date = null;
+                    // 3 cases -- it's a date already
+                    try {
+                        java.sql.Date.valueOf(colValue);
+                        date = dateFormat.parse(colValue);
+                    } catch (Exception e) {
+                        logger.trace("couldn't parse " + colValue, e);
+                    }
+                    // it's an Access date
+                    try {
+                        date = accessDateFormat.parse(colValue);
+                    } catch (Exception e) {
+                        logger.trace("couldn't parse " + colValue, e);
+                    }
+                    // still don't know, so it came from the date analyzer
+                    if (date == null) {
+                        date = DateAnalyzer.convertValue(colValue);
+                    }
                     if (date != null) {
                         java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
                         preparedStatement.setTimestamp(i, sqlDate);
