@@ -150,9 +150,16 @@ TDAR.fileupload = function() {
         $(_options.formSelector).add(_options.inputSelector).data('fileuploadHelper', helper);
 
         _registerReplaceButton(_options.formSelector);
+        
+        
+        //update the proxy action if user updates fileproxy metadata
+        $(_options.formSelector).on("change", "select,textarea,input[type=text],input[type=date]", function(e) {
+            _updateFileAction(this);
+        });
 
         return helper;
     };
+    
     
     
     
