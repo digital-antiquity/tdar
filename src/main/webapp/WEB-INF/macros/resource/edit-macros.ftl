@@ -952,7 +952,9 @@ jquery validation hooks?)
             </#list>
             </tbody>
         </table>
+    <div id="cancelledProxies" style="display:none">
     
+    </div>
 </div>
 </#macro>
 
@@ -1312,40 +1314,21 @@ $(function() {
         </td>
         <td>
             {%if (file.fileId) { %}
-            <@edit.fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="fileupload-replace"/>
+            <@edit.fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button"/>
+            <button type="button" style="display:none" class="btn undo-replace-button">Undo</button>
             {% } %}
             
-            
-            <#-- TODO: this widget has a "bulk actions" convention, but I don't want it.  is it safe to remove the html,  or do we also need to handle this in javascript --> 
-            <#-- <input type="checkbox" name="delete"  value="1"> -->
-
-
-            <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}"/>
-            <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}"/>
-            <input type="hidden" class="fileReplaceName" name="fileProxies[{%=idx%}].filename" value="{%=file.name%}"/>
-            <input type="hidden" class="fileSequenceNumber" name="fileProxies[{%=idx%}].sequenceNumber" value="{%=idx%}"/>
-            
+            <div class="fileProxyFields">
+                <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}"/>
+                <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}"/>
+                <input type="hidden" class="fileReplaceName" name="fileProxies[{%=idx%}].filename" value="{%=file.name%}"/>
+                <input type="hidden" class="fileSequenceNumber" name="fileProxies[{%=idx%}].sequenceNumber" value="{%=idx%}"/>
+            </div>
         </td>
     </tr>
 {% } %}
 </script>
 
-<script id="template-replace-menu" type="text/x-tmpl">
-{% for(var i = 0, row; row = o.jqnewfiles[i]; i++) { %}
-<#noparse>
-   <li><a href="#" 
-            class="replace-menu-item"
-            data-action="rename"
-            data-filename="{%=$('.fileReplaceName', row).val()%}" 
-            data-target="#{%=$(row).attr('id')%}" 
-            >{%=$('.fileReplaceName', row).val()%}</a></li>
-</#noparse>
-{% } %}
-{% if(o.bReplacePending) { %}
-   <li class="divider"></li> 
-   <li><a href="#" class="cancel" >Cancel previous operation</a></li>
-{% } %}
-</script>
 </#macro>
 
 <#macro acceptedFileTypesRegex>
