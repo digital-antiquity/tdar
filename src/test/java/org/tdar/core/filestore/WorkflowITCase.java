@@ -48,25 +48,24 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon_mac.tif"));
 
-        for (File version : versions) {
-            InformationResourceFileVersion irfv = generateAndStoreVersion(Image.class, version.getName(), version, store);
-            irversions.add(irfv);
-            genericService.saveOrUpdate(irfv.getInformationResourceFile());
-        }
-        genericService.synchronize();
         AsynchTester[] testers = new AsynchTester[versions.size()];
         final FileAnalyzer analyzer = fileAnalyzer;
         final GenericService gs = genericService;
         for (int i = 0; i < versions.size(); i++) {
+            final File version = versions.get(i);
             testers[i] = new AsynchTester(new Runnable() {
-
                 @Override
                 public void run() {
                     runInNewTransactionWithoutResult(new TransactionCallback<Object>() {
                         @Override
                         public Object doInTransaction(TransactionStatus status) {
-                            InformationResourceFileVersion irversion = irversions.remove(0);
+
                             try {
+                                InformationResourceFileVersion irfv = generateAndStoreVersion(Image.class, version.getName(), version, store);
+                                // irversions.add(irfv);
+                                genericService.saveOrUpdate(irfv.getInformationResourceFile());
+
+                                InformationResourceFileVersion irversion = irversions.remove(0);
                                 InformationResource ir = irversion.getInformationResourceFile().getInformationResource();
                                 ir = gs.merge(ir);
                                 boolean result = analyzer.processFile(irversion);
