@@ -33,6 +33,7 @@ import static org.junit.Assert.*;
 
 public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
 
+    @Override
     public String[] getDataImportDatabaseTables() {
         String[] databases = { "d_503_spital_abone_database_mdb_basic_int", "d_503_spital_abone_database_mdb_bone_modification",
                 "d_503_spital_abone_database_mdb_context_data", "d_503_spital_abone_database_mdb_element_codes",
@@ -43,6 +44,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         return databases;
     };
 
+    @Override
     @Autowired
     @Qualifier("tdarDataImportDataSource")
     public void setIntegrationDataSource(DataSource dataSource) {
@@ -120,7 +122,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         assertEquals("basic_int", rel.getColumnRelationships().iterator().next().getLocalColumn().getName());
         assertEquals("basic_int", rel.getColumnRelationships().iterator().next().getForeignColumn().getName());
 
-        tdarDataImportDatabase.selectAllFromTable(converter.getDataTableByName("d_503_spital_abone_database_mdb_main_table"),
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(converter.getDataTableByName("d_503_spital_abone_database_mdb_main_table"),
                 new ResultSetExtractor<Object>() {
                     @Override
                     public Object extractData(ResultSet rs)
@@ -206,7 +208,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
             logger.info("{}", table);
         }
 
-        tdarDataImportDatabase.selectAllFromTable(converter.getDataTableByName("d_1124_pgm_tdr_test_docs_mdb_spec_test"),
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(converter.getDataTableByName("d_1124_pgm_tdr_test_docs_mdb_spec_test"),
                 new ResultSetExtractor<Object>() {
                     @Override
                     public Object extractData(ResultSet rs)
