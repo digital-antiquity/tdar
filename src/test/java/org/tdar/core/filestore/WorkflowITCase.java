@@ -14,6 +14,8 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Image;
@@ -50,7 +52,6 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
             InformationResourceFileVersion irfv = generateAndStoreVersion(Image.class, version.getName(), version, store);
             irversions.add(irfv);
             genericService.saveOrUpdate(irfv.getInformationResourceFile());
-
         }
         genericService.synchronize();
         AsynchTester[] testers = new AsynchTester[versions.size()];
@@ -61,18 +62,25 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
 
                 @Override
                 public void run() {
-                    InformationResourceFileVersion irversion = irversions.remove(0);
-                    try {
-                        InformationResource ir = irversion.getInformationResourceFile().getInformationResource();
-                        ir = gs.merge(ir);
-                        boolean result = analyzer.processFile(irversion);
-                        if (!result) {
-                            throw new TdarRecoverableRuntimeException("should not see this, file processing error");
+                    runInNewTransactionWithoutResult(new TransactionCallback<Object>() {
+                        @Override
+                        public Object doInTransaction(TransactionStatus status) {
+                            InformationResourceFileVersion irversion = irversions.remove(0);
+                            try {
+                                InformationResource ir = irversion.getInformationResourceFile().getInformationResource();
+                                ir = gs.merge(ir);
+                                boolean result = analyzer.processFile(irversion);
+                                if (!result) {
+                                    throw new TdarRecoverableRuntimeException("should not see this, file processing error");
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                throw new TdarRecoverableRuntimeException("something happened", e);
+                            }
+                            return null;
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        throw new TdarRecoverableRuntimeException("something happened", e);
-                    }
+                    });
+
                 }
             });
             testers[i].start();
