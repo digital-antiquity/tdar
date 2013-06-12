@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -172,6 +173,42 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
                 }, false);
     }
 
+    @Test
+    @Rollback
+    public void testConverterWithDates() throws Exception {
+        InformationResourceFileVersion datasetWithDates = makeFileVersion("dataset_with_dates.xls", 592);
+        File storedFile = filestore.retrieveFile(datasetWithDates);
+        assertTrue("text file exists", storedFile.exists());
+        DatasetConverter converter = DatasetConversionFactory.getConverter(datasetWithDates, tdarDataImportDatabase);
+
+        converter.execute();
+        DataTable table = converter.getDataTables().iterator().next();
+        assertTrue("table created", table.getName().indexOf("sheet1") == -1);
+        assertTrue("table created", table.getName().indexOf("dataset_with_dates") > 0);
+
+        // confirm that all the columns in the new table are dates
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
+                new ResultSetExtractor<Object>() {
+                    @Override
+                    public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+                        ResultSetMetaData meta = rs.getMetaData();
+                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
+                        assertEquals(Types.TIMESTAMP, meta.getColumnType(2));
+                        assertEquals(Types.BIGINT, meta.getColumnType(3));
+                        assertEquals(Types.BIGINT, meta.getColumnType(4));
+                        assertEquals(Types.DOUBLE, meta.getColumnType(5));
+                        assertEquals(Types.VARCHAR, meta.getColumnType(6));
+                        rs.next();
+                        final Date date = rs.getDate(2);
+                        // I know that getYear, getMonth and getDate are deprecated, but this just seemed the simplest.
+                        assertTrue("Year should be 2003: " + date.getYear(), date.getYear() == 2003 - 1900);
+                        assertTrue("Month should be 1: " + date.getMonth(), date.getMonth() == 1);
+                        assertTrue("Day should be 1: " + date.getDate(), date.getDate() == 1);
+                        return null;
+                    }
+                }, false);
+    }
+    
     @Test
     @Rollback
     public void testConverterWithFloats() throws Exception {

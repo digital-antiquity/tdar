@@ -1,7 +1,11 @@
 package org.tdar.db.conversion;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -27,6 +31,7 @@ import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
 
+    @Override
     public String[] getDataImportDatabaseTables() {
         String[] databases = { "csv_503_workbook1", "csv_505_malformed_csv_dataset", "csv_504_word_formed_csv_dataset" };
         return databases;
@@ -35,6 +40,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
     @Autowired
     public DataTableService dataTableService;
 
+    @Override
     @Autowired
     @Qualifier("tdarDataImportDataSource")
     public void setIntegrationDataSource(DataSource dataSource) {
@@ -106,7 +112,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
         assertEquals(1, findAllDistinctValues.size());
         assertEquals("1", findAllDistinctValues.get(0));
     }
-    
+
     @Test
     @Rollback(true)
     public void testCsvWithTooManyColumns()
@@ -117,7 +123,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         Exception ex = null;
         try {
-        converter.execute();
+            converter.execute();
         } catch (Exception e) {
             ex = e;
         }
@@ -139,7 +145,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
             assertTrue("didn't find " + table.getName(), ArrayUtils.contains(getDataImportDatabaseTables(), table.getName()));
         }
 
-        tdarDataImportDatabase.selectAllFromTable(converter.getDataTableByName("csv_503_workbook1"),
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(converter.getDataTableByName("csv_503_workbook1"),
                 new ResultSetExtractor<Object>() {
                     @Override
                     public Object extractData(ResultSet rs)
@@ -147,11 +153,12 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
                         ResultSetMetaData meta = rs.getMetaData();
                         logger.info("testing types");
                         assertEquals(Types.VARCHAR, meta.getColumnType(1));
-                        assertEquals(Types.BIGINT, meta.getColumnType(2));
+                        assertEquals(Types.TIMESTAMP, meta.getColumnType(2));
                         assertEquals(Types.BIGINT, meta.getColumnType(3));
-                        assertEquals(Types.DOUBLE, meta.getColumnType(4));
-                        assertEquals(Types.VARCHAR, meta.getColumnType(5));
+                        assertEquals(Types.BIGINT, meta.getColumnType(4));
+                        assertEquals(Types.DOUBLE, meta.getColumnType(5));
                         assertEquals(Types.VARCHAR, meta.getColumnType(6));
+                        assertEquals(Types.VARCHAR, meta.getColumnType(7));
 
                         logger.info("testing column names");
                         assertEquals("column_1", meta.getColumnName(1));
@@ -159,17 +166,23 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
                         assertEquals("column_3", meta.getColumnName(3));
                         assertEquals("column_4", meta.getColumnName(4));
                         assertEquals("column_5", meta.getColumnName(5));
-                        assertEquals("col_blank", meta.getColumnName(6));
+                        assertEquals("column_6", meta.getColumnName(6));
+                        assertEquals("col_blank", meta.getColumnName(7));
                         rs.next();
 
                         logger.info("testing values");
                         assertEquals("aaaa", rs.getString(1));
-                        assertEquals(0, rs.getLong(2));
+                        final Date date = rs.getDate(2);
+                        // I know that getYear, getMonth and getDate are deprecated, but this just seemed the simplest.
+                        assertTrue("Year should be 2003: " + date.getYear(), date.getYear() == 2003 - 1900);
+                        assertTrue("Month should be 1: " + date.getMonth(), date.getMonth() == 1 - 1);
+                        assertTrue("Day should be 2: " + date.getDate(), date.getDate() == 2);
+                        assertEquals(0, rs.getLong(3));
                         assertTrue(rs.wasNull());
-                        assertEquals(1234, rs.getLong(3));
-                        assertTrue(1.1234 == rs.getDouble(4));
-                        assertEquals("1234", rs.getString(5));
-                        assertEquals(null, rs.getString(6));
+                        assertEquals(1234, rs.getLong(4));
+                        assertTrue(1.1234 == rs.getDouble(5));
+                        assertEquals("1234", rs.getString(6));
+                        assertEquals(null, rs.getString(7));
                         assertTrue(rs.wasNull());
                         return null;
                     }

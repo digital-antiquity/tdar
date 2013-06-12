@@ -54,6 +54,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.RowOperations;
+import org.tdar.db.conversion.analyzers.DateAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.odata.server.AbstractDataRecord;
 import org.tdar.struts.data.IntegrationColumn;
@@ -516,8 +517,6 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     private void setPreparedStatementValue(PreparedStatement preparedStatement, int i, DataTableColumn column, String colValue) throws SQLException {
         // not thread-safe
-        DateFormat dateFormat = new SimpleDateFormat();
-        DateFormat accessDateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy");
         if (!StringUtils.isEmpty(colValue)) {
             switch (column.getColumnDataType()) {
                 case BOOLEAN:
@@ -534,18 +533,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                     break;
                 case DATE:
                 case DATETIME:
-                    Date date = null;
-                    try {
-                        java.sql.Date.valueOf(colValue);
-                        date = dateFormat.parse(colValue);
-                    } catch (Exception e) {
-                        logger.trace("couldn't parse " + colValue, e);
-                    }
-                    try {
-                        date = accessDateFormat.parse(colValue);
-                    } catch (Exception e) {
-                        logger.trace("couldn't parse " + colValue, e);
-                    }
+                    Date date = DateAnalyzer.convertValue(colValue);
                     if (date != null) {
                         java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
                         preparedStatement.setTimestamp(i, sqlDate);
