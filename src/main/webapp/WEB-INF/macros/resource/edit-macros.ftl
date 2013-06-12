@@ -865,6 +865,7 @@ jquery validation hooks?)
 
 
 <#macro asyncFileUpload uploadLabel="Attach Files" showMultiple=false divTitle="Upload" divId="divFileUpload" inputFileCss="" >
+
 <div id="${divId}" class="well-alt">
     <@s.hidden name="ticketId" id="ticketId" />
     <h2>${uploadLabel}</h2>
@@ -938,7 +939,6 @@ jquery validation hooks?)
 	</#if>
         <table id="files" role="presentation" class="tableFormat table table-striped sortable">
             <thead>
-               <th><!--preview-->&nbsp;</th>
                <th>Name</th>
                <th>Size</th>
                <th colspan="2">Access Restrictions</th>
@@ -986,7 +986,7 @@ jquery validation hooks?)
         
             <div class="controls">
                 <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right" 
-                style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential" onchange="TDAR.fileupload.updateFileAction(this)" style="padding-left: 20px;" />
+                style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential" style="padding-left: 20px;" />
             </div> 
         </div>
         </td>
@@ -1288,14 +1288,18 @@ $(function() {
             <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
             <td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
         {% } else { %}
-            <td class="preview"></td>
             <td class="name">
-                {% if (file.url) { %}        
-                <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
-                {% } else { %}
-                {%=file.name%}
-                {% } %} 
-                <span class="replacement-text"></span>
+                <div>
+                    {% if (file.url) { %}        
+                    <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
+                    {% } else { %}
+                    {%=file.name%}
+                    {% } %} 
+                    <span class="replacement-text"></span>
+                </div>
+                <label>Description</label>
+                <textarea name="fileProxies[{%=idx%}].description"></textarea>
+                <label>Create Date</label><input type="text" name="fileProxies[{%=idx%}].fileCreatedDate"></input>
             </td>
             <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
             <td colspan="2">
