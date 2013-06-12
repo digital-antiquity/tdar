@@ -3,6 +3,7 @@ package org.tdar.struts.action.resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -108,6 +109,8 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private List<String> codingSheetNames = new ArrayList<String>();
 
     private Long dataTableId;
+    private Long rowId;
+    private Map<DataTableColumn, String> dataTableRowAsMap;
 
     @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
     @WriteableSession
@@ -204,6 +207,35 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     private List<DataTableColumn> columnsToRemap;
 
+
+    /**
+     * Used to render a row within a {@link Dataset}.
+     * The expected URL is of the form /datatable/view-row?dataTableId=5815&rowId=1 where dataTableId = data table id, and rowId is the tDAR row id within
+     * the table.
+     * 
+     * @return com.opensymphony.xwork2.SUCCESS if able to find and display the table, com.opensymphony.xwork2.ERROR if not.
+     */
+    @Action(value="view-row",results= {
+            @Result(name = SUCCESS, location="../dataset/view-row.ftl")})
+    public String getDataResultsRow() {
+        if (!isViewRowSupported()) {
+            return ERROR;
+        }
+        dataTableRowAsMap = new HashMap<>();
+        if (Persistable.Base.isNullOrTransient(dataTableId)) {
+            return ERROR;
+        }
+        DataTable dataTable = getDataTableService().find(dataTableId);
+        if (dataTable != null) {
+            if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
+                dataTableRowAsMap = getDatasetService().selectRowFromDataTable(dataTable, rowId, true);
+                return SUCCESS;
+            }
+        }
+        return ERROR;
+    }
+
+    
     protected void postSaveColumnMetadataCleanup() {
         if (CollectionUtils.isNotEmpty(columnsToRemap)) {
             if (isAsync()) {
@@ -382,4 +414,28 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     public Set<String> getValidFileExtensions() {
      return  analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
     }
+
+
+    /**
+     * @return the dataTableRowAsMap ie: the column header information, and a row with the given rowId the table
+     */
+    public Map<DataTableColumn, String> getDataTableRowAsMap() {
+        return dataTableRowAsMap;
+    }
+
+    /**
+     * @return the rowId of the row that is in being requested by the view-row call
+     */
+    public Long getRowId() {
+        return rowId;
+    }
+
+    /**
+     * @param rowId
+     *            set the rowId of the row that will be returned in a view-row call
+     */
+    public void setRowId(Long rowId) {
+        this.rowId = rowId;
+    }
+
 }

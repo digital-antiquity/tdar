@@ -119,7 +119,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * Creating a simple transient boolean to handle visibility here instead of freemarker
      */
     public void setTransientViewableStatus(InformationResource ir, Person p) {
-        getAuthenticationAndAuthorizationService().setTransientViewableStatus(ir, p);
+        getAuthenticationAndAuthorizationService().applyTransientViewableFlag(ir, p);
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             getInformationResourceFileService().updateTransientDownloadCount(irf);
             if (irf.isDeleted()) {

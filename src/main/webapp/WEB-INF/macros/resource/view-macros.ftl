@@ -729,7 +729,6 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 
 <#macro datatableChildJavascript>
-//$(function() {
     if(window.opener && window.opener.TDAR.common.adhocTarget)  {
         window.opener.populateTarget({
             id:${resource.id?c},
@@ -737,7 +736,6 @@ ${_date?string('MM/dd/yyyy')}<#t>
        });
 
 
-//    $(function() {
         $( "#datatable-child" ).dialog({
             resizable: false,
             modal: true,
@@ -752,9 +750,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
                 }
             }
         });
-//    });
     }
-//});
 </#macro>
 
 <#macro firstThumbnail resource_ forceAddSchemeHostAndPort=true>

@@ -19,18 +19,19 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.resource.DatasetController;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
 public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     private static final String TEST_DATASET = "src/test/resources/data_integration_tests/england_woods.xlsx";
-    private DataTableViewRowController controller;
+    private DatasetController controller;
     private Dataset dataset;
 
     @Before
     public void setUpController() {
-        controller = generateNewInitializedController(DataTableViewRowController.class);
+        controller = generateNewInitializedController(DatasetController.class);
     }
 
     private void prepareValidData() {
@@ -38,6 +39,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(dataset);
         DataTable dataTable = dataset.getDataTables().iterator().next();
         assertNotNull(dataTable);
+        controller.setId(dataset.getId());
         controller.setDataTableId(dataTable.getId());
     }
 

@@ -154,8 +154,7 @@
 
 <#if resource.resourceType.dataTableSupported>
 	<#if (dataset.dataTables?has_content)>
-
-		<#if resource.viewable>
+		<#if resource.viewable && authenticated >
 			<h3>Browse the Data Set</h3>
 			
 			<#if (dataset.dataTables?size > 1)>
@@ -443,7 +442,7 @@ $(function() {
                         "sName" : "id_row_tdar", 
                         "sTitle" : '<i class="icon-eye-open  icon-white"></i>',
                         "fnRender": function(obj) {
-                           return '<a href="/datatable/view-row?dataTableId=${dataTable.id?c}&rowId=' + obj.aData[${offset}] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
+                           return '<a href="/${resource.urlNamespace}/view-row?id=${resource.id?c}&dataTableId=${dataTable.id?c}&rowId=' + obj.aData[${offset}] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
                          } 
                       },
                       <#assign offset=1>

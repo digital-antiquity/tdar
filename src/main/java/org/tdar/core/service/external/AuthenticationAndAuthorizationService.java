@@ -465,7 +465,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         return normalizedUsername;
     }
 
-    public void setTransientViewableStatus(InformationResource ir, Person p) {
+    private void setTransientViewableStatus(InformationResource ir, Person p) {
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             boolean viewable = canDownload(irf, p);
 

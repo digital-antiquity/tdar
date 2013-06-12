@@ -104,7 +104,7 @@ public class IndexAction extends AuthenticationAware.Base {
             for (HomepageFeaturedItemCache cache : getGenericService().findAll(HomepageFeaturedItemCache.class)) {
                 Resource key = cache.getKey();
                 if (key instanceof InformationResource) {
-                    getAuthenticationAndAuthorizationService().setTransientViewableStatus((InformationResource) key, null);
+                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag((InformationResource) key, null);
                 }
                 getFeaturedResources().add(key);
             }
