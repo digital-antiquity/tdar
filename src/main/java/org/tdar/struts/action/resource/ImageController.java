@@ -57,6 +57,7 @@ public class ImageController extends AbstractInformationResourceController<Image
         return getPersistable();
     }
 
+    @Override
     public Class<Image> getPersistableClass() {
         return Image.class;
     }
