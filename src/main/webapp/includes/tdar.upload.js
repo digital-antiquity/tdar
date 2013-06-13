@@ -156,6 +156,11 @@ TDAR.fileupload = function() {
         $(_options.formSelector).on("change", "select,textarea,input[type=text],input[type=date]", function(e) {
             _updateFileAction(this);
         });
+        
+        $(_options.formSelector).bind("fileuploadcompleted", function(e, data) {
+            var $datefields = $(data.context).find(".date");
+            _applyDateInputs($datefields);
+        });
 
         return helper;
     };
@@ -179,13 +184,19 @@ TDAR.fileupload = function() {
     //convert json returned from tDAR into something understood by upload-plugin, as well as fileproxy fields to send back to server
     var _translateIrFiles = function(fileProxies) {
         return $.map(fileProxies, function(proxy, i) {
-            return $.extend({
+            var file = $.extend({
                 name: proxy.filename,
                 url: TDAR.uri("filestore/" + proxy.originalFileVersionId),
                 thumbnail_url: null, 
                 delete_url: null,
-                delete_type: "DELETE" 
+                delete_type: "DELETE",
+                description: proxy.description,
+                fileCreatedDate: ""
             }, proxy);
+            if(proxy.fileCreatedDate) {
+                file.fileCreatedDate = $.datepicker.formatDate("mm/dd/yy", new Date(proxy.fileCreatedDate))                
+            }
+            return file;
         });
     };
 
@@ -342,6 +353,14 @@ TDAR.fileupload = function() {
         });
 
 
+    }
+    
+    //use jquery datepicker if input[type=date] not supported
+    
+    //TODO: before we can use html5 inputs we need to write typeconverter or figure out how to specifiy date format in annotations
+    //Modernizr.inputtypes.date
+    var _applyDateInputs = function($elements) {
+        $elements.datepicker({dateFormat: "mm/dd/yy"});
     }
     
     //expose public elements

@@ -1298,8 +1298,9 @@ $(function() {
                     <span class="replacement-text"></span>
                 </div>
                 <label>Description</label>
-                <textarea name="fileProxies[{%=idx%}].description"></textarea>
-                <label>Create Date</label><input type="text" name="fileProxies[{%=idx%}].fileCreatedDate"></input>
+                <textarea name="fileProxies[{%=idx%}].description">{%=file.description%}</textarea>
+                <label>Create Date</label>
+                <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date" value="{%=file.fileCreatedDate%}">
             </td>
             <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
             <td colspan="2">
