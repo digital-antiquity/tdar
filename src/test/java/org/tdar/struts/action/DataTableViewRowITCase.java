@@ -48,6 +48,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
     public void getDataResultsRowReturnsRow() {
         prepareValidData();
         controller.setRowId(1L);
+        controller.prepare();
         assertEquals(TdarActionSupport.SUCCESS, controller.getDataResultsRow());
         assertTrue("A row was expected", controller.getDataTableRowAsMap().size() > 0);
     }
@@ -58,6 +59,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
     public void getDataResultsDoesntReturnRowInTDAR() {
         prepareValidData();
         controller.setRowId(1L);
+        controller.prepare();
         assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
     }
 
@@ -66,6 +68,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
     public void outOfRangeRowReturnsEmptySet() {
         prepareValidData();
         controller.setRowId(0L);
+        controller.prepare();
         assertEquals(TdarActionSupport.SUCCESS, controller.getDataResultsRow());
         assertTrue("No row was expected", controller.getDataTableRowAsMap().size() == 0);
     }
@@ -74,6 +77,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
     public void nonExistentTableIdReturnsError() {
         controller.setDataTableId(0L);
         controller.setRowId(1L);
+        controller.prepare();
         assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
     }
 
@@ -86,6 +90,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
             file.setRestriction(FileAccessRestriction.CONFIDENTIAL);
         }
         controller.setRowId(1L);
+        controller.prepare();
         assertEquals(TdarActionSupport.SUCCESS, controller.getDataResultsRow());
         assertTrue("A row was expected", controller.getDataTableRowAsMap().size() > 0);
     }
@@ -102,6 +107,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         Person user = createAndSaveNewPerson();
         init(controller, user);
         controller.setRowId(1L);
+        controller.prepare();
         assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
     }
 
@@ -110,6 +116,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
     public void firstColumnIsRowIndex() {
         prepareValidData();
         controller.setRowId(1L);
+        controller.prepare();
         assertEquals(TdarActionSupport.SUCCESS, controller.getDataResultsRow());
         final Iterator<DataTableColumn> iterator = controller.getDataTableRowAsMap().keySet().iterator();
         final String name = iterator.next().getName();

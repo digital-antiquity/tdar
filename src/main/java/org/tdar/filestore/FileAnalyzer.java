@@ -38,8 +38,8 @@ public class FileAnalyzer {
     private Map<String, Workflow> fileExtensionToWorkflowMap = new HashMap<String, Workflow>();
     private Map<FileType, List<String>> primaryExtensionList = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
-   
-@Autowired
+
+    @Autowired
     private MessageService messageService;
 
     public FileType analyzeFile(HasExtension version) {
@@ -93,7 +93,7 @@ public class FileAnalyzer {
 
     public Workflow getWorkflow(HasExtension... irFileVersion) throws Exception {
         Workflow wf = null;
-        for (HasExtension ex :  irFileVersion) {
+        for (HasExtension ex : irFileVersion) {
             Workflow w = fileExtensionToWorkflowMap.get(ex.getExtension());
             if (wf == null) {
                 wf = w;
@@ -115,7 +115,7 @@ public class FileAnalyzer {
         checkFilesExist(informationResourceFileVersions);
 
         logger.debug("using workflow: {}", workflow);
-//        return workflow;
+        // return workflow;
         return messageService.sendFileProcessingRequest(workflow, informationResourceFileVersions);
     }
 

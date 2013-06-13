@@ -222,7 +222,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             return ERROR;
         }
         dataTableRowAsMap = new HashMap<>();
-        if (Persistable.Base.isNullOrTransient(dataTableId)) {
+        if (Persistable.Base.isNullOrTransient(dataTableId) || Persistable.Base.isNullOrTransient(rowId)) {
             return ERROR;
         }
         DataTable dataTable = getDataTableService().find(dataTableId);
