@@ -68,7 +68,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("resourceCollections[0].name", "TESTCOLLECTIONNAME");
         docValMap.put("dataset.date", "1923");
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_NAME);
-
+        
     }
 
     @Test
@@ -92,7 +92,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         if (TdarConfiguration.getInstance().isViewRowSupported()) {
             assertTextPresentIgnoreCase("Row number 1");
         } else {
-            assertTextPresentIgnoreCase("The view dataset row feature does not appear to be enabled");
+            assertTextNotPresentIgnoreCase("Row number 1");
         }
     }
 
