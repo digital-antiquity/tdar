@@ -221,6 +221,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         if (!isViewRowSupported()) {
             return ERROR;
         }
+        setTransientViewableStatus(getResource(), getAuthenticatedUser());
         dataTableRowAsMap = new HashMap<>();
         if (Persistable.Base.isNullOrTransient(dataTableId) || Persistable.Base.isNullOrTransient(rowId)) {
             return ERROR;

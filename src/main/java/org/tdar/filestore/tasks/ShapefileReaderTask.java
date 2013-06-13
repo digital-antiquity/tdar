@@ -120,6 +120,7 @@ public class ShapefileReaderTask extends AbstractTask {
             case "kml":
                 // this may be a better way to parse the KML
                 // http://gis.stackexchange.com/questions/4549/how-to-parse-kml-data-using-geotools
+                // issue -- this doesn't properly detect the version of KML and use the appropriate configuration... 
                 Parser parser = new Parser(new KMLConfiguration());
                 SimpleFeature f = (SimpleFeature) parser.parse(new FileInputStream(file));
                 Collection placemarks = (Collection) f.getAttribute("Feature");

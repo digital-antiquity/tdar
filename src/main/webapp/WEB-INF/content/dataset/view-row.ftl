@@ -1,7 +1,6 @@
-<#if dataset??>
+<#if dataset?? && dataset.viewable >
     <h1 class="view-page-title">Row number ${rowId} of ${dataset.name}</h1>
     <#-- At the moment no sidebar: we await further refinement of the users needs. -->
-    <#if authenticatedUser??>
       <#if dataTableRowAsMap??>
         <p><strong>Dataset:</strong> ${dataset.name}</p>
         <p><strong>Description:</strong> ${dataset.description}</p>
@@ -21,7 +20,6 @@
         </#list>
             </tbody>
         </table>
-      </#if>
     </#if>
 <#else>
     <#-- text of following is used for testing DatasetWebITCase#viewRowPageRender-->
