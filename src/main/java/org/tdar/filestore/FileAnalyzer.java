@@ -39,6 +39,7 @@ public class FileAnalyzer {
     private Map<FileType, List<String>> primaryExtensionList = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
    
+@Autowired
     private MessageService messageService;
 
     public FileType analyzeFile(HasExtension version) {

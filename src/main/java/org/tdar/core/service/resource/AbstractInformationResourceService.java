@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -26,9 +27,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
-import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.WorkflowResult;
-import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.BaseFilestore;
@@ -118,7 +117,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             try {
                 analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
             } catch (Exception e) {
-                logger.warn("caught exception {} while analyzing file {}", e, filesToProcess);
+                logger.warn("caught exception {} while analyzing file {}\n {}", e, filesToProcess, ExceptionUtils.getStackTrace(e));
             }
         } else {
             for (InformationResourceFileVersion version : filesToProcess) {
