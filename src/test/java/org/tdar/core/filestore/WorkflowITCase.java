@@ -42,7 +42,6 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
         // List<File>;
         final PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         final List<File> versions = new ArrayList<File>();
-        final List<InformationResourceFileVersion> irversions = new ArrayList<>();
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon_mac.tif"));
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
@@ -65,10 +64,9 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
                                 // irversions.add(irfv);
                                 genericService.saveOrUpdate(irfv.getInformationResourceFile());
 
-                                InformationResourceFileVersion irversion = irversions.remove(0);
-                                InformationResource ir = irversion.getInformationResourceFile().getInformationResource();
+                                InformationResource ir = irfv.getInformationResourceFile().getInformationResource();
                                 ir = gs.merge(ir);
-                                boolean result = analyzer.processFile(irversion);
+                                boolean result = analyzer.processFile(irfv);
                                 if (!result) {
                                     throw new TdarRecoverableRuntimeException("should not see this, file processing error");
                                 }
