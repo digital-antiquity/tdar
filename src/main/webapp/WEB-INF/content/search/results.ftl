@@ -163,8 +163,10 @@
         </#if>
         <li class="media">
             <#if (facetlist?size > 1)>
-				<i class="pull-left search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
-                <div class="media-body"><a rel="noindex" href="<@s.url includeParams="all">
+				
+                <div class="media-body">
+                
+                <a rel="noindex" href="<@s.url includeParams="all">
                     <@s.param name="${facetParam}">${facet}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if facetParam != "documentType">
@@ -175,6 +177,7 @@
                     </#if>
                     <#nested>
                 </@s.url>">
+                <i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
                 ${facetLabel}</a> <span>(${facet.count})</span></div>
             <#elseif currentValues?size == 1>
                 <@removeFacet facetlist=currentValues facetParam=facetParam />
