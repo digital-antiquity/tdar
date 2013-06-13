@@ -114,6 +114,7 @@ public class FileAnalyzer {
         checkFilesExist(informationResourceFileVersions);
 
         logger.debug("using workflow: {}", workflow);
+//        return workflow;
         return messageService.sendFileProcessingRequest(workflow, informationResourceFileVersions);
     }
 
@@ -160,11 +161,4 @@ public class FileAnalyzer {
         return false;
     }
 
-    /**
-     * @param messageService the messageService to set
-     */
-    @Autowired
-    public void setMessageService(MessageService messageService) {
-        this.messageService = messageService;
-    }
 }

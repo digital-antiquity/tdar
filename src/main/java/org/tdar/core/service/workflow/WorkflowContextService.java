@@ -44,6 +44,8 @@ public class WorkflowContextService {
     private GenericDao genericDao;
     @Autowired
     private XmlService xmlService;
+
+    @Autowired
     private DatasetService datasetService;
     @Autowired
     private OntologyService ontologyService;
@@ -171,8 +173,9 @@ public class WorkflowContextService {
     /**
      * @param datasetService the datasetService to set
      */
-    @Autowired
-    public void setDatasetService(DatasetService datasetService) {
-        this.datasetService = datasetService;
+    
+    public DatasetService getDatasetService() {
+        return datasetService;
     }
+
 }

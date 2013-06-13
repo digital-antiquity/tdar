@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.resource.DatasetService;
+import org.tdar.core.service.workflow.WorkflowContextService;
 
 /**
  * $Id$
@@ -22,7 +23,7 @@ public class RebuildDatasetProcess extends ScheduledBatchProcess<Dataset> {
     private static final long serialVersionUID = -7637484880673479889L;
     
     @Autowired
-    private DatasetService datasetService;
+    private WorkflowContextService workflowContextService;
 
     @Override
     public String getDisplayName() {
@@ -41,7 +42,7 @@ public class RebuildDatasetProcess extends ScheduledBatchProcess<Dataset> {
 
     @Override
     public void process(Dataset dataset) {
-        datasetService.reprocess(dataset);
+        workflowContextService.getDatasetService().reprocess(dataset);
     }
 
     @Override
@@ -53,5 +54,9 @@ public class RebuildDatasetProcess extends ScheduledBatchProcess<Dataset> {
     public boolean isEnabled() {
         return false;
     }
+
+    /**
+     * @param messageService the messageService to set
+     */
 
 }

@@ -26,7 +26,9 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
+import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.WorkflowResult;
+import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.BaseFilestore;
@@ -53,6 +55,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     private PersonalFilestoreService personalFilestoreService;
 
     protected FileAnalyzer analyzer;
+
+//    private MessageService messageService;
 
     @Transactional(readOnly = false)
     private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
@@ -239,7 +243,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             // this is a known case where we need to purge the session
             getDao().synchronize();
             try {
-                analyzer.processFile(original);
+                boolean result = analyzer.processFile(original);
+//                messageService.sendFileProcessingRequest(workflow, original);
             } catch (Exception e) {
                 logger.warn("caught exception {} while analyzing file {}", e, original.getFilename());
             }
@@ -277,5 +282,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     public void setAnalyzer(FileAnalyzer analyzer) {
         this.analyzer = analyzer;
     }
+
+
 
 }
