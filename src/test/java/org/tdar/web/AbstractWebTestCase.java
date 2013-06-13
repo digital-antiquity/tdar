@@ -50,6 +50,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.w3c.tidy.Tidy;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
@@ -180,6 +181,20 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertNoEscapeIssues();
         assertNoErrorTextPresent();
         return statusCode;
+    }
+
+    protected void assertPageValidHtml() {
+        if (internalPage.getWebResponse().getContentType().toLowerCase().contains("html")) {
+            Tidy tidy = new Tidy(); // obtain a new Tidy instance
+            tidy.setXHTML(true); // set desired config options using tidy setters
+            tidy.setOnlyErrors(true);
+            try {
+                tidy.parse(internalPage.getWebResponse().getContentAsStream(), System.out);
+            } catch (IOException e) {
+                logger.error("{}", e);
+            } // run tidy, providing an input and output stream
+
+        }
     }
 
     /**
@@ -487,6 +502,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertFalse(statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         assertNoErrorTextPresent();
         assertNoEscapeIssues();
+        assertPageValidHtml();
         return statusCode;
     }
 
@@ -608,6 +624,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             htmlPage = (HtmlPage) internalPage;
             documentElement = htmlPage.getDocumentElement();
             assertNoEscapeIssues();
+            assertPageValidHtml();
         }
     }
 
@@ -825,7 +842,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
         logger.warn("No form found containing id '{}'", id);
     }
-
 
     public String getPersonalFilestoreTicketId() {
         gotoPageWithoutErrorCheck("/upload/grab-ticket");
