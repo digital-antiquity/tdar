@@ -181,13 +181,7 @@ public interface Persistable extends Serializable {
              */
             if (!(a.getClass().isAssignableFrom(b.getClass()) || b.getClass().isAssignableFrom(a.getClass()))) {
                 logger.trace("false b/c of class {} != {} ", a.getClass(), b.getClass());
-                
-                // this is test code to see if this helps with the issue
-                if (a instanceof Resource && b instanceof Resource && ((Resource)a).getResourceType().equals(((Resource)b).getResourceType())) {
-
-				} else {                
-	                return false;
-                }
+                return false;
             }
 
             EqualsBuilder equalsBuilder = new EqualsBuilder();
