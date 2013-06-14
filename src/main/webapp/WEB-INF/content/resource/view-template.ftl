@@ -311,10 +311,10 @@
                 <ul class="unstyled-list">
                     <@view.resourceProvider />
                     <#if resource.seriesName?has_content>
-                    <li><strong>Series name</strong><br>${resource.seriesName}</li>
+	                    <li><strong>Series name</strong><br>${resource.seriesName}</li>
                     </#if>
                     <#if resource.seriesNumber?has_content>
-                    <li><strong>Series number</strong><br>${resource.seriesNumber}</li>
+    	                <li><strong>Series number</strong><br>${resource.seriesNumber}</li>
                     </#if>
                     <#if resource.journalName?has_content>
                         <li><strong>Journal</strong><br>${resource.journalName}
@@ -323,15 +323,14 @@
                         </li>
                     </#if>
                     <#if resource.volume?has_content>
-                    <li><strong>Volume</strong><br>${resource.volume}
+	                    <li><strong>Volume</strong><br>${resource.volume}</li>
                     </#if>
-                      <#if resource.bookTitle?has_content>
-                          <li><strong>Book Title</strong><br>${resource.bookTitle}</li>
-                      </#if>
+                  <#if resource.bookTitle?has_content>
+                      <li><strong>Book Title</strong><br>${resource.bookTitle}</li>
+                  </#if>
                     <#if resource.numberOfVolumes??>
                         <li><strong>Number of volumes</strong><br>${resource.numberOfVolumes}</li>
                     </#if>
-                    </li>
                     <#if resource.edition?has_content>
                     <li><strong>Edition</strong><br><span itemprop="bookEdition">${resource.edition}</span></li>
                     </#if>

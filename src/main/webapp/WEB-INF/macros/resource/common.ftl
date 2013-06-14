@@ -218,10 +218,13 @@ TDAR.uri = function(path) {
     <h3>Access Permissions</h3>
     <#nested />
     <table class="tableFormat table">
-    <thead><th>Collection</th><th>User</th>
-    <#list availablePermissions as permission>
-    <th>${permission.label}</th>
-    </#list>
+    <thead>
+    <tr>
+	    <th>Collection</th><th>User</th>
+	    <#list availablePermissions as permission>
+		    <th>${permission.label}</th>
+	    </#list>
+    </tr>
     <#if owner?has_content>
 	    <tr>
 		     <td>Local Resource</td>
