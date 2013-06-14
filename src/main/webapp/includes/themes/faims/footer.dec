@@ -43,12 +43,12 @@
 <div class="row no-print footerlogos" id="copyright" >  
     <p>OUR PARTNERS
     <div class="footerlogos">
-        <a href="http://www.nectar.org.au/"><img class="footerlogo" src="/includes/themes/faims/images/nectar-small.jpg"></a>
-        <a href="http://www.unsw.edu.au/"><img class="footerlogo" src="/includes/themes/faims/images/unswL.png"></a>
-        <a href="http://www.latrobe.edu.au/"><img class="footerlogo" src="/includes/themes/faims/images/LaTrobe.png"></a>
-        <a href="http://www.intersect.org.au/"><img class="footerlogo" src="/includes/themes/faims/images/Intersect_Logo2colour-small.png"></a>
-        <a href="http://www.versi.edu.au/"><img class="footerlogo" src="/includes/themes/faims/images/versi2.png"></a>
-        <a href="http://sydney.edu.au/"><img class="footerlogo" src="/includes/themes/faims/images/usyd.png"></a>
+        <a href="http://www.nectar.org.au/"><img alt="Nectar Logo" class="footerlogo" src="/includes/themes/faims/images/nectar-small.jpg"></a>
+        <a href="http://www.unsw.edu.au/"><img class="footerlogo" alt="UNSW Logo" src="/includes/themes/faims/images/unswL.png"></a>
+        <a href="http://www.latrobe.edu.au/"><img class="footerlogo" alt="aTrobe Logo" src="/includes/themes/faims/images/LaTrobe.png"></a>
+        <a href="http://www.intersect.org.au/"><img class="footerlogo" alt="Intersect Logo" src="/includes/themes/faims/images/Intersect_Logo2colour-small.png"></a>
+        <a href="http://www.versi.edu.au/"><img class="footerlogo" alt="Versi Logo" src="/includes/themes/faims/images/versi2.png"></a>
+        <a href="http://sydney.edu.au/"><img class="footerlogo" alt="USYD Logo" src="/includes/themes/faims/images/usyd.png"></a>
     </div>
     <p class="copyright-notice">This repository is hosted by the <a class="external" href="http://www.fedarch.org">${siteAcronym} Project</a>, 
     led by the <a class="external" href="http://www.unsw.edu.au/">University of NSW</a> in partnership with the 

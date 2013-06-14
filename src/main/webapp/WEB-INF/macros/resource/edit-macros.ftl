@@ -1117,7 +1117,7 @@ jquery validation hooks?)
                             value="ID_REVERSE" cssClass="input-block-level"/>
              </div>
         </div>
-        <p class="span4">&nbsp</p>
+        <p class="span4">&nbsp;</p>
     </div>
 
 <!-- <ul id="proj-toolbar" class="projectMenu"><li></li></ul> -->

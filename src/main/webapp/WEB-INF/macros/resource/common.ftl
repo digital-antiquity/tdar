@@ -372,6 +372,11 @@ TDAR.uri = function(path) {
 
 <#macro barGraph  resourceCacheObjects graphWidth=360 graphHeight=800 graphLabel="" rotateColors=true labelRotation=0 minWidth=50 searchKey="resourceTypes">
 <#local totalItems = resourceCacheObjects?size />
+
+<#if totalItems == 0>
+  <#return/>
+</#if>
+
    <#list resourceCacheObjects?sort_by("key") as key>
       <#if (key.count == 0) >
           <#local totalItems = totalItems - 1/>
@@ -623,7 +628,7 @@ this bit of freemarker is voodoo:
 
 </script> 
 <!-- div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px" -->
-<img class="worldmap" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png" />" width=480 height=304 usemap="#world" > 
+<img class="worldmap" alt="world map" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png" />" width=480 height=304 usemap="#world" > 
  <div id="map_legend">
   <div><span class='legendText'>none</span> 
     <#list settings.mapColors as color>

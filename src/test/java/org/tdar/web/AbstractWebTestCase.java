@@ -7,8 +7,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ import net.sf.json.JSONSerializer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -102,7 +106,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static String PROJECT_ID_FIELDNAME = "projectId";
     protected static final String MY_TEST_ACCOUNT = "my test account";
     protected static final String THIS_IS_A_TEST_DESCIPTION = "this is a test desciption";
-
+    protected String[] ignores = { "<style> isn't allowed in", "<header>", "<nav>", "<section>", "<article>", "<aside>", "<footer>", "</header>", "</nav>",
+            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
+            "replacing illegal character code", "lacks \"summary\" attribute","unescaped & which","Warning: '<' + '/' + letter not allowed here" };
     protected Set<String> encodingErrorExclusions = new HashSet<String>();
 
     @SuppressWarnings("serial")
@@ -184,12 +190,47 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected void assertPageValidHtml() {
+        if (internalPage.getWebResponse().getContentType().contains("json")) {
+            try {
+                JSONObject.fromObject(getPageCode());
+            } catch (Exception e) {
+                Assert.fail(String.format("%s : %s", e.getMessage(), ExceptionUtils.getFullStackTrace(e)));
+            }
+        }
         if (internalPage.getWebResponse().getContentType().toLowerCase().contains("html")) {
             Tidy tidy = new Tidy(); // obtain a new Tidy instance
             tidy.setXHTML(true); // set desired config options using tidy setters
-            tidy.setOnlyErrors(true);
+            tidy.setQuiet(true);
+            // tidy.setOnlyErrors(true);
+            // tidy.setShowWarnings(false);
             try {
-                tidy.parse(internalPage.getWebResponse().getContentAsStream(), System.out);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                StringWriter errs = new StringWriter();
+                tidy.setErrout(new PrintWriter(errs, true));
+                tidy.parse(internalPage.getWebResponse().getContentAsStream(), baos);
+                StringBuilder errors = new StringBuilder();
+                for (String line : StringUtils.split(errs.toString(), "\n")) {
+                    boolean skip = false;
+                    for (String ignore : ignores) {
+                        if (StringUtils.containsIgnoreCase(line, ignore)) {
+                            skip = true;
+                            logger.trace("skipping: {} ", line);
+                        }
+                    }
+                    if (skip) {
+                        continue;
+                    }
+
+                    if (line.contains("Error:") || line.contains("Warning:")) {
+                        errors.append(line).append("\n");
+                        logger.error("adding: {}", line);
+                    }
+                }
+                String string = errors.toString();
+                if (StringUtils.isNotBlank(string.trim())) {
+                    logger.warn(getPageCode());
+                    fail(string);
+                }
             } catch (IOException e) {
                 logger.error("{}", e);
             } // run tidy, providing an input and output stream

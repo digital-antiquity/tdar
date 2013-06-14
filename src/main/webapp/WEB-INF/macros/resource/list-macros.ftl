@@ -110,7 +110,9 @@
         <#local first=false/>
      </#if>
     </#list>
-  </${listTag_}>
+    <#if rowCount != -1>
+	  </${listTag_}>
+    </#if>
   </#if>
   <#if orientation == "MAP">
   </div>
