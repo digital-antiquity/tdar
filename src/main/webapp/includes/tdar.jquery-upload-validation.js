@@ -7,11 +7,6 @@
 var FileuploadValidator;
 (function(console) {
     "option explicit";
-    console.log("this is a test");
-
-    function _id(id) {
-        return document.getElementById(id);
-    }
 
     var _defaults = {
         errorContainer: "#fileuploadErrors",
@@ -46,15 +41,16 @@ var FileuploadValidator;
         //element representing the 'container' of the fileupload widget (usually top-level form)
         fileupload: null,
 
-        init: function(fileuploadId, settings) {
+        init: function(formId, settings) {
             var self = this;
             console.log("init");
             var errs = [];
+            this.fileupload = $("#" + formId)[0];
             $.extend(this, _defaults, settings);
-            this.fileupload = _id(fileuploadId);
             this.helper = $(this.fileupload).data("fileuploadHelper");
             if(!this.fileupload) errs.push("fileupload element not found");
             if(!this.helper) errs.push("fileupload helper not found - did you call registerFileUpload yet?");
+            this.inputSelector = this.helper.inputSelector;
             errs.forEach(function(err){
                 console.error(err)
             });
@@ -144,8 +140,7 @@ var FileuploadValidator;
             }
         },
 
-        //THINKABOUTIT: unlike $.validator, it doesn't make sense to tie rules to elements...
-        // but it might make sense to tie to extensions?
+        //TODO: (maybe) It doesn't make sense to tie rules to elements, but it might make sense to tie to extensions.
         addRule: function(methodName, settings, customMessage){
             console.log("add rule: %s", methodName);
             var message = this.messages[methodName];
@@ -164,7 +159,7 @@ var FileuploadValidator;
 
         addSuggestion: function(methodName, settings, customMessage) {
             var rule = this.addRule( methodName, settings, customMessage);
-            rule.suggested = true;
+            rule.suggestion = true;
         },
 
         highlight: function(file) {
@@ -177,11 +172,18 @@ var FileuploadValidator;
             file.context.removeClass(this.errorClass).addClass(this.okayClass);
         },
 
-        //create a $.validator method and rule  which returns false if any fileupload validation errors exist
+        /**
+         * Register this fileupload validator as a jQuery Validation Plugin (aka "$.validator") validation method.
+         * 
+         * This method allows the fileupload validator to hook into the $.validator validation process.  It does this
+         * by creating a  new $.validator method (named "valid-fileupload"), and then adding a new $.validator rule
+         * that binds this method  to the file input form element used by the fileupload widget.
+         */
         registerValidiatorMethod: function () {
-            var self = this;
+            var self = this,
+                methodName = "valid-fileupload";
             $.validator.addMethod(
-                "fileuploadErrors",
+                methodName,
                 function() {
                     return self.validate();
                 },
@@ -189,11 +191,8 @@ var FileuploadValidator;
             );
 
             //we've added the method, now we need the specific rule that binds the fileinput element to the method
-            var $inputElem = $(this.fileupload).find("input[type=file]");
-            $inputElem.addClass("fileuploadErrors");
+            $(self.inputSelector).addClass(methodName)
         }
-
-
     });
     
 })(console)
