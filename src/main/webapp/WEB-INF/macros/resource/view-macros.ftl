@@ -762,7 +762,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
     <#t><span class="primary-thumbnail <#if seenThumbnail>thumbnail-border</#if>"><#t>
     <#if seenThumbnail ><#t>
         <#t><span class="thumbnail-center-spacing"></span><#t>
-			<#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />" title="${resource_.primaryThumbnail.filename}" onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" /><#t>
+			<#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />" title="${resource_.primaryThumbnail.filename}" alt="${resource_.primaryThumbnail.filename}"  onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" /><#t>
 <#t><#local seenThumbnail = true/><#t>
     <#else>
     <#t><i class="${resource_.resourceType?lower_case}-125"></i><#t>
@@ -776,7 +776,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
       <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
 	<#assign bb=resource.firstActiveLatitudeLongitudeBox />
-		<img class="pull-right" src="//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}&sensor=false&key=${googleMapsApiKey}" />
+		<img alt="map" class="pull-right" src="//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}&sensor=false&key=${googleMapsApiKey}" />
 <#else>
       <a href="${url}" target="_top"><@firstThumbnail resource true /></a> 
 </#if>
@@ -834,7 +834,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
     <#if (resource.licenseType??) >
         <h3>License</h3>
         <#if (resource.licenseType.imageURI != "")>
-            <a href="${resource.licenseType.URI}"><img src="${resource.licenseType.imageURI}"/></a>
+            <a href="${resource.licenseType.URI}"><img alt="license image" src="${resource.licenseType.imageURI}"/></a>
         </#if>
         <#if (resource.licenseType.URI != "")>
             <h4>${resource.licenseType.licenseName}</h4>

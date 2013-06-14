@@ -10,9 +10,8 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/${themeDir}/local-helptext.ftl" as  helptext>
 
-
 <#macro subNavMenu>
-    <li><a href="#enter-data">Coding Rules</a></li>
+    <li class="hidden-tablet hidden-phone"><a href="#enter-data">Coding Rules</a></li>
 </#macro>
 
 

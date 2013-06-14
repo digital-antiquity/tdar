@@ -175,7 +175,7 @@ $(document).ready(function() {
 
 <#macro img url alt="">
 <img src='<@s.url value="${url}" />' <#t>
-    <#if alt != ""> alt='${alt}'</#if> <#t>
+    <#if alt != ""> alt='${alt}'<#else>alt='toolbar image'</#if> <#t>
  />
 </#macro>
 

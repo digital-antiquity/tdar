@@ -506,7 +506,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <#nested>
             <input type="hidden" name="possibleJsError" id="jserror" value="PRE-INIT" />
             <@submitButton label=label id=buttonid />
-            <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none" />
+            <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none" />
         </div> 
     </div>
 </div> 
@@ -1222,7 +1222,7 @@ $(function() {
         <tr id="license_details_${licenseCursor}" class="${visible}">
                 <td>
                     <#if (licenseCursor.imageURI != "")>
-                        <a href="${licenseCursor.URI}" target="_blank"><img src="${licenseCursor.imageURI}"/></a>
+                        <a href="${licenseCursor.URI}" target="_blank"><img alt="license image" src="${licenseCursor.imageURI}"/></a>
                     </#if>
                 </td>
                 <td>
@@ -1353,9 +1353,7 @@ $(function() {
             <li><a href="#authorshipSection">Authors</a></li>
             </#if>
             <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT'  && (!supporting)><li><a href="#divFileUpload">Files</a></li></#if>
-            <span class="hidden-tablet hidden-phone" >
             <#nested />
-            </span>
              <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' >
             <li><a href="#organizeSection"><span class="visible-phone visible-tablet" title="Project">Proj.</span><span class="hidden-phone hidden-tablet">Project</span></a></li>
             </#if>
@@ -1370,7 +1368,7 @@ $(function() {
         </ul>
             <div id="fakeSubmitDiv" class="pull-right">
                 <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner"  style="display:none"/>
+                <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner"  style="display:none"/>
             </div>
         </div>
       </div>

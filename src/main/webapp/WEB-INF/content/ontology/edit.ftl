@@ -11,7 +11,7 @@
 
 
 <#macro subNavMenu>
-            <li><a href="#enter-data">Ontology Values</a></li>
+            <li class="hidden-tablet hidden-phone"><a href="#enter-data">Ontology Values</a></li>
 </#macro>
 
 <#macro beforeUpload>
