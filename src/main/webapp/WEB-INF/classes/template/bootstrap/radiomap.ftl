@@ -52,9 +52,10 @@
 <#if parameters.tabindex??>
  tabindex="${parameters.tabindex?html}"<#rt/>
 </#if>
+<#-- somehow this is duplicating itself...
 <#if parameters.cssClass??>
  class="${parameters.cssClass?html}"<#rt/>
-</#if>
+</#if> -->
 <#if parameters.cssStyle??>
  style="${parameters.cssStyle?html}"<#rt/>
 </#if>
