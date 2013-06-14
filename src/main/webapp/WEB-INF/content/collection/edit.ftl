@@ -35,7 +35,7 @@ $(function(){
         </ul>
             <div id="fakeSubmitDiv" class="pull-right">
                 <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner"  style="display:none"/>
+                <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner"  style="display:none"/>
             </div>
         </div>
       </div>
@@ -77,7 +77,7 @@ $(function(){
 <div id="divBrowseOptionsTips" style="display:none">
     <p>Choose whether this collection will be public or private, and how ${siteAcronym} will sort the resources when displaying this collection to other users. Marking a collection as "private" does not restrict access to the resources within it.</p>
     <ul>
-        <li>Public collections are viewable to all ${siteAcronym} users and accessible from the &quot;Browse Collections&quot page.</li>
+        <li>Public collections are viewable to all ${siteAcronym} users and accessible from the &quot;Browse Collections&quot; page.</li>
         <li>Private collections are only viewable to the users specified in the <a href="#accessRights">Access Rights</a> section.</li>
     </ul>
 </div>

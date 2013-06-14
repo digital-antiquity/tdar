@@ -249,10 +249,10 @@
           <#assign itemIndent = collection.parentNameList?size />
           <#if itemIndent != currentIndent>
             <#if (itemIndent > currentIndent) >
-              <@repeat (itemIndent - currentIndent) "<ul>"/>
+              <@repeat (itemIndent - currentIndent) "<li><ul>"/>
             </#if>
             <#if (itemIndent < currentIndent) >
-              <@repeat (currentIndent - itemIndent)  "</ul>"/>
+              <@repeat (currentIndent - itemIndent)  "</ul></li>"/>
             </#if>
             <#assign currentIndent = itemIndent />
           </#if>

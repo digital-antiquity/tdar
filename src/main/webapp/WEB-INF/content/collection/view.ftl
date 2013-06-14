@@ -23,7 +23,7 @@
 <!-- Don't show header if header doesn't exist -->
 <#if resourceCollection.parent?? || resourceCollection.description?? || collections??>
     <div class="glide">
-        <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}"/>${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
+        <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
         <p>${resourceCollection.description!"(n/a)"}</p>
     
     <#if (collections?has_content) >
@@ -70,15 +70,17 @@
 		  <h3>Administrative Information</h3>
 		  
 		    <@common.resourceUsageInfo />
-		  
-		    <p><strong>Collection Type:</strong> ${resourceCollection.type.label}</p>
+		  <dl>
+		    <dt><p><strong>Collection Type:</strong></p><dt>
+		    <dd><p> ${resourceCollection.type.label}</p></dd>
             <dt><p><strong>Created by</strong></p></dt>
             <dd><p><a href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner.properName}</a> on ${resourceCollection.dateCreated}</p></dd>
             <dt><p><strong>Updated By</strong></p></dt>
             <dd><p><a href="<@s.url value="/browse/creators/${resourceCollection.updater.id?c}"/>">${resourceCollection.updater.properName}</a> on ${resourceCollection.dateUpdated}</p></dd>
-		    <p><strong>Visible:</strong> ${resourceCollection.visible?string}</p>
-		    <#if resourceCollection.sortBy??><p><strong>Sort by:</strong> ${resourceCollection.sortBy.label}</p></#if>
-		
+		    <dt><p><strong>Visible:</strong></p></dt>
+		    <dd><p> ${resourceCollection.visible?string}</p></dd>
+		    <#if resourceCollection.sortBy??><dt><p><strong>Sort by:</strong></dt><dd><p> ${resourceCollection.sortBy.label}</p></dd></#if>
+		</dl>
 		    <@view.authorizedUsers resourceCollection />
 		</#if>
 <#else>

@@ -87,7 +87,7 @@
             data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
             </@printTag>
 
-<!-- ${itemTag_} -- ${rowCount} -- ${itemsPerRow} -- ${rowCount % itemsPerRow } -->
+<!-- ${itemTag_} - ${rowCount} - ${itemsPerRow} - ${rowCount % itemsPerRow } -->
             <#if itemTag_?lower_case != 'li'>
                 <#if !first>
 	                <#if (!isGridLayout)>
