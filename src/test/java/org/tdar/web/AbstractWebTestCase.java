@@ -113,10 +113,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             "discarding unexpected </span>", "missing </span> before <div>", 
             "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */ 
             "input repeated attribute" /* radiobutton duplicate css */,
-            "unescaped & or unknown entity" /*add back later */,
             "inserting implicit <br>",
             "replacing element</p>"
             };
+    //            "unescaped & or unknown entity" /*add back later */,
+
     protected Set<String> encodingErrorExclusions = new HashSet<String>();
 
     @SuppressWarnings("serial")

@@ -78,7 +78,7 @@
 		<#assign extraClass="strikethrough" />
 	</#if>
     <tr class="${extraClass}">
-        <td><a href="<@s.url value="/cart/${invoice.id?c}" />"/>${invoice.dateCreated}</a></td>
+        <td><a href="<@s.url value="/cart/${invoice.id?c}" />" >${invoice.dateCreated}</a></td>
         <td>
             ${invoice.owner.properName}
             <#if invoice.proxy>

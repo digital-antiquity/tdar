@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-<h1>Processing Payment<h1>
+<h1>Processing Payment</h1>
 
 <h2>Instructions</h2>
 <div class="row">
@@ -15,7 +15,7 @@ Once your payment has been <em>successfully completed</em> you will be able to s
 </p>
 </div>
 <div class="span4">
-<img src="<@s.url value="/includes/nellnet_screenshot.png"/>" title="Nellnet Screenshot" cssClass="img-polaroid responsive-image" />
+<img alt="nelnet exmaple" src="<@s.url value="/includes/nellnet_screenshot.png"/>" title="Nellnet Screenshot" cssClass="img-polaroid responsive-image" />
 </div>
 </div>
 
