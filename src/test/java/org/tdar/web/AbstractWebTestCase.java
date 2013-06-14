@@ -108,8 +108,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected static final String THIS_IS_A_TEST_DESCIPTION = "this is a test desciption";
     protected String[] ignores = { "<style> isn't allowed in", "<header>", "<nav>", "<section>", "<article>", "<aside>", "<footer>", "</header>", "</nav>",
             "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
-            "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which", "Warning: '<' + '/' + letter not allowed here",
-            "discarding unexpected </span>", "missing </span> before <div>" , "meta isn't allowed in", "missing </div> before meta"};
+            "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which", 
+            "Warning: '<' + '/' + letter not allowed here", /*javascript */
+            "discarding unexpected </span>", "missing </span> before <div>", 
+            "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */ 
+            "input repeated attribute" /* radiobutton duplicate css */};
     protected Set<String> encodingErrorExclusions = new HashSet<String>();
 
     @SuppressWarnings("serial")
