@@ -111,6 +111,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which", 
             "Warning: '<' + '/' + letter not allowed here", /*javascript */
             "link isn't allowed in <div> elements",
+            "missing </a> before <div>",
+            "missing </div> before link",
             "discarding unexpected </span>", "missing </span> before ", 
             "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */ 
             "input repeated attribute" /* radiobutton duplicate css */,

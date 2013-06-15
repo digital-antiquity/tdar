@@ -64,7 +64,7 @@
                 <@s.textfield theme="simple" name='codingRules[${rule_index}].term' size='50' readonly=true cssClass="span4"/>
         
             <div class="span1">
-                <img src="<@s.url value='/images/arrow_right.png'/>"/>
+                <img src="<@s.url value='/images/arrow_right.png' alt="right arrow" />"/>
             </div>
         
             <div>
