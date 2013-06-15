@@ -2,31 +2,28 @@ package org.tdar.filestore.tasks;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFinder;
-import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.gce.geotiff.GeoTiffFormat;
-import org.geotools.kml.v22.KMLConfiguration;
+import org.geotools.kml.KMLConfiguration;
+import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.filestore.tasks.Task.AbstractTask;
+import org.xml.sax.SAXException;
 
 public class ShapefileReaderTask extends AbstractTask {
 
@@ -79,59 +76,36 @@ public class ShapefileReaderTask extends AbstractTask {
                 getLogger().info(" {} ", sources);
                 // GeoTiffReader rdr = (GeoTiffReader) ((new GeoTiffFormat()).getReader(file));
                 break;
-//            case "shp":
-//                DataStore dataStore = null;
-//                // http://stackoverflow.com/questions/2044876/does-anyone-know-of-a-library-in-java-that-can-parse-esri-shapefiles
-//                try {
-//                    Map connect = new HashMap();
-//                    connect.put("url", workingOriginal.toURL());
-//
-//                    dataStore = DataStoreFinder.getDataStore(connect);
-//                    String[] typeNames = dataStore.getTypeNames();
-//                    String typeName = typeNames[0];
-//                    getLogger().info(typeName);
-//                    System.out.println("Reading content " + typeName);
-//                    getLogger().info("infO: {} {} ({})", dataStore.getInfo().getTitle(), dataStore.getInfo().getDescription(),
-//                            dataStore.getInfo().getKeywords());
-//                    FeatureSource featureSource = dataStore.getFeatureSource(typeName);
-//                    FeatureCollection collection = featureSource.getFeatures();
-//                    FeatureIterator iterator = collection.features();
-//                    getLogger().debug("{}", dataStore.getNames());
-//                    SimpleFeatureType TYPE = DataUtilities.createType("location", "geom:Point,name:String");
-//
-//                    // File locationFile = new File("location.xsd");
-//                    // locationFile = locationFile.getCanonicalFile();
-//                    // locationFile.createNewFile();
-//                    //
-//                    // URL locationURL = locationFile.toURI().toURL();
-//                    // URL baseURL = locationFile.getParentFile().toURI().toURL();
-//                    //
-//                    // FileOutputStream xsd = new FileOutputStream(locationFile);
-//                    //
-//                    // GML encode = new GML(GML.Version.GML2);
-//                    // encode.setBaseURL(baseURL);
-//                    // encode.setNamespace("location", locationURL.toExternalForm());
-//                    // FeatureIterator featureIterator = collection.features();
-//                } catch (Throwable e) {
-//                    getLogger().error("exception", e);
-//                } finally {
-//                    dataStore.dispose();
-//                }
-//                break;
             case "kml":
-                // this may be a better way to parse the KML
-                // http://gis.stackexchange.com/questions/4549/how-to-parse-kml-data-using-geotools
-                // issue -- this doesn't properly detect the version of KML and use the appropriate configuration... 
-                Parser parser = new Parser(new KMLConfiguration());
-                SimpleFeature f = (SimpleFeature) parser.parse(new FileInputStream(file));
-                Collection placemarks = (Collection) f.getAttribute("Feature");
-                for (Object mark : placemarks) {
-                    SimpleFeature feature = (SimpleFeature)mark;
-                    Set<Entry<Object, Object>> entrySet = feature.getUserData().entrySet();
-                    getLogger().info("props:{} \n attributes: {}\nuserData:{}", feature.getProperties(), feature.getAttributes(),feature.getUserData());
-                    getLogger().info("{}: {}", feature.getAttribute("name"), feature.getAttribute("description"));
+                Configuration config = new org.geotools.kml.v22.KMLConfiguration();
+                try {
+                    parseFile(file, config);
+                } catch (Exception e) {
+                    config = new KMLConfiguration();
+                    parseFile(file, config);
+
                 }
                 break;
+        }
+    }
+
+    private void parseFile(File file, Configuration config) throws IOException, SAXException, ParserConfigurationException, FileNotFoundException {
+        /*
+         * this may be a better way to parse the KML
+         * http://gis.stackexchange.com/questions/4549/how-to-parse-kml-data-using-geotools
+         * issue -- this doesn't properly detect the version of KML and use the appropriate configuration...
+         * FIXME: once we get to the point that we have "data" we need to move this into a database parser, but that would also require that we figure out how
+         * to use the external data callout to unify a dataset as well...
+         */
+
+        Parser parser = new Parser(config);
+        SimpleFeature f = (SimpleFeature) parser.parse(new FileInputStream(file));
+        Collection placemarks = (Collection) f.getAttribute("Feature");
+        for (Object mark : placemarks) {
+            SimpleFeature feature = (SimpleFeature) mark;
+            Set<Entry<Object, Object>> entrySet = feature.getUserData().entrySet();
+            getLogger().info("props:{} \n attributes: {}\nuserData:{}", feature.getProperties(), feature.getAttributes(), feature.getUserData());
+            getLogger().info("{}: {}", feature.getAttribute("name"), feature.getAttribute("description"));
         }
     }
 
