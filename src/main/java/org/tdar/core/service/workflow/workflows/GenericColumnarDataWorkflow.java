@@ -56,7 +56,9 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
         registerFileExtension("mdb", AccessDatabaseConverter.class, null, ResourceType.DATASET);
         registerFileExtension("accdb", AccessDatabaseConverter.class, null, ResourceType.DATASET);
         registerFileExtension("mdbx", AccessDatabaseConverter.class, null, ResourceType.DATASET);
+        registerFileExtension("gdb", AccessDatabaseConverter.class, null, ResourceType.DATASET);
         registerFileExtension("shp", ShapeFileDatabaseConverter.class, null, ResourceType.DATASET);
+        
         getRequiredExtensions().put("shp", Arrays.asList("dbf", "sbn", "sbx", "shp.xml", "shx", "xml"));
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
         addTask(ConvertDatasetTask.class, WorkflowPhase.CREATE_DERIVATIVE);

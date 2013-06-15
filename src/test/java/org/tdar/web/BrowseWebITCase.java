@@ -14,7 +14,7 @@ import org.junit.Test;
 public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
 boolean indexed = false;
 
-    public void reindex() {
+    public void reindexOnce() {
         if (indexed)
             return;
         
@@ -36,7 +36,7 @@ boolean indexed = false;
 
     @Test
     public void testProjectView() {
-        reindex();
+        reindexOnce();
         super.testProjectView();
         assertTextNotPresent("edit metadata");
     }
@@ -55,13 +55,13 @@ boolean indexed = false;
 
     @Test
     public void testExploreView() {
-        reindex();
+        reindexOnce();
         gotoPage("/browse/explore");
     }
 
     @Test
     public void testExploreGoogleScholar() {
-        reindex();
+        reindexOnce();
         gotoPage("/year-2012");
     }
 
@@ -77,13 +77,13 @@ boolean indexed = false;
 
     @Test
     public void testBrowseCreators() {
-        reindex();
+        reindexOnce();
         gotoPage("/browse/creators/1");
     }
 
     @Test
     public void testBrowseCollections() {
-        reindex();
+        reindexOnce();
         gotoPage("/browse/collections");
     }
 

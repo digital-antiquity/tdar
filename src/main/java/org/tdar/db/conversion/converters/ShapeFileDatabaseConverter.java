@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
     }
 
     private List<InformationResourceFileVersion> versions = new ArrayList<>();
-    
+
     public ShapeFileDatabaseConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
@@ -89,12 +90,11 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         setIndexedContentsFile(new File(FileUtils.getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
         FileOutputStream fileOutputStream = new FileOutputStream(getIndexedContentsFile());
         BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(fileOutputStream);
-
         DataTable dataTable = createDataTable(getFilename());
         // drop the table if it has been there
         targetDatabase.dropTable(dataTable);
 
-        Map connect = new HashMap();
+        Map<String, URL> connect = new HashMap<>();
         connect.put("url", getDatabaseFile().toURL());
 
         DataStore dataStore = DataStoreFinder.getDataStore(connect);
@@ -103,9 +103,9 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         logger.info(typeName);
         System.out.println("Reading content " + typeName);
         logger.info("infO: {} {} ({})", dataStore.getInfo().getTitle(), dataStore.getInfo().getDescription(), dataStore.getInfo().getKeywords());
-        FeatureSource featureSource = dataStore.getFeatureSource(typeName);
-        FeatureCollection collection = featureSource.getFeatures();
-        FeatureIterator iterator = collection.features();
+        FeatureSource<?, ?> featureSource = dataStore.getFeatureSource(typeName);
+        FeatureCollection<?, ?> collection = featureSource.getFeatures();
+        FeatureIterator<?> iterator = collection.features();
         logger.debug("{}", dataStore.getNames());
         // Filter filter = CQL.toFilter(text.getText());
         // SimpleFeatureCollection features = source.getFeatures(filter);
@@ -114,7 +114,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             PropertyType type = descriptors.getType();
             DataTableColumnType columnType = DataTableColumnType.BLOB;
             if (type.getBinding().isAssignableFrom(String.class)) {
-                columnType = DataTableColumnType.VARCHAR;
+                columnType = DataTableColumnType.TEXT;
             } else if (type.getBinding().isAssignableFrom(Double.class)) {
                 columnType = DataTableColumnType.DOUBLE;
             } else if (type.getBinding().isAssignableFrom(Long.class)) {
@@ -124,7 +124,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             } else {
                 logger.error("unknown binding: {} ", type.getBinding());
             }
-            createDataTableColumn(descriptors.getName().getLocalPart(), DataTableColumnType.TEXT, dataTable);
+            createDataTableColumn(descriptors.getName().getLocalPart(), columnType, dataTable);
         }
 
         targetDatabase.createTable(dataTable);
@@ -145,7 +145,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
 
                 }
                 targetDatabase.addTableRow(dataTable, valueColumnMap);
-                logger.info("{}", valueColumnMap);
+                logger.trace("{}", valueColumnMap);
                 IOUtils.write(sb.toString(), indexedFileOutputStream);
 
             }

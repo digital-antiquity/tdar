@@ -49,6 +49,7 @@ public class ShapefileReaderTask extends AbstractTask {
 
         String extension = FilenameUtils.getExtension(file.getName());
         switch (extension) {
+            case "jpg":
             case "tif":
                 // AbstractGridFormat format = GridFormatFinder.findFormat(file);
                 // AbstractGridCoverage2DReader reader = format.getReader(file);
@@ -78,45 +79,45 @@ public class ShapefileReaderTask extends AbstractTask {
                 getLogger().info(" {} ", sources);
                 // GeoTiffReader rdr = (GeoTiffReader) ((new GeoTiffFormat()).getReader(file));
                 break;
-            case "shp":
-                DataStore dataStore = null;
-                // http://stackoverflow.com/questions/2044876/does-anyone-know-of-a-library-in-java-that-can-parse-esri-shapefiles
-                try {
-                    Map connect = new HashMap();
-                    connect.put("url", workingOriginal.toURL());
-
-                    dataStore = DataStoreFinder.getDataStore(connect);
-                    String[] typeNames = dataStore.getTypeNames();
-                    String typeName = typeNames[0];
-                    getLogger().info(typeName);
-                    System.out.println("Reading content " + typeName);
-                    getLogger().info("infO: {} {} ({})", dataStore.getInfo().getTitle(), dataStore.getInfo().getDescription(),
-                            dataStore.getInfo().getKeywords());
-                    FeatureSource featureSource = dataStore.getFeatureSource(typeName);
-                    FeatureCollection collection = featureSource.getFeatures();
-                    FeatureIterator iterator = collection.features();
-                    getLogger().debug("{}", dataStore.getNames());
-                    SimpleFeatureType TYPE = DataUtilities.createType("location", "geom:Point,name:String");
-
-                    // File locationFile = new File("location.xsd");
-                    // locationFile = locationFile.getCanonicalFile();
-                    // locationFile.createNewFile();
-                    //
-                    // URL locationURL = locationFile.toURI().toURL();
-                    // URL baseURL = locationFile.getParentFile().toURI().toURL();
-                    //
-                    // FileOutputStream xsd = new FileOutputStream(locationFile);
-                    //
-                    // GML encode = new GML(GML.Version.GML2);
-                    // encode.setBaseURL(baseURL);
-                    // encode.setNamespace("location", locationURL.toExternalForm());
-                    // FeatureIterator featureIterator = collection.features();
-                } catch (Throwable e) {
-                    getLogger().error("exception", e);
-                } finally {
-                    dataStore.dispose();
-                }
-                break;
+//            case "shp":
+//                DataStore dataStore = null;
+//                // http://stackoverflow.com/questions/2044876/does-anyone-know-of-a-library-in-java-that-can-parse-esri-shapefiles
+//                try {
+//                    Map connect = new HashMap();
+//                    connect.put("url", workingOriginal.toURL());
+//
+//                    dataStore = DataStoreFinder.getDataStore(connect);
+//                    String[] typeNames = dataStore.getTypeNames();
+//                    String typeName = typeNames[0];
+//                    getLogger().info(typeName);
+//                    System.out.println("Reading content " + typeName);
+//                    getLogger().info("infO: {} {} ({})", dataStore.getInfo().getTitle(), dataStore.getInfo().getDescription(),
+//                            dataStore.getInfo().getKeywords());
+//                    FeatureSource featureSource = dataStore.getFeatureSource(typeName);
+//                    FeatureCollection collection = featureSource.getFeatures();
+//                    FeatureIterator iterator = collection.features();
+//                    getLogger().debug("{}", dataStore.getNames());
+//                    SimpleFeatureType TYPE = DataUtilities.createType("location", "geom:Point,name:String");
+//
+//                    // File locationFile = new File("location.xsd");
+//                    // locationFile = locationFile.getCanonicalFile();
+//                    // locationFile.createNewFile();
+//                    //
+//                    // URL locationURL = locationFile.toURI().toURL();
+//                    // URL baseURL = locationFile.getParentFile().toURI().toURL();
+//                    //
+//                    // FileOutputStream xsd = new FileOutputStream(locationFile);
+//                    //
+//                    // GML encode = new GML(GML.Version.GML2);
+//                    // encode.setBaseURL(baseURL);
+//                    // encode.setNamespace("location", locationURL.toExternalForm());
+//                    // FeatureIterator featureIterator = collection.features();
+//                } catch (Throwable e) {
+//                    getLogger().error("exception", e);
+//                } finally {
+//                    dataStore.dispose();
+//                }
+//                break;
             case "kml":
                 // this may be a better way to parse the KML
                 // http://gis.stackexchange.com/questions/4549/how-to-parse-kml-data-using-geotools
