@@ -21,8 +21,6 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.resource.DatasetController;
 
-@RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
 public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     private static final String TEST_DATASET = "src/test/resources/data_integration_tests/england_woods.xlsx";
@@ -55,10 +53,9 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR })
-    public void getDataResultsDoesntReturnRowInTDAR() {
+    public void getDataResultsDoesntReturnInvalidRowInTDAR() {
         prepareValidData();
-        controller.setRowId(1L);
+        controller.setRowId(100000000L);
         controller.prepare();
         assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
     }
@@ -69,7 +66,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         prepareValidData();
         controller.setRowId(0L);
         controller.prepare();
-        assertEquals(TdarActionSupport.SUCCESS, controller.getDataResultsRow());
+        assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
         assertTrue("No row was expected", controller.getDataTableRowAsMap().size() == 0);
     }
 

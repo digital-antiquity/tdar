@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -230,6 +231,9 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         if (dataTable != null) {
             if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
                 dataTableRowAsMap = getDatasetService().selectRowFromDataTable(dataTable, rowId, true);
+                if (MapUtils.isEmpty(dataTableRowAsMap)) {
+                    return ERROR;
+                }
                 return SUCCESS;
             }
         }
