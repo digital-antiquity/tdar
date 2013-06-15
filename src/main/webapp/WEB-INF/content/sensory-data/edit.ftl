@@ -27,7 +27,7 @@
             <div class='control-group'>
                 <div class='controls controls-row'>
                 <@s.textfield theme='simple' placeholder='Filename' maxLength="255" name="sensoryDataImages[${_image_index}].filename"  />
-                <@s.textfield theme='simple' placeholder='Description' maxLength="255" name="sensoryDataImages[${_image_index}].description" /></td>
+                <@s.textfield theme='simple' placeholder='Description' maxLength="255" name="sensoryDataImages[${_image_index}].description" />
                 <@edit.clearDeleteButton id="sensoryDataImagesRow" />
                 </div>
             </div>

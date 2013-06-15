@@ -145,7 +145,6 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testTicketIdAfterValidationFail() {
         String ticketId = getPersonalFilestoreTicketId();
         gotoPage("/image/add");
-        logger.debug("\n\nbody page \n\n{}\n\n\n");
         fillOutRequiredfields(ResourceType.IMAGE);
         setInput("ticketId", ticketId);
         //set the ticket id, but not necessary to add a file.

@@ -110,7 +110,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which", 
             "Warning: '<' + '/' + letter not allowed here", /*javascript */
-            "discarding unexpected </span>", "missing </span> before <div>", 
+            "discarding unexpected </span>", "missing </span> before ", 
             "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */ 
             "input repeated attribute" /* radiobutton duplicate css */,
             "inserting implicit <br>",
@@ -237,8 +237,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 }
                 String string = errors.toString();
                 if (StringUtils.isNotBlank(string.trim())) {
-                    logger.warn(getPageCode());
-                    fail(string);
+                    fail(string + "\r\n\r\n" + getPageBodyCode());
                 }
             } catch (IOException e) {
                 logger.error("{}", e);

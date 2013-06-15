@@ -307,7 +307,9 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertNotNull(redirectUrl);
         Map<String, String[]> params = new HashMap<String, String[]>();
         String qs = redirectUrl.substring(redirectUrl.indexOf("?") + 1);
+        qs = StringUtils.replace(qs, "&amp;", "&");
         for (String part : StringUtils.split(qs, "&")) {
+            logger.info("part: {} ", part);
             String[] kvp = StringUtils.split(part, "=");
             params.put(kvp[0], new String[] { kvp[1] });
         }

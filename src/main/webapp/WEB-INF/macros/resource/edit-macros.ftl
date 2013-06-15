@@ -939,10 +939,12 @@ jquery validation hooks?)
 	</#if>
         <table id="files" role="presentation" class="tableFormat table table-striped sortable">
             <thead>
+            <tr>
                <th>Name</th>
                <th>Size</th>
                <th colspan="2">Access Restrictions</th>
                <th colspan="2">Action</th>
+               </tr>
             </thead>
             <tbody id="fileProxyUploadBody" class="files">
             <#list fileProxies as fileProxy>

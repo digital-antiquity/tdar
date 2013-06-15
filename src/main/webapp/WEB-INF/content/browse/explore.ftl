@@ -7,11 +7,11 @@
 <h1>Explore ${siteAcronym}</h1>
 
  <h2>Browse Resources by Title</h2>
-   <div>
+   <ul>
 	 <#list alphabet as letter>
-	     <@searchFor "groups[0].startingLetter" letter letter "span"/>
+	     <@searchFor "groups[0].startingLetter" letter letter "li"/>
 	 </#list>
-   </div>
+   </ul>
 <br/>
 <br/>
 
@@ -44,21 +44,21 @@
 <h2>Browse by Investigation Type</h2>
 <ul>
      <#list investigationTypes as investigationType>
-         <@searchFor "groups[0].investigationTypeIdLists[0]" investigationType.id investigationType.label "span" investigationType.occurrence />
+         <@searchFor "groups[0].investigationTypeIdLists[0]" investigationType.id investigationType.label "li" investigationType.occurrence />
      </#list>
 </ul>
 
 <h2>Browse by Site Type</h2>
 <ul>
      <#list siteTypeKeywords as keyword>
-         <@searchFor "groups[0].approvedSiteTypeIdLists[0]" keyword.id keyword.label "span" keyword.occurrence />
+         <@searchFor "groups[0].approvedSiteTypeIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
      </#list>
 </ul>
 
 <h2>Browse by Culture</h2>
 <ul>
      <#list cultureKeywords as keyword>
-         <@searchFor "groups[0].approvedCultureKeywordIdLists[0]" keyword.id keyword.label "span" keyword.occurrence />
+         <@searchFor "groups[0].approvedCultureKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
      </#list>
 </ul>
 
@@ -66,7 +66,7 @@
 <h2>Browse by Material Type</h2>
 <ul>
      <#list materialTypes as keyword>
-         <@searchFor "groups[0].materialKeywordIdLists[0]" keyword.id keyword.label "span" keyword.occurrence />
+         <@searchFor "groups[0].materialKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
      </#list>
 </ul>
  

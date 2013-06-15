@@ -12,7 +12,16 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
 
 public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
+boolean indexed = false;
 
+    public void reindex() {
+        if (indexed)
+            return;
+        
+        reindexUnauthenticated();
+        indexed =true;
+    }
+    
     @Test
     public void testOntologyView() {
         super.testOntologyView();
@@ -27,7 +36,7 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
 
     @Test
     public void testProjectView() {
-        reindexUnauthenticated();
+        reindex();
         super.testProjectView();
         assertTextNotPresent("edit metadata");
     }
@@ -46,13 +55,13 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
 
     @Test
     public void testExploreView() {
-        reindexUnauthenticated();
+        reindex();
         gotoPage("/browse/explore");
     }
 
     @Test
     public void testExploreGoogleScholar() {
-        reindexUnauthenticated();
+        reindex();
         gotoPage("/year-2012");
     }
 
@@ -68,13 +77,13 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
 
     @Test
     public void testBrowseCreators() {
-        reindexUnauthenticated();
+        reindex();
         gotoPage("/browse/creators/1");
     }
 
     @Test
     public void testBrowseCollections() {
-        reindexUnauthenticated();
+        reindex();
         gotoPage("/browse/collections");
     }
 

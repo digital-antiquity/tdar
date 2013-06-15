@@ -1,11 +1,12 @@
 <body>
+<title>Bulk Upload Status</title>
 <div class="glide">
     <h3>Bulk Upload Status (this may take some time)</h3>
     <span id="asyncErrors" >
         <div id="unspecifiedError" class="alert alert-error" style="display:none">
             <h3>Unspecified Error</h3>
             <p>An error occured while asking the server for an upload status update.   This does not mean that your upload failed.  
-            Please check the <a href='<@s.url value="/dashboard"/>'>dashboard</a> to determine
+            Please check the <a href="<@s.url value="/dashboard"/>">dashboard</a> to determine
             whether you successfully uploaded your files. Please notify an administrator if this problem persists.
             </p>
             <div id="errorDetails"></div>
@@ -23,8 +24,8 @@
 <div id="divUploadComplete" class="glide" style="display:none">
     <h3>Upload Complete!</h3>
     <p>The upload process is complete.  If ${siteAcronym} experienced any errors they will be displayed at the top of this page. 
-    You can visit the <a href='<@s.url value="/dashboard"/>'>dashboard</a> to review your recently uploaded files.</p>
-    <div><a href='<@s.url value="/dashboard"/>' id="btnDashboard">Continue to the Dashboard</div></div>
+    You can visit the <a href="<@s.url value="/dashboard"/>">dashboard</a> to review your recently uploaded files.</p>
+    <div><a href="<@s.url value="/dashboard"/>" id="btnDashboard">Continue to the Dashboard</a></div></div>
 </div>
 <#if ticketId??>
 <script type="text/javascript">
