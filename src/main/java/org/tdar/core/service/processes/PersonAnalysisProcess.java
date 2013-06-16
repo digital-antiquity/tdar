@@ -149,11 +149,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
             Collections.sort(log.getKeywordLogPart(), new LogPartComparator());
 
             try {
-                File dir = new File(TdarConfiguration.getInstance().getPersonalFileStoreLocation(), "creatorInfo");
-                dir.mkdir();
-                FileWriter writer = new FileWriter(new File(dir, person.getId() + ".xml"));
-                xmlService.convertToXML(log, writer);
-                IOUtils.closeQuietly(writer);
+                xmlService.generateFOAF(person, log);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 logger.error("exception: {} ", e);

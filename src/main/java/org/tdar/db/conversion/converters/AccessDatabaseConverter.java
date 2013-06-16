@@ -157,7 +157,6 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     int j = 0;
                     if (currentRow == null)
                         continue;
-                    StringBuilder sb = new StringBuilder();
                     for (Object currentObject : currentRow.values()) {
                         DataTableColumn currentColumn = dataTable.getDataTableColumns().get(j);
                         if (currentObject == null) {
@@ -192,13 +191,13 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                             }
                             // logger.info("data: {} ", data);
                         }
-                        sb.append(currentObjectAsString).append(" ");
+                        IOUtils.write(currentObjectAsString, indexedFileOutputStream);
+                        IOUtils.write(" ", indexedFileOutputStream);
                         valueColumnMap.put(currentColumn, currentObjectAsString);
                         j++;
                     }
-                    sb.append("\r\n");
+                    IOUtils.write("\r\n", indexedFileOutputStream);
                     targetDatabase.addTableRow(dataTable, valueColumnMap);
-                    IOUtils.write(sb.toString(), indexedFileOutputStream);
                 }
             } catch (BufferUnderflowException bex) {
                 throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);

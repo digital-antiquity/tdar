@@ -110,10 +110,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             Sheet currentSheet = workbook.getSheetAt(sheetIndex);
             String sheetName = workbook.getSheetName(sheetIndex);
             if (currentSheet.getPhysicalNumberOfRows() < 2) {
-                logger.warn(String.format(
-                        "Sheet # %d (%s) only had %d rows, skipping.",
-                        sheetIndex, sheetName,
-                        currentSheet.getPhysicalNumberOfRows()));
+                logger.warn(String.format("Sheet # %d (%s) only had %d rows, skipping.", sheetIndex, sheetName, currentSheet.getPhysicalNumberOfRows()));
                 continue;
             }
             numberOfActualSheets++;

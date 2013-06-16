@@ -1,6 +1,9 @@
 package org.tdar.struts.action.search;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +43,7 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
@@ -83,7 +87,10 @@ public class BrowseController extends AbstractLookupController {
     private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private String creatorXml;
-    private List<Account> accounts = new ArrayList<Account>(); 
+    private List<Account> accounts = new ArrayList<Account>();
+
+    private transient InputStream inputStream;
+    private Long contentLength;
 
     // private Keyword keyword;
 
@@ -124,6 +131,26 @@ public class BrowseController extends AbstractLookupController {
         return SUCCESS;
     }
 
+    @Action(value = "creatorRdf", results = {
+            @Result(name = TdarActionSupport.SUCCESS, type = "stream",
+                    params = {
+                            "contentType", "application/rdf+xml",
+                            "inputName", "inputStream",
+                            "contentLength", "${contentLength}"
+                    }
+            )
+    })
+    public String creatorRdf() throws FileNotFoundException {
+        if (Persistable.Base.isNotNullOrTransient(getId())) {
+            creator = getGenericService().find(Creator.class, getId());
+            File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml");
+            setInputStream(new FileInputStream(file));
+            setContentLength(file.length());
+            return SUCCESS;
+        }
+        return ERROR;
+    }
+
     @Action(value = CREATORS, results = { @Result(location = "results.ftl") })
     public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
@@ -137,12 +164,11 @@ public class BrowseController extends AbstractLookupController {
                     } catch (Throwable e) {
                         logger.error("problem communicating with crowd getting user info for {} ", creator, e);
                     }
-                    getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+                    getAccounts().addAll(
+                            getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
                 }
                 try {
                     setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
-                    File dir = new File(TdarConfiguration.getInstance().getPersonalFileStoreLocation(), "creatorInfo");
-                    setCreatorXml(FileUtils.readFileToString(new File(dir, creator.getId() + ".xml")));
                 } catch (Exception e) {
                     logger.error("error: {}", e);
                 }
@@ -323,6 +349,22 @@ public class BrowseController extends AbstractLookupController {
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    public Long getContentLength() {
+        return contentLength;
+    }
+
+    public void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
     }
 
 }

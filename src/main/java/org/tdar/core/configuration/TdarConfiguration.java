@@ -618,4 +618,8 @@ public class TdarConfiguration {
     public boolean isGeoLocationToBeUsed() {
         return assistant.getBooleanProperty("is.geolocation.to.be.used", false);
     }
+
+    public String getCreatorFOAFDir() {
+        return getPersonalFileStoreLocation() + "/creatorInfo";
+    }
 }

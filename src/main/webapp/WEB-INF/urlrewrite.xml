@@ -124,6 +124,15 @@
 	</outbound-rule>
 
 	<rule>
+		<from>^/browse/(.+)/(\d+)/rdf</from>
+		<to>/browse/creatorRdf?id=$2</to>
+	</rule>
+	<outbound-rule>
+		<from>^/browse/creatorRdf\?id=(\d+)$</from>
+		<to>/browse/creators/$2/rdf</to>
+	</outbound-rule>
+
+	<rule>
 		<from>^/filestore/(\d+)/(\w+)</from>
 		<to>/filestore/$2?informationResourceFileId=$1</to>
 	</rule>
