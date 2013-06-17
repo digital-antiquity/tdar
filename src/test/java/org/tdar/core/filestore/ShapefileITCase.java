@@ -5,7 +5,10 @@ package org.tdar.core.filestore;
 
 import java.io.File;
 
+import javax.persistence.Id;
+
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -85,6 +88,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @Ignore("not implemented")
     public void testGeoTiffAUX() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         ShapefileReaderTask task = new ShapefileReaderTask();
