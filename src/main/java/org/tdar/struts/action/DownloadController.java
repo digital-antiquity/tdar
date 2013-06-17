@@ -1,6 +1,5 @@
 package org.tdar.struts.action;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +58,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     private PdfService pdfService;
 
     @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-download.ftl") })
-    public String confirm() throws TdarActionException, FileNotFoundException {
+    public String confirm() throws TdarActionException {
         // FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
         String status = execute();
         if (status != SUCCESS) {
@@ -69,6 +68,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         return "confirm";
     }
 
+    @Override
     @Action(value = GET)
     public String execute() throws TdarActionException {
         InformationResourceFileVersion irFileVersion = null;
@@ -134,6 +134,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         return SUCCESS;
     }
 
+    @Override
     public InputStream getInputStream() {
         return inputStream;
     }
@@ -142,6 +143,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         return contentType;
     }
 
+    @Override
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
