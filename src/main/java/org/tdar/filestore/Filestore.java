@@ -232,6 +232,7 @@ public interface Filestore {
             return Hex.encodeHexString(digest.digest());
         }
 
+        @Override
         public void storeLog(LogType type, String filename, String message) {
             File logdir = new File(FilenameUtils.concat(getFilestoreLocation(),
                     String.format("%s/%s/%s", LOG_DIR, type.getDir(), Calendar.getInstance().get(Calendar.YEAR))));
@@ -246,6 +247,7 @@ public interface Filestore {
             }
         }
 
+        @Override
         public List<File> listLogFiles(LogType type, Integer year) {
             String subdir = String.format("%s/%s", LOG_DIR, type.getDir());
             if (year != null) {
@@ -255,12 +257,14 @@ public interface Filestore {
             return Arrays.asList(logDir.listFiles());
         }
 
+        @Override
         public File getLogFile(LogType type, Integer year, String filename) {
             String subdir = String.format("%s/%s/%s/%s", LOG_DIR, type.getDir(), year, filename);
             File logDir = new File(FilenameUtils.concat(getFilestoreLocation(), subdir));
             return logDir;
         }
 
+        @Override
         public boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException {
             File toVerify = retrieveFile(version);
             MessageDigest newDigest = createDigest(toVerify);
@@ -284,6 +288,7 @@ public interface Filestore {
             return digestInputStream;
         }
 
+        @Override
         public MessageDigest createDigest(File f) {
             DigestInputStream digestInputStream = null;
             FileInputStream stream = null;
@@ -312,10 +317,12 @@ public interface Filestore {
             return new File(getFilestoreLocation()).toURI().relativize(f.toURI()).getPath();
         }
 
+        @Override
         public long getSizeInBytes() {
             return FileUtils.sizeOfDirectory(new File(getFilestoreLocation()));
         }
 
+        @Override
         public String getSizeAsReadableString() {
             return FileUtils.byteCountToDisplaySize(FileUtils.sizeOfDirectory(new File(getFilestoreLocation())));
         }
