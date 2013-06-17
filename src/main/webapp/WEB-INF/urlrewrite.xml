@@ -115,7 +115,7 @@
 
 
 	<rule>
-		<from>^/browse/(.+)/(\d+)</from>
+		<from>^/browse/(.+)/(\d+)/?$</from>
 		<to>/browse/$1?id=$2</to>
 	</rule>
 	<outbound-rule>

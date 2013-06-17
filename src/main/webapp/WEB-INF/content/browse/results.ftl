@@ -12,13 +12,17 @@
 
 <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 
+<#if creator.creatorType.person>
+<link rel="meta" type="application/rdf+xml" title="FOAF" href="rdf"/>
+</#if>
+
 <@view.pageStatusCallout />
 
 <#if creator??>
 
 <h1><#if creator.properName??>${creator.properName}</#if></h1>
 <#assign scope="http://schema.org/Person"/>
-<#if creator.creatorType == 'INSTITUTION'>
+<#if creator.creatorType.institution >
 	<#assign scope="http://schema.org/Organization"/>
 </#if>
 
@@ -39,7 +43,7 @@
 		<a href="${creator.url?html}">${creator.url?html}</a>
 	</#if>
     <br/>
-        <#if creator.creatorType == 'PERSON'>
+        <#if creator.creatorType.person>
            <#if authenticated && (editor ||  id == authenticatedUser.id ) >
            
            <h3>Future Contact Information</h3>

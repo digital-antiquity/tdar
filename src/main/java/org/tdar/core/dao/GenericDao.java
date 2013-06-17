@@ -93,6 +93,7 @@ public class GenericDao {
         return getCurrentSession().createQuery("select id from " + persistentClass.getName()).list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Long> findActiveIds(Class<? extends HasStatus> persistentClass) {
         return getCurrentSession().createQuery(String.format("select id from %s where status in ('ACTIVE')", persistentClass.getName())).list();
     }

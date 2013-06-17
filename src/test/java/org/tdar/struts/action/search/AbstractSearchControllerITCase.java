@@ -232,6 +232,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
     }
 
+    @SuppressWarnings("unchecked")
     protected void reindex() {
         searchIndexService.purgeAll();
         searchIndexService.indexAll(getAdminUser(), Resource.class);
