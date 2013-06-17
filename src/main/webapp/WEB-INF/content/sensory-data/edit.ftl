@@ -250,87 +250,140 @@
 <#macro divSurveyInfo>
 <div id="divSurveyInfo">
     <h2>Survey Information</h2>
-    
-    <div tiplabel="Survey Date(s)" tooltipcontent="Date of survey, or date range of survey.">
-    <@s.textfield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" cssClass="shortfield date formatUS" placeholder="mm/dd/yyyy" />
-    <@s.textfield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" cssClass="right-shortfield date formatUS" placeholder="mm/dd/yyyy" />
-    </div>
-<#-- FIXME: need to convert surveyDateEnd and surveyDateBegin to short forms when editing existing sensory data
-value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateEnd /></#if>"
--->
-    <!-- FIXME: why is this commented out?
-    <div tiplabel="" tooltipcontent=""><@s.textfield maxLength="255" name="sensoryData.surveyLocation" cssClass="input-xxlarge" label="Survey Location" labelposition="left" title="Survey Location" /></div>
-    -->
-    <@s.textfield maxLength="255" name="sensoryData.surveyConditions" 
-        tiplabel="Survey Conditions" tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)"
-        cssClass="input-xxlarge" label="Conditions" labelposition="left" />
-    <div tiplabel="Company / Operator Name" tooltipcontent="Details of company and scan operator name">
-    <@s.textfield maxLength="255" name="sensoryData.companyName" cssClass="input-xxlarge" label="Company Name" labelposition="left" />
-    </div>
     <div id="divScannerTechnologyOptions">
         <@s.radio name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"
-                    list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
+        list='%{scannerTechnologyTypes}' label="Scan Technology" theme="bootstrap" />
     </div>
-    <div class="conditional-scantype combined phase_based time_of_flight triangulation" tiplabel="Scanner Details" tooltipcontent="Details of the instrument(s) with serial number(s) and scan units">
+
+    <div class="conditional-scantype phase_based time_of_flight triangulation">
+        <div tiplabel="Survey Date(s)" tooltipcontent="Date of survey, or date range of survey.">
+            <@s.textfield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" cssClass="shortfield date formatUS" placeholder="mm/dd/yyyy" />
+            <@s.textfield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" cssClass="right-shortfield date formatUS" placeholder="mm/dd/yyyy" />
+        </div>
+        <@s.textfield maxLength="255" name="sensoryData.surveyConditions"
+            tiplabel="Survey Conditions" tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)"
+            cssClass="input-xxlarge" label="Conditions" labelposition="left" />
+        <div tiplabel="Company / Operator Name" tooltipcontent="Details of company and scan operator name">
+            <@s.textfield maxLength="255" name="sensoryData.companyName" cssClass="input-xxlarge" label="Company Name" labelposition="left" />
+        </div>
+    </div>
+
+    <div class="conditional-scantype phase_based time_of_flight triangulation" tiplabel="Scanner Details" tooltipcontent="Details of the instrument(s) with serial number(s) and scan units">
         <@s.textfield maxLength="255" name="sensoryData.scannerDetails" cssClass="input-xxlarge" label="Scanner Details" labelposition="left" />
     </div>
-    <div tiplabel="Estimated Data Resolution" tooltipcontent="The estimated average data resolution across the monument or object">
-    <@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" label="Average Data Resolution" labelposition="left" />
+    <div class="conditional-scantype phase_based time_of_flight triangulation" tiplabel="Estimated Data Resolution" tooltipcontent="The estimated average data resolution across the monument or object">
+        <@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" label="Average Data Resolution" labelposition="left" />
     </div>
-    <div tiplabel="Total Number of Scans in Project" tooltipcontent="Total number of scans">
-    <@s.textfield maxLength="255" name="sensoryData.totalScansInProject" cssClass="right-shortfield number" label="# Scans" labelposition="left" />
+    <div class="conditional-scantype phase_based time_of_flight triangulation" tiplabel="Total Number of Scans in Project" tooltipcontent="Total number of scans">
+        <@s.textfield maxLength="255" name="sensoryData.totalScansInProject" cssClass="right-shortfield number" label="# Scans" labelposition="left" />
     </div>
-    <div class="conditional-scantype combined triangulation" tiplabel="Turntable used" tooltipcontent="Check this box if a turntable was used for this survey.">
+    <div class="conditional-scantype triangulation" tiplabel="Turntable used" tooltipcontent="Check this box if a turntable was used for this survey.">
         <@s.checkbox  label="Turntable Used" name="sensoryData.turntableUsed"  id="cbTurntableUsed"  />
     </div>
-    <div class="conditional-scantype combined phase_based time_of_flight" tiplabel="Planimetric Map Filename" tooltipcontent="If applicable, then provide the image name.">
+    <div class="conditional-scantype phase_based time_of_flight" tiplabel="Planimetric Map Filename" tooltipcontent="If applicable, then provide the image name.">
     <@s.textfield maxLength="255" name="sensoryData.planimetricMapFilename" cssClass="input-xxlarge" label="Planimetric Map Filename" labelposition="top" />
     </div>
-    <div class="conditional-scantype combined phase_based time_of_flight" tiplabel="Control Data Filename" tooltipcontent="If control data was collected, enter the control data filename.">
+    <div class="conditional-scantype phase_based time_of_flight" tiplabel="Control Data Filename" tooltipcontent="If control data was collected, enter the control data filename.">
     <@s.textfield maxLength="255" name="sensoryData.controlDataFilename" cssClass="input-xxlarge" label="Control Data Filename" labelposition="top" />
     </div>
-    <div class="conditional-scantype combined phase_based time_of_flight triangulation" tiplabel='RGB Data Capture Information' tooltipcontent="Please specify it is (1) internal or external and (2) describe any additional lighting systems used if applicable">
-    <@s.radio name='sensoryData.rgbCapture'  listValue="label"
-                list='%{rgbCaptureOptions}' label="RGB Capture" theme="bootstrap" />
-    <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="Lighting Setup Information" labelposition="top" rows="5" />
+    <div class="conditional-scantype phase_based time_of_flight triangulation" tiplabel='RGB Data Capture Information' tooltipcontent="Please specify it is (1) internal or external and (2) describe any additional lighting systems used if applicable">
+        <@s.radio name='sensoryData.rgbCapture'  listValue="label"
+                    list='%{rgbCaptureOptions}' label="RGB Capture" theme="bootstrap" />
+        <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="Lighting Setup Information" labelposition="top" rows="5" />
     </div>
     <div tiplabel="Description of Final Datasets for Archive" tooltipcontent="What datasets will be archived (include file names if possible).">
         <@s.textarea name="sensoryData.finalDatasetDescription" cssClass="resizable input-xxlarge" label="Description of Final Datasets for Archive" labelposition="top" rows="5" />
     </div>
     
-    <div class="conditional-scantype combined phase_based time_of_flight triangulation" 
+    <div class="conditional-scantype phase_based time_of_flight triangulation"
         tiplabel="Camera Details"  tooltipcontent="If applicable, provide the make/model/lense for the external camera that is is used to capture images for color mapping onto the scanned object">
         <@s.textarea name="sensoryData.cameraDetails" id="rgbDataCaptureInfo" cssClass="phase_based time_of_flight resizable input-xxlarge" label="Camera Details" labelposition="top" rows="5" />
     </div>
     
 </div>
-<div id="scantypeFileReminder" style="display:none">
-    <div class="well">
-        <h4>Scan Metadata Templates</h4>
-        <p>Due to the variability and complexity of sensory data scans, we're providing templates you can use to include the details of how your scan was captured and composed.</p>
-        <h5>Available Templates</h5>
+    <div id="scantypeFileReminder" style="display:none">
         <div class="well">
-          <ul id="ulTemplateList">
-              <li class="phase_based time_of_flight" id="liTofPhase">
-              <span class="inlineblock">
-                  <a target="_blank" href="/includes/sensory-data/scan_metadata_tof_phase.xlsx"><i class="icon-file"></i> scan_metadata_tof.xlsx</a>
-                      best for time-of-flight and phase-based scans
-              </span>
-              </li>
-              
-              <li class="triangulation" id="liTriangulation">
-              <span class="inlineblock">
-                  <a target="_blank"  href="/includes/sensory-data/scan_metadata_triangulation.xlsx" ><i class="icon-file"></i> scan_metadata_triangulation.xlsx</a>
-                      best for triangulation scans
-              </span>
-              </li>
-              <li class="combined" id="liCombined">
-              <span class="inlineblock"><a target="_blank"  href="/includes/sensory-data/scan_metadata_combined.xlsx" ><i class="icon-file"></i> scan_metadata_combined.xlsx</a>
-                      best for scans that involve multiple scan technologies
-              </span>
-              </li>
-          </ul>
+            <h4>Scan Metadata Templates</h4>
+            <p>
+                Metadata collected for 3D scan data will vary based on differences in scan technology and
+                instrumentation.  Individualized templates are provided below, please select and download the
+                template that is appropriate to your scan project.  Complete the metadata for the original scan
+                files in your project and any additional products that will be archived (only registered point clouds
+                and polygonal mesh datasets can be accepted at this time).  Include the completed template in your zip
+                file upload (See instructions below for suggested upload file structure). Metadata collected for 3D
+                scan data will vary based on differences in scan technology and instrumentation.  Individualized
+                templates are provided below, please select and download the template that is appropriate to your
+                scan project.  Complete the metadata for the original scan files in your project and any additional
+                products that will be archived (only registered point clouds and polygonal mesh datasets can be
+                accepted at this time).  Include the completed template in your zip file upload (See
+                instructions below for suggested upload file structure).
+            </p>
+            <h5>Available Templates</h5>
+            <div class="well">
+              <ul id="ulTemplateList">
+                  <li class="phase_based time_of_flight" id="liTofPhase">
+                  <span class="inlineblock">
+                      <a target="_blank" href="/includes/sensory-data/scan_metadata_tof_phase.xlsx"><i class="icon-file"></i> scan_metadata_tof.xlsx</a>
+                          best for time-of-flight and phase-based scans
+                  </span>
+                  </li>
+                  
+                  <li class="triangulation" id="liTriangulation">
+                  <span class="inlineblock">
+                      <a target="_blank"  href="/includes/sensory-data/scan_metadata_triangulation.xlsx" ><i class="icon-file"></i> scan_metadata_triangulation.xlsx</a>
+                          best for triangulation scans
+                  </span>
+                  </li>
+                  <li class="combined" id="liCombined">
+                  <span class="inlineblock"><a target="_blank"  href="/includes/sensory-data/scan_metadata_combined.xlsx" ><i class="icon-file"></i> scan_metadata_combined.xlsx</a>
+                          best for scans that involve multiple scan technologies
+                  </span>
+                  </li>
+              </ul>
+            </div>
         </div>
+    </div>
+
+<div class="well">
+    <h5>Upload Structure</h5>
+    <p>
+        All 3D data and the associated metadata template should be zipped into a single zip file prior to upload.
+        Additional images or videos of the data should be uploaded individually and image metadata should be
+        completed for each image in the Image Information section below.  The suggested folder structure for your zip
+        file is as follows:
+    </p>
+    <div class="well">
+        <ul>
+            <li class="folder">
+                    <em>SurveyName</em>
+                    contains original scan files in .e57 or .txt format
+                    <ul>
+                        <li class="folder">
+                            <em>SurveyName_L1</em> &mdash;
+                            contains registered point cloud or registered polygonal mesh in appropriate format
+                            <ul>
+                                <li class="folder">
+                                    <em>Trans_Matrices</em> &mdash;
+                                    contains transformation matrices for each original scan file, file naming should
+                                    match original scan file names
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="folder">
+                            <em>SurveyName_L2</em> &mdash;
+                            contains registered point cloud or registered polygonal mesh in appropriate format
+                        </li>
+                        <li class="folder">
+                            <em>SurveyName_L3</em> &mdash;
+                            contains merged polygonal mesh in appropriate format, if applicable
+                        </li>
+                        <li class="file">
+                            <em>SurveyName_metadata.xls</em>
+                        </li>
+                    <ul>
+                </ul>
+            </li>
+        </ul>
     </div>
 </div>
 </#macro>
