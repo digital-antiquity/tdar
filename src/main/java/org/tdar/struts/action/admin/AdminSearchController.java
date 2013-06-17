@@ -106,6 +106,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
         return Arrays.asList(SortOption.values());
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         return null;

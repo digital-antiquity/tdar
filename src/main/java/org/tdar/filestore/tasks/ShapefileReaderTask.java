@@ -100,9 +100,10 @@ public class ShapefileReaderTask extends AbstractTask {
 
         Parser parser = new Parser(config);
         SimpleFeature f = (SimpleFeature) parser.parse(new FileInputStream(file));
-        Collection placemarks = (Collection) f.getAttribute("Feature");
+        Collection<?> placemarks = (Collection<?>) f.getAttribute("Feature");
         for (Object mark : placemarks) {
             SimpleFeature feature = (SimpleFeature) mark;
+            @SuppressWarnings("unused")
             Set<Entry<Object, Object>> entrySet = feature.getUserData().entrySet();
             getLogger().info("props:{} \n attributes: {}\nuserData:{}", feature.getProperties(), feature.getAttributes(), feature.getUserData());
             getLogger().info("{}: {}", feature.getAttribute("name"), feature.getAttribute("description"));

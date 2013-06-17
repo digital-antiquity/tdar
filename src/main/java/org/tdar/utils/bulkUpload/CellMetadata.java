@@ -59,8 +59,9 @@ public class CellMetadata {
         return sb.toString();
     }
 
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    private List<Enum> enumList = new ArrayList<Enum>();
+    private List<Enum<?>> enumList = new ArrayList<>();
     private boolean floatNumber = false;
     private boolean numeric = false;
 
@@ -68,7 +69,7 @@ public class CellMetadata {
         this.mappedClass = class2;
         if (field.getType().isEnum()) {
             for (Object enumConstant : field.getType().getEnumConstants()) {
-                getEnumList().add((Enum) enumConstant);
+                getEnumList().add((Enum<?>) enumConstant);
             }
         }
 
@@ -207,11 +208,11 @@ public class CellMetadata {
         return name;
     }
 
-    public List<Enum> getEnumList() {
+    public List<Enum<?>> getEnumList() {
         return enumList;
     }
 
-    public void setEnumList(List<Enum> enumList) {
+    public void setEnumList(List<Enum<?>> enumList) {
         this.enumList = enumList;
     }
 

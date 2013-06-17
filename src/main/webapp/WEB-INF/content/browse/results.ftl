@@ -12,13 +12,13 @@
 
 <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 
-<#if creator.creatorType.person>
-<link rel="meta" type="application/rdf+xml" title="FOAF" href="rdf"/>
-</#if>
 
 <@view.pageStatusCallout />
 
 <#if creator??>
+<#if creator.creatorType.person>
+<link rel="meta" type="application/rdf+xml" title="FOAF" href="rdf"/>
+</#if>
 
 <h1><#if creator.properName??>${creator.properName}</#if></h1>
 <#assign scope="http://schema.org/Person"/>
