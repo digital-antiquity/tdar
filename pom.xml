@@ -7,7 +7,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
-		<struts2.version>2.3.14.1</struts2.version>
+		<struts2.version>2.3.14.3</struts2.version>
 		<hibernate.version>4.2.1.Final</hibernate.version>
 		<hibernate.search.version>4.3.0.Final</hibernate.search.version>
 		<spring.framework.version>3.2.3.RELEASE</spring.framework.version>
@@ -21,7 +21,7 @@
 		<jvm.args>-Xms256m -Xmx2560m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
 		<generated.schema.file>schema.sql</generated.schema.file>
-		<jetty.version>8.1.10.v20130312</jetty.version>
+		<jetty.version>8.1.11.v20130520</jetty.version>
 		<jetty.port>8080</jetty.port>
 		<jetty.ssl.port>8443</jetty.ssl.port>
 		<jetty.stop.port>12919</jetty.stop.port>
@@ -32,7 +32,7 @@
 		<batik.version>1.7</batik.version>
 		<odata4j.version>0.7.0</odata4j.version>
 		<jersey.version>1.17.1</jersey.version>
-		<jackson.version>2.2.1</jackson.version>
+		<jackson.version>2.2.2</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<truezip.version>7.7.2</truezip.version>
 		<http-components.version>4.2.2</http-components.version>
@@ -199,7 +199,7 @@
 		<dependency>
 			<groupId>com.ibm.icu</groupId>
 			<artifactId>icu4j</artifactId>
-			<version>4.8.1.1</version>
+			<version>51.2</version>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
@@ -239,7 +239,7 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.47q</version>
+			<version>1.47t</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.media.jai</groupId>
@@ -954,7 +954,7 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>2.32.0</version>
+			<version>2.33.0</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -1216,7 +1216,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.2</version>
+				<version>2.3</version>
 				<configuration>
 					<!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
 					<outputDirectory>${webapp.deploy.dir}</outputDirectory>
@@ -1232,7 +1232,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.4</version>
+				<version>3.1</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
@@ -1355,7 +1355,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.11</version>
+				<version>2.15</version>
 				<configuration>
 					<outputDirectory>${basedir}/target/site</outputDirectory>
 				</configuration>
@@ -1402,7 +1402,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.11</version>
+				<version>2.15</version>
 				<executions>
 					<execution>
 						<id>integration-test</id>
