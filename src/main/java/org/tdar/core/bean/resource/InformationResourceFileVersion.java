@@ -175,6 +175,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.format = format;
     }
 
+    @Override
     public String getExtension() {
         return extension;
     }
@@ -376,6 +377,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         return informationResourceId;
     }
 
+    @Override
     public String toString() {
         return String.format("%s (%s, #%d | %d)", filename, fileVersionType, version, getInformationResourceFileId());
     }
@@ -399,10 +401,12 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         return comparison;
     }
 
+    @Override
     public boolean isViewable() {
         return viewable;
     }
 
+    @Override
     public void setViewable(boolean viewable) {
         this.viewable = viewable;
     }
