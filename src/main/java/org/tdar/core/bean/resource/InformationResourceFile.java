@@ -117,6 +117,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         EMBARGOED,
         CONFIDENTIAL;
 
+        @Override
         public String getLabel() {
             return WordUtils.capitalize(this.name().toLowerCase());
         }
@@ -480,6 +481,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         setStatus(FileStatus.DELETED);
     }
 
+    @Override
     public String toString() {
         return String.format("(%d, %s) v#:%s: %s (%s versions)", getId(), status, getLatestVersion(), restriction,
                 CollectionUtils.size(informationResourceFileVersions));
@@ -495,10 +497,12 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return getInformationResourceFileType() == FileType.COLUMNAR_DATA;
     }
 
+    @Override
     public boolean isViewable() {
         return viewable;
     }
 
+    @Override
     public void setViewable(boolean accessible) {
         this.viewable = accessible;
     }
