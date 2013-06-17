@@ -29,6 +29,7 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -137,6 +138,10 @@ public class XmlService implements Serializable {
 
     @Transactional(readOnly = true)
     public Document convertToXML(Object object, Document document) throws JAXBException {
+        // http://marlonpatrick.info/blog/2012/07/12/jaxb-plus-hibernate-plus-javassist/
+        if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
+            object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
+        }
         JAXBContext jc = JAXBContext.newInstance(object.getClass());
         Marshaller marshaller = jc.createMarshaller();
         marshaller.marshal(object, document);
