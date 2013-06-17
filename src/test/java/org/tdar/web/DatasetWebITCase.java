@@ -77,12 +77,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // upload a file ahead of submitting the form
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME);
         uploadDataset();
-    }
 
-    @Test
-    @Rollback(true)
-    public void viewRowPageRender() {
-        testCreateDatasetRecordSpitalfields();
         Long datasetId = extractTdarIdFromCurrentURL();
         Dataset dataset = datasetService.find(datasetId);
         DataTable datatable = dataset.getDataTables().iterator().next();
