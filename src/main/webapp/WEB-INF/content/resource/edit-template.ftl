@@ -12,10 +12,17 @@
 <style>
 // .deleteButton, .replaceButton {display:none;}
 </style>
-
+<#noescape>
+<#assign _filesJson = "''">
+<#if filesJson?has_content>
+<#assign _filesJson = filesJson>
+</#if>
 <script type="text/javascript">
-
 $(function(){
+    if(TDAR) {
+        TDAR.filesJson = ${_filesJson!"''"};
+    }
+    
     $("#fileUploadField").change(function(){
             if ($("#fileUploadField").val().length > 0) {
                 $("#reminder").hide();
@@ -23,7 +30,7 @@ $(function(){
     });
 });
 </script>
-
+</#noescape>
 
 </head>
 <body>

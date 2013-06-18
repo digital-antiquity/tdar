@@ -25,7 +25,15 @@ TDAR.fileupload = function() {
         //pass off our options to fileupload options (to allow easy passthrough of page-specific (options e.g. acceptFileTypes)
         var $fileupload = $(_options.formSelector).fileupload($.extend({
             formData: function(){
-                return [{name:"ticketId", value:$('#ticketId').val()}];
+                var ticketId, data;
+                ticketId = $('#ticketId').val();
+                if(!ticketId) {
+                    data = [{name:"ticketRequested", value: "true"}]
+                } else {
+                    data = [{name:"ticketId", value:$('#ticketId').val()}]
+                }
+                return data;
+                
             },
             //send files in a single http request (singleFileUploads==false). See TDAR-2763 for more info      
             singleFileUploads: false,
@@ -63,20 +71,11 @@ TDAR.fileupload = function() {
                 //console.log("updating sequencenumber::   row.id:%s   sequenceNumber:%s", trElem.id, idx+1);
                 $('.fileSequenceNumber', trElem).val(idx + 1);
             });
-        };
+        }
         
         //note: unlike in jquery.bind(), you cant use space-separated event names here.
         $fileupload.bind("fileuploadcompleted fileuploadfailed", _updateSequenceNumbers);
-        
-        //hack: disable until we have a valid ticket
-        //$fileupload.fileupload("disable");
-        if (!parseInt($('#ticketId').val())) {
-	        $.post(TDAR.uri("upload/grab-ticket"), function(data) {
-	            $('#ticketId').val(data.id);
-	            //$fileupload.fileupload('enable');
-	        }, 'json');
-        }
-        
+                
         //populate list of peviously uploaded files,  if available.
         if(_options.informationResourceId) {
             _informationResourceId = _options.informationResourceId;
@@ -140,7 +139,7 @@ TDAR.fileupload = function() {
                             ext:  ext,
                             base: file.fileReplaceName.substr(0, file.fileReplaceName.length - ext.length - 1),
                             context: file.context
-                        };
+                        }
                     });
                     return files;
                 }
@@ -160,7 +159,22 @@ TDAR.fileupload = function() {
         $(_options.formSelector).bind("fileuploadcompleted", function(e, data) {
             var $datefields = $(data.context).find(".date");
             _applyDateInputs($datefields);
+            
         });
+        
+        $(_options.formSelector).bind("fileuploaddone", function(e, data) {
+            if(!data.result) return;
+            if(!data.result.ticket) return;
+            if(!data.result.ticket.id)  {
+                console.log("no ticket in results"); 
+            } else {
+                var ticket = data.result.ticket;
+                console.log("ticket received: %s", JSON.stringify(ticket));
+                $("#ticketId").val(ticket.id);
+            }
+        });
+        
+        //TODO: look for list of files from inline filesJson.
 
         return helper;
     };
@@ -179,7 +193,7 @@ TDAR.fileupload = function() {
         if($hdnAction.val()==="NONE") {
             $hdnAction.val("MODIFY_METADATA");
         }
-    };
+    }
 
     //convert json returned from tDAR into something understood by upload-plugin, as well as fileproxy fields to send back to server
     var _translateIrFiles = function(fileProxies) {
@@ -279,7 +293,7 @@ TDAR.fileupload = function() {
     //public: kludge for dealing w/ fileupload's template system, which doesn't have a good way to pass the row number of the table the template will be rendered to
     var _getRowId = function() {
         return _nextRowId++;
-    };
+    }
 
 
     var _replaceFile = function($originalRow, $targetRow) {
@@ -299,9 +313,9 @@ TDAR.fileupload = function() {
             $targetRow.detach();
             $originalRow.data("$targetRow", $targetRow);
             $originalRow.find(".replace-file-button, .undo-replace-button").toggle();
-        });
+        })
 
-    };
+    }
 
     //to 'cancel' a file replacement, we need to restore state of the fileproxy,  and then create a new file proxy
     //telling the server to ignore the replacement file.
@@ -322,11 +336,11 @@ TDAR.fileupload = function() {
 
         $row.find(".replace-file-button, .undo-replace-button").toggle();
 
-    };
+    }
 
 
     var _registerReplaceButton = function(formSelector) {
-        console.log("registering replace button");
+        console.log("registering replace button")
 
         //invoke the fileupload widgets "add" method
         $(formSelector).on('change', '.replace-file' , function (e) {
@@ -351,7 +365,9 @@ TDAR.fileupload = function() {
             console.log("undo replace click");
             _cancelReplaceFile($(this).closest(".existing-file"));
         });
-    };
+
+
+    }
     
     //use jquery datepicker if input[type=date] not supported
     

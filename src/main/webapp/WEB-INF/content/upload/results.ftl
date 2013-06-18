@@ -1,3 +1,8 @@
+<#assign ticketjson = "{}">
+<#if personalFilestoreTicket??>
+<#assign ticketjson = personalFilestoreTicket.toJSON()>
+</#if>
+
 {"files":[
 <#list uploadFileFileName as fileName>
 {   
@@ -7,5 +12,6 @@
     "delete_type": "DELETE"
 }<#if fileName_has_next>,</#if>
 </#list>
-]
+],
+    "ticket": ${ticketjson}
 }

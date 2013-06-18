@@ -32,6 +32,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.XmlService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -59,6 +60,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     @Autowired
     protected FileProxyService fileProxyService;
+    
+    @Autowired
+    protected XmlService xmlService;
 
     private List<CategoryVariable> allDomainCategories;
 
@@ -73,6 +77,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private Language metadataLanguage;
     private List<Language> languages;
     private List<FileProxy> fileProxies = new ArrayList<FileProxy>();
+    
+    //previously uploaded files list in json format, needed by blueimp jquery file upload
+    private String filesJson = "";
+
 
     private Boolean isAbleToUploadFiles = null;
 
@@ -331,7 +339,28 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     public String loadAddMetadata() {
         String toReturn = super.loadAddMetadata();
+        loadFilesJson();
         return toReturn;
+    }
+
+    //jtd: not putting this in the getFilesJson because I want any exceptions to occur prior to rendering
+    private void loadFilesJson() {
+        if(Persistable.Base.isNullOrTransient(getResource())) {
+            return;
+        }
+
+        List<FileProxy> fileProxies = new ArrayList<FileProxy>();
+        for (InformationResourceFile informationResourceFile : getResource().getInformationResourceFiles()) {
+            if (!informationResourceFile.isDeleted()) {
+                fileProxies.add(new FileProxy(informationResourceFile));
+            }
+        }
+        try {
+            filesJson =  xmlService.convertToJson(fileProxies);
+        } catch (IOException e) {
+            logger.error("could not convert file list to json", e);
+            filesJson = "[]";
+        }
     }
 
     @Override
@@ -631,6 +660,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public void setHasFileProxyChanges(boolean hasFileProxyChanges) {
         this.hasFileProxyChanges = hasFileProxyChanges;
+    }
+
+    public String getFilesJson() {
+        return filesJson;
     }
 
 }
