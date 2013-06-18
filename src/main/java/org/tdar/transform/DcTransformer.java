@@ -330,6 +330,8 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
                 return new VideoTransformer().transform((Video)resource);
             case GEOSPATIAL:
                 return new GeospatialTransformer().transform((Geospatial)resource);
+            case ARCHIVE:
+                return new ArchiveTransformer().transform((Archive) resource);
             default:
                 break;
         }
