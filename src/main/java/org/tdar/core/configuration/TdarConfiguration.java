@@ -509,6 +509,8 @@ public class TdarConfiguration {
         return assistant.getStringProperty("help.url.site", "http://dev.tdar.org/confluence/display/TDAR/Site+Types");
     }
 
+    @Deprecated
+    // TODO: Martin will remove
     public String getMobileImportURL() {
         return assistant.getStringProperty("mobile.upload.url", "/");
     }
@@ -516,7 +518,7 @@ public class TdarConfiguration {
     /*
      * Returns the collectionId to use for finding featured resources within
      * 
-     * @default -1 -- used to say any colleciton
+     * @default -1 -- used to say any collection
      */
     public Long getFeaturedCollectionId() {
         return assistant.getLongProperty("featured.collection.id", -1);
