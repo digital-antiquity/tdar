@@ -14,6 +14,7 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -31,7 +32,7 @@ public enum LookupSource implements HasLabel {
     KEYWORD("items", CultureKeyword.class, GeographicKeyword.class, InvestigationType.class, MaterialKeyword.class, OtherKeyword.class, TemporalKeyword.class,
             SiteNameKeyword.class, SiteTypeKeyword.class),
     RESOURCE("resources", Resource.class, Document.class, Dataset.class, Ontology.class, CodingSheet.class, Project.class,
-            SensoryData.class, Video.class, Geospatial.class),
+            SensoryData.class, Video.class, Geospatial.class, Archive.class),
     COLLECTION("collections", ResourceCollection.class);
 
     private String collectionName;
@@ -42,6 +43,7 @@ public enum LookupSource implements HasLabel {
         this.classes = classes;
     }
 
+    @Override
     public String getLabel() {
         return this.collectionName;
     }

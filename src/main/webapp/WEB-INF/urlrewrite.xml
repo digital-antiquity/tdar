@@ -81,6 +81,11 @@
 		<to type="redirect">/search/results?resourceTypes=IMAGE&amp;startRecord=0</to>
 	</rule>
 
+    <rule>
+        <from>^/(archive)s?/?$</from>
+        <to type="redirect">/search/results?resourceTypes=ARCHIVE&amp;startRecord=0</to>
+    </rule>
+
 	<rule>
 		<from>^/(project)s?/?$</from>
 		<to type="redirect">/search/results?resourceTypes=PROJECT&amp;startRecord=0
@@ -182,18 +187,18 @@
 	</rule>
 
 	<rule>
-		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)\??(.*)$
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection|archive)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)\??(.*)$
 		</from>
 		<to>/$1/$3?id=$2</to>
 		<!-- was &amp;$3 aat end -->
 	</rule>
 	<outbound-rule>
-		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)$
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection|archive)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)$
 		</from>
 		<to>/$1/$3/$2</to>
 	</outbound-rule>
 	<outbound-rule>
-		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)&amp;(.*)$
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection|archive)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)&amp;(.*)$
 		</from>
 		<to>/$1/$3/$2?$4</to>
 	</outbound-rule>
@@ -224,12 +229,12 @@
 	<!-- all requests for a resource supplying just an id should go to it's 
 		view action -->
 	<rule>
-		<from>^/(project|dataset|ontology|billing|image|video|document|cart|sensory-data|coding-sheet|collection)/([0-9]+)$
+		<from>^/(project|dataset|ontology|billing|image|video|document|cart|sensory-data|coding-sheet|collection|archive)/([0-9]+)$
 		</from>
 		<to>/$1/view?id=$2</to>
 	</rule>
 	<outbound-rule>
-		<from>^/(project|dataset|ontology|billing|image|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/view$
+		<from>^/(project|dataset|ontology|billing|image|video|document|sensory-data|cart|coding-sheet|collection|archive)/([0-9]+)/view$
 		</from>
 		<to>/$1/$2</to>
 	</outbound-rule>

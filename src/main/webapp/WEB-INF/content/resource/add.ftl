@@ -72,8 +72,8 @@
         <div class="span4">
         </div>
         <div class="span4">
-            <h3 class="mobile-import-mid-red"><a target="_blank" title ="click to open the upload pane in a new window" href="${mobileImportURL}">Site Data</a></h3>
-            The upload of data from a ${siteAcronym} compatible field server that has been used in conjunction with mobile devices on site.
+            <h3 class="mobile-import-mid-red"><@link "archive" "Site Archive"/></h3>
+            The upload of archived data from a ${siteAcronym} compatible field server that has been used in conjunction with mobile devices on a site. <br />
         </div>
     </div>
     </#if>

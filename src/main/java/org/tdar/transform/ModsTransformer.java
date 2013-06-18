@@ -21,6 +21,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -392,6 +393,10 @@ public abstract class ModsTransformer<R extends Resource> implements
     }
 
     public static class ProjectTransformer extends ModsTransformer<Project> {
+    }
+    
+    public static class ArchiveTransformer extends ModsTransformer<Archive> {
+        // marker class
     }
 
     public static class VideoTransformer extends ModsTransformer<Video> {

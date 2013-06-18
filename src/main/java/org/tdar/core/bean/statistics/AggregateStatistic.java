@@ -37,7 +37,8 @@ public class AggregateStatistic extends Persistable.Base {
         NUM_SENSORY_DATA("# of Sensory Data Objects"),
         NUM_VIDEO("# of Videos"),
         NUM_GIS("# of GeoSpatial Objects"),
-
+        NUM_ARCHIVES("# of Archive Objects"),
+        
         NUM_VIDEO_WITH_FILES("# of Videos with Files"),
         NUM_IMAGE_WITH_FILES("# of Images with Files"),
         NUM_DATASET_WITH_FILES("# of Data Sets with Files"),

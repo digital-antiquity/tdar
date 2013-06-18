@@ -76,6 +76,9 @@ public class ResourceTest {
         type = ResourceType.SENSORY_DATA;
         assertTrue(type.isSensoryData());
         assertFalse(type.isDataset());
+        type = ResourceType.ARCHIVE;
+        assertTrue(type.isArchive());
+        assertFalse(type.isDataset());
 
         assertEquals(ResourceType.DOCUMENT, ResourceType.fromString("DOCUMENT"));
     }

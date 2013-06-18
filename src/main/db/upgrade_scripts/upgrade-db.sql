@@ -62,3 +62,16 @@ alter table pos_coupon add column date_redeemed timestamp;
 --2013-05-29
 alter table person add column proxyinstitution_id int8 references institution;
 alter table person add column proxy_note text;
+
+--2013-06-13
+create table archive (
+    id bigint not null,
+    constraint archive_pkey primary key (id ),
+    constraint archive_fkey foreign key (id)
+    references information_resource (id) match SIMPLE
+) with (
+  OIDS=FALSE
+);
+
+alter table archive owner to tdar;
+

@@ -13,21 +13,24 @@ import org.tdar.search.query.QueryFieldNames;
  * @version $Revision$
  */
 public enum ResourceType implements HasLabel, Facetable<ResourceType> {
-    CODING_SHEET("Coding Sheet", 9, "Dataset", "unknown", "Dataset",  CodingSheet.class),
+    CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset",  CodingSheet.class),
     DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
     DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
     IMAGE("Image", 2, "Still Image", "unknown", "Photograph", Image.class),
     SENSORY_DATA("3D & Sensory Data", 7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
     GEOSPATIAL("GIS", 6, "Dataset", "unknown", "Dataset", Geospatial.class),
-    ONTOLOGY("Ontology", 8, "Dataset", "unknown", "Dataset", Ontology.class),
+    ONTOLOGY("Ontology", 9, "Dataset", "unknown", "Dataset", Ontology.class),
     PROJECT("Project", 5, "ItemList", Project.class),
-    VIDEO("Video", 4, "Moving Image", "unknown", "Movie", Video.class);
+    VIDEO("Video", 4, "Moving Image", "unknown", "Movie", Video.class),
+    ARCHIVE("Site Archive", 8, "Collection", "unknown", "SoftwareApplication", Archive.class);
+    
 
     private final String label;
     private final String dcmiTypeString;
     private final String openUrlGenre;
     private int order;
     private transient Integer count;
+    // Schema is one of from http://schema.org/docs/full.html
     private String schema;
     private final Class<? extends Resource> resourceClass;
 
@@ -114,6 +117,10 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
 
     public boolean isProject() {
         return this == PROJECT;
+    }
+    
+    public boolean isArchive() {
+        return this == ARCHIVE;
     }
 
     @Override

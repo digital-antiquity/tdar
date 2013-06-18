@@ -28,7 +28,8 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     @Transactional(readOnly=true)
     public Map<Date, Map<StatisticType, Long>> getResourceStatistics() {
         List<StatisticType> types = Arrays.asList(StatisticType.NUM_CODING_SHEET, StatisticType.NUM_DATASET, StatisticType.NUM_DOCUMENT,
-                StatisticType.NUM_IMAGE, StatisticType.NUM_ONTOLOGY, StatisticType.NUM_PROJECT, StatisticType.NUM_SENSORY_DATA, StatisticType.NUM_VIDEO);
+                StatisticType.NUM_IMAGE, StatisticType.NUM_ONTOLOGY, StatisticType.NUM_PROJECT, StatisticType.NUM_SENSORY_DATA, StatisticType.NUM_VIDEO,
+                StatisticType.NUM_ARCHIVES);
         return getDao().getStatistics(startDate, new Date(), types.toArray(new StatisticType[0]));
     }
 

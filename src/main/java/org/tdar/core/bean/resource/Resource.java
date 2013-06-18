@@ -134,8 +134,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
-@XmlSeeAlso({ Document.class, InformationResource.class, Project.class,
-        CodingSheet.class, Dataset.class, Ontology.class, Image.class, SensoryData.class, Video.class, Geospatial.class })
+@XmlSeeAlso({ Document.class, InformationResource.class, Project.class, CodingSheet.class, Dataset.class, Ontology.class,
+        Image.class, SensoryData.class, Video.class, Geospatial.class, Archive.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource")
 @FetchProfiles(value = {

@@ -20,6 +20,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -177,7 +178,6 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
             if (!pub.isEmpty())
                 dc.getPublisher().add(pub);
 
-
             return dc;
         }
 
@@ -297,6 +297,9 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
     public static class ImageTransformer extends InformationResourceTransformer<Image> {
     }
 
+    public static class ArchiveTransformer extends InformationResourceTransformer<Archive> {
+        // marker class
+    }
     public static class OntologyTransformer extends InformationResourceTransformer<Ontology> {
     }
 
