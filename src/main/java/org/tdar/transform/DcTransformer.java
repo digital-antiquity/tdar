@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.fortuna.ical4j.model.property.Geo;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.CoverageDate;
@@ -22,6 +24,7 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -285,6 +288,9 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
     public static class VideoTransformer extends InformationResourceTransformer<Video> {
     }
 
+    public static class GeospatialTransformer extends InformationResourceTransformer<Geospatial> {
+    }
+
     public static class CodingSheetTransformer extends InformationResourceTransformer<CodingSheet> {
     }
 
@@ -319,6 +325,8 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
                 return new SensoryDataTransformer().transform((SensoryData) resource);
             case VIDEO:
                 return new VideoTransformer().transform((Video)resource);
+            case GEOSPATIAL:
+                return new GeospatialTransformer().transform((Geospatial)resource);
             default:
                 break;
         }

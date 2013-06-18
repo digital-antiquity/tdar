@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
@@ -396,6 +397,9 @@ public abstract class ModsTransformer<R extends Resource> implements
     public static class VideoTransformer extends ModsTransformer<Video> {
     }
 
+    public static class GeospatialTransformer extends ModsTransformer<Geospatial> {
+    }
+
     public static class DcmiModsTypeMapper {
 
         private static final Map<String, TypeOfResourceValue> typeMap = initTypeMap();
@@ -440,6 +444,8 @@ public abstract class ModsTransformer<R extends Resource> implements
                 return new SensoryDataTransformer().transform((SensoryData) resource);
             case VIDEO:
                 return new VideoTransformer().transform((Video) resource);
+            case GEOSPATIAL:
+                return new GeospatialTransformer().transform((Geospatial) resource);
             default:
                 break;
         }
