@@ -218,6 +218,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
      */
     @Action(value="view-row",results= {
             @Result(name = SUCCESS, location="../dataset/view-row.ftl")})
+    @SkipValidation
     public String getDataResultsRow() {
         if (!isViewRowSupported()) {
             return ERROR;

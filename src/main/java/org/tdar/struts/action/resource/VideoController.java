@@ -62,11 +62,6 @@ public class VideoController extends AbstractInformationResourceController<Video
     }
 
     @Override
-    public boolean supportsMultipleFileUpload() {
-        return false;
-    }
-
-    @Override
     public Video getResource() {
         if (getPersistable() == null)
             setPersistable(createPersistable());

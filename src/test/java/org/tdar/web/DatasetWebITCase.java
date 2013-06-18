@@ -158,7 +158,6 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     private void uploadDataset() {
-        addCopyrightHolder(docValMap);
 
         String ticketId = getPersonalFilestoreTicketId();
         assertTrue("Expected integer number for ticket - but got: " + ticketId, ticketId.matches("([0-9]*)"));
@@ -167,6 +166,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         uploadFileToPersonalFilestore(ticketId, filename);
 
         gotoPage("/dataset/add");
+        addCopyrightHolder(docValMap);
         setInput("ticketId", ticketId);
         addFileProxyFields(0, FileAccessRestriction.PUBLIC, filename);
 
@@ -201,7 +201,6 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         webClient.getCache().clear();
         clickLinkWithText("edit");
         logger.trace(getPageText());
-
         // FIXME: the order here is arbitrary, mainly from the fact that
         // we're not setting ids and using them, or maintaining an order
         List<String> unorderedCheck = new ArrayList<String>();

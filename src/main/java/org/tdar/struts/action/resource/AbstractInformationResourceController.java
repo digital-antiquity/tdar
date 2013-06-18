@@ -631,10 +631,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return copyrightHolderProxies;
     }
 
-    public boolean supportsMultipleFileUpload() {
-        return true;
-    }
-
     public List<FileAccessRestriction> getFileAccessRestrictions() {
         return Arrays.asList(FileAccessRestriction.values());
     }

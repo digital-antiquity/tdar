@@ -87,9 +87,4 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
         return true;
     }
     
-    @Override
-    public boolean supportsMultipleFileUpload() {
-        return true;
-    }
-
 }

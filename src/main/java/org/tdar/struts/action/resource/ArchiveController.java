@@ -8,6 +8,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Archive;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.TdarActionException;
 
 /**
@@ -37,7 +38,7 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Set<String> getValidFileExtensions() {
-        Set<String> extensionsForTypes = new HashSet<>(); //analyzer.getExtensionsForType(ResourceType.ARCHIVE);
+        Set<String> extensionsForTypes = new HashSet<>(analyzer.getExtensionsForType(ResourceType.ARCHIVE));
         extensionsForTypes.add("tar.bz");
         extensionsForTypes.add("zip");
         extensionsForTypes.add("bz2");

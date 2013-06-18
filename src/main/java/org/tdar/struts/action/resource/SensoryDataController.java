@@ -50,19 +50,8 @@ public class SensoryDataController extends AbstractInformationResourceController
          sensoryDataImages = new ArrayList<SensoryDataImage>(getPersistable().getSensoryDataImages());
          Collections.sort(sensoryDataImages);
          Collections.sort(sensoryDataScans);
-         loadScannerInformationResourceFile();
     }
     
-    private void loadScannerInformationResourceFile() {
-        //FIXME: compile? Needed?
-//        for(InformationResourceFile irfile : getSensoryData().getInformationResourceFiles()) {
-//            if(irfile.getFileName().endsWith("xls") || irfile.getFileName().endsWith("xlsx")) {
-//                getSensoryData().setScannerInformationResourceFile(irfile);
-//                break;
-//            }
-//        }
-    }
-
     /**
      * Save basic metadata of the registering concept.
      * 

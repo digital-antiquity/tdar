@@ -17,9 +17,9 @@ import org.tdar.filestore.tasks.ListArchiveTask;
 public class FileArchiveWorkflow extends BaseWorkflow {
 
     public FileArchiveWorkflow() {
-        registerFileExtension("tgz", ResourceType.SENSORY_DATA);
-        registerFileExtension("tar", ResourceType.SENSORY_DATA);
-        registerFileExtension("zip", ResourceType.SENSORY_DATA);
+        registerFileExtension("tgz", ResourceType.SENSORY_DATA, ResourceType.ARCHIVE);
+        registerFileExtension("tar", ResourceType.SENSORY_DATA, ResourceType.ARCHIVE);
+        registerFileExtension("zip", ResourceType.SENSORY_DATA, ResourceType.ARCHIVE);
 
         addTask(ListArchiveTask.class, WorkflowPhase.PRE_PROCESS);
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);

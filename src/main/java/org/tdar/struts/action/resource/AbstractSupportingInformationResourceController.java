@@ -177,11 +177,6 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         return SUCCESS;
     }
 
-    @Override
-    public boolean supportsMultipleFileUpload() {
-        return false;
-    }
-
     protected String getLatestUploadedTextVersionText() {
         // in order for this to work we need to be generating text versions
         // of these files for both text input and file uploads
@@ -194,6 +189,11 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         }
         return "";
     }
+    
+    @Override
+    public boolean isMultipleFileUploadEnabled() {
+        return false;
+    };
 
     public String getFileInputMethod() {
         return fileInputMethod;
