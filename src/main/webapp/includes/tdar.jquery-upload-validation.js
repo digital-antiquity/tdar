@@ -52,7 +52,7 @@ var FileuploadValidator;
             if(!this.helper) errs.push("fileupload helper not found - did you call registerFileUpload yet?");
             this.inputSelector = this.helper.inputSelector;
             errs.forEach(function(err){
-                console.error(err)
+                console.error(err);
             });
 
             if(this.validateOnChange) {
@@ -195,6 +195,6 @@ var FileuploadValidator;
         }
     });
     
-})(console)
+})(console);
 
         
