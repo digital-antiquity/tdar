@@ -265,34 +265,34 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#nested />
         <#-- XXX: verify logic for rendering this -->
         <#if multipleFileUploadEnabled || resource.hasFiles()>
-        <!-- not sure this is ever used -->
-        <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
+            <!-- not sure this is ever used -->
+            <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
         
-        <div class="">
-        <p><span class="label">Note:</span> You can only have <strong>${maxUploadFilesPerRecord}</strong> per record</p> 
-        </div>
+            <div class="">
+            <p><span class="label">Note:</span> You can only have <strong>${maxUploadFilesPerRecord}</strong> per record</p> 
+            </div>
         
-        <table id="uploadFiles" class="files table tableFormat">
-        </table>
-        <table id="files" class="files sortable tableFormat">
-        <thead>
-            <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
-                <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
-            </tr>
-        </thead>
-        <tbody>
-        <#list fileProxies as fileProxy>
-            <#if fileProxy??>
-            <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
-            </#if>
-        </#list>
-        <#if fileProxies.empty>
-        <tr class="noFiles newRow">
-        <td><em>no files uploaded</em></td>
-        </tr>
-        </#if>
-        </tbody>
-        </table>
+            <table id="uploadFiles" class="files table tableFormat">
+            </table>
+            <table id="files" class="files sortable tableFormat">
+                <thead>
+                    <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
+                    <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <#list fileProxies as fileProxy>
+                        <#if fileProxy??>
+                            <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
+                        </#if>
+                    </#list>
+                    <#if fileProxies.empty>
+                        <tr class="noFiles newRow">
+                            <td><em>no files uploaded</em></td>
+                        </tr>
+                    </#if>
+                </tbody>
+            </table>
         </#if>
     </div>
     <@helptext.confidentialFile />
