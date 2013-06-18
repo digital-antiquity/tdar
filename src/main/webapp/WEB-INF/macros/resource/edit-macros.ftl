@@ -446,8 +446,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 	                        <@join sequence=validFileExtensions delimiter=", "/>">
 	    <label for="fileUploadField" class="control-label">${typeLabel}</label>
 	    <div class="controls">
-	        <input type="hidden" name="ticketId" id="ticketId" value="" /> 
-	        <#-- name was uploadedFiles, should be uploadFile? -->
 	        <@s.file theme="simple" name='uploadedFiles' cssClass="validateFileType input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
 	        <span class="help-block">Valid file types include: <@join sequence=validFileExtensions delimiter=", "/></span>
 	    </div>

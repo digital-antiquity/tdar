@@ -74,7 +74,7 @@
                     "/css/famfamfam.css",
                     "/includes/ivaynberg-select2-817453b/select2.css",
                     "/includes/jquery.aw-showcase.1.1.3/css/style.css",
-                    "/includes/blueimp-jquery-file-upload-5.28.5/css/jquery.fileupload-ui.css",
+                    "/includes/blueimp-jquery-file-upload-5.31.6/css/jquery.fileupload-ui.css",
                     "/includes/jquery-treeview/jquery.treeview.css",
                     "/includes/datatables.css"
                     
