@@ -126,7 +126,7 @@
 </#macro>
 
 <#macro localJavascript>
-        var $form = $("#resourceRegistrationForm");
+        var $form = $("#metadataForm");
         setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
         applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
 
