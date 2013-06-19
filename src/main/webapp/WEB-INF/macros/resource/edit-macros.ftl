@@ -1067,14 +1067,14 @@ jquery validation hooks?)
               <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
               <optgroup label="Your Projects">
                   <#list allSubmittedProjects?sort_by("titleSort") as submittedProject>
-                  <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
+                  <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@common.truncate submittedProject.title 70 /> </option>
                   </#list>
               </optgroup>
               </#if>
               
               <optgroup label="Projects you have been given access to">
                   <#list fullUserProjects?sort_by("titleSort") as editableProject>
-                      <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
+                      <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@common.truncate editableProject.title 70 /></option>
                   </#list>
               </optgroup>
             </select>
@@ -1086,7 +1086,7 @@ jquery validation hooks?)
                 <select name="_tdar.collection" id="collection-selector" class="input-block-level">
                     <option value="" selected='selected'>All Collections</option>
                     <@s.iterator value='resourceCollections' var='rc'>
-                        <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
+                        <option value="${rc.id?c}" title="${rc.name!""?html}"><@common.truncate rc.name!"(No Name)" 70 /></option>
                     </@s.iterator>
                 </select>
             </div>

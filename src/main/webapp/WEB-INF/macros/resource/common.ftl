@@ -316,7 +316,9 @@ $(document).ready(function(){
     	    gridLineWidth: 0,
     	    drawGridlines:false
         },
-      legend: { show:true, 
+      legend: { 
+				renderer:$.jqplot.EnhancedLegendRenderer,
+      			show:true, 
       			location: 'e', 
 		        fontSize:10,
       			showSwatch:true
