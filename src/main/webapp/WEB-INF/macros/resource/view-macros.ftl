@@ -143,6 +143,7 @@ View freemarker macros
         <#assign extensionMap = { 'pdf':'page-white-acrobat', 'doc':'page-white-word','docx':'page-white-word' ,
                         'mdb':'page-white-key','mdbx':'page-white-key','accdb':'page-white-key',
                         'xls':'page-excel','xlsx':'page-excel',
+                        'zip':'page-white-zip','tar':'page-white-zip','tgz':'page-white-zip',
         				'DOCUMENT','page-white-text',
                         'DATASET':'page-white-text',
                         'CODING_SHEET':'page-white-text',

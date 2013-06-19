@@ -67,7 +67,7 @@
                 A list of codes and their meanings, usually associated with a single column in a dataset. An example from archaeology might be a list of ceramic type codes from a particular analysis project, linked to a specific dataset within ${siteAcronym}. A collection of coding sheets make up a coding packet, and are part of the proper documentation of a dataset.  
         </div>
     </div>
-    <#if copyrightMandatory>
+    <#if archiveFileEnabled>
     <div class="row">
         <div class="span4">
         </div>

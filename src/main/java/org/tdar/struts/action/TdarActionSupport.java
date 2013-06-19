@@ -256,6 +256,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isCopyrightMandatory() {
         return getTdarConfiguration().getCopyrightMandatory();
     }
+    
+    public boolean isArchiveFileEnabled() {
+        return getTdarConfiguration().isArchiveFileEnabled();
+    }
 
     public boolean isLicensesEnabled() {
         return getTdarConfiguration().getLicenseEnabled();
