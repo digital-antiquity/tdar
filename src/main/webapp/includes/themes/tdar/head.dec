@@ -2,7 +2,11 @@
 <meta name="msvalidate.01" content="121771274977CEA348D5B098DE1F823F" />
 <link rel='shortcut icon' href='<@s.url value="/images/tdar-favicon.ico"/>'/>
 
-<meta name="description" content="The Digital Archaeological Record (tDAR) is the digital repository of Digital Antiquity, an organization devoted to enhancing preservation and access to digital records of archaeological investigations. tDAR is a national/international digital repository for archaeological information, including databases, reports, images, and other kinds of archaeological information. tDAR is a database of archaeological Information"/>
+<#if (persistable.description)?has_content>
+	<meta name="description" content="${persistable.description?html}"/>
+<#else>
+	<meta name="description" content="The Digital Archaeological Record (tDAR) is the digital repository of Digital Antiquity, an organization devoted to enhancing preservation and access to digital records of archaeological investigations. tDAR is a national/international digital repository for archaeological information, including databases, reports, images, and other kinds of archaeological information. tDAR is a database of archaeological Information"/>
+</#if>
 <meta name="keywords" content="tdar, database, archaeology, digital repository, Digital Antiquity, preservation, access"/>
 
     <script type="text/javascript" src="//use.typekit.net/czp6njc.js"></script>
