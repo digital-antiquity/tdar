@@ -281,12 +281,7 @@ TDAR.uri = function(path) {
       <#assign label = ikey />
       <#if ikey.label??><#assign label=ikey.label ></#if>
       <#if (val?? && val > 0)>
-        <#if !first>,</#if>{ label: "${label}", key:"${ikey}",  data: ${val?c},color: 
-            <#if name !="resourceForUser">
-                "${settings.barColors[ikey_index % settings.barColors?size]}"
-            <#else>
-                "${settings.barColors[ikey.order - 1]}"    
-            </#if> }
+        <#if !first>,</#if>["${label}", ${(val!0)?c}]
         <#assign first=false/>
       </#if>
       <#if (ikey_index > settings.barColors?size)>
@@ -295,59 +290,40 @@ TDAR.uri = function(path) {
     </#list>
     ];
 </#noescape>
-    $(function() {
-
-        $.plot($("#${name}"), data${name}, {
-            series: {
-                pie: { 
-                    show: true,
-                    radius:1,
-//                    tilt:.3,
-                    label : {
-                        formatter: function(label, series){
-                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:black;">'+label+' ('+series.datapoints.points[1]+ ')</div>';
-                        },
-                        radius: 6/7
-                    }
-                }
-            },
-            legend: {
-                show: ${legend?string},
-                position:"sw"
-            },
-            grid: {
-                hoverable: true,
-                clickable: true
-            }
-        });
-        $("#${name}").bind("plotclick",function(event, pos, obj) { 
-        for (var entry  in data${name}) {
-            if (data${name}[entry].label == obj.series.label) {
-                var key = data${name}[entry].key;
-                var url = "<@s.url value="/search/results?"/>?<#noescape>${type}</#noescape>=" + key;
-                document.location = url;
-            }
-        }
-    });
-
-    $("#${name}").bind("plothover", function (event, pos, item) {
-            if (item) {
-                if (previousPoint != item.seriesIndex) {
-                    previousPoint = item.seriesIndex;
-                    
-                    $("#flottooltip").remove();
-                    showTooltip(pos.pageX, pos.pageY  - 30, item.series.label );
-               }
-            }
-            else {
-                $("#flottooltip").remove();
-                previousPoint = null;            
-            }
-    });
-
-    });
-    
-            
+$(document).ready(function(){
+  var plot${name} = jQuery.jqplot ('${name}', [data${name}], 
+    {
+      fontSize:10,
+      seriesDefaults: {
+        renderer: jQuery.jqplot.PieRenderer, 
+        rendererOptions: {
+          fill: true,
+          showDataLabels: true, 
+          // Add a margin to seperate the slices.
+          sliceMargin: 4, 
+          // stroke the slices with a little thicker line.
+          lineWidth: 5,
+			padding:5,
+ 	      dataLabels: 'value'
+         }
+		},
+        grid: {
+			background: 'rgba(0,0,0,0)',
+            drawBorder: false,
+	        shadow: false,
+	        gridLineColor: 'none',
+	        borderWidth:0,
+    	    gridLineWidth: 0,
+    	    drawGridlines:false
+        },
+      legend: { show:true, 
+      			location: 'e', 
+		        fontSize:10,
+      			showSwatch:true
+      }
+    }
+  );
+});
     </script>
 
 </#macro>
@@ -380,106 +356,79 @@ TDAR.uri = function(path) {
   <#return/>
 </#if>
 
-   <#list resourceCacheObjects?sort_by("key") as key>
-      <#if (key.count == 0) >
-          <#local totalItems = totalItems - 1/>
-      </#if>
-    </#list>
-
-    <#if (totalItems < 1)>
-        <#local totalItems = 1 />
-    </#if>
-    
-<#local barWidth = (graphWidth  / (totalItems) -6)/>
-<div class="barGraph" style="width:${graphWidth?c}px;height:${graphHeight?c}px;" >
-    <h3>${graphLabel}</h3>
-   <table style="width:${graphWidth -5}px;height:${graphHeight - 15}px;">
-  <tr>
-  <#local resourceTypeCount = 0>
-   <#list resourceCacheObjects?sort_by("key") as key>
-      <#if (key.count > 0) >
-        <#local calulatedValue= key.key >
-        <#if calulatedValue?is_number>
-            <#local calulatedValue=calulatedValue?c?string/>
-        </#if>
-        <#local resourceTypeCount = key.logCount + resourceTypeCount >
-        <td>
-              <a target="_top" href="<@s.url value="/search/results?${searchKey}=${calulatedValue}"/>">
-              <div class="barlabel">${key.count}</div><div class="bar" id="${key.cssId}"></div></a>
-        </td>
-      </#if>
-    </#list>
-  </tr>
-  <tr>
-   <#list resourceCacheObjects?sort_by("key") as key>
-      <#if (key.count > 0) >
-      <td><div class="barlabel">${key.label}</div></td>
-      </#if>
-   </#list>
-   </tr>
-</table>
-
-<style>
-table td  {vertical-align:bottom;}
-
-    <#if resourceTypeCount == 0><#-- if database is empty, to prevent division by zero -->
-        <#local resourceTypeCount = 1>
-    </#if>
-
-   <#list resourceCacheObjects?sort_by("key") as key>
-    <#if (key.count > 0)>
-       <#local color_= settings.barColors[0]>
-        <#if rotateColors>
-           <#local color_=settings.barColors[key.resourceType.order - 1]>
-        </#if>
-        <#local heightToUse = (2 * graphHeight * (key.logCount / resourceTypeCount))?floor>
-        <#if (graphHeight < heightToUse)>
-            <#-- TDAR 2875: Kneecap this graph entry. Will only affect emptyish databases -->
-            <#local heightToUse = (graphHeight - 50)> 
-        </#if>
-        #${key.cssId} {background-color: ${color_}; height: ${heightToUse}px }
-    </#if>
-   </#list>
-
-   
-
-.bar {width:${barWidth?c}px;;min-width:${minWidth?c}px }
-
- td > div.barlabel {
-    <#if (labelRotation == 90) >
-        -webkit-transform: rotate(90deg); 
-        -moz-transform: rotate(90deg);    
-        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
-    </#if>
-    <#if (labelRotation == 180) >
-        -webkit-transform: rotate(180deg); 
-        -moz-transform: rotate(180deg);    
-        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
-    </#if>
-    <#if (labelRotation == 270 || labelRotation == -90) >
-        -webkit-transform: rotate(-90deg); 
-        -moz-transform: rotate(-90deg);    
-        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-    </#if>
-    
-}
-</style>
+<div class="barGraph" id="graph${searchKey}" style="height:${graphHeight?c}px;" ></div>
 <script>
-$(function() {
-$(".bar").each(function() {
-    var el = $(this);
-    var color1 = el.css('background-color');
-    var color2 = $.xcolor.darken(color1);
-    el.hover(function(){
-        el.stop().animate({backgroundColor: color2}, 'fast');
-    }, function(){
-        el.stop().animate({backgroundColor: color1}, 'fast');
+	$(document).ready(function(){
+        $.jqplot.config.enablePlugins = true;
+        var data = []; 
+         
+        <#list homepageResourceCountCache as cache>
+        	<#if (cache.count > 0)>
+        	<#noescape>
+	        data.push(["${cache.resourceType.plural?js_string}",${(cache.count!0)?c},"${cache.resourceType?js_string}",${(cache.count!0)?c}]);
+        	</#noescape>
+	        </#if>
+        </#list>
+         
+        plot1 = $.jqplot('graph${searchKey}', [data], {
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
+ 			title: "${graphLabel}",
+            animate: !$.jqplot.use_excanvas,
+            seriesDefaults:{
+                renderer:$.jqplot.BarRenderer,
+                pointLabels: { 
+                	show: true, 
+                	location: 'n', 
+                	edgeTolerance: -25
+                },
+	            rendererOptions: {
+	                // Set varyBarColor to tru to use the custom colors on the bars.
+	                varyBarColor: true
+	            }
+            },
+			seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            grid: {
+				background: 'rgba(0,0,0,0)',
+	            drawBorder: false,
+    	        shadow: false,
+    	        gridLineColor: 'none',
+    	        borderWidth:0,
+        	    gridLineWidth: 0,
+        	    drawGridlines:false
+        },
+            axes: {
+                xaxis: {
+                   renderer: $.jqplot.CategoryAxisRenderer,
+			       tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                   tickOptions: {
+                        fontFamily: 'Georgia',
+                        fontSize: '8pt',
+                        showGridline: false
+                    }
+                                    },
+                yaxis: {
+                	renderer: $.jqplot.LogAxisRenderer,
+			        showTicks: false,
+			        show:false,
+                    showGridline: false
+                }
+            },
+            highlighter: { show: false }
+        });
+     
+        $('#resourceGraph').bind('jqplotDataClick', 
+            function (ev, seriesIndex, pointIndex, data) {
+                $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
+            window.location.href="<@s.url value="/search/results?${searchKey}="/>" +data[2];
+            }
+        );
     });
-});
-});
-</script>
-
-</div>
+	</script>
+	<style>
+	.jqplot-grid-canvas {
+ 	   display: none;
+	}
+	</style>
 </#macro>
 
 <#macro flotBarGraph  resourceCacheObjects graphWidth=368 graphHeight=800 graphLabel="" rotateColors=true labelRotation=0 minWidth=50 searchKey="g[0].creationDecade" explore=false max=100000 min=-1 minDataVal=10 >

@@ -29,7 +29,7 @@
 
 <div class="row">
     <div class="span6">
-        <@common.barGraph resourceCacheObjects=homepageResourceCountCache graphLabel="${siteAcronym} by the Numbers" graphHeight=304 />
+    <h1>FIXME: REplace with barGraph</h1>
     </div>
     <div class="span6 map">
     <!-- fixme styling -->
