@@ -11,6 +11,8 @@
 <meta name="lastModifiedDate" content="$Date: 2009-02-13 09:05:44 -0700 (Fri, 13 Feb 2009)$"/>
 </head>
 <body>
+<#escape _untrusted as _untrusted?html >
+
 <#-- 
 <div class="row">
     <div class="<#if !sessionData?? || !sessionData.authenticated>span8</#if>">
@@ -96,7 +98,8 @@
         </ul>
     </div>
     <div class="span6">
-        <@common.barGraph resourceCacheObjects=homepageResourceCountCache graphLabel="${siteAcronym} by the Numbers" graphHeight=354 />
+    	<@common.resourceBarGraph />
 	</div>
 </div>
+</#escape>
 </body>

@@ -349,29 +349,42 @@ $(document).ready(function(){
 </#compress>
 </#macro>
 
-<#macro barGraph  resourceCacheObjects graphWidth=360 graphHeight=800 graphLabel="" rotateColors=true labelRotation=0 minWidth=50 searchKey="resourceTypes">
-<#local totalItems = resourceCacheObjects?size />
+<#macro resourceBarGraph>
+	<script>
+	    var resourceGraphData = []; 
+	    <#list homepageResourceCountCache as cache>
+	    	<#if (cache.count > 0)>
+	    	<#noescape>
+		        resourceGraphData.push(["${cache.resourceType.plural?js_string}",${(cache.count!0)?c},"${cache.resourceType?js_string}",${(cache.count!0)?c}]);
+	    	</#noescape>
+	        </#if>
+	    </#list>
+   </script> 
 
-<#if totalItems == 0>
-  <#return/>
+    <@common.barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354  config="resourceConfig">
+  		var resourceConfig = {
+	        axes: {
+		        yaxis: {
+		        	renderer: $.jqplot.LogAxisRenderer
+		        }
+	        }
+  		};  	
+    </@common.barGraph>
+
+</#macro>
+
+
+<#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="">
+<#if id == "">
+	<#local id=searchKey />
 </#if>
-
-<div class="barGraph" id="graph${searchKey}" style="height:${graphHeight?c}px;"> </div>
+<div class="barGraph" id="graph${id}" style="height:${graphHeight?c}px;"> </div>
 
 <script>
 	$(document).ready(function(){
         $.jqplot.config.enablePlugins = true;
-        var data = []; 
-         
-        <#list homepageResourceCountCache as cache>
-        	<#if (cache.count > 0)>
-        	<#noescape>
-	        data.push(["${cache.resourceType.plural?js_string}",${(cache.count!0)?c},"${cache.resourceType?js_string}",${(cache.count!0)?c}]);
-        	</#noescape>
-	        </#if>
-        </#list>
-         
-        plot1 = $.jqplot('graph${searchKey}', [data], {
+
+		var _defaults =  {
             // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
  			title: "${graphLabel}",
             animate: !$.jqplot.use_excanvas,
@@ -396,7 +409,7 @@ $(document).ready(function(){
     	        borderWidth:0,
         	    gridLineWidth: 0,
         	    drawGridlines:false
-        },
+          },
             axes: {
                 xaxis: {
                    renderer: $.jqplot.CategoryAxisRenderer,
@@ -406,18 +419,25 @@ $(document).ready(function(){
                         fontSize: '8pt',
                         showGridline: false
                     }
-                                    },
+                },
                 yaxis: {
-                	renderer: $.jqplot.LogAxisRenderer,
 			        showTicks: false,
 			        show:false,
                     showGridline: false
                 }
             },
             highlighter: { show: false }
-        });
+        };
+		<#nested/>
+
+     	<#if config?has_content>
+     	$.extend(true, _defaults,${config});
+     	</#if>
+         
+        var plot${id} = $.jqplot('graph${id}', [${data}],_defaults);
      
-        $('#resourceGraph').bind('jqplotDataClick', 
+     
+        $('#graph${id}').bind('jqplotDataClick', 
             function (ev, seriesIndex, pointIndex, data) {
                 $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
             window.location.href="<@s.url value="/search/results?${searchKey}="/>" +data[2];

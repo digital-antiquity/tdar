@@ -7,7 +7,7 @@
 <h1>Explore ${siteAcronym}</h1>
 
  <h2>Browse Resources by Title</h2>
-   <ul>
+   <ul class="inline">
 	 <#list alphabet as letter>
 	     <@searchFor "groups[0].startingLetter" letter letter "li"/>
 	 </#list>
@@ -29,7 +29,7 @@
 
 <div class="row">
     <div class="span6">
-    <h1>FIXME: REplace with barGraph</h1>
+		<@common.resourceBarGraph />
     </div>
     <div class="span6 map">
     <!-- fixme styling -->
@@ -39,24 +39,44 @@
 </div>
 
 <h2>Browse By Decade</h2>
-<@common.flotBarGraph resourceCacheObjects=timelineData graphWidth=900 graphHeight=300 graphLabel="${siteAcronym} by decade" rotateColors=false labelRotation=-90 minWidth=10 searchKey="groups[0].creationDecades" explore=true max=2100 min=1400 />
+	<script>
+	        var timelineData = []; 
+	        <#list timelineData as cache>
+	        	<#if (cache.count > 0)>
+	        	<#noescape>
+			        timelineData.push(["${cache.key?c}",${(cache.count!0)?string(",##0")},"${cache.key?c}",${(cache.count!0)?string(",##0")}]);
+	        	</#noescape>
+		        </#if>
+	        </#list>
+	        
+	     var timelineConfig = {
+ 	            seriesDefaults:{
+		            rendererOptions: {
+		                varyBarColor: false
+	    			}
+    			} 	
+	     };
+	</script>
+    <@common.barGraph data="timelineData" graphLabel="" graphHeight=354 searchKey="groups[0].creationDecades" id="browseByDecade" config="timelineConfig"/>
+
+<#-- -@common.flotBarGraph resourceCacheObjects=timelineData graphWidth=900 graphHeight=300 graphLabel="${siteAcronym} by decade" rotateColors=false labelRotation=-90 minWidth=10  explore=true max=2100 min=1400 / -->
 
 <h2>Browse by Investigation Type</h2>
-<ul>
+<ul class="inline">
      <#list investigationTypes as investigationType>
          <@searchFor "groups[0].investigationTypeIdLists[0]" investigationType.id investigationType.label "li" investigationType.occurrence />
      </#list>
 </ul>
 
 <h2>Browse by Site Type</h2>
-<ul>
+<ul class="inline">
      <#list siteTypeKeywords as keyword>
          <@searchFor "groups[0].approvedSiteTypeIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
      </#list>
 </ul>
 
 <h2>Browse by Culture</h2>
-<ul>
+<ul class="inline">
      <#list cultureKeywords as keyword>
          <@searchFor "groups[0].approvedCultureKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
      </#list>
@@ -64,7 +84,7 @@
 
 
 <h2>Browse by Material Type</h2>
-<ul>
+<ul class="inline">
      <#list materialTypes as keyword>
          <@searchFor "groups[0].materialKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
      </#list>
