@@ -114,6 +114,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             "link isn't allowed in <div> elements",
             "missing </a> before <div>",
             "discarding unexpected </div",
+            "missing </div> before <style>",
             "discarding unexpected </a>",
             "missing </div> before link",
             "discarding unexpected </span>", "missing </span> before ", 
