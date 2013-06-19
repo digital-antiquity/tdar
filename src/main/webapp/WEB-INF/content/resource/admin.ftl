@@ -15,40 +15,75 @@ var data = [];
 	    <#list usageStatsForResources as stats>
             data.push([new Date("${stats.aggregateDate?string("yyyy-MM-dd")}"), ${stats.count?c}]);
         </#list>
-        results.push({label: "Views", data: data ,color: "#000000" });
+        results.push(data);
+        //{label: "Views", data: data ,color: "#000000" });
         
 		<#list downloadStats?keys as key>
-		<#if downloadStats.get(key)?has_content>
-		var row${key_index} = [];
-		<#list (downloadStats.get(key)) as stats>
-			row${key_index}.push([new Date("${stats.aggregateDate?string("yyyy-MM-dd")}"), ${stats.count?c}]);
-		</#list>
-		var colr = "${settings.barColors[ key_index % settings.barColors?size ]}";
-		results.push({label: "${key}", data: row${key_index} ,color: colr });
-		</#if>
+			<#if downloadStats.get(key)?has_content>
+			var row${key_index} = [];
+			<#list (downloadStats.get(key)) as stats>
+				row${key_index}.push([new Date("${stats.aggregateDate?string("yyyy-MM-dd")}"), ${stats.count?c}]);
+			</#list>
+			results.push(row${key_index});
+			</#if>
 		</#list>
 
-    $.plot($("#graphstats"), results,{
-          bars: {
-            show: true,
-            barWidth: 5,
-            align: "center"
+	<#assign data="results"/>
+	<#assign graphLabel="views &amp; downloads"/>
+
+        $.jqplot.config.enablePlugins = true;
+
+		var _defaults =  {
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
+ 			title: "${graphLabel}",
+            animate: !$.jqplot.use_excanvas,
+            seriesDefaults:{
+                renderer:$.jqplot.BarRenderer,
+                pointLabels: { 
+                	show: true, 
+                	location: 'n', 
+                	edgeTolerance: -25
+                },
+	            rendererOptions: {
+	                // Set varyBarColor to tru to use the custom colors on the bars.
+	                varyBarColor: true
+	            }
+            },
+			seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            grid: {
+				background: 'rgba(0,0,0,0)',
+	            drawBorder: false,
+    	        shadow: false,
+    	        gridLineColor: 'none',
+    	        borderWidth:0,
+        	    gridLineWidth: 0,
+        	    drawGridlines:false
           },
-          xaxis: {
-            mode:"time",
-            minTickSize: [1, "day"],
-	        timeformat: "%y-%m-%d",
-	        min: (new Date("${resource.dateCreated?string("yyyy-MM-dd")}")),
-            max: (new Date())
-        },
-        legend : {
-            show:true,
-            position:"nw"
-        }
-    });
+            axes: {
+                xaxis: {
+  	               renderer:$.jqplot.DateAxisRenderer,
+			       tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                   tickOptions: {
+                        fontFamily: 'Georgia',
+                        fontSize: '8pt',
+                        showGridline: false
+                    }
+                },
+                yaxis: {
+			        showTicks: false,
+			        show:false,
+                    showGridline: false
+                }
+            },
+            highlighter: { show: false }
+        };
+
+         
+        var plot${id?c} = $.jqplot('graph${id?c}', ${data}, _defaults);
+
 });
 </script>
-<div id="graphstats" style="height:120px"></div>
+<div id="graph${id?c}" style="height:120px"></div>
 </#noescape>
 <table class="tableFormat table">
     <tr>

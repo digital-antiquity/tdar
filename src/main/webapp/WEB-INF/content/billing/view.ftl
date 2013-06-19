@@ -11,12 +11,12 @@
 
 </head>
 <body>
-<@view.toolbar "${account.urlNamespace}" "view">
-  <@view.makeLink "cart" "add" "add invoice" "add" "" false false />
+<@nav.toolbar "${account.urlNamespace}" "view">
+  <@nav.makeLink "cart" "add" "add invoice" "add" "" false false />
 	<#if administrator>
-  <@view.makeLink "billing" "updateQuotas?id=${account.id?c}" "Reset Totals" "add" "" false false />
+  <@nav.makeLink "billing" "updateQuotas?id=${account.id?c}" "Reset Totals" "add" "" false false />
 	</#if>
-</@view.toolbar>
+</@nav.toolbar>
 <h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
 
 <#if account.description?has_content>

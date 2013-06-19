@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <head>
 <title>Edit Table Metadata for ${dataset.title}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -174,7 +175,7 @@
                 <#assign codingTxt="${column.defaultCodingSheet.title} (${column.defaultCodingSheet.id?c})"/>
             </#if>
             <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
-            <@edit.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
+            <@common.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
              label="Translate your data using a Coding Sheet:"
              autocompleteParentElement="#divCodingSheet-${column_index}"
              autocompleteIdElement="#${column_index}_cid"
@@ -190,7 +191,7 @@
                 <#assign ontologyTxt="${column.defaultOntology.title} (${column.defaultOntology.id?c})"/>
             </#if>
             <@s.hidden name="dataTableColumns[${column_index}].defaultOntology.id" value="${ontologyId}" id="${column_index}_oid" />
-            <@edit.combobox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
+            <@common.combobox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
              value="${ontologyTxt}"  
              label="Map it to an Ontology:"
              placeholder="Enter the name of an Ontology"
@@ -207,7 +208,7 @@
         <#if column.mappingColumn??>
             <#assign mapping =column.mappingColumn /></#if>
 
-    <@edit.boolfield name="dataTableColumns[${column_index}].mappingColumn"
+    <@common.boolfield name="dataTableColumns[${column_index}].mappingColumn"
         label="Use column values to map table rows to resources?"
         id="mapping_${column_index}" value=mapping cssClass="mappingValue" />
     <div class="mappingDetail well">
@@ -220,7 +221,7 @@
         <#assign ignoreExt = "false" />
         <#if column.ignoreFileExtension??>
             <#assign ignoreExt = column.ignoreFileExtension /></#if>
-        <@edit.boolfield 
+        <@common.boolfield 
           name="dataTableColumns[${column_index}].ignoreFileExtension"
           label="ignore file extension"
           id="dataTableColumns[${column_index}].ignoreFileExtension"
@@ -232,7 +233,7 @@
         <#assign visible = "true" />
         <#if column.visible??>
             <#assign visible = column.visible /></#if>
-        <@edit.boolfield 
+        <@common.boolfield 
           name="dataTableColumns[${column_index}].visible"
           label="visible?"
           id="dataTableColumns[${column_index}].visible"

@@ -31,15 +31,14 @@
 
 
 <#macro statsTable statsObj header="HEADER" cssid="CSS_ID" valueFormat="number">
-  <#assign width=900/>
   <#assign height=225/>
 <div class="glide">
     <h3>${header}</h3>
-<div id="graph${cssid}" style="width:${width}px;height:${height}px"></div>
+<div id="graph${cssid}" style="height:${height}px"></div>
 <#assign statsObjKeys = statsObj?keys?sort?reverse />
 <#assign numSets = 0/>
 <#assign totalRows = 0/>
-    <table class="tableFormat">
+	<table class="tableFormat table">
         <#assign first = true/>
         <#list statsObjKeys as key>
             <#assign vals = statsObj.get(key) />
@@ -62,7 +61,7 @@
              <#assign totalRows = totalRows +1 />
              </#if>
              <#assign first = false/>
-             <tr>
+             <tr class="<#if (totalRows > 15)>hidden</#if>">
                <td>
                 ${key?date}
               </td>
@@ -78,6 +77,12 @@
                 </#list>
             </tr>
         </#list>
+             <#if (totalRows > 15)>
+             <tr>
+             <td><a href="#" onClick="$(this).parents('table').find('tr').removeClass('hidden');$(this).parent().parent().addClass('hidden');return false;">show all</a></td>
+             </tr>
+             </#if>
+             
     </table>
 
 <#noescape>
@@ -94,29 +99,22 @@ var d${i} = [];
         <#assign vals = statsObj.get(key) />
         <#assign valsKeys = vals?keys />
         <#list valsKeys as key_>
-            d${key__index}.push([${(key.time)?c}, ${vals.get(key_)?default("0")?c}]);
+            d${key__index}.push(["${key?string("yyyy-MM-dd")}", ${vals.get(key_)?default("0")?c}]);
             d${key__index}.label = "${key_.label}";
-            d${key__index}.color = "${settings.barColors[key__index % settings.barColors?size ]}";
             </#list>
         </#list>
 
-    $.plot($("#graph${cssid}"), [ <#list 0..numSets as i><#if i != 0>,</#if>{label: d${i}.label, data: d${i},color: d${i}.color }</#list> ],{
-        xaxis: {
-            mode:"date",
-          tickFormatter: function (val, axis) {
-            var d = new Date(val);
-            return  d.getFullYear() + "-" + (d.getUTCMonth() + 1) + '-' + d.getUTCDate();
-          }
-        },
-        yaxis: {
-       //        transform: function (v) { return Math.log(v); },
-            inverseTransform: function (v) { return Math.exp(v); }
-        },
-        legend : {
-            show:true,
-            position:"nw"
-        }
-    });
+	$(document).ready(function(){
+	  var plot${cssid} = $.jqplot('graph${cssid}', [<#list 0..numSets as i><#if i != 0>,</#if>d${i}</#list> ], {
+	    axes:{
+	        xaxis:{
+	            renderer:$.jqplot.DateAxisRenderer
+	        }
+	    }
+	    ,
+	    seriesDefaults:{lineWidth:1,showLabel:true, showMarker:false}
+	  });
+	});
 });
 </script>
 </#noescape>
