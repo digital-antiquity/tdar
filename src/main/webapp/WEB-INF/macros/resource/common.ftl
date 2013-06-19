@@ -356,7 +356,8 @@ $(document).ready(function(){
   <#return/>
 </#if>
 
-<div class="barGraph" id="graph${searchKey}" style="height:${graphHeight?c}px;" ></div>
+<div class="barGraph" id="graph${searchKey}" style="height:${graphHeight?c}px;"> </div>
+
 <script>
 	$(document).ready(function(){
         $.jqplot.config.enablePlugins = true;

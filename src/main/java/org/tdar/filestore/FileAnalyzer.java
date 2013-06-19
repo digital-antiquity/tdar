@@ -60,12 +60,15 @@ public class FileAnalyzer {
     public Set<String> getExtensionsForType(ResourceType type) {
         Set<String> toReturn = new HashSet<String>();
         for (Workflow w : workflows) {
-            toReturn.addAll(w.getValidExtensionsForResourceType(type));
-            for (List<String> values : w.getRequiredExtensions().values()) {
-                toReturn.addAll(values);
-            }
-            for (List<String> values : w.getSuggestedExtensions().values()) {
-                toReturn.addAll(values);
+            Set<String> exts = w.getValidExtensionsForResourceType(type);
+            if (CollectionUtils.isNotEmpty(exts)) {
+                toReturn.addAll(exts);
+                for (List<String> values : w.getRequiredExtensions().values()) {
+                    toReturn.addAll(values);
+                }
+                for (List<String> values : w.getSuggestedExtensions().values()) {
+                    toReturn.addAll(values);
+                }
             }
         }
         return toReturn;

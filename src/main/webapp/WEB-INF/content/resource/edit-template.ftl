@@ -261,7 +261,7 @@ $(function(){
     <#if multipleUpload??>
     //init fileupload
     var id = $('input[name=id]').val();
-    <#if ableToUploadFiles>
+    <#if ableToUploadFiles && multipleUpload>
 	    TDAR.fileupload.registerUpload({
 	       informationResourceId: id, 
 	       acceptFileTypes: acceptFileTypes, 
@@ -294,12 +294,12 @@ applyInheritance(project, formSelector);
     var validate = $('.validateFileType');
     if ($(validate).length > 0) {
         $(validate).rules("add", {
-            accept: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
+            extension: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
             messages: {
                 accept: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
             }
         });
-    }
+    } 
     </#if>
     
     <#if local_.localJavascript?? && local_.localJavascript?is_macro>

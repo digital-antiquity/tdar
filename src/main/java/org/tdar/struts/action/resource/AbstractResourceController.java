@@ -54,6 +54,7 @@ import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
@@ -971,6 +972,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setResourceAnnotations(List<ResourceAnnotation> resourceAnnotations) {
         this.resourceAnnotations = resourceAnnotations;
+    }
+    
+    public List<ResourceType> getAllResourceTypes() {
+        return Arrays.asList(ResourceType.values());
     }
 
     /**

@@ -588,6 +588,10 @@ public class TdarConfiguration {
         return assistant.getIntProperty("upload.maxFilesPerResource", 50);
     }
 
+    public Boolean isArchiveFileEnabled() {
+        return assistant.getBooleanProperty("archive.enabled", false);
+    }
+    
     public Boolean getShowJiraLink() {
         return assistant.getBooleanProperty("jira.link.show", true);
     }

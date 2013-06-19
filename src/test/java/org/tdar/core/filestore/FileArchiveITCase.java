@@ -4,6 +4,7 @@
 package org.tdar.core.filestore;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -50,6 +51,8 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(ResourceType.IMAGE, fileAnalyzer.suggestTypeForFileExtension("gif", ResourceType.IMAGE, ResourceType.SENSORY_DATA));
         assertNull(fileAnalyzer.suggestTypeForFileExtension("xls", ResourceType.ONTOLOGY));
         assertEquals(ResourceType.CODING_SHEET, fileAnalyzer.suggestTypeForFileExtension("xls", ResourceType.ONTOLOGY, ResourceType.CODING_SHEET));
+
+        assertFalse(fileAnalyzer.getExtensionsForType(ResourceType.ARCHIVE).contains("xml"));
     }
 
     @Test
@@ -75,7 +78,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         boolean seen = false;
         for (InformationResourceFileVersion version : informationResourceFile.getLatestVersions()) {
             logger.info(version);
-            
+
             if (version.isTranslated()) {
                 String contents = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
                 assertTrue(contents.contains("Ark_HM_Headpot_01.txt"));
