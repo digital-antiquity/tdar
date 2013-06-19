@@ -98,5 +98,5 @@
     <div class="span6">
         <@common.barGraph resourceCacheObjects=homepageResourceCountCache graphLabel="${siteAcronym} by the Numbers" graphHeight=354 />
 	</div>
-
+</div>
 </body>
