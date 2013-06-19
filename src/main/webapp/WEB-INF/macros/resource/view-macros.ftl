@@ -449,7 +449,7 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 <#macro authorizedUsers collection >
-    <@resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
+    <@common.resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
 </#macro>
 
 <#macro infoResourceAccessRights>

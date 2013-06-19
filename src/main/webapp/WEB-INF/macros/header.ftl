@@ -35,6 +35,7 @@
 					 "/includes/jqplot-1.08/plugins/jqplot.categoryAxisRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.canvasTextRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.canvasAxisTickRenderer.min.js",
+					 "/includes/jqplot-1.08/plugins/jqplot.enhancedLegendRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.pieRenderer.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.pointLabels.js",
                      "/includes${fakeDirectory}/tdar.gmaps.js",
@@ -85,6 +86,7 @@
                     "/includes/jquery.aw-showcase.1.1.3/css/style.css",
                     "/includes/blueimp-jquery-file-upload-5.31.6/css/jquery.fileupload-ui.css",
                     "/includes/jquery-treeview/jquery.treeview.css",
+					 "/includes/jqplot-1.08/jquery.jqplot.min.css",
                     "/includes/datatables.css"
                     
                     ] />

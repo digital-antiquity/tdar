@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
@@ -86,8 +87,8 @@ $(function(){
 <div class="control-group">
 <label class="control-label">Make this collection public?</label>
 <div class="controls">
-    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.visible" value="true" <@edit.checkedif resourceCollection.visible true /> />Yes</label> 
-    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.visible" value="false" <@edit.checkedif resourceCollection.visible false /> />No</label>
+    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.visible" value="true" <@common.checkedif resourceCollection.visible true /> />Yes</label> 
+    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.visible" value="false" <@common.checkedif resourceCollection.visible false /> />No</label>
 </div>
 </div>
 

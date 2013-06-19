@@ -15,7 +15,7 @@
 
 </head>
 <body>
-<@view.toolbar "collection" "view" />
+<@nav.toolbar "collection" "view" />
 
 <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>
