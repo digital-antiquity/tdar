@@ -209,7 +209,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             try {
                 JSONObject.fromObject(getPageCode());
             } catch (Exception e) {
-                Assert.fail(String.format("%s : %s", e.getMessage(), ExceptionUtils.getFullStackTrace(e)));
+                Assert.fail(String.format("%s : %s: %s", e.getMessage(), ExceptionUtils.getFullStackTrace(e), getPageCode()));
             }
         }
         if (internalPage.getWebResponse().getContentType().toLowerCase().contains("html")) {
