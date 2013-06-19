@@ -13,6 +13,7 @@ import org.tdar.struts.action.TdarActionException;
 
 /**
  * Wraps an archive file, such as a zip file or a tarball.
+ * 
  * @author Martin Paulo
  */
 @ParentPackage("secured")
@@ -38,11 +39,7 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Set<String> getValidFileExtensions() {
-        Set<String> extensionsForTypes = new HashSet<>(analyzer.getExtensionsForType(ResourceType.ARCHIVE));
-        extensionsForTypes.add("tar.bz");
-        extensionsForTypes.add("zip");
-        extensionsForTypes.add("bz2");
-        return extensionsForTypes;
+        return new HashSet<>(analyzer.getExtensionsForType(ResourceType.ARCHIVE));
     }
 
     public void setArchive(final Archive archive) {
@@ -52,11 +49,17 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
     public Archive getArchive() {
         return getPersistable();
     }
-    
+
+    @Override
+    public Archive getResource() {
+        if (getPersistable() == null)
+            setPersistable(createPersistable());
+        return getPersistable();
+    }
+
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return false;
     }
-    
-    
+
 }

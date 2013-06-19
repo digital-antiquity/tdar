@@ -140,10 +140,17 @@ View freemarker macros
       <@embargoCheck/>
     </#if>
         <ul class="downloads media-list">
-        <#assign extensionMap = { 'pdf':'page-white-acrobat', 'doc':'page-white-word','docx':'page-white-word' ,'DOCUMENT','page-white-text',
+        <#assign extensionMap = { 'pdf':'page-white-acrobat', 'doc':'page-white-word','docx':'page-white-word' ,
                         'mdb':'page-white-key','mdbx':'page-white-key','accdb':'page-white-key',
-                        'xls':'page-excel','xlsx':'page-excel','DATASET':'page-white-text','CODING_SHEET':'page-white-text',
-                        'IMAGE':'page-white-picture','SENSORY_DATA':'page-white-picture','ONTOLOGY','page-white-text','GEOSPATIAL':'page-white-picture'
+                        'xls':'page-excel','xlsx':'page-excel',
+        				'DOCUMENT','page-white-text',
+                        'DATASET':'page-white-text',
+                        'CODING_SHEET':'page-white-text',
+                        'IMAGE':'page-white-picture',
+                        'SENSORY_DATA':'page-white-picture',
+                        'ONTOLOGY','page-white-text',
+                        'GEOSPATIAL':'page-white-picture',
+                        'ARCHIVE':'page-white-zip'
           } />
 
         <#local showAll = ""/>
