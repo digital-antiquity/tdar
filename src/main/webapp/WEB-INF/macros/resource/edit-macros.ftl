@@ -4,10 +4,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 -->
 <#-- include navigation menu in edit and view macros -->
 <#escape _untrusted as _untrusted?html>
-<#include "common.ftl">
+<#import "common.ftl" as common>
 <#import "/${themeDir}/local-helptext.ftl" as  helptext>
 <#import "/${themeDir}/settings.ftl" as settings>
-<#include "navigation-macros.ftl">
+<#import "navigation-macros.ftl" as nav>
 
 <#macro basicInformation itemTypeLabel="file" itemPrefix="resource">
 
@@ -92,7 +92,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <@s.textfield theme="simple" id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
             autocompleteIdElement="#resourceCollectionRow_${collection_index}_id" maxlength=255
             autocompleteParentElement="#resourceCollectionRow_${collection_index}_" />
-        <@clearDeleteButton id="resourceCollectionRow" />
+        <@nav.clearDeleteButton id="resourceCollectionRow" />
     </div>
 </#macro>
 
@@ -113,7 +113,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class="controls controls-row" id='${keywordField}Row_${keyword_index}_'>
         <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]'  maxlength=255 cssClass='input-xlarge keywordAutocomplete' placeholder="enter keyword"/>
         <#if showDelete>
-        <@clearDeleteButton id="${keywordField}Row" />
+        <@nav.clearDeleteButton id="${keywordField}Row" />
         </#if>
     </div>
 </#macro>
@@ -357,7 +357,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <tr id='uncontrolledCultureKeywordRow_${uncontrolledCultureKeyword_index}_'>
             <td>
                 <@s.textfield name='uncontrolledCultureKeywords[${uncontrolledCultureKeyword_index}]' cssClass=' input-xxlarge cultureKeywordAutocomplete' autocomplete="off" />
-                </td><td><@clearDeleteButton id="uncontrolledCultureKeywordRow" />
+                </td><td><@nav.clearDeleteButton id="uncontrolledCultureKeywordRow" />
             </td>
             </tr>
 </#macro>
@@ -397,7 +397,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                            prefix="authorizedUsers" includeRights=true includeRepeatRow=false />
                     </div>
                     <div class="span1">
-                        <@clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=disabled />
+                        <@nav.clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=disabled />
                     </div>
                 </div>
             </#if>
@@ -409,9 +409,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#nested>
 
  <#if persistable.resourceType??>
-  <@resourceCollectionsRights collections=effectiveResourceCollections owner=submitter >
+  <@common.resourceCollectionsRights collections=effectiveResourceCollections owner=submitter >
   <#--Note: this does not reflect changes to resource collection you have made until you save.-->
-  </@resourceCollectionsRights>
+  </@common.resourceCollectionsRights>
  </#if>
 
 </div>
@@ -626,7 +626,7 @@ applyInheritance(project, formSelector);
         <#-- <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" /> -->
         <@s.textarea theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
         <div class="span1">
-            <@edit.clearDeleteButton id="${prefix}Row${index}" />
+            <@nav.clearDeleteButton id="${prefix}Row${index}" />
         </div>
     </div>
 </#macro>
@@ -706,7 +706,7 @@ applyInheritance(project, formSelector);
             </div>
         </div>
         <div class="span1">
-            <@clearDeleteButton id="resourceNoteRow" />
+            <@nav.clearDeleteButton id="resourceNoteRow" />
         </div>
     </div>
 </div>
@@ -742,7 +742,7 @@ applyInheritance(project, formSelector);
         <@s.textfield theme="tdar" placeholder="Start Year" cssClass="coverageStartYear input-small" name="coverageDates[${proxy_index}].startDate" maxlength="10" /> 
         <@s.textfield theme="tdar" placeholder="End Year" cssClass="coverageEndYear input-small" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
         <@s.textfield theme="tdar" placeholder="Description"  cssClass="coverageDescription input-xlarge" name="coverageDates[${proxy_index}].description"  maxlength=255 />
-       <@edit.clearDeleteButton id="{proxy_index}DateRow"/>
+       <@nav.clearDeleteButton id="{proxy_index}DateRow"/>
 </div>
 </#macro>
 
@@ -833,7 +833,7 @@ applyInheritance(project, formSelector);
     <div id="resourceAnnotationRow_${annotation_index}_" class="controls-row repeat-row">
         <@s.textfield theme="tdar" placeholder="Name"  maxlength=128 cssClass="annotationAutoComplete span3" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
         <@s.textfield theme="tdar" placeholder="Value" cssClass="span3" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
-        <div class="span1"><@clearDeleteButton id="resourceAnnotationRow" /></div>                        
+        <div class="span1"><@nav.clearDeleteButton id="resourceAnnotationRow" /></div>                        
     </div>
 </#macro>
 
@@ -1393,7 +1393,7 @@ $(function() {
                         <@userRow person=user _indexNumber=user_index isUser=true includeRepeatRow=false/>
                     </div>
                     <div class="span1">
-                        <@clearDeleteButton id="user${user_index}"  />
+                        <@nav.clearDeleteButton id="user${user_index}"  />
                     </div>
                 </div>
             </#if>

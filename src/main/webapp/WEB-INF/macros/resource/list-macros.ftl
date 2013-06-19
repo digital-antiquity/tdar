@@ -1,5 +1,4 @@
 <#escape _untrusted as _untrusted?html>
-<#include "navigation-macros.ftl">
 <#import "view-macros.ftl" as view>
 <#import "common.ftl" as common>
 <#assign DEFAULT_SORT = 'RELEVANCE' />

@@ -3,6 +3,7 @@
 <#global inheritanceEnabled=true />
 <#global multipleUpload=true />
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#assign customUploadPlacement=true>
 
@@ -28,7 +29,7 @@
                 <div class='controls controls-row'>
                 <@s.textfield theme='simple' placeholder='Filename' maxLength="255" name="sensoryDataImages[${_image_index}].filename"  />
                 <@s.textfield theme='simple' placeholder='Description' maxLength="255" name="sensoryDataImages[${_image_index}].description" />
-                <@edit.clearDeleteButton id="sensoryDataImagesRow" />
+                <@nav.clearDeleteButton id="sensoryDataImagesRow" />
                 </div>
             </div>
         </div>
@@ -72,7 +73,7 @@
                     <span tiplabel="Scan Date" tooltipcontent="Date the object/monument was scanned">
                     <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].scanDate" value="${_scanDate}" placeholder="mm/dd/yyyy" cssClass="span2 date" />
                     </span>
-                    <@edit.clearDeleteButton id="sensoryDataScanRow" />
+                    <@nav.clearDeleteButton id="sensoryDataScanRow" />
                 </div>
                 <div class='controls controls-row'>
                     <span tiplabel="Data Resolution" tooltipcontent="Fixed resolution or data resolution at specific range.">

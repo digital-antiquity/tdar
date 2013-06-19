@@ -1,7 +1,7 @@
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
-<#include "/WEB-INF/macros/resource/navigation-macros.ftl">
+<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 
 <#--FIXME: this method for determining active tab won't work if (for example) controller returns INPUT for collection/institution/person search -->
 <#function activeWhen _actionNames>
@@ -19,6 +19,7 @@
 
 </head>
 <body>
+<#escape _untrusted as _untrusted?html >
 <h1>Search ${siteAcronym}</h1>
 <div class="usual">
 
@@ -375,3 +376,4 @@ $(document).ready(function(){
 
 
 
+</#escape>

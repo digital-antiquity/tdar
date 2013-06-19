@@ -122,7 +122,7 @@
         <@edit.userRow person=blankAuthorizedUser.user _indexNumber="" isDisabled=false includeRole=false prefix="owner" 
                 includeRights=false isUser=true includeRepeatRow=true/>
 
-            <@edit.clearDeleteButton id="clearAssignedOwner" />
+            <@nav.clearDeleteButton id="clearAssignedOwner" />
         </div>
     </div>
 </div>

@@ -4,7 +4,6 @@ navigation freemarker macros
 -->
 <#escape _untrusted as _untrusted?html>
 <#import "list-macros.ftl" as list>
-<#import "edit-macros.ftl" as edit>
 
 
 <#macro loginForm cssClass="">

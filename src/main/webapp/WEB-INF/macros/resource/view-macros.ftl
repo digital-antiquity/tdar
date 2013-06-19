@@ -5,8 +5,8 @@ $Id$
 View freemarker macros
 -->
 <#-- include navigation menu in edit and view macros -->
-<#include "common.ftl">
-<#include "navigation-macros.ftl">
+<#import "common.ftl" as common>
+<#import "navigation-macros.ftl" as nav>
 <#setting url_escaping_charset='UTF-8'>
 
 <#macro canonical object>
@@ -80,15 +80,15 @@ View freemarker macros
           <a href="<@s.url value='/filestore/${version.id?c}/get'/>" onClick="registerDownload('<@s.url value='/filestore/${version.id?c}/get'/>', '${id?c}')" 
     <#if resource.resourceType == 'IMAGE'>target='_blank'</#if>
           title="${version.filename?html}">
-              <@truncate version.filename 65 />
+              <@common.truncate version.filename 65 />
           </a><#if newline><br /></#if>
          <#else>
-             <@truncate version.filename 65 /> 
+             <@common.truncate version.filename 65 /> 
          </#if>
          <#if (!version.viewable || !version.informationResourceFile.public )>
             <span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
          </#if>
-        (<@convertFileSize version.fileLength />)
+        (<@common.convertFileSize version.fileLength />)
         <@downloadCount version />
 </#macro>
 
@@ -418,7 +418,7 @@ No coding rules have been entered for this coding sheet yet.
   <#if sessionData?? && sessionData.authenticated>
 <h2>Administrative Information</h2>
 
-    <@resourceUsageInfo />
+    <@common.resourceUsageInfo />
     <div>
         <dl class="dl-horizontal">
             <dt><p><strong>Created by</strong></p></dt>
@@ -444,7 +444,7 @@ No coding rules have been entered for this coding sheet yet.
     </div>
 
     <#nested>
-    <@resourceCollectionsRights collections=effectiveResourceCollections owner=resource.submitter />
+    <@common.resourceCollectionsRights collections=effectiveResourceCollections owner=resource.submitter />
     </#if>
 </#macro>
 
@@ -794,7 +794,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
             <br/></#if>
         </p>
     
-        <p><@truncate resource.description 150 /></p>
+        <p><@common.truncate resource.description 150 /></p>
     
         <p>
             <a target="_top"  href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a target="_top"  href="/search/results">Browse all Resources</a>

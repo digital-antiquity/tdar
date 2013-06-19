@@ -2,6 +2,7 @@
 
 <#import "/WEB-INF/content/${namespace}/view.ftl" as local_ />
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 
   <head>
     <title>${resource.title}</title>
@@ -55,17 +56,17 @@
   </head>
 
 
-<@view.toolbar "${resource.urlNamespace}" "view">
+<@nav.toolbar "${resource.urlNamespace}" "view">
 	<#if resource.resourceType.dataTableSupported && editable>
 	    <#assign disabled = resource.dataTables?size==0 />
-	    <@view.makeLink "dataset" "columns" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
-	    <@view.makeLink "dataset" "columns" "metadata" "columns" current true disabled "hidden-desktop"/>
+	    <@nav.makeLink "dataset" "columns" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
+	    <@nav.makeLink "dataset" "columns" "metadata" "columns" current true disabled "hidden-desktop"/>
     </#if>
 	
 	<#if local_.toolbarAdditions?? && local_.toolbarAdditions?is_macro>
 		<@local_.toolbarAdditions />
 	</#if>
-</@view.toolbar>
+</@nav.toolbar>
 
 
 <div id="datatable-child" style="display:none">
