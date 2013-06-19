@@ -363,7 +363,7 @@ $(document).ready(function(){
 	    </#list>
    </script> 
 
-    <@common.barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354  config="resourceConfig">
+    <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354  config="resourceConfig">
   		var resourceConfig = {
 	        axes: {
 		        yaxis: {
@@ -371,7 +371,7 @@ $(document).ready(function(){
 		        }
 	        }
   		};  	
-    </@common.barGraph>
+    </@barGraph>
 
 </#macro>
 
