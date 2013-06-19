@@ -8,6 +8,7 @@
 
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/${themeDir}/local-helptext.ftl" as  helptext>
 
 <#macro subNavMenu>
@@ -35,7 +36,7 @@
                 <#assign ontologyTxt="${ontology.title} (${ontology.id?c})"/>
             </#if>
             <@s.hidden name="ontology.id" value="${ontologyId}" id="oid" />
-            <@edit.combobox name="ontology.title"
+            <@common.combobox name="ontology.title"
                 label="Ontology Name" 
                 target="#divOntology"
                  value="${ontologyTxt}"  
@@ -125,7 +126,7 @@
 </#macro>
 
 <#macro localJavascript>
-        var $form = $("#resourceRegistrationForm");
+        var $form = $("#metadataForm");
         setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
         applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
 

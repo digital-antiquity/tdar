@@ -31,6 +31,7 @@
                      "/includes/latLongUtil-1.0.js",
   					 "/includes/jqplot-1.08/jquery.jqplot.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.logAxisRenderer.min.js",
+					 "/includes/jqplot-1.08/plugins/jqplot.dateAxisRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.barRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.categoryAxisRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.canvasTextRenderer.min.js",
@@ -53,9 +54,7 @@
                      "/includes${fakeDirectory}/tdar.contexthelp.js",
 	                 "/includes${fakeDirectory}/tdar.formValidateExtensions.js",
 	                 "/includes${fakeDirectory}/tdar.jquery-upload-validation.js",
-                     "/includes/bindWithDelay.js",
-                     "/includes/flot-0.7/jquery.flot.min.js",
-                     "/includes/flot-0.7/jquery.flot.pie.min.js"
+                     "/includes/bindWithDelay.js"
     ] />
 <#--                     "/includes/ivaynberg-select2-817453b/select2.js" -->
 
