@@ -87,5 +87,10 @@ public class PersonalFilestoreTicket extends Persistable.Base {
     public String getDescription() {
         return description;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("[ticket id:%s submitter:%s date:%s]", getId(), submitter, dateGenerated);
+    }
 
 }

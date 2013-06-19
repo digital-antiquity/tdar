@@ -301,7 +301,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
         assertEquals(TdarActionSupport.SUCCESS, uploadController.upload());
         List<PersonalFilestoreFile> files = filestoreService.retrieveAllPersonalFilestoreFiles(uploadController.getTicketId());
-        assertEquals(files.size(), uploadFiles.size());
+        assertEquals("file count retrieved from personal filestore", uploadFiles.size(), files.size());
         // XXX: potentially assert that md5s and/or filenames are same across both file lists
         for (PersonalFilestoreFile personalFilestoreFile : files) {
             String filename = personalFilestoreFile.getFile().getName();

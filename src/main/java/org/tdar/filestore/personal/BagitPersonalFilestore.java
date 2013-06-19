@@ -130,6 +130,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
 
     @Override
     public synchronized File store(PersonalFilestoreTicket personalFilestoreTicket, File file, String incomingFileName) throws IOException {
+        logger.debug("ticket:{}\t file:{}\t name:{}", new Object[]{personalFilestoreTicket, file, incomingFileName});
         String pathToBag = getPath(personalFilestoreTicket);
         File pathToBagFile = new File(pathToBag);
 

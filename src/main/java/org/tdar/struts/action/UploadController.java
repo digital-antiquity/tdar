@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -58,7 +57,7 @@ public class UploadController extends AuthenticationAware.Base {
     private List<String> processedFileNames;
 
     // this is the groupId that comes back to us from the the various upload requests
-    private long ticketId;
+    private Long ticketId;
 
     //indicates that client is not sending a ticket because the server should create a new ticket for this upload 
     private boolean ticketRequested = false;
@@ -78,21 +77,23 @@ public class UploadController extends AuthenticationAware.Base {
     })
     public String upload() {
         PersonalFilestoreTicket ticket = null;
+        logger.info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
         if(ticketRequested) {
             grabTicket();
             ticketId = personalFilestoreTicket.getId();
             ticket = personalFilestoreTicket;
+            logger.debug("UPLOAD CONTROLLER: on-demand ticket requested: {}", ticket);
         } else {
             ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
+            logger.debug("UPLOAD CONTROLLER: upload request with ticket included: {}", ticket);
             if (ticket == null) {
                 addActionError("asynchronous uploads require a valid ticket"); 
             }
         }
-        logger.debug("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
         if (CollectionUtils.isEmpty(uploadFile)) {
             addActionError("No files in this request");
         }
-        if(!CollectionUtils.isEmpty(getActionErrors())) {
+        if(CollectionUtils.isEmpty(getActionErrors())) {
             Person submitter = getAuthenticatedUser();
             for (int i = 0; i < uploadFile.size(); i++) {
                 File file = uploadFile.get(i);
