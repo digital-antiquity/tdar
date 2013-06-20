@@ -361,3 +361,8 @@ function _removeResourceClicked(id, elem) {
     $('#cbEntityId_' + id, $dataTable).prop('checked', false);
     
 }
+
+
+function _scrollOnPagination() {
+    $(".dataTables_paginate a").click(function(){$(".dataTables_scrollBody").animate( {scrollTop:0 });return true;});
+}

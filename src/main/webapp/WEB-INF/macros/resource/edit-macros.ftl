@@ -1165,6 +1165,7 @@ var datatable_showDescription = ${showDescription?string};
 
 $(function() {
     setupDashboardDataTable();
+    _scrollOnPagination();
 });
 
 </script>
