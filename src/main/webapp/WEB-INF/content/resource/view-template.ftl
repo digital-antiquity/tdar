@@ -3,6 +3,7 @@
 <#import "/WEB-INF/content/${namespace}/view.ftl" as local_ />
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 
   <head>
     <title>${resource.title}</title>

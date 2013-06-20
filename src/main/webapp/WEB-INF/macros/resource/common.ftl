@@ -354,15 +354,17 @@ $(document).ready(function(){
 <#macro resourceBarGraph>
 	<script>
 	    var resourceGraphData = []; 
+	    <#local seen=false />
 	    <#list homepageResourceCountCache as cache>
 	    	<#if (cache.count > 0)>
+	    	<#local seen=true />
 	    	<#noescape>
 		        resourceGraphData.push(["${cache.resourceType.plural?js_string}",${(cache.count!0)?c},"${cache.resourceType?js_string}",${(cache.count!0)?c}]);
 	    	</#noescape>
 	        </#if>
 	    </#list>
    </script> 
-
+	<#if seen>
     <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354  config="resourceConfig">
   		var resourceConfig = {
 	        axes: {
@@ -372,7 +374,7 @@ $(document).ready(function(){
 	        }
   		};  	
     </@barGraph>
-
+	</#if>
 </#macro>
 
 
