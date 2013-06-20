@@ -29,6 +29,7 @@
                      "/includes/latLongUtil-1.0.js",
   					 "/includes/jqplot-1.08/jquery.jqplot.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.logAxisRenderer.min.js",
+					 "/includes/jqplot-1.08/plugins/jqplot.highlighter.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.dateAxisRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.barRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.categoryAxisRenderer.min.js",

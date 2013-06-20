@@ -104,17 +104,26 @@ var d${i} = [];
             </#list>
         </#list>
 
-	$(document).ready(function(){
+	var labels = [<#list 0..numSets as i><#if i != 0>,</#if>d${i}.label</#list> ];
 	  var plot${cssid} = $.jqplot('graph${cssid}', [<#list 0..numSets as i><#if i != 0>,</#if>d${i}</#list> ], {
 	    axes:{
 	        xaxis:{
 	            renderer:$.jqplot.DateAxisRenderer
 	        }
-	    }
-	    ,
+	    },
+        highlighter: {
+            show: true,
+    	    sizeAdjust: 7.5
+        },
+        legend: {
+            show: true,
+            placement: 'outsideGrid',
+            labels: labels,
+            location: 'ne',
+            rowSpacing: '0px'
+        },
 	    seriesDefaults:{lineWidth:1,showLabel:true, showMarker:false}
 	  });
-	});
 });
 </script>
 </#noescape>
