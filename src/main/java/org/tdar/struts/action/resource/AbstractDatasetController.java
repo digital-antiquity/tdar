@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
@@ -46,6 +47,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     // public static final String SAVE_MAP_NEXT = "SAVE_MAP_NEXT";
 
+    private Integer pageNumber = 1;
+    private Integer columnsPerPage = 1000;
+    private Integer maxPages = 1;
+    
     public enum PostSaveColumnMapActions implements HasLabel {
         SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"),
         SAVE_MAP_THIS("Save, and return to this edit page", "Save, and return to this edit page");
@@ -154,8 +159,16 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         }
         // load existing column metadata if any.
         DataTable currentDataTable = getDataTable();
-
-        for (DataTableColumn column : currentDataTable.getSortedDataTableColumns()) {
+        List<DataTableColumn> columns = new ArrayList<>(currentDataTable.getSortedDataTableColumns());
+        //FIXME: replace with Pagination helper
+        if (CollectionUtils.size(columns) > columnsPerPage) {
+            int toIndex = pageNumber * columnsPerPage;
+            if (toIndex >= columns.size()) {
+                toIndex = columns.size() -1;
+            }
+            columns = columns.subList((pageNumber - 1) * columnsPerPage, toIndex);
+        }
+        for (DataTableColumn column : columns) {
             CategoryVariable categoryVariable = column.getCategoryVariable();
             if (categoryVariable == null) {
                 subcategories.add(null);
@@ -169,7 +182,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
                 }
             }
         }
-        setDataTableColumns(currentDataTable.getSortedDataTableColumns());
+        setDataTableColumns(columns);
 
         getLogger().debug("passing off to Freemarker");
         return SUCCESS;
@@ -444,4 +457,30 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         this.rowId = rowId;
     }
 
+    public Integer getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(Integer pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
+    public Integer getColumnsPerPage() {
+        return columnsPerPage;
+    }
+
+    public void setColumnsPerPage(Integer columnsPerPage) {
+        this.columnsPerPage = columnsPerPage;
+    }
+
+    public Integer getMaxPages() {
+        return maxPages;
+    }
+
+    public void setMaxPages(Integer maxPages) {
+        this.maxPages = maxPages;
+    }
+
+    
+    
 }
