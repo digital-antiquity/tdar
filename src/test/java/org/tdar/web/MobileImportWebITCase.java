@@ -8,17 +8,19 @@ import org.tdar.junit.RunWithTdarConfiguration;
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class MobileImportWebITCase extends AbstractAuthenticatedWebTestCase {
 
+    private static final String SITE_ARCHIVE = "Site Archive";
+
     @Test
     public void testMobileImportDoesNotAppearOnNonFaimsSite() {
         gotoPage("/resource/add");
-        assertTextNotPresentIgnoreCase("Site Data");
+        assertTextNotPresentIgnoreCase(SITE_ARCHIVE);
     }
 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testMobileImportAppearsOnFaimsSite() {
         gotoPage("/resource/add");
-        assertTextPresentIgnoreCase("Site Data");
+        assertTextPresentIgnoreCase(SITE_ARCHIVE);
     }
 
 }
