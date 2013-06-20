@@ -105,12 +105,12 @@ $(document).ready(function() {
   <#if sessionData?? && sessionData.authenticated>
     <div class="span12 resource-nav no-print " id="toolbars" parse="true">
       <ul >
-    <@nav.makeLink "browse" "creators" "view" "view" current true />
+    <@makeLink "browse" "creators" "view" "view" current true />
 
     <#if "edit" != current>
-        <@nav.makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
+        <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
     <#else>
-        <@nav.makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
+        <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
     </#if>
       </ul>
     </div>

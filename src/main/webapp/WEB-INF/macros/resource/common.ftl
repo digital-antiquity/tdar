@@ -380,7 +380,7 @@ $(document).ready(function(){
 <#if id == "">
 	<#local id=searchKey />
 </#if>
-<div class="barGraph" id="graph${id}" style="height:${graphHeight?c}px;"> </div>
+<div class="barGraph nogrid" id="graph${id}" style="height:${graphHeight?c}px;" > </div>
 
 <script>
 	$(document).ready(function(){
@@ -447,11 +447,6 @@ $(document).ready(function(){
         );
     });
 	</script>
-	<style>
-	.jqplot-grid-canvas {
- 	   display: none;
-	}
-	</style>
 </#macro>
 
 <#macro worldMap forceAddSchemeHostAndPort=false>

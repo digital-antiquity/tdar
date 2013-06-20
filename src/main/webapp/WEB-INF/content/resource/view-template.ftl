@@ -139,7 +139,7 @@
 <hr />
 
 <#if resource.url! != ''>
-    <p><strong>URL:</strong><a itemprop="url" href="${resource.url?html}" title="${resource.url?html}"><@view.truncate resource.url?html 80 /></a></p><br/>
+    <p><strong>URL:</strong><a itemprop="url" href="${resource.url?html}" title="${resource.url?html}"><@common.truncate resource.url?html 80 /></a></p><br/>
 </#if>
 
 

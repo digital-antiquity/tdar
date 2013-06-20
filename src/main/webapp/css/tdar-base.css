@@ -1307,3 +1307,8 @@ vertical-align: middle;
 	text-align: center;
     vertical-align: middle;
 }
+
+
+.nogrid .jqplot-grid-canvas {
+	   display: none;
+}

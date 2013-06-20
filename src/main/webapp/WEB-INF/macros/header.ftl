@@ -6,8 +6,6 @@
     <#--if not using mergeservlet, use a fake directory name that corresponds to build number so that client will pull up-to-date version -->
     <#local fakeDirectory = combine?string("", "/vc/${common.tdarBuildId}") />
 
-
-//                     "/includes/jquery.xcolor-1.5.js",
     <#local srcs = [
                      "/includes/jquery.cookie.js",
                      "/includes/jquery.metadata.2.1/jquery.metadata.js",
