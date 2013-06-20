@@ -129,32 +129,31 @@
     <div class="well">
         <ul>
             <li class="folder">
-                    <em>SurveyName</em>
-                    contains original scan files in .e57 or .txt format
-                    <ul>
-                        <li class="folder">
-                            <em>SurveyName_L1</em> &mdash;
-                            contains registered point cloud or registered polygonal mesh in appropriate format
-                            <ul>
-                                <li class="folder">
-                                    <em>Trans_Matrices</em> &mdash;
-                                    contains transformation matrices for each original scan file, file naming should
-                                    match original scan file names
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="folder">
-                            <em>SurveyName_L2</em> &mdash;
-                            contains registered point cloud or registered polygonal mesh in appropriate format
-                        </li>
-                        <li class="folder">
-                            <em>SurveyName_L3</em> &mdash;
-                            contains merged polygonal mesh in appropriate format, if applicable
-                        </li>
-                        <li class="file">
-                            <em>SurveyName_metadata.xls</em>
-                        </li>
-                    <ul>
+                <em>SurveyName</em>
+                contains original scan files in .e57 or .txt format
+                <ul>
+                    <li class="folder">
+                        <em>SurveyName_L1</em> &mdash;
+                        contains registered point cloud or registered polygonal mesh in appropriate format
+                        <ul>
+                            <li class="folder">
+                                <em>Trans_Matrices</em> &mdash;
+                                contains transformation matrices for each original scan file, file naming should
+                                match original scan file names
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="folder">
+                        <em>SurveyName_L2</em> &mdash;
+                        contains registered point cloud or registered polygonal mesh in appropriate format
+                    </li>
+                    <li class="folder">
+                        <em>SurveyName_L3</em> &mdash;
+                        contains merged polygonal mesh in appropriate format, if applicable
+                    </li>
+                    <li class="file">
+                        <em>SurveyName_metadata.xls</em>
+                    </li>
                 </ul>
             </li>
         </ul>
