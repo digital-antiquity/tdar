@@ -380,8 +380,7 @@
                         </li>
                         <li class="file">
                             <em>SurveyName_metadata.xls</em>
-                        </li>
-                    <ul>
+                    </li>
                 </ul>
             </li>
         </ul>
