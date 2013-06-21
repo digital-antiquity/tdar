@@ -268,6 +268,9 @@ $(function(){
 	       formSelector: formSelector,
 	       inputSelector: '#fileAsyncUpload'
 	       });
+
+        var fileValidator = new FileuploadValidator("metadataForm");
+        fileValidator.addRule("nodupes");
     </#if>
     </#if>
 

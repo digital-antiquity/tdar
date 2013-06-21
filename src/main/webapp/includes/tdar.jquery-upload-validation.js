@@ -16,7 +16,20 @@ var FileuploadValidator;
 
         //execute validate() whenever the user updates the fileupload list
         validateOnChange: true,
-        registerJqueryValidateMethod: true
+        registerJqueryValidateMethod: true,
+
+        methods: {
+            "nodupes": function(file, files) {
+                var dupes = $.map(files, function(_file){
+                    return file.name === _file.name;
+                });
+                return dupes.length < 2;
+            }
+        },
+
+        messages: {
+            "nodupes": $.validator.format("Files with duplicated filenames are not allowed.")
+        }
     };
 
     FileuploadValidator = Class.extend({
@@ -62,7 +75,7 @@ var FileuploadValidator;
                 });
 
                 //revalidate when the user deletes or "undeletes" a file
-                $(this.fileupload).bind("click", "button.delete-button", function() {
+                $(this.fileupload).on("click", "button.delete-button", function() {
                     self.validate();
                 });
             }

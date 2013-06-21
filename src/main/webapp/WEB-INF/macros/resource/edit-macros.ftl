@@ -531,62 +531,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  <#if id?has_content>id="${id}"</#if>>
 </#macro>
 
-<#macro resourceJavascript formSelector="#metadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false>
-<#noescape>
-<script type='text/javascript'>
-
-/** FIXME: used only by collection controller (I think) **/
-var formSelector = "${formSelector}";
-var includeInheritance = ${includeInheritance?string("true", "false")};
-var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;
-/*
-
- * FIXME: move to common.js
- */
-$(function(){
-    'use strict';
-    var form = $(formSelector)[0];
-    
-    <#if includeAsync>
-    //init fileupload
-    var id = $('input[name=id]').val();
-    <#if ableToUploadFiles>
-	    TDAR.fileupload.registerUpload({
-	       informationResourceId: id, 
-	       acceptFileTypes: acceptFileTypes, 
-	       formSelector:"${formSelector}",
-	       inputSelector: '#fileAsyncUpload'
-	       });
-    </#if>
-    </#if>
-
-    TDAR.common.initEditPage(form);
-    
-    //register maps, if any
-    if($('#divSpatialInformation').length) {
-        $(function() {
-            //fixme: implicitly init when necessary
-            TDAR.maps.initMapApi();
-            var mapdiv = $('#editmapv3')[0];
-            var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
-            TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
-        });
-    }
-    
-<#if includeInheritance>
-var project = ${projectAsJson};
-applyInheritance(project, formSelector);
-</#if>    
-    
-    
-<#nested>
-});
-</#noescape>
-</script>
-  
-</#macro>
-
-
 <#macro parentContextHelp element="div" resourceType="resource" valueType="values">
 <${element} tiplabel="Inherited Values" tooltipcontent="The parent project for this ${resourceType} defines ${valueType} for this section.  You may also define your own, but note that they will not override the values defined by the parent.">
 <#nested>

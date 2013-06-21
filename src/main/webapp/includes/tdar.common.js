@@ -767,10 +767,9 @@ TDAR.common = function() {
                 
             }
         };
-        
+
          var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
          $(form).validate(allValidateOptions);
-
      };
      
     var _initRegformValidation = function(form) {

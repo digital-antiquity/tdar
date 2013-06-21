@@ -9,19 +9,12 @@ TDAR.fileupload = function() {
     var _informationResourceId = -1;
     var _nextRowId = 0;
 
-    var _swapval = function(el) {
-        $(el).data("orig-value", el.value);
-        el.value = arguments.length > 1 ? arguments[1] : $(el).data("orig-value");
-    };
-
-    
     //main file upload registration function
     var _registerUpload  = function(options) {
         
         //combine options w/ defaults
         var _options = $.extend({formSelector: "#resourceMetadataForm"}, options);
-        $(_options.formSelector).data("uploadNames", {});
-        
+
         //pass off our options to fileupload options (to allow easy passthrough of page-specific (options e.g. acceptFileTypes)
         var $fileupload = $(_options.formSelector).fileupload($.extend({
             formData: function(){
@@ -41,24 +34,8 @@ TDAR.fileupload = function() {
             url: TDAR.uri('upload/upload'),
             autoUpload: true,
             maxNumberOfFiles: TDAR.maxUploadFiles,
-            destroy: _destroy,
-            //FIXME: don't allow dupe filenames in same upload session until TDAR-2801 fixed.
-            submit: function(e, data) {
-                var i;
-                var errorCount = 0;
-                var uploadNames = $(_options.formSelector).data("uploadNames");
-                for(i = 0; i < data.files.length; i++) {
-                    var file = data.files[i];
-                    if(uploadNames[file.name]) {
-                        errorCount++;
-                        file.error = "Duplicate file name";
-                        $(data.context[i]).find('.name').append("<br><span class='label label-important'>" + file.error  + "</span>");                            
-                    } else {
-                        uploadNames[file.name]=true;
-                    }
-                }
-                return errorCount === 0;
-            }
+            destroy: _destroy
+
         }, _options));
 
         var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
@@ -75,39 +52,7 @@ TDAR.fileupload = function() {
         
         //note: unlike in jquery.bind(), you cant use space-separated event names here.
         $fileupload.bind("fileuploadcompleted fileuploadfailed", _updateSequenceNumbers);
-                
-        //populate list of peviously uploaded files,  if available.
-        if(_options.informationResourceId) {
-            _informationResourceId = _options.informationResourceId;
-            $.ajax(
-                    {
-                        url: TDAR.uri("upload/list-resource-files"), 
-                        data: {informationResourceId: _options.informationResourceId},
-                        success: function(data){
-                            //FIXME: if there's an exception in this method, it gets eaten
-                            var files = _translateIrFiles(data);
-                            console.log("files.length: %s", files.length);
-                            // remove all of the pre-loaded proxies ahead of replacing them with their respective proxy versions
-                            if (files.length) {
-                                $("#fileProxyUploadBody").empty();
-                            }
-                            //fake out the fileupload widget to render our previously uploaded files by invoking it's 'uploadComplete' callback
-                            $fileupload.fileupload('option', 'done').call($fileupload[0], null, {result: {"files":files}});
-                            
-                            //FIXME: the file.restriction select boxes won't have the correct state,  so as a hack we put the correct value in a data attr and reset it here
-                            $filesContainer.find("select.fileProxyConfidential").each(function(){
-                                var restriction = $(this).attr("datarestriction");
-                                if(restriction) $(this).val(restriction);
-                            });
-                            
-                        },
-                        error: function(jqxhr, textStatus, errorThrown) {
-                            console.error("textStatus:%s    error:%s", textStatus, errorThrown);
-                        },
-                        dataType: 'json'
-                    });
-        }
-        
+
         var helper = {
                 //reference back to fileupload widget's container element
                 context: $fileupload[0],
@@ -174,19 +119,30 @@ TDAR.fileupload = function() {
             }
         });
         
-        //TODO: look for list of files from inline filesJson.
+
+        //pre-populate the files table with any previously-uploaded files
+        if(TDAR.filesJson) {
+            var files = _translateIrFiles(TDAR.filesJson);
+            console.log("files.length: %s", files.length);
+            // remove all of the pre-loaded proxies ahead of replacing them with their respective proxy versions
+            if (files.length) {
+                $("#fileProxyUploadBody").empty();
+            }
+            //fake out the fileupload widget to render our previously uploaded files by invoking it's 'uploadComplete' callback
+            $fileupload.fileupload('option', 'done').call($fileupload[0], null, {result: {"files":files}});
+
+            //any dropdown boxes in the new row have no selected value, so we update it here manually.
+            $filesContainer.find("select.fileProxyConfidential").each(function(){
+                var restriction = $(this).attr("datarestriction");
+                if(restriction) $(this).val(restriction);
+            });
+        }
+
 
         return helper;
     };
     
-    
-    
-    
-
-
-
-    
-    //update file proxy actionto indicate that the values have changed 
+    //update file proxy actionto indicate that the values have changed
     var _updateFileAction = function(elemInRow) {
         console.log("updateFileAction(%s)", elemInRow);
         var $hdnAction = $(elemInRow).closest("tr").find(".fileAction");
@@ -295,7 +251,6 @@ TDAR.fileupload = function() {
         return _nextRowId++;
     }
 
-
     var _replaceFile = function($originalRow, $targetRow) {
         var targetFilename = $targetRow.find("input.fileReplaceName").val();
         var originalFilename = $originalRow.find("input.fileReplaceName").val();
@@ -335,9 +290,7 @@ TDAR.fileupload = function() {
         $("#cancelledProxies").append($targetRow);
 
         $row.find(".replace-file-button, .undo-replace-button").toggle();
-
     }
-
 
     var _registerReplaceButton = function(formSelector) {
         console.log("registering replace button")
@@ -365,14 +318,8 @@ TDAR.fileupload = function() {
             console.log("undo replace click");
             _cancelReplaceFile($(this).closest(".existing-file"));
         });
-
-
     }
     
-    //use jquery datepicker if input[type=date] not supported
-    
-    //TODO: before we can use html5 inputs we need to write typeconverter or figure out how to specifiy date format in annotations
-    //Modernizr.inputtypes.date
     var _applyDateInputs = function($elements) {
         $elements.datepicker({dateFormat: "mm/dd/yy"});
     }
@@ -380,9 +327,7 @@ TDAR.fileupload = function() {
     //expose public elements
     return {
         "registerUpload": _registerUpload,
-        //FIXME: we can remove the need for this if we include it as closure to instanced version of _destroy.
         "updateFileAction": _updateFileAction,
-        "getRowId": _getRowId,
-        "swap": _swapval
+        "getRowId": _getRowId
     };
 }();
