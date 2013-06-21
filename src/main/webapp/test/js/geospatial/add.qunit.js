@@ -1,0 +1,10 @@
+(function() {
+    "option explicit";
+
+
+
+    $(function() {
+
+    });
+
+})()
