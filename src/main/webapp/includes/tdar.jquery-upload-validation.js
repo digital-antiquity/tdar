@@ -27,6 +27,7 @@ var FileuploadValidator;
             }
         },
 
+
         messages: {
             "nodupes": $.validator.format("Files with duplicated filenames are not allowed.")
         }
@@ -91,28 +92,34 @@ var FileuploadValidator;
             var files = this.helper.validFiles();
             for(var i = 0; i < this.rules.length; i++) {
                 var rule = this.rules[i];
+
+                //optionally only apply a rule if settings has a when-callback
+                var when = rule.settings.when || function() {return true;}
+
                 var method = rule.method;
                 var message = rule.message;
                 this.suggestions = [];
                 this.errors = [];
-                $.each(files, function(idx, file) {
-                    var valid = method(file, files, rule.settings);
-                    console.log("validate  rule:%s   method:%s   valid:%s", rule, typeof method, valid);
-                    if(!valid) {
-                        self.highlight(file);
-                        var error = {
-                            "file": file,
-                            "message": message(file.filename, file.base, file.ext, idx)
-                        };
-                        console.dir(error);
-                        self.errors.push(error);
-                        if(rule.suggestion) {
-                            self.suggestions.push(error);
+                if(when(files)) {
+                    $.each(files, function(idx, file) {
+                        var valid = method(file, files, rule.settings);
+                        console.log("validate  rule:%s   method:%s   valid:%s", rule, typeof method, valid);
+                        if(!valid) {
+                            self.highlight(file);
+                            var error = {
+                                "file": file,
+                                "message": message(file.filename, file.base, file.ext, idx)
+                            };
+                            console.dir(error);
+                            self.errors.push(error);
+                            if(rule.suggestion) {
+                                self.suggestions.push(error);
+                            }
+                        } else {
+                            self.unhighlight(file);
                         }
-                    } else {
-                        self.unhighlight(file);
-                    }
-                });
+                    });
+                }
 
                 this.clearErrors();
                 if(this.errors.length) {
@@ -162,7 +169,7 @@ var FileuploadValidator;
             }
             var rule  = {
                 "method": this.methods[methodName],
-                "settings": settings,
+                "settings": settings || {},
                 "message": message,
                 "suggestion": false
             };
@@ -207,6 +214,15 @@ var FileuploadValidator;
             $(self.inputSelector).addClass(methodName)
         }
     });
+
+
+    /** shapefile notes
+     *
+     * - we need a "required" method
+     * - we need to have a dependency mechanism. For example,  .shp is only required when another shapefile is present
+     * - in addition to methods that apply to individual files,  we need methods that apply to all files.  what to call them? how to define them?
+     *
+     */
     
 })(console);
 
