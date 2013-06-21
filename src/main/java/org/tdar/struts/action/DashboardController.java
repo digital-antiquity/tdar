@@ -71,8 +71,8 @@ public class DashboardController extends AuthenticationAware.Base {
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
         collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
-        reconcileCollectionTree(getResourceCollections().iterator(), collectionIds);
-        reconcileCollectionTree(getSharedResourceCollections().iterator(), collectionIds);
+        getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), collectionIds);
+        getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), collectionIds);
 
         try {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
@@ -102,18 +102,6 @@ public class DashboardController extends AuthenticationAware.Base {
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
         logger.trace("{}", resourceCollections);
         return SUCCESS;
-    }
-
-    private void reconcileCollectionTree(Iterator<ResourceCollection> iter, List<Long> collectionIds) {
-        while (iter.hasNext()) {
-            ResourceCollection rc = iter.next();
-            List<Long> list = rc.getParentIdList();
-            list.remove(rc.getId());
-            if (CollectionUtils.containsAny(collectionIds, list)) {
-                iter.remove();
-            }
-            getResourceCollectionService().findAllChildCollectionsRecursive(rc, ResourceCollection.CollectionType.SHARED);
-        }
     }
 
     /**

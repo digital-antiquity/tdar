@@ -379,4 +379,17 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return users;
     }
 
+    public void reconcileCollectionTree(Collection<ResourceCollection> collection, List<Long> collectionIds) {
+            Iterator<ResourceCollection> iter = collection.iterator();
+            while (iter.hasNext()) {
+                ResourceCollection rc = iter.next();
+                List<Long> list = rc.getParentIdList();
+                list.remove(rc.getId());
+                if (CollectionUtils.containsAny(collectionIds, list)) {
+                    iter.remove();
+                }
+                findAllChildCollectionsRecursive(rc, ResourceCollection.CollectionType.SHARED);
+            }
+    }
+
 }

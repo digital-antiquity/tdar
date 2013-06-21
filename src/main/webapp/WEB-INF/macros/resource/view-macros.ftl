@@ -13,8 +13,26 @@ View freemarker macros
 	<link rel="canonical" href="http://${hostName}/${object.urlNamespace}/${object.id?c}" /> 
 </#macro>
 
-<#macro displayNode ontologyNode>
-    <span style="padding-left:${ontologyNode.numberOfParents * 2}em"><a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/${ontologyNode.iri}"/>">${ontologyNode.displayName} 
+<#macro displayNode ontologyNode previewSize count size>
+	    <#if count == 0><ul id="ontology-nodes-root"><li>${resource.name}<ul></#if>
+    <#if !(numParents?has_content)>
+    	<#global numParents = 1/>
+    </#if>
+    <#local parentCount = ontologyNode.numberOfParents />
+    <#if ontologyNode.index != ontologyNode.intervalStart?string && numParents == parentCount >
+			</li>
+	</#if>
+    <#if (numParents < parentCount)>
+		<#list 1.. (parentCount -numParents) as x ><ul></#list>
+    </#if>
+    <#if (parentCount < numParents )>
+		<#list 1..(numParents -parentCount) as x >
+			</li></ul>
+		</#list>
+    </#if>
+    <#global numParents = parentCount />
+    <li class="<#if (previewSize <=count)>hidden-nodes</#if>">
+    <a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/${ontologyNode.iri}"/>">${ontologyNode.displayName} 
     <#if ontologyNode.synonyms?has_content>
         (<#t>
       <#list ontologyNode.synonyms as synonym><#t>
@@ -22,36 +40,30 @@ View freemarker macros
         <#if synonym_has_next>, </#if><#t>
       </#list><#t>
       )<#t>
-    </#if>
-</a>    </span><br>
+    </#if><!-- (${ontologyNode.index})-->
+</a>
+<#if count == (size -1)>			<#list 1.. (numParents) as x ></li></ul></#list>
+		</li>
+		</ul>
+		</li>
+		</ul>
+</#if>
+
 </#macro>
 
 <#macro ontology sectionTitle="Parsed Ontology Nodes" previewSize=10 triggerSize=15>
 <#if resource.sortedOntologyNodesByImportOrder?has_content>
 	<#local allNodes = resource.sortedOntologyNodesByImportOrder />
-	<#local previewNodes = allNodes />
-	<#local collapsedNodes = [] />
-	<#local shouldCollapse = (allNodes?size > triggerSize) />
-	<#if shouldCollapse >
-	    <#local previewNodes = allNodes[0..(previewSize-1)] />
-	    <#local collapsedNodes = allNodes[previewSize..] />
-	</#if>
-	
-	<#if (allNodes?size>0)>
+	<#local size = allNodes?size />
+	<#if (size>0)>
 	    <h2>${sectionTitle}</h2>
 	    <div class="ontology-nodes-container">
-		    <div id="ontology-nodes-part1">
-		    <#list previewNodes as ontologyNode>
-		        <@displayNode ontologyNode />
+		    <div id="ontology-nodes">
+		    <#list allNodes as node>
+			        <@displayNode node previewSize node_index size/>
 		    </#list>
 		    </div>
-		    <#if shouldCollapse>
-			    <div id="ontology-nodes-part2" style="display:none">
-			    <#list collapsedNodes as ontologyNode>
-			        <@displayNode ontologyNode />
-			    </#list>
-			    </div>
-			    
+		    <#if (size >= previewSize)>
 			    <div id='divOntologyShowMore' class="alert">
 			        <span>Showing first ${previewSize?c} ontology nodes.</span>
 			        <button type="button" class="btn btn-small" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
@@ -60,7 +72,7 @@ View freemarker macros
 				    $(function(){
 				        $('#btnOntologyShowMore').click(function() {
 				            $('#divOntologyShowMore').hide();
-				            $('#ontology-nodes-part2').show();
+				            $('#ontology-nodes .hidden-nodes').removeClass("hidden-nodes");
 				            return(false);
 				        });
 				    });

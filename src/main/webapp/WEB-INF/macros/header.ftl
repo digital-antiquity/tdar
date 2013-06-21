@@ -17,7 +17,6 @@
                      "/includes/jquery.datatables-1.8.2/extras/bootstrap-paging.js",
                      "/includes/jquery-treeview/jquery.treeview.js"
                      "/includes/blueimp-javascript-templates/tmpl.min.js",
-                     "/includes/Jit-2.0.1/jit.js",
                      "/includes/jquery.aw-showcase.1.1.3/jquery.aw-showcase.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/vendor/jquery.ui.widget.js", 
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.iframe-transport.js", 
@@ -27,6 +26,7 @@
                      "/includes/jquery.populate.js",
                      "/includes/jquery.tabby-0.12.js",
                      "/includes/latLongUtil-1.0.js",
+                     "/includes/jquery.orgChart/jquery.orgchart.js",
   					 "/includes/jqplot-1.08/jquery.jqplot.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.logAxisRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.highlighter.min.js",
@@ -58,7 +58,6 @@
 <#--                     "/includes/ivaynberg-select2-817453b/select2.js" -->
 
     <#if !production> <#local srcs = srcs + ["/includes${fakeDirectory}/tdar.test.js"]> </#if> 
-    
 
 <#if combine>
    <!-- call to http://code.google.com/p/webutilities/wiki/JSCSSMergeServlet#URLs_in_CSS -->
@@ -85,6 +84,7 @@
                     "/includes/blueimp-jquery-file-upload-5.31.6/css/jquery.fileupload-ui.css",
                     "/includes/jquery-treeview/jquery.treeview.css",
 					 "/includes/jqplot-1.08/jquery.jqplot.min.css",
+                     "/includes/jquery.orgChart/jquery.orgchart.css",
                     "/includes/datatables.css"
                     
                     ] />
