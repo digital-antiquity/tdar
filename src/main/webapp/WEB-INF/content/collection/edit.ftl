@@ -11,7 +11,18 @@
 </#if>
 <meta name="lastModifiedDate" content="$Date$"/>
 
-<@edit.resourceJavascript formSelector="#metadataForm" />
+<#noescape>
+<script type='text/javascript'>
+	$(function(){
+	    'use strict';
+	    var form = $("#metadataForm")[0];
+	    TDAR.common.initEditPage(form);
+	});
+</script>
+</#noescape>
+  
+
+
 <@edit.resourceDataTableJavascript false true />
 <script type="text/javascript">
 
