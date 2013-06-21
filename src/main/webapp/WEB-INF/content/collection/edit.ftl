@@ -17,6 +17,8 @@
 	    'use strict';
 	    var form = $("#metadataForm")[0];
 	    TDAR.common.initEditPage(form);
+	    registerResourceCollectionDataTable();
+
 	});
 </script>
 </#noescape>
@@ -24,15 +26,6 @@
 
 
 <@edit.resourceDataTableJavascript false true />
-<script type="text/javascript">
-
-
-$(function(){
-    registerResourceCollectionDataTable();
-});
-
-
-</script>
 </head>
 <body>
 
