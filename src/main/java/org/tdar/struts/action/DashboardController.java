@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
@@ -67,7 +69,11 @@ public class DashboardController extends AuthenticationAware.Base {
         setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
         getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
-        // removing duplicates
+        List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
+        collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
+        reconcileCollectionTree(getResourceCollections().iterator(), collectionIds);
+        reconcileCollectionTree(getSharedResourceCollections().iterator(), collectionIds);
+
         try {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
         if (isEditor() && indexingTask != null) {
@@ -96,6 +102,18 @@ public class DashboardController extends AuthenticationAware.Base {
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
         logger.trace("{}", resourceCollections);
         return SUCCESS;
+    }
+
+    private void reconcileCollectionTree(Iterator<ResourceCollection> iter, List<Long> collectionIds) {
+        while (iter.hasNext()) {
+            ResourceCollection rc = iter.next();
+            List<Long> list = rc.getParentIdList();
+            list.remove(rc.getId());
+            if (CollectionUtils.containsAny(collectionIds, list)) {
+                iter.remove();
+            }
+            getResourceCollectionService().findAllChildCollectionsRecursive(rc, ResourceCollection.CollectionType.SHARED);
+        }
     }
 
     /**

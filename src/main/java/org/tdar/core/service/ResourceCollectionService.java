@@ -359,7 +359,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             ResourceCollection child = toEvaluate.get(0);
             collections.add(child);
             toEvaluate.remove(0);
-            toEvaluate.addAll(findAllDirectChildCollections(child.getId(), null, CollectionType.SHARED));
+            child.setTransientChildren(findAllDirectChildCollections(child.getId(), null, CollectionType.SHARED));
+            toEvaluate.addAll(child.getTransientChildren());
         }
         return collections;
     }

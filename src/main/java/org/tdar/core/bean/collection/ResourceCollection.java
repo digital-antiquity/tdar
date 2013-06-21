@@ -183,6 +183,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @JoinColumn(name = "parent_id")
     private ResourceCollection parent;
 
+    private transient List<ResourceCollection> transientChildren;
+    
     @Column(nullable = false)
     private boolean visible = true;
 
@@ -652,5 +654,13 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         authorizedUsers.addAll(bestMap.values());
         staticLogger.trace("outgoing" + authorizedUsers);
 
+    }
+
+    public List<ResourceCollection> getTransientChildren() {
+        return transientChildren;
+    }
+
+    public void setTransientChildren(List<ResourceCollection> transientChildren) {
+        this.transientChildren = transientChildren;
     }
 }

@@ -242,34 +242,25 @@
 </div>
 </#macro>
 
+<#macro collectionListItem collection>
+	<#compress><li>
+    <a href="<@s.url value="/collection/${collection.id?c}"/>">
+    <#if collection.name?? && collection.name != ''>${collection.name!"no title"}<#t/><#else>No Title</#if> (${collection.resources?size})</a>
+          <#if collection.transientChildren?has_content>
+			<ul>
+		        <#list collection.transientChildren as child>
+		        	<@collectionListItem child />
+				</#list>
+			</ul>          	
+          </#if>
+	</li></#compress>
+</#macro>
+
 <#macro listCollections resourceCollections_ >
       <ul>
-      <#assign currentIndent =1 />
         <#list resourceCollections_ as collection>
-          <#assign itemIndent = collection.parentNameList?size />
-            <#if (itemIndent <= currentIndent) && collection_index != 0>
-            	</li>
-            </#if>
-
-          <#if itemIndent != currentIndent>
-            <#if (itemIndent >= currentIndent) >
-              <@repeat itemIndent " "/><@repeat (itemIndent - currentIndent) "<ul>"/>
-            </#if>
-            <#if (itemIndent < currentIndent) >
-              <@repeat itemIndent " "/><@repeat (currentIndent - itemIndent)  "</ul></li>"/>
-            </#if>
-            <#assign currentIndent = itemIndent />
-          </#if>
-            <li><a href="<@s.url value="/collection/${collection.id?c}"/>"><#compress>
-                  <#if collection.name?? && collection.name != ''>
-                      ${collection.name!"no title"}
-                  <#else>No Title</#if>
-            </#compress></a>
-      </#list>
-      </li>
-      <#if (currentIndent > 1)>
-              <@repeat (currentIndent -1) " "/><@repeat (currentIndent - 1)  "</ul></li>"/>
-      </#if>
+        	<@collectionListItem collection />
+        </#list>
       <#nested>
       </ul>
 
