@@ -1,0 +1,756 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+  <Document>
+    <Style id="trb2">
+      <IconStyle>
+        <scale>0.8</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+        </Icon>
+        <hotSpot x="20" y="2" xunits="pixels" yunits="pixels" />
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+        <color>FFFFFFFF</color>
+      </LabelStyle>
+      <BalloonStyle>
+        <bgColor>ffffffff</bgColor>
+        <text>
+                  &lt;font font size='3' color="#aa0000"&gt;&lt;b&gt;$[name]&lt;/b&gt;&lt;/font&gt;
+                  &lt;table border='1' padding='1'&gt;$[description]&lt;/table&gt;                  
+                  &lt;br&gt;&lt;a href='http://shape2earth.com'&gt;&lt;b&gt;Shape2Earth&lt;/b&gt;&lt;/a&gt;
+                  </text>
+      </BalloonStyle>
+    </Style>
+    <name>FAIMSTracklog</name>
+    <open>1</open>
+    <Placemark id="0">
+      <Snippet maxLines="0">0</Snippet>
+      <name>24</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2042541503906,-33.86671447753906&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2042534&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86671346&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;24&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2042534,-33.86671346,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="1">
+      <Snippet maxLines="0">0</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2041625976562,-33.8668098449707&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2041657&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86681175&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2041657,-33.86681175,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="2">
+      <Snippet maxLines="0">0</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2040863037109,-33.86688613891601&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2040794&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86688455&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2040794,-33.86688455,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="3">
+      <Snippet maxLines="0">253.90135</Snippet>
+      <name>12</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2039489746093,-33.86684799194335&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2039422&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86684703&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;253.90135&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2039422,-33.86684703,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="4">
+      <Snippet maxLines="0">232.44238</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2037963867187,-33.86685562133789&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2038006&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86685391&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;232.44238&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2038006,-33.86685391,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="5">
+      <Snippet maxLines="0">259.471</Snippet>
+      <name>24</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2036437988281,-33.86687469482421&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2036457&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86687609&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;259.471&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;24&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2036457,-33.86687609,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="6">
+      <Snippet maxLines="0">291.98553</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2035064697265,-33.86681747436523&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2035068&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86681882&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;291.98553&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2035068,-33.86681882,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="7">
+      <Snippet maxLines="0">276.99887</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2033996582031,-33.86671829223632&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2034071&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86671663&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;276.99887&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2034071,-33.86671663,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="8">
+      <Snippet maxLines="0">270.05853</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2032775878906,-33.86674118041992&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2032716&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86673981&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;270.05853&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2032716,-33.86673981,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="9">
+      <Snippet maxLines="0">268.03903</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2032012939453,-33.8668098449707&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2031995&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86680973&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;268.03903&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2031995,-33.86680973,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="10">
+      <Snippet maxLines="0">274.74088</Snippet>
+      <name>12</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2030792236328,-33.8668212890625&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2030786&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86681991&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;274.74088&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2030786,-33.86681991,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="11">
+      <Snippet maxLines="0">351.93762</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2029418945312,-33.86680603027343&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2029359&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86680734&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;351.93762&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2029359,-33.86680734,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="12">
+      <Snippet maxLines="0">351.93762</Snippet>
+      <name>12</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2028503417968,-33.86685943603515&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2028462&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86686055&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;351.93762&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2028462,-33.86686055,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="13">
+      <Snippet maxLines="0">351.93762</Snippet>
+      <name>12</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.202651977539,-33.86687469482421&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2026594&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86687356&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;351.93762&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2026594,-33.86687356,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="14">
+      <Snippet maxLines="0">238.15576</Snippet>
+      <name>12</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2025451660156,-33.86683273315429&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2025417&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86683418&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;238.15576&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2025417,-33.86683418,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="15">
+      <Snippet maxLines="0">290.79178</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.202407836914,-33.86679458618164&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2024029&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86679363&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;290.79178&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2024029,-33.86679363,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="16">
+      <Snippet maxLines="0">293.4143</Snippet>
+      <name>24</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2023010253906,-33.86682510375976&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2022955&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86682345&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;293.4143&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;24&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2022955,-33.86682345,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="17">
+      <Snippet maxLines="0">245.1586</Snippet>
+      <name>48</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2021942138671,-33.86687088012695&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2021964&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86687264&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;245.1586&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;48&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2021964,-33.86687264,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="18">
+      <Snippet maxLines="0">206.64236</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2020874023437,-33.86697387695312&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2020874&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86697376&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;206.64236&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2020874,-33.86697376,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="19">
+      <Snippet maxLines="0">218.05936</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2019653320312,-33.86695861816406&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2019609&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86696014&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;218.05936&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2019609,-33.86696014,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="20">
+      <Snippet maxLines="0">223.59831</Snippet>
+      <name>12</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2018432617187,-33.86696243286132&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2018389&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86696334&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;223.59831&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2018389,-33.86696334,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="21">
+      <Snippet maxLines="0">257.4847</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.201675415039,-33.86698150634765&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2016756&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86698026&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;257.4847&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2016756,-33.86698026,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="22">
+      <Snippet maxLines="0">261.54367</Snippet>
+      <name>12</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2015533447265,-33.86696243286132&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2015519&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.8669638&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;261.54367&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2015519,-33.8669638,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="23">
+      <Snippet maxLines="0">272.84592</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2013702392578,-33.86690139770507&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2013746&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.866901&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;272.84592&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2013746,-33.866901,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="24">
+      <Snippet maxLines="0">318.83978</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2013244628906,-33.86680221557617&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2013298&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86680137&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;318.83978&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2013298,-33.86680137,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="25">
+      <Snippet maxLines="0">339.09335</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2013244628906,-33.8666648864746&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2013278&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86666363&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;339.09335&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2013278,-33.86666363,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="26">
+      <Snippet maxLines="0">351.39398</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2013092041015,-33.86653137207031&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2013043&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86653022&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;351.39398&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2013043,-33.86653022,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="27">
+      <Snippet maxLines="0">1.3581061</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2013092041015,-33.86641693115234&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.201312&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86641774&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;1.3581061&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.201312,-33.86641774,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="28">
+      <Snippet maxLines="0">352.11987</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2012939453125,-33.86629104614257&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2012945&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86629143&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;352.11987&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2012945,-33.86629143,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="29">
+      <Snippet maxLines="0">336.46045</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2012481689453,-33.86620712280273&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2012528&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86620583&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;336.46045&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2012528,-33.86620583,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="30">
+      <Snippet maxLines="0">353.7103</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2012481689453,-33.86609649658203&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2012462&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86609782&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;353.7103&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using distance"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2012462,-33.86609782,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="31">
+      <Snippet maxLines="0">176.58104</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2012939453125,-33.86630630493164&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2012951&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86630628&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;176.58104&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2012951,-33.86630628,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="32">
+      <Snippet maxLines="0">173.90805</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2013244628906,-33.86658477783203&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2013289&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86658436&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;173.90805&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2013289,-33.86658436,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="33">
+      <Snippet maxLines="0">165.32692</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2013549804687,-33.86690521240234&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2013482&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86690707&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;165.32692&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2013482,-33.86690707,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="34">
+      <Snippet maxLines="0">182.76744</Snippet>
+      <name>6</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2013854980468,-33.86721420288085&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2013898&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86721573&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;182.76744&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;6&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2013898,-33.86721573,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="35">
+      <Snippet maxLines="0">190.5254</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.201431274414,-33.8675422668457&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2014294&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86754111&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;190.5254&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2014294,-33.86754111,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="36">
+      <Snippet maxLines="0">176.67287</Snippet>
+      <name>6</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2014617919921,-33.86781311035156&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2014654&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86781289&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;176.67287&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;6&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2014654,-33.86781289,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="37">
+      <Snippet maxLines="0">177.10919</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2015075683593,-33.86805343627929&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2015033&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.8680552&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;177.10919&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2015033,-33.8680552,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="38">
+      <Snippet maxLines="0">173.50632</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2015686035156,-33.86838150024414&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2015732&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86838298&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;173.50632&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2015732,-33.86838298,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="39">
+      <Snippet maxLines="0">183.54704</Snippet>
+      <name>6</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2015533447265,-33.86866378784179&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2015536&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86866515&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;183.54704&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;6&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2015536,-33.86866515,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="40">
+      <Snippet maxLines="0">110.82866</Snippet>
+      <name>6</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2018127441406,-33.86886978149414&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.201813&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86886956&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;110.82866&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;6&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.201813,-33.86886956,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="41">
+      <Snippet maxLines="0">98.44208</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2021026611328,-33.86890029907226&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2021092&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86889922&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;98.44208&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2021092,-33.86889922,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="42">
+      <Snippet maxLines="0">87.88031</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2024688720703,-33.8688621520996&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2024629&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86886039&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;87.88031&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2024629,-33.86886039,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="43">
+      <Snippet maxLines="0">107.36233</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2026977539062,-33.86887741088867&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2026978&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86887551&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;107.36233&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2026978,-33.86887551,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="44">
+      <Snippet maxLines="0">151.66415</Snippet>
+      <name>8</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2030639648437,-33.8689842224121&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2030684&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86898409&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;151.66415&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2030684,-33.86898409,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="45">
+      <Snippet maxLines="0">66.00198</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2034454345703,-33.86884307861328&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2034518&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86884169&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;66.00198&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2034518,-33.86884169,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="46">
+      <Snippet maxLines="0">333.03152</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2035064697265,-33.8685188293457&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2035063&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86851943&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;333.03152&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2035063,-33.86851943,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="47">
+      <Snippet maxLines="0">340.7143</Snippet>
+      <name>12</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2035980224609,-33.8681526184082&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2035977&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86815089&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;340.7143&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2035977,-33.86815089,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="48">
+      <Snippet maxLines="0">356.3174</Snippet>
+      <name>12</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2035980224609,-33.8678970336914&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2035904&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86789732&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;356.3174&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2035904,-33.86789732,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="49">
+      <Snippet maxLines="0">124.825424</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2035522460937,-33.86769104003906&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2035562&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86769011&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;124.825424&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2035562,-33.86769011,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="50">
+      <Snippet maxLines="0">308.70605</Snippet>
+      <name>32</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2035217285156,-33.8675537109375&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.2035285&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86755382&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;308.70605&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;32&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.2035285,-33.86755382,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+    <Placemark id="51">
+      <Snippet maxLines="0">320.61493</Snippet>
+      <name>16</name>
+      <description>&lt;br&gt;&lt;br&gt;&lt;table border="1"padding="1"width="97%"&gt;&lt;tr&gt;&lt;td&gt;UUID:&lt;/td&gt;&lt;td&gt;1.00001E+18&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Coordinate:&lt;/td&gt;&lt;td&gt;&lt;Point&gt;&lt;coordinates&gt;151.2035064697265,-33.86741638183593&lt;/coordinates&gt;&lt;/Point&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_user:&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_timest:&lt;/td&gt;&lt;td&gt;20130507&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_longit:&lt;/td&gt;&lt;td&gt;151.203513&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_latitu:&lt;/td&gt;&lt;td&gt;-33.86741736&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_headin:&lt;/td&gt;&lt;td&gt;320.61493&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_accura:&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;gps_type:&lt;/td&gt;&lt;td&gt;"track using time"&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</description>
+      <visibility>1</visibility>
+      <open>0</open>
+      <Point>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>151.203513,-33.86741736,0 </coordinates>
+      </Point>
+      <styleUrl>#trb2</styleUrl>
+    </Placemark>
+  </Document>
+</kml>
