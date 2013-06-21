@@ -84,13 +84,7 @@
                 template that is appropriate to your scan project.  Complete the metadata for the original scan
                 files in your project and any additional products that will be archived (only registered point clouds
                 and polygonal mesh datasets can be accepted at this time).  Include the completed template in your zip
-                file upload (See instructions below for suggested upload file structure). Metadata collected for 3D
-                scan data will vary based on differences in scan technology and instrumentation.  Individualized
-                templates are provided below, please select and download the template that is appropriate to your
-                scan project.  Complete the metadata for the original scan files in your project and any additional
-                products that will be archived (only registered point clouds and polygonal mesh datasets can be
-                accepted at this time).  Include the completed template in your zip file upload (See
-                instructions below for suggested upload file structure).
+                file upload (See instructions below for suggested upload file structure).
             </p>
             <h5>Available Templates</h5>
             <div class="well">
@@ -130,29 +124,30 @@
         <ul>
             <li class="folder">
                 <em>SurveyName</em>
-                contains original scan files in .e57 or .txt format
                 <ul>
                     <li class="folder">
                         <em>SurveyName_L1</em> &mdash;
-                        contains registered point cloud or registered polygonal mesh in appropriate format
+                        contains original scan files in .e57 or .txt format
                         <ul>
                             <li class="folder">
                                 <em>Trans_Matrices</em> &mdash;
-                                contains transformation matrices for each original scan file, file naming should
-                                match original scan file names
+                                contains transformation matrices for each original scan file, file
+                                naming should match original scan file names
                             </li>
                         </ul>
                     </li>
                     <li class="folder">
                         <em>SurveyName_L2</em> &mdash;
-                        contains registered point cloud or registered polygonal mesh in appropriate format
+                        contains registered point cloud or registered polygonal mesh in appropriate
+                        format
                     </li>
                     <li class="folder">
                         <em>SurveyName_L3</em> &mdash;
                         contains merged polygonal mesh in appropriate format, if applicable
                     </li>
                     <li class="file">
-                        <em>SurveyName_metadata.xls</em>
+                        <em>SurveyName_metadata.xls</em> &mdash;
+                        completed metadata template for all scan data and final products
                     </li>
                 </ul>
             </li>
