@@ -24,13 +24,31 @@ var FileuploadValidator;
                     return file.name === _file.name;
                 });
                 return dupes.length < 2;
-            }
+            },
+
+            "nodupes-ext": function(file, files) {
+                var dupes = $.map(files, function(_file) {
+                    return file.ext === _file.ext;
+                });
+                return dupes.length < 2;
+            },
+
         },
 
+        groupMethods: {
+            "required": function(files) {
+                return files.length > 0;
+            }
+        }
 
         messages: {
-            "nodupes": $.validator.format("Files with duplicated filenames are not allowed.")
+            "nodupes": $.validator.format("Files with duplicated filenames are not allowed."),
+            "required": $.validator.format("A file attachment is required."),
+            "nodupes-ext": $.validator.format("You may only attach one file with this extension");
         }
+    };
+
+    var _addToMethodQueue = (methodMap, method, message) {
     };
 
     FileuploadValidator = Class.extend({
@@ -42,6 +60,9 @@ var FileuploadValidator;
 
         //similar to $.validator methods. defines for given context whether a file is valid, e.g. 'duplicate-name'
         methods: {},
+
+        //group methods are applied once for all files 
+        groupMethods: {},
 
         //rules designate which methods are applied to the fileupload container.
         rules: [],
@@ -150,6 +171,7 @@ var FileuploadValidator;
             $container.show();
         },
 
+
         addMethod: function(name, method, message)  {
             console.log("addMethod name:%s   method:%s    message:%s", name, typeof method, message);
             this.methods[name] = method;
@@ -158,6 +180,10 @@ var FileuploadValidator;
             } else {
                 this.messages[name] = $.validator.format("This file is invalid");
             }
+
+
+
+
         },
 
         //TODO: (maybe) It doesn't make sense to tie rules to elements, but it might make sense to tie to extensions.
