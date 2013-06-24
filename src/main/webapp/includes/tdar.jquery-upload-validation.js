@@ -39,12 +39,12 @@ var FileuploadValidator;
             "required": function(files) {
                 return files.length > 0;
             }
-        }
+        },
 
         messages: {
             "nodupes": $.validator.format("Files with duplicated filenames are not allowed."),
             "required": $.validator.format("A file attachment is required."),
-            "nodupes-ext": $.validator.format("You may only attach one file with this extension");
+            "nodupes-ext": $.validator.format("You may only attach one file with this extension")
         }
     };
 
