@@ -8,6 +8,18 @@ var FileuploadValidator;
 (function(console) {
     "option explicit";
 
+    var _updateHighlighting = function(validator, files) {
+        $.each(files, function(idx, file) {
+            validator.unhighlight(file);
+        });
+
+        $.each(validator.errors, function(idx, error){
+           if(error.file) {
+               validator.highlight(file);
+           }
+        });
+    };
+
     var _defaults = {
         errorContainer: "#fileuploadErrors",
         errorWrapper: "<li class='fileupload-error'></li>",
@@ -49,6 +61,8 @@ var FileuploadValidator;
 
         groupMethods: ["required"],
 
+        rules: [],
+
         messages: {
             "nodupes": $.validator.format("Files with duplicated filenames are not allowed."),
             "required": $.validator.format("A file attachment is required."),
@@ -58,22 +72,22 @@ var FileuploadValidator;
 
     FileuploadValidator = Class.extend({
         //errors resulting from the last validate()
-        errors: [],
+        errors: null,
 
         //suggestions are a subset of errors that, when present, will show error  messages but not cause uploud to be 'invalid'
-        suggestions: [],
+        suggestions: null,
 
         //similar to $.validator methods. defines for given context whether a file is valid, e.g. 'duplicate-name'
-        methods: {},
+        methods: null,
 
         //group methods are applied once for all files 
-        groupMethods: {},
+        groupMethods: null,
 
         //rules designate which methods are applied to the fileupload container.
-        rules: [],
+        rules: null,
 
         //default error messages, keyed by method name
-        messages: {},
+        messages: null,
 
         //fileupload helper class we created in tdar.upload.js
         helper: null,
@@ -86,7 +100,11 @@ var FileuploadValidator;
             console.log("init");
             var errs = [];
             this.fileupload = $("#" + formId)[0];
-            $.extend(this, _defaults, settings);
+
+            //note the deep copy of defaults is necessary
+            $.extend(true, this, _defaults);
+            $.extend(this, settings);
+
             this.helper = $(this.fileupload).data("fileuploadHelper");
             if(!this.fileupload) errs.push("fileupload element not found");
             if(!this.helper) errs.push("fileupload helper not found - did you call registerFileUpload yet?");
@@ -113,9 +131,13 @@ var FileuploadValidator;
         },
 
         validate: function() {
-            var self = this;
             console.log("validating %s   rulecount:%s", this.fileupload, this.rules.length);
+            var self = this;
+            this.suggestions = [];
+            this.errors = [];
+
             var files = this.helper.validFiles();
+
             for(var i = 0; i < this.rules.length; i++) {
                 var rule = this.rules[i];
 
@@ -124,10 +146,7 @@ var FileuploadValidator;
                 if(when(files)) {
 
                     var method = rule.method;
-
                     var message = rule.message;
-                    this.suggestions = [];
-                    this.errors = [];
 
                     //if this is a group method,  execute just once
                     if($.inArray(rule.methodName, self.groupMethods)) {
@@ -150,7 +169,6 @@ var FileuploadValidator;
                             var valid = method(file, files, rule.settings);
                             console.log("validate  rule:%s   method:%s   valid:%s", rule, typeof method, valid);
                             if(!valid) {
-                                self.highlight(file);
                                 var error = {
                                     "file": file,
                                     "message": message(file.filename, file.base, file.ext, idx)
@@ -161,7 +179,6 @@ var FileuploadValidator;
                                     self.suggestions.push(error);
                                 }
                             } else {
-                                self.unhighlight(file);
                             }
                         });
 
@@ -170,6 +187,7 @@ var FileuploadValidator;
                 }
 
                 this.clearErrors();
+                _updateHighlighting(self, files);
                 if(this.errors.length) {
                     this.showErrors();
                 }
@@ -222,7 +240,7 @@ var FileuploadValidator;
                 message = $.validator.format(customMessage);
             }
             var rule  = {
-                "methodName": this.methodName,
+                "methodName": methodName,
                 "method": this.methods[methodName],
                 "settings": settings || {},
                 "message": message,
@@ -270,15 +288,6 @@ var FileuploadValidator;
         }
     });
 
-
-    /** shapefile notes
-     *
-     * - we need a "required" method
-     * - we need to have a dependency mechanism. For example,  .shp is only required when another shapefile is present
-     * - in addition to methods that apply to individual files,  we need methods that apply to all files.  what to call them? how to define them?
-     *
-     */
-    
 })(console);
 
         

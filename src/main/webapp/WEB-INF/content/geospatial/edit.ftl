@@ -5,22 +5,22 @@
 <#global hideRelatedCollections=true/>
 <#global hideKeywordsAndIdentifiersSection=true/>
 
-
-<#-- global validFileExtensions = ['aaa', 'bbb', 'ccc', 'jpg', 'jpeg', 'tif', 'tiff'] -->
-
-
 <#macro localJavascript>
-/*
-        var fv = new  FileuploadValidator("geospatialMetadataForm");
-        fv.addMethod("must-have-foo", function(file, files) {
-            return file.filename.indexOf("foo") > -1;
-        }, "This file does not contain the word 'foo'");
-        fv.addRule("must-have-foo");
-         
-        //expose global for debug;
-        window.fv = fv;
+<#--(funciton (fv) {-->
+    <#--var shapeExtensions = ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],-->
+        <#--requiredShapeExtensions = ["shp", "shx" "dbf"],-->
+        <#--tiffExtensions = ["tfw", "aux", "xml"],-->
+        <#--jpgExtensions;-->
 
-*/</#macro>
+
+
+
+
+
+<#--})(TDAR.fileupload.validator);-->
+
+
+</#macro>
 
 <#macro footer>
 
