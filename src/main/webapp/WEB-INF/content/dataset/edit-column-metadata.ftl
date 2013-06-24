@@ -130,7 +130,7 @@
 
 <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">
-    	<a href="<@s.url value="?startRecord=${startRecord?c}&recordsPerPage=${recordsPerPage}"/>">${linkText}</a>
+    	<a href="<@s.url value="?startRecord=${startRecord?c}&amp;recordsPerPage=${recordsPerPage}"/>">${linkText}</a>
     </span>
 </#macro>
 

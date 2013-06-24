@@ -580,7 +580,7 @@ No coding rules have been entered for this coding sheet yet.
 	<ol class="carousel-indicators">
 	    <#local numIndicators = ((resource.visibleFilesWithThumbnails?size!0) / numIndicatorsPerSection)?ceiling />
 	    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-	    <#list 1..numIndicators as x>
+	    <#list 1..(numIndicators -1) as x>
 		    <li data-target="#myCarousel" data-slide-to="${x}"></li>
 	    </#list>
 	</ol>
@@ -593,7 +593,7 @@ No coding rules have been entered for this coding sheet yet.
 		<div class="item <#if irfile_index == 0>active</#if>">
 			<div class="row-fluid">
 		</#if>
-			  <div class="span3"><img class="thumbnailLink" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/thumbnail"/>" style="max-width:100%;" 
+			  <div class="span3"><img class="thumbnailLink" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" style="max-width:100%;" 
 			  	onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"  /></div>
 		<#if ((irfile_index + 1) % numIndicatorsPerSection) == 0 || !irfile_has_next>
 			</div><!--/row-fluid-->
