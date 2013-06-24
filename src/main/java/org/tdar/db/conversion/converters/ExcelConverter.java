@@ -3,15 +3,22 @@ package org.tdar.db.conversion.converters;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -19,14 +26,24 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable;
+import org.apache.poi.xssf.eventusermodel.XSSFReader;
+import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler;
+import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler.SheetContentsHandler;
+import org.apache.poi.xssf.model.StylesTable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.parser.XSSFReaderHelper;
 import org.tdar.core.service.excel.SheetEvaluator;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * Uses Apache POI to parse and convert Excel workbooks into a unique table,
@@ -60,8 +77,7 @@ public class ExcelConverter extends DatasetConverter.Base {
         this.setFilename(version[0].getFilename());
     }
 
-    protected void openInputDatabase()
-            throws IOException {
+    protected void openInputDatabase() throws IOException {
         if (informationResourceFileVersion == null) {
             logger.warn("Received null information resource file.");
             return;
@@ -71,8 +87,14 @@ public class ExcelConverter extends DatasetConverter.Base {
             logger.error("InformationResourceFile's file was null, this should never happen.");
             return;
         }
+
         try {
+//            XSSFReaderHelper helper = new XSSFReaderHelper();
+//            helper.openFile(excelFile);
+//            helper.processSheet(null, 25);
             workbook = WorkbookFactory.create(new FileInputStream(excelFile));
+        } catch (NullPointerException npe) {
+            logger.error("{}", npe);
         } catch (InvalidFormatException exception) {
             logger.debug("cannot read excel file (invalid format)", exception);
             String errorMessage = "Couldn't create workbook from " + excelFile.getAbsolutePath();
@@ -233,5 +255,4 @@ public class ExcelConverter extends DatasetConverter.Base {
         completePreparedStatements();
         alterTableColumnTypes(dataTable, statisticsManager.getStatistics());
     }
-
 }
