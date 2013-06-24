@@ -149,7 +149,7 @@
 </#if>
 
 <#if ( resource.hasBrowsableImages && resource.visibleFilesWithThumbnails?size > 0)>
-	<@view.showcase />
+	<@view.imageGallery />
 	<br/>
 	<hr/>
 </#if>

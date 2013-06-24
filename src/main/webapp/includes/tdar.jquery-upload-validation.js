@@ -56,6 +56,7 @@ var FileuploadValidator;
         }
     };
 
+    var _addToMethodQueue = function(methodMap, method, message) {
     FileuploadValidator = Class.extend({
         //errors resulting from the last validate()
         errors: [],

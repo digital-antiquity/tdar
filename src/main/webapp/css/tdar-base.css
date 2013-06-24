@@ -369,14 +369,17 @@ header .welcome-drop ul {
 	float: right;
 }
 
+.tdar-slider .carousel-control {
+	position: absolute;
+	top: 145px;
+}
+
 .carousel-control {
 	display: block;
 	width: 24px;
 	height: 38px;
-	position: absolute;
-	top: 145px;
-	text-indent: -999em;
 	background: url(/images/r4/btns-slider.png) 0 0 no-repeat;
+	text-indent: -999em;
 	opacity: 0.5;
 	transition: opacity 0.1s ease-out;
 	-moz-transition: opacity 0.1s ease-out;
@@ -1350,4 +1353,31 @@ div.orgChart div.node.level3 {
 
 div#ontologyTarget {
 	background-color:#EFEFEF;	
+}
+
+/* Removes the default 20px margin and creates some padding space for the indicators and controls */
+.image-carousel.carousel {
+	margin-bottom: 0;
+	padding: 0 40px 30px 40px;
+}
+/* Reposition the controls slightly */
+.image-carousel .carousel-control {
+	left: -12px;
+}
+.image-carousel .carousel-control.right {
+	right: -12px;
+}
+/* Changes the position of the indicators */
+.image-carousel .carousel-indicators {
+	right: 50%;
+	top: auto;
+	bottom: 0px;
+	margin-right: -19px;
+}
+/* Changes the colour of the indicators */
+.image-carousel .carousel-indicators li {
+	background: #c0c0c0;
+}
+.image-carousel .carousel-indicators .active {
+background: #333333;
 }

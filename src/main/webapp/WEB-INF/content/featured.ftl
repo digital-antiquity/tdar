@@ -2,7 +2,7 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#if featuredResources?? >
 
-<div class="slider span12">
+<div class="tdar-slider slider span12">
     <h3>Featured Content</h3>
     <div id="slider" class="carousel slide">
       <!-- Carousel items -->

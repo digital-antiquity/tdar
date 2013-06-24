@@ -17,7 +17,6 @@
                      "/includes/jquery.datatables-1.8.2/extras/bootstrap-paging.js",
                      "/includes/jquery-treeview/jquery.treeview.js"
                      "/includes/blueimp-javascript-templates/tmpl.min.js",
-                     "/includes/jquery.aw-showcase.1.1.3/jquery.aw-showcase.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/vendor/jquery.ui.widget.js", 
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.iframe-transport.js", 
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload.js",

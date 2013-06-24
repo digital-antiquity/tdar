@@ -562,6 +562,65 @@ No coding rules have been entered for this coding sheet yet.
 </#if> 
 </#macro>
 
+<#macro imageGallery>
+<#if authenticatedUser??>
+	<div class="bigImage">
+		<#list resource.visibleFilesWithThumbnails as irfile>
+			<img  id="bigImage" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
+			<div id="downloadText">
+			</div>
+			<#break>
+		</#list>
+	</div>
+</#if>
+<div class="well slider">
+ <#local numIndicatorsPerSection = 4 />
+<div id="myCarousel" class="image-carousel carousel slide">
+ 
+	<ol class="carousel-indicators">
+	    <#local numIndicators = ((resource.visibleFilesWithThumbnails?size!0) / numIndicatorsPerSection)?ceiling />
+	    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+	    <#list 1..numIndicators as x>
+		    <li data-target="#myCarousel" data-slide-to="${x}"></li>
+	    </#list>
+	</ol>
+ 
+	<!-- Carousel items -->
+	<div class="carousel-inner">
+	
+	<#list resource.visibleFilesWithThumbnails as irfile>
+		<#if (irfile_index % numIndicatorsPerSection) == 0>
+		<div class="item <#if irfile_index == 0>active</#if>">
+			<div class="row-fluid">
+		</#if>
+			  <div class="span3"><img class="thumbnailLink" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/thumbnail"/>" style="max-width:100%;" 
+			  	onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"  /></div>
+		<#if ((irfile_index + 1) % numIndicatorsPerSection) == 0 || !irfile_has_next>
+			</div><!--/row-fluid-->
+		</div><!--/item-->
+		</#if>
+	</#list> 
+	</div><!--/carousel-inner-->
+ 
+	<a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
+	<a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+</div><!--/myCarousel-->
+ 
+</div><!--/well-->
+ 
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".thumbnailLink").click(function() {
+	var $this = $(this);
+		$("#bigImage").attr('src',$this.data('url'));
+		$("#downloadText").html($this.attr('alt'));
+		});
+//	$('#myCarousel').carousel();
+});
+</script>
+
+</#macro>
+
 <#macro showcase>
     <#local numImagesToDisplay= resource.visibleFilesWithThumbnails?size />
   <#assign numImagesToDisplay=0/>
