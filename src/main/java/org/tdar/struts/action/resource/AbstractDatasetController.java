@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
@@ -32,6 +31,7 @@ import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.Pair;
 
 public abstract class AbstractDatasetController<R extends InformationResource> extends AbstractInformationResourceController<R> {
@@ -47,9 +47,8 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     // public static final String SAVE_MAP_NEXT = "SAVE_MAP_NEXT";
 
-    private Integer pageNumber = 1;
-    private Integer columnsPerPage = 1000;
-    private Integer maxPages = 1;
+    private Integer startRecord = 0;
+    private Integer recordsPerPage = 10;
     
     public enum PostSaveColumnMapActions implements HasLabel {
         SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"),
@@ -117,6 +116,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private Long dataTableId;
     private Long rowId;
     private Map<DataTableColumn, String> dataTableRowAsMap;
+    private PaginationHelper paginationHelper;
 
     @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
     @WriteableSession
@@ -161,12 +161,11 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         DataTable currentDataTable = getDataTable();
         List<DataTableColumn> columns = new ArrayList<>(currentDataTable.getSortedDataTableColumns());
         //FIXME: replace with Pagination helper
-        if (CollectionUtils.size(columns) > columnsPerPage) {
-            int toIndex = pageNumber * columnsPerPage;
-            if (toIndex >= columns.size()) {
-                toIndex = columns.size() -1;
-            }
-            columns = columns.subList((pageNumber - 1) * columnsPerPage, toIndex);
+        
+        setPaginationHelper(PaginationHelper.withStartRecord(columns.size(), getRecordsPerPage(), 100, getStartRecord()));
+        
+        if (CollectionUtils.size(columns) > getRecordsPerPage()) {
+            columns = columns.subList(paginationHelper.getFirstItem(), paginationHelper.getLastItem() + 1);
         }
         for (DataTableColumn column : columns) {
             CategoryVariable categoryVariable = column.getCategoryVariable();
@@ -457,28 +456,28 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         this.rowId = rowId;
     }
 
-    public Integer getPageNumber() {
-        return pageNumber;
+    public PaginationHelper getPaginationHelper() {
+        return paginationHelper;
     }
 
-    public void setPageNumber(Integer pageNumber) {
-        this.pageNumber = pageNumber;
+    public void setPaginationHelper(PaginationHelper paginationHelper) {
+        this.paginationHelper = paginationHelper;
     }
 
-    public Integer getColumnsPerPage() {
-        return columnsPerPage;
+    public Integer getStartRecord() {
+        return startRecord;
     }
 
-    public void setColumnsPerPage(Integer columnsPerPage) {
-        this.columnsPerPage = columnsPerPage;
+    public void setStartRecord(Integer startRecord) {
+        this.startRecord = startRecord;
     }
 
-    public Integer getMaxPages() {
-        return maxPages;
+    public Integer getRecordsPerPage() {
+        return recordsPerPage;
     }
 
-    public void setMaxPages(Integer maxPages) {
-        this.maxPages = maxPages;
+    public void setRecordsPerPage(Integer recordsPerPage) {
+        this.recordsPerPage = recordsPerPage;
     }
 
     

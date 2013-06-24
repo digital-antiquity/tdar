@@ -81,7 +81,58 @@
 </div>
 </#if>
 
+<div class="pagination">
+<b>Showing ${recordsPerPage} columns, jump to another page?</b>
+<#assign path="/">
+<#if (paginationHelper.totalNumberOfItems >0)>
+    <table class="pagin">
+        <tr>
+        <#if paginationHelper.hasPrevious()>
+        <td class="prev">
+            <@paginationLink startRecord=paginationHelper.previousPageStartRecord path=path linkText="Previous" />
+        </td>
+        </#if>
+        <td class="page">
+            <ul>
+              <#if (0 < paginationHelper.minimumPageNumber) >
+                <li>
+                  <@paginationLink startRecord=0 path=path linkText="First" />
+                 </li>
+                <li>...</li>
+              </#if>
+                <#list paginationHelper.minimumPageNumber..paginationHelper.maximumPageNumber as i>
+                <li>
+                    <#if i == paginationHelper.currentPage>
+                        <span class="currentResultPage">${i + 1}</span>
+                    <#else>
+                        <@paginationLink startRecord=(i * paginationHelper.itemsPerPage) path=path linkText=(i + 1) />
+                    </#if>
+                </li>
+                </#list>
+            <#if (paginationHelper.maximumPageNumber < (paginationHelper.pageCount - 1))>
+                <li>...</li>
+                <li>
+                      <@paginationLink startRecord=paginationHelper.lastPage path=path linkText="Last" />
+                </li>
+            </#if>
+            </ul>
+        </td>
+            <#if (paginationHelper.hasNext()) >
+        <td class="next">
+                <@paginationLink startRecord=paginationHelper.nextPageStartRecord path=path linkText="Next" />
+        </td>
+            </#if>
+        </tr>
+    </table>
+</#if>
+</div>
 
+
+<#macro paginationLink startRecord path linkText>
+    <span class="paginationLink">
+    	<a href="<@s.url value="?startRecord=${startRecord?c}&recordsPerPage=${recordsPerPage}"/>">${linkText}</a>
+    </span>
+</#macro>
 
 <#if dataTable.dataTableColumns??>
 <div id="datatablecolumns">
