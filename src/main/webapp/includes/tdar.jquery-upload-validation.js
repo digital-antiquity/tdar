@@ -33,22 +33,27 @@ var FileuploadValidator;
                 return dupes.length < 2;
             },
 
-        },
-
-        groupMethods: {
-            "required": function(files) {
-                return files.length > 0;
+            "required": function(files, settings) {
+                console.log("required files rule - filecount:%s", files.length);
+                var _files = files;
+                if(settings.extension) {
+                    _files = $.map(files, function(file){
+                        if(file.ext === settings.extension.toLowerCase()) {
+                            return file;
+                        }
+                    });
+                }
+                return _files.length > 0;
             }
         },
+
+        groupMethods: ["required"],
 
         messages: {
             "nodupes": $.validator.format("Files with duplicated filenames are not allowed."),
             "required": $.validator.format("A file attachment is required."),
             "nodupes-ext": $.validator.format("You may only attach one file with this extension")
         }
-    };
-
-    var _addToMethodQueue = (methodMap, method, message) {
     };
 
     FileuploadValidator = Class.extend({
@@ -116,30 +121,52 @@ var FileuploadValidator;
 
                 //optionally only apply a rule if settings has a when-callback
                 var when = rule.settings.when || function() {return true;}
-
-                var method = rule.method;
-                var message = rule.message;
-                this.suggestions = [];
-                this.errors = [];
                 if(when(files)) {
-                    $.each(files, function(idx, file) {
-                        var valid = method(file, files, rule.settings);
-                        console.log("validate  rule:%s   method:%s   valid:%s", rule, typeof method, valid);
+
+                    var method = rule.method;
+
+                    var message = rule.message;
+                    this.suggestions = [];
+                    this.errors = [];
+
+                    //if this is a group method,  execute just once
+                    if($.inArray(rule.methodName, self.groupMethods)) {
+                        var valid = method(files, rule.settings);
                         if(!valid) {
-                            self.highlight(file);
                             var error = {
-                                "file": file,
-                                "message": message(file.filename, file.base, file.ext, idx)
+                                "file": null,
+                                "message": message()
                             };
                             console.dir(error);
                             self.errors.push(error);
                             if(rule.suggestion) {
                                 self.suggestions.push(error);
                             }
-                        } else {
-                            self.unhighlight(file);
                         }
-                    });
+
+                    //otherwise execute the method once-per-file
+                    } else {
+                        $.each(files, function(idx, file) {
+                            var valid = method(file, files, rule.settings);
+                            console.log("validate  rule:%s   method:%s   valid:%s", rule, typeof method, valid);
+                            if(!valid) {
+                                self.highlight(file);
+                                var error = {
+                                    "file": file,
+                                    "message": message(file.filename, file.base, file.ext, idx)
+                                };
+                                console.dir(error);
+                                self.errors.push(error);
+                                if(rule.suggestion) {
+                                    self.suggestions.push(error);
+                                }
+                            } else {
+                                self.unhighlight(file);
+                            }
+                        });
+
+
+                    }
                 }
 
                 this.clearErrors();
@@ -164,13 +191,14 @@ var FileuploadValidator;
             var $ul = $container.find("ul");
             this.errors.forEach(function(error, idx) {
                 var $error = $(self.errorWrapper);
-                $error.append("<b>" + error.file.filename + ": </b>")
-                    .append("<span>" + error.message + "</span>");
+                if(error.file) {
+                    $error.append("<b>" + error.file.filename + ": </b>");
+                }
+                $error.append("<span>" + error.message + "</span>");
                 $ul.append($error);
             });
             $container.show();
         },
-
 
         addMethod: function(name, method, message)  {
             console.log("addMethod name:%s   method:%s    message:%s", name, typeof method, message);
@@ -180,13 +208,13 @@ var FileuploadValidator;
             } else {
                 this.messages[name] = $.validator.format("This file is invalid");
             }
-
-
-
-
         },
 
-        //TODO: (maybe) It doesn't make sense to tie rules to elements, but it might make sense to tie to extensions.
+        addGroupMethod: function(name, method, message) {
+            this.groupMethods.push(name);
+            this.addMethod(name, method, message);
+        },
+
         addRule: function(methodName, settings, customMessage){
             console.log("add rule: %s", methodName);
             var message = this.messages[methodName];
@@ -194,6 +222,7 @@ var FileuploadValidator;
                 message = $.validator.format(customMessage);
             }
             var rule  = {
+                "methodName": this.methodName,
                 "method": this.methods[methodName],
                 "settings": settings || {},
                 "message": message,
