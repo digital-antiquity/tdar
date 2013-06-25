@@ -116,7 +116,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     }
 
     @Action(value = "downloadAllAsZip")
-    public String zip() throws TdarActionException {
+    public String downloadZipArchive() throws TdarActionException {
         if (getInformationResourceId() == null)
             return ERROR;
 

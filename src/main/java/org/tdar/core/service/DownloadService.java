@@ -111,7 +111,7 @@ public class DownloadService {
 
         try {
         if (irFileVersions.length > 1) {
-            resourceFile = File.createTempFile("archiveDownload", "zip");
+            resourceFile = File.createTempFile("archiveDownload", ".zip");
             generateZipArchive(files, resourceFile);
             mimeType = "application/zip";
         }
