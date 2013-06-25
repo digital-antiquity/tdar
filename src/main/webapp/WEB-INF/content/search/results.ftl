@@ -31,8 +31,23 @@
     <div id="sidebar-left" parse="true" class="options hidden-phone">
                 
                 <h2 class="totalRecords">Search Options</h2>
-
     <ul class="tools media-list">
+    <li>Records Per Page
+<@s.select id="recordsPerPage" name="recordsPerPage" list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
+      <script type='text/javascript'>
+      $("#recordsPerPage").change(function() {
+        var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g,"");
+        //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'? 
+        var prefix = "";
+        if (url.indexOf("?") != 0) {
+          prefix = "?";
+        }
+        url = prefix + url +  "&recordsPerPage="+$('#recordsPerPage').val();
+        window.location = url;
+        });
+      </script>
+
+    </li>
         <li class="media"><a href="<@search.refineUrl/>" rel="noindex"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
 	<#if lookupSource == 'RESOURCE'>
 	        <li class="media"><i class="pull-left search-download-icon-red" ></i><div class="media-body">Download these results &raquo;
@@ -223,3 +238,4 @@
     </#if>
     </#if>
 </#macro>
+

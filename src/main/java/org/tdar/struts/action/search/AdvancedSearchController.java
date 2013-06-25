@@ -588,10 +588,10 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     public String getSearchPhrase() {
         StringBuilder sb = new StringBuilder();
-        if (groups.isEmpty()) {
+        String searchingFor = topLevelQueryPart.getDescription();
+        if (groups.isEmpty() || StringUtils.isBlank(searchingFor)) {
             sb.append(SHOWING_ALL_RESOURCES);
         } else {
-            String searchingFor = topLevelQueryPart.getDescription();
             sb.append(searchingFor);
         }
         // THIS SHOULD BE LESS BRITTLE THAN CALLING isEmpty()

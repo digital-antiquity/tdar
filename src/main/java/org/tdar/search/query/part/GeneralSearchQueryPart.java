@@ -9,6 +9,7 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.struts.action.search.SearchFieldType;
 
 public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     protected static final float TITLE_BOOST = 6f;
@@ -65,7 +66,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         primary.setOperator(Operator.OR);
         return primary;
     }
-
+    
     public String getCleanedQueryString(String value) {
         String cleanedQueryString = value.trim();
         // if we have a leading and trailng quote, strip them
@@ -86,7 +87,11 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
     @Override
     public String getDescription() {
-        return "All fields:" + StringUtils.join(getFieldValues(), ", ");
+        String fields = StringUtils.join(getFieldValues(), ", ");
+        if (StringUtils.isBlank(fields)) {
+            return "";
+        }
+        return SearchFieldType.ALL_FIELDS.getFieldName() + fields;
     }
 
     @Override

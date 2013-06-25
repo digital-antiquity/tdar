@@ -89,7 +89,15 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     @Override
     public boolean isEmpty() {
-        return CollectionUtils.isEmpty(fieldValues);
+        if (CollectionUtils.isEmpty(fieldValues)) {
+            return true;
+        }
+        for (C value : fieldValues) {
+            if (value != null || StringUtils.isNotBlank(value.toString())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
