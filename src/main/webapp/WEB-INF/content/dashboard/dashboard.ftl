@@ -113,40 +113,16 @@
 	    <div class="span3">
 	        <h2>At a glance</h2>
 	            <div class="piechart row">
-	            <@generateJson statusCountForUser "statusForUser" />
+	            <@common.generatePieJson statusCountForUser "statusForUser" />
 	            <@common.barGraph  data="statusForUser" searchKey="includedStatuses" graphHeight=150 context=true/>
 		     </div>
 	         <div class="piechart row">
- 	            <@generateJson resourceCountForUser "resourceCountForUser" />
+ 	            <@common.generatePieJson resourceCountForUser "resourceCountForUser" />
 	            <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=150 context=true />
 	        </div>
 	    </div>
 	</div>
 
-</#macro>
-<#macro generateJson ilist name>
-<script>
-    <#assign ikeys=ilist?keys />
-	<#noescape>
-	    var ${name} = [
-	    <#assign first = true/>
-	    <#assign legend = true>
-	    <#list ikeys as ikey>
-	      <#assign val = ilist.get(ikey) />
-	      <#assign label = ikey />
-	      <#if ikey.label??><#assign label=ikey.label ></#if>
-	      <#if (val?? && val > 0)>
-	        <#if !first>,</#if>["${label}", ${(val!0)?c},"${ikey}", ${(val!0)?c}]
-	        
-	        <#assign first=false/>
-	      </#if>
-	      <#if (ikey_index > settings.barColors?size)>
-	        <#assign legend = true>
-	      </#if>
-	    </#list>
-	    ];
-	</#noescape>
-</script>
 </#macro>
 
 <#macro recentlyUpdatedSection>

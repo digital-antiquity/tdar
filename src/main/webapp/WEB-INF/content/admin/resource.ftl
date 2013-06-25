@@ -15,7 +15,8 @@
 
 <div class="glide">
     <h3># of Files by extension</h3>
-    <@common.pieChart extensionStats "extensions" "" 600 300 />
+    <@common.generatePieJson extensionStats "extensionStats" />
+    <@common.pieChart  data="extensionStats" searchKey="extensions" graphHeight=600 graphWidth=400 />
 </div>
 
 

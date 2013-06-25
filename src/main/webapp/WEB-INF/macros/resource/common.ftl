@@ -265,6 +265,30 @@ TDAR.uri = function(path) {
     </#if>
 </#macro>
 
+<#macro generatePieJson ilist name>
+<script>
+    <#assign ikeys=ilist?keys />
+	<#noescape>
+	    var ${name} = [
+	    <#assign first = true/>
+	    <#assign legend = true>
+	    <#list ikeys as ikey>
+	      <#assign val = ilist.get(ikey) />
+	      <#assign label = ikey />
+	      <#if ikey.label??><#assign label=ikey.label ></#if>
+	      <#if (val?? && val > 0)>
+	        <#if !first>,</#if>["${label}", ${(val!0)?c},"${ikey}", ${(val!0)?c}]
+	        
+	        <#assign first=false/>
+	      </#if>
+	      <#if (ikey_index > settings.barColors?size)>
+	        <#assign legend = true>
+	      </#if>
+	    </#list>
+	    ];
+	</#noescape>
+</script>
+</#macro>
 
 <#macro pieChart data="data" searchKey="" graphWidth=300 graphHeight=150 context=false config="">
 	<#local id>${data}Id</#local>
