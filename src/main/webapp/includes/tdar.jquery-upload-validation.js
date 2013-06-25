@@ -288,6 +288,11 @@ var FileuploadValidator;
         }
     });
 
+
+    //FIXME: move me to a component that only gets added to GIS
+    TDAR.fileupload.addGisValidation = function(validator) {
+    };
+
 })(console);
 
         
