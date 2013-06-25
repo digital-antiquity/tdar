@@ -79,10 +79,9 @@
         </#if>  
 	        <#-- printing item tag -->
             <@printTag itemTag_ "listItem ${itemClass!''}" false>
-
-            <#if orientation == 'MAP' && (resource.firstActiveLatitudeLongitudeBox.centerLatitudeIfNotObfuscated)?has_content  &&
-            (resource.firstActiveLatitudeLongitudeBox.centerLongitudeIfNotObfuscated)?has_content &&!resource.hasConfidentialFiles()
-             > data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
+			<#local showLat = orientation == 'MAP' && (resource.firstActiveLatitudeLongitudeBox.centerLatitudeIfNotObfuscated)?has_content  &&
+            (resource.firstActiveLatitudeLongitudeBox.centerLongitudeIfNotObfuscated)?has_content &&!resource.hasConfidentialFiles() >
+            <#if showLat> data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
             data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
             </@printTag>
 
@@ -101,7 +100,7 @@
                         <@view.firstThumbnail resource /><#t>
                     <#t></a><br/>
             </#if>
-            <@searchResultTitleSection resource titleTag />
+            <@searchResultTitleSection resource titleTag showLat/>
             <@printLuceneExplanation  resource />
             <@printDescription resource=resource orientation=orientation length=500 showProject=showProject/>
 
@@ -173,7 +172,7 @@
     </#macro>
 
 
-<#macro searchResultTitleSection result titleTag>
+<#macro searchResultTitleSection result titleTag showLat=false>
     <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
     <#if titleTag?has_content>
         <${titleTag} class="${titleCssClass}">
@@ -186,6 +185,7 @@
      <#else>
          No Title
     </#if>
+    <#if showLat><i class="icon-map-marker"></i></#if>
         <#if (result.date?has_content && (result.date > 0 || result.date < -1) )>(${result.date?c})</#if>
     </a><#lt>
     <@bookmark result false/>
