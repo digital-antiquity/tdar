@@ -30,6 +30,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
@@ -60,7 +61,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     @Autowired
     protected FileProxyService fileProxyService;
-    
+
     @Autowired
     protected XmlService xmlService;
 
@@ -77,10 +78,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private Language metadataLanguage;
     private List<Language> languages;
     private List<FileProxy> fileProxies = new ArrayList<FileProxy>();
-    
-    //previously uploaded files list in json format, needed by blueimp jquery file upload
-    private String filesJson = "";
 
+    // previously uploaded files list in json format, needed by blueimp jquery file upload
+    private String filesJson = "";
 
     private Boolean isAbleToUploadFiles = null;
 
@@ -159,20 +159,28 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      */
     protected void handleUploadedFiles() throws TdarActionException {
 
-        getLogger().debug("handling uploaded files for {}", getPersistable());
-        List<FileProxy> proxies = getFileProxiesToProcess();
-        logger.debug("Final proxy set: {}", proxies);
+        List<FileProxy> proxies = new ArrayList<>();
+        try {
+            getLogger().debug("handling uploaded files for {}", getPersistable());
+            proxies = getFileProxiesToProcess();
+            logger.debug("Final proxy set: {}", proxies);
 
-        for (FileProxy proxy : proxies) {
-            if (proxy != null && proxy.getAction() != FileAction.NONE) {
-                setHasFileProxyChanges(true);
+            for (FileProxy proxy : proxies) {
+                if (proxy != null && proxy.getAction() != FileAction.NONE) {
+                    setHasFileProxyChanges(true);
+                }
             }
-        }
-        if (isHasFileProxyChanges() && !getAuthenticationAndAuthorizationService().canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.MODIFY_RECORD)) {
-            throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
-        } 
 
-        
+        } catch (TdarRecoverableRuntimeException trrc) {
+            addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, trrc);
+        }
+
+        if (isHasFileProxyChanges()
+                && !getAuthenticationAndAuthorizationService().canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
+                        GeneralPermissions.MODIFY_RECORD)) {
+            throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
+        }
+
         try {
             getInformationResourceService().importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this, proxies);
         } catch (Exception e) {
@@ -343,9 +351,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return toReturn;
     }
 
-    //jtd: not putting this in the getFilesJson because I want any exceptions to occur prior to rendering
+    // jtd: not putting this in the getFilesJson because I want any exceptions to occur prior to rendering
     private void loadFilesJson() {
-        if(Persistable.Base.isNullOrTransient(getResource())) {
+        if (Persistable.Base.isNullOrTransient(getResource())) {
             return;
         }
 
@@ -356,7 +364,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             }
         }
         try {
-            filesJson =  xmlService.convertToJson(fileProxies);
+            filesJson = xmlService.convertToJson(fileProxies);
         } catch (IOException e) {
             logger.error("could not convert file list to json", e);
             filesJson = "[]";
