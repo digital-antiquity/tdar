@@ -53,9 +53,9 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     }
 
     // hashmap representing single level of a directory
-    private class DirectoryMap extends HashMap<String, File> {
-        public DirectoryMap(File dir) {
-            for (File file : dir.listFiles()) {
+    private class DirectoryMap extends HashMap<String, TFile> {
+        public DirectoryMap(TFile dir) {
+            for (TFile file : dir.listFiles()) {
                 put(file.getName(), file);
             }
         }

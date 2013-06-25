@@ -266,33 +266,14 @@ TDAR.uri = function(path) {
 </#macro>
 
 
-<#macro pieChart map name type width=300 height=150>
-    <#assign ilist = map />
-    <#assign ikeys=ilist?keys />
-    <div id="${name}"  style="width:${width}px;height:${height}px;"></div>
+<#macro pieChart data="data" searchKey="" graphWidth=300 graphHeight=150 context=false config="">
+	<#local id>${data}Id</#local>
+    <div id="${id}"  style="width:${graphWidth}px;height:${graphHeight}px;"></div>
     
     <script>
-<#noescape>
-    var data${name} = [
-    <#assign first = true/>
-    <#assign legend = true>
-    <#list ikeys as ikey>
-      <#assign val = ilist.get(ikey) />
-      <#assign label = ikey />
-      <#if ikey.label??><#assign label=ikey.label ></#if>
-      <#if (val?? && val > 0)>
-        <#if !first>,</#if>["${label}", ${(val!0)?c}]
-        <#assign first=false/>
-      </#if>
-      <#if (ikey_index > settings.barColors?size)>
-        <#assign legend = true>
-      </#if>
-    </#list>
-    ];
-</#noescape>
 $(document).ready(function(){
-  var plot${name} = jQuery.jqplot ('${name}', [data${name}], 
-    {
+
+  var defaults_ = {
       fontSize:10,
       seriesDefaults: {
         renderer: jQuery.jqplot.PieRenderer, 
@@ -323,9 +304,17 @@ $(document).ready(function(){
 		        fontSize:10,
       			showSwatch:true
       }
-    }
-  );
+    };
+
+
+ 	<#if config?has_content>
+ 	$.extend(true, _defaults,${config});
+ 	</#if>
+
+  var plot${data} = jQuery.jqplot ('${id}', [${data}],defaults_);
+     <@clickPlot id searchKey context />
 });
+
     </script>
 
 </#macro>
@@ -378,9 +367,9 @@ $(document).ready(function(){
 </#macro>
 
 
-<#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="">
+<#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="" context=false>
 <#if id == "">
-	<#local id=searchKey />
+	<#local id=data+"id" />
 </#if>
 <div class="barGraph nogrid" id="graph${id}" style="height:${graphHeight?c}px;" > </div>
 
@@ -440,15 +429,18 @@ $(document).ready(function(){
          
         var plot${id} = $.jqplot('graph${id}', [${data}],_defaults);
      
-     
+     <@clickPlot id searchKey context />
+    });
+	</script>
+</#macro>
+
+     <#macro clickPlot id searchKey context>
         $('#graph${id}').bind('jqplotDataClick', 
             function (ev, seriesIndex, pointIndex, data) {
                 $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
-            window.location.href="<@s.url value="/search/results?${searchKey}="/>" +data[2];
+            window.location.href="<@s.url value="/search/results?${searchKey}="/>" +data[2] <#if context>+  "&amp;userSubmitterContext=true"</#if>;
             }
         );
-    });
-	</script>
 </#macro>
 
 <#macro worldMap forceAddSchemeHostAndPort=false>
