@@ -7,7 +7,7 @@ public enum Status implements HasLabel {
     DRAFT("Draft"),
     ACTIVE("Active"),
     FLAGGED("Flagged"),
-    FLAGGED_ACCOUNT_BALANCE("Flagged for account overage"),
+    FLAGGED_ACCOUNT_BALANCE("Flagged: Overage"),
     DUPLICATE("Duplicate"),
     DELETED("Deleted");
 
