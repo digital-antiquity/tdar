@@ -70,7 +70,20 @@ var FileuploadValidator;
                     });
                 }
                 return _files.length > 0;
+            },
+
+            //Fileupload component already has maxFileUpload feature.  Use this method only if you want to limit
+            //consideration to a certain set of file extensions.
+            "filecount": function(file, files, settings) {
+                var opts = $.extend({min:0, max:100, extension:[]}, settings);
+                var filecount = $.map(files, function(file){
+                    if($.inArray(file.ext, opts.extension)){
+                        return file
+                    }
+                }).length;
+                return filecount >= opts.min && filecount <= opts.max;
             }
+
         },
 
         groupMethods: ["required"],
@@ -80,7 +93,8 @@ var FileuploadValidator;
         messages: {
             "nodupes": $.validator.format("Files with duplicated filenames are not allowed."),
             "required": $.validator.format("A file attachment is required."),
-            "nodupes-ext": $.validator.format("You may only attach one file with this extension")
+            "nodupes-ext": $.validator.format("You may only attach one file with this extension"),
+            "filecount": $.validator.format("Filecount exceeded")
         }
     };
 
@@ -319,13 +333,13 @@ var FileuploadValidator;
             shapefile: ["shp", "shx", "dbf"]
         }
 
+        //require image files if image metadata file is present
         validator.addRule("required", {
                 extension: ["jpg", "jpeg"],
                 when: _hasFileWithExtension("jpw")
             },
             "A jpg file must accompany a jpw file"
         );
-
         validator.addRule("required", {
                 extension: ["tif", "tiff"],
                 when: _hasFileWithExtension("tfw")
@@ -333,21 +347,26 @@ var FileuploadValidator;
             "A tiff file must accompany a tfw file"
         );
 
+        //aux and aux.xml files can apply to either jpg or tiff
+        validator.addRule("required", {
+                extension: ["tif", "tiff", "jpg", "jpeg"],
+                when: _hasFileWithExtension("aux", "aux.xml")
+            },
+            "an image metadata file must be paired with a JPEG or TIFF file");
 
+        //add suggestions for the image metadata files.
         validator.addSuggestion("required", {
                 extension: ["jpw", "aux", "aux.xml"],
                 when: _hasFileWithExtension("jpg", "jpeg")
             },
             "consider including an image metadata file such as .jpw, .aux, or .aux.xml"
         );
-
         validator.addSuggestion("required", {
             extension: ["tfw", "aux", "aux.xml"],
             when: _hasFileWithExtension("tiff", "tif")
         }, "consider including an image metadata file such as .tfw, .aux, or .aux.xml");
 
-
-
+        //require the mandatory shapefiles if any shapefiles are present
         $.each(["shp", "shx", "dbf"], function(idx, ext) {
             validator.addRule("required", {
                 extension: ext,
@@ -361,6 +380,23 @@ var FileuploadValidator;
             },
             "A " + ext + " file must be present when uploading shapefiles");
         });
+
+        //all files must have the same base name
+        validator.addGroupMethod("same-basename", function(files) {
+            var basenames = [];
+            $.each(files, function(idx, file){
+                if(!$.inArray(file.base, basenames)) {
+                    basenames.push(file.base);
+                }
+            });
+            return basenames.length <= 1;
+        }, "all files must have the same base filename");
+        validator.addRule("same-basename");
+
+        //only one image metadata file
+        validator.addRule("filecount",
+            {max: 1, extension:["jpg", "jpeg", "tif", "tiff"]},
+            "You may only upload one image record (JPG or TIFF)");
 
     };
 
