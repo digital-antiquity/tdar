@@ -261,9 +261,10 @@
             <@s.textfield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" cssClass="shortfield date formatUS" placeholder="mm/dd/yyyy" />
             <@s.textfield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" cssClass="right-shortfield date formatUS" placeholder="mm/dd/yyyy" />
         </div>
+        <span data-tiplabel="Survey Conditions" data-tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)"> 
         <@s.textfield maxLength="255" name="sensoryData.surveyConditions"
-            data-tiplabel="Survey Conditions" data-tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)"
             cssClass="input-xxlarge" label="Conditions" labelposition="left" />
+            </span>
         <div data-tiplabel="Company / Operator Name" data-tooltipcontent="Details of company and scan operator name">
             <@s.textfield maxLength="255" name="sensoryData.companyName" cssClass="input-xxlarge" label="Company Name" labelposition="left" />
         </div>

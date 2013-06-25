@@ -154,7 +154,9 @@
     <@s.hidden name="dataTableColumns[${column_index}].id" value="${column.id?c}" />
     <@s.hidden name="dataTableColumns[${column_index}].columnDataType" value="${column.columnDataType}" cssClass="dataType" />
     <@s.hidden name="dataTableColumns[${column_index}].name" value="${column.name}" />
-    <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" data-tooltipcontent="#displayNameToolTip" data-tiplabel="Display Name" cssClass="input-xxlarge" />
+    <span data-tooltipcontent="#displayNameToolTip" data-tiplabel="Display Name" >
+    <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" cssClass="input-xxlarge" />
+    </span>
     <div class="measurementInfo" style='display:none;'>
     <@s.select name='dataTableColumns[${column_index}].measurementUnit' cssClass="measurementUnit"
          label="Meas. Unit:" listValue='fullName' emptyOption='true' list='%{allMeasurementUnits}'/>
