@@ -141,12 +141,12 @@
 
 <div class="datatablecolumn" id="columnDiv_${column_index}" >
   <h3> 
-  <span id="columnDiv_${column_index}lgnd" tooltipcontent="#generalToolTip" tiplabel="Column Mapping Instructions" class="columnSquare">&nbsp;</span>
+  <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions" class="columnSquare">&nbsp;</span>
   <!-- Column: -->
   <span class="displayName">${column.displayName}</span> 
   <!-- <small style="float:right">jump to: <a href="#top">top</a> | <a href="#submitButton">save</a></small> --></h3>
 
-    <span tooltipcontent="#columnTypeToolTip" tiplabel="Column Type">
+    <span data-tooltipcontent="#columnTypeToolTip" data-tiplabel="Column Type">
     <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
     cssClass="columnEncoding" target="#columnDiv_${column_index}"
          listValue='label' emptyOption='false' list='%{allColumnEncodingTypes}'/>
@@ -154,12 +154,12 @@
     <@s.hidden name="dataTableColumns[${column_index}].id" value="${column.id?c}" />
     <@s.hidden name="dataTableColumns[${column_index}].columnDataType" value="${column.columnDataType}" cssClass="dataType" />
     <@s.hidden name="dataTableColumns[${column_index}].name" value="${column.name}" />
-    <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" tooltipcontent="#displayNameToolTip" tiplabel="Display Name" cssClass="input-xxlarge" />
+    <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" data-tooltipcontent="#displayNameToolTip" data-tiplabel="Display Name" cssClass="input-xxlarge" />
     <div class="measurementInfo" style='display:none;'>
     <@s.select name='dataTableColumns[${column_index}].measurementUnit' cssClass="measurementUnit"
          label="Meas. Unit:" listValue='fullName' emptyOption='true' list='%{allMeasurementUnits}'/>
     </div>
-    <div tooltipcontent="#categoryVariableToolTip" tiplabel="Category Variable" class="control-group">
+    <div data-tooltipcontent="#categoryVariableToolTip" data-tiplabel="Category Variable" class="control-group">
         <label class="control-label">Category:</label>
         <#assign subCategoryId="" />
         <#assign categoryId="" />
@@ -214,11 +214,11 @@
                <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
         </div>
     </div>
-    <span tooltipcontent="#descriptionToolTip" tiplabel="Column Description">
+    <span data-tooltipcontent="#descriptionToolTip" data-tiplabel="Column Description">
     <@s.textarea label="Column Description" name='dataTableColumns[${column_index}].description' rows='2' cols='12' cssClass="resizable input-xxlarge" />
 
     </span>
-    <div id='divCodingSheet-${column_index}' class="codingInfo" tooltipcontent="#codingSheetToolTip" tiplabel="Coding Sheet">
+    <div id='divCodingSheet-${column_index}' class="codingInfo" data-tooltipcontent="#codingSheetToolTip" data-tiplabel="Coding Sheet">
             <#assign codingId="" />
             <#assign codingTxt="" />
             <#if column.defaultCodingSheet?? && column.defaultCodingSheet.id??>
@@ -234,7 +234,7 @@
              addNewLink="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"
             value="${codingTxt}" cssClass="input-xxlarge-combo codingsheetfield" />
     </div>
-     <div id='divOntology-${column_index}' class="ontologyInfo " tooltipcontent="#ontologyToolTip" tiplabel="Ontology">
+     <div id='divOntology-${column_index}' class="ontologyInfo " data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology">
             <#assign ontologyId="" />
             <#assign ontologyTxt="" />
             <#if column.defaultOntology??  && column.defaultOntology.id??>
@@ -253,7 +253,7 @@
              cssClass="input-xxlarge-combo ontologyfield" />
     </div>
     <br/>
-    <div class="mappingInfo" tooltipcontent="#mappingToolTip" tiplabel="Mapping ${siteAcronym} Resources">
+    <div class="mappingInfo" data-tooltipcontent="#mappingToolTip" data-tiplabel="Mapping ${siteAcronym} Resources">
     <#if column.dataTable?? && column.dataTable.dataset.project?? && column.dataTable.dataset.project.id != -1 >
         <#assign mapping = "false" />
         <#if column.mappingColumn??>

@@ -13,11 +13,11 @@ TDAR.contexthelp = (function() {
         // separate div
         var label = "";
         var content = "";
-        if ($targetElem.attr('tooltipcontent')) {
-            content = $targetElem.attr('tooltipcontent');
+        if ($targetElem.data('tooltipcontent')) {
+            content = $targetElem.data('tooltipcontent');
             // tooltip label can either be in atttribute, otherwise will be set to
             // the first h2
-            label = $targetElem.attr('tiplabel') || "";
+            label = $targetElem.data('tiplabel') || "";
             if (label) {
                 label = "<h2>" + label + "</h2>";
             }
@@ -54,7 +54,7 @@ TDAR.contexthelp = (function() {
         if(typeof form === "undefined") return;
         
         //console.debug('delegating tooltips');
-        $(form).on("mouseenter focusin", "[tooltipcontent]",  function() {
+        $(form).on("mouseenter focusin", "[data-tooltipcontent]",  function() {
             setToolTipContents(this);
         });
     }

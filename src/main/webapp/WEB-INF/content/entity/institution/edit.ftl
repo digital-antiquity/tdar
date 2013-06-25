@@ -25,7 +25,7 @@
         <@s.textfield name="name" required=true label="Name" id="txtInstitutionName" cssClass="input-xlarge"  maxlength=255 />
 
 		<#if editor>    
-        <div id="spanStatus" tooltipcontent="#spanStatusToolTip" class="control-group">
+        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
             <label class="control-label">Status</label>
             <div class="controls">
                 <@s.select theme="tdar" value="institution.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>

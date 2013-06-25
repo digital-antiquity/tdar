@@ -22,7 +22,7 @@
         If you would like to link this column to a ${siteAcronym} ontology, make that selection here. This is important if you (or other researchers) intend to integrate this dataset with other datasets using the ${siteAcronym} data integration tool. 
     </span>
 
-     <div id='divOntology' class="glide ontologyInfo" tooltipcontent="#ontologyToolTip" tiplabel="Ontology" >
+     <div id='divOntology' class="glide ontologyInfo" data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology" >
      
          <@edit.categoryVariable />
      

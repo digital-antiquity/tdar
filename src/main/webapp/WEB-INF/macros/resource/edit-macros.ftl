@@ -17,8 +17,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <div class="well-alt">
     <h2>Abstract / Description</h2>
     <div id="t-abstract" class="clear"
-        tiplabel="Abstract / Description"
-        tooltipcontent="Short description of the <@resourceTypeLabel />.">
+        data-tiplabel="Abstract / Description"
+        data-tooltipcontent="Short description of the <@resourceTypeLabel />.">
             <@s.textarea id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
     </div>
 </div>
@@ -33,7 +33,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         Select a project with which your <@resourceTypeLabel /> will be associated. This is an important choice because it  will allow metadata to be inherited from the project further down this form
         </div>
         <h4>Choose a Project</h4>
-        <div id="t-project" tooltipcontent="#projectTipText" tiplabel="Project">
+        <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
         </div>
         <div class="control-group">
             <label class="control-label">Project</label>
@@ -60,7 +60,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div> 
         
         <@helptext.inheritance />
-        <div class="control-group" tiplabel="Inherit Metadata from Selected Project" tooltipcontent="#divSelectAllInheritanceTooltipContent" id="divInheritFromProject">
+        <div class="control-group" data-tiplabel="Inherit Metadata from Selected Project" data-tooltipcontent="#divSelectAllInheritanceTooltipContent" id="divInheritFromProject">
             <div class="controls">
                 <label class="checkbox" for="cbSelectAllInheritance">
                     <input type="checkbox" value="true" id="cbSelectAllInheritance" class="">
@@ -76,7 +76,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#local _resourceCollections = resourceCollections />
     </#if>
     <@helptext.resourceCollection />
-    <div tiplabel="${siteAcronym} Collections" tooltipcontent="#divResourceCollectionListTips">
+    <div data-tiplabel="${siteAcronym} Collections" data-tooltipcontent="#divResourceCollectionListTips">
         <div id="resourceCollectionTable" class="control-group repeatLastRow" addAnother="add another collection">
             <label class="control-label">Collection Name(s)</label>
             <#list _resourceCollections as resourceCollection>
@@ -125,16 +125,16 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <@inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited />
     <div id="divSpatialInformation">
  
-        <div tiplabel="Spatial Terms: Geographic" tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;." >
+        <div data-tiplabel="Spatial Terms: Geographic" data-tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;." >
         <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' />
         </div>
         <@helptext.geo />
         <h4>Geographic Region</h4>
         <div id='editmapv3' class="tdar-map-large google-map"
-            tiplabel="Geographic Coordinates"
-            tooltipcontent="#geoHelpDiv"
+            data-tiplabel="Geographic Coordinates"
+            data-tooltipcontent="#geoHelpDiv"
             ></div>
-        <div id="divManualCoordinateEntry" tooltipcontent="#divManualCoordinateEntryTip">
+        <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip">
         <br />
             
             <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="$('#explicitCoordinatesDiv').toggle(this.checked);" label='Enter / View Coordinates' labelposition='right'  />
@@ -188,7 +188,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro resourceProvider showInherited=true>
-<div class="well-alt" id="divResourceProvider" tiplabel="Resource Provider" tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
+<div class="well-alt" id="divResourceProvider" data-tiplabel="Resource Provider" data-tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
     <h2>Institution Authorizing Upload of this <@resourceTypeLabel /></h2>
     <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
     <br/>
@@ -201,7 +201,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <h2>Temporal Coverage</h2>
     <@inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
     <div  id="divTemporalInformation">
-        <div tiplabel="Temporal Terms" tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
+        <div data-tiplabel="Temporal Terms" data-tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
             <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' true "add another temporal keyword" />
         </div>
         <@coverageDatesSection />
@@ -228,8 +228,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro generalKeywords showInherited=true>
 
 <div  
-    tiplabel="General Keywords"
-    tooltipcontent="Keyword list: Select the artifact types discussed in the document.">   
+    data-tiplabel="General Keywords"
+    data-tooltipcontent="Keyword list: Select the artifact types discussed in the document.">   
     <h2>General Keywords</h2>
     <@inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited />
     <div id="divOtherInformation">
@@ -301,7 +301,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#macro siteKeywords showInherited=true divTitle="Site Information">
 <@helptext.siteName />
-<div id="siteSection" tooltipcontent="#siteinfohelp">
+<div id="siteSection" data-tooltipcontent="#siteinfohelp">
     <h2>${divTitle}</h2>
     <@inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
     <div id="divSiteInformation" >
@@ -321,7 +321,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro materialTypes showInherited=true>
-<div tooltipcontent="#materialtypehelp">
+<div data-tooltipcontent="#materialtypehelp">
 <@helptext.materialType />
     <h2>Material Types</h2>
     <@inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
@@ -334,7 +334,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro culturalTerms showInherited=true inline=false>
-<div tooltipcontent="#culturehelp">
+<div data-tooltipcontent="#culturehelp">
 <@helptext.cultureTerms />
     <h2>Cultural Terms</h2>
     <@inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
@@ -363,7 +363,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 -->
 <#macro investigationTypes showInherited=true >
-<div tiplabel="Investigation Types" tooltipcontent="#investigationtypehelp" id="investigationSection">
+<div data-tiplabel="Investigation Types" data-tooltipcontent="#investigationtypehelp" id="investigationSection">
     <h2>Investigation Types</h2>
     <@inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited />
     <div id="divInvestigationInformation">
@@ -382,7 +382,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
 <@helptext.accessRights />
 
-<div id="divAccessRights" tiplabel="Access Rights" tooltipcontent="${tipsSelector}">
+<div id="divAccessRights" data-tiplabel="Access Rights" data-tooltipcontent="${tipsSelector}">
 <h2><a name="accessRights"></a>Access Rights</h2>
 <h3>Users who can view or modify this resource</h3>
 <div id="accessRightsRecords" class="<#if !ableToUploadFiles?has_content || ableToUploadFiles>repeatLastRow</#if>" data-addAnother="add another user">
@@ -441,8 +441,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 	<b>note:</b> you have not been granted permission to upload or modify files<br/>
 <#else>
 	<div class="control-group"
-	        tiplabel="Upload your ${typeLabel}" 
-	        tooltipcontent="The metadata entered on this form will be associated with this file. We accept the following formats: 
+	        data-tiplabel="Upload your ${typeLabel}" 
+	        data-tooltipcontent="The metadata entered on this form will be associated with this file. We accept the following formats: 
 	                        <@join sequence=validFileExtensions delimiter=", "/>">
 	    <label for="fileUploadField" class="control-label">${typeLabel}</label>
 	    <div class="controls">
@@ -532,7 +532,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro parentContextHelp element="div" resourceType="resource" valueType="values">
-<${element} tiplabel="Inherited Values" tooltipcontent="The parent project for this ${resourceType} defines ${valueType} for this section.  You may also define your own, but note that they will not override the values defined by the parent.">
+<${element} data-tiplabel="Inherited Values" data-tooltipcontent="The parent project for this ${resourceType} defines ${valueType} for this section.  You may also define your own, but note that they will not override the values defined by the parent.">
 <#nested>
 </${element}>
 </#macro>
@@ -597,7 +597,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro resourceNoteSection showInherited=true>
-<div id="resourceNoteSectionGlide" tiplabel="Notes" tooltipcontent="Use this section to append any notes that may help clarify certain aspects of the resource.  For example, 
+<div id="resourceNoteSectionGlide" data-tiplabel="Notes" data-tooltipcontent="Use this section to append any notes that may help clarify certain aspects of the resource.  For example, 
     a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document.">
     <#local _resourceNotes = resourceNotes />
     <#if _resourceNotes.empty >
@@ -663,7 +663,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#local _coverageDates=coverageDates />
 <#if _coverageDates.empty><#local _coverageDates = [blankCoverageDate] /></#if>
 <@helptext.coverageDates />
-<div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date" tiplabel="Coverage Dates" tooltipcontent="#coverageDatesTip">
+<div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date" data-tiplabel="Coverage Dates" data-tooltipcontent="#coverageDatesTip">
     <label class="control-label">Coverage Dates</label>
     
     <#list _coverageDates as coverageDate>
@@ -695,9 +695,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro resourceCreators sectionTitle proxies prefix>
 <#local _proxies = proxies >
 <#if proxies?size == 0><#local _proxies = [blankCreatorProxy]></#if>
-<div class="" tiplabel="${sectionTitle}" 
+<div class="" data-tiplabel="${sectionTitle}" 
     id="${prefix}Section"
-    tooltipcontent="#divResourceCreatorsTip">
+    data-tooltipcontent="#divResourceCreatorsTip">
     <h2>${sectionTitle}</h2>
        
     <div id="${prefix}Table" class="table repeatLastRow creatorProxyTable">
@@ -753,7 +753,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#if _resourceAnnotations.empty>
     <#local _resourceAnnotations = [blankResourceAnnotation] />
     </#if>
-    <div id="divIdentifiersGlide" tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
+    <div id="divIdentifiersGlide" data-tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" data-tooltipcontent="#divIdentifiersTip">
         <@helptext.identifiers />
         <h2><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
         <@inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
@@ -1139,7 +1139,7 @@ $(function() {
 <#macro copyrightHolders sectionTitle copyrightHolderProxies >
     <#if copyrightMandatory>
         <@helptext.copyrightHoldersTip />
-        <div class="" id="copyrightHoldersSection" tiplabel="Primary Copyright Holder" tooltipcontent="#divCopyrightHoldersTip" >
+        <div class="" id="copyrightHoldersSection" data-tiplabel="Primary Copyright Holder" data-tooltipcontent="#divCopyrightHoldersTip" >
             <h2>${sectionTitle}</h2>
             <div id="copyrightHolderTable" class="control-group table creatorProxyTable">
                 <@creatorProxyRow proxy=copyrightHolderProxies proxy_index="" prefix="copyrightHolder" required=true 

@@ -66,7 +66,7 @@ $(function(){
 	  
 	  <@s.hidden name="startTime" value="${currentTime?c}" />
 	
-	        <div id="spanStatus" tooltipcontent="#spanStatusToolTip" class="control-group">
+	        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
 	            <label class="control-label">Status</label>
 	            <div class="controls">
 	                <@s.select theme="tdar" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
@@ -82,13 +82,13 @@ $(function(){
 	    <@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
 	
 	<#else>
-	    <div tiplabel="Title"
-	    tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
+	    <div data-tiplabel="Title"
+	    data-tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
 	        <@s.textfield label="Title" id="resourceRegistrationTitle"  
 	            title="A title is required for all ${resource.resourceType.label}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
 	    </div>
 	    <#if resource.resourceType != 'PROJECT'>
-	    <div tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
+	    <div data-tiplabel="Year" data-tooltipcontent="Four digit year, e.g. 1966 or 2005.">
 	        <#assign dateVal = ""/>
 	        <#if resource.date?? && resource.date != -1>
 	        <#assign dateVal = resource.date?c />
@@ -126,7 +126,7 @@ $(function(){
 	    <h2>Additional Citation Information</h2>
 	
 	    <#if resource.resourceType != 'PROJECT'>
-	    <div tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)">
+	    <div data-tiplabel="Department / Publisher Location" data-tooltipcontent="Department name, or City,State (and Country, if relevant)">
 	        <span id="publisher-hints"  book="Publisher" book_section="Publisher" journal_article="Publisher"  conference_presentation="Conference" thesis="Institution" other="Publisher">
 	            <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
 	        </span>
@@ -141,7 +141,7 @@ $(function(){
 			<@local_.citationInformation />
 		</#if>
 	
-	    <div id="divUrl" tiplabel="URL" tooltipcontent="Website address for this resource, if applicable">
+	    <div id="divUrl" data-tiplabel="URL" data-tooltipcontent="Website address for this resource, if applicable">
 	        <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
 	    </div>
 	    

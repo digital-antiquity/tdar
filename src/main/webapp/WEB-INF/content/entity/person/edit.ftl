@@ -26,7 +26,7 @@ label.error {display:block;}
     <h2>Personal Details</h2>
     <div class="" >
 		<#if editor>    
-        <div id="spanStatus" tooltipcontent="#spanStatusToolTip" class="control-group">
+        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
             <label class="control-label">Status</label>
             <div class="controls">
                 <@s.select theme="tdar" cssClass="input-xlarge" value="person.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>

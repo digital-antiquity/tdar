@@ -58,7 +58,7 @@
 <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
 
 <h2>Basic Information</h2>
-<div class="" id="basicInformationSection" tiplabel="Basic Information"  tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent 
+<div class="" id="basicInformationSection" data-tiplabel="Basic Information"  data-tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent 
     collection&quot; which allows you to inherit all of the access permissions defined by the parent.">
   <#if resourceCollection.id?? &&  resourceCollection.id != -1>
       <@s.hidden name="id"  value="${resourceCollection.id?c}" />
@@ -86,7 +86,7 @@
         <li>Private collections are only viewable to the users specified in the <a href="#accessRights">Access Rights</a> section.</li>
     </ul>
 </div>
-<div class="glide" tiplabel="Browse and Display Options" tooltipcontent="#divBrowseOptionsTips">
+<div class="glide" data-tiplabel="Browse and Display Options" data-tooltipcontent="#divBrowseOptionsTips">
 <h2>Browse and Display Options</h2>
 <div class="control-group">
 <label class="control-label">Make this collection public?</label>
@@ -118,7 +118,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 </div>
 <@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" />
 
-<div class="glide" id="divResourcesSesction" tiplabel="Add/Remove Resources" tooltipcontent="Check the items in this table to add them to your collection.  Navigate the pages
+<div class="glide" id="divResourcesSesction" data-tiplabel="Add/Remove Resources" data-tooltipcontent="Check the items in this table to add them to your collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
     <h2>Add/Remove Resources</h2>

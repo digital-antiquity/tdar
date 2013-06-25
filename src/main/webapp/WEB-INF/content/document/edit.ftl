@@ -16,26 +16,26 @@
 </#macro>
 
 <#macro citationInformation>
-    <div tiplabel="Document Type"  tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
+    <div data-tiplabel="Document Type"  data-tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
         <@s.radio name='document.documentType' emptyOption='false' listValue="label"  
             list='%{documentTypes}' label="Document Type" theme="bootstrap" />
     </div>
             
     
-    <div  tiplabel="Additional Title" tooltipcontent="Enter the title of the book, report, or journal this document is part of"
+    <div  data-tiplabel="Additional Title" data-tooltipcontent="Enter the title of the book, report, or journal this document is part of"
     class="journal_article doctypeToggle" id="t-journal-name">
             <@s.textfield label="Journal Title" id='journalName' 
             title="A journal title is required"  maxlength=255
             name='document.journalName' cssClass="requiredIfVisible tdartext longfield input-xxlarge" />
     </div>
     
-    <div class="doctypeToggle book_section"     tooltipcontent="Enter the title of the book, report, or journal this document is part of." tiplabel="Additional Title" id="t-book-title">
+    <div class="doctypeToggle book_section"     data-tooltipcontent="Enter the title of the book, report, or journal this document is part of." data-tiplabel="Additional Title" id="t-book-title">
         <@s.textfield label="Book Title" id='bookTitle' title="A book title is required" name='document.bookTitle' cssClass="requiredIfVisible tdartext input-xxlarge"  maxlength=255 />
     </div>
 
 
 
-    <div tiplabel="Language" tooltipcontent="Select the language in which the document is written.">
+    <div data-tiplabel="Language" data-tooltipcontent="Select the language in which the document is written.">
         <@s.select label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
     </div>
 
@@ -70,19 +70,19 @@
         <@s.radio name='document.degree' label="Degree" emptyOption='false' listValue="label"  list='%{degrees}' />
     </div> 
           
-    <div tooltipcontent="Actual physical location of a copy of the document, e.g. an agency, repository, or library." tiplabel="Copy Location">
+    <div data-tooltipcontent="Actual physical location of a copy of the document, e.g. an agency, repository, or library." data-tiplabel="Copy Location">
         <@s.textfield id='copyLocation' label='Copy Location' name='document.copyLocation' cssClass="input-xxlarge"  maxlength=255 />
     </div>
 
-    <div id="t-doi" tiplabel="DOI" tooltipcontent="Digital Object Identifier.">
+    <div id="t-doi" data-tiplabel="DOI" data-tooltipcontent="Digital Object Identifier.">
         <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield"  maxlength=255 />
     </div>
     
-    <div id="t-isbn" placeholder="XXXX-XXXX" tiplabel="ISBN" tooltipcontent="International Standard Book Number." class="book_section book other doctypeToggle">
+    <div id="t-isbn" placeholder="XXXX-XXXX" data-tiplabel="ISBN" data-tooltipcontent="International Standard Book Number." class="book_section book other doctypeToggle">
         <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="isbn "  maxlength=25 />
     </div>
     
-    <div id="t-issn" placeholder="XXXX-XXXX" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications." class="journal_article doctypeToggle">
+    <div id="t-issn" placeholder="XXXX-XXXX" data-tiplabel="ISSN" data-tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications." class="journal_article doctypeToggle">
         <@s.textfield labelposition='left' id='issn' title="please add a valid ISSN" label='ISSN' name='document.issn' cssClass="issn journal_article"  maxlength=25 />
     </div>
 </#macro>
