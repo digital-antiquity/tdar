@@ -271,6 +271,7 @@ $(function(){
 
         var fileValidator = new FileuploadValidator("metadataForm");
         fileValidator.addRule("nodupes");
+        TDAR.fileupload.validator = fileValidator;
     </#if>
     </#if>
 

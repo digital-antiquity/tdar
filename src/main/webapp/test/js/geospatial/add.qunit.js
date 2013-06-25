@@ -38,9 +38,6 @@
         return $.extend(file, stats);
     }
 
-
-
-
     $(function() {
 
         var basic = {
@@ -92,7 +89,24 @@
             ok(!validator.validate(), "form should be invalid because user hasn't uploaded file with the right type yet.");
             _mockUpload(helper, "foo.foo");
             ok(validator.validate(), "user uploaded a .foo file, so the file group should be valid");
+        });
 
+
+
+        test("conditional validation methods",  function() {
+            var b = true,
+                validator = basic.validator;
+            ok(validator.rules.length === 0, "should be no rules yet");
+
+            //create a when-callback that is really just a wrapper around 'b'.  Validation method should be applied
+            //whenever b === true
+            var when = function() {return b};
+            validator.addRule("required", {extension: "jpg", when: when});
+            ok(!validator.validate(), "required method should be applied if 'when' callback evals to true");
+
+            b = false;
+            ok(validator.validate(), "when-callback returns false, so validator should not apply required method");
+            equal(validator.errors.length, 0,  "error list should be empty if we didn't apply validation rules");
         });
 
 
