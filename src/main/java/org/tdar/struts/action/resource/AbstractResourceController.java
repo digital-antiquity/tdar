@@ -53,6 +53,7 @@ import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
+import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -109,6 +110,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
     private List<ResourceCollection> effectiveResourceCollections = new ArrayList<ResourceCollection>();
 
+    private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
+    
     // containers for submitted data.
     private List<String> siteNameKeywords;
 
@@ -1114,5 +1117,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setSubmitter(Person submitter) {
         this.submitter = submitter;
+    }
+
+    public List<ResourceRelationship> getResourceRelationships() {
+        return resourceRelationships;
+    }
+
+    public void setResourceRelationships(List<ResourceRelationship> resourceRelationships) {
+        this.resourceRelationships = resourceRelationships;
     }
 }

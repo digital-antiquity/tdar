@@ -51,6 +51,7 @@ import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.resource.ProjectService;
+import org.tdar.core.service.resource.ResourceRelationshipService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 import org.tdar.utils.activity.Activity;
@@ -150,6 +151,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
+    private transient ResourceRelationshipService resourceRelationshipService;
+
+    @Autowired
     private transient StatisticService statisticService;
 
     private transient List<String> stackTraces = new ArrayList<String>();
@@ -184,6 +188,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return bookmarkedResourceService;
     }
 
+    public ResourceRelationshipService getResourceRelationshipService() {
+        return resourceRelationshipService;
+    }
+
     public EntityService getEntityService() {
         return entityService;
     }
@@ -199,6 +207,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getNamespace() {
         return ServletActionContext.getActionMapping().getNamespace();
     }
+
     public String getActionName() {
         if (ActionContext.getContext() == null)
             return null;
@@ -236,7 +245,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getSiteTypesHelpUrl() {
         return getTdarConfiguration().getSiteTypesHelpURL();
     }
-    
+
     public String getMobileImportURL() {
         return getTdarConfiguration().getMobileImportURL();
     }
@@ -256,7 +265,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isCopyrightMandatory() {
         return getTdarConfiguration().getCopyrightMandatory();
     }
-    
+
     public boolean isArchiveFileEnabled() {
         return getTdarConfiguration().isArchiveFileEnabled();
     }
@@ -344,7 +353,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         latlong.setGroupingUsed(false);
         return latlong.format(getTdarConfiguration().getMapDefaultLng());
     }
-    
+
     public boolean isGeoLocationToBeUsed() {
         return getTdarConfiguration().isGeoLocationToBeUsed();
     }
@@ -415,7 +424,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public FreemarkerService getFreemarkerService() {
         return freemarkerService;
     }
-    
+
     /**
      * Returns a list of Strings resulting from applying toString to each
      * element of the incoming Collection.
@@ -542,16 +551,15 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isPayPerIngestEnabled() {
         return getTdarConfiguration().isPayPerIngestEnabled();
     }
-    
 
     public Integer getMaxUploadFilesPerRecord() {
         return getTdarConfiguration().getMaxUploadFilesPerRecord();
     }
-    
+
     public boolean isSecure() {
         return servletRequest.isSecure();
     }
-    
+
     public String getProtocol() {
         if (isSecure()) {
             return "https:";
@@ -559,11 +567,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             return "http:";
         }
     }
-    
+
     public boolean getShowJiraLink() {
         return getTdarConfiguration().getShowJiraLink();
     }
-    
+
     public String getJiraScriptLink() {
         return getTdarConfiguration().getJiraScriptLink();
     }
@@ -576,11 +584,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return false;
     }
 
-    
     public String getCurrentUrl() {
         return UrlService.getCurrentAbsoluteUrlPath(servletRequest);
     }
-    
+
     public boolean isViewRowSupported() {
         return getTdarConfiguration().isViewRowSupported();
     }

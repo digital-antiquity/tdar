@@ -75,3 +75,16 @@ create table archive (
 
 alter table archive owner to tdar;
 
+-- 2013-06-25
+create table resource_relationship (
+    id  bigserial not null,
+    relationship_type varchar(255),
+    sourceResource_id int8 references resource,
+    targetResource_id int8 references resource,
+    primary key (id)
+);
+
+alter table geospatial add column currentnessUpdateNotes text;
+alter table geospatial add column projection varchar(50);
+alter table geospatial add column scale varchar(100);
+alter table geospatial add column spatial_reference_system varchar(50);
