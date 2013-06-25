@@ -947,6 +947,15 @@ TDAR.common = function() {
         
         $("#fakeSubmitButton").click(function() {$("#submitButton").click();});
 
+        $("#subnavbar .nav a").click(function() {
+            $($(this).attr('href')).animate({
+                backgroundColor : "#ffffee"
+            }, 200).animate({
+                backgroundColor : "transparent"
+            }, 400);
+            return true;
+        });
+
         //init repeatrows
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");
         
