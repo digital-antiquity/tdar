@@ -10,8 +10,8 @@ var FileuploadValidator;
     //creates when-callback that returns true when file list has at least file with provided extension (in varargs)
     var _hasFileWithExtension = function() {
         return function(files) {
-            return $.map(files, function(file) {
-                if($.inArray(file.ext, arguments)) return file;
+            return $.grep(files, function(file) {
+                return $.inArray(file.ext, arguments) > -1;
             }).length > 0;
         }
     };
@@ -40,33 +40,25 @@ var FileuploadValidator;
 
         methods: {
             "nodupes": function(file, files) {
-                var dupes = $.map(files, function(_file){
+                var dupes = $.grep(files, function(_file){
                     return file.name === _file.name;
                 });
                 return dupes.length < 2;
             },
 
             "nodupes-ext": function(file, files) {
-                var dupes = $.map(files, function(_file) {
+                var dupes = $.grep(files, function(_file) {
                     return file.ext === _file.ext;
                 });
                 return dupes.length < 2;
             },
 
             "required": function(files, settings) {
-                console.log("required files rule - filecount:%s", files.length);
                 var _files = files;
                 if(settings.extension) {
-                    _files = $.map(files, function(file){
-                        if(typeof settings.extension === "string") {
-                            if(file.ext === settings.extension.toLowerCase()) {
-                                return file;
-                            }
-                        } else {
-                            if($.inArray(file.ext, settings.extension)) {
-                                return file;
-                            }
-                        }
+                    var exts = (typeof settings.extension === "string") ? [settings.extension] : settings.extension;
+                    _files = $.grep(files, function(file){
+                        return $.inArray(file.ext, exts) > -1;
                     });
                 }
                 return _files.length > 0;
@@ -76,10 +68,8 @@ var FileuploadValidator;
             //consideration to a certain set of file extensions.
             "filecount": function(file, files, settings) {
                 var opts = $.extend({min:0, max:100, extension:[]}, settings);
-                var filecount = $.map(files, function(file){
-                    if($.inArray(file.ext, opts.extension)){
-                        return file
-                    }
+                var filecount = $.grep(files, function(file){
+                    return $.inArray(file.ext, opts.extension) > -1;
                 }).length;
                 return filecount >= opts.min && filecount <= opts.max;
             }
@@ -177,8 +167,9 @@ var FileuploadValidator;
                     var message = rule.message;
 
                     //if this is a group method,  execute just once
-                    if($.inArray(rule.methodName, self.groupMethods)) {
+                    if($.inArray(rule.methodName, self.groupMethods) > -1) {
                         var valid = method(files, rule.settings);
+                        console.log("applying rule, method:%s   valid:%s", rule.methodName, valid);
                         if(!valid) {
                             var error = {
                                 "file": null,
@@ -372,7 +363,7 @@ var FileuploadValidator;
                 extension: ext,
                 when: function(files) {
                     return $.map(files, function(file){
-                        if($.inArray(file.ext, fileinfo.shapefile)) {
+                        if($.inArray(file.ext, fileinfo.shapefile) > -1) {
                             return file;
                         }
                     }).length > 0
@@ -385,7 +376,7 @@ var FileuploadValidator;
         validator.addGroupMethod("same-basename", function(files) {
             var basenames = [];
             $.each(files, function(idx, file){
-                if(!$.inArray(file.base, basenames)) {
+                if(!$.inArray(file.base, basenames) > -1) {
                     basenames.push(file.base);
                 }
             });
