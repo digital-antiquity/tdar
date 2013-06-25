@@ -1362,7 +1362,7 @@ div#ontologyTarget {
 }
 /* Reposition the controls slightly */
 .image-carousel .carousel-control {
-	left: -12px;
+//	left: -12px; // not sure this works...
 }
 .image-carousel .carousel-control.right {
 	right: -12px;

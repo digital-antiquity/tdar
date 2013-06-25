@@ -562,17 +562,11 @@ No coding rules have been entered for this coding sheet yet.
 </#if> 
 </#macro>
 
+<#macro altText irfile>
+${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if>
+</#macro>
+
 <#macro imageGallery>
-<#if authenticatedUser??>
-	<div class="bigImage pagination-centered">
-		<#list resource.visibleFilesWithThumbnails as irfile>
-			<img  id="bigImage" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
-			<div id="downloadText">
-			</div>
-			<#break>
-		</#list>
-	</div>
-</#if>
 <div class="well slider">
  <#local numIndicatorsPerSection = 4 />
 <div id="myCarousel" class="image-carousel carousel slide pagination-centered">
@@ -593,8 +587,13 @@ No coding rules have been entered for this coding sheet yet.
 		<div class="item pagination-centered <#if irfile_index == 0>active</#if>">
 			<div class="row-fluid">
 		</#if>
-			  <div class="span3"><img class="thumbnailLink img-polaroid" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" style="max-width:100%;" 
-			  	onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"  /></div>
+			  <div class="span3">
+			  <span class="primary-thumbnail thumbnail-border">
+			  	<span class="thumbnail-center-spacing"></span>
+			  <img class="thumbnailLink img-polaroid" alt="<@altText irfile />" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" style="max-width:100%;" 
+			  	onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"  />
+			  	                </span>
+			  	</div>
 		<#if ((irfile_index + 1) % numIndicatorsPerSection) == 0 || !irfile_has_next>
 			</div><!--/row-fluid-->
 		</div><!--/item-->
@@ -607,6 +606,17 @@ No coding rules have been entered for this coding sheet yet.
 </div><!--/myCarousel-->
  
 </div><!--/well-->
+ <#if authenticatedUser??>
+	<div class="bigImage pagination-centered">
+		<#list resource.visibleFilesWithThumbnails as irfile>
+			<img  id="bigImage" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
+			<div id="downloadText">
+			<@altText irfile/>
+			</div>
+			<#break>
+		</#list>
+	</div>
+</#if>
  
 <script type="text/javascript">
 $(document).ready(function() {

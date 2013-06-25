@@ -85,7 +85,7 @@ public class DownloadService {
 
     @Transactional
     public void handleDownload(Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion... irFileVersions) throws TdarActionException {
-        if (ArrayUtils.isEmpty((irFileVersions)) || irFileVersions.length > 1) {
+        if (ArrayUtils.isEmpty((irFileVersions))) {
             throw new TdarRecoverableRuntimeException("unsupported action");
         }
 
