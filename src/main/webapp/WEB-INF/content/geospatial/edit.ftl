@@ -6,20 +6,8 @@
 <#global hideKeywordsAndIdentifiersSection=true/>
 
 <#macro localJavascript>
-<#--(funciton (fv) {-->
-    <#--var shapeExtensions = ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],-->
-        <#--requiredShapeExtensions = ["shp", "shx" "dbf"],-->
-        <#--tiffExtensions = ["tfw", "aux", "xml"],-->
-        <#--jpgExtensions;-->
-
-
-
-
-
-
-<#--})(TDAR.fileupload.validator);-->
-
-
+console.log("adding gis validation rules");
+TDAR.fileupload.addGisValidation(TDAR.fileupload.validator);
 </#macro>
 
 <#macro footer>

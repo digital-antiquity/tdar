@@ -3,10 +3,18 @@
  *
  * jQuery Validator Plugin extension for jQuery File Upload Plugin
  */
-//TODO: implement 'suggestions'.  treat them like rules but don't prevent submit.
 var FileuploadValidator;
 (function(console) {
     "option explicit";
+
+    //creates when-callback that returns true when file list has at least file with provided extension (in varargs)
+    var _hasFileWithExtension = function() {
+        return function(files) {
+            return $.map(files, function(file) {
+                if($.inArray(file.ext, arguments)) return file;
+            }).length > 0;
+        }
+    };
 
     var _updateHighlighting = function(validator, files) {
         $.each(files, function(idx, file) {
@@ -50,8 +58,14 @@ var FileuploadValidator;
                 var _files = files;
                 if(settings.extension) {
                     _files = $.map(files, function(file){
-                        if(file.ext === settings.extension.toLowerCase()) {
-                            return file;
+                        if(typeof settings.extension === "string") {
+                            if(file.ext === settings.extension.toLowerCase()) {
+                                return file;
+                            }
+                        } else {
+                            if($.inArray(file.ext, settings.extension)) {
+                                return file;
+                            }
                         }
                     });
                 }
@@ -289,8 +303,65 @@ var FileuploadValidator;
     });
 
 
+
+
+
     //FIXME: move me to a component that only gets added to GIS
     TDAR.fileupload.addGisValidation = function(validator) {
+        var fileinfo = {
+            shapefile: ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
+            jpeg:["jpg", "jpeg", "jpw"],
+            tiff:["tif", "tiff", "tfw"],
+            image: ["jpg", "jpeg", "jpw", "tfw", "aux", "aux.xml"]
+        };
+
+        var requiredFiles = {
+            shapefile: ["shp", "shx", "dbf"]
+        }
+
+        validator.addRule("required", {
+                extension: ["jpg", "jpeg"],
+                when: _hasFileWithExtension("jpw")
+            },
+            "A jpg file must accompany a jpw file"
+        );
+
+        validator.addRule("required", {
+                extension: ["tif", "tiff"],
+                when: _hasFileWithExtension("tfw")
+            },
+            "A tiff file must accompany a tfw file"
+        );
+
+
+        validator.addSuggestion("required", {
+                extension: ["jpw", "aux", "aux.xml"],
+                when: _hasFileWithExtension("jpg", "jpeg")
+            },
+            "consider including an image metadata file such as .jpw, .aux, or .aux.xml"
+        );
+
+        validator.addSuggestion("required", {
+            extension: ["tfw", "aux", "aux.xml"],
+            when: _hasFileWithExtension("tiff", "tif")
+        }, "consider including an image metadata file such as .tfw, .aux, or .aux.xml");
+
+
+
+        $.each(["shp", "shx", "dbf"], function(idx, ext) {
+            validator.addRule("required", {
+                extension: ext,
+                when: function(files) {
+                    return $.map(files, function(file){
+                        if($.inArray(file.ext, fileinfo.shapefile)) {
+                            return file;
+                        }
+                    }).length > 0
+                }
+            },
+            "A " + ext + " file must be present when uploading shapefiles");
+        });
+
     };
 
 })(console);
