@@ -992,7 +992,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             String query) {
         List<String> coalesce = new ArrayList<String>();
         for (DataTableColumn column : dataTable.getDataTableColumns()) {
-            coalesce.add(String.format("coalesce(\"%s\",'') ",column.getName()));
+            coalesce.add(String.format("coalesce(\"%s\",'') ", column.getName()));
         }
 
         String selectColumns = "*";
@@ -1001,17 +1001,23 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         }
 
         String vector = StringUtils.join(coalesce, " || ' ' || ");
-        String sql = String.format("SELECT %s from %s where to_tsvector('english', %s) @@ to_tsquery(%s)", selectColumns,dataTable.getName(), vector, quote(query,false));
+        String sql = String.format("SELECT %s from %s where to_tsvector('english', %s) @@ to_tsquery(%s)", selectColumns, dataTable.getName(), vector,
+                quote(query, false));
         logger.debug(sql);
         return jdbcTemplate.query(sql, resultSetExtractor);
     }
 
     @Override
-    public <T> T selectRowFromTable(DataTable dataTable,  ResultSetExtractor<T> resultSetExtractor, Long rowId){
+    public <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId) {
         String sql = String.format(SELECT_ROW_FROM_TABLE, dataTable.getName(), rowId);
         logger.debug(sql);
         return jdbcTemplate.query(sql, resultSetExtractor);
     }
 
-    
+    @Override
+    public String selectTableAsXml(DataTable dataTable) {
+        String sql = String.format("select table_to_xml('%s',true,false,'');", dataTable.getName());
+        logger.debug(sql);
+        return jdbcTemplate.queryForObject(sql, String.class);
+    }
 }

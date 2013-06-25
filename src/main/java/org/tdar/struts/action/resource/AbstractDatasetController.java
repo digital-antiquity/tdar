@@ -1,5 +1,8 @@
 package org.tdar.struts.action.resource;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +34,7 @@ import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.Pair;
 
@@ -117,6 +121,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private Long rowId;
     private Map<DataTableColumn, String> dataTableRowAsMap;
     private PaginationHelper paginationHelper;
+    private InputStream xmlStream;
 
     @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
     @WriteableSession
@@ -220,16 +225,15 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     private List<DataTableColumn> columnsToRemap;
 
-
     /**
      * Used to render a row within a {@link Dataset}.
      * The expected URL is of the form /datatable/view-row?dataTableId=5815&rowId=1 where dataTableId = data table id, and rowId is the tDAR row id within
      * the table.
      * 
-     * @return com.opensymphony.xwork2.SUCCESS if able to find and display the table, com.opensymphony.xwork2.ERROR if not.
+     * @return com.opensymphony.xwork2.SUCCESS if able to find and display the row, com.opensymphony.xwork2.ERROR if not.
      */
-    @Action(value="view-row",results= {
-            @Result(name = SUCCESS, location="../dataset/view-row.ftl")})
+    @Action(value = "view-row", results = {
+            @Result(name = SUCCESS, location = "../dataset/view-row.ftl") })
     @SkipValidation
     public String getDataResultsRow() {
         if (!isViewRowSupported()) {
@@ -253,7 +257,50 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         return ERROR;
     }
 
-    
+    /**
+     * @return The output of the xml request to the database wrapped in a stream
+     */
+    public InputStream getXmlStream() {
+        return xmlStream;
+    }
+
+    /**
+     * Used to return the contents of a table in a {@link Dataset} wrapped in XML.
+     * The expected URL is of the form /dataset/xml?dataTableId=5818 where dataTableId = data table id
+     * 
+     * @return com.opensymphony.xwork2.SUCCESS if able to find and display the table, com.opensymphony.xwork2.ERROR if not.
+     */
+    @Action(value = "xml",
+            results = {
+                    @Result(name = TdarActionSupport.SUCCESS,
+                            type = "stream",
+                            params = {
+                                "contentDisposition", "attachment; filename=\"${dataTable.name}.xml\"",
+                                "contentType", "text/xml",
+                                "inputName", "xmlStream",
+                            }),
+                    @Result(name = TdarActionSupport.ERROR, type = "httpheader", params = { "error", "404" }),
+            })
+    @SkipValidation
+    public String getTableAsXml() {
+        xmlStream = null;
+        if (!getTdarConfiguration().isXmlExportEnabled()) {
+            return ERROR;
+        }        
+        if (Persistable.Base.isNullOrTransient(dataTableId)) {
+            return ERROR;
+        }
+        DataTable dataTable = getDataTableService().find(dataTableId);
+        if (dataTable != null) {
+            if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
+                String dataTableAsXml = getDatasetService().selectTableAsXml(dataTable);
+                xmlStream = new ByteArrayInputStream(dataTableAsXml.getBytes(StandardCharsets.UTF_8));
+                return SUCCESS;
+            }
+        }
+        return ERROR;
+    }
+
     protected void postSaveColumnMetadataCleanup() {
         if (CollectionUtils.isNotEmpty(columnsToRemap)) {
             if (isAsync()) {
@@ -430,9 +477,8 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     @Override
     public Set<String> getValidFileExtensions() {
-     return  analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
+        return analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
     }
-
 
     /**
      * @return the dataTableRowAsMap ie: the column header information, and a row with the given rowId the table

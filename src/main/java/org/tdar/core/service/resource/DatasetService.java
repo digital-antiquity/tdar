@@ -871,4 +871,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
     }
 
+    @Transactional
+    public String selectTableAsXml(DataTable dataTable) {
+        return tdarDataImportDatabase.selectTableAsXml(dataTable);
+    }
+
 }

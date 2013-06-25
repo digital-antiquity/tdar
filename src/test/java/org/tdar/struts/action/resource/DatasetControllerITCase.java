@@ -1,6 +1,8 @@
 package org.tdar.struts.action.resource;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,10 +11,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.convention.annotation.Action;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
@@ -28,6 +32,8 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.resource.DataTableService;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -42,6 +48,7 @@ import static org.junit.Assert.*;
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     private static final String ALEXANDRIA_EXCEL_FILENAME = "qrybonecatalogueeditedkk.xls";
@@ -165,6 +172,29 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     }
 
+    @Test
+    @Rollback
+    public void tableAsXmlReturnsErrorIfXmlExportNotEnabled() {
+        controller = generateNewInitializedController(DatasetController.class);
+        assertSame(TdarActionSupport.ERROR, controller.getTableAsXml());
+    }
+    
+    @Test
+    @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
+    public void tableAsXml() throws IOException {
+        Dataset dataset = setupAndLoadResource(TRUNCATED_HARP_EXCEL_FILENAME, Dataset.class);
+        DataTable dataTable = dataset.getDataTables().iterator().next();
+        controller = generateNewInitializedController(DatasetController.class);
+        controller.setId(dataset.getId());
+        controller.setDataTableId(dataTable.getId());
+        controller.prepare();
+        assertEquals(TdarActionSupport.SUCCESS, controller.getTableAsXml());
+        InputStream xmlStream = controller.getXmlStream();
+        String xml = IOUtils.toString(xmlStream, "UTF-8");
+        assertTrue(xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""));
+    }
+    
     @Test
     @Rollback
     public void testDatasetReplaceWithMappings() throws TdarActionException {

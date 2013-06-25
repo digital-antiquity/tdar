@@ -178,6 +178,9 @@
 			        <table id="dataTable" class="table tableFormat table-striped table-bordered" ></table>
 			    </div>
 			</div>
+			<#if tdarConfiguration.isXmlExportEnabled()>
+			    <p class="faims_xml_logo"><a href="/dataset/xml?dataTableId=${dataTable.id?c}" target="_blank">XML</a></p>
+			</#if>
 		</#if>
 		
 		<h3>Data Set Structure</h3>

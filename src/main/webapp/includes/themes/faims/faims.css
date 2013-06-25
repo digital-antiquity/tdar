@@ -170,3 +170,12 @@ label .required {
 #copyrightHolderRow__ {
     margin-bottom: -20px;
 }
+
+.faims_xml_logo {
+	font-weight: bold;
+	color: orange;
+	border-style: solid;
+	border-width: medium;
+	width: 3em;
+	text-align: center;
+}

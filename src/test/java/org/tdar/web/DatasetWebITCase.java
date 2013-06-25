@@ -32,7 +32,6 @@ import org.tdar.junit.RunWithTdarConfiguration;
  * 
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     // FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.
@@ -68,7 +67,6 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("resourceCollections[0].name", "TESTCOLLECTIONNAME");
         docValMap.put("dataset.date", "1923");
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_NAME);
-        
     }
 
     @Test
@@ -155,6 +153,21 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage(browseDataUrl);
         assertTextPresentInCode("{}");
+    }
+    
+    @Test
+    @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
+    public void testXmlDatatableView() {
+        testCreateDatasetRecord();
+        Long datasetId = extractTdarIdFromCurrentURL();
+        Dataset dataset = datasetService.find(datasetId);
+        DataTable datatable = dataset.getDataTables().iterator().next();
+        String browseDataUrl = "/dataset/xml?dataTableId=" + datatable.getId();
+        gotoPage(browseDataUrl);
+        // does this look like xml?
+        final String pageCode = getPageCode();
+        assertTrue("response should be xml, not html", pageCode.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""));
     }
 
     private void uploadDataset() {

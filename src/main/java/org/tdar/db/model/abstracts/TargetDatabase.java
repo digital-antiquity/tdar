@@ -80,4 +80,6 @@ public interface TargetDatabase extends Database {
     
     public <T> T selectRowFromTable(DataTable dataTable,  ResultSetExtractor<T> resultSetExtractor, Long rowId);
 
+    public String selectTableAsXml(DataTable dataTable);
+
 }

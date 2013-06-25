@@ -592,6 +592,10 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("archive.enabled", false);
     }
     
+    public boolean isXmlExportEnabled() {
+        return assistant.getBooleanProperty("xml.export.enabled", false);
+    }
+    
     public Boolean getShowJiraLink() {
         return assistant.getBooleanProperty("jira.link.show", true);
     }
