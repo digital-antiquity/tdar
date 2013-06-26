@@ -84,7 +84,12 @@ public class CollectionController extends AbstractPersistableController<Resource
         // FIXME: may need some potential check for recursive loops here to prevent self-referential
         // parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
-        persistable.setParent(getResourceCollectionService().find(parentId));
+        ResourceCollection parent = getResourceCollectionService().find(parentId);
+        if (Persistable.Base.isNotNullOrTransient(persistable) && (parent.getParentIdList().contains(persistable.getId()) || parent.getId().equals(persistable.getId()))) {
+            addActionError("cannot set a parent collection of self or it's child");
+            return INPUT;
+        }
+        persistable.setParent(parent);
         getGenericService().saveOrUpdate(persistable);
         getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, getAuthorizedUsers(), shouldSaveResource());
 

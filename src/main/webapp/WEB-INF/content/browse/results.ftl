@@ -42,9 +42,11 @@
 
 <h3>Related Keywords</h3>
 <ul>
-<#list nodeModel["personInfoLog/keywords/*"] as keyword>
+<#list nodeModel["personInfoLog/keywords/*"]?sort as keyword>
 <#if (keyword.@count?number >= nodeModel.personInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
+<#if keyword.@name?has_content && !keyword.@name?contains("Country Code")>
 <li>${keyword.@name}</li>
+</#if>
 </#if>
 </#list>
 </ul> 
