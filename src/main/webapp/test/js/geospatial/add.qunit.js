@@ -1,6 +1,10 @@
 (function() {
     "option explicit";
 
+    //FIXME: the modules should have to do so much setup.  ideally they should just call whatever the page's "main()"
+    //          function is.  but we don't have any convention like that.
+    
+
     //mock a file upload - similar process as how we render previously uploaded files
     function _mockUpload(helper, filename) {
         var mockFile = _mockFile(filename);
@@ -65,6 +69,7 @@
                     });
                 }
                 basic.validator = new FileuploadValidator("metadataForm");
+                basic.validator.addRule("nodupes");
                 basic.helper = helper;
             },
             teardown: function() {
@@ -104,7 +109,6 @@
         test("conditional validation methods",  function() {
             var b = true,
                 validator = basic.validator;
-            ok(validator.rules.length === 0, "should be no rules yet");
 
             //create a when-callback that is really just a wrapper around 'b'.  Validation method should be applied
             //whenever b === true
@@ -115,6 +119,16 @@
             b = false;
             ok(validator.validate(), "when-callback returns false, so validator should not apply required method");
             equal(validator.errors.length, 0,  "error list should be empty if we didn't apply validation rules");
+        });
+
+        test("no dupes", function() {
+            _mockUpload(basic.helper, "foo.tiff");
+            _mockUpload(basic.helper, "foo.tiff");
+            var rules = $.grep(basic.validator.rules, function(rule){
+               return rule.methodName === "nodupes";
+            });
+            ok(rules.length === 1, "nodupes rule should be present");
+            ok(!basic.validator.validate(), "should be invalid because we uploaded dupe file");
         });
 
         var gis = {
@@ -129,6 +143,7 @@
                     });
                 }
                 gis.validator = new FileuploadValidator("metadataForm");
+                gis.validator.addRule("nodupes");
                 TDAR.fileupload.addGisValidation(gis.validator);
                 gis.helper = helper;
             },
@@ -141,6 +156,18 @@
         module("gis scenarios", gis);
         test("no files whatsoever", function() {
             ok(gis.validator.validate(), "no files are required");
+        });
+
+        test("multiple base filenames", function() {
+            _mockUpload(gis.helper, "foo.tiff");
+            _mockUpload(gis.helper, "bar.tfw");
+            ok(!gis.validator.validate(), "should be invalid because files do not have the same basename");
+        });
+
+        test("multiple image files", function() {
+            _mockUpload(gis.helper, "fancyfile.tiff");
+            _mockUpload(gis.helper, "fancyfile.jpeg");
+            ok(!gis.validator.validate(), "should be invalid because only one GIS image file allowed");
         });
 
 

@@ -25,7 +25,7 @@ var FileuploadValidator;
 
         $.each(validator.errors, function(idx, error){
            if(error.file) {
-               validator.highlight(file);
+               validator.highlight(error.file);
            }
         });
     };
@@ -43,7 +43,7 @@ var FileuploadValidator;
         methods: {
             "nodupes": function(file, files) {
                 var dupes = $.grep(files, function(_file){
-                    return file.name === _file.name;
+                    return file.filename === _file.filename;
                 });
                 return dupes.length < 2;
             },
