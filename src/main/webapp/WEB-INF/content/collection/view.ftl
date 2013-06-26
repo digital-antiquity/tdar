@@ -24,7 +24,7 @@
 <#if resourceCollection.parent?? || resourceCollection.description?? || collections??>
     <div class="glide">
         <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
-        <p>${resourceCollection.description!"(n/a)"}</p>
+        <@common.description resourceCollection.description />
     
     <#if (collections?has_content) >
     <B>Collections Contained in this Collection</B>

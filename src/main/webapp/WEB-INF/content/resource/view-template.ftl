@@ -130,12 +130,7 @@
 <hr class="dbl">
 
 <h2>Summary</h2>
-<p itemprop="description">
-  <#assign description = resource.description!"No description specified."/>
-  <#noescape>
-    ${(description)?html?replace("[\r\n]++","</p><p>","r")}
-  </#noescape>
-</p>
+  <@common.description resource.description />
 
 <hr />
 

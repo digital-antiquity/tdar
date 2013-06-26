@@ -693,7 +693,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
         </colgroup>
         <thead>
             <tr>
-                <th style="width: 4em">${siteAcronym} ID</th>
+                <th style="width: 4em">ID</th>
                 <th <#if removeable>colspan="2"</#if>>Name</th>
                 
             </tr>
@@ -703,7 +703,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
                 <tr id='dataTableRow_${resource.id?c}'>
                     <td>${resource.id?c}</td>
                     <td>
-                        <@linkToResource resource resource.title!'<em>(no title)</em>' />
+                        <@linkToResource resource resource.title!'<em>(no title)</em>' /> <#if !resource.active>[${resource.status.label}]</#if>
                     </td>
                     <#if removeable>
                     <td>

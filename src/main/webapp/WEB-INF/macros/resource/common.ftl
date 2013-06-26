@@ -958,6 +958,14 @@ this bit of freemarker is voodoo:
 
 
 
+<#macro description description_="No description specified." >
+  <#assign description = description_!"No description specified."/>
+<p itemprop="description">
+  <#noescape>
+    ${(description)?html?replace("[\r\n]++","</p><p>","r")}
+  </#noescape>
+</p>
+</#macro>
 
 
 </#escape>

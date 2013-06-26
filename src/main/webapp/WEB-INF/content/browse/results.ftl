@@ -12,6 +12,7 @@
 
 <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 
+		
 
 <@view.pageStatusCallout />
 
@@ -34,7 +35,8 @@
     <a itemprop="affiliation" href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
     </#if>
     
-    <p itemprop="description">${creator.description!''}</p>
+    <@common.description creator.description />
+
 	<#if creator.synonyms?has_content>
 	<p>Alternate Names: <#list creator.synonyms as syn> <#if syn_index !=0>,</#if>${syn.properName}</#list>
 	</p>

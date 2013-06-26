@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.ListUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
@@ -47,6 +46,11 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.w3c.dom.Node;
+
+import com.sun.syndication.io.SAXBuilder;
+
+import freemarker.ext.dom.NodeModel;
 
 /**
  * $Id$
@@ -91,6 +95,7 @@ public class BrowseController extends AbstractLookupController {
 
     private transient InputStream inputStream;
     private Long contentLength;
+    private NodeModel nodeModel;
 
     // private Keyword keyword;
 
@@ -157,6 +162,11 @@ public class BrowseController extends AbstractLookupController {
             creator = getGenericService().find(Creator.class, getId());
             QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser());
 
+//            try {
+////            setNodeModel(NodeModel.parse(new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml")));
+//            } catch (Exception e) {
+//                logger.error("{}", e);
+//            }
             if (isEditor()) {
                 if (creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
                     try {
@@ -365,6 +375,14 @@ public class BrowseController extends AbstractLookupController {
 
     public void setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
+    }
+
+    public NodeModel getNodeModel() {
+        return nodeModel;
+    }
+
+    public void setNodeModel(NodeModel nodeModel) {
+        this.nodeModel = nodeModel;
     }
 
 }
