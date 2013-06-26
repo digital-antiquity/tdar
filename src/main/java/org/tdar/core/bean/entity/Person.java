@@ -181,13 +181,31 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return firstName + " " + lastName;
     }
 
+
+    /**
+     * set the user firstname, lastname from string in "first last" format.  anything other than simple
+     * two word string is ignored.
+     * @param properName
+     */
+    public void setProperName(String properName) {
+        String[] names = Person.split(properName);
+        if(names.length == 2)  {
+            setLastName(names[0]);
+            setFirstName(names[1]);
+        }
+    }
+
+    /**
+     * set the user firstname, lastname from string in "last first" format.  anything other than simple
+     * two word string is ignored.
+     * @param properName
+     */
     public void setName(String name) {
         String[] names = Person.split(name);
-        if (names.length == 0) {
-            return;
+        if (names.length == 2) {
+            setLastName(names[0]);
+            setFirstName(names[1]);
         }
-        setLastName(names[0]);
-        setFirstName(names[1]);
     }
 
     /**
