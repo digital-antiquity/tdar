@@ -526,6 +526,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         this.recordsPerPage = recordsPerPage;
     }
 
-    
+
     
 }

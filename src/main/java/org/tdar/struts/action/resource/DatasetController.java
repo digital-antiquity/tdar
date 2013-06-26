@@ -8,10 +8,8 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.FileProxy;
 
 /**
  * $Id$
@@ -61,15 +59,6 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
         return SUCCESS;
     }
 
-    /*
-     * public List<Dataset> getAllSubmittedDatasets() {
-     * return getDatasetService().findBySubmitter(getAuthenticatedUser());
-     * }
-     */
-    public String getContentDisposition() {
-        return String.format("filename=\"dataset_%s.xls\"", getPersistable().getId());
-    }
-
     public void setDataset(Dataset dataset) {
         setPersistable(dataset);
     }
@@ -86,5 +75,5 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
     public boolean isMultipleFileUploadEnabled() {
         return true;
     }
-    
+
 }
