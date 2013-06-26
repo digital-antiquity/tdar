@@ -75,7 +75,7 @@ TDAR.fileupload = function() {
                     
                     //translate property names and add extension
                     files = $.map(files, function(file){
-                        var ext = file.fileReplaceName.substring(file.fileReplaceName.lastIndexOf(".") + 1).toLowerCase();
+                        var ext = file.fileReplaceName.substring(file.fileReplaceName.indexOf(".") + 1).toLowerCase();
                         return {
                             id: parseInt(file.fileId),
                             action: file.fileAction,
@@ -94,8 +94,7 @@ TDAR.fileupload = function() {
         $(_options.formSelector).add(_options.inputSelector).data('fileuploadHelper', helper);
 
         _registerReplaceButton(_options.formSelector);
-        
-        
+
         //update the proxy action if user updates fileproxy metadata
         $(_options.formSelector).on("change", "select,textarea,input[type=text],input[type=date]", function(e) {
             _updateFileAction(this);
@@ -118,7 +117,6 @@ TDAR.fileupload = function() {
                 $("#ticketId").val(ticket.id);
             }
         });
-        
 
         //pre-populate the files table with any previously-uploaded files
         if(TDAR.filesJson) {

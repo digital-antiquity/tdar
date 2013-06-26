@@ -22,8 +22,8 @@
         }
         //not sure id is necessary for this mock, since we wouldn't get it from the uploadController.upload() response json
         // return {"fileId": id, "size": size};
-        return {"size": size};
-    }
+        return {"size": size}
+    };
 
 
     function _mockFile(name) {
@@ -38,10 +38,21 @@
         return $.extend(file, stats);
     }
 
+    function _mockDelete(helper, filename) {
+        var fnDelete =  $(helper.context).fileupload("option", "destroy");
+
+        var files = $.grep(helper.validFiles(), function(file, idx){
+            return file.filename === filename;
+        });
+
+        $.each(files, function(idx, file) {
+            fnDelete.call(helper.context, null, {context: file.context, url:null, type:"DELETE", dataType:null});
+        });
+    }
+
     $(function() {
 
         var basic = {
-
             //qunit destroys fixture dom on teardown.  need to re-register fileupload widget
             setup: function() {
                 var helper = $("#metadataForm").data("fileuploadHelper");
@@ -62,8 +73,7 @@
             }
         }
 
-
-        module("required files", basic);
+        module("basic validation rules", basic);
         test("required file missing", function() {
             var validator = basic.validator;
             validator.addRule("required");
@@ -91,8 +101,6 @@
             ok(validator.validate(), "user uploaded a .foo file, so the file group should be valid");
         });
 
-
-
         test("conditional validation methods",  function() {
             var b = true,
                 validator = basic.validator;
@@ -109,8 +117,93 @@
             equal(validator.errors.length, 0,  "error list should be empty if we didn't apply validation rules");
         });
 
+        var gis = {
+            setup: function() {
+                var helper = $("#metadataForm").data("fileuploadHelper");
+                if(!helper) {
+                    helper = TDAR.fileupload.registerUpload({
+                        informationResourceId: -1,
+                        acceptFileTypes: /\.[a-z]+$/i,
+                        formSelector:"#metadataForm",
+                        inputSelector: '#fileAsyncUpload'
+                    });
+                }
+                gis.validator = new FileuploadValidator("metadataForm");
+                TDAR.fileupload.addGisValidation(gis.validator);
+                gis.helper = helper;
+            },
+            teardown: function() {
+                gis.validator.clearErrors();
+                gis.validator = null;
+            }
+        };
+
+        module("gis scenarios", gis);
+        test("no files whatsoever", function() {
+            ok(gis.validator.validate(), "no files are required");
+        });
+
+
+        module("conditionally required files", gis);
+
+        //construct tests for all optional/required file types
+        (function() {
+            var files = {
+                optional:{
+                    shapefile: ["sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
+                    jpeg:["jpw"],
+                    tiff:["tfw"],
+                    image: ["aux", "aux.xml"]
+                },
+
+                required: {
+                    shapefile: [["shp", "shx", "dbf"]],
+                    jpeg:["jpg", "jpeg"],
+                    tiff:["tif", "tiff"],
+                    image: ["jpg", "jpeg", "tif", "tiff"]
+                }
+            };
+
+
+
+            $.each(files.optional, function(gistype, extensions){
+
+                var optexts = files.optional[gistype];
+                var reqexts = files.required[gistype];
+                $.each(optexts, function(oidx, optext) {
+                    $.each(reqexts, function(ridx, reqext){
+                        //if reqext is array,  add all elements to the form
+                        var exts = typeof reqext === "string" ? [reqext] : reqext;
+
+                        test("validator should return false if ." + optext + " file present without " + exts.join(", ") + " file present", function() {
+                            ok(gis.helper.validFiles().length === 0);
+
+                            var filename = "basename." + optext;
+
+                            //now add an optional file
+                            _mockUpload(gis.helper, filename);
+
+                            ok(!gis.validator.validate(), "form should be invalid because we included " + filename + " without also including required file");
+
+                            //now add the required file(s)
+                            $.each(exts, function(idx, ext) {
+                               _mockUpload(gis.helper, "basename." + ext);
+                            });
+
+                            ok(gis.validator.validate(), "form should be valid because all required files present");
+                        });
+
+                    });
+                });
+
+            });
+        })();
+
+
+
+
 
 
     });
-
+//FIXME: we need some tests where we simulate file deletion/replacement
 })()

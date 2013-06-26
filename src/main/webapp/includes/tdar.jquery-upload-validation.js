@@ -9,9 +9,11 @@ var FileuploadValidator;
 
     //creates when-callback that returns true when file list has at least file with provided extension (in varargs)
     var _hasFileWithExtension = function() {
+        //copy current scope's arguments
+        var varargs = Array.prototype.slice.call(arguments, 0);
         return function(files) {
             return $.grep(files, function(file) {
-                return $.inArray(file.ext, arguments) > -1;
+                return $.inArray(file.ext, varargs) > -1;
             }).length > 0;
         }
     };
@@ -376,7 +378,7 @@ var FileuploadValidator;
         validator.addGroupMethod("same-basename", function(files) {
             var basenames = [];
             $.each(files, function(idx, file){
-                if(!$.inArray(file.base, basenames) > -1) {
+                if($.inArray(file.base, basenames) === -1) {
                     basenames.push(file.base);
                 }
             });
