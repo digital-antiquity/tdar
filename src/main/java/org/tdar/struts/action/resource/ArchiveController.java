@@ -39,7 +39,10 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return new HashSet<>(analyzer.getExtensionsForType(ResourceType.ARCHIVE));
+        Set<String> extensionsForTypes = new HashSet<>(analyzer.getExtensionsForType(ResourceType.ARCHIVE));
+        // add the format type used by FAIMS
+        extensionsForTypes.add("bz2");
+        return extensionsForTypes;
     }
 
     public void setArchive(final Archive archive) {
@@ -59,6 +62,6 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public boolean isMultipleFileUploadEnabled() {
-        return false;
+        return true;
     }
 }
