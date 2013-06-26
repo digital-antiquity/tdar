@@ -221,7 +221,7 @@ public class XmlService implements Serializable {
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/keywordMedian"), log.getKeywordMedian().toString());
         File dir = new File(TdarConfiguration.getInstance().getCreatorFOAFDir());
         dir.mkdir();
-        FileWriter writer = new FileWriter(new File(dir, creator.getId() + ".xml"));
+        FileWriter writer = new FileWriter(new File(dir, creator.getId() + ".foaf.xml"));
         model.write(writer, "RDF/XML-ABBREV");
         IOUtils.closeQuietly(writer);
 

@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -150,6 +149,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
             try {
                 xmlService.generateFOAF(person, log);
+                xmlService.convertToXML(log, new FileWriter(new File(TdarConfiguration.getInstance().getCreatorFOAFDir() +"/" + person.getId() + ".xml")));
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 logger.error("exception: {} ", e);
@@ -335,7 +335,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
     public boolean isEnabled() {
         return true;
     }
-    
+
     @Override
     public boolean isSingleRunProcess() {
         return true;

@@ -148,7 +148,7 @@ public class BrowseController extends AbstractLookupController {
     public String creatorRdf() throws FileNotFoundException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml");
+            File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".foaf.xml");
             setInputStream(new FileInputStream(file));
             setContentLength(file.length());
             return SUCCESS;
@@ -162,11 +162,11 @@ public class BrowseController extends AbstractLookupController {
             creator = getGenericService().find(Creator.class, getId());
             QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser());
 
-//            try {
-////            setNodeModel(NodeModel.parse(new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml")));
-//            } catch (Exception e) {
-//                logger.error("{}", e);
-//            }
+            try {
+            setNodeModel(NodeModel.parse(new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml")));
+            } catch (Exception e) {
+                logger.error("{}", e);
+            }
             if (isEditor()) {
                 if (creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
                     try {

@@ -20,6 +20,36 @@
 <#if creator.creatorType.person>
 <link rel="meta" type="application/rdf+xml" title="FOAF" href="rdf"/>
 </#if>
+<#if nodeModel?has_content>
+        <div id="sidebar-right" parse="true">
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+<h3>Related Creators</h3>
+<ul>
+<#list nodeModel["personInfoLog/collaborators/*"] as collab>
+<#if (collab.@count?number >= nodeModel.personInfoLog.@creatorMedian?number && collab.@count?number  >1)>
+<li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a></li>
+</#if>
+</#list> 
+</uL>
+
+<h3>Related Keywords</h3>
+<ul>
+<#list nodeModel["personInfoLog/keywords/*"] as keyword>
+<#if (keyword.@count?number >= nodeModel.personInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
+<li>${keyword.@name}</li>
+</#if>
+</#list>
+</ul> 
+</div>
+</#if>
 
 <h1><#if creator.properName??>${creator.properName}</#if></h1>
 <#assign scope="http://schema.org/Person"/>
