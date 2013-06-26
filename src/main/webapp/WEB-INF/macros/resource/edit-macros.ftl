@@ -1433,7 +1433,7 @@ $(function() {
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
             <@s.textfield theme="tdar" cssClass="span3 ${lookupType} ${requiredClass}" placeholder="Name"  readonly=isDisabled autocomplete="off"
-                name="${strutsPrefix}${personPrefix}.properName" maxlength="255" autocompleteName="properName"
+                name="${strutsPrefix}${personPrefix}.tempDisplayName" maxlength="255" autocompleteName="tempDisplayName"
                 autocompleteIdElement="#${idIdElement}" 
                 autocompleteParentElement="#${rowIdElement}" 
                  title="${nameTitle}" 

@@ -67,8 +67,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private static final long serialVersionUID = -3863573773250268081L;
 
     @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "registered" };
+    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "registered","tempDisplayName" };
 
+    @Transient
+    private transient String tempDisplayName;
+    
     public Person() {
     }
 
@@ -181,19 +184,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return firstName + " " + lastName;
     }
 
-
-    /**
-     * set the user firstname, lastname from string in "first last" format.  anything other than simple
-     * two word string is ignored.
-     * @param properName
-     */
-    public void setProperName(String properName) {
-        String[] names = Person.split(properName);
-        if(names.length == 2)  {
-            setLastName(names[0]);
-            setFirstName(names[1]);
-        }
-    }
 
     /**
      * set the user firstname, lastname from string in "last first" format.  anything other than simple
@@ -512,5 +502,17 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public void setProxyNote(String proxyNote) {
         this.proxyNote = proxyNote;
+    }
+
+    /* convenience for struts in case of error on INPUT, better than "NULL NULL" */
+    public String getTempDisplayName() {
+        if (StringUtils.isBlank(tempDisplayName) && StringUtils.isNotBlank(getProperName())) {
+            setTempDisplayName(getProperName());
+        }
+        return tempDisplayName;
+    }
+
+    public void setTempDisplayName(String tempName) {
+        this.tempDisplayName = tempName;
     }
 }
