@@ -310,30 +310,11 @@
 
                 <ul class="unstyled-list">
                     <@view.resourceProvider />
-                    <#if resource.seriesName?has_content>
-	                    <li><strong>Series name</strong><br>${resource.seriesName}</li>
-                    </#if>
-                    <#if resource.seriesNumber?has_content>
-    	                <li><strong>Series number</strong><br>${resource.seriesNumber}</li>
-                    </#if>
-                    <#if resource.journalName?has_content>
-                        <li><strong>Journal</strong><br>${resource.journalName}
-                            <!-- issue -->
-                            <#if resource.journalNumber?has_content> (${resource.journalNumber}) </#if>
-                        </li>
-                    </#if>
-                    <#if resource.volume?has_content>
-	                    <li><strong>Volume</strong><br>${resource.volume}</li>
-                    </#if>
-                  <#if resource.bookTitle?has_content>
-                      <li><strong>Book Title</strong><br>${resource.bookTitle}</li>
-                  </#if>
-                    <#if resource.numberOfVolumes??>
-                        <li><strong>Number of volumes</strong><br>${resource.numberOfVolumes}</li>
-                    </#if>
-                    <#if resource.edition?has_content>
-                    <li><strong>Edition</strong><br><span itemprop="bookEdition">${resource.edition}</span></li>
-                    </#if>
+                    
+					
+					<#if local_.sidebarDataTop?? && local_.sidebarDataTop?is_macro>
+						<@local_.sidebarDataTop />
+					</#if>
                     <#if ((resource.publisher.name)?has_content ||  resource.publisherLocation?has_content)>
                         <li><strong>
                         <#-- label -->
@@ -347,42 +328,9 @@
                             <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
                         </li>
                     </#if>
-                    <#if resource.isbn?has_content>
-                        <li><strong>ISBN</strong><br><span itemprop="isbn">${resource.isbn}</span></li>
-                    </#if>
-                    <#if resource.issn?has_content>
-                        <li><strong>ISSN</strong><br><span itemprop="issn">${resource.issn}</span></li>
-                    </#if>
-                    <#if resource.doi?has_content>
-                        <li><strong>DOI</strong><br>${resource.doi}</li>
-                    <#elseif resource.externalId?has_content>
-                        <li><strong>DOI</strong><br>${resource.externalId}</li>
-                    </#if>
-
-
-                    <#if resource.documentType?has_content>
-                    <#if (resource.startPage?has_content) || (resource.endPage?has_content) || (resource.totalNumberOfPages?has_content)>
-                    <li>
-                        <strong>Pages</strong><br>
-						<#if resource.documentType.partOfLargerDocument>
-                            ${resource.startPage!} <#if resource.startPage?has_content && resource.endPage?has_content>-</#if> ${resource.endPage!}
-						</#if>
-                        </#if>
-                          <#if resource.totalNumberOfPages?? >
-                          <#assign showParen = false/>
-                          <#if ((resource.startPage?has_content || resource.endPage?has_content) && !resource.documentType.partOfLargerDocument) >
-                          <#assign showParen = true/>
-                           </#if>
-                          <#if showParen >(</#if>
-                            ${resource.totalNumberOfPages}
-                          <#if showParen >)</#if>
-                       </li>
-                    </#if>
-                    <li>
-                        <strong>Document Type</strong><br>
-                        ${resource.documentType.label}
-                    </li>
-                    </#if>
+					<#if local_.sidebarDataBottom?? && local_.sidebarDataBottom?is_macro>
+						<@local_.sidebarDataBottom />
+					</#if>
                     <#if resource.resourceLanguage?has_content>
                     <li>
                         <strong>Language</strong><br>

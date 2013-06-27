@@ -403,7 +403,7 @@ function _projectChangedCallback(data) {
 
     TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);
     var formId = $('#projectId').closest('form').attr("id");
-    _updateInheritableSections(TDAR.inheritance.json, formId);
+    _updateInheritableSections(formId);
 }
 
 
@@ -641,19 +641,19 @@ function _enableAll() {
 }
 
 //todo: this duplicates code (see all the calls to bindCheckbox); use  inheritOptionsList instead
-function _updateInheritableSections(json, formId) {
+function _updateInheritableSections(formId) {
     //HACK: temporary fix for TDAR-2268 - our form populate js is overwriting the ID field with data.id
-    var jsonid = json.id;
+    var jsonid = TDAR.inheritance.json.id;
 //    console.log(json);
-    json.id = null;
-    delete(json.id);
+    TDAR.inheritance.id = null;
+    delete(TDAR.inheritance.id);
 
     // indicate in each section which project the section will inherit from.
     var labelText = "Inherit values from parent project";
     var selectedProjectName = "Select a project above to enable inheritance";
     if (jsonid > 0) {
-        labelText = 'Inherit values from parent project "' + TDAR.ellipsify(json.title, 60) + '"';
-        selectedProjectName = "Inherit metadata from " + json.title;
+        labelText = 'Inherit values from parent project "' + TDAR.ellipsify(TDAR.inheritance.json.title, 60) + '"';
+        selectedProjectName = "Inherit metadata from " + TDAR.inheritance.json.title;
     }
     
     //update inheritance checkbox labels with new project name (don't clobber checkbox in the process)
