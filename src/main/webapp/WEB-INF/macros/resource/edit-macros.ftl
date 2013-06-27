@@ -874,8 +874,7 @@ jquery validation hooks?)
         <table id="files" role="presentation" class="tableFormat table table-striped sortable">
             <thead>
             <tr>
-               <th>Name</th>
-               <th>Size</th>
+               <th colspan="2">Name / Description / Date</th>
                <th colspan="2">Access Restrictions</th>
                <th colspan="2">Action</th>
                </tr>
@@ -1219,46 +1218,47 @@ $(function() {
 {% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
     <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
         {% if (file.error) { %}        
-            <td></td>
-            <td class="name"><span>{%=file.name%}</span></td>
-            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+            <td colspan="2">
+                  <div>
+                    <span class="name input-xlarge uneditable-input">{%=file.name%}</span>
+                    <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date" value="{%=file.fileCreatedDate%}">
+                    <span class="size label label-info">{%=o.formatFileSize(file.size)%}</span>
+                  </div>                
+                  <textarea class="input-block-level" name="fileProxies[{%=idx%}].description" rows="1" placeholder="Enter a description here">{%=file.description%}</textarea>
+            </td>
             <td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
         {% } else { %}
-            <td class="name">
+            <td colspan="2">
                 <div>
-                    {% if (file.url) { %}        
-                    <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
-                    {% } else { %}
-                    {%=file.name%}
-                    {% } %} 
+                    <span class="name input-xlarge uneditable-input">{%=file.name%}</span>
                     <span class="replacement-text"></span>
+                    <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date input-small" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}">
+                    <span class="size label label-info">{%=o.formatFileSize(file.size)%}</span>
                 </div>
-                <label>Description</label>
-                <textarea name="fileProxies[{%=idx%}].description">{%=file.description%}</textarea>
-                <label>Create Date</label>
-                <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date" value="{%=file.fileCreatedDate%}">
+                <textarea class="input-block-level" name="fileProxies[{%=idx%}].description" rows="1" placeholder="Enter a description here">{%=file.description%}</textarea>
+
             </td>
-            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
             <td colspan="2">
                 <#-- FIXME:supposedly struts 2.1+ allows custom data attributes but I get a syntax error.  What gives? -->
                 <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" name="fileProxies[{%=idx%}].restriction" 
                 style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  
                 onchange="TDAR.fileupload.updateFileAction(this)" 
-                cssClass="fileProxyConfidential"/>
+                cssClass="fileProxyConfidential input-small"/>
             </td>
         {% } %}
-        <td class="delete">
-                <button class="btn btn-danger delete-button" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
-                    <i class="icon-trash icon-white"></i>
-                    <span>Delete</span>
-                </button>
-        </td>
         <td>
-            {%if (file.fileId) { %}
-            <@edit.fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button"/>
-            <button type="button" style="display:none" class="btn undo-replace-button">Undo</button>
-            {% } %}
+                <div class="delete">
+                    <button class="btn btn-danger delete-button btn-small" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}" style="width:8em; text-align:left ">
+                        <i class="icon-trash icon-white"></i>
+                        <span>Delete</span>
+                    </button>
+                </div>
             
+                {%if (file.fileId) { %}
+                <@edit.fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button"/>
+                <button type="button" style="display:none" class="btn btn-small btn-warning undo-replace-button">Undo</button>
+                {% } %}
+                
             <div class="fileProxyFields">
                 <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}"/>
                 <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}"/>
