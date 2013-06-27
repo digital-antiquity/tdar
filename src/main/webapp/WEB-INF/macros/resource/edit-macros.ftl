@@ -800,7 +800,44 @@ jquery validation hooks?)
 
 <#macro asyncFileUpload uploadLabel="Attach Files" showMultiple=false divTitle="Upload" divId="divFileUpload" inputFileCss="" >
 
-<div id="${divId}" class="well-alt">
+<div id="${divId}Help" style="display:none">
+    <div class="">
+        <ul>
+            <li>To attach files to this resource,  click the button labeled "Add Files..." </li>
+            <#if multipleFileUploadEnabled>
+                <li>You may upload up to ${maxUploadFilesPerRecord} for this resource type</li>
+            <#else>
+                <#--FIXME:  i'm pretty sure async upload for single files is untested, and wont work as described here -->
+                <li> To replace a file, simply upload the updated version</li>
+            </#if>
+            <#if validFileExtensions??>
+                <li>Accepted file types: .<@join validFileExtensions ", ." /></li>
+            </#if>
+        </ul>
+
+        <h3>Deleting Files</h3>
+        You can remove files by clicking on the button labeled "Delete".  If you change your mind or if you mistakenly
+        clicked on the delete button, fear not: you can restore the file by clicking the button a 2nd time (the button
+        will now be labeled "Undelete..."
+
+        <#if fileProxies?size &gt; 0>
+        <p>To replace a previously-uploaded file with a new version:
+        <h3>Replacing Files</h3>
+            <ol>
+                <li>Locate the row in the files table that corresponds to the file you would like to replace</li>
+                <li>Click on the button labeled "Replace...". ${siteAcronym} will prompt you for a new file</li>
+                <li>Once the upload is complete, you must submit the form to confirm your changes</li>
+                <li><em>Conversely</em>, to undo this action and restore the original file,  simply click the
+                    button again (which will now be labeled  "Restore Original")</li>
+            </ol>
+        </p>
+
+        </#if>
+
+    </span>
+    </div>
+</div>
+<div id="${divId}" class="well-alt" data-tiplabel="${uploadLabel}" data-tooltipcontent="#${divId}Help">
     <@s.hidden name="ticketId" id="ticketId" />
     <h2>${uploadLabel}</h2>
   
@@ -811,14 +848,6 @@ jquery validation hooks?)
             </div>
     </div>
     
-    <div class="">
-	<#if multipleFileUploadEnabled>
-    <p><span class="label">Note:</span> You can only have ${maxUploadFilesPerRecord} per record.<br/></p> 
-    <#else>
-    <p><span class="label">Note:</span> To replace a file, simply upload the updated version.<br/></p> 
-    </#if>
-    </div>
-	<br/>
     <#if !ableToUploadFiles>
     <b>note:</b> you have not been granted permission to upload or modify files<br/>
     <#else>
@@ -830,28 +859,7 @@ jquery validation hooks?)
                 <span>Add files...</span>
             <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" class="${inputFileCss}">
             </span>
-            <#-- we don't want the 'bulk operations' for now,  might be handy later -->
-            <#--
-            <button type="submit" class="btn btn-primary start">
-                <i class="icon-upload icon-white"></i>
-                <span>Start upload</span>
-            </button>
-            <button type="reset" class="btn btn-warning cancel">
-                <i class="icon-ban-circle icon-white"></i>
-                <span>Cancel upload</span>
-            </button>
-            <button type="button" class="btn btn-danger delete">
-                <i class="icon-trash icon-white"></i>
-                <span>Delete</span>
-            </button>
-            <input type="checkbox" class="toggle">
-           -->
         </div>
-	    <#if validFileExtensions??>
-	    <span class="help-block">
-	        Accepted file types: .<@join validFileExtensions ", ." />
-	    </span>
-	    </#if>
         <!-- The global progress information -->
         <div class="span5 fileupload-progress fade">
             <!-- The global progress bar -->
@@ -872,6 +880,7 @@ jquery validation hooks?)
                 </div>
 	</#if>
         <table id="files" role="presentation" class="tableFormat table table-striped sortable">
+            <!--
             <thead>
             <tr>
                <th colspan="2">Name / Description / Date</th>
@@ -879,6 +888,7 @@ jquery validation hooks?)
                <th colspan="2">Action</th>
                </tr>
             </thead>
+            -->
             <tbody id="fileProxyUploadBody" class="files">
             <#list fileProxies as fileProxy>
                 <#if fileProxy??>
@@ -939,7 +949,7 @@ jquery validation hooks?)
               <li><a href="#">file 1</a></li>
               <li><a href="#">file 2</a></li>
               <li class="divider"></li>
-              <li><a href="#">cancel replace operation</a></li>
+              <li><a href="#">Restore Original</a></li>
             </ul>
           </div> 
 
@@ -1255,8 +1265,8 @@ $(function() {
                 </div>
             
                 {%if (file.fileId) { %}
-                <@edit.fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button"/>
-                <button type="button" style="display:none" class="btn btn-small btn-warning undo-replace-button">Undo</button>
+                <@edit.fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button btn btn-small btn-warning"/>
+                <button type="button" style="display:none; width: 8em; text-align:left" class="btn btn-small btn-warning undo-replace-button">Restore Original</button>
                 {% } %}
                 
             <div class="fileProxyFields">
@@ -1474,7 +1484,8 @@ $(function() {
 </#macro>
 
 <#macro fileuploadButton id="fileuploadButton" name="" label="" cssClass="" buttonCssClass="">
-<span class="btn fileinput-button ${buttonCssClass}" id="${id}Wrapper">
+<span class="btn fileinput-button ${buttonCssClass}" id="${id}Wrapper" style="width:6em;text-align:left">
+    <i class="icon-refresh icon-white"> </i>
     <span>${label}</span>
     <input type="file" name="uploadFile" id="${id}" class="${cssClass}">
 </span>
