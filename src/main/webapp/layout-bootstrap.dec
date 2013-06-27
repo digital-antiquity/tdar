@@ -299,6 +299,9 @@ ${_stacktrace?html}
     TDAR.maps.defaults.center.lng = ${mapDefaultLng};
     TDAR.maps.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};
     TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
+
+    TDAR.common.sessionTimeout = ${sessionTimeout?c};
+    TDAR.common.currentTime = 0;
     </script>
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
     <#if qunit>

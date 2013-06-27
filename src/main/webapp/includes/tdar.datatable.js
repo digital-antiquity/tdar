@@ -166,14 +166,14 @@ function drawToolbar(projId) {
 function fnRenderTitle(oObj) {
     // in spite of name, aData is an object containing the resource record for this row
     var objResource = oObj.aData;
-    var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + htmlEncode(objResource.title) + '</a>';
+    var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) + '</a>';
     html += ' (ID: ' + objResource.id 
     if (objResource.status != 'ACTIVE') {
     html += " " + objResource.status;
     }
     html += ')';
     if (datatable_showDescription) {
-        html += '<br /> <p>' + htmlEncode(TDAR.common.elipsify(objResource.description,80)) + '</p>';
+        html += '<br /> <p>' + TDAR.common.htmlEncode(TDAR.common.elipsify(objResource.description,80)) + '</p>';
     }; 
     return html;
 }

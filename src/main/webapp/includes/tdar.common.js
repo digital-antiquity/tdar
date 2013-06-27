@@ -653,9 +653,13 @@ var _sortFilesAlphabetically= function() {
     }
     
     //return html-encoded copy of provided string
-    var _htmlEncode = function(str) {
-            if (typeof value === "undefined" || str === '') return "";
-            return $('<div></div>').text(str).html();
+    var _htmlEncode = function(value) {
+	    if (value == undefined || value == '')
+	        return "";
+	    return $('<div/>').text(value).html();
+		// older vesrion
+		//    	if (typeof value === "undefined" || str === '') return "";
+		//            return $('<div></div>').text(str).html();
     }
     
     var _determineResponsiveClass = function(width) {
@@ -684,19 +688,11 @@ var _sortFilesAlphabetically= function() {
     }
 
     
-    /*
-     * AJAX BOOKMARKING FUNCTIONS
-     */
-
-    $(document).ready(function() {
-        $(document).delegate(".bookmark-link","click",_applyBookmarks);
-    });
-
     function _applyBookmarks() {
         var $this = $(this);
         var resourceId = $this.attr("resource-id");
         var state = $this.attr("bookmark-state");
-        $waitingElem = $("<img src='" + getURI('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
+        var $waitingElem = $("<img src='" + getURI('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
         $this.prepend($waitingElem);
         var $icon = $(".bookmark-icon",$this);
         $icon.hide();
@@ -828,8 +824,8 @@ var _sortFilesAlphabetically= function() {
     var _sessionTimeoutWarning = function() {
         // I RUN ONCE A MINUTE
         // sessionTimeout in seconds
-        currentTime += 60;
-        var remainingTime = sessionTimeout - currentTime;
+        TDAR.common.currentTime += 60;
+        var remainingTime = TDAR.common.sessionTimeout - TDAR.common.currentTime;
         if (remainingTime == 300) {
             var dialog = $('<div id=timeoutDialog></div>')
                     .html(
@@ -1096,7 +1092,6 @@ var _sortFilesAlphabetically= function() {
         "applyTreeviews": _applyTreeviews,
         "initializeView": _initializeView,
         "getObjValue": _getObjValue,
-        "htmlEncode": _htmlEncode,
         "initRegformValidation": _initRegformValidation,
         "determineResponsiveClass": _determineResponsiveClass,
         "elipsify":_elipsify,
@@ -1111,8 +1106,10 @@ var _sortFilesAlphabetically= function() {
         "setupDocumentEditForm": _setupDocumentEditForm,
         "sessionTimeoutWarning": _sessionTimeoutWarning,
         "delegateCreator": _delegateCreator,
+        "applyBookmarks":_applyBookmarks,
         "sprintf": _sprintf,
         "htmlDecode": _htmlDecode,
+        "htmlEncode":_htmlEncode,
         "applyWatermarks": _applyWatermarks,
         "replaceAttribute": _replaceAttribute,
         "delayJiraButton": _delayJiraButton
@@ -1136,7 +1133,12 @@ $(document).ready(function() {
     if($.cookie("hide_jira_button")) {
         setTimeout(function(){$('#atlwdg-trigger').hide()}, 700);
     }
-//    TDAR.common.sessionTimeoutWarning();
+
+    TDAR.common.sessionTimeoutWarning();
+
+    $(document).delegate(".bookmark-link","click",TDAR.common.applyBookmarks);
+
+
 });
 
 
