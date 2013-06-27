@@ -109,7 +109,7 @@ label.error {display:block;}
         var $frmPerson;
         $(function() {
             $frmPerson = $('#frmPerson');
-            applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
+            TDAR.autocomplete.applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
             initializeView();
             TDAR.common.initEditPage($('#frmPerson')[0]);
             //tack on the confirm-password rules

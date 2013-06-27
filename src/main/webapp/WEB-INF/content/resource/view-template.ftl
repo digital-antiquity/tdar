@@ -462,7 +462,7 @@ $(function() {
            ],
            "sAjaxSource": "<@s.url value="/datatable/browse?id=${dataTable.id?c}" />"
     };
-    registerLookupDataTable(options);    
+    TDAR.datatable.registerLookupDataTable(options);    
     </#if>
     </#if>
 	<#if local_.localJavascript?? && local_.localJavascript?is_macro>

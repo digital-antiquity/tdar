@@ -58,7 +58,7 @@ $.validator.addMethod("float", function(value, element) {
 $.validator.addMethod("validIdRequired", function(value, element) {
     if (parseInt(value) != undefined && parseInt(value) > 0) {
         return true;
-    } else if (evaluateAutocompleteRowAsEmpty(element, 0)) {
+    } else if (TDAR.autocomplete.evaluateAutocompleteRowAsEmpty(element, 0)) {
         return true;
     }
     return false;

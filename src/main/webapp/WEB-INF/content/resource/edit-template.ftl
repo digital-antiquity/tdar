@@ -147,7 +147,14 @@ $(function(){
 	    
 	</div>
     </#if>
-    <@edit.abstractSection "${itemPrefix}" />
+	<div class="well-alt">
+	    <h2>Abstract / Description</h2>
+	    <div id="t-abstract" class="clear"
+	        data-tiplabel="Abstract / Description"
+	        data-tooltipcontent="Short description of the <@resourceTypeLabel />.">
+	            <@s.textarea id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+	    </div>
+	</div>
 
     <#if resource.resourceType.label?lower_case != 'project'>
         <@edit.copyrightHolders 'Primary Copyright Holder' copyrightHolderProxies />
@@ -289,8 +296,8 @@ $(function(){
     }
     
 <#if inheritanceEnabled>
-var project = ${projectAsJson};
-applyInheritance(project, formSelector);
+TDAR.inheritance.project = ${projectAsJson};
+TDAR.inheritance.applyInheritance(formSelector);
 </#if>    
     
     

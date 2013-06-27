@@ -1,8 +1,3 @@
-/**
- * Map rendering / edit support.
- * 
- * Requires:  jquery,  latLongUtil-1.0.js
- */
 TDAR.namespace("auth");
 TDAR.auth = function() {
     "use strict";
@@ -83,7 +78,7 @@ function registerDataTable() {
      
      settings.rowSelectionCallback =  renderSelectedDupes;
      
-     dataTable = registerLookupDataTable(settings);
+     dataTable = TDAR.datatable.registerLookupDataTable(settings);
 }
 
 //show the correct search control based on the value of the 'entity type' dropdown

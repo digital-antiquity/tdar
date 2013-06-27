@@ -98,13 +98,13 @@
 $(document).ready(function(){
     //switch to the correct tab if coming from collection search
 
-    serializeFormState();
+    TDAR.advancedSearch.serializeFormState();
 
     if ($("#autosave").val() !== '') {
         $("#searchGroups").html($("#autosave").val());
         $('.add-another-control').remove();
     }
-    initAdvancedSearch();
+    TDAR.advancedSearch.initAdvancedSearch();
     
     //other view init stuff;
     if($('#large-google-map').length) {
@@ -301,7 +301,7 @@ $(document).ready(function(){
                 </select>
             </div>
         </div>
-        <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="setDefaultTerm" data-groupnum="0"  data-add-another="add another search term">
+        <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="TDAR.advancedSearch.setDefaultTerm" data-groupnum="0"  data-add-another="add another search term">
         
             <#if group_?is_hash >
                 <#list group_.fieldTypes as fieldType >

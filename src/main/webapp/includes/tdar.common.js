@@ -335,15 +335,15 @@ function delegateCreator(id, user, showCreate) {
                     // TODO: these calls re-regester every row after a row is
                     // created,
                     // change so that only the new row is registered.
-                    applyPersonAutoComplete($(".nameAutoComplete", id), false,
+                    TDAR.autocomplete.applyPersonAutoComplete($(".nameAutoComplete", id), false,
                             showCreate);
                 });
         $(id).delegate(".institutionAutoComplete", "focusin", function() {
-            applyInstitutionAutocomplete($(".institution", id), true);
+            TDAR.autocomplete.applyInstitutionAutocomplete($(".institution", id), true);
         });
     } else {
         $(id).delegate(".userAutoComplete", "focusin", function() {
-            applyPersonAutoComplete($(".userAutoComplete", id), true, false);
+            TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete", id), true, false);
         });
     }
 }
@@ -351,7 +351,7 @@ function delegateCreator(id, user, showCreate) {
 // fixme: instead of focusin, look into using a customEvent (e.g. 'rowCreated')
 function delegateAnnotationKey(id, prefix, delim) {
     $(id).delegate("." + prefix + "AutoComplete", "focusin", function() {
-        applyKeywordAutocomplete("." + prefix + "AutoComplete", delim, {}, false);
+        TDAR.autocomplete.applyKeywordAutocomplete("." + prefix + "AutoComplete", delim, {}, false);
     });
 }
 
@@ -360,7 +360,7 @@ function delegateKeyword(id, prefix, type) {
         // TODO: these calls re-regester every row after a row is created,
         // change so that only the new row is registered.
         console.log('focusin:' + this.id);
-        applyKeywordAutocomplete(id + " .keywordAutocomplete", "keyword", {
+        TDAR.autocomplete.applyKeywordAutocomplete(id + " .keywordAutocomplete", "keyword", {
             keywordType : type
         }, true);
     });
@@ -989,13 +989,13 @@ TDAR.common = function() {
         delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
         delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
         delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
-        applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
-        applyInstitutionAutocomplete($('#publisher'), true);
+        TDAR.autocomplete.applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
+        TDAR.autocomplete.applyInstitutionAutocomplete($('#publisher'), true);
         $('#resourceCollectionTable').on(
                 "focus",
                 ".collectionAutoComplete",
                 function() {
-                    applyCollectionAutocomplete($(this), {showCreate:true});
+                    TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate:true});
                 });
 
         // prevent "enter" from submitting

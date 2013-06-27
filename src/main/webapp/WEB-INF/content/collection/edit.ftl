@@ -17,7 +17,7 @@
 	    'use strict';
 	    var form = $("#metadataForm")[0];
 	    TDAR.common.initEditPage(form);
-	    registerResourceCollectionDataTable();
+	    TDAR.datatable.registerResourceCollectionDataTable();
 
 	});
 </script>

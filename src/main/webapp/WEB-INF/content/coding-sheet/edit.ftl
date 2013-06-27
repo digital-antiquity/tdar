@@ -128,7 +128,7 @@
 <#macro localJavascript>
         var $form = $("#metadataForm");
         setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
-        applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
+        TDAR.autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
 
 
     <#if validFileExtensions??>

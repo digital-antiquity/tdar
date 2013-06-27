@@ -13,16 +13,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 </#macro>
 
-<#macro abstractSection itemPrefix="resource">
-<div class="well-alt">
-    <h2>Abstract / Description</h2>
-    <div id="t-abstract" class="clear"
-        data-tiplabel="Abstract / Description"
-        data-tooltipcontent="Short description of the <@resourceTypeLabel />.">
-            <@s.textarea id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
-    </div>
-</div>
-</#macro>
 
 <#macro chooseProjectSection>
     <#local _projectId = 'project.id' />
@@ -1108,8 +1098,7 @@ var datatable_showDescription = ${showDescription?string};
  
 
 $(function() {
-    setupDashboardDataTable();
-    _scrollOnPagination();
+    TDAR.datatable.setupDashboardDataTable();
 });
 
 </script>

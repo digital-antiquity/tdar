@@ -30,7 +30,7 @@ $(function() {
         requestCallback: function() {return {minLookupLength:0,registered:'true',term: $("#dataTable_filter input").val()};}
     };
     
-    var dataTable = registerLookupDataTable(settings);
+    var dataTable = TDAR.datatable.registerLookupDataTable(settings);
 });
 
     

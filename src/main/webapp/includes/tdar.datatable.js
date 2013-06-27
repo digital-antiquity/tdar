@@ -1,8 +1,14 @@
+TDAR.namespace("datatable");
+TDAR.datatable = function() {
+    "use strict";
 
-//FIXME: selectableRows is redundant -- let rowSelectionCallback implicitly indicate that we want selectable rows.
-function registerLookupDataTable(parms) {
+    var self = {};
 
-    //tableSelector, sAjaxSource, sAjaxDataProp,  aoColumns, requestCallback, selectableRows
+
+// FIXME: selectableRows is redundant -- let rowSelectionCallback implicitly indicate that we want selectable rows.
+function _registerLookupDataTable(parms) {
+
+    // tableSelector, sAjaxSource, sAjaxDataProp, aoColumns, requestCallback, selectableRows
     var doNothingCallback = function(){};
     var options = {
             tableSelector: '#dataTable',
@@ -14,7 +20,7 @@ function registerLookupDataTable(parms) {
             "bJQueryUI": false,
             "sScrollY": "350px",
             fnDrawCallback: function(){
-                //if all checkboxes are checked, the 'select all' box should also be checked, and unchecked in all other situations
+                // if all checkboxes are checked, the 'select all' box should also be checked, and unchecked in all other situations
                 if($(":checkbox:not(:checked)", $dataTable).length == 0) {
                     $('#cbCheckAllToggle').prop('checked', true);
                 } else {
@@ -26,7 +32,7 @@ function registerLookupDataTable(parms) {
     $.extend(options, parms);
     var $dataTable = $(options.tableSelector);
     
-    //here is where we will store the selected rows (if caller wants to track that stuff)
+    // here is where we will store the selected rows (if caller wants to track that stuff)
     $dataTable.data('selectedRows', {});
 
     var dataTableOptions = {
@@ -34,8 +40,8 @@ function registerLookupDataTable(parms) {
      		"bScrollCollapse": true,
             "bProcessing": true,
             "bServerSide": true,
-            //"sAjaxDataProp": sAjaxDataProp,
-            //"aoColumns": aoColumns
+            // "sAjaxDataProp": sAjaxDataProp,
+            // "aoColumns": aoColumns
 
             // intercept the server request, and translate the parameters to server
             // format. similarly, take the json returned by the jserver
@@ -43,12 +49,12 @@ function registerLookupDataTable(parms) {
             "fnServerData": function _fnServerData(sSource, aoData, fnCallback) {
                 
                 $.ajax({
-                    traditional: true, //please don't convert my arrays to php arrays.  php is dumb.
+                    traditional: true, // please don't convert my arrays to php arrays. php is dumb.
                     dataType : 'jsonp',
                     url : sSource,
                     data : _convertRequest(aoData, options.aoColumns, options.requestCallback),
                     success : function(_data) {
-                        //intercept data returned by server, translate to client format
+                        // intercept data returned by server, translate to client format
                         
                         var recordInfo = {
                                 iTotalDisplayRecords: _data.status.totalRecords,
@@ -64,12 +70,12 @@ function registerLookupDataTable(parms) {
             }
     };
 
-    //if user wants selectable rows,   render checkbox in the first column (which we assume is an ID field)
+    // if user wants selectable rows, render checkbox in the first column (which we assume is an ID field)
     if(options.selectableRows) {
         options.aoColumns[0].fnRender = fnRenderIdColumn;
         options.aoColumns[0].bUseRendered = false;
         dataTableOptions["fnRowCallback"] =  function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-            //determine whether the user selected this item already (if so check the box)
+            // determine whether the user selected this item already (if so check the box)
             var $cb = $(nRow).find('input[type=checkbox]'); 
             var id = $cb.val();
             if($dataTable.data('selectedRows')[id]) {
@@ -78,50 +84,50 @@ function registerLookupDataTable(parms) {
             return nRow;
         };
         
-        //register datatable checkbox changes.  maintain a hashtable of all of the currently selected items.
-        //call the rowSelectionCallback whenever something changes
+        // register datatable checkbox changes. maintain a hashtable of all of the currently selected items.
+        // call the rowSelectionCallback whenever something changes
         $dataTable.delegate('input[type=checkbox]', 'change', function() {
-            var $elem = $(this); //here 'this' is checkbox 
+            var $elem = $(this); // here 'this' is checkbox
             var id = $elem.val();
             var objRowData = $dataTable.fnGetData($elem.parents('tr')[0]);
             if($elem.prop('checked')) {
-                //get the json data associated w/ the selected row, put it in selectedRows
+                // get the json data associated w/ the selected row, put it in selectedRows
                 $dataTable.data('selectedRows')[id] = objRowData;
                 options.rowSelectionCallback(id, objRowData, true);
             } else {
-                delete $dataTable.data('selectedRows')[id]; //unchecked, so remove from the hashtable
+                delete $dataTable.data('selectedRows')[id]; // unchecked, so remove from the hashtable
                 options.rowSelectionCallback(id, objRowData, false);
             }
             
         });
     }
     
-    //put any user-specified dataTable options that have been specified in the parms into the dataTableOptions
+    // put any user-specified dataTable options that have been specified in the parms into the dataTableOptions
     $.extend(options, dataTableOptions);
 
     $dataTable.dataTable(options);
-    
+    _scrollOnPagination();
     return $dataTable;
 }
 
-//prepare request data to be sent to tdar lookup request.  This function will derive the startpage, recordsPerPage, and sortField
-//any additional data to be sent to server should be returned by requestCallback(sSearch)  where sSearch is the search term entered
-//in the datatable search box (if any).
+// prepare request data to be sent to tdar lookup request. This function will derive the startpage, recordsPerPage, and sortField
+// any additional data to be sent to server should be returned by requestCallback(sSearch) where sSearch is the search term entered
+// in the datatable search box (if any).
 function _convertRequest(aoData, aoColumns, requestCallback) {
     var oData = {};
-    //first convert the request from array of key/val pairs to map<string,string>.
+    // first convert the request from array of key/val pairs to map<string,string>.
     $.each(aoData, function(){
         oData[this.name] = this.value;
     });
 
-    //derive sort column from the field name and reversed status
+    // derive sort column from the field name and reversed status
     var tdarSortOption = aoColumns[oData["iSortCol_0"]].tdarSortOption;
     var sSortReversed = {desc:'true'}[oData["sSortDir_0"]];
     if(sSortReversed) tdarSortOption += '_REVERSE';
     var translatedData = {
             startRecord:oData.iDisplayStart,
             recordsPerPage:oData.iDisplayLength,
-//            minLookupLength:0,
+// minLookupLength:0,
             sortField: tdarSortOption
     };
     
@@ -132,7 +138,7 @@ function _convertRequest(aoData, aoColumns, requestCallback) {
 
 
 function fnRenderIdColumn(oObj) {
-    //in spite of the name, aData is an object corresponding to the current row 
+    // in spite of the name, aData is an object corresponding to the current row
     var id = oObj.aData.id;
     var attrId = "cbEntityId_" + id;
     return '<input type="checkbox" id="' + attrId + '" value="' + id + '" />' + 
@@ -158,7 +164,7 @@ function drawToolbar(projId) {
 }
 
 function fnRenderTitle(oObj) {
-    //in spite of name, aData is an object containing the resource record for this row
+    // in spite of name, aData is an object containing the resource record for this row
     var objResource = oObj.aData;
     var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + htmlEncode(objResource.title) + '</a>';
     html += ' (ID: ' + objResource.id 
@@ -173,9 +179,9 @@ function fnRenderTitle(oObj) {
 }
 
 
-function setupDashboardDataTable() {
+function _setupDashboardDataTable() {
     // set the project selector to the last project viewed from this page
-    // if not found, then select the first item 
+    // if not found, then select the first item
     var prevSelected = $.cookie("tdar_datatable_selected_project");
     if (prevSelected != null) {
         var elem = $('#project-selector option[value=' + prevSelected + ']');
@@ -202,11 +208,11 @@ function setupDashboardDataTable() {
     $.extend( $.fn.dataTableExt.oStdClasses, {
         "sWrapper": "dataTables_wrapper form-inline"
     } );
-//        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
+// sDom:'<"datatabletop"ilrp>t<>', //omit the search box
         
       var aoColumns_ = [{ "mDataProp": "title",  sWidth: '65%', fnRender: fnRenderTitle, bUseRendered:false ,"bSortable":false},
           { "mDataProp": "resourceTypeLabel",  sWidth: '15%',"bSortable":false }];
-          //make id the first column when datatable is selectable
+          // make id the first column when datatable is selectable
           if (datatable_isSelectable) {
               aoColumns_.unshift({ "mDataProp": "id", tdarSortOption: "ID", sWidth:'5em' ,"bSortable":false});
           };
@@ -216,8 +222,8 @@ function setupDashboardDataTable() {
         "bLengthChange": true,
         "bFilter": false,
         aoColumns: aoColumns_,
-        //"sDom": "<'row'<'span9'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",  
-        "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>",  //no text filter!
+        // "sDom": "<'row'<'span9'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+        "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>",  // no text filter!
         sPaginationType:"bootstrap",
         sAjaxDataProp: 'resources',
         requestCallback: function(searchBoxContents){
@@ -277,11 +283,13 @@ function setupDashboardDataTable() {
     });
     
     $("#query").bindWithDelay("keyup", function() {$("#resource_datatable").dataTable().fnDraw();} ,500);
+
+    _scrollOnPagination();
 }
 
 
-function registerResourceCollectionDataTable() {
-    //if user is editing existing collection, gather the hidden elements and put them in the 'seleted rows' object
+function _registerResourceCollectionDataTable() {
+    // if user is editing existing collection, gather the hidden elements and put them in the 'seleted rows' object
     var selectedRows = {};
     $.each($('input', '#divSelectedResources'), function(ignored, item){
         var elem = this;
@@ -290,22 +298,23 @@ function registerResourceCollectionDataTable() {
     });
     $dataTable.data('selectedRows', selectedRows);
     
-    //hide the selected items table if server hasn't prepopulated it
+    // hide the selected items table if server hasn't prepopulated it
     var $table = $('#tblCollectionResources');
     if($table.find('tr').length==1) {
         $table.hide();
     }
+    _scrollOnPagination();
 }
 
 
 function _rowSelected(obj) {
 
-    //first, add the hidden input tag to the dom
+    // first, add the hidden input tag to the dom
     var tag = '<input type="hidden" name="resources.id" value="' + obj.id + '" id="hdnResourceId' + obj.id + '"/>';
     console.log("adding selected resource:" + tag);
     $('#divSelectedResources').append(tag);
 
-    //next, add a new row to the 'selected items' table.
+    // next, add a new row to the 'selected items' table.
     var $table = $('#tblCollectionResources');
     var $tbody = $('tbody', $table);
     var resourceTag = '';
@@ -326,7 +335,7 @@ function _rowSelected(obj) {
        resourceTag = resourceTag.replace(/:status/g, obj.status);
        
        $tbody.append(resourceTag);
-       //$table.closest('div').show();
+       // $table.closest('div').show();
        $table.show();
 }
 
@@ -336,30 +345,30 @@ function _rowUnselected(obj) {
     
     var $row = $('#dataTableRow_' + obj.id);
     var $table = $row.closest('table');
-    //var $div = $row.closest('div');
+    // var $div = $row.closest('div');
     $row.remove();
-    if($table.find('tr').length == 1) $table.hide(); //FIXME: DRY
+    if($table.find('tr').length == 1) $table.hide(); // FIXME: DRY
 
 }
 
 function _removeResourceClicked(id, elem) {
-    //delete the element from the selectedrows structure and remove the hidden input tag
+    // delete the element from the selectedrows structure and remove the hidden input tag
     delete $dataTable.data('selectedRows')[id];
     $('#hdnResourceId' + id).remove();
     
-    //now delete the row from the table
+    // now delete the row from the table
     var $elem = $(elem);
     var $tr = $elem.closest('tr');  
     var $div = $elem.closest('div');
     $tr.remove();
     
-    //if the table is empty,  hide the section
-    if($('tr', $div).length == 1) { //one header row
-        //$div.hide();
+    // if the table is empty, hide the section
+    if($('tr', $div).length == 1) { // one header row
+        // $div.hide();
         $table.hide();
     }
     
-    //if the datatable is on a page that shows the corresponding checkbox,  clear the checkbox it
+    // if the datatable is on a page that shows the corresponding checkbox, clear the checkbox it
     $('#cbEntityId_' + id, $dataTable).prop('checked', false);
     
 }
@@ -368,3 +377,10 @@ function _removeResourceClicked(id, elem) {
 function _scrollOnPagination() {
     $(".dataTables_paginate a").click(function(){$(".dataTables_scrollBody").animate( {scrollTop:0 });return true;});
 }
+
+return {
+    registerLookupDataTable:_registerLookupDataTable,
+    setupDashboardDataTable:_setupDashboardDataTable,
+    registerResourceCollectionDataTable:_registerResourceCollectionDataTable
+};
+}();
