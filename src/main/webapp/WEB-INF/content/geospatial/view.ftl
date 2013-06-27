@@ -17,7 +17,7 @@
 
   <#if resource.currentnessUpdateNotes??>
 	  <p><strong>Currentness &amp; Update Notes</strong></p>
-	  <p>${resource.currentnessUpdateNotes}</p>
+  <p>${resource.currentnessUpdateNotes}</p>
   </#if>
 	
 </#macro>

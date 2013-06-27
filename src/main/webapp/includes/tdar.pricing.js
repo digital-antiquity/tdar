@@ -50,7 +50,7 @@ var _initPricing = function(form, ajaxUrl) {
           }
           if (subtotal == defaultsubtotal) {
               $("#price").html("0.00");
-              var line = sprintf("<tr><td colspan=4>{0}</td></tr>", "Please enter a number of files and MB above.");
+              var line = TDAR.common.sprintf("<tr><td colspan=4>{0}</td></tr>", "Please enter a number of files and MB above.");
               $est.append(line);
 
         	  
@@ -64,13 +64,13 @@ var _initPricing = function(form, ajaxUrl) {
           if(item.parts && item.parts.length > 0) {
               for (var j=0; j < item.parts.length; j++) {
                   var part = item.parts[j];
-                  var line = sprintf("<tr><td>{0}</td><td>{1}</td><td>{2} MB</td><td>${3}</td></tr>", part.name, part.numFiles * part.quantity, part.numMb  * part.quantity, part.subtotal);
+                  var line = TDAR.common.sprintf("<tr><td>{0}</td><td>{1}</td><td>{2} MB</td><td>${3}</td></tr>", part.name, part.numFiles * part.quantity, part.numMb  * part.quantity, part.subtotal);
                   total_files += part.numFiles * part.quantity;
                   total_mb += part.numMb * part.quantity;
                   $est.append(line);
               }
           }
-          var line = sprintf("<tr class='table-row-separator-above'><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1} MB</td><td class='red'>${2}</td></tr>", total_files, total_mb, subtotal);
+          var line = TDAR.common.sprintf("<tr class='table-row-separator-above'><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1} MB</td><td class='red'>${2}</td></tr>", total_files, total_mb, subtotal);
           $est.append(line);
           }
       },

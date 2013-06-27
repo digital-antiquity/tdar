@@ -365,7 +365,7 @@ function _applyInheritance(formSelector) {
                 waitMessage: "Loading project information"
             });
         } else {
-            TDAR.inheritance.project = getBlankProject();
+            TDAR.inheritance.project = _getBlankProject();
             TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);
             _updateInheritableSections(TDAR.inheritance.json, formId);
         }
@@ -389,6 +389,36 @@ function _applyInheritance(formSelector) {
     _projectChangedCallback(TDAR.inheritance.project);
 }
 
+//return skeleton project
+function _getBlankProject() {
+    var skeleton = {
+        "approvedCultureKeywords" : [],
+        "approvedSiteTypeKeywords" : [],
+        "cultureKeywords" : [],
+        "dateCreated" : {},
+        "description" : null,
+        "firstLatitudeLongitudeBox" : null,
+        "geographicKeywords" : [],
+        "id" : null,
+        "investigationTypes" : [],
+        "materialKeywords" : [],
+        "otherKeywords" : [],
+        "resourceType" : null,
+        "siteNameKeywords" : [],
+        "siteTypeKeywords" : [],
+        "submitter" : null,
+        "temporalKeywords" : [],
+        "coverageDates" : [],
+        "title" : null,
+        "resourceNotes" : [],
+        "relatedComparativeCollections" : [],
+        "resourceAnnotations" : [],
+        "uncontrolledCultureKeywords" : [],
+        "uncontrolledSiteTypeKeywords" : []
+    };
+    return skeleton;
+}
+
 
 //update the project json variable and update the inherited sections
 function _projectChangedCallback(data) {
@@ -396,9 +426,9 @@ function _projectChangedCallback(data) {
     
     // if user picked blank option, then clear the sections
     if (!TDAR.inheritance.project.id) {
-        TDAR.inheritance.project = getBlankProject();
+        TDAR.inheritance.project = _getBlankProject();
     } else  if (TDAR.inheritance.project.resourceType === 'INDEPENDENT_RESOURCES_PROJECT') {
-        TDAR.inheritance.project = getBlankProject();
+        TDAR.inheritance.project = _getBlankProject();
     } 
 
     TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);

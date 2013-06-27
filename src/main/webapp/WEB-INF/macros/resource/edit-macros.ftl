@@ -414,7 +414,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class="controls controls-row">
         <div id='categoryDivId' class="span3">
         <@s.select theme="tdar"  id='categoryId' name='categoryId' 
-            onchange='changeSubcategory("#categoryId","#subcategoryId")' autocompleteName="sortCategoryId"
+            onchange='TDAR.common.changeSubcategory("#categoryId","#subcategoryId")' autocompleteName="sortCategoryId"
             listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' cssClass="input-block-level" />
         </div>
         <div id='subcategoryDivId' class="span3">
@@ -452,7 +452,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class="control-group">
         <label class='control-label' for='inputMethodId'>Submit as</label>
         <div class="controls">
-            <select id='inputMethodId' name='fileInputMethod' onchange='refreshInputDisplay()' class="input-xxlarge">
+            <select id='inputMethodId' name='fileInputMethod' onchange='TDAR.common.refreshInputDisplay()' class="input-xxlarge">
                 <option value='file' <#if !usetext>selected="selected"</#if>>${uploadOptionText}</option>
                 <option value='text' <#if usetext>selected="selected"</#if>>${manualEntryText}</option>
             </select>

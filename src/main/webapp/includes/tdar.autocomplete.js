@@ -380,7 +380,7 @@ function _applyResourceAutocomplete($elements, type) {
         }
         //double-encode on custom render
         return $("<li></li>").data("item.autocomplete", item).append(
-                "<a  title=\"" + htmlDecode(description) + "\">" + htmlEncode(htmlEncode(item.value)) + link + "</a>").appendTo(ul);
+                "<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + htmlEncode(htmlEncode(item.value)) + link + "</a>").appendTo(ul);
     };
 
     _applyGenericAutocomplete($elements, options);

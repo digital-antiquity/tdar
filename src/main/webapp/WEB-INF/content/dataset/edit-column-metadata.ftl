@@ -176,7 +176,7 @@
         <div class="controls">
             <@s.select id='categoryVariableId_${column_index}' 
                     name='dataTableColumns[${column_index}].categoryVariable.id' 
-                    onchange='changeSubcategory("#categoryVariableId_${column_index}","#subcategoryId_${column_index}")'
+                    onchange='TDAR.common.changeSubcategory("#categoryVariableId_${column_index}","#subcategoryId_${column_index}")'
                     headerKey="-1"
                     headerValue=""
                     cssClass="categorySelect span3"
@@ -369,7 +369,7 @@ $(document).ready(function() {
         cache: false 
     });
      
-    applyWatermarks(document);
+    TDAR.common.applyWatermarks(document);
  
       
     $('#table_select').change(function() {

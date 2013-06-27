@@ -88,7 +88,7 @@
 </#macro>
 
 <#macro localJavascript>
-setupDocumentEditForm();
+TDAR.common.setupDocumentEditForm();
 </#macro>
 
 </#escape>

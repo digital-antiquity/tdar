@@ -67,11 +67,11 @@
 $(document).ready(function() {
     'use strict';
     TDAR.common.initEditPage($('#MetadataForm')[0]);
-    $(".transactionType[type=radio]").click(function() {switchType(this,'#MetadataForm');});
+    $(".transactionType[type=radio]").click(function() {TDAR.common.switchType(this,'#MetadataForm');});
    if (!$(".transactionType[type=radio]:checked").length) {
     $(".transactionType[type=radio]").first().click();
    }
-   switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
+   TDAR.common.switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
    
    $("#MetadataForm").submit(function() {
    	$("#MetadataForm_invoice_billingPhone").val($("#MetadataForm_invoice_billingPhone").val().replace(/([^\d]+)/ig,"") );

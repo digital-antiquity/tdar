@@ -67,7 +67,7 @@ Core
 </#macro>
 
 <#macro localJavascript>
-    setupSupportingResourceForm(${resource.getTotalNumberOfFiles()?c}, "ontology");
+    TDAR.common.setupSupportingResourceForm(${resource.getTotalNumberOfFiles()?c}, "ontology");
     $('#fileInputTextArea').tabby();
 
     <#if validFileExtensions??>

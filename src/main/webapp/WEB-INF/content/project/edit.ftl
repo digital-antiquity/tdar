@@ -25,10 +25,5 @@
 		     list='%{ResultsOrientations}'  listValue='label'  title="Display as" />
 	</#macro>
 	
-	<#macro localJavascript>
-	    $(function(){
-	        $("#collapse").click(toggleDiv);
-	    });
-	</#macro>
 
 </#escape>

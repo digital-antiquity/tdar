@@ -53,7 +53,7 @@
                     
                         
                     <a class="btn btn-small"target="adhoc_1" 
-                        onclick="setAdhocTarget(this, '#divOntology');" 
+                        onclick="TDAR.common.setAdhocTarget(this, '#divOntology');" 
                         href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create An Ontology</a>
                 </div>
              </div>
@@ -127,7 +127,7 @@
 
 <#macro localJavascript>
         var $form = $("#metadataForm");
-        setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
+        TDAR.common.setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
         TDAR.autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
 
 

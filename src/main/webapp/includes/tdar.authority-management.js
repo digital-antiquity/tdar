@@ -176,7 +176,7 @@ function _initAuthTable() {
     if (selEntityType != undefined) {
         searchControls = $('.searchControl');
         selEntityType.change(_updateSearchControl).change();
-        applyWatermarks(document);
+        TDAR.common.applyWatermarks(document);
         $('span.button').button().click(_clearDupeList);
     }
 

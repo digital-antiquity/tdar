@@ -106,12 +106,12 @@ function _initAdvancedSearch() {
 // NOTE: if all you want to do is register an event handler, your best bet is to
 // do so via jQuery.on().
 function sectionLoaded(context) {
-    applyWatermarks(context);
+    TDAR.common.applyWatermarks(context);
 
     // HACK: registering datetype fields if any were created. We should just
     // make a smarter validator rule
     if ($('.coverageDateType', context).length) {
-        prepareDateFields($('.coverageDateType', context));
+        TDAR.common.prepareDateFields($('.coverageDateType', context));
     }
 
     // register any treeviews

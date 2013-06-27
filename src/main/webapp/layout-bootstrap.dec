@@ -288,7 +288,7 @@ ${_stacktrace?html}
               $('.welcome-drop').hide();
             });
         
-	        applyWatermarks($('form.searchheader, form[name=searchheader]'));
+	        TDAR.common.applyWatermarks($('form.searchheader, form[name=searchheader]'));
         });
         </script>
     <@header.scripts production />

@@ -160,7 +160,7 @@ TDAR.repeatrow = function() {
         $("select", $element).find('option:first').attr("selected", "selected");
         
         // allow html5 polyfills for watermarks to be added.
-        applyWatermarks($element);
+        TDAR.common.applyWatermarks($element);
     };
     
     

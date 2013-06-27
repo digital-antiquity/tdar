@@ -173,7 +173,7 @@ function fnRenderTitle(oObj) {
     }
     html += ')';
     if (datatable_showDescription) {
-        html += '<br /> <p>' + htmlEncode(elipsify(objResource.description,80)) + '</p>';
+        html += '<br /> <p>' + htmlEncode(TDAR.common.elipsify(objResource.description,80)) + '</p>';
     }; 
     return html;
 }

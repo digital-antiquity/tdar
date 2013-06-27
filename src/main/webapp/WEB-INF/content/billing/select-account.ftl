@@ -29,7 +29,7 @@
 $(document).ready(function(){
     'use strict';
     TDAR.common.initEditPage($('#MetadataForm')[0]);
-    delegateCreator('#accessRightsRecords', true, false);
+    TDAR.common.delegateCreator('#accessRightsRecords', true, false);
 });
 </script>
 

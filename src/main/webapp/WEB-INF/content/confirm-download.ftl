@@ -22,7 +22,7 @@
 
 <script>
     var _register = function() {
-        registerDownload('<@s.url value="${download}"/>', '${informationResourceId?c}'); 
+        TDAR.common.registerDownload('<@s.url value="${download}"/>', '${informationResourceId?c}'); 
     };
     
     var _autoDownload = function() {

@@ -173,7 +173,7 @@ var data = [];
 		<tr>
 			<td></td>
 	        <td>
-          <a href="<@s.url value='/filestore/${vers.id?c}/get'/>" onClick="registerDownload('<@s.url value='/filestore/${vers.id?c}/get'/>', '${id?c}')" >${vers.filename}</a></td>
+          <a href="<@s.url value='/filestore/${vers.id?c}/get'/>" onClick="TDAR.common.registerDownload('<@s.url value='/filestore/${vers.id?c}/get'/>', '${id?c}')" >${vers.filename}</a></td>
 	        <td>${vers.fileVersionType} </td>
 	        <td>${vers.version}</td>
 	        <td></td>

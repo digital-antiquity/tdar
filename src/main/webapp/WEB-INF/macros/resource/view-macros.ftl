@@ -86,7 +86,7 @@ View freemarker macros
             <#assign version=version.latestUploadedVersion />        
          </#if>
         <#if (version.viewable)>
-          <a href="<@s.url value='/filestore/${version.id?c}/get'/>" onClick="registerDownload('<@s.url value='/filestore/${version.id?c}/get'/>', '${id?c}')" 
+          <a href="<@s.url value='/filestore/${version.id?c}/get'/>" onClick="TDAR.common.registerDownload('<@s.url value='/filestore/${version.id?c}/get'/>', '${id?c}')" 
     <#if resource.resourceType == 'IMAGE'>target='_blank'</#if>
           title="${version.filename?html}">
               <@common.truncate version.filename 65 />
@@ -102,7 +102,7 @@ View freemarker macros
 </#macro>
 
 <#macro createArchiveFileLink resource newline=false >
-          <a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="registerDownload('/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}', '${id?c}')" 
+          <a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="TDAR.common.registerDownload('/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}', '${id?c}')" 
           title="download all as zip">Download All</a>
          <#if resource.hasConfidentialFiles() >
             <span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
@@ -771,7 +771,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 <#macro datatableChildJavascript>
     if(window.opener && window.opener.TDAR.common.adhocTarget)  {
-        window.opener.populateTarget({
+        window.opener.TDAR.common.populateTarget({
             id:${resource.id?c},
             title:"${resource.title?js_string}"
        });

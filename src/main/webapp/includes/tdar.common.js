@@ -80,589 +80,6 @@ jQuery.extend({
     }
 });
 
-function getFunctionBody(func) {
-    var m = func.toString().match(/\{([\s\S]*)\}/m)[1];
-    return m;
-}
-
-// replace last occurance of str in attribute with rep
-function replaceAttribute(elem, attrName, str, rep) {
-    if (!$(elem).attr(attrName))
-        return;
-    var oldval = $(elem).attr(attrName);
-    if (typeof oldval == "function") {
-        oldval = getFunctionBody(oldval);
-        // console.debug("converting function to string:" + oldval );
-
-    }
-    if (oldval.indexOf(str) != -1) {
-        var beginPart = oldval.substring(0, oldval.lastIndexOf(str));
-        var endPart = oldval.substring(oldval.lastIndexOf(str) + str.length,
-                oldval.length);
-        var newval = beginPart + rep + endPart;
-        $(elem).attr(attrName, newval);
-        // console.debug('attr:' + attrName + ' oldval:' + oldval + ' newval:' +
-        // newval);
-    }
-}
-
-function refreshInputDisplay() {
-    var selectedInputMethod = $('#inputMethodId').val();
-    var showUploadDiv = (selectedInputMethod == 'file');
-    $('#uploadFileDiv').toggle(showUploadDiv);
-    $('#textInputDiv').toggle(!showUploadDiv);
-}
-
-function personAdded(id) {
-//    console.log("person added " + id);
-    $(".creatorInstitution", "#" + id).hide();
-    $(".creatorPerson", "#" + id).show();
-}
-
-function institutionAdded(id) {
-//    console.log("institution added " + id);
-    // hide the person record
-    $(".creatorPerson", "#" + id).hide();
-    $(".creatorInstitution", "#" + id).show();
-}
-
-// expand those nodes where children are selected
-function switchLabel(field, type) {
-    var label = "#" + $(field).attr('id') + '-label';
-    if ($(field).attr(type) != undefined && $(label) != undefined) {
-        $(label).text($(field).attr(type));
-    }
-}
-
-
-
-
-
-// called whenever date type changes
-//FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be 
-//       used via $.validator.addClassRules.  The benefit would be that we don't need to register these registration rules each time a date
-//       gets added to the dom.
-function prepareDateFields(selectElem) {
-    var startElem = $(selectElem).siblings('.coverageStartYear');
-    var endElem = $(selectElem).siblings('.coverageEndYear');
-    $(startElem).rules("remove");
-    $(endElem).rules("remove");
-    switch ($(selectElem).val()) {
-    case "CALENDAR_DATE":
-        $(startElem).rules("add", {
-            range : [ -99900, 2100 ],
-            lessThanEqual : [endElem,"Calender Start", "Calendar End"],
-            required : function() {
-                return $(endElem).val() != "";
-            }
-        });
-        $(endElem).rules("add", {
-            range : [ -99900, 2100 ],
-            required : function() {
-                return $(startElem).val() != "";
-            }
-        });
-        break;
-    case "RADIOCARBON_DATE":
-        $(startElem).rules("add", {
-            range : [ 0, 100000 ],
-            greaterThanEqual : [endElem, "Radiocarbon Start", "Radiocarbon End"],
-            required : function() {
-                return $(endElem).val() != "";
-            }
-        });
-        $(endElem).rules("add", {
-            range : [ 0, 100000 ],
-            required : function() {
-                return $(startElem).val() != "";
-            }
-        });
-        break;
-    case "NONE":
-        $(startElem).rules("add", {
-        	blankCoverageDate: {"start":startElem, "end":endElem}
-        });
-        break;
-    }
-}
-
-/*
- * AJAX BOOKMARKING FUNCTIONS
- */
-
-$(document).ready(function() {
-	$(document).delegate(".bookmark-link","click",applyBookmarks);
-});
-
-function applyBookmarks() {
-	var $this = $(this);
-	var resourceId = $this.attr("resource-id");
-	var state = $this.attr("bookmark-state");
-	$waitingElem = $("<img src='" + getURI('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
-	$this.prepend($waitingElem);
-	var $icon = $(".bookmark-icon",$this);
-	$icon.hide();
-	console.log(resourceId + ": " + state);
-	var oldclass = "tdar-icon-" + state;
-	var newtext = "un-bookmark";
-	var newstate = "bookmarked";
-	var action = "bookmarkAjax";
-	var newUrl = "/resource/removeBookmark?resourceId=" + resourceId;
-	
-	if (state == 'bookmarked') {
-		newtext = "bookmark";
-		newstate = "bookmark";
-		action = "removeBookmarkAjax";
-		newUrl = "/resource/bookmark?resourceId=" + resourceId;
-	}
-	var newclass = "tdar-icon-" + newstate;
-	
-    $.getJSON(getBaseURI() + "resource/"+action+"?resourceId=" + resourceId,
-            function(data) {
-                if (data.success) {
-                	$(".bookmark-label",$this).text(newtext);
-                	$icon.removeClass(oldclass).addClass(newclass).show();
-                	$this.attr("bookmark-state",newstate);
-                	$this.attr("href",newUrl);
-                	$(".waiting",$this).remove();
-                }
-            });
-	
-	return false;
-}
-
-//apply watermark input tags in context with watermark attribute.  'context' can be any valid argument to jQuery(selector[, context])
-function applyWatermarks(context) {
-    if(!Modernizr.input.placeholder){
-        $("input[placeholder]", context).each(function() {
-            //todo: see if its any faster to do direct call to attr, e.g. this.attributes["watermark"].value
-            $(this).watermark($(this).attr("placeholder"));
-        });
-    }
-}
-
-
-// show the access rights reminder if any files are marked as confidential or if
-// the resource is embargoed
-function showAccessRightsLinkIfNeeded() {
-    if ($(".fileProxyConfidential").filter(function(index) {return $(this).val() != "PUBLIC"; }).length > 0) {
-        $('#divConfidentialAccessReminder').removeClass("hidden");
-    } else {
-        $('#divConfidentialAccessReminder').addClass("hidden");
-    }
-}
-
-
-
-function cancelSearchRequest($elem) {
-
-}
-
-function htmlEncode(value) {
-    if (value == undefined || value == '')
-        return "";
-    return $('<div/>').text(value).html();
-}
-
-function htmlDecode(value) {
-    if (value == undefined || value == '')
-        return "";
-    return $('<div/>').html(value).text();
-}
-
-// return skeleton project
-function getBlankProject() {
-    var skeleton = {
-        "approvedCultureKeywords" : [],
-        "approvedSiteTypeKeywords" : [],
-        "cultureKeywords" : [],
-        "dateCreated" : {},
-        "description" : null,
-        "firstLatitudeLongitudeBox" : null,
-        "geographicKeywords" : [],
-        "id" : null,
-        "investigationTypes" : [],
-        "materialKeywords" : [],
-        "otherKeywords" : [],
-        "resourceType" : null,
-        "siteNameKeywords" : [],
-        "siteTypeKeywords" : [],
-        "submitter" : null,
-        "temporalKeywords" : [],
-        "coverageDates" : [],
-        "title" : null,
-        "resourceNotes" : [],
-        "relatedComparativeCollections" : [],
-        "resourceAnnotations" : [],
-        "uncontrolledCultureKeywords" : [],
-        "uncontrolledSiteTypeKeywords" : []
-    };
-    return skeleton;
-}
-
-
-// http://stackoverflow.com/questions/1038746/equivalent-of-string-format-in-jquery
-function sprintf() {
-    var s = arguments[0];
-    for ( var i = 0; i < arguments.length - 1; i++) {
-        var reg = new RegExp("\\{" + i + "\\}", "gm");
-        s = s.replace(reg, arguments[i + 1]);
-    }
-    return s;
-}
-
-/**
- * Testing Support
- */
-
-function initializeView() {
-    console.debug('initialize view');
-    var maps = $(".google-map, #large-google-map");
-    if(maps.length) {
-        TDAR.maps.initMapApi();
-        maps.each(function() {
-            TDAR.maps.setupMap(this, this);
-        });
-    }
-}
-
-function delegateCreator(id, user, showCreate) {
-    if (user == undefined || user == false) {
-        $(id).delegate(
-                ".nameAutoComplete",
-                "focusin",
-                function() {
-                    // TODO: these calls re-regester every row after a row is
-                    // created,
-                    // change so that only the new row is registered.
-                    TDAR.autocomplete.applyPersonAutoComplete($(".nameAutoComplete", id), false,
-                            showCreate);
-                });
-        $(id).delegate(".institutionAutoComplete", "focusin", function() {
-            TDAR.autocomplete.applyInstitutionAutocomplete($(".institution", id), true);
-        });
-    } else {
-        $(id).delegate(".userAutoComplete", "focusin", function() {
-            TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete", id), true, false);
-        });
-    }
-}
-
-// fixme: instead of focusin, look into using a customEvent (e.g. 'rowCreated')
-function delegateAnnotationKey(id, prefix, delim) {
-    $(id).delegate("." + prefix + "AutoComplete", "focusin", function() {
-        TDAR.autocomplete.applyKeywordAutocomplete("." + prefix + "AutoComplete", delim, {}, false);
-    });
-}
-
-function delegateKeyword(id, prefix, type) {
-    $(id).delegate(".keywordAutocomplete", "focusin", function() {
-        // TODO: these calls re-regester every row after a row is created,
-        // change so that only the new row is registered.
-        console.log('focusin:' + this.id);
-        TDAR.autocomplete.applyKeywordAutocomplete(id + " .keywordAutocomplete", "keyword", {
-            keywordType : type
-        }, true);
-    });
-
-}
-
-function sessionTimeoutWarning() {
-    // I RUN ONCE A MINUTE
-    // sessionTimeout in seconds
-    currentTime += 60;
-    var remainingTime = sessionTimeout - currentTime;
-    if (remainingTime == 300) {
-        var dialog = $('<div id=timeoutDialog></div>')
-                .html(
-                        "<B>Warning!</B><br/>Your session will timeout in 5 minutes, please save the document you're currently working on")
-                .dialog({
-                    modal : true,
-                    title : "Session Timeout Warning",
-                    closeText : "Ok",
-                    buttons : {
-                        "Ok" : function() {
-                            $(this).dialog("close");
-                        }
-                    }
-                });
-    }
-    if ($("#timeoutDialog").length != 0 && remainingTime <= 0) {
-        $("#timeoutDialog")
-                .html(
-                        "<B>WARNING!</B><BR>Your Session has timed out, any pending changes will not be saved");
-    } else {
-        setTimeout(sessionTimeoutWarning, 60000);
-    }
-}
-/*
-function getBrowserMajorVersion() {
-    var browserMajorVersion = 1;
-    try {
-        browserMajorVersion = parseInt($.browser.version);
-    } catch (e) {
-    }
-    return browserMajorVersion;
-}
-*/
-function setupDocumentEditForm() {
-    $(".doctype input[type=radio]").click(function() {switchDocType(this);});
-    switchDocType($(".doctype input[type=radio]:checked"));
-}
-
-
-function switchType(radio, container) {
-    var type = $(radio).val().toLowerCase();
-
-    console.debug('switchType:start:' + type);
-    var $container = $(container);
-    $(".typeToggle",$container).hide();
-    $($("." + type) ,$container).show();
-
-}
-
-
-
-
-function switchDocType(el) {
-    var doctype = $(el).val().toLowerCase();
-
-    console.debug('switchType:start:' + doctype);
-    var $citeInfo = $("#citationInformation");
-    $(".doctypeToggle",$citeInfo).hide();
-    $($("." + doctype) ,$citeInfo).show();
-
-    switchLabel($("#publisher-hints"), doctype);
-    switchLabel($("#publisherLocation-hints"), doctype);
-
-}
-
-function switchLabel(field, type) {
-    // console.debug('switchLabel('+field+','+type+')');
-    $("label",field).text(field.attr(type));
-}
-
-function toggleDiv() {
-    $(this).next().slideToggle('slow');
-    $(this).find("span.ui-icon-triangle-1-e").switchClass(
-            "ui-icon-triangle-1-e", "ui-icon-triangle-1-s", 700);
-    $(this).find("span.ui-icon-triangle-1-s").switchClass(
-            "ui-icon-triangle-1-s", "ui-icon-triangle-1-e", 700);
-}
-
-function setupSupportingResourceForm(totalNumberOfFiles, rtype) {
-    // the ontology textarea or file upload field is required whenever it is
-    // visible AND
-    // no ontology rules are already present from a previous upload
-
-    $('#fileInputTextArea').rules(
-            "add",
-            {
-                required : {
-                    depends : isFieldRequired
-                },
-                messages : {
-                    required : "No " + rtype + " data entered. Please enter "
-                            + rtype + " manually or upload a file."
-                }
-            });
-
-    $('#fileUploadField').rules(
-            "add",
-            {
-                required : {
-                    depends : isFieldRequired
-                },
-                messages : {
-                    required : "No " + rtype
-                            + " file selected. Please select a file or enter "
-                            + rtype + " data manually."
-                }
-            });
-
-    function isFieldRequired(elem) {
-        var noRulesExist = !((totalNumberOfFiles > 0)
-                || ($("#fileInputTextArea").val().length > 0) || ($(
-                "#fileUploadField").val().length > 0));
-        return noRulesExist && $(elem).is(":visible");
-    }
-
-    refreshInputDisplay();
-}
-
-function makeMap(json, mapId, type, value_) {
-    var mapString = "";
-
-    if (!json.chartshape) {
-        alert("No map elements");
-        return;
-    }
-    mapString = "<map name='" + mapId + "'>";
-    var area = false;
-    var chart = json.chartshape;
-    var values = value_.split("|");
-    for ( var i = 0; i < chart.length; i++) {
-        area = chart[i];
-        mapString += "\n  <area name='" + area.name + "' shape='" + area.type
-                + "' coords='" + area.coords.join(",");
-        var val = values[i];
-
-        // FIXME: I don't always consistently work
-        // var offset = values.length - 1;
-        // if (val == undefined && i >= offset && values[i-offset] != undefined)
-        // {
-        // val = values[(i-offset)];
-        // }
-        // console.log(values.length + ' ' + i + "{"+ (i -offset)+ "}" + ' ' +
-        // values[(i-offset)]);
-        if (val != undefined) {
-            mapString += "' href='" + getURI("search/results") + "?" + type
-                    + "=" + val + "&useSubmitterContext=true'";
-        }
-        mapString += " title='" + val + "'>";
-        ;
-    }
-    mapString += "\n</map>";
-    $("#" + mapId + "-img").after(mapString);
-}
-
-function registerDownload(url, tdarId) {
-    if (typeof _gaq == 'undefined')
-        return;
-    var command = [ '_trackEvent', 'Download', url ];
-    if (tdarId)
-        command.push(tdarId);
-    var errcount = _gaq.push(command);
-    if (errcount) {
-        console.warn("_trackEvent command failed for" + url);
-    }
-}
-
-function changeSubcategory(categoryIdSelect, subCategoryIdSelect) {
-    var $categoryIdSelect = $(categoryIdSelect);
-    var $subCategoryIdSelect = $(subCategoryIdSelect);
-    $categoryIdSelect.siblings(".waitingSpinner").show();
-    $.get(getBaseURI() + "resource/ajax/column-metadata-subcategories", {
-        "categoryVariableId" : $categoryIdSelect.val()
-    }, function(data_, textStatus) {
-        var data = jQuery.parseJSON(data_);
-
-        var result = "";
-        for ( var i = 0; i < data.length; i++) {
-            result += "<option value=\"" + data[i]['value'] + "\">"
-                    + data[i]['label'] + "</option>\n";
-        }
-
-        $categoryIdSelect.siblings(".waitingSpinner").hide();
-        $subCategoryIdSelect.html(result);
-    });
-}
-
-//indicate the root context  to use when populateTarget is called. 
-function setAdhocTarget(elem, selector) {
-    var _selector = selector;
-    if (!_selector) selector = "div";
-    var adhocTarget = $(elem).closest(_selector);
-    $('body').data("adhocTarget", adhocTarget);
-    //expose target for use by child window
-    TDAR.common.adhocTarget = adhocTarget;
-    //return false; 
-}
-
-
-function showTooltip(x, y, contents) {
-    $('<div id="flottooltip">' + contents + '</div>').css({
-        position : 'absolute',
-        display : 'none',
-        top : y + 30,
-        left : x + 5
-    }).appendTo("body").fadeIn(200);
-}
-
-var previousPoint = null;
-
-function dynamicSort(property, caseSensitive) {
-    return function(a, b) {
-        if (caseSensitive == undefined || caseSensitive == false) {
-            return (a[property].toLowerCase() < b[property].toLowerCase()) ? -1
-                    : (a[property].toLowerCase() > b[property].toLowerCase()) ? 1
-                            : 0;
-        } else {
-            return (a[property] < b[property]) ? -1
-                    : (a[property] > b[property]) ? 1 : 0;
-        }
-    };
-}
-
-function sortFilesAlphabetically() {
-    var rowList = new Array();
-    var $table = $("#files tbody");
-    $("tr", $table).each(function() {
-        var row = {};
-        row["id"] = $(this).attr("id");
-        row["filename"] = $(".filename", $(this)).text();
-        rowList[rowList.length] = row;
-    });
-
-    rowList.sort(dynamicSort("filename"));
-
-    for (var i = 0; i < rowList.length; i++) {
-        $("#" + rowList[i]["id"]).appendTo("#files");
-    }
-}
-
-//populate a coding sheet / ontology field from an adhoc add-resource child page. 
-//for now, let's assume there's never more than one adhoc child in play...
-function populateTarget(obj) {
-    var $body = $("body");
-    var adhocTarget = $body.data("adhocTarget");
-    if(typeof(adhocTarget) == 'undefined') return;
-
-    console.log("populateTarget called.   adHocTarget:%s", adhocTarget);
-    $('input[type=hidden]', adhocTarget).val(obj.id);
-    $('input[type=text]', adhocTarget).val(obj.title);
-    $body.removeData("adhocTarget");
-    TDAR.common.adhocTarget = null;
-
-}
-
-
-//function toggleCopyrightHolder() {
-//
-//    $("#copyrightHolderTable input[type!='radio']").val("");
-//
-//    $("#copyrightPerson").toggle();
-//    $("#copyrightInstitution").toggle();
-//    $("#copyright_holder_institution_name").toggleClass("required");
-//    $("#copyright_holder_person_first_name").toggleClass("required");
-//    $("#copyright_holder_person_last_name").toggleClass("required");
-//}
-
-function toggleLicense() {
-
-    // update display of licenses when the radio button selection changes
-    $("#license_section input[type='radio']").each(
-        function(index) {
-            // show or hide the row depending on whether the corresponding radio button is checked
-            var $this = $(this);
-            var license_type_name = $this.val();
-            var license_details_reference = "#license_details_" + license_type_name;
-            var license_details = $(license_details_reference);
-            var $licenseText = $('#licenseText');
-            if ($this.is(":checked")) {
-                license_details.show();
-            } else {
-                license_details.hide();
-            }    
-            if (!$licenseText.is(':hidden')) {
-                $licenseText.addClass("required");
-            } else {
-                $licenseText.removeClass("required");
-            }
-        }
-    );
-}
-
 
 /**
  * trying to move these functions out of global scope and apply strict parsing.
@@ -714,7 +131,90 @@ TDAR.common = function() {
         $parents.find("select").attr("disabled", "disabled");
     }
 
+
+  //indicate the root context  to use when populateTarget is called. 
+    var _setAdhocTarget = function(elem, selector) {
+        var _selector = selector;
+        if (!_selector) selector = "div";
+        var adhocTarget = $(elem).closest(_selector);
+        $('body').data("adhocTarget", adhocTarget);
+        //expose target for use by child window
+        TDAR.common.adhocTarget = adhocTarget;
+        //return false; 
+    }
     
+    
+
+    var _dynamicSort = function(property, caseSensitive) {
+        return function(a, b) {
+            if (caseSensitive == undefined || caseSensitive == false) {
+                return (a[property].toLowerCase() < b[property].toLowerCase()) ? -1
+                        : (a[property].toLowerCase() > b[property].toLowerCase()) ? 1
+                                : 0;
+            } else {
+                return (a[property] < b[property]) ? -1
+                        : (a[property] > b[property]) ? 1 : 0;
+            }
+        };
+    }
+
+var _sortFilesAlphabetically= function() {
+        var rowList = new Array();
+        var $table = $("#files tbody");
+        $("tr", $table).each(function() {
+            var row = {};
+            row["id"] = $(this).attr("id");
+            row["filename"] = $(".filename", $(this)).text();
+            rowList[rowList.length] = row;
+        });
+
+        rowList.sort(_dynamicSort("filename"));
+
+        for (var i = 0; i < rowList.length; i++) {
+            $("#" + rowList[i]["id"]).appendTo("#files");
+        }
+    }
+
+  //populate a coding sheet / ontology field from an adhoc add-resource child page. 
+  //for now, let's assume there's never more than one adhoc child in play...
+  var _populateTarget = function(obj) {
+      var $body = $("body");
+      var adhocTarget = $body.data("adhocTarget");
+      if(typeof(adhocTarget) == 'undefined') return;
+
+      console.log("populateTarget called.   adHocTarget:%s", adhocTarget);
+      $('input[type=hidden]', adhocTarget).val(obj.id);
+      $('input[type=text]', adhocTarget).val(obj.title);
+      $body.removeData("adhocTarget");
+      TDAR.common.adhocTarget = null;
+  }
+
+    var _toggleLicense = function() {
+
+        // update display of licenses when the radio button selection changes
+        $("#license_section input[type='radio']").each(
+            function(index) {
+                // show or hide the row depending on whether the corresponding radio button is checked
+                var $this = $(this);
+                var license_type_name = $this.val();
+                var license_details_reference = "#license_details_" + license_type_name;
+                var license_details = $(license_details_reference);
+                var $licenseText = $('#licenseText');
+                if ($this.is(":checked")) {
+                    license_details.show();
+                } else {
+                    license_details.hide();
+                }    
+                if (!$licenseText.is(':hidden')) {
+                    $licenseText.addClass("required");
+                } else {
+                    $licenseText.removeClass("required");
+                }
+            }
+        );
+    }
+
+
     
      // FIXME: the jquery validate documentation for onfocusout/onkeyup/onclick
      // doesn't jibe w/ what we see in practice. supposedly these take a boolean
@@ -853,7 +353,7 @@ TDAR.common = function() {
 
 
         $('.coverageTypeSelect', "#coverageDateRepeatable").each(function(i, elem) {
-            prepareDateFields(elem);
+            _prepareDateFields(elem);
         });
 
         var $uploaded = $(formid + '_uploadedFiles');
@@ -874,10 +374,10 @@ TDAR.common = function() {
         }
 
         $("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function() {
-            prepareDateFields(this);
+            _prepareDateFields(this);
         });
-        showAccessRightsLinkIfNeeded();
-        $('.fileProxyConfidential').change(showAccessRightsLinkIfNeeded);
+        _showAccessRightsLinkIfNeeded();
+        $('.fileProxyConfidential').change(_showAccessRightsLinkIfNeeded);
         
         //FIXME: idea is nice, but default options produce more annoying UI than original browser treatment of 'title' attribute. also, bootstrap docs
         //       tell you how to delegate to selectors but I couldn't figure it out.
@@ -907,6 +407,54 @@ TDAR.common = function() {
         
     };
     
+ // called whenever date type changes
+  //FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be 
+//         used via $.validator.addClassRules.  The benefit would be that we don't need to register these registration rules each time a date
+//         gets added to the dom.
+  var _prepareDateFields = function(selectElem) {
+      var startElem = $(selectElem).siblings('.coverageStartYear');
+      var endElem = $(selectElem).siblings('.coverageEndYear');
+      $(startElem).rules("remove");
+      $(endElem).rules("remove");
+      switch ($(selectElem).val()) {
+      case "CALENDAR_DATE":
+          $(startElem).rules("add", {
+              range : [ -99900, 2100 ],
+              lessThanEqual : [endElem,"Calender Start", "Calendar End"],
+              required : function() {
+                  return $(endElem).val() != "";
+              }
+          });
+          $(endElem).rules("add", {
+              range : [ -99900, 2100 ],
+              required : function() {
+                  return $(startElem).val() != "";
+              }
+          });
+          break;
+      case "RADIOCARBON_DATE":
+          $(startElem).rules("add", {
+              range : [ 0, 100000 ],
+              greaterThanEqual : [endElem, "Radiocarbon Start", "Radiocarbon End"],
+              required : function() {
+                  return $(endElem).val() != "";
+              }
+          });
+          $(endElem).rules("add", {
+              range : [ 0, 100000 ],
+              required : function() {
+                  return $(startElem).val() != "";
+              }
+          });
+          break;
+      case "NONE":
+          $(startElem).rules("add", {
+              blankCoverageDate: {"start":startElem, "end":endElem}
+          });
+          break;
+      }
+  }
+
     
     var _applyTreeviews = function() {
         //console.debug("applying tdar-treeviews v3");
@@ -977,18 +525,18 @@ TDAR.common = function() {
         
 
         //wire up autocompletes
-        delegateCreator("#authorshipTable", false, true);
-        delegateCreator("#creditTable", false, true);
-        delegateCreator("#divAccessRights", true, false);
-        delegateCreator("#divSubmitter", true, false);
-        delegateCreator("#copyrightHolderTable",false,true);
-        delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
-        delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
-        delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
-        delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
-        delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
-        delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
-        delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
+        _delegateCreator("#authorshipTable", false, true);
+        _delegateCreator("#creditTable", false, true);
+        _delegateCreator("#divAccessRights", true, false);
+        _delegateCreator("#divSubmitter", true, false);
+        _delegateCreator("#copyrightHolderTable",false,true);
+        _delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
+        _delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
+        _delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
+        _delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
+        _delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
+        _delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
+        _delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
         TDAR.autocomplete.applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
         TDAR.autocomplete.applyInstitutionAutocomplete($('#publisher'), true);
         $('#resourceCollectionTable').on(
@@ -1005,10 +553,10 @@ TDAR.common = function() {
 
         //init sortables
         //FIXME: sortables currently broken 
-        $(".alphasort").click(sortFilesAlphabetically);
+        $(".alphasort").click(_sortFilesAlphabetically);
         
         //ahad: toggle license
-        $(".licenseRadio",$("#license_section")).change(toggleLicense);
+        $(".licenseRadio",$("#license_section")).change(_toggleLicense);
         
 //        //ahad: toggle person/institution for copyright holder
 //        $("#copyright_holder_type_person").change(toggleCopyrightHolder);
@@ -1032,7 +580,7 @@ TDAR.common = function() {
         
         
         TDAR.contexthelp.initializeTooltipContent(form);
-        applyWatermarks(form);
+        _applyWatermarks(form);
         
         //FIXME: other init stuff that is separate function for some reason 
         _setupEditForm(form);
@@ -1127,6 +675,421 @@ TDAR.common = function() {
     
     }
     
+    function _elipsify(text, n, useWordBoundary){
+        /* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
+        var toLong = text.length>n,
+            s_ = toLong ? text.substr(0,n-1) : text;
+        s_ = useWordBoundary && toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
+        return  toLong ? s_ + '...' : s_;
+    }
+
+    
+    /*
+     * AJAX BOOKMARKING FUNCTIONS
+     */
+
+    $(document).ready(function() {
+        $(document).delegate(".bookmark-link","click",_applyBookmarks);
+    });
+
+    function _applyBookmarks() {
+        var $this = $(this);
+        var resourceId = $this.attr("resource-id");
+        var state = $this.attr("bookmark-state");
+        $waitingElem = $("<img src='" + getURI('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
+        $this.prepend($waitingElem);
+        var $icon = $(".bookmark-icon",$this);
+        $icon.hide();
+        console.log(resourceId + ": " + state);
+        var oldclass = "tdar-icon-" + state;
+        var newtext = "un-bookmark";
+        var newstate = "bookmarked";
+        var action = "bookmarkAjax";
+        var newUrl = "/resource/removeBookmark?resourceId=" + resourceId;
+        
+        if (state == 'bookmarked') {
+            newtext = "bookmark";
+            newstate = "bookmark";
+            action = "removeBookmarkAjax";
+            newUrl = "/resource/bookmark?resourceId=" + resourceId;
+        }
+        var newclass = "tdar-icon-" + newstate;
+        
+        $.getJSON(getBaseURI() + "resource/"+action+"?resourceId=" + resourceId,
+                function(data) {
+                    if (data.success) {
+                        $(".bookmark-label",$this).text(newtext);
+                        $icon.removeClass(oldclass).addClass(newclass).show();
+                        $this.attr("bookmark-state",newstate);
+                        $this.attr("href",newUrl);
+                        $(".waiting",$this).remove();
+                    }
+                });
+        
+        return false;
+    }
+
+    //apply watermark input tags in context with watermark attribute.  'context' can be any valid argument to jQuery(selector[, context])
+    var _applyWatermarks = function(context) {
+        if(!Modernizr.input.placeholder){
+            $("input[placeholder]", context).each(function() {
+                //todo: see if its any faster to do direct call to attr, e.g. this.attributes["watermark"].value
+                $(this).watermark($(this).attr("placeholder"));
+            });
+        }
+    }
+
+
+    // show the access rights reminder if any files are marked as confidential or if
+    // the resource is embargoed
+    var _showAccessRightsLinkIfNeeded = function() {
+        if ($(".fileProxyConfidential").filter(function(index) {return $(this).val() != "PUBLIC"; }).length > 0) {
+            $('#divConfidentialAccessReminder').removeClass("hidden");
+        } else {
+            $('#divConfidentialAccessReminder').addClass("hidden");
+        }
+    }
+
+
+
+
+    var _htmlDecode = function(value) {
+        if (value == undefined || value == '')
+            return "";
+        return $('<div/>').html(value).text();
+    }
+
+    // http://stackoverflow.com/questions/1038746/equivalent-of-string-format-in-jquery
+    var _sprintf = function() {
+        var s = arguments[0];
+        for ( var i = 0; i < arguments.length - 1; i++) {
+            var reg = new RegExp("\\{" + i + "\\}", "gm");
+            s = s.replace(reg, arguments[i + 1]);
+        }
+        return s;
+    }
+
+    /**
+     * Testing Support
+     */
+
+    function initializeView() {
+        console.debug('initialize view');
+        var maps = $(".google-map, #large-google-map");
+        if(maps.length) {
+            TDAR.maps.initMapApi();
+            maps.each(function() {
+                TDAR.maps.setupMap(this, this);
+            });
+        }
+    }
+
+    var _delegateCreator = function(id, user, showCreate) {
+        if (user == undefined || user == false) {
+            $(id).delegate(
+                    ".nameAutoComplete",
+                    "focusin",
+                    function() {
+                        // TODO: these calls re-regester every row after a row is
+                        // created,
+                        // change so that only the new row is registered.
+                        TDAR.autocomplete.applyPersonAutoComplete($(".nameAutoComplete", id), false,
+                                showCreate);
+                    });
+            $(id).delegate(".institutionAutoComplete", "focusin", function() {
+                TDAR.autocomplete.applyInstitutionAutocomplete($(".institution", id), true);
+            });
+        } else {
+            $(id).delegate(".userAutoComplete", "focusin", function() {
+                TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete", id), true, false);
+            });
+        }
+    }
+
+    // fixme: instead of focusin, look into using a customEvent (e.g. 'rowCreated')
+    var _delegateAnnotationKey = function(id, prefix, delim) {
+        $(id).delegate("." + prefix + "AutoComplete", "focusin", function() {
+            TDAR.autocomplete.applyKeywordAutocomplete("." + prefix + "AutoComplete", delim, {}, false);
+        });
+    }
+
+    var _delegateKeyword = function(id, prefix, type) {
+        $(id).delegate(".keywordAutocomplete", "focusin", function() {
+            // TODO: these calls re-regester every row after a row is created,
+            // change so that only the new row is registered.
+            console.log('focusin:' + this.id);
+            TDAR.autocomplete.applyKeywordAutocomplete(id + " .keywordAutocomplete", "keyword", {
+                keywordType : type
+            }, true);
+        });
+
+    }
+
+    var _sessionTimeoutWarning = function() {
+        // I RUN ONCE A MINUTE
+        // sessionTimeout in seconds
+        currentTime += 60;
+        var remainingTime = sessionTimeout - currentTime;
+        if (remainingTime == 300) {
+            var dialog = $('<div id=timeoutDialog></div>')
+                    .html(
+                            "<B>Warning!</B><br/>Your session will timeout in 5 minutes, please save the document you're currently working on")
+                    .dialog({
+                        modal : true,
+                        title : "Session Timeout Warning",
+                        closeText : "Ok",
+                        buttons : {
+                            "Ok" : function() {
+                                $(this).dialog("close");
+                            }
+                        }
+                    });
+        }
+        if ($("#timeoutDialog").length != 0 && remainingTime <= 0) {
+            $("#timeoutDialog")
+                    .html(
+                            "<B>WARNING!</B><BR>Your Session has timed out, any pending changes will not be saved");
+        } else {
+            setTimeout(TDAR.common.sessionTimeoutWarning, 60000);
+        }
+    }
+    /*
+    function getBrowserMajorVersion() {
+        var browserMajorVersion = 1;
+        try {
+            browserMajorVersion = parseInt($.browser.version);
+        } catch (e) {
+        }
+        return browserMajorVersion;
+    }
+    */
+    var _setupDocumentEditForm = function() {
+        $(".doctype input[type=radio]").click(function() {_switchDocType(this);});
+        _switchDocType($(".doctype input[type=radio]:checked"));
+    }
+
+
+    var _switchType = function(radio, container) {
+        var type = $(radio).val().toLowerCase();
+
+        console.debug('switchType:start:' + type);
+        var $container = $(container);
+        $(".typeToggle",$container).hide();
+        $($("." + type) ,$container).show();
+
+    }
+
+
+
+
+    var switchDocType = function(el) {
+        var doctype = $(el).val().toLowerCase();
+
+        console.debug('switchType:start:' + doctype);
+        var $citeInfo = $("#citationInformation");
+        $(".doctypeToggle",$citeInfo).hide();
+        $($("." + doctype) ,$citeInfo).show();
+
+        _switchLabel($("#publisher-hints"), doctype);
+        _switchLabel($("#publisherLocation-hints"), doctype);
+
+    }
+
+    var _switchLabel = function(field, type) {
+        // console.debug('_switchLabel('+field+','+type+')');
+        $("label",field).text(field.attr(type));
+    }
+
+    var _toggleDiv = function() {
+        $(this).next().slideToggle('slow');
+        $(this).find("span.ui-icon-triangle-1-e").switchClass(
+                "ui-icon-triangle-1-e", "ui-icon-triangle-1-s", 700);
+        $(this).find("span.ui-icon-triangle-1-s").switchClass(
+                "ui-icon-triangle-1-s", "ui-icon-triangle-1-e", 700);
+    }
+
+    var _setupSupportingResourceForm = function(totalNumberOfFiles, rtype) {
+        // the ontology textarea or file upload field is required whenever it is
+        // visible AND
+        // no ontology rules are already present from a previous upload
+
+        $('#fileInputTextArea').rules(
+                "add",
+                {
+                    required : {
+                        depends : isFieldRequired
+                    },
+                    messages : {
+                        required : "No " + rtype + " data entered. Please enter "
+                                + rtype + " manually or upload a file."
+                    }
+                });
+
+        $('#fileUploadField').rules(
+                "add",
+                {
+                    required : {
+                        depends : isFieldRequired
+                    },
+                    messages : {
+                        required : "No " + rtype
+                                + " file selected. Please select a file or enter "
+                                + rtype + " data manually."
+                    }
+                });
+
+        function isFieldRequired(elem) {
+            var noRulesExist = !((totalNumberOfFiles > 0)
+                    || ($("#fileInputTextArea").val().length > 0) || ($(
+                    "#fileUploadField").val().length > 0));
+            return noRulesExist && $(elem).is(":visible");
+        }
+
+        _refreshInputDisplay();
+    }
+
+    /*
+    function makeMap(json, mapId, type, value_) {
+        var mapString = "";
+
+        if (!json.chartshape) {
+            alert("No map elements");
+            return;
+        }
+        mapString = "<map name='" + mapId + "'>";
+        var area = false;
+        var chart = json.chartshape;
+        var values = value_.split("|");
+        for ( var i = 0; i < chart.length; i++) {
+            area = chart[i];
+            mapString += "\n  <area name='" + area.name + "' shape='" + area.type
+                    + "' coords='" + area.coords.join(",");
+            var val = values[i];
+
+            // FIXME: I don't always consistently work
+            // var offset = values.length - 1;
+            // if (val == undefined && i >= offset && values[i-offset] != undefined)
+            // {
+            // val = values[(i-offset)];
+            // }
+            // console.log(values.length + ' ' + i + "{"+ (i -offset)+ "}" + ' ' +
+            // values[(i-offset)]);
+            if (val != undefined) {
+                mapString += "' href='" + getURI("search/results") + "?" + type
+                        + "=" + val + "&useSubmitterContext=true'";
+            }
+            mapString += " title='" + val + "'>";
+            ;
+        }
+        mapString += "\n</map>";
+        $("#" + mapId + "-img").after(mapString);
+    }
+    */
+    var _registerDownload = function(url, tdarId) {
+        if (typeof _gaq == 'undefined')
+            return;
+        var command = [ '_trackEvent', 'Download', url ];
+        if (tdarId)
+            command.push(tdarId);
+        var errcount = _gaq.push(command);
+        if (errcount) {
+            console.warn("_trackEvent command failed for" + url);
+        }
+    }
+
+    var _changeSubcategory = function(categoryIdSelect, subCategoryIdSelect) {
+        var $categoryIdSelect = $(categoryIdSelect);
+        var $subCategoryIdSelect = $(subCategoryIdSelect);
+        $categoryIdSelect.siblings(".waitingSpinner").show();
+        $.get(getBaseURI() + "resource/ajax/column-metadata-subcategories", {
+            "categoryVariableId" : $categoryIdSelect.val()
+        }, function(data_, textStatus) {
+            var data = jQuery.parseJSON(data_);
+
+            var result = "";
+            for ( var i = 0; i < data.length; i++) {
+                result += "<option value=\"" + data[i]['value'] + "\">"
+                        + data[i]['label'] + "</option>\n";
+            }
+
+            $categoryIdSelect.siblings(".waitingSpinner").hide();
+            $subCategoryIdSelect.html(result);
+        });
+    }
+
+    
+
+    var _getFunctionBody = function(func) {
+        var m = func.toString().match(/\{([\s\S]*)\}/m)[1];
+        return m;
+    }
+
+    // replace last occurance of str in attribute with rep
+    function _replaceAttribute(elem, attrName, str, rep) {
+        if (!$(elem).attr(attrName))
+            return;
+        var oldval = $(elem).attr(attrName);
+        if (typeof oldval == "function") {
+            oldval = _getFunctionBody(oldval);
+            // console.debug("converting function to string:" + oldval );
+
+        }
+        if (oldval.indexOf(str) != -1) {
+            var beginPart = oldval.substring(0, oldval.lastIndexOf(str));
+            var endPart = oldval.substring(oldval.lastIndexOf(str) + str.length,
+                    oldval.length);
+            var newval = beginPart + rep + endPart;
+            $(elem).attr(attrName, newval);
+            // console.debug('attr:' + attrName + ' oldval:' + oldval + ' newval:' +
+            // newval);
+        }
+    }
+
+    var _refreshInputDisplay = function() {
+        var selectedInputMethod = $('#inputMethodId').val();
+        var showUploadDiv = (selectedInputMethod == 'file');
+        $('#uploadFileDiv').toggle(showUploadDiv);
+        $('#textInputDiv').toggle(!showUploadDiv);
+    }
+
+    /*
+     * 
+    function personAdded(id) {
+//        console.log("person added " + id);
+        $(".creatorInstitution", "#" + id).hide();
+        $(".creatorPerson", "#" + id).show();
+    }
+
+    function institutionAdded(id) {
+//        console.log("institution added " + id);
+        // hide the person record
+        $(".creatorPerson", "#" + id).hide();
+        $(".creatorInstitution", "#" + id).show();
+    }
+
+     */
+    // expand those nodes where children are selected
+    function _switchLabel(field, type) {
+        var label = "#" + $(field).attr('id') + '-label';
+        if ($(field).attr(type) != undefined && $(label) != undefined) {
+            $(label).text($(field).attr(type));
+        }
+    }
+
+
+
+
+    /*
+    function showTooltip(x, y, contents) {
+        $('<div id="flottooltip">' + contents + '</div>').css({
+            position : 'absolute',
+            display : 'none',
+            top : y + 30,
+            left : x + 5
+        }).appendTo("body").fadeIn(200);
+    }
+    */
+    
     $.extend(self, {
         "initEditPage": _initEditPage,
         "initFormValidation": _setupFormValidate,
@@ -1136,6 +1099,22 @@ TDAR.common = function() {
         "htmlEncode": _htmlEncode,
         "initRegformValidation": _initRegformValidation,
         "determineResponsiveClass": _determineResponsiveClass,
+        "elipsify":_elipsify,
+        "populateTarget": _populateTarget,
+        "prepareDateFields": _prepareDateFields,
+        "setAdhocTarget": _setAdhocTarget,
+        "changeSubcategory ": _changeSubcategory ,
+        "registerDownload": _registerDownload,
+        "setupSupportingResourceForm": _setupSupportingResourceForm,
+        "toggleDiv": _toggleDiv,
+        "switchType": _switchType,
+        "setupDocumentEditForm": _setupDocumentEditForm,
+        "sessionTimeoutWarning": _sessionTimeoutWarning,
+        "delegateCreator": _delegateCreator,
+        "sprintf": _sprintf,
+        "htmlDecode": _htmlDecode,
+        "applyWatermarks": _applyWatermarks,
+        "replaceAttribute": _replaceAttribute,
         "delayJiraButton": _delayJiraButton
     });
     
@@ -1157,13 +1136,7 @@ $(document).ready(function() {
     if($.cookie("hide_jira_button")) {
         setTimeout(function(){$('#atlwdg-trigger').hide()}, 700);
     }
+//    TDAR.common.sessionTimeoutWarning();
 });
 
 
-function elipsify(text, n, useWordBoundary){
-    /* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
-    var toLong = text.length>n,
-        s_ = toLong ? text.substr(0,n-1) : text;
-    s_ = useWordBoundary && toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
-    return  toLong ? s_ + '...' : s_;
-}
