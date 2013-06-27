@@ -216,7 +216,7 @@ function _setupDashboardDataTable() {
           if (datatable_isSelectable) {
               aoColumns_.unshift({ "mDataProp": "id", tdarSortOption: "ID", sWidth:'5em' ,"bSortable":false});
           };
-    $dataTable = registerLookupDataTable({
+    $dataTable = _registerLookupDataTable({
         tableSelector: '#resource_datatable',
         sAjaxSource:'/lookup/resource',
         "bLengthChange": true,
