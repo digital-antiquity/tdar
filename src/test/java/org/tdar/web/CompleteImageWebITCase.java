@@ -56,8 +56,8 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("authorizedUsers[1].user.id", "5349");
         docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("authorizedUsers[0].user.properName", "Michelle Elliott");
-        docValMap.put("authorizedUsers[1].user.properName", "Joshua Watts");
+        docValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
+        docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
 
         docValMap.put("authorshipProxies[0].person.firstName", "Adam");
         docValMap.put("authorshipProxies[0].person.lastName", "Brin");
