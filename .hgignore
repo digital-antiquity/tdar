@@ -16,6 +16,7 @@ tags
 *.orig
 *.rej
 .idea/*
+*.iml
 nb-configuration.xml
 nbactions*
 glassfish-web.xml
