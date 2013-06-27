@@ -173,6 +173,11 @@ table.display.tableFormat {
 	margin-top: 0px !important;
 }
 
+/* See TDAR-3106 */
+table.dataTable {
+  max-width: none;
+}
+
 div.mapcontainer {
 	position: relative;
 	right: 0px;

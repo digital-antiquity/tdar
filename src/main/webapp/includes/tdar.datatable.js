@@ -30,6 +30,8 @@ function registerLookupDataTable(parms) {
     $dataTable.data('selectedRows', {});
 
     var dataTableOptions = {
+    		"sScrollX": "100%",
+     		"bScrollCollapse": true,
             "bProcessing": true,
             "bServerSide": true,
             //"sAjaxDataProp": sAjaxDataProp,

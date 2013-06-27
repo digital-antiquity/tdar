@@ -170,7 +170,7 @@
 			
 			<div class="row">
 			    <div class="span9">
-			        <table id="dataTable" class="table tableFormat table-striped table-bordered" ></table>
+			        <table id="dataTable" class="dataTable table tableFormat table-striped table-bordered" ></table>
 			    </div>
 			</div>
 			<#if tdarConfiguration.isXmlExportEnabled()>
