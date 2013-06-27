@@ -21,6 +21,9 @@
 <link rel="meta" type="application/rdf+xml" title="FOAF" href="rdf"/>
 </#if>
 <#if nodeModel?has_content>
+	<#assign collaborators=nodeModel["personInfoLog/collaborators/*"] />
+	<#assign keywords= nodeModel["personInfoLog/keywords/*"] />
+	<#if keywords?has_content || collaborators?has_content>
         <div id="sidebar-right" parse="true">
         <br/>
         <br/>
@@ -31,26 +34,32 @@
         <br/>
         <br/>
         <br/>
-<h3>Related Creators</h3>
-<ul>
-<#list nodeModel["personInfoLog/collaborators/*"] as collab>
-<#if (collab.@count?number >= nodeModel.personInfoLog.@creatorMedian?number && collab.@count?number  >1)>
-<li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a></li>
-</#if>
-</#list> 
-</uL>
+        <#-- fixme -- some of these may show the h3 w/o contents if count == 1 -->
+        <#if collaborators?has_content>
+			<h3>Related Creators</h3>
+			<ul>
+			<#list collaborators as collab>
+			<#if (collab.@count?number >= nodeModel.personInfoLog.@creatorMedian?number && collab.@count?number  >1)>
+			<li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a></li>
+			</#if>
+			</#list> 
+			</uL>
+		</#if>
 
-<h3>Related Keywords</h3>
-<ul>
-<#list nodeModel["personInfoLog/keywords/*"]?sort as keyword>
-<#if (keyword.@count?number >= nodeModel.personInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
-<#if keyword.@name?has_content && !keyword.@name?contains("Country Code")>
-<li>${keyword.@name}</li>
-</#if>
-</#if>
-</#list>
-</ul> 
+        <#if keywords?has_content>
+			<h3>Related Keywords</h3>
+			<ul>
+			<#list keywords as keyword>
+			<#if (keyword.@count?number >= nodeModel.personInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
+			<#if keyword.@name?has_content && !keyword.@name?contains("Country Code")>
+			<li>${keyword.@name}</li>
+			</#if>
+			</#if>
+			</#list>
+			</ul> 
+		</#if>
 </div>
+</#if>
 </#if>
 
 <h1><#if creator.properName??>${creator.properName}</#if></h1>
