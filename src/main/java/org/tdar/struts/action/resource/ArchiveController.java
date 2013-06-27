@@ -62,6 +62,6 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public boolean isMultipleFileUploadEnabled() {
-        return true;
+        return false;
     }
 }
