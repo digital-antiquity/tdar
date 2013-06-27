@@ -1360,12 +1360,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
-            throw new TdarValidationException(
-                    "A title is required for this " + getResourceType());
+            throw new TdarValidationException("A title is required for this " + getResourceType());
         }
         if (StringUtils.isEmpty(getDescription())) {
-            throw new TdarValidationException(
-                    "A description is required for this " + getResourceType());
+            throw new TdarValidationException("A description is required for this " + getResourceType());
         }
         return true;
     }

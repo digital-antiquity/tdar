@@ -7,8 +7,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Indexed;
+import org.tdar.core.exception.TdarValidationException;
 
 /**
  * $Id$
@@ -91,4 +93,16 @@ public class Geospatial extends Dataset {
     public void setCurrentnessUpdateNotes(String currentnessUpdateNotes) {
         this.currentnessUpdateNotes = currentnessUpdateNotes;
     }
+
+    @Override
+    public boolean isValidForController() {
+//        if (StringUtils.isEmpty(getSpatialReferenceSystem())) {
+//            throw new TdarValidationException("A spatial reference system is required for this " + getResourceType());
+//        }
+//        if (StringUtils.isEmpty(getProjection())) {
+//            throw new TdarValidationException("A projection is required for this " + getResourceType());
+//        }
+        return super.isValidForController();
+    }
+
 }
