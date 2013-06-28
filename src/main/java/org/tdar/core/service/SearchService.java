@@ -51,6 +51,7 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -64,13 +65,10 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.DynamicQueryComponent;
-import org.tdar.search.query.builder.InstitutionQueryBuilder;
-import org.tdar.search.query.builder.PersonQueryBuilder;
-import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.builder.*;
 import org.tdar.search.query.part.AbstractHydrateableQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.InstitutionQueryPart;
@@ -104,6 +102,8 @@ public class SearchService {
     private static final Pattern luceneSantizeQueryPattern = Pattern.compile("(^|\\W)(" + StringUtils.join(LUCENE_RESERVED_WORDS, "|") + ")(\\W|$)");
 
     private transient ConcurrentMap<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>> parserCacheMap = new ConcurrentHashMap<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>>();
+
+    public static int  MAX_FTQ_RESULTS = 50_000;
 
     public void logParserMap() {
         for (Map.Entry<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>> entry : parserCacheMap.entrySet()) {
@@ -555,13 +555,13 @@ public class SearchService {
 
     /**
      * Constructs a new MultiFieldQueryParser and sets it on the QueryBuilder parameter.
-     * 
+     *
      * Currently caches the QueryBuilder's class with a Pair<String[] field names, PerFieldAnalyzerWrapper> used to construct the
      * MultiFieldQueryParser.
-     * 
+     *
      * The MultiFieldQueryParser cannot be cached as it is not thread-safe. PerFieldAnalyzerWrapper is not thread-safe either (has an internal HashMap) but
      * appears to be safely usable by multiple threads as long as we don't add more analyzers to it (TODO: need to verify this).
-     * 
+     *
      * @param qb
      */
     private void setupQueryParser(QueryBuilder qb) {
@@ -737,4 +737,46 @@ public class SearchService {
             queryBuilder.append(reservedSearchParameters);
             return queryBuilder;
     }
+
+
+    public List<ResourceCollection> findEditableCollectionsForUser(Long userid) {
+        QueryBuilder qb = new ResourceCollectionQueryBuilder();
+        qb.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_TYPE, ResourceCollection.CollectionType.SHARED));
+        qb.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, userid));
+
+        logger.debug("yo check out my query! {}", qb.getQuery());
+
+        return searchAndFetchAllResults(qb);
+    }
+
+    /**
+     * Perform a full text search and return a list of hibernate objects. Besides a max resultsize of MAX_FTQ_RESULTS,
+     * this method attempts to immediately return all results.
+     * @param qb
+     * @return
+     */
+    private List searchAndFetchAllResults(QueryBuilder qb) {
+        FullTextQuery ftq = null;
+        try {
+            ftq = search(qb);
+        } catch (ParseException e) {
+            logger.error("error in collection search", e);
+            return Collections.EMPTY_LIST;
+        }
+
+        logger.debug("results size:{}, querstring:{}", ftq.getResultSize(), ftq.getQueryString());
+
+        ftq.setFirstResult(0);
+        ftq.setMaxResults(Math.max(ftq.getResultSize(), MAX_FTQ_RESULTS));
+        //ftq.setProjection(new String[] {FullTextQuery.THIS, FullTextQuery.OBJECT_CLASS, FullTextQuery.SCORE});
+        ftq.setProjection(FullTextQuery.THIS);
+        List list = ftq.list();
+        List hibObjects = new ArrayList<>();
+        for (Object[] obj : (List<Object[]>) list) {
+            logger.debug("adding item: {}", obj);
+            hibObjects.add(obj[0]);
+        }
+        return hibObjects;
+    }
+
 }

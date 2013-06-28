@@ -631,7 +631,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
-        List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
+        List<FacetGroup<? extends Facetable>> group = new ArrayList<>();
+        //List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
         group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
         group.add(new FacetGroup<IntegratableOptions>(IntegratableOptions.class, QueryFieldNames.INTEGRATABLE, integratableOptionFacets,
                 IntegratableOptions.YES));

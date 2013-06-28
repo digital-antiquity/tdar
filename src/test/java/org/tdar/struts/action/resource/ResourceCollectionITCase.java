@@ -61,10 +61,16 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
     CollectionController controller;
 
+    static int indexCount = 0;
+
     @Before
     public void setup()
     {
         controller = generateNewInitializedController(CollectionController.class);
+        if(indexCount < 1) {
+            reindex();
+        }
+        indexCount++;
     }
 
     @Test
@@ -135,6 +141,16 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         }
         assertEquals(3, count);
     }
+
+
+    @Test
+    @Rollback
+    public void testEditableCollections() throws Exception {
+        testResourceCollectionController();
+        List<ResourceCollection> rcs =  searchService.findEditableCollectionsForUser(getAdminUser().getId());
+        Assert.assertFalse("collection list should not be empty", rcs.isEmpty());
+    }
+
 
     @Test
     @Rollback
@@ -361,7 +377,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
         assertFalse("user should not be able to delete collection", resourceCollection == null);
 
-        for (ResourceCollection child : resourceCollectionService.findAllDirectChildCollections(rcid, null, CollectionType.SHARED))
+        for (ResourceCollection child : resourceCollectionService.findDirectChildCollections(rcid, null, CollectionType.SHARED))
         {
             child.setParent(null);
             genericService.saveOrUpdate(child);
@@ -388,7 +404,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         resourceCollectionChild = null;
         resourceCollectionParent = null;
         ResourceCollection child = genericService.find(ResourceCollection.class, childId);
-        List<ResourceCollection> children = resourceCollectionService.findAllDirectChildCollections(parentId, null, CollectionType.SHARED);
+        List<ResourceCollection> children = resourceCollectionService.findDirectChildCollections(parentId, null, CollectionType.SHARED);
         logger.info("child: {}", child.getParent());
         logger.info("children: {}", children);
         assertTrue(child.getParent() == null);
