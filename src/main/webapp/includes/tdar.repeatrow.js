@@ -128,6 +128,7 @@ TDAR.repeatrow = function() {
     
     
     // private: replace last occurrence of str in attribute with rep
+    //FIXME: Can I be replaced with TDAR.common.replaceAttribute()??
     var _replaceAttribute = function(elem, attrName, str, rep) {
         var oldval = $(elem).attr(attrName);
         if (!oldval) return;

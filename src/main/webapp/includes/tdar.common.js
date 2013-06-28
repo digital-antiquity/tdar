@@ -879,7 +879,7 @@ var _sortFilesAlphabetically= function() {
 
 
 
-    var switchDocType = function(el) {
+    var _switchDocType = function(el) {
         var doctype = $(el).val().toLowerCase();
 
         console.debug('switchType:start:' + doctype);
