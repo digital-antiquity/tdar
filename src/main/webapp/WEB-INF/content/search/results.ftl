@@ -161,7 +161,7 @@
 <script type="text/javascript">
         //pretty controls for sort options, sidebar options (pulled from main.js)
         $(function() {
-            initializeView();
+            TDAR.common.initializeView();
             
         });
 </script>

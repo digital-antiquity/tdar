@@ -13,7 +13,14 @@ ul.resource-list {list-style:none;}
 </style>
 
 <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
+
+
+<#if creator?? &&  creator.creatorType.person>
+<link rel="meta" type="application/rdf+xml" title="FOAF" href="rdf"/>
+</#if>
 </head>
+
+
 <@nav.creatorToolbar "view" />
 
 		

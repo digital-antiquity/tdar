@@ -229,12 +229,12 @@
 	<!-- all requests for a resource supplying just an id should go to it's 
 		view action -->
 	<rule>
-		<from>^/(project|dataset|ontology|billing|image|video|document|cart|sensory-data|coding-sheet|collection|archive)/([0-9]+)$
+		<from>^/(project|dataset|ontology|billing|image|video|document|cart|sensory-data|coding-sheet|collection|archive|geospatial)/([0-9]+)$
 		</from>
 		<to>/$1/view?id=$2</to>
 	</rule>
 	<outbound-rule>
-		<from>^/(project|dataset|ontology|billing|image|video|document|sensory-data|cart|coding-sheet|collection|archive)/([0-9]+)/view$
+		<from>^/(project|dataset|ontology|billing|image|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/view$
 		</from>
 		<to>/$1/$2</to>
 	</outbound-rule>
