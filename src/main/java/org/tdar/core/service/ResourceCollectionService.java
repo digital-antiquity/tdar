@@ -80,7 +80,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         // remove all of the undesirable resources that that the user just tried to add
         rehydratedIncomingResources.removeAll(ineligibleResources);
-        // getResourceCollectionService().findAllChildCollectionsRecursive(persistable, CollectionType.SHARED);
+        // getResourceCollectionService().findAllChildCollections(persistable, CollectionType.SHARED);
         persistable.getResources().addAll(rehydratedIncomingResources);
 
         // add all the deleted resources that were already in the colleciton
@@ -187,7 +187,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     @Transactional(readOnly = true)
-    public List<ResourceCollection> findAllDirectChildCollections(Long id, Boolean visible, CollectionType... type) {
+    public List<ResourceCollection> findDirectChildCollections(Long id, Boolean visible, CollectionType... type) {
         return getDao().findCollectionsOfParent(id, visible, type);
     }
 
@@ -351,7 +351,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findAllSharedResourceCollections();
     }
 
-    public List<ResourceCollection> findAllChildCollectionsRecursive(ResourceCollection collection, CollectionType shared) {
+    /**
+     * Recursively build the transient child collection fields of a specified resource collection, and return a list
+     * containing the parent collection and all descendants
+     * @param collection the parent collection
+     * @param collectionType the  type of collections to return (e.g. internal, shared, public)
+     * @return  a list containing the provided 'parent' collection and any descendant collections (if any).  Futhermore
+     *          this method recursively populates the transient children resource collection fields of the specified
+     *          collection.
+     */
+    public List<ResourceCollection> findAllChildCollections(ResourceCollection collection, CollectionType collectionType) {
         List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
         List<ResourceCollection> toEvaluate = new ArrayList<ResourceCollection>();
         toEvaluate.add(collection);
@@ -359,7 +368,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             ResourceCollection child = toEvaluate.get(0);
             collections.add(child);
             toEvaluate.remove(0);
-            child.setTransientChildren(findAllDirectChildCollections(child.getId(), null, CollectionType.SHARED));
+            child.setTransientChildren(findDirectChildCollections(child.getId(), null, collectionType));
             toEvaluate.addAll(child.getTransientChildren());
         }
         return collections;
@@ -388,7 +397,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 if (CollectionUtils.containsAny(collectionIds, list)) {
                     iter.remove();
                 }
-                findAllChildCollectionsRecursive(rc, ResourceCollection.CollectionType.SHARED);
+                findAllChildCollections(rc, ResourceCollection.CollectionType.SHARED);
             }
     }
 

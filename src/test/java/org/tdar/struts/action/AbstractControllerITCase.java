@@ -40,6 +40,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.search.query.SortOption;
@@ -59,6 +60,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     public static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";
 
     public static final String REASON = "because";
+    @Autowired
+    protected SearchIndexService searchIndexService;
 
     @Before
     public final void init() {
@@ -363,5 +366,11 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         String execute = controller.create();
 
         return execute;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void reindex() {
+        searchIndexService.purgeAll();
+        searchIndexService.indexAll(getAdminUser(), Resource.class, ResourceCollection.class);
     }
 }

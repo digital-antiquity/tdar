@@ -70,8 +70,6 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
 
     @Autowired
-    protected SearchIndexService searchIndexService;
-    @Autowired
     protected GenericKeywordService genericKeywordService;
 
     @Override
@@ -230,12 +228,6 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         controller.setQuery(query);
         doSearch(controller, LookupSource.RESOURCE, exceptions);
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void reindex() {
-        searchIndexService.purgeAll();
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
     }
 
     protected void setStatuses(Status... status) {

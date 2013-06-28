@@ -116,7 +116,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public List<? extends Persistable> getDeleteIssues() {
-        List<ResourceCollection> findAllChildCollections = getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED);
+        List<ResourceCollection> findAllChildCollections = getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED);
         logger.info("we still have children: {}", findAllChildCollections);
         return findAllChildCollections;
     }
@@ -219,7 +219,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             return;
         List<ResourceCollection> findAllChildCollections;
         if (isAuthenticated()) {
-            findAllChildCollections = getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED);
+            findAllChildCollections = getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED);
             // FIXME: not needed?
             // boolean granularPermissions = false;
             // if (granularPermissions) {
@@ -234,13 +234,13 @@ public class CollectionController extends AbstractPersistableController<Resource
             // }
             // }
         } else {
-            findAllChildCollections = getResourceCollectionService().findAllDirectChildCollections(getId(), true, CollectionType.SHARED);
+            findAllChildCollections = getResourceCollectionService().findDirectChildCollections(getId(), true, CollectionType.SHARED);
         }
         setCollections(findAllChildCollections);
         Collections.sort(collections);
 
         if (isEditor()) {
-            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollectionsRecursive(getPersistable(),
+            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollections(getPersistable(),
                     CollectionType.SHARED));
             collectionIds.add(getId());
             setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null,
