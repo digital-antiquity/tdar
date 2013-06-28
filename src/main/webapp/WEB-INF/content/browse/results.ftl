@@ -28,9 +28,6 @@ ul.resource-list {list-style:none;}
 <@view.pageStatusCallout />
 
 <#if creator??>
-<#if creator.creatorType.person>
-<link rel="meta" type="application/rdf+xml" title="FOAF" href="rdf"/>
-</#if>
 <#if nodeModel?has_content>
 	<#assign collaborators=nodeModel["personInfoLog/collaborators/*"] />
 	<#assign keywords= nodeModel["personInfoLog/keywords/*"] />
