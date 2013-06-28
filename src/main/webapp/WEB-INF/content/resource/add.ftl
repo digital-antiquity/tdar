@@ -39,22 +39,22 @@
         </div>
     </div>
     <div class="row">
+        <div class="span4">
+            <h3 class="geospatial-mid-red"><@link "geospatial" "Geospatial" /></h3>
+            Geospatial
+        </div>
+        <div class="span4">
+                <h3 class="sensory_data-mid-red"><@link "sensory-data" "Sensory Data / 3D Scan" /></h3>
+                Certain images and/or datasets fall under the heading of Sensory Data. 3-D scans, for example. 
+        </div>
+    </div>
+    <div class="row">
      <#if administrator>
         <div class="span4">
             <h3 class="video-mid-red"><@link "video" "Video" /></h3>
             A video
         </div>
     </#if>
-        <div class="span4">
-            <h3 class="geospatial-mid-red"><@link "geospatial" "Geospatial" /></h3>
-            Geospatial
-        </div>
-    </div>
-    <div class="row">
-        <div class="span4">
-                <h3 class="sensory_data-mid-red"><@link "sensory-data" "Sensory Data / 3D Scan" /></h3>
-                Certain images and/or datasets fall under the heading of Sensory Data. 3-D scans, for example. 
-        </div>
 
     </div>
     <div class="row">

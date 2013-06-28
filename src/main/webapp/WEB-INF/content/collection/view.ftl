@@ -89,7 +89,7 @@ This collection is not accessible
 
 <script type='text/javascript'>
 $(document).ready(function(){
-    $(initializeView);
+    TDAR.common.initializeView();
 });
 </script>
 

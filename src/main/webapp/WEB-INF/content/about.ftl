@@ -47,7 +47,7 @@
 </div><div class="span1 center">
  <h3 class="ontology-mid-red red"></h3>
 </div><div class="span1 center">
- <h3 class="coding_sheet-mid-black red"></h3> 
+ <h3 class="geospatial-mid-black red"></h3> 
 </div><div class="span1 center"><h3 class="project-mid-red red"></h3>
 </div><div class="span1 center"> <h3 class="collection-mid-black red"></h3>
 </div></div></div>

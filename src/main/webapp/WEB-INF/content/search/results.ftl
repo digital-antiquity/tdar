@@ -162,7 +162,6 @@
         //pretty controls for sort options, sidebar options (pulled from main.js)
         $(function() {
             TDAR.common.initializeView();
-            
         });
 </script>
 

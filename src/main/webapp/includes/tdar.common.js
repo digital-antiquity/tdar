@@ -615,8 +615,14 @@ var _sortFilesAlphabetically= function() {
     
     var _initializeView = function() {
         console.debug('initialize view');
-        if($('#large-google-map').length) {
-            var mapdiv = $('#large-google-map')[0];
+	        var mapdiv = undefined;
+	        if($('#large-google-map').length) {
+	            mapdiv = $('#large-google-map')[0];
+	        };
+	        if ($(".google-map").length) {
+	            mapdiv = $('.google-map')[0];
+	        }
+	        if (mapdiv != undefined) {
             var inputContainer = $("#divCoordContainer")[0];
             TDAR.maps.initMapApi();
             TDAR.maps.setupMap(mapdiv, inputContainer);

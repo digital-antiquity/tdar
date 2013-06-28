@@ -91,7 +91,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         if (StringUtils.isBlank(fields)) {
             return "";
         }
-        return SearchFieldType.ALL_FIELDS.getFieldName() + fields;
+        return SearchFieldType.ALL_FIELDS.getLabel() + ": "+ fields;
     }
 
     @Override
