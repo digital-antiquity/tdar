@@ -277,7 +277,7 @@ TDAR.uri = function(path) {
 	      <#assign label = ikey />
 	      <#if ikey.label??><#assign label=ikey.label ></#if>
 	      <#if (val?? && val > 0)>
-	        <#if !first>,</#if>["${label}", ${(val!0)?c},"${ikey}", ${(val!0)?c}]
+	        <#if !first>,</#if>["${label?replace(":",":<br/>")}", ${(val!0)?c},"${ikey}", ${(val!0)?c}]
 	        
 	        <#assign first=false/>
 	      </#if>
@@ -299,6 +299,7 @@ $(document).ready(function(){
 
   var defaults_ = {
       fontSize:10,
+  	  seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
       seriesDefaults: {
         renderer: jQuery.jqplot.PieRenderer, 
         rendererOptions: {
@@ -332,7 +333,7 @@ $(document).ready(function(){
 
 
  	<#if config?has_content>
- 	$.extend(true, _defaults,${config});
+ 	$.extend(true, defaults_,${config});
  	</#if>
 
   var plot${data} = jQuery.jqplot ('${id}', [${data}],defaults_);
@@ -391,6 +392,87 @@ $(document).ready(function(){
 </#macro>
 
 
+<#macro lineChart data="data" graphWidth=360 graphHeight=800 graphLabel="" searchKey="resourceTypes" id="" config="" context=false>
+<#noescape>
+<#if id == "">
+	<#local id=data+"id" />
+</#if>
+<script>
+	$(document).ready(function(){
+        $.jqplot.config.enablePlugins = true;
+		var labels_ = [];
+			try {
+        	labels_ = eval('labels');
+			} catch(e) {
+			labels_ = [];
+			}
+		var _defaults =  {
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
+ 			title: "${graphLabel}",
+            animate: !$.jqplot.use_excanvas,
+            seriesDefaults:{
+//                renderer:$.jqplot.BarRenderer,
+                pointLabels: { 
+                	show: true, 
+                	location: 'n', 
+                	edgeTolerance: -25
+                },
+	            rendererOptions: {
+	                // Set varyBarColor to tru to use the custom colors on the bars.
+	                varyBarColor: true
+	            }
+            },
+			seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            grid: {
+				background: 'rgba(0,0,0,0)',
+	            drawBorder: false,
+    	        shadow: false,
+    	        gridLineColor: 'none',
+    	        borderWidth:0,
+        	    gridLineWidth: 0,
+        	    drawGridlines:false
+          },
+            axes: {
+                xaxis: {
+  	               renderer:$.jqplot.DateAxisRenderer,
+			       tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                   tickOptions: {
+                        fontFamily: 'Georgia',
+                        fontSize: '8pt',
+                        showGridline: false
+                    }
+                },
+                yaxis: {
+			        showTicks: false,
+			        show:false,
+                    showGridline: false
+                }
+            },
+        highlighter: {
+            show: true,
+    	    sizeAdjust: 7.5
+        },
+        legend: {
+            show: true,
+            placement: 'outsideGrid',
+            labels: labels_,
+            location: 'ne',
+            rowSpacing: '0px'
+        }            
+        };
+
+     	<#if config?has_content>
+     	$.extend(true, _defaults,${config});
+     	</#if>
+         
+        var plot${id} = $.jqplot('graph${id}', ${data}, _defaults);
+
+});
+</script>
+<div id="graph${id}" style="height:120px"></div>
+</#noescape>
+
+</#macro>
 <#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="" context=false>
 <#if id == "">
 	<#local id=data+"id" />
@@ -430,7 +512,7 @@ $(document).ready(function(){
             axes: {
                 xaxis: {
                    renderer: $.jqplot.CategoryAxisRenderer,
-			       tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+//			       tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                    tickOptions: {
                         fontFamily: 'Georgia',
                         fontSize: '8pt',

@@ -1210,10 +1210,10 @@ h3.collection-mid-black::before {
 }
 
 .adminbox {
-	left: -12px;
+	left: -25px;
 	background: lightBlue;
 	margin: 0px;
-	padding: 10px;
+	padding: 2px 15px 2px 15px;
 	font-weight: 700;
 }
 

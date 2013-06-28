@@ -558,7 +558,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#local plural = "${prefix}s" />
     <div class="controls controls-row repeat-row" id="${prefix}Row_${index}_">
         <#-- <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" /> -->
-        <@s.textarea theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
+        <@s.textarea rows="4" theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
         <div class="span1">
             <@nav.clearDeleteButton id="${prefix}Row${index}" />
         </div>
@@ -635,7 +635,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" />
             </div>
             <div class="controls-row">
-                <@s.textarea theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='span6 resizable resize-vertical' 
+                <@s.textarea rows="4" theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='span6 resizable resize-vertical' 
                     maxlength='5000' />
             </div>
         </div>
@@ -1177,7 +1177,7 @@ $(function() {
                         <p><a href="${licenseCursor.URI}" target="_blank">view details</a></p>
                     <#else>
                         <p><label style="position: static"  for="licenseText">License text:</label></p>
-                        <p><@s.textarea id="licenseText" name='resource.licenseText' rows="3" cols="60" /></p>
+                        <p><@s.textarea id="licenseText" name='resource.licenseText' rows="4" cols="60" /></p>
                     </#if>
                 </td>
             </tr>

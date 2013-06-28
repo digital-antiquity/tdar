@@ -824,6 +824,7 @@ var _sortFilesAlphabetically= function() {
     var _sessionTimeoutWarning = function() {
         // I RUN ONCE A MINUTE
         // sessionTimeout in seconds
+        if (parseInt(TDAR.common.currentTime)) {
         TDAR.common.currentTime += 60;
         var remainingTime = TDAR.common.sessionTimeout - TDAR.common.currentTime;
         console.log("remaining time in session:" + remainingTime);
@@ -848,6 +849,7 @@ var _sortFilesAlphabetically= function() {
                             "<B>WARNING!</B><BR>Your Session has timed out, any pending changes will not be saved");
         } else {
             setTimeout(TDAR.common.sessionTimeoutWarning, 60000);
+        }
         }
     }
     /*

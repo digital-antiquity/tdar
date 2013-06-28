@@ -152,7 +152,7 @@ $(function(){
 	    <div id="t-abstract" class="clear"
 	        data-tiplabel="Abstract / Description"
 	        data-tooltipcontent="Short description of the <@edit.resourceTypeLabel />.">
-	            <@s.textarea id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+	            <@s.textarea rows="4" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
 	    </div>
 	</div>
 

@@ -118,7 +118,12 @@
 		     </div>
 	         <div class="piechart row">
  	            <@common.generatePieJson resourceCountForUser "resourceCountForUser" />
-	            <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=150 context=true />
+ 	            <script>
+ 	            var pcconfig = {
+ 	               legend: { show:true, location: 's', rendererOptions: {numberColumns: 3} }
+ 	               };
+ 	            </script>
+	            <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=300 context=true config="pcconfig"/>
 	        </div>
 	    </div>
 	</div>

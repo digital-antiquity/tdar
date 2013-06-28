@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html >
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/${themeDir}/settings.ftl" as settings>
 
 <h1>Administrative info for <span>${resource.title}</span></h1>
@@ -7,9 +8,6 @@
 <h2>Usage Stats</h2>
 <#noescape>
 <script>
-$(function() {
-
-
 var results = [];
 var data = [];
 	    <#list usageStatsForResources as stats>
@@ -27,64 +25,9 @@ var data = [];
 			results.push(row${key_index});
 			</#if>
 		</#list>
-
-	<#assign data="results"/>
-	<#assign graphLabel="views &amp; downloads"/>
-
-        $.jqplot.config.enablePlugins = true;
-
-		var _defaults =  {
-            // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
- 			title: "${graphLabel}",
-            animate: !$.jqplot.use_excanvas,
-            seriesDefaults:{
-                renderer:$.jqplot.BarRenderer,
-                pointLabels: { 
-                	show: true, 
-                	location: 'n', 
-                	edgeTolerance: -25
-                },
-	            rendererOptions: {
-	                // Set varyBarColor to tru to use the custom colors on the bars.
-	                varyBarColor: true
-	            }
-            },
-			seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
-            grid: {
-				background: 'rgba(0,0,0,0)',
-	            drawBorder: false,
-    	        shadow: false,
-    	        gridLineColor: 'none',
-    	        borderWidth:0,
-        	    gridLineWidth: 0,
-        	    drawGridlines:false
-          },
-            axes: {
-                xaxis: {
-  	               renderer:$.jqplot.DateAxisRenderer,
-			       tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-                   tickOptions: {
-                        fontFamily: 'Georgia',
-                        fontSize: '8pt',
-                        showGridline: false
-                    }
-                },
-                yaxis: {
-			        showTicks: false,
-			        show:false,
-                    showGridline: false
-                }
-            },
-            highlighter: { show: false }
-        };
-
-         
-        var plot${id?c} = $.jqplot('graph${id?c}', ${data}, _defaults);
-
-});
 </script>
-<div id="graph${id?c}" style="height:120px"></div>
 </#noescape>
+	<@common.lineChart data="results" graphLabel="views &amp; downloads" />
 <table class="tableFormat table">
     <tr>
         <th>views</th>

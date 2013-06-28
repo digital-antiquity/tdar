@@ -11,7 +11,9 @@
 <@nav.creatorToolbar "view" />
 
 <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
-
+<style>
+ul.resource-list {list-style:none;}
+</style>
 		
 
 <@view.pageStatusCallout />

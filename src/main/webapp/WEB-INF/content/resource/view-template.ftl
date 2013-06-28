@@ -245,8 +245,8 @@
     <div class="citeMe">
         <p class="sml">
         ${resource.title}. <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}.</#if> 
-         <#if resource.formattedSourceInformation?has_content>${resource.formattedSourceInformation}</#if> (${siteAcronym} ID: ${resource.id?c})<br/>
-        <#if resource.externalId?has_content>${resource.externalId}
+         <#if resource.formattedSourceInformation?has_content>${resource.formattedSourceInformation}</#if> (${siteAcronym} ID: ${resource.id?c})
+        <#if resource.externalId?has_content>; ${resource.externalId}
         <#elseif resource.lessThanDayOld && !resource.citationRecord>
         <br/>
             <em>Note:</em>A DOI will be generated in the next day for this resource.

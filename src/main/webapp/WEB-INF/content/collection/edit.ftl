@@ -73,7 +73,7 @@
 <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="255" />
 <p class='field'>
 </p>
-<@s.textarea labelposition='top' label='Collection Description' name='resourceCollection.description'  
+<@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  
      cssClass='resizable input-xxlarge' title="Please enter the description " />
 
 

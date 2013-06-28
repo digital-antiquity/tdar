@@ -13,7 +13,7 @@ TDAR.fileupload.addGisValidation(TDAR.fileupload.validator);
 		<br/>
     
     <span data-tiplabel="Currentness &amp; Update Notes" data-tooltipcontent="Please describe how current this dataset is and what the frequency for updates is">
-            <@s.textarea label="Currentness & Update Information" name='geospatial.currentnessUpdateNotes' cssClass='resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+            <@s.textarea rows="4" label="Currentness & Update Information" name='geospatial.currentnessUpdateNotes' cssClass='resizable resize-vertical input-xxlarge' required=true title="A description is required" />
     </span>
 
     <span data-tiplabel="Spatial Reference Sytstem" data-tooltipcontent="FILL ME IN" class="">
