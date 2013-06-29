@@ -493,4 +493,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         }
         return true;
     }
+    
+    public boolean isInitializedAndValid() {
+        return isInitialized() && isValid();
+    }
 }

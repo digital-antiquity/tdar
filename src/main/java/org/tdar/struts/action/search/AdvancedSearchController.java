@@ -335,7 +335,14 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             setMap(latLong);
         }
 
-        if (getMap() != null || (!getGroups().isEmpty() && !getGroups().get(0).getLatitudeLongitudeBoxes().isEmpty()) && getOrientation() == null) {
+        LatitudeLongitudeBox ll = getMap();
+        if (ll == null || !ll.isInitializedAndValid()) {
+            if (!getGroups().isEmpty() && !getGroups().get(0).getLatitudeLongitudeBoxes().isEmpty()) {
+                ll = getGroups().get(0).getLatitudeLongitudeBoxes().get(0);
+            }
+        }
+        
+        if (ll.isInitializedAndValid()) {
             setOrientation(DisplayOrientation.MAP);
         }
         
