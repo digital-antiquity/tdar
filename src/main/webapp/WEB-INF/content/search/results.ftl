@@ -169,7 +169,7 @@
             <#if !map_?has_content && (g[0].latitudeLongitudeBoxes[0])?has_content>
             	<#assign map_ = g[0].latitudeLongitudeBoxes[0] />
             </#if>
-            <#if map_?has_content>
+            <#if map_?has_content && map_.valid && map_.minimumLatitude?has_content >
             TDAR.maps.mapPromise.done(function() {
 	            TDAR.maps.updateResourceRect($(".google-map")[0], ${map_.minimumLatitude?c}, ${map_.minimumLongitude?c}, ${map_.maximumLatitude?c}, ${map_.maximumLongitude?c});
             });
