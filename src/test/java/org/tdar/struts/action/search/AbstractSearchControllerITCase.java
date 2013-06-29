@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Indexable;
@@ -67,6 +70,8 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
 
+    
+    
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
 
     @Autowired
@@ -189,6 +194,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     public static void doSearch(AdvancedSearchController controller, LookupSource resource, Boolean b) {
         Exception e = null;
         String msg = null;
+        Logger logger = LoggerFactory.getLogger(AbstractControllerITCase.class);
         try {
             switch (resource) {
                 case COLLECTION:
@@ -208,12 +214,13 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
             }
         } catch (Exception ex) {
             e = ex;
+            logger.error("exception: {} ", e);
         }
         if (b == Boolean.TRUE) {
             Assert.assertTrue(String.format("there should be an exception %s or returned input %s", e, msg),
                     e != null || AbstractLookupController.INPUT.equals(msg));
         } else if (b == Boolean.FALSE){
-            Assert.assertTrue("there should not be an exception", e == null);
+            Assert.assertTrue("there should not be an exception: " + ExceptionUtils.getFullStackTrace(e), e == null);
             assertEquals(AbstractLookupController.SUCCESS, msg);
         } else {
             // "maybe" state -- in some cases (looped state in AdvancedSearchController.testResultCountsAsBasicUser for example)

@@ -342,7 +342,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             }
         }
         
-        if (ll.isInitializedAndValid()) {
+        if (ll != null && ll.isInitializedAndValid()) {
             setOrientation(DisplayOrientation.MAP);
         }
         
