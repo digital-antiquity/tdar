@@ -3,7 +3,7 @@
 
     //FIXME: the modules should have to do so much setup.  ideally they should just call whatever the page's "main()"
     //          function is.  but we don't have any convention like that.
-    
+
 
     //mock a file upload - similar process as how we render previously uploaded files
     function _mockUpload(helper, filename) {

@@ -48,18 +48,18 @@
       </script>
 
     </li>
-        <li class="media"><a href="<@search.refineUrl/>" rel="noindex"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
+        <li class="media"><a href="<@search.refineUrl/>" rel="noindex"><i class="search-magnify-icon-red" ></i> Refine your search &raquo;</a></li>
 	<#if lookupSource == 'RESOURCE'>
-	        <li class="media"><i class="pull-left search-download-icon-red" ></i><div class="media-body">Download these results &raquo;
+	        <li class="media"><i class="search-download-icon-red" ></i> <span>Download these results &raquo;
 	        <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
 	            <@search.searchLink "download" "to Excel" />
 	            <#if (totalRecords > maxDownloadRecords)>
-	                Limited to the first ${maxDownloadRecords} results.    
+	                Limited to the first ${maxDownloadRecords} results.
 	            </#if>
 	    
 	        <#else>
 	        Login
-	         </#if></div>
+	         </#if></span>
 	        </li>
 	</#if>
 	<!--        <li>Subscribe via &raquo;
@@ -72,16 +72,16 @@
 	        <ul class="tools media-list">
 	                <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">LIST</@s.param>
-	                </@s.url>"><i class="pull-left search-list-icon-red"></i>List (Title)</a></li>
+	                </@s.url>"><i class="search-list-icon-red"></i> List (Title)</a></li>
 	                <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">LIST_FULL</@s.param>
-	                </@s.url>"><i class="pull-left search-list-icon-red"></i>List (Expanded)</a></li>
+	                </@s.url>"><i class="search-list-icon-red"></i> List (Expanded)</a></li>
 	                <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">GRID</@s.param>
-	                </@s.url>"><i class="pull-left search-grid-icon-red"></i>Grid</a></li>
+	                </@s.url>"><i class="search-grid-icon-red"></i> Grid</a></li>
 	                <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">MAP</@s.param>
-	                </@s.url>"><i class="pull-left search-map-icon-red"></i>Map</a></li>
+	                </@s.url>"><i class="search-map-icon-red"></i> Map</a></li>
 	        </ul>
 	</#if>
     <form>
