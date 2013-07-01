@@ -458,6 +458,7 @@ TDAR.maps = function() {
         updateResourceRect: _updateResourceRect,
         setupEditMap: _setupEditMap,
         setupMapResult: _setupMapResult,
+        addBound: _addBound,
         mapPromise: _deferredMap.promise()
     };
 }();
