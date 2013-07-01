@@ -28,6 +28,7 @@ import org.tdar.struts.action.TdarActionSupport;
 import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TConfig;
 import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TVFS;
 
 public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
@@ -117,6 +118,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         IOUtils.closeQuietly(output);
         assertTrue("file should have been created", file.exists());
         assertTrue("file should be non-empty", file.length() > 0);
+        TVFS.umount();
         assertArchiveContents(files, file);
     }
 
