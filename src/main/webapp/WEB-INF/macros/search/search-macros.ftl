@@ -108,7 +108,7 @@
       <link rel="next" href="<@searchUrl path><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@searchUrl>"/>
   </#if>
   <#if  paginationHelper.hasPrevious() >
-      <link rel="previous" href="<@searchUrl path ><@s.param name="startRecord" value="${prevPageStartRecord?c}" /></@searchUrl>"/>
+      <link rel="previous" href="<@searchUrl path ><#if prevPageStartRecord !=0><@s.param name="startRecord" value="${prevPageStartRecord?c}" /><#else><@s.param name="startRecord" value="" /></#if></@searchUrl>"/>
   </#if>
 </#macro>
 
@@ -128,7 +128,11 @@
 <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">
     <@searchLink path linkText>
-        <@s.param name="startRecord" value="${startRecord?c}" />
+    	<#if startRecord != 0>
+    	    <@s.param name="startRecord" value="${startRecord?c}" />
+        <#else>
+	        <@s.param name="startRecord" value="" />
+        </#if>
         <@s.param name="recordsPerPage" value="${recordsPerPage?c}" />
     </@searchLink>
     </span>
