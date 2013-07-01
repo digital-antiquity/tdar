@@ -11,28 +11,14 @@ public class LicenseTypeITCase {
 
     @Test
     public void testImageUrlIsHttpOnHttpConfigration() {
-        setConfiguration(RunWithTdarConfiguration.FAIMS);
-        testEachLicenceImageUri("FAIMS default is currently http!", "http://");
+        assertTrue("FAIMS default is currently http!", LicenseType.CREATIVE_COMMONS_ATTRIBUTION.getImageURI().contains("http://"));
     }
 
     
     @Test
     public void testImageUrlIsHttpsOnHttpsConfigration() {
-        setConfiguration(RunWithTdarConfiguration.TDAR);
-        testEachLicenceImageUri("TDAR default is currently https!", "https://");
+        assertTrue("TDAR default is currently https!", LicenseType.CREATIVE_COMMONS_ATTRIBUTION.getSecureImageURI().contains("https://"));
     }
 
-
-    private void testEachLicenceImageUri(final String errorMessage, final String prefix) {
-        for (LicenseType lt : LicenseType.values()) {
-            if (lt.getImageURI().length() > 0) {
-                assertTrue(errorMessage, lt.getImageURI().startsWith(prefix));
-            }
-        }
-    }
-
-    private void setConfiguration(final String filePath) {
-        TdarConfiguration.getInstance().setConfigurationFile(filePath);
-    }
 
 }
