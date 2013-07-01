@@ -32,7 +32,7 @@ public enum LicenseType implements HasLabel {
     private final String licenseTag;
     private final String descriptionText;
     private final String URI;
-    private final String imageURI;  // the image uri (?) is expected to be served on both http and https. Currently, as at 1st July '13 the CC images do.
+    private final String imageURI; // the image uri (?) is expected to be served on both http and https. Currently, as at 1st July '13 the CC images do.
 
     private LicenseType(String licenseName, String licenseTag, String descriptionText, String URI, String imageURI) {
         this.licenseName = licenseName;
@@ -63,10 +63,12 @@ public enum LicenseType implements HasLabel {
     }
 
     public String getImageURI() {
+        return imageURI;
+    }
+
+    public String getSecureImageURI() {
         String result = imageURI;
-        if (TdarConfiguration.getInstance().isHttpsEnabled()) {
-            result = result.replace("http://", "https://");
-        }
+        result = result.replace("http://", "https://");
         return result;
     }
 

@@ -1167,7 +1167,7 @@ $(function() {
         <tr id="license_details_${licenseCursor}" class="${visible}">
                 <td>
                     <#if (licenseCursor.imageURI != "")>
-                        <a href="${licenseCursor.URI}" target="_blank"><img alt="license image" src="${licenseCursor.imageURI}"/></a>
+                        <a href="${licenseCursor.URI}" target="_blank"><img alt="license image" src="<#if secure>${licenseCursor.secureImageURI}<#else>${licenseCursor.imageURI}</#if>"/></a>
                     </#if>
                 </td>
                 <td>

@@ -874,7 +874,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
     <#if (resource.licenseType??) >
         <h3>License</h3>
         <#if (resource.licenseType.imageURI != "")>
-            <a href="${resource.licenseType.URI}"><img alt="license image" src="${resource.licenseType.imageURI}"/></a>
+            <a href="${resource.licenseType.URI}"><img alt="license image" src="<#if secure>${resource.licenseType.secureImageURI}<#else>${resource.licenseType.imageURI}</#if>"/></a>
         </#if>
         <#if (resource.licenseType.URI != "")>
             <h4>${resource.licenseType.licenseName}</h4>
