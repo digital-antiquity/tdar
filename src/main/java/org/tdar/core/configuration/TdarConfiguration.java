@@ -70,6 +70,10 @@ public class TdarConfiguration {
         this("/tdar.properties");
     }
 
+    /*
+     * Do not use this except for via the @MultipleTdarConfigurationRunner
+     */
+    @Deprecated
     public void setConfigurationFile(String configurationFile) {
         assistant = new ConfigurationAssistant();
         assistant.loadProperties(configurationFile);
