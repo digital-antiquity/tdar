@@ -17,7 +17,8 @@
     <h1>${authenticatedUser.properName}'s Dashboard</h1>
 
     <#if payPerIngestEnabled>
-    <div class="news alert">
+    <div class="news alert" id="alert-charging">
+		<button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-charging">&times;</button>
         <B>${siteAcronym} Update:</B>
         Please note we are now charging to upload materials to ${siteAcronym}, please see <a href="http://www.tdar.org/about/pricing"> our website</a> for more information. 
         <br/>
@@ -27,8 +28,14 @@
         <br/>
     </div>
     </#if>
-</div>
 
+    <div class="news alert" id="alert-jar">
+		<button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-jar">&times;</button>
+        <B>${siteAcronym} Update:</B>
+        Welcome to Jar! What's new?
+        <br/>
+    </div>
+</div>
 
 
 <#if overdrawnAccounts?has_content>
@@ -71,6 +78,9 @@
      The resources you can access are listed below.  To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or 
      <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on  the "upload" button above.
     </#if>
+    <p><strong>Jump To:</strong><a href="#project-list">Browse Resources</a> | <a href="#collection-section">Collections</a> | <a href="#divAccountInfo">Your Profile</a> | <a href="#billing">Billing Accounts</a> | <a href="#boomkarks">Bookmarks</a>
+    </p>
+    <hr/>
     </div>
 </div>
 
@@ -205,7 +215,7 @@
 
 <#macro collectionsSection>
 	
-   <div class="">
+   <div class="" id="collection-section">
    <h2>Collections You Created </h2>
       <@listCollections resourceCollections>
           <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
@@ -233,7 +243,7 @@
 	</div>
 
 	<#if payPerIngestEnabled>
-	    <div class="span5">
+	    <div class="span5" id="billing">
 	       <@common.billingAccountList accounts />
 	    </div>
 	</#if>
@@ -277,4 +287,19 @@
       </ul>
 
 </#macro>
+<script>
+$(document).ready(function() {
+	$("[data-dismiss-cookie]").each(function(){
+		var $this = $(this);
+		var id = $this.data('dismiss-cookie');
+		if ($.cookie(id)) {
+			$("#"+id).hide();
+		} else {
+			$this.click(function() {
+				$.cookie(id, id);
+			});
+		}
+	});
+});
+</script>
 </#escape>
