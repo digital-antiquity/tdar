@@ -625,7 +625,6 @@ $(document).ready(function() {
 		$("#bigImage").attr('src',$this.data('url'));
 		$("#downloadText").html($this.attr('alt'));
 		});
-//	$('#myCarousel').carousel();
 });
 </script>
 
@@ -684,8 +683,8 @@ ${_date?string('MM/dd/yyyy')}<#t>
 <a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="${target}" >${title}</a>
 </#macro>
 
-<#macro resourceCollectionTable removeable=false>
-    <table class="table table-condensed table-hover" id="tblCollectionResources">
+<#macro resourceCollectionTable removeable=false tbid="tblCollectionResources">
+    <table class="table table-condensed table-hover" id="${tbid}">
         <colgroup>
             <col style="width:4em">
             <col>

@@ -363,7 +363,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         }
 
         Object[] params = { resourceId, projectId, personId, collectionId, statuses_};
-        logger.info("admin stats [resources: {} projects: {} people: {} collections: {} statuses: {}  ]", params);
+        logger.trace("admin stats [resources: {} projects: {} people: {} collections: {} statuses: {}  ]", params);
         Query query = null;
         if (CollectionUtils.isNotEmpty(resourceId)) {
             query = getCurrentSession().getNamedQuery(SPACE_BY_RESOURCE);

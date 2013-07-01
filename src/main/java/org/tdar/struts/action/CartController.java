@@ -51,7 +51,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String A_BILING_ADDRESS_IS_REQUIRED = "a biling address is required";
     public static final String VALID_PHONE_NUMBER_IS_REQUIRED = "a valid phone number is required (212) 555-1212";
     public static final String ENTER_A_BILLING_ADDERESS = "please enter a billing adderess";
-    public static final String CANNOT_MODIFY = "cannot modify existing invocie";
+    public static final String CANNOT_MODIFY = "cannot modify existing invoice";
     public static final String VALID_PAYMENT_METHOD_IS_REQUIRED = "a valid payment method is required";
     private static final long serialVersionUID = 1592977664145682926L;
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();

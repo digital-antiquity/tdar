@@ -288,8 +288,9 @@ function _setupDashboardDataTable() {
 }
 
 
-function _registerResourceCollectionDataTable() {
+function _registerResourceCollectionDataTable(dataTable) {
     // if user is editing existing collection, gather the hidden elements and put them in the 'seleted rows' object
+    var $dataTable = $(dataTable);
     var selectedRows = {};
     $.each($('input', '#divSelectedResources'), function(ignored, item){
         var elem = this;
@@ -299,9 +300,8 @@ function _registerResourceCollectionDataTable() {
     $dataTable.data('selectedRows', selectedRows);
     
     // hide the selected items table if server hasn't prepopulated it
-    var $table = $('#tblCollectionResources');
-    if($table.find('tr').length==1) {
-        $table.hide();
+    if($dataTable.find('tr').length==1) {
+        $dataTable.hide();
     }
     _scrollOnPagination();
 }

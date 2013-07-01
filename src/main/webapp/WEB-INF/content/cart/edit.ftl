@@ -119,8 +119,8 @@
     <div class="control-group">
         <label class="control-label">Invoice Owner</label>
         <div class="controls">
-        <@edit.userRow person=blankAuthorizedUser.user _indexNumber="" isDisabled=false includeRole=false prefix="owner" 
-                includeRights=false isUser=true includeRepeatRow=true/>
+        
+                <@edit.registeredUserRow person=blankAuthorizedUser.user _indexNumber="" includeRepeatRow=false/>
 
             <@nav.clearDeleteButton id="clearAssignedOwner" />
         </div>
@@ -135,7 +135,7 @@
 $(document).ready(function(){
     TDAR.common.initEditPage($('#MetadataForm')[0]);
     TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/cart/api"/>");
-    applyPersonAutoComplete($(".userAutoComplete"), true, false);
+    TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete"), true, false);
 });
 </script>
 

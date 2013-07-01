@@ -11,19 +11,6 @@
 </#if>
 <meta name="lastModifiedDate" content="$Date$"/>
 
-<#noescape>
-<script type='text/javascript'>
-	$(function(){
-	    'use strict';
-	    var form = $("#metadataForm")[0];
-	    TDAR.common.initEditPage(form);
-	    TDAR.datatable.registerResourceCollectionDataTable();
-
-	});
-</script>
-</#noescape>
-  
-
 
 <@edit.resourceDataTableJavascript false true />
 </head>
@@ -142,13 +129,24 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 
 <div class="glide" >
     <h2>Selected Resources</h2>
-    <@view.resourceCollectionTable true />
+    <@view.resourceCollectionTable removeable=true tbid="tblCollectionResources"/>
 </div>
 
 
     <@edit.submit fileReminder=false />
 </@s.form>
 
+<#noescape>
+<script type='text/javascript'>
+	$(function(){
+	    'use strict';
+	    var form = $("#metadataForm")[0];
+	    TDAR.common.initEditPage(form);
+	    TDAR.datatable.registerResourceCollectionDataTable("#tblCollectionResources");
+
+	});
+</script>
+</#noescape>
 
 </body>
 </#escape>

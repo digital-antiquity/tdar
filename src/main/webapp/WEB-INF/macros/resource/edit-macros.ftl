@@ -1334,7 +1334,7 @@ $(function() {
             <#if user??>
                 <div class="controls-row repeat-row" id="userrow_${user_index}_">
                     <div class="span6">
-                        <@userRow person=user _indexNumber=user_index isUser=true includeRepeatRow=false/>
+                        <@registeredUserRow person=user _indexNumber=user_index includeRepeatRow=false/>
                     </div>
                     <div class="span1">
                         <@nav.clearDeleteButton id="user${user_index}"  />

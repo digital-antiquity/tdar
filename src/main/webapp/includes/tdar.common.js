@@ -660,14 +660,19 @@ var _sortFilesAlphabetically= function() {
     
     //return html-encoded copy of provided string
     var _htmlEncode = function(value) {
-	    if (value == undefined || value == '')
-	        return "";
-	    return $('<div/>').text(value).html();
-		// older vesrion
-		//    	if (typeof value === "undefined" || str === '') return "";
-		//            return $('<div></div>').text(str).html();
+        if (value == undefined || value == '')
+            return "";
+        return $('<div/>').text(value).html();
+        // older vesrion
+        //      if (typeof value === "undefined" || str === '') return "";
+        //            return $('<div></div>').text(str).html();
     }
-    
+
+    //return html-encoded copy of provided string
+    var _htmlDoubleEncode = function(value) {
+        return _htmlEncode(_htmlEncode(value));
+    }
+
     var _determineResponsiveClass = function(width) {
         return width > 1200 ? 'responsive-large-desktop' :
             width > 979 ? 'responsive-desktop' :
@@ -1119,6 +1124,7 @@ var _sortFilesAlphabetically= function() {
         "sprintf": _sprintf,
         "htmlDecode": _htmlDecode,
         "htmlEncode":_htmlEncode,
+        "htmlDoubleEncode":_htmlDoubleEncode,
         "applyWatermarks": _applyWatermarks,
         "replaceAttribute": _replaceAttribute,
         "delayJiraButton": _delayJiraButton

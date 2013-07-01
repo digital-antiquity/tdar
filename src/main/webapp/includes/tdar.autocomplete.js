@@ -90,8 +90,8 @@ function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
         }
         //double-encode on custom render
         var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
-                "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + htmlEncode(htmlEncode(item.properName)) + "(" +
-                htmlEncode(htmlEncode(item.email)) + ")</span><br/><span class='institution'>" + htmlEncode(htmlEncode(institution)) + "</span></p>";
+                "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + TDAR.common.htmlDoubleEncode(item.properName) + "(" +
+                TDAR.common.htmlDoubleEncode(item.email) + ")</span><br/><span class='institution'>" + TDAR.common.htmlDoubleEncode(institution) + "</span></p>";
         if (item.id == -1 && options.showCreate) {
             htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
                     "<span class='name'><em>Create a new person record</em></span> </p>";
@@ -268,7 +268,9 @@ function _applyGenericAutocomplete($elements, options) {
         minLength : options.minLength || 0,
         select : function(event, ui) {
             // 'this' is the input box element.
-            $elem = $(this);
+            console.log(event.target);
+            console.log(ui);
+            var $elem = $(event.target);
             _applyDataElements(this, ui.item);
 
             //cancel any pending searches once the user selects an item
@@ -380,7 +382,7 @@ function _applyResourceAutocomplete($elements, type) {
         }
         //double-encode on custom render
         return $("<li></li>").data("item.autocomplete", item).append(
-                "<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + htmlEncode(htmlEncode(item.value)) + link + "</a>").appendTo(ul);
+                "<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>").appendTo(ul);
     };
 
     _applyGenericAutocomplete($elements, options);
