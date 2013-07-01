@@ -401,7 +401,7 @@ $(function() {
                        "sTitle" : "${column.displayName?js_string}",
                        "fnRender": function(obj) {
                            var val = obj.aData[${column_index?c} + ${offset}];
-                           var str = htmlEncode(val);
+                           var str = TDAR.common.htmlEncode(val);
                            return str;
                            }  
                      }<#if column_has_next >,</#if>
