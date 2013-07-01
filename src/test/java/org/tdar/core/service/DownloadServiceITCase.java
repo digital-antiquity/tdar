@@ -15,6 +15,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.TestConstants;
@@ -60,6 +61,9 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
             fail("file is not an archive:" + archive);
 
         HashMap<String, TFile> dmap = new HashMap<>();
+        Assert.assertNotNull(arc);
+        Assert.assertNotNull(arc.listFiles());
+        logger.info("files:{}", arc.list());
         for (TFile file : arc.listFiles()) {
             dmap.put(file.getName(), file);
         }
