@@ -51,9 +51,9 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     }
 
     public void assertArchiveContents(Collection<File> expectedFiles, File archive) throws IOException {
-        TConfig config = TConfig.push();
         TConfig.get().setArchiveDetector(TArchiveDetector.ALL);
-        TFile arc = new TFile(archive);
+        TFile arc = new TFile(archive, TArchiveDetector.ALL);
+
         if (!arc.exists())
             fail("file does not exist:" + archive);
         if (!arc.isArchive())

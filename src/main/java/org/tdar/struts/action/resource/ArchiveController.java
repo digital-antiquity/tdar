@@ -40,8 +40,6 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
     @Override
     public Set<String> getValidFileExtensions() {
         Set<String> extensionsForTypes = new HashSet<>(analyzer.getExtensionsForType(ResourceType.ARCHIVE));
-        // add the format type used by FAIMS
-        extensionsForTypes.add("bz2");
         return extensionsForTypes;
     }
 

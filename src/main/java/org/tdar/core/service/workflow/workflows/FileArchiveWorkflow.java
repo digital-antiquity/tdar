@@ -20,6 +20,7 @@ public class FileArchiveWorkflow extends BaseWorkflow {
         registerFileExtension("tgz", ResourceType.SENSORY_DATA, ResourceType.ARCHIVE);
         registerFileExtension("tar", ResourceType.SENSORY_DATA, ResourceType.ARCHIVE);
         registerFileExtension("zip", ResourceType.SENSORY_DATA, ResourceType.ARCHIVE);
+        registerFileExtension("bz2", ResourceType.SENSORY_DATA, ResourceType.ARCHIVE);
 
         addTask(ListArchiveTask.class, WorkflowPhase.PRE_PROCESS);
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
