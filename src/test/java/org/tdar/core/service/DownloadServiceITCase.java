@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -46,18 +44,9 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     @After
     public void cleanup() throws IOException {
         try {
-        FileUtils.cleanDirectory(ROOT_DEST);
+            FileUtils.cleanDirectory(ROOT_DEST);
         } catch (Exception e) {
             logger.error("{} ", e);
-        }
-    }
-
-    // hashmap representing single level of a directory
-    private class DirectoryMap extends HashMap<String, TFile> {
-        public DirectoryMap(TFile dir) {
-            for (TFile file : dir.listFiles()) {
-                put(file.getName(), file);
-            }
         }
     }
 
@@ -69,8 +58,12 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
             fail("file does not exist:" + archive);
         if (!arc.isArchive())
             fail("file is not an archive:" + archive);
-        DirectoryMap dmap = new DirectoryMap(arc);
-        Set<String> expectedNames = new HashSet<String>();
+
+        HashMap<String, TFile> dmap = new HashMap<>();
+        for (TFile file : arc.listFiles()) {
+            dmap.put(file.getName(), file);
+        }
+
         List<String> errs = new ArrayList<String>();
         for (File expected : expectedFiles) {
             TFile actual = (TFile) dmap.get(expected.getName());

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -200,7 +201,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
             bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
         } catch (Exception e) {
             logger.info(e.getMessage());
-            assertTrue(e.getMessage().contains("the following columns are required: Date Created (Year)"));
+            assertTrue("exception:" + ExceptionUtils.getFullStackTrace(e),e.getMessage().contains("the following columns are required: Date Created (Year)"));
         }
     }
 

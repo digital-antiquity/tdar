@@ -30,6 +30,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.FileSystemResourceDao;
+import org.tdar.core.exception.PdfCoverPageGenerationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 /*
@@ -158,10 +159,10 @@ public class PdfService implements Serializable {
                 
                 return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
             } else {
-                throw new TdarRecoverableRuntimeException("file type was not valid or file was null");
+                throw new PdfCoverPageGenerationException("file type was not valid or file was null");
             }
         } catch (Throwable e) {
-            throw new TdarRecoverableRuntimeException("could not add Cover Page", e);
+            throw new PdfCoverPageGenerationException("could not add Cover Page", e);
         }
     }
 

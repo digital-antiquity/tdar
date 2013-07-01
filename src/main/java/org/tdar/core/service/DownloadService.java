@@ -28,6 +28,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.PdfCoverPageGenerationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.TdarActionException;
@@ -152,6 +153,8 @@ public class DownloadService {
             try {
                 resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
                 dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
+            } catch (PdfCoverPageGenerationException cpge) {
+                logger.trace("Error occured while merging cover page onto " + irFileVersion, cpge);
             } catch (Exception e) {
                 logger.error("Error occured while merging cover page onto " + irFileVersion, e);
             }
