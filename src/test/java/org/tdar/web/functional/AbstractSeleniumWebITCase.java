@@ -38,7 +38,9 @@ public abstract class AbstractSeleniumWebITCase {
 
     public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
+
     private boolean ignoreJavascriptErrors = false;
+    private String pageText = null;
 
     WebDriver driver;
     protected Logger logger = LoggerFactory.getLogger(getClass());
@@ -62,7 +64,7 @@ public abstract class AbstractSeleniumWebITCase {
         
         public void beforeClickOn(WebElement element, WebDriver driver) {
             if(elementCausesNavigation(element)) {
-                reportJavascriptErrors();
+                beforePageChange();
             }
         }
         
@@ -74,9 +76,22 @@ public abstract class AbstractSeleniumWebITCase {
         }
         
         public void beforeNavigateTo(String url, WebDriver driver) {
-            reportJavascriptErrors();
+            beforePageChange();
         }
     };
+
+    private void beforePageChange() {
+        reportJavascriptErrors();
+        clearPageCache();
+    }
+
+    private void afterPageChange() {
+
+    }
+
+    private void clearPageCache() {
+        pageText = null;
+    }
 
     @Before
     public void before() throws MalformedURLException {
@@ -247,7 +262,11 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public String getText() {
-        return find("body").getText();
+        if(pageText == null) {
+            WebElement body = waitFor("body");
+            pageText = body.getText();
+        }
+        return pageText;
     }
 
     @SuppressWarnings("unchecked")
@@ -442,4 +461,11 @@ public abstract class AbstractSeleniumWebITCase {
         }
     }
 
+    protected boolean sourceContains(String substring) {
+        return getSource().contains(substring);
+    }
+
+    protected boolean textContains(String substring) {
+        return getText().toLowerCase().contains(substring.toLowerCase());
+    }
 }

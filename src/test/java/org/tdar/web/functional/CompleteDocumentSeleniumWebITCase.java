@@ -324,15 +324,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         assertTrue(sourceContains(TEST_DOCUMENT_NAME));
 
     }
-    
-    private boolean sourceContains(String substring) {
-        return getSource().contains(substring);
-    }
-    
-    private boolean textContains(String substring) {
-        return getText().toLowerCase().contains(substring.toLowerCase());
-    }
-    
+
     @Test @Ignore
     public void testAddAnotherClick() {
         login();
