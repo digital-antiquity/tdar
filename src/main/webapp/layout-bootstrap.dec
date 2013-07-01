@@ -87,8 +87,9 @@
                 <#if (authenticatedUser??) > 
 
                     <p id="welcome-menu" class="welcome no-print ">
-                        Welcome back, <a href="">${authenticatedUser.properName}</a>
+                        Welcome back, <a href="">${authenticatedUser.properName}
                         <i class="caret drop-down"></i>
+                        </a>
                     </p>
     
                     <div class="welcome-drop no-print ">

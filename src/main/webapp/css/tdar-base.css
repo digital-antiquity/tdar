@@ -244,7 +244,7 @@ header .welcome {
 	top: 11px;
 	right: 0;
 	margin: 0;
-	margin-right:12px !important;	
+//	margin-right:12px !important;	
 	font-weight: 700;
 	font-size: 11px;
 	color: #999;
@@ -254,7 +254,7 @@ header .welcome {
 }
 
 header .welcome a {
-	padding-right: 13px;
+	// padding-right: 13px;
 	// background: url(/images/r4/bg-welcome.png) right 3px no-repeat;
 }
 

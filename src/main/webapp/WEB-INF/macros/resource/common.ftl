@@ -373,7 +373,7 @@ $(document).ready(function(){
 	    	<#if (cache.count > 0)>
 	    	<#local seen=true />
 	    	<#noescape>
-		        resourceGraphData.push(["${cache.resourceType.plural?js_string}",${(cache.count!0)?c},"${cache.resourceType?js_string}",${(cache.count!0)?c}]);
+		        resourceGraphData.push(["${cache.resourceType.plural?replace("(?<=[\\w\\:]) (?=[\\w])","<br>","r")?js_string}",${(cache.count!0)?c},"${cache.resourceType?js_string}",${(cache.count!0)?c}]);
 	    	</#noescape>
 	        </#if>
 	    </#list>
