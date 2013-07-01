@@ -62,7 +62,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
         HashMap<String, TFile> dmap = new HashMap<>();
         Assert.assertNotNull(arc);
-        Assert.assertNotNull(arc.listFiles());
+        Assert.assertNotNull(((File)arc).listFiles());
         logger.info("files:{}", arc.list());
         for (TFile file : arc.listFiles()) {
             dmap.put(file.getName(), file);
