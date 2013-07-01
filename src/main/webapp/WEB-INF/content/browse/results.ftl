@@ -59,7 +59,8 @@ ul.resource-list {list-style:none;}
 			<ul>
 			<#list keywords as keyword>
 			<#if (keyword.@count?number >= nodeModel.personInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
-			<#if keyword.@name?has_content && !keyword.@name?contains("Country Code")>
+			
+			<#if keyword.@name?has_content && !keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !!keyword.@home?contains("Fips Code")>
 			<li>${keyword.@name}</li>
 			</#if>
 			</#if>
@@ -157,6 +158,8 @@ ul.resource-list {list-style:none;}
 				
                 <@common.resourceUsageInfo />
 				<#if (editor || id == authenticatedUser.id) >
+
+<#if creator.registered >
 <div class="row">
 	<div class="span6">
 	       <@common.billingAccountList accounts />
@@ -170,7 +173,7 @@ ul.resource-list {list-style:none;}
 			</ul>
 	</div>
 </div>				
-					<#if creator.addresses?has_content >
+</#if>					<#if creator.addresses?has_content >
 					<h3>Addresses</h3>
 					<div class="row">
 						<#list creator.addresses  as address>
