@@ -230,10 +230,10 @@ drop table test;
 --DONT-PROCESS-- INSERT INTO resource VALUES (4291, '2013-07-01 16:46:42.454', '2013-07-01 16:46:42.454', 'test', NULL, 0, 'ACTIVE', 'GEOSPATIAL', 0, 'ACTIVE', 'sample geospatial', '', 8092, 8092, 8092, NULL);
 --DONT-PROCESS-- INSERT INTO resource VALUES (4292, '2013-07-01 17:21:35.881', '2013-07-01 17:21:35.881', 'this is a test', NULL, 0, 'ACTIVE', 'IMAGE', 0, 'ACTIVE', 'sample image', '', 8092, 8092, 8092, NULL);
 
---DONT-PROCESS-- INSERT INTO resource_access_statistics VALUES (2, '2013-07-01 16:42:34.693', 4289);
---DONT-PROCESS-- INSERT INTO resource_access_statistics VALUES (3, '2013-07-01 16:44:51.07', 4290);
---DONT-PROCESS-- INSERT INTO resource_access_statistics VALUES (4, '2013-07-01 16:46:43.537', 4291);
---DONT-PROCESS-- INSERT INTO resource_access_statistics VALUES (5, '2013-07-01 16:46:43.537', 4292);
+--DONT-PROCESS-- INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:42:34.693', 4289);
+--DONT-PROCESS-- INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:44:51.07', 4290);
+--DONT-PROCESS-- INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:46:43.537', 4291);
+--DONT-PROCESS-- INSERT INTO resource_access_statistics ( date_accessed, resource_id) VALUES ('2013-07-01 16:46:43.537', 4292);
 --DONT-PROCESS-- INSERT INTO information_resource VALUES (NULL, 2013, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4289, NULL, NULL, NULL, NULL, NULL);
 --DONT-PROCESS-- INSERT INTO information_resource VALUES ('', 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4290, NULL, NULL, NULL, NULL, NULL);
 --DONT-PROCESS-- INSERT INTO information_resource VALUES (NULL, 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4291, NULL, NULL, NULL, NULL, NULL);
