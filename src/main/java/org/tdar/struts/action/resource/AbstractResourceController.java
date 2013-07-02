@@ -1040,7 +1040,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     })
     public String viewAdmin() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ADMIN_INFO);
-        view();
+        //view();
         setResourceLogEntries(getResourceService().getLogsForResource(getPersistable()));
         setUsageStatsForResources(getResourceService().getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
                 Arrays.asList(getPersistable().getId())));
