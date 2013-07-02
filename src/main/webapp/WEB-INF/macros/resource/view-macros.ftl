@@ -66,56 +66,34 @@ View freemarker macros
 			        <button type="button" class="btn btn-small" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
 			    </div>
 			    <script type="text/javascript">
-$(function(){
-var el, dragged, onMouseDown, onMouseUp, onStartDrag
+				    $(function(){
+				     $( ".orgChart.interactive" ).draggable({
+
+
+              });
+var el, dragged
 
 el = $( '.orgChart.interactive' );
-el.find("a,div").click(function(evt) {
-    if(dragged) {
-        console.log("a,div click");
-        evt.preventDefault();
-        evt.stopPropagation();
-        return false;
-    }
-});
 
 onMouseDown = function( ) {
   dragged = false;
 }
 
 onMouseUp = function( event ) {
-  console.log("mouse up");
   if( !dragged ) {
     console.log('no drag, normal click')
   } else {
-  	event.preventDefault();
+  	event.preventDefault(); 
   }
 }
 
 onStartDrag = function( event) {
   dragged = true;
-//  	event.preventDefault();
-
+//  	event.preventDefault(); 
 }
 el.on( 'mousedown', onMouseDown );
 el.on( 'mouseup', onMouseUp );
-el.on( 'click', function(evt){
-    console.log("click");
-    if(dragged) {
-        console.log("was dragged, prevent default");
-        evt.preventDefault();
-        return false;
-    }
-});
-
-el.draggable( {
-    start: onStartDrag,
-    stop: function(evt, ui ){
-        console.dir(evt.target);
-        console.log("stop drag");
-        evt.stopPropagation();
-    }
-} );
+el.draggable( { start: onStartDrag } );
 
 
 				        $('#btnOntologyShowMore').click(function() {
