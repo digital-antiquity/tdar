@@ -2629,6 +2629,7 @@ INSERT INTO resource_creator (id, role, sequence_number, creator_id, resource_id
 -- END extract from SQLExtract
 -- ====================================================================================================================----
 -- added by jim 6/1/2013
+-- FIXME add field names so we're not dealing with insertion order bugs
 INSERT INTO collection VALUES (1575, '2013-07-01 16:49:15.583', '2013-07-01 16:49:15.583', 'this is a test', 'sample collection', 'LIST', 'TITLE', 'SHARED', true, 8092, NULL, 8092);
 INSERT INTO resource VALUES (4289, '2013-07-01 16:42:32.355', '2013-07-01 16:42:32.355', 'this is a test ', NULL, 0, 'ACTIVE', 'SENSORY_DATA', 0, 'ACTIVE', 'sample sensorydata', '', 8092, 8092, 8092, NULL);
 INSERT INTO resource VALUES (4290, '2013-07-01 16:44:49.712', '2013-07-01 16:44:49.712', 'this is a test', NULL, 0, 'ACTIVE', 'VIDEO', 0, 'ACTIVE', 'sample video', '', 8092, 8092, 8092, NULL);
@@ -2643,6 +2644,8 @@ INSERT INTO information_resource VALUES (NULL, 2013, 2010, false, false, false, 
 INSERT INTO information_resource VALUES ('', 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4290, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO information_resource VALUES (NULL, 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4291, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO information_resource VALUES (NULL, 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4292, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO dataset (id) values(4291);
+INSERT INTO dataset (id) values(4289);
 INSERT INTO sensory_data VALUES (NULL, '', '', '', '', NULL, NULL, NULL, '', NULL, '', false, '', false, false, '', false, false, NULL, false, '', '', '', '', NULL, false, false, false, false, '', NULL, '', NULL, '', false, '', NULL, NULL, NULL, '', NULL, NULL, NULL, NULL, false, 4289);
 INSERT INTO video VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 4290);
 INSERT INTO geospatial VALUES ('hipster-level currentness', 'bogus projection information', '', '', 4291);

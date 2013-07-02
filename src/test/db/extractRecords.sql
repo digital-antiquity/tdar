@@ -238,6 +238,11 @@ drop table test;
 --DONT-PROCESS-- INSERT INTO information_resource VALUES ('', 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4290, NULL, NULL, NULL, NULL, NULL);
 --DONT-PROCESS-- INSERT INTO information_resource VALUES (NULL, 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4291, NULL, NULL, NULL, NULL, NULL);
 --DONT-PROCESS-- INSERT INTO information_resource VALUES (NULL, 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4292, NULL, NULL, NULL, NULL, NULL);
+
+-- FIXME add field names so we're not dealing with insertion order bugs
+--DONT-PROCESS-- INSERT INTO dataset (id) values(4291);
+--DONT-PROCESS-- INSERT INTO dataset (id) values(4289);
+
 --DONT-PROCESS-- INSERT INTO sensory_data VALUES (NULL, '', '', '', '', NULL, NULL, NULL, '', NULL, '', false, '', false, false, '', false, false, NULL, false, '', '', '', '', NULL, false, false, false, false, '', NULL, '', NULL, '', false, '', NULL, NULL, NULL, '', NULL, NULL, NULL, NULL, false, 4289);
 --DONT-PROCESS-- INSERT INTO video VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 4290);
 --DONT-PROCESS-- INSERT INTO geospatial VALUES ('hipster-level currentness', 'bogus projection information', '', '', 4291);
