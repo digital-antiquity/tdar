@@ -1,4 +1,3 @@
-
 /**
  * 
  * @author Adam Brin
@@ -23,26 +22,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.web.AbstractWebTestCase;
 
 //TODO: implement a workaround for file uploads, including tricking fileupload ui to render new file proxy rows   
 //TODO: click on 'add row' buttons to create the element names referenced in the docValMap. 
 //TODO: refactor the block-of-doom on near line 220.  
 
-
-public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase {
+public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();
@@ -50,15 +45,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
     public static Map<String, String> docUnorderdValMap = new HashMap<String, String>();
     public static List<String> alternateTextLookup = new ArrayList<String>();
     public static List<String> alternateCodeLookup = new ArrayList<String>();
-    
-    
 
-    @After
-    public void logout() {
-        gotoPage("/logout");
-    }
-    
-    
     public CompleteDocumentSeleniumWebITCase() {
         docValMap = new LinkedHashMap<String, String>();
         // removing inline implementation of HashMap to remove serialization warning
@@ -82,14 +69,14 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         // docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
-//        docValMap.put("authorizedUsers[0].user.id", "121");
-//        docValMap.put("authorizedUsers[1].user.id", "5349");
-//        docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-//        docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-//        docValMap.put("authorizedUsers[0].user.properName", "Michelle Elliott");
-//        docValMap.put("authorizedUsers[1].user.properName", "Joshua Watts");
-//        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
-//        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
+        // docValMap.put("authorizedUsers[0].user.id", "121");
+        // docValMap.put("authorizedUsers[1].user.id", "5349");
+        // docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+        // docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
+        // docValMap.put("authorizedUsers[0].user.properName", "Michelle Elliott");
+        // docValMap.put("authorizedUsers[1].user.properName", "Joshua Watts");
+        // alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
+        // alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         alternateTextLookup.add(Language.SPANISH.getLabel());
@@ -101,10 +88,10 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         docValMap.put("document.seriesName", "series title");
         docValMap.put("document.seriesNumber", "series number");
         docValMap.put("document.copyLocation", "copy location");
-        //book title, journal name, issn field not relevant for OTHER documentType
-//        docValMap.put("document.bookTitle", "book title");
-//        docValMap.put("document.journalName", "journal name");
-//        docValMap.put("document.issn", "0002-9114");
+        // book title, journal name, issn field not relevant for OTHER documentType
+        // docValMap.put("document.bookTitle", "book title");
+        // docValMap.put("document.journalName", "journal name");
+        // docValMap.put("document.issn", "0002-9114");
         docValMap.put("document.startPage", "mcmxvii");
         docValMap.put("document.endPage", "MMMvii");
         docValMap.put("document.journalNumber", "1");
@@ -115,15 +102,14 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         docValMap.put("otherKeywords[0]", "other");
         docValMap.put("uncontrolledCultureKeywords[0]", "German");
         docValMap.put("geographicKeywords[0]", "Georgia");
-        
-        
-        //FIXME: selenium can't manipulate these because they aren't visible.  That said,  we should do it the way a user would (e.g. 43°11′50″N)
-//        docValMap.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
-//        docValMap.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
-//        docValMap.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
-//        docValMap.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
-//        
-        
+
+        // FIXME: selenium can't manipulate these because they aren't visible. That said, we should do it the way a user would (e.g. 43°11′50″N)
+        // docValMap.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
+        // docValMap.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
+        // docValMap.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
+        // docValMap.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
+        //
+
         docValMap.put("temporalKeywords[0]", "before time");
         docValMap.put("coverageDates[0].startDate", "1200");
         docValMap.put("coverageDates[0].endDate", "1500");
@@ -159,15 +145,15 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         docUnorderdValMap.put("resourceNotes[5].note", "I'm not internationally known, but I'm known to rock a microphone.");
 
     }
-    
+
     private void prepIndexedFields(Collection<String> fieldNames) {
-        for(String fieldName : fieldNames) {
-            if(isIndexedField(fieldName)) {
+        for (String fieldName : fieldNames) {
+            if (isIndexedField(fieldName)) {
                 findOrCreateIndexedField(fieldName);
             }
         }
     }
-    
+
     private void prepIndexedFields() {
         prepIndexedFields(docValMap.keySet());
         prepIndexedFields(docMultiValMap.keySet());
@@ -176,11 +162,8 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
 
     @Test
     public void testCreateDocumentEditSavehasResource() {
-        reindex();
-        login();
         gotoPage("/document/add");
         WebElement form = find("#metadataForm").first();
-        
 
         HashMap<String, String> docValMap2 = new HashMap<String, String>();
         docValMap2.put("document.title", "My Sample Document");
@@ -200,13 +183,13 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         }
 
         submitForm();
-        
+
         String path = getDriver().getCurrentUrl();
         logger.info(find("body").getText());
-        assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));        
+        assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));
         assertTrue("expected value on view page", sourceContains(ORIGINAL_START_DATE));
         assertTrue("expected value on view page", sourceContains(ORIGINAL_END_DATE));
-        
+
         assertEquals("count of edit buttons", 1, find(By.partialLinkText("EDIT")).size());
         find(By.partialLinkText("EDIT")).click();
         expandAllTreeviews();
@@ -226,14 +209,11 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
 
     @Test
     public void testCreateDocument() {
-        
-        reindex();
-        login();
         gotoPage("/document/add");
         expandAllTreeviews();
-        prepIndexedFields();        
+        prepIndexedFields();
         File uploadFile = new File(TEST_DOCUMENT);
-        
+
         clearFileInputStyles();
         find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
         waitFor(".delete-button");
@@ -241,18 +221,18 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
 
         docValMap.putAll(docUnorderdValMap);
 
-        //fill in various text fields
-        for(Map.Entry<String, String> entry : docValMap.entrySet()) {
+        // fill in various text fields
+        for (Map.Entry<String, String> entry : docValMap.entrySet()) {
             find(By.name(entry.getKey())).val(entry.getValue());
         }
-                
-        //check various keyword checkboxes
+
+        // check various keyword checkboxes
         for (String key : docMultiValMap.keySet()) {
-            for(String val : docMultiValMap.get(key)) {
+            for (String val : docMultiValMap.get(key)) {
                 find(By.name(key)).val(val);
             }
         }
-        
+
         logger.info(getDriver().getPageSource());
         submitForm();
 
@@ -287,7 +267,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
         assertFalse(sourceContains("embargo"));
         for (String key : docMultiValMapLab.keySet()) {
             for (String val : docMultiValMapLab.get(key)) {
-                assertTrue("looking for '" + val + "' in source" , sourceContains(val));
+                assertTrue("looking for '" + val + "' in source", sourceContains(val));
             }
         }
 
@@ -325,33 +305,33 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractSeleniumWebITCase
 
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void testAddAnotherClick() {
-        login();
         gotoPage("/document/add");
         String fieldName = "resourceNotes[5].note";
         WebElementSelection elems = find(By.name(fieldName));
 
         assertEquals(elems.size(), 0);
         assertTrue(isIndexedField(fieldName));
-        
-        //find element, or click until found.
+
+        // find element, or click until found.
         WebElement elem = findOrCreateIndexedField(fieldName);
         assertNotNull(elem);
-        
+
         assertEquals(elem.getAttribute("name"), fieldName);
     }
-    
+
     /**
      * jquery treeview plugin has no method for "expand-all" because it is horrible.
      */
     private void expandAllTreeviews() {
         int giveupCount = 0;
-        //yes, you really have to do this.  the api has no "expand all" method.
-        while(!find(".expandable-hitarea").visibleElements().isEmpty() && giveupCount++ < 10) {
+        // yes, you really have to do this. the api has no "expand all" method.
+        while (!find(".expandable-hitarea").visibleElements().isEmpty() && giveupCount++ < 10) {
             find(".expandable-hitarea").visibleElements().click();
         }
         assertTrue("trying to expand all listview subtrees", giveupCount < 10);
     }
-    
+
 }

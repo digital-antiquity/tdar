@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QunitRunnerITCase extends AbstractSeleniumWebITCase {
+public class QunitRunnerITCase extends AbstractBasicSeleniumWebITCase {
 
     Logger logger = LoggerFactory.getLogger(QunitRunnerITCase.class);
 
@@ -35,7 +35,6 @@ public class QunitRunnerITCase extends AbstractSeleniumWebITCase {
 
     @Test
     public void testFileUploadTests() {
-        login();
         File dir = new File("src/main/webapp/test/js");
         for (File file : FileUtils.listFiles(dir, null, true)) {
             String path = file.getPath();

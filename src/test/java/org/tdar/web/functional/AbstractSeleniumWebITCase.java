@@ -44,37 +44,61 @@ public abstract class AbstractSeleniumWebITCase {
 
     WebDriver driver;
     protected Logger logger = LoggerFactory.getLogger(getClass());
-    
-    
-    //FIXME: it seems silly that you can't hook into some kind of "
+
+    // FIXME: it seems silly that you can't hook into some kind of "
     private WebDriverEventListener eventListener = new WebDriverEventListener() {
-        public void afterNavigateTo(String url, WebDriver driver) {}
-        public void beforeNavigateBack(WebDriver driver) {}
-        public void afterNavigateBack(WebDriver driver) {}
-        public void beforeNavigateForward(WebDriver driver) {}
-        public void afterNavigateForward(WebDriver driver) {}
-        public void beforeFindBy(By by, WebElement element, WebDriver driver) {}
-        public void afterFindBy(By by, WebElement element, WebDriver driver) {}
-        public void afterClickOn(WebElement element, WebDriver driver) {}
-        public void beforeChangeValueOf(WebElement element, WebDriver driver) {}
-        public void afterChangeValueOf(WebElement element, WebDriver driver) {}
-        public void beforeScript(String script, WebDriver driver) {}
-        public void afterScript(String script, WebDriver driver) {}
-        public void onException(Throwable throwable, WebDriver driver) {}
-        
+        public void afterNavigateTo(String url, WebDriver driver) {
+        }
+
+        public void beforeNavigateBack(WebDriver driver) {
+        }
+
+        public void afterNavigateBack(WebDriver driver) {
+        }
+
+        public void beforeNavigateForward(WebDriver driver) {
+        }
+
+        public void afterNavigateForward(WebDriver driver) {
+        }
+
+        public void beforeFindBy(By by, WebElement element, WebDriver driver) {
+        }
+
+        public void afterFindBy(By by, WebElement element, WebDriver driver) {
+        }
+
+        public void afterClickOn(WebElement element, WebDriver driver) {
+        }
+
+        public void beforeChangeValueOf(WebElement element, WebDriver driver) {
+        }
+
+        public void afterChangeValueOf(WebElement element, WebDriver driver) {
+        }
+
+        public void beforeScript(String script, WebDriver driver) {
+        }
+
+        public void afterScript(String script, WebDriver driver) {
+        }
+
+        public void onException(Throwable throwable, WebDriver driver) {
+        }
+
         public void beforeClickOn(WebElement element, WebDriver driver) {
-            if(elementCausesNavigation(element)) {
+            if (elementCausesNavigation(element)) {
                 beforePageChange();
             }
         }
-        
+
         private boolean elementCausesNavigation(WebElement element) {
             String tag = element.getTagName();
-            return (tag.equals("a")) 
+            return (tag.equals("a"))
                     || (tag.equals("input") && "submit".equals(element.getAttribute("type")))
                     || (tag.equals("button") && "submit".equals(element.getAttribute("type")));
         }
-        
+
         public void beforeNavigateTo(String url, WebDriver driver) {
             beforePageChange();
         }
@@ -106,11 +130,11 @@ public abstract class AbstractSeleniumWebITCase {
         if (StringUtils.isNotBlank(xvfbPropsFile)) {
             fb.setEnvironmentProperty("DISPLAY", xvfbPropsFile);
         }
-        
+
         WebDriver firefoxDriver = new FirefoxDriver(fb, newFirefoxProfile());
         EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(firefoxDriver);
         eventFiringWebDriver.register(eventListener);
-        
+
         this.driver = eventFiringWebDriver;
     }
 
@@ -131,6 +155,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     @Rule
     public TestName testName = new TestName();
+    private boolean reindexed = false;
 
     /*
      * Shutdown Selenium
@@ -262,7 +287,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public String getText() {
-        if(pageText == null) {
+        if (pageText == null) {
             WebElement body = waitFor("body");
             pageText = body.getText();
         }
@@ -284,9 +309,10 @@ public abstract class AbstractSeleniumWebITCase {
         Object result = executor.executeScript(functionBody, arguments);
         return (T) result;
     }
-    
+
     /**
      * same as {@link #executeJavascript(String, Object...) but with exceptions suppressed}
+     * 
      * @param functionBody
      * @param arguments
      * @return
@@ -295,7 +321,8 @@ public abstract class AbstractSeleniumWebITCase {
         T result = null;
         try {
             result = executeJavascript(functionBody, arguments);
-        } catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
         return result;
     }
 
@@ -420,43 +447,49 @@ public abstract class AbstractSeleniumWebITCase {
         login(TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_PASSWORD);
     }
 
+    public boolean hasReindexedOnce() {
+        return reindexed;
+    }
+
     public void reindex() {
+        logout();
         loginAdmin();
         gotoPage("/admin/searchindex/build");
         find("#idxBtn").click();
         waitFor("#spanDone", 120);
         logout();
+        reindexed = true;
     }
 
     public void submitForm() {
         reportJavascriptErrors();
         find("#submitButton").click();
     }
-    
-    
+
     public List<String> getJavascriptErrors() {
         return executeJavascript("return window.__errorMessages;");
     }
-    
+
     public void setIgnoreJavascriptErrors(boolean ignoreJavascriptErrors) {
         this.ignoreJavascriptErrors = ignoreJavascriptErrors;
     }
-    
+
     /**
      * If any javascript errors have occured since last pageload, log them and (if ignoreJavascriptErrors==false) fail the test.
      * 
-     * Note: most actions that cause page navigation will implicitly callreportJavascriptErrors() anyway, such as formSubmit(), gotoPage(),  and click events on 
-     *       links & buttons.  An example of when you might wish to explicitly call this method is when you expect a javascript function to modify the 
-     *       <code>Window.location</code> property, or if you call {@link WebElement#submit()} rather than submitForm();   
+     * Note: most actions that cause page navigation will implicitly callreportJavascriptErrors() anyway, such as formSubmit(), gotoPage(), and click events on
+     * links & buttons. An example of when you might wish to explicitly call this method is when you expect a javascript function to modify the
+     * <code>Window.location</code> property, or if you call {@link WebElement#submit()} rather than submitForm();
      */
     public void reportJavascriptErrors() {
         List<String> errors = getJavascriptErrors();
-        if(errors == null) return;
+        if (errors == null)
+            return;
         logger.trace("javascript error report for {}", driver.getCurrentUrl());
-        for(String error : errors ) {
+        for (String error : errors) {
             logger.error("javascript error: {}", error);
         }
-        if(!errors.isEmpty() && !ignoreJavascriptErrors) {
+        if (!errors.isEmpty() && !ignoreJavascriptErrors) {
             Assert.fail("Encountered javascript errors on page: " + driver.getCurrentUrl());
         }
     }
@@ -467,5 +500,11 @@ public abstract class AbstractSeleniumWebITCase {
 
     protected boolean textContains(String substring) {
         return getText().toLowerCase().contains(substring.toLowerCase());
+    }
+
+    public void reindexOnce() {
+        if (!hasReindexedOnce()) {
+            reindex();
+        }
     }
 }

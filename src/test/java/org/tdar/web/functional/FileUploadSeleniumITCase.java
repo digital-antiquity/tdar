@@ -10,13 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 
-public class FileUploadSeleniumITCase extends AbstractSeleniumWebITCase {
+public class FileUploadSeleniumITCase extends AbstractBasicSeleniumWebITCase {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void testDocumentUpload() {
-        login();
         gotoPage("/document/add");
 
         File testDocument = new File(TestConstants.TEST_DOCUMENT);

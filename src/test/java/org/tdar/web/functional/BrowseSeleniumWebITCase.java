@@ -11,19 +11,7 @@ import static  org.junit.Assert.*;
  * User: jimdevos
  * Date: 7/1/13
  */
-public class BrowseSeleniumWebITCase extends AbstractSeleniumWebITCase {
-
-    @Before
-    public void  beforeTest() {
-        loginAdmin();
-    }
-
-
-    @After
-    public void afterTest() {
-        logout();
-    }
-
+public class BrowseSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
 
     private void browseTest(String url) {
         gotoPage(url);
