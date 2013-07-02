@@ -2628,6 +2628,29 @@ INSERT INTO resource_creator (id, role, sequence_number, creator_id, resource_id
 -- ====================================================================================================================----
 -- END extract from SQLExtract
 -- ====================================================================================================================----
+-- added by jim 6/1/2013
+INSERT INTO collection VALUES (1575, '2013-07-01 16:49:15.583', '2013-07-01 16:49:15.583', 'this is a test', 'sample collection', 'LIST', 'TITLE', 'SHARED', true, 8092, NULL, 8092);
+INSERT INTO resource VALUES (4289, '2013-07-01 16:42:32.355', '2013-07-01 16:42:32.355', 'this is a test ', NULL, 0, 'ACTIVE', 'SENSORY_DATA', 0, 'ACTIVE', 'sample sensorydata', '', 8092, 8092, 8092, NULL);
+INSERT INTO resource VALUES (4290, '2013-07-01 16:44:49.712', '2013-07-01 16:44:49.712', 'this is a test', NULL, 0, 'ACTIVE', 'VIDEO', 0, 'ACTIVE', 'sample video', '', 8092, 8092, 8092, NULL);
+INSERT INTO resource VALUES (4291, '2013-07-01 16:46:42.454', '2013-07-01 16:46:42.454', 'test', NULL, 0, 'ACTIVE', 'GEOSPATIAL', 0, 'ACTIVE', 'sample geospatial', '', 8092, 8092, 8092, NULL);
+INSERT INTO resource VALUES (4292, '2013-07-01 17:21:35.881', '2013-07-01 17:21:35.881', 'this is a test', NULL, 0, 'ACTIVE', 'IMAGE', 0, 'ACTIVE', 'sample image', '', 8092, 8092, 8092, NULL);
+
+INSERT INTO resource_access_statistics VALUES (2, '2013-07-01 16:42:34.693', 4289);
+INSERT INTO resource_access_statistics VALUES (3, '2013-07-01 16:44:51.07', 4290);
+INSERT INTO resource_access_statistics VALUES (4, '2013-07-01 16:46:43.537', 4291);
+INSERT INTO resource_access_statistics VALUES (4, '2013-07-01 16:46:43.537', 4292);
+INSERT INTO information_resource VALUES (NULL, 2013, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4289, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO information_resource VALUES ('', 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4290, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO information_resource VALUES (NULL, 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4291, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO information_resource VALUES (NULL, 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4292, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO sensory_data VALUES (NULL, '', '', '', '', NULL, NULL, NULL, '', NULL, '', false, '', false, false, '', false, false, NULL, false, '', '', '', '', NULL, false, false, false, false, '', NULL, '', NULL, '', false, '', NULL, NULL, NULL, '', NULL, NULL, NULL, NULL, false, 4289);
+INSERT INTO video VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 4290);
+INSERT INTO geospatial VALUES ('hipster-level currentness', 'bogus projection information', '', '', 4291);
+INSERT INTO image VALUES (4292);
+-- end added by jim 6/1/2013
+-- ab add 6/2/2103
+INSERT INTO collection_resource(resource_id, collection_id) VALUES(4289,1575),(4290,1575),(4291,1575),(4292,1575);
+
 SELECT setval('category_variable_id_seq', (SELECT MAX(id) FROM category_variable)+1);
 SELECT setval('contributor_request_id_seq', (SELECT MAX(id) FROM contributor_request)+1);
 SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);

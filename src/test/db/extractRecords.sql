@@ -223,7 +223,7 @@ drop table test;
 --DONT-PROCESS-- -- END extract from SQLExtract
 --DONT-PROCESS-- -- ====================================================================================================================----
 
-
+-- added by jim 6/1/2013
 --DONT-PROCESS-- INSERT INTO collection VALUES (1575, '2013-07-01 16:49:15.583', '2013-07-01 16:49:15.583', 'this is a test', 'sample collection', 'LIST', 'TITLE', 'SHARED', true, 8092, NULL, 8092);
 --DONT-PROCESS-- INSERT INTO resource VALUES (4289, '2013-07-01 16:42:32.355', '2013-07-01 16:42:32.355', 'this is a test ', NULL, 0, 'ACTIVE', 'SENSORY_DATA', 0, 'ACTIVE', 'sample sensorydata', '', 8092, 8092, 8092, NULL);
 --DONT-PROCESS-- INSERT INTO resource VALUES (4290, '2013-07-01 16:44:49.712', '2013-07-01 16:44:49.712', 'this is a test', NULL, 0, 'ACTIVE', 'VIDEO', 0, 'ACTIVE', 'sample video', '', 8092, 8092, 8092, NULL);
@@ -242,6 +242,10 @@ drop table test;
 --DONT-PROCESS-- INSERT INTO video VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 4290);
 --DONT-PROCESS-- INSERT INTO geospatial VALUES ('hipster-level currentness', 'bogus projection information', '', '', 4291);
 --DONT-PROCESS-- INSERT INTO image VALUES (4292);
+-- end added by jim 6/1/2013
+-- end added by jim 6/1/2013
+-- ab add 6/2/2103
+--DONT-PROCESS-- INSERT INTO collection_resource(resource_id, collection_id) VALUES(4289,1575),(4290,1575),(4291,1575),(4292,1575);
 
 
 --DONT-PROCESS-- SELECT setval('category_variable_id_seq', (SELECT MAX(id) FROM category_variable)+1);
