@@ -51,20 +51,20 @@
       <@s.hidden name="id"  value="${resourceCollection.id?c}" />
   </#if>
   <@s.hidden name="startTime" value="${currentTime?c}" />
-
+    <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="255" />
 
     <div id="parentIdContainer" class="control-group">
         <label class="control-label">Parent Collection</label>
         <div class="controls">
             <@s.hidden name="parentId"  id="hdnParentId" />
             <@s.textfield theme="simple" name="parentCollectionName" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
-            autocompleteIdElement="#hdnParentId" maxlength=255
-            autocompleteParentElement="#parentIdContainer" />
+                autocompleteIdElement="#hdnParentId" maxlength=255 autocompleteParentElement="#parentIdContainer"
+                placeholder="parent collection name" id="txtParentCollectionName" />
         </div>
     </div>
 
 
-<@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="255" />
+
 <p class='field'>
 </p>
 <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'
@@ -143,6 +143,8 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 	    var form = $("#metadataForm")[0];
 	    TDAR.common.initEditPage(form);
 	    TDAR.datatable.registerResourceCollectionDataTable("#tblCollectionResources");
+        TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate:false}, {permission:"ADMINISTER_GROUP"});
+
 
 	});
 </script>
