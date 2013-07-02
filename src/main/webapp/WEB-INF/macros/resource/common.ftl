@@ -473,7 +473,7 @@ $(document).ready(function(){
 </#noescape>
 
 </#macro>
-<#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="" context=false>
+<#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="" context=false rotate=0 log=false>
 <#if id == "">
 	<#local id=data+"id" />
 </#if>
@@ -512,14 +512,17 @@ $(document).ready(function(){
             axes: {
                 xaxis: {
                    renderer: $.jqplot.CategoryAxisRenderer,
-//			       tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+		           labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+			       <#if rotate !=0>tickRenderer: $.jqplot.CanvasAxisTickRenderer,</#if>
                    tickOptions: {
                         fontFamily: 'Georgia',
                         fontSize: '8pt',
+                        <#if rotate != 0>angle:${rotate},</#if>
                         showGridline: false
                     }
                 },
                 yaxis: {
+                	<#if log>renderer:$.jqplot.LogAxisRenderer,</#if>
 			        showTicks: false,
 			        show:false,
                     showGridline: false

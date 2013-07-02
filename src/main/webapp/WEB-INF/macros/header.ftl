@@ -34,6 +34,7 @@
 					 "/includes/jqplot-1.08/plugins/jqplot.categoryAxisRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.canvasTextRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.canvasAxisTickRenderer.min.js",
+					 "/includes/jqplot-1.08/plugins/jqplot.canvasAxisLabelRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.enhancedLegendRenderer.min.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.pieRenderer.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.pointLabels.js",

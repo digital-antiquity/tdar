@@ -54,12 +54,10 @@
 		            rendererOptions: {
 		                varyBarColor: false
 	    			}
-    			} 	
+    			}
 	     };
 	</script>
-    <@common.barGraph data="timelineData" graphLabel="" graphHeight=354 searchKey="groups[0].creationDecades" id="browseByDecade" config="timelineConfig"/>
-
-<#-- -@common.flotBarGraph resourceCacheObjects=timelineData graphWidth=900 graphHeight=300 graphLabel="${siteAcronym} by decade" rotateColors=false labelRotation=-90 minWidth=10  explore=true max=2100 min=1400 / -->
+    <@common.barGraph data="timelineData" graphLabel="" graphHeight=354 searchKey="groups[0].creationDecades" id="browseByDecade" config="timelineConfig" rotate=-30 log=false />
 
 <h2>Browse by Investigation Type</h2>
 <ul class="inline">
