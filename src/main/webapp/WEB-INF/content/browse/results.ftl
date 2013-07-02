@@ -211,7 +211,7 @@ ${creatorXml?html}
 </#if>
 
 <div class="tdarresults">
-<@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" />
+<@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" orientation="LIST"/>
 </div>
 <@search.basicPagination "Results"/>
 <#else>
