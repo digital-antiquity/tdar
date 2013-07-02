@@ -223,6 +223,22 @@ drop table test;
 --DONT-PROCESS-- -- END extract from SQLExtract
 --DONT-PROCESS-- -- ====================================================================================================================----
 
+
+--DONT-PROCESS-- INSERT INTO collection VALUES (1575, '2013-07-01 16:49:15.583', '2013-07-01 16:49:15.583', 'this is a test', 'sample collection', 'LIST', 'TITLE', 'SHARED', true, 8092, NULL, 8092);
+--DONT-PROCESS-- INSERT INTO resource VALUES (4289, '2013-07-01 16:42:32.355', '2013-07-01 16:42:32.355', 'this is a test ', NULL, 0, 'ACTIVE', 'SENSORY_DATA', 0, 'ACTIVE', 'sample sensorydata', '', 8092, 8092, 8092, NULL);
+--DONT-PROCESS-- INSERT INTO resource VALUES (4290, '2013-07-01 16:44:49.712', '2013-07-01 16:44:49.712', 'this is a test', NULL, 0, 'ACTIVE', 'VIDEO', 0, 'ACTIVE', 'sample video', '', 8092, 8092, 8092, NULL);
+--DONT-PROCESS-- INSERT INTO resource VALUES (4291, '2013-07-01 16:46:42.454', '2013-07-01 16:46:42.454', 'test', NULL, 0, 'ACTIVE', 'GEOSPATIAL', 0, 'ACTIVE', 'sample geospatial', '', 8092, 8092, 8092, NULL);
+--DONT-PROCESS-- INSERT INTO resource_access_statistics VALUES (2, '2013-07-01 16:42:34.693', 4289);
+--DONT-PROCESS-- INSERT INTO resource_access_statistics VALUES (3, '2013-07-01 16:44:51.07', 4290);
+--DONT-PROCESS-- INSERT INTO resource_access_statistics VALUES (4, '2013-07-01 16:46:43.537', 4291);
+--DONT-PROCESS-- INSERT INTO information_resource VALUES (NULL, 2013, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4289, NULL, NULL, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO information_resource VALUES ('', 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4290, NULL, NULL, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO information_resource VALUES (NULL, 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4291, NULL, NULL, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO sensory_data VALUES (NULL, '', '', '', '', NULL, NULL, NULL, '', NULL, '', false, '', false, false, '', false, false, NULL, false, '', '', '', '', NULL, false, false, false, false, '', NULL, '', NULL, '', false, '', NULL, NULL, NULL, '', NULL, NULL, NULL, NULL, false, 4289);
+--DONT-PROCESS-- INSERT INTO video VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 4290);
+--DONT-PROCESS-- INSERT INTO geospatial VALUES ('hipster-level currentness', 'bogus projection information', '', '', 4291);
+
+
 --DONT-PROCESS-- SELECT setval('category_variable_id_seq', (SELECT MAX(id) FROM category_variable)+1);
 --DONT-PROCESS-- SELECT setval('contributor_request_id_seq', (SELECT MAX(id) FROM contributor_request)+1);
 --DONT-PROCESS-- SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
@@ -298,3 +314,4 @@ drop table test;
 --DONT-PROCESS-- SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);
 --DONT-PROCESS-- update pos_billing_activity set activity_type='PRODUCTION';
 --DONT-PROCESS-- update pos_billing_activity set activity_type = 'TEST' where name in ('good','error', 'decline', 'unknown');
+
