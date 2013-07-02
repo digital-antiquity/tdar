@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -102,7 +103,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
                 while (results.next()) {
                     Resource resource = (Resource) results.get()[0];
                     incrementKeywords(keywords, resource);
-                    incrementCreators(person, collaborators, resource);
+                    incrementCreators(person, collaborators, resource,userIdsToIgnoreInLargeTasks);
                 }
             } catch (Exception e) {
                 logger.warn("Exception {}", e);
@@ -303,10 +304,15 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
     }
 
-    private void incrementCreators(Person person, Map<Creator, Double> collaborators, Resource resource) {
+    private void incrementCreators(Person person, Map<Creator, Double> collaborators, Resource resource, List<Long> userIdsToIgnoreInLargeTasks) {
         for (Creator creator : resource.getRelatedCreators()) {
             if (ObjectUtils.equals(creator, person) || creator == null || StringUtils.isBlank(creator.getProperName()))
                 continue;
+
+            if (CollectionUtils.isNotEmpty(userIdsToIgnoreInLargeTasks) && userIdsToIgnoreInLargeTasks.contains(person.getId())) {
+                continue;
+            }
+
             Double count = collaborators.get(creator);
             if (count == null) {
                 count = 0.0;
