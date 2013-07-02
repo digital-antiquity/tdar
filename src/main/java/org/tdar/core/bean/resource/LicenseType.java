@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
-import org.tdar.core.configuration.TdarConfiguration;
 
 public enum LicenseType implements HasLabel {
     PUBLIC_DOMAIN("Public Domain", "Public Domain", "This option dictates that the work in question has no applicable attribution and can be reused freely.",
@@ -50,6 +49,7 @@ public enum LicenseType implements HasLabel {
         return licenseTag;
     }
 
+    @Override
     public String getLabel() {
         return licenseName;
     }
