@@ -66,9 +66,9 @@
 </#macro>
 
 <#macro sortFields javascriptOn=false label="Sort By">
-
-<@s.select value="sortField" name='sortField'  
-        emptyOption='false' listValue='label' label=label list='%{sortOptions}'/>
+<label>${label}
+<@s.select value="sortField" name='sortField' cssClass="input-large" theme="simple"
+        emptyOption='false' listValue='label' list='%{sortOptions}'/>
     <#--FIXME: move this block to tdar.common.js, bind if select has 'autoreload' class -->
     <#if javascriptOn>
       <script type='text/javascript'>
@@ -84,6 +84,7 @@
         });
       </script>
     </#if>
+</label>
 </#macro>
 
 <#macro rssUrlTag url>

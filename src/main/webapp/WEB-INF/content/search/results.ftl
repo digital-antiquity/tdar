@@ -32,22 +32,6 @@
                 
                 <h2 class="totalRecords">Search Options</h2>
     <ul class="tools media-list">
-    <li>Records Per Page
-<@s.select id="recordsPerPage" name="recordsPerPage" list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
-      <script type='text/javascript'>
-      $("#recordsPerPage").change(function() {
-        var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g,"");
-        //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'? 
-        var prefix = "";
-        if (url.indexOf("?") != 0) {
-          prefix = "?";
-        }
-        url = prefix + url +  "&recordsPerPage="+$('#recordsPerPage').val();
-        window.location = url;
-        });
-      </script>
-
-    </li>
         <li class="media"><a href="<@search.refineUrl/>" rel="noindex"><i class="search-magnify-icon-red" ></i> Refine your search &raquo;</a></li>
 	<#if lookupSource == 'RESOURCE'>
 	        <li class="media"><i class="search-download-icon-red" ></i> <span>Download these results &raquo;
@@ -117,15 +101,32 @@
     
     <div id="divResultsSortControl">
         <div class="row">
-            <div class="span4">
+            <div class="span3">
 	            <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Result" />
             </div>
-            <div class="span5">
+            <div class="span6 form-inline">
+                <div class="pull-right">
+                <div class="control-group"></div>
+                <label>Records Per Page
+                <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
+                    list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
+                </label>
+                <script type='text/javascript'>
+                    $("#recordsPerPage").change(function() {
+                        var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g,"");
+                        //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
+                        var prefix = "";
+                        if (url.indexOf("?") != 0) {
+                            prefix = "?";
+                        }
+                        url = prefix + url +  "&recordsPerPage="+$('#recordsPerPage').val();
+                        window.location = url;
+                    });
+                </script>
             	<#if !hideFacetsAndSort>
-                <div class="form-horizontal pull-right">
                    <@search.sortFields true/>
-                </div>
             	</#if>
+                </div>
         	</div>
         </div>
 	</div>
