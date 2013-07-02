@@ -54,7 +54,7 @@ View freemarker macros
 	<#local size = allNodes?size />
 	<#if (size>0)>
 	    <h2>${sectionTitle}</h2>
-	    <div class="ontology-nodes-container">
+	    <div class="ontology-nodes-container draggable">
 		    <div id="ontology-nodes">
 		    <#list allNodes as node>
 			        <@displayNode node previewSize node_index size/>
@@ -67,6 +67,35 @@ View freemarker macros
 			    </div>
 			    <script type="text/javascript">
 				    $(function(){
+				     $( ".orgChart.interactive" ).draggable({
+
+
+              });
+var el, dragged
+
+el = $( '.orgChart.interactive' );
+
+onMouseDown = function( ) {
+  dragged = false;
+}
+
+onMouseUp = function( event ) {
+  if( !dragged ) {
+    console.log('no drag, normal click')
+  } else {
+  	event.preventDefault(); 
+  }
+}
+
+onStartDrag = function( event) {
+  dragged = true;
+//  	event.preventDefault(); 
+}
+el.on( 'mousedown', onMouseDown );
+el.on( 'mouseup', onMouseUp );
+el.draggable( { start: onStartDrag } );
+
+
 				        $('#btnOntologyShowMore').click(function() {
 				            $('#divOntologyShowMore').hide();
 				            $('#ontology-nodes .hidden-nodes').removeClass("hidden-nodes");
