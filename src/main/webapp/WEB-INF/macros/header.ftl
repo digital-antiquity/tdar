@@ -15,7 +15,7 @@
                      "/includes/jquery.watermark-3.1.3.min.js",
                      "/includes/jquery.datatables-1.8.2/media/js/jquery.dataTables.js",
                      "/includes/jquery.datatables-1.8.2/extras/bootstrap-paging.js",
-                     "/includes/jquery-treeview/jquery.treeview.js"
+                     "/includes/jquery-treeview/jquery.treeview.js",
                      "/includes/blueimp-javascript-templates/tmpl.min.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/vendor/jquery.ui.widget.js", 
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.iframe-transport.js", 
