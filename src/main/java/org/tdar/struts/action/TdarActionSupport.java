@@ -591,4 +591,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isViewRowSupported() {
         return getTdarConfiguration().isViewRowSupported();
     }
+
+    public Long getGuestUserId(){
+        return getTdarConfiguration().getGuestUserId();
+    }
 }

@@ -69,7 +69,13 @@ $(function(){
 	        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
 	            <label class="control-label">Status</label>
 	            <div class="controls">
-	                <@s.select theme="tdar" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+		            <#if !(guestUserId != -1 && guestUserId == authenticatedUser.id)>
+		            	<select name="status">
+		            		<option value='DRAFT' selected>Draft</option>
+		            	</select>
+					<#else>
+	                	<@s.select theme="tdar" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+					</#if>
 	                <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
 	            </div>  
 	        </div>

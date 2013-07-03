@@ -616,6 +616,10 @@ public class TdarConfiguration {
         return new File(assistant.getStringProperty("freemarker.templatedir", "includes/email/"));
     }
 
+    public Long getGuestUserId() {
+        return assistant.getLongProperty("guest.user.id", -1L);
+    }
+    
     public List<Long> getUserIdsToIgnoreInLargeTasks() {
         String users = assistant.getStringProperty("userids.to.ignore");
         List<Long> userIds = new ArrayList<Long>();
