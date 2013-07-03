@@ -93,7 +93,11 @@
 
 
 <#macro searchFor queryParam term displayTerm wrappingTag="span" occurrence=0>
-     <${wrappingTag} class="bullet"><a href="<@s.url value="/search/results?${queryParam}=${term}&explore=true"/>">${displayTerm}
+	<#local term_ = term />
+	<#if term?is_number>
+		<#local term_ = term?c/>
+    </#if>
+     <${wrappingTag} class="bullet"><a href="<@s.url value="/search/results?${queryParam}=${term_}&explore=true"/>">${displayTerm}
      <#if occurrence?has_content && occurrence != 0 >(${occurrence?c})</#if>
      </a></${wrappingTag}>
 </#macro>

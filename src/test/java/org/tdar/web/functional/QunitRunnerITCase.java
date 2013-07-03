@@ -26,7 +26,7 @@ public class QunitRunnerITCase extends AbstractBasicSeleniumWebITCase {
         assertSelector("#qunit-fixture");
 
         // FIXME: this is insufficient because we don't know that this is the very last element it adds to the dom.
-        waitFor("#qunit-testresults");
+        waitFor("#qunit-testresult");
 
         if (!find(".fail").isEmpty()) {
             fail("your qunit tests failed. sorry");
