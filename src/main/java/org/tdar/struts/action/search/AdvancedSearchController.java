@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -819,8 +820,12 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     private <K extends Keyword> void setExploreKeyword(Class<K> type,
             List<List<String>> listOfLists) {
-        Long id = Long.valueOf(listOfLists.get(0).get(0));
-        exploreKeyword = getGenericService().find(type, id);
+        final String id = listOfLists.get(0).get(0);
+        try {
+            exploreKeyword = getGenericService().find(type, NumberFormat.getInstance().parse(id).longValue());
+        } catch (java.text.ParseException e) {
+            throw new TdarRecoverableRuntimeException("The ID "+ id +" was not parseable as a long.", e);
+        }
     }
 
     public boolean isExplore() {
