@@ -155,7 +155,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     @Rule
     public TestName testName = new TestName();
-    private boolean reindexed = false;
+    private static boolean reindexed = false;
 
     /*
      * Shutdown Selenium

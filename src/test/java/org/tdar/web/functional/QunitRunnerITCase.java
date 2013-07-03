@@ -44,7 +44,7 @@ public class QunitRunnerITCase extends AbstractBasicSeleniumWebITCase {
         assertEquals(String.format("qunit failures: %s", failures.getText()), 0, failures.size());
     };
 
-    @Parameters
+    @Parameters(name="{0}")
     public static Collection<Object[]> data() {
         Collection<Object[]> data = new ArrayList<>();
         File dir = new File("src/main/webapp/test/js");
@@ -53,7 +53,7 @@ public class QunitRunnerITCase extends AbstractBasicSeleniumWebITCase {
             path = path.replace("\\", "/");
             path = path.replace("src/main/webapp/test/js/", "");
             path = path.replace(".qunit.js", "?qunit");
-            data.add(new Object[] { path });
+            data.add(new Object[] { "/" + path });
         }
         return data;
     }
