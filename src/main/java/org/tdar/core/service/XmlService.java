@@ -43,8 +43,8 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.processes.PersonAnalysisProcess.LogPart;
-import org.tdar.core.service.processes.PersonAnalysisProcess.PersonInfoLog;
+import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
+import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -183,7 +183,7 @@ public class XmlService implements Serializable {
         return toReturn;
     }
 
-    public void generateFOAF(Creator creator, PersonInfoLog log) throws IOException {
+    public void generateFOAF(Creator creator, CreatorInfoLog log) throws IOException {
         Model model = ModelFactory.createDefaultModel();
         String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
         com.hp.hpl.jena.rdf.model.Resource rdf = null;

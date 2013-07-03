@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -32,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
@@ -46,7 +44,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import com.google.common.primitives.Doubles;
 
 @Component
-public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
+public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     private static final long serialVersionUID = 581887107336388520L;
 
@@ -60,7 +58,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
     private XmlService xmlService;
 
     public String getDisplayName() {
-        return "Person Analytics Process";
+        return "Creator Analytics Process";
     }
 
     @Override
@@ -68,13 +66,13 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
         return 100;
     }
 
-    public Class<Person> getPersistentClass() {
-        return Person.class;
+    public Class<Creator> getPersistentClass() {
+        return Creator.class;
     }
 
     @Override
     public List<Long> findAllIds() {
-        List<Person> results = genericDao.findAll(getPersistentClass());
+        List<Creator> results = genericDao.findAll(getPersistentClass());
         if (CollectionUtils.isNotEmpty(results)) {
             return Persistable.Base.extractIds(results);
         }
@@ -83,17 +81,17 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
     @Override
     public void execute() {
-        List<Person> people = genericDao.findAll(getPersistentClass(), getNextBatch());
+        List<Creator> creators = genericDao.findAll(getPersistentClass(), getNextBatch());
         List<Long> userIdsToIgnoreInLargeTasks = getTdarConfiguration().getUserIdsToIgnoreInLargeTasks();
-        for (Person person : people) {
-            logger.info("~~~~~ " + person + " ~~~~~~");
-            if (userIdsToIgnoreInLargeTasks.contains(person.getId())) {
+        for (Creator creator : creators) {
+            logger.info("~~~~~ " + creator + " ~~~~~~");
+            if (userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
                 continue;
             }
             Map<Creator, Double> collaborators = new HashMap<Creator, Double>();
             Map<Keyword, Double> keywords = new HashMap<Keyword, Double>();
             int total = 0;
-            QueryBuilder query = searchService.generateQueryForRelatedResources(person, null);
+            QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null);
             try {
                 FullTextQuery search = searchService.search(query, null);
                 ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
@@ -103,14 +101,14 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
                 while (results.next()) {
                     Resource resource = (Resource) results.get()[0];
                     incrementKeywords(keywords, resource);
-                    incrementCreators(person, collaborators, resource,userIdsToIgnoreInLargeTasks);
+                    incrementCreators(creator, collaborators, resource,userIdsToIgnoreInLargeTasks);
                 }
             } catch (Exception e) {
                 logger.warn("Exception {}", e);
             }
 
-            PersonInfoLog log = new PersonInfoLog();
-            log.setPerson(person);
+            CreatorInfoLog log = new CreatorInfoLog();
+            log.setPerson(creator);
             log.setTotalRecords(total);
 
             // refactor to remove dups
@@ -149,8 +147,8 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
             Collections.sort(log.getKeywordLogPart(), new LogPartComparator());
 
             try {
-                xmlService.generateFOAF(person, log);
-                xmlService.convertToXML(log, new FileWriter(new File(TdarConfiguration.getInstance().getCreatorFOAFDir() +"/" + person.getId() + ".xml")));
+                xmlService.generateFOAF(creator, log);
+                xmlService.convertToXML(log, new FileWriter(new File(TdarConfiguration.getInstance().getCreatorFOAFDir() +"/" + creator.getId() + ".xml")));
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 logger.error("exception: {} ", e);
@@ -168,11 +166,11 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
     @XmlRootElement
     @XmlAccessorType(XmlAccessType.PROPERTY)
-    @XmlType(name = "personInfoLog")
-    public static class PersonInfoLog {
+    @XmlType(name = "creatorInfoLog")
+    public static class CreatorInfoLog {
         private List<LogPart> collaboratorLogPart = new ArrayList<LogPart>();
         private List<LogPart> keywordLogPart = new ArrayList<LogPart>();
-        private Person person;
+        private Creator creator;
         private int totalRecords;
         private Double creatorMean;
         private Double creatorMedian;
@@ -237,12 +235,12 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
         @XmlAttribute(name = "submitterRef")
         @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-        public Person getPerson() {
-            return person;
+        public Creator getCreator() {
+            return creator;
         }
 
-        public void setPerson(Person person) {
-            this.person = person;
+        public void setPerson(Creator creator) {
+            this.creator = creator;
         }
 
         @XmlAttribute
@@ -258,7 +256,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
     @XmlRootElement
     @XmlAccessorType(XmlAccessType.PROPERTY)
-    @XmlType(name = "personLogPart")
+    @XmlType(name = "creatorLogPart")
     public static class LogPart {
 
         private Long id;
@@ -304,12 +302,12 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
     }
 
-    private void incrementCreators(Person person, Map<Creator, Double> collaborators, Resource resource, List<Long> userIdsToIgnoreInLargeTasks) {
+    private void incrementCreators(Creator current, Map<Creator, Double> collaborators, Resource resource, List<Long> userIdsToIgnoreInLargeTasks) {
         for (Creator creator : resource.getRelatedCreators()) {
-            if (ObjectUtils.equals(creator, person) || creator == null || StringUtils.isBlank(creator.getProperName()))
+            if (ObjectUtils.equals(creator, current) || creator == null || StringUtils.isBlank(creator.getProperName()))
                 continue;
 
-            if (CollectionUtils.isNotEmpty(userIdsToIgnoreInLargeTasks) && userIdsToIgnoreInLargeTasks.contains(person.getId())) {
+            if (CollectionUtils.isNotEmpty(userIdsToIgnoreInLargeTasks) && userIdsToIgnoreInLargeTasks.contains(current.getId())) {
                 continue;
             }
 
@@ -334,7 +332,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
     }
 
     @Override
-    public void process(Person account) throws Exception {
+    public void process(Creator account) throws Exception {
     }
 
     @Override

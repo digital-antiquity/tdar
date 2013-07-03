@@ -32,6 +32,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
@@ -75,6 +76,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     public void generateWeeklyStats() {
         queue(scheduledProcessMap.get(WeeklyStatisticsLoggingProcess.class));
         queue(scheduledProcessMap.get(OccurranceStatisticsUpdateProcess.class));
+        queue(scheduledProcessMap.get(CreatorAnalysisProcess.class));
     }
 
     @Scheduled(fixedDelay = FIVE_MIN_MS)

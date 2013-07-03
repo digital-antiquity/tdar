@@ -15,7 +15,7 @@
 <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 
 
-<#if creator?? &&  creator.creatorType.person>
+<#if creator?? >
 <link rel="meta" type="application/rdf+xml" title="FOAF" href="rdf"/>
 </#if>
 </head>
@@ -29,8 +29,8 @@
 
 <#if creator??>
 <#if nodeModel?has_content>
-	<#assign collaborators=nodeModel["personInfoLog/collaborators/*"] />
-	<#assign keywords= nodeModel["personInfoLog/keywords/*"] />
+	<#assign collaborators=nodeModel["creatorInfoLog/collaborators/*"] />
+	<#assign keywords= nodeModel["creatorInfoLog/keywords/*"] />
 	<#if keywords?has_content || collaborators?has_content>
         <div id="sidebar-right" parse="true">
         <br/>
@@ -47,7 +47,7 @@
 			<h3>Related Creators</h3>
 			<ul>
 			<#list collaborators as collab>
-			<#if (collab.@count?number >= nodeModel.personInfoLog.@creatorMedian?number && collab.@count?number  >1)>
+			<#if (collab.@count?number >= nodeModel.creatorInfoLog.@creatorMedian?number && collab.@count?number  >1)>
 			<li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a></li>
 			</#if>
 			</#list> 
@@ -58,7 +58,7 @@
 			<h3>Related Keywords</h3>
 			<ul>
 			<#list keywords as keyword>
-			<#if (keyword.@count?number >= nodeModel.personInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
+			<#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
 			
 			<#if keyword.@name?has_content && !keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !!keyword.@home?contains("Fips Code")>
 			<li>${keyword.@name}</li>

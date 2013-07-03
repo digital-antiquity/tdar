@@ -1,5 +1,13 @@
 package org.tdar.core.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -33,14 +41,12 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
-import org.tdar.core.service.processes.PersonAnalysisProcess;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
-
-import static org.junit.Assert.*;
 
 /**
  * $Id$
@@ -54,17 +60,15 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     private ScheduledProcessService scheduledProcessService;
     private static final int MOCK_NUMBER_OF_IDS = 2000;
 
-
     @Autowired
     private SitemapGeneratorProcess sitemap;
 
     @Autowired
     WeeklyStatisticsLoggingProcess processingTask;
 
-    
     @Autowired
-    PersonAnalysisProcess pap;
-    
+    CreatorAnalysisProcess pap;
+
     private class MockScheduledProcess extends ScheduledBatchProcess<Dataset> {
 
         private static final long serialVersionUID = 1L;
@@ -176,14 +180,13 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     OccurranceStatisticsUpdateProcess ocur;
-    
+
     @Test
     @Rollback(true)
     public void testOccurranceStats() throws InstantiationException, IllegalAccessException {
         ocur.execute();
     }
 
-    
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)

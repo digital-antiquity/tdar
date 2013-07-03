@@ -159,7 +159,7 @@ public class BrowseController extends AbstractLookupController {
             creator = getGenericService().find(Creator.class, getId());
             QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser());
 
-            if (Persistable.Base.isNotNullOrTransient(creator) && creator.getCreatorType().isPerson()) {
+            if (Persistable.Base.isNotNullOrTransient(creator)) {
                 try {
                     setNodeModel(NodeModel.parse(new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml")));
                 } catch (Exception e) {
