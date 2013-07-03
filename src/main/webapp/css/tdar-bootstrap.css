@@ -1497,6 +1497,13 @@ div.tdarresults {
     margin-bottom: 0.1em;
 }
 
+/* first row of grid results should have margin similar to rows that follow an HR */
+div.tdarresults .row.GRID:first-child div.listItem {
+    margin-top: 24px;
+}
+
+
+
 /* override the bootstrap defaults for the 'sort by' control */
 #divResultsSortControl label {
     font-size: 10pt;
