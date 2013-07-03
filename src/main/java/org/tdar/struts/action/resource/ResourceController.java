@@ -164,11 +164,4 @@ public class ResourceController extends AuthenticationAware.Base {
     public Long getResourceId() {
         return resourceId;
     }
-
-    @Action(value = "debug-modules", results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "debug-modules.ftl", params = { "contentType", "text/html" })
-    })
-    public String debugModules() {
-        return SUCCESS;
-    }
 }
