@@ -13,6 +13,7 @@ vim:sts=2:sw=2:
     <pattern>/featured</pattern>
     <pattern>/config-browser/*</pattern>
     <pattern>/services/*</pattern>
+    <pattern>/resource/debug-modules*</pattern>
   </excludes>
   <!--  FIXME:// http://stackoverflow.com/questions/5329693/is-it-possible-to-decorate-more-than-once-in-sitemesh -->
   <decorator name="main" page="layout-bootstrap.dec">
