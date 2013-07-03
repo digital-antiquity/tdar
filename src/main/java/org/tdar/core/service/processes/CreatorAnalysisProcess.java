@@ -342,7 +342,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     @Override
     public boolean isSingleRunProcess() {
-        return true;
+        return false;
     }
 
 }
