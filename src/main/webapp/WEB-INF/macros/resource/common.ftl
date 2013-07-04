@@ -291,8 +291,8 @@ TDAR.uri = function(path) {
 </#macro>
 
 <#macro pieChart data="data" searchKey="" graphWidth=300 graphHeight=150 context=false config="">
-	<#local id>${data}Id</#local>
-    <div id="${id}"  style="width:${graphWidth}px;height:${graphHeight}px;"></div>
+	<#local id= "${data}Id">
+    <div id="graph${id}"  style="width:${graphWidth}px;height:${graphHeight}px;"></div>
     
     <script>
 $(document).ready(function(){
@@ -328,6 +328,14 @@ $(document).ready(function(){
       			location: 'e', 
 		        fontSize:10,
       			showSwatch:true
+      },
+      cursor: {
+          style:"pointer",
+          useAxesFormatters: false
+      },
+      highlighter: {
+          useAxesFormatters: false,
+          showTooltip:false
       }
     };
 
@@ -336,7 +344,7 @@ $(document).ready(function(){
  	$.extend(true, defaults_,${config});
  	</#if>
 
-  var plot${data} = jQuery.jqplot ('${id}', [${data}],defaults_);
+  var plot${data} = jQuery.jqplot ('graph${id}', [${data}],defaults_);
      <@clickPlot id searchKey context />
 });
 
@@ -458,7 +466,7 @@ $(document).ready(function(){
             labels: labels_,
             location: 'ne',
             rowSpacing: '0px'
-        }            
+        }
         };
 
      	<#if config?has_content>
@@ -528,7 +536,11 @@ $(document).ready(function(){
                     showGridline: false
                 }
             },
-            highlighter: { show: false }
+            highlighter: { show: false },
+            cursor: {
+                style:"pointer"
+            }
+
         };
 		<#nested/>
 
