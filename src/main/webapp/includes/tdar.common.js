@@ -201,9 +201,9 @@ var _sortFilesAlphabetically= function() {
                 var license_details = $(license_details_reference);
                 var $licenseText = $('#licenseText');
                 if ($this.is(":checked")) {
-                    license_details.show();
+                    license_details.removeClass('hidden');
                 } else {
-                    license_details.hide();
+                    license_details.addClass('hidden');
                 }    
                 if (!$licenseText.is(':hidden')) {
                     $licenseText.addClass("required");
