@@ -54,7 +54,7 @@ View freemarker macros
 	<#local size = allNodes?size />
 	<#if (size>0)>
 	    <h2>${sectionTitle}</h2>
-	    <div class="ontology-nodes-container draggable">
+	    <div id="ontologyNodesContainer" class="ontology-nodes-container">
 		    <div id="ontology-nodes">
 		    <#list allNodes as node>
 			        <@displayNode node previewSize node_index size/>
@@ -65,44 +65,6 @@ View freemarker macros
 			        <span>Showing first ${previewSize?c} ontology nodes.</span>
 			        <button type="button" class="btn btn-small" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
 			    </div>
-			    <script type="text/javascript">
-				    $(function(){
-				     $( ".orgChart.interactive" ).draggable({
-
-
-              });
-var el, dragged
-
-el = $( '.orgChart.interactive' );
-
-onMouseDown = function( ) {
-  dragged = false;
-}
-
-onMouseUp = function( event ) {
-  if( !dragged ) {
-    console.log('no drag, normal click')
-  } else {
-  	event.preventDefault(); 
-  }
-}
-
-onStartDrag = function( event) {
-  dragged = true;
-//  	event.preventDefault(); 
-}
-el.on( 'mousedown', onMouseDown );
-el.on( 'mouseup', onMouseUp );
-el.draggable( { start: onStartDrag } );
-
-
-				        $('#btnOntologyShowMore').click(function() {
-				            $('#divOntologyShowMore').hide();
-				            $('#ontology-nodes .hidden-nodes').removeClass("hidden-nodes");
-				            return(false);
-				        });
-				    });
-			    </script>
 		    </#if>
 		</#if>
 		</div>

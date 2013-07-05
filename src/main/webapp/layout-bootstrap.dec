@@ -37,11 +37,11 @@
             }
         </script>
         </#if>
-		<#-- dev only 
+		<#-- dev only
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
         -->
 		<script src="/includes/modernizr-custom-2.6.2.min.js"></script>
-        
+
 		<link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
 		
 

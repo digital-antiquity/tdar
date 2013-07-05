@@ -11,13 +11,11 @@
 </#if>
 	<h3>Ontology</h3>
 	
-	<div id="ontologyTarget" class="" style="overflow:scroll;height:400px;">
+	<div id="ontologyViewer" class="" style="overflow:scroll;height:400px;">
+        <div id="ontologyViewerPan" style="width:100%;">
+
+        </div>
 	</div>
-	<script>
-        $(function() {
-            $("#ontology-nodes-root").orgChart({container: $("#ontologyTarget"), interactive:true, showLevels:2, stack:true});
-        });	
-	</script>	
 	<div id="divHints">
 	<em>click and drag to pan across the ontology, darker nodes contain more children, click on a node to expand children</em>
 	</div>
@@ -29,5 +27,10 @@
 
 <#macro localJavascript>
 <@view.datatableChildJavascript />
+TDAR.ontology.view();
+</#macro>
+
+<#macro footer>
+    <script src="<@s.url value='/includes/tdar.ontology.js'/>"></script>
 </#macro>
 </#escape>
