@@ -357,7 +357,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param collection the parent collection
      * @param collectionType the  type of collections to return (e.g. internal, shared, public)
      * @return  a list containing the provided 'parent' collection and any descendant collections (if any).  Futhermore
-     *          this method recursively populates the transient children resource collection fields of the specified
+     *          this method iteratively populates the transient children resource collection fields of the specified
      *          collection.
      */
     public List<ResourceCollection> findAllChildCollections(ResourceCollection collection, CollectionType collectionType) {
@@ -373,6 +373,26 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         return collections;
     }
+
+
+    private  ResourceCollection getRootResourceCollection(ResourceCollection node)  {
+        return node.getHierarchicalResourceCollections().get(0);
+    };
+
+    /**
+     * Return the root resource collection of the provided resource collection. This method also populates the
+     * transient children resource collection for every node in the tree.
+     *
+     * @param anyNode
+     * @return
+     */
+    public ResourceCollection getFullyInitializedRootResourceCollection(ResourceCollection anyNode) {
+        ResourceCollection root  = getRootResourceCollection(anyNode);
+        findAllChildCollections(getRootResourceCollection(anyNode), CollectionType.SHARED);
+        return root;
+    }
+
+
 
     public List<Long> findAllPublicActiveCollectionIds() {
         return getDao().findAllPublicActiveCollectionIds();
