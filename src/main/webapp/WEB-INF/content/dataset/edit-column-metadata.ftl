@@ -528,7 +528,6 @@ function updateSummaryTable() {
 
 
 </script>
-<script src="<@s.url value='/includes/tdar.dataset.js'/>"></script>
 
 </body>
 
