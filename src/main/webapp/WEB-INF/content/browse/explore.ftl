@@ -57,7 +57,7 @@
     			}
 	     };
 	</script>
-    <@common.barGraph data="timelineData" graphLabel="" graphHeight=354 searchKey="groups[0].creationDecades" id="browseByDecade" config="timelineConfig" rotate=-30 log=false />
+    <@common.barGraph data="timelineData" graphLabel="" graphHeight=354 searchKey="groups[0].creationDecades" id="browseByDecade" config="timelineConfig" rotate=-30  />
 
 <h2>Browse by Investigation Type</h2>
 <ul class="inline">

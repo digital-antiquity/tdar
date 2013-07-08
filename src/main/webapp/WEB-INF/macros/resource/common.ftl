@@ -481,7 +481,7 @@ $(document).ready(function(){
 </#noescape>
 
 </#macro>
-<#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="" context=false rotate=0 log=false>
+<#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="" context=false rotate=0 xaxis="" yaxis="">
 <#if id == "">
 	<#local id=data+"id" />
 </#if>
@@ -500,7 +500,7 @@ $(document).ready(function(){
                 pointLabels: { 
                 	show: true, 
                 	location: 'n', 
-                	edgeTolerance: -25
+                	edgeTolerance: -35
                 },
 	            rendererOptions: {
 	                // Set varyBarColor to tru to use the custom colors on the bars.
@@ -519,8 +519,11 @@ $(document).ready(function(){
           },
             axes: {
                 xaxis: {
-                   renderer: $.jqplot.CategoryAxisRenderer,
 		           labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+		 renderer: $.jqplot.CategoryAxisRenderer,
+                	<#if xaxis == "log">renderer:$.jqplot.LogAxisRenderer,</#if>
+                	<#if xaxis == "date">renderer:$.jqplot.DateAxisRenderer,</#if>
+
 			       <#if rotate !=0>tickRenderer: $.jqplot.CanvasAxisTickRenderer,</#if>
                    tickOptions: {
                         fontFamily: 'Georgia',
@@ -530,7 +533,9 @@ $(document).ready(function(){
                     }
                 },
                 yaxis: {
-                	<#if log>renderer:$.jqplot.LogAxisRenderer,</#if>
+                	<#if yaxis== "log">renderer:$.jqplot.LogAxisRenderer,</#if>
+                	<#if yaxis== "date">renderer:$.jqplot.DateAxisRenderer,</#if>
+                	
 			        showTicks: false,
 			        show:false,
                     showGridline: false
@@ -538,6 +543,7 @@ $(document).ready(function(){
             },
             highlighter: { show: false },
             cursor: {
+            	show: false,
                 style:"pointer"
             }
 
