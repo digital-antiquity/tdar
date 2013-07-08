@@ -802,6 +802,7 @@ jquery validation hooks?)
 
 <div id="${divId}Help" style="display:none">
     <div class="">
+        <h3>Adding Files</h3>
         <ul>
             <li>To attach files to this resource,  click the button labeled "Add Files..." </li>
             <#if multipleFileUploadEnabled>
@@ -821,7 +822,7 @@ jquery validation hooks?)
         will now be labeled "Undelete..."
 
         <#if fileProxies?size &gt; 0>
-        <p>To replace a previously-uploaded file with a new version:
+        <p>
         <h3>Replacing Files</h3>
             <ol>
                 <li>Locate the row in the files table that corresponds to the file you would like to replace</li>
