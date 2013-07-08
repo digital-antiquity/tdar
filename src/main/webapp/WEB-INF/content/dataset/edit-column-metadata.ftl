@@ -239,7 +239,7 @@
      <div id='divOntology-${column_index}' class="ontologyInfo " data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology">
             <#assign ontologyId="" />
             <#assign ontologyTxt="" />
-            <#if column.defaultOntology??  && column.defaultOntology.id??>
+            <#if column.defaultOntology??  && column.defaultOntology.id?? && column.columnEncodingType != "CODED_VALUE" >
                 <#assign ontologyId=column.defaultOntology.id?c />
                 <#assign ontologyTxt="${column.defaultOntology.title} (${column.defaultOntology.id?c})"/>
             </#if>
