@@ -22,7 +22,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <div id="spanStatus" tooltipcontent="#spanStatusToolTip" class="control-group">
             <label class="control-label">Status</label>
             <div class="controls">
-		            <#if !(guestUserId != -1 && guestUserId == authenticatedUser.id)>
+		            <#if (guestUserId != -1 && guestUserId == authenticatedUser.id)>
 		            	<select name="status">
 		            		<option value='DRAFT' selected>Draft</option>
 		            	</select>
