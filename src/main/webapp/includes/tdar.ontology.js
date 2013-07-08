@@ -36,8 +36,8 @@ TDAR.ontology = (function(){
 
         registerOrgChart: function($elem) {
 
-            //FIXME: I don't think we should make this "draggable" as most browsers will implicitly make the div scrollable whenever it needs to be
-            _makedraggable();
+            //Removing 'draggable' behavior for now since it doesn't work will with expandable nodes.
+            //_makedraggable();
             $elem.orgChart({container: $("#ontologyViewerPan"), interactive:true, showLevels:2, stack:true});
         }
 
