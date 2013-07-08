@@ -28,7 +28,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -170,16 +169,17 @@ public abstract class AbstractSeleniumWebITCase {
         this.driver = eventFiringWebDriver;
     }
 
-    /**
-     * @return firefox profile that has CSS rendering disabled.
-     */
-    public final FirefoxProfile firefoxProfileNoCss() {
-        // http://stackoverflow.com/questions/3526361/firefoxdriver-how-to-disable-javascript-css-and-make-sendkeys-type-instantly
-        FirefoxProfile profile = new FirefoxProfile();
-        profile.setPreference("permissions.default.stylesheet", 2);
-        // profile.setPreference("permissions.default.image", 2);
-        return profile;
-    }
+//    /**
+//     * @return firefox profile that has CSS rendering disabled.
+//     */
+//    public final FirefoxProfile firefoxProfileNoCss() {
+//        // http://stackoverflow.com/questions/3526361/firefoxdriver-how-to-disable-javascript-css-and-make-sendkeys-type-instantly
+//        FirefoxProfile profile = new FirefoxProfile();
+//        profile.setPreference("permissions.default.stylesheet", 2);
+//        // profile.setPreference("permissions.default.image", 2);
+//        return profile;
+//    }
+//
 
     @Rule
     public TestName testName = new TestName();
