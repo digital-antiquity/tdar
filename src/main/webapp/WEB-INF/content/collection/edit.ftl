@@ -16,7 +16,7 @@
 </head>
 <body>
 
-    <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static no-print"  data-offset-top="250" data-spy="affix" >
+    <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen"  data-offset-top="250" data-spy="affix" >
       <div class="">
         <div class="container" >
         <ul class="nav">

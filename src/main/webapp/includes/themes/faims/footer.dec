@@ -1,4 +1,4 @@
-<div class="row no-print footer-links">
+<div class="row screen footer-links">
     <div class="span3"> 
         <h4>About</h4> 
             <ul> 
@@ -40,7 +40,7 @@
         </ul>
     </div>
 </div>
-<div class="row no-print footerlogos" id="copyright" >  
+<div class="row  screen footerlogos" id="copyright" >  
     <p>OUR PARTNERS
     <div class="footerlogos">
         <a href="http://www.nectar.org.au/"><img alt="Nectar Logo" class="footerlogo" src="/includes/themes/faims/images/nectar-small.jpg"></a>
