@@ -23,7 +23,6 @@ public class BrowseSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
 
         //we could do this implicitly by going to any other page but this makes the test faster
         reportJavascriptErrors();
-
     }
 
     @Test
@@ -51,7 +50,29 @@ public class BrowseSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         browseTest("/dataset/3088");
     }
 
-    //TODO: need urls for Image, Sensory Data, Video, Geospatial
+    @Test
+    public void testSensoryData() {
+        browseTest("/sensory-data/4289");
+    }
 
+    @Test
+    public void testImage() {
+        browseTest("/image/4292");
+    }
+
+    @Test
+    public void testVideo() {
+        browseTest("/video/4290");
+    }
+
+    @Test
+    public void testGeospatial() {
+        browseTest("/geospatial/4291");
+    }
+
+    @Test
+    public void testResourceCollection() {
+        browseTest("/collection/1575");
+    }
 
 }
