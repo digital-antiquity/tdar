@@ -18,7 +18,21 @@
 
 </head>
 <body>
-<@nav.toolbar "collection" "view" />
+<#if editable>
+    <@nav.toolbar "collection" "view">
+        <@nav.makeLink
+            namespace="collection"
+            action="add?parentId=${id?c}"
+            label="create child collection"
+            name="columns"
+            current=current
+            includeResourceId=false
+            disabled=disabled
+            extraClass="hidden-tablet hidden-phone"/>
+    </@nav.toolbar>
+<#else>
+    <@nav.toolbar "collection" "view" />
+</#if>
 
 <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>

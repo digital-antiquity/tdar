@@ -52,6 +52,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private SortOption sortField;
     private String mode = "CollectionBrowse";
     private PaginationHelper paginationHelper;
+    private String parentCollectionName;
 
     @Override
     public boolean isEditable() {
@@ -188,6 +189,20 @@ public class CollectionController extends AbstractPersistableController<Resource
         // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
         // }
         setParentId(getPersistable().getParentId());
+        if(Persistable.Base.isNotNullOrTransient(getParentId())) {
+            parentCollectionName = getPersistable().getParent().getName();
+        }
+        return SUCCESS;
+    }
+
+    @Override
+    public String loadAddMetadata() {
+        if(Persistable.Base.isNotNullOrTransient(parentId)) {
+            ResourceCollection parent = getResourceCollectionService().find(parentId);
+            if(parent != null) {
+                parentCollectionName = parent.getName();
+            }
+        }
         return SUCCESS;
     }
 
@@ -454,6 +469,11 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (paginationHelper == null)
             paginationHelper = PaginationHelper.withSearchResults(this);
         return paginationHelper;
+    }
+
+    public String getParentCollectionName() {
+        return parentCollectionName;
+
     }
 
 }
