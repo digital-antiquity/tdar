@@ -70,8 +70,12 @@ public class DashboardController extends AuthenticationAware.Base {
         // removing duplicates
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
         if (isEditor() && indexingTask != null) {
+            try {
             String msg = String.format("%s is RE-INDEXING %s (%s)", indexingTask.getUser().getProperName(), getSiteAcronym(), indexingTask.getStartDate());
             addActionMessage(msg);
+            } catch (Exception e) {
+                logger.error("exception in indexing note: {}", e);
+            }
         }
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);
