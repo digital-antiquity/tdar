@@ -3,10 +3,13 @@ package org.tdar.web.functional;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -23,6 +26,9 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -117,29 +123,51 @@ public abstract class AbstractSeleniumWebITCase {
         pageText = null;
     }
 
+    private enum Browser {
+        FIREFOX, CHROME, SAFARI, IE;
+    }
+
     @Before
-    public void before() throws MalformedURLException {
+    public void before() throws IOException {
         /*
          * We define a specific binary so when running "headless" we can specify a PORT
          */
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
-
-        FirefoxBinary fb = new FirefoxBinary();
-        String xvfbPropsFile = System.getProperty("display.port");
-        if (StringUtils.isNotBlank(xvfbPropsFile)) {
-            fb.setEnvironmentProperty("DISPLAY", xvfbPropsFile);
+        WebDriver driver = null;
+        Browser browser = Browser.FIREFOX;
+        String xvfbPort = System.getProperty("display.port");
+        Map<String, String> environment = new HashMap<String, String>();
+        if (StringUtils.isNotBlank(xvfbPort)) {
+            environment.put("DISPLAY", xvfbPort);
         }
-
-        WebDriver firefoxDriver = new FirefoxDriver(fb, newFirefoxProfile());
-        EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(firefoxDriver);
+        switch (browser) {
+            case FIREFOX:
+                FirefoxBinary fb = new FirefoxBinary();
+                for (String key : environment.keySet()) {
+                    fb.setEnvironmentProperty(key, environment.get(key));
+                }
+                driver = new FirefoxDriver(fb, new FirefoxProfile());
+                break;
+            case CHROME:
+                /* yes, this is ugly */
+                File app = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
+                if (!app.exists()) {
+                    app = new File("C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe");
+                } 
+                if (!app.exists()) {
+                    app = new File("/usr/bin/google-chrome");
+                } 
+                
+                ChromeDriverService options = new ChromeDriverService.Builder().usingDriverExecutable(app).withEnvironment(environment).build();
+                driver = new ChromeDriver(options);
+                options.start();
+                break;
+        }
+        EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(driver);
         eventFiringWebDriver.register(eventListener);
 
         this.driver = eventFiringWebDriver;
-    }
-
-    public FirefoxProfile newFirefoxProfile() {
-        return new FirefoxProfile();
     }
 
     /**
