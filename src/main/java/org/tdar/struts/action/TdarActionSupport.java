@@ -542,4 +542,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return false;
     }
 
+    public Long getGuestUserId(){
+        return getTdarConfiguration().getGuestUserId();
+    }
+
 }

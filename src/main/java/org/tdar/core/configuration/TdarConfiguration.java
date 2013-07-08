@@ -590,4 +590,8 @@ public class TdarConfiguration {
     public File getFremarkerTemplateDirectory() {
         return new File(assistant.getStringProperty("freemarker.templatedir", "includes/email/"));
     }
+    
+    public Long getGuestUserId() {
+        return assistant.getLongProperty("guest.user.id", -1L);
+    }
 }
