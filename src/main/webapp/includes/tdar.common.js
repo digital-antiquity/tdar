@@ -1112,7 +1112,7 @@ var _sortFilesAlphabetically= function() {
         "populateTarget": _populateTarget,
         "prepareDateFields": _prepareDateFields,
         "setAdhocTarget": _setAdhocTarget,
-        "changeSubcategory ": _changeSubcategory ,
+        "changeSubcategory": _changeSubcategory ,
         "registerDownload": _registerDownload,
         "setupSupportingResourceForm": _setupSupportingResourceForm,
         "toggleDiv": _toggleDiv,
