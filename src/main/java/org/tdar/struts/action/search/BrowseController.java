@@ -167,14 +167,15 @@ public class BrowseController extends AbstractLookupController {
                 }
             }
             if (isEditor()) {
-                if (creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
+                if (creator instanceof Person && StringUtils.isNotBlank(((Person)creator).getUsername())) {
+                    Person person = (Person)creator;
                     try {
-                        getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) creator));
+                        getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(person));
                     } catch (Throwable e) {
                         logger.error("problem communicating with crowd getting user info for {} ", creator, e);
                     }
                     getAccounts().addAll(
-                            getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+                            getAccountService().listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
                 }
                 try {
                     setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));

@@ -60,7 +60,7 @@
 			<#list keywords as keyword>
 			<#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
 			
-			<#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !!keyword.@name?contains("Fips Code"))>
+			<#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !!keyword.@name?contains("Fips "))>
 			<li>${keyword.@name}</li>
 			</#if>
 			</#if>
