@@ -64,9 +64,6 @@ hr.dbl {
 
 a {
 	color: #7a1501;
-	transition: 0.1s ease-out;
-	-moz-transition: 0.1s ease-out;
-	-webkit-transition: 0.1s ease-out;
 }
 
 a:hover {
@@ -93,9 +90,6 @@ a.button, .tdar-button {
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	text-align: center;
-	transition: 0.1s ease-out;
-	-moz-transition: 0.1s ease-out;
-	-webkit-transition: 0.1s ease-out;
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=/images/hIEfix.png, sizingMethod=crop );
 	zoom: 1;
 	padding-left: 8px;
