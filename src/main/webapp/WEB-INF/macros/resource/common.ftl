@@ -290,7 +290,7 @@ TDAR.uri = function(path) {
 </script>
 </#macro>
 
-<#macro pieChart data="data" searchKey="" graphWidth=300 graphHeight=150 context=false config="">
+<#macro pieChart data="data" searchKey="" graphWidth=300 graphHeight=150 context=false config="" graphLabel="">
 	<#local id= "${data}Id">
     <div id="graph${id}"  style="width:${graphWidth}px;height:${graphHeight}px;"></div>
     
@@ -304,6 +304,8 @@ $(document).ready(function(){
         renderer: jQuery.jqplot.PieRenderer, 
         rendererOptions: {
           fill: true,
+          title:"${graphLabel?js_string}",
+          animate: !$.jqplot.use_excanvas,
           showDataLabels: true, 
           // Add a margin to seperate the slices.
           sliceMargin: 4, 
@@ -331,6 +333,7 @@ $(document).ready(function(){
       },
       cursor: {
           style:"pointer",
+       	  show: false,
           useAxesFormatters: false
       },
       highlighter: {
@@ -416,7 +419,7 @@ $(document).ready(function(){
 			}
 		var _defaults =  {
             // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
- 			title: "${graphLabel}",
+ 			title: "${graphLabel?js_string}",
             animate: !$.jqplot.use_excanvas,
             seriesDefaults:{
 //                renderer:$.jqplot.BarRenderer,
@@ -493,7 +496,7 @@ $(document).ready(function(){
 
 		var _defaults =  {
             // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
- 			title: "${graphLabel}",
+ 			title: "${graphLabel?js_string}",
             animate: !$.jqplot.use_excanvas,
             seriesDefaults:{
                 renderer:$.jqplot.BarRenderer,

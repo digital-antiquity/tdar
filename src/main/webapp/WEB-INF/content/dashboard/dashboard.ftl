@@ -124,7 +124,7 @@
 	        <h2>At a glance</h2>
 	            <div class="piechart row">
 	            <@common.generatePieJson statusCountForUser "statusForUser" />
-	            <@common.barGraph  data="statusForUser" searchKey="includedStatuses" graphHeight=150 context=true/>
+	            <@common.barGraph  data="statusForUser" searchKey="includedStatuses" graphHeight=150 context=true graphLabel="Your Resources By Status"/>
 		     </div>
 	         <div class="piechart row">
  	            <@common.generatePieJson resourceCountForUser "resourceCountForUser" />
@@ -133,7 +133,7 @@
  	               legend: { show:true, location: 's', rendererOptions: {numberColumns: 3} }
  	               };
  	            </script>
-	            <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=300 context=true config="pcconfig"/>
+	            <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=300 context=true config="pcconfig" graphLabel="Your Resources By Type"/>
 	        </div>
 	    </div>
 	</div>

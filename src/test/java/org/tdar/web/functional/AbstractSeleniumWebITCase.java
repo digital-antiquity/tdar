@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,8 +31,6 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.events.WebDriverEventListener;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -166,9 +163,9 @@ public abstract class AbstractSeleniumWebITCase {
                 options.start();
                 break;
             case PHANTOMJS:
-                driver = new PhantomJSDriver(
-                        ResolvingPhantomJSDriverService.createDefaultService(), // service resolving phantomjs binary automatically
-                        DesiredCapabilities.phantomjs());
+//                driver = new PhantomJSDriver(
+//                        ResolvingPhantomJSDriverService.createDefaultService(), // service resolving phantomjs binary automatically
+//                        DesiredCapabilities.phantomjs());
         }
         EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(driver);
         eventFiringWebDriver.register(eventListener);
