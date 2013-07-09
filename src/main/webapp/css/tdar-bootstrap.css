@@ -211,10 +211,12 @@ table.legend {
 	border-bottom: 1px solid #AAA;
 }
 
-.buttontable div, .columnSquare.coded {
-	background: #eeeeee; /* Old browsers */
+.defaultColumn , .buttontable div, .columnSquare.coded {
+	background: #eeeeee; 
 	border: 1px solid #999999;
 }
+
+
 
 .displayColumn {
 	background:#E9E4CD;

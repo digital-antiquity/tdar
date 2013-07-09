@@ -347,8 +347,13 @@ $(document).ready(function(){
  	$.extend(true, defaults_,${config});
  	</#if>
 
-  var plot${data} = jQuery.jqplot ('graph${id}', [${data}],defaults_);
-     <@clickPlot id searchKey context />
+    if (${data}.length > 1) {
+        var plot${data} = jQuery.jqplot ('graph${id}', [${data}],defaults_);
+        <@clickPlot id searchKey context />
+    } else {
+         $("#graph${data}").hide();
+         console.log("hiding ${data} graph");
+    }
 });
 
     </script>
@@ -557,9 +562,14 @@ $(document).ready(function(){
      	$.extend(true, _defaults,${config});
      	</#if>
          
-        var plot${id} = $.jqplot('graph${id}', [${data}],_defaults);
      
-     <@clickPlot id searchKey context />
+     if (${data}.length > 1) {
+         var plot${id} = $.jqplot('graph${id}', [${data}],_defaults);
+         <@clickPlot id searchKey context />
+     } else {
+          $("#graph${id}").hide();
+          console.log("hiding ${id} bar graph");
+     }
     });
 	</script>
 </#macro>
