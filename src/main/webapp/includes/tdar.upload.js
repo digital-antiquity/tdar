@@ -34,6 +34,9 @@ TDAR.fileupload = function() {
             url: TDAR.uri('upload/upload'),
             autoUpload: true,
             maxNumberOfFiles: TDAR.maxUploadFiles,
+            getNumberOfFiles: function() {
+                return this.filesContainer.children().not(".deleted-file").length;
+            },
             destroy: _destroy
 
         }, _options));
@@ -214,24 +217,6 @@ TDAR.fileupload = function() {
         } else {
         	$("#reminder").show();
         }
-    };
-
-    //dynamically generate the replace-with dropdown list items with the the candidate replacement files
-    var _buildReplaceDropdown = function(e) {
-        var button = this;
-        var $ul = $(button).next(); //in a button dropdown, the ul follows the button
-        var $tr = $(button).parents("tr.existing-file");
-        var $tbody = $(button).closest("tbody.files");
-        var $newfiles = $('.new-file:not(.replace-target,.deleted-file)');
-        var data = {
-                jqnewfiles: $newfiles,
-                //TODO: figure  out if this existing file has already chosen a replacement, if so,  render a "cancel" option.
-                bReplacePending: $tr.hasClass('replacement-selected')};
-        
-        var $listItems = $(tmpl("template-replace-menu", data));
-        $listItems.find('a').bind("click", _replacementFileItemClicked);
-        $ul.empty();
-        $ul.append($listItems);
     };
 
     var _enableRow = function(row) {
