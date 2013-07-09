@@ -523,7 +523,7 @@ $(document).ready(function(){
             axes: {
                 xaxis: {
 		           labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-		 renderer: $.jqplot.CategoryAxisRenderer,
+		 			renderer: $.jqplot.CategoryAxisRenderer,
                 	<#if xaxis == "log">renderer:$.jqplot.LogAxisRenderer,</#if>
                 	<#if xaxis == "date">renderer:$.jqplot.DateAxisRenderer,</#if>
 

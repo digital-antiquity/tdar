@@ -80,7 +80,7 @@
 
 </div>
 </#if>
-
+<#if (paginationHelper.pageCount > 1)>
 <div class="pagination">
 <b>Showing ${recordsPerPage} columns, jump to another page?</b>
 <#assign path="/">
@@ -127,6 +127,7 @@
 </#if>
 </div>
 
+</#if>
 
 <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">
@@ -141,7 +142,7 @@
 
 <div class="datatablecolumn" id="columnDiv_${column_index}" >
   <h3> 
-  <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions" class="columnSquare">&nbsp;</span>
+  <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions" class="columnSquare"><p>&nbsp;</p></span>
   <!-- Column: -->
   <span class="displayName">${column.displayName}</span> 
   <!-- <small style="float:right">jump to: <a href="#top">top</a> | <a href="#submitButton">save</a></small> --></h3>

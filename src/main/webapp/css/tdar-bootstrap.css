@@ -252,16 +252,27 @@ table.legend {
 	border: 1px solid #999999;
 }
 
-.columnSquare.complete {
+.columnSquare.complete p:before {
 	content:"\2713";
 	color:#000;
+	font-size: 14px;
+	font-weight: bold;
+	top: -20px;
+	position: relative;
+	left: 4px;
+	font-family: helvetica;
 }
 
-.columnSquare.invalid {
-	content:"X";
-	color:red;
+.columnSquare.invalid p:before {
+	content: "X";
+	color: red;
+	font-size: 14px;
+	font-weight: bold;
+	top: -20px;
+	position: relative;
+	left: 4px;
+	font-family: helvetica;
 }
-
 .columnSquare.mapped {
 	background: #8b755e;
 }
