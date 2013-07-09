@@ -983,7 +983,17 @@
 			<version>2.33.0</version>
 			<scope>test</scope>
 		</dependency>
-
+<dependency>
+	<groupId>org.jboss.arquillian.extension</groupId>
+	<artifactId>arquillian-phantom-binary</artifactId>
+	<version>1.9.0</version>
+</dependency>
+<dependency>
+	<groupId>org.jboss.arquillian.extension</groupId>
+	<artifactId>arquillian-phantom-driver</artifactId>
+	<version>1.0.3</version>
+</dependency>
+                
 	</dependencies>
 	<pluginRepositories>
 		<pluginRepository>
