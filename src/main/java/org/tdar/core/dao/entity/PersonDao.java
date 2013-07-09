@@ -168,11 +168,15 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         Session session = getCurrentSession();
         logger.info("clearing creator occurrence values");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT)).executeUpdate();
-        logger.info("beginning updates");
+        logger.info("beginning updates - resource");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE)).executeUpdate();
+        logger.info("beginning updates - copyright");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT)).executeUpdate();
+        logger.info("beginning updates - provider");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER)).executeUpdate();
+        logger.info("beginning updates - publisher");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER)).executeUpdate();
+        logger.info("beginning updates - submitter");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER)).executeUpdate();
         logger.info("completed updates");
     }
