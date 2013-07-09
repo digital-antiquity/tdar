@@ -272,7 +272,7 @@ table.legend {
 
 .columnSquare.invalid span:before {
 	content: "X";
-	color: red;
+	color: #7a1501;
 }
 .columnSquare.mapped {
 	background: #8b755e;
