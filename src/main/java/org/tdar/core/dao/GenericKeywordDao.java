@@ -116,6 +116,7 @@ public class GenericKeywordDao extends GenericDao {
                 session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT, tableName)).executeUpdate();
                 session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT, tableName)).executeUpdate();
                 session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE, tableName, inheritanceField)).executeUpdate();
+                logger.info("completed update on {}", tableName);
             } catch (IllegalAccessException e) {
                 logger.error("could not update keywords",e);
             }
