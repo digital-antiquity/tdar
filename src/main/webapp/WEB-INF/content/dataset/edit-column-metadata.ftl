@@ -142,7 +142,7 @@
 
 <div class="datatablecolumn" id="columnDiv_${column_index}" >
   <h3> 
-  <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions" class="columnSquare"><p>&nbsp;</p></span>
+  <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions" class="columnSquare"><span>&nbsp;</span></span>
   <!-- Column: -->
   <span class="displayName">${column.displayName}</span> 
   <!-- <small style="float:right">jump to: <a href="#top">top</a> | <a href="#submitButton">save</a></small> --></h3>
