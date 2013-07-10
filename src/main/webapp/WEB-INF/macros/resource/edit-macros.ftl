@@ -1227,6 +1227,7 @@ $(function() {
 {% for (var i=0, file; file=o.files[i]; i++) { %}
 {% var idx = '' + TDAR.fileupload.getRowId();%}
 {% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
+{% rowclass += TDAR.fileupload.getRowVisibility() ? "" : " hidden"; %}
     <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
         {% if (file.error) { %}        
             <td colspan="2">

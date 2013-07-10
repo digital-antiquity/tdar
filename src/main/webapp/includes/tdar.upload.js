@@ -5,9 +5,10 @@ TDAR.namespace("fileupload");
 TDAR.fileupload = function() {
     'use strict';
     
-    var _informationResource;
-    var _informationResourceId = -1;
+
     var _nextRowId = 0;
+    var _nextRowVisibility = true;
+
 
     //main file upload registration function
     var _registerUpload  = function(options) {
@@ -229,9 +230,17 @@ TDAR.fileupload = function() {
         $('.delete-button', row).addClass('btn-warning').removeClass('btn-danger');
     };
     
-    //public: kludge for dealing w/ fileupload's template system, which doesn't have a good way to pass the row number of the table the template will be rendered to
+    // kludge for dealing w/ fileupload's template system, which doesn't have a good way to pass the row number of the table the template will be rendered to
     var _getRowId = function() {
         return _nextRowId++;
+    }
+
+    /**
+     * another kludge:  indicate to fileupload-ui template that we don't want uploaded file to appear in files section
+     * (e.g. when the user is using the "replace file" feature).
+     */
+    var _getRowVisibility = function() {
+        return _nextRowVisibility;
     }
 
     var _replaceFile = function($originalRow, $targetRow) {
@@ -251,8 +260,7 @@ TDAR.fileupload = function() {
             $targetRow.detach();
             $originalRow.data("$targetRow", $targetRow);
             $originalRow.find(".replace-file-button, .undo-replace-button").toggle();
-        })
-
+        });
     }
 
     //to 'cancel' a file replacement, we need to restore state of the fileproxy,  and then create a new file proxy
@@ -278,17 +286,21 @@ TDAR.fileupload = function() {
     var _registerReplaceButton = function(formSelector) {
         console.log("registering replace button")
 
-        //invoke the fileupload widgets "add" method
+        //invoke the fileupload widgets "send" method
         $(formSelector).on('change', '.replace-file' , function (e) {
             console.log("triggering file upload");
-            $(formSelector).fileupload('add', {
+
+            //tell filupload-ui to hide this upload from files table
+            _nextRowVisibility = false;
+
+            $(formSelector).fileupload('send', {
                 files: e.target.files || [{name: this.value}],
                 fileInput: $(this),
                 $replaceTarget: $(this).closest(".existing-file")
             });
         });
 
-        //when the upload is complete&succesful, update file proxy fields to indicate incoming file is replacement
+        //when browser uploads replacement file uploaded succesfully, update file proxy fields to indicate incoming file is replacement
         $(formSelector).bind("fileuploadcompleted", function(e, data) {
             if(!data.$replaceTarget) return;
             var file = data.files[0];
@@ -297,6 +309,13 @@ TDAR.fileupload = function() {
             _replaceFile($originalRow, $targetRow);
         });
 
+        //regardless of success/failure,  perform this cleanup after replacement upload terminates
+        $(formSelector).bind("fileuploadfinished", function() {
+            //tell filupload-ui to stop hiding uploads
+            _nextRowVisibility = true;
+        });
+
+        //
         $(formSelector).on("click", ".undo-replace-button", function(e) {
             console.log("undo replace click");
             _cancelReplaceFile($(this).closest(".existing-file"));
@@ -311,6 +330,7 @@ TDAR.fileupload = function() {
     return {
         "registerUpload": _registerUpload,
         "updateFileAction": _updateFileAction,
-        "getRowId": _getRowId
+        "getRowId": _getRowId,
+        "getRowVisibility": _getRowVisibility
     };
 }();
