@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,6 +32,8 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.events.WebDriverEventListener;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -123,7 +126,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     private enum Browser {
-        FIREFOX, CHROME, SAFARI, IE,PHANTOMJS;
+        FIREFOX, CHROME, SAFARI, IE, PHANTOMJS;
     }
 
     @Before
@@ -153,19 +156,20 @@ public abstract class AbstractSeleniumWebITCase {
                 File app = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
                 if (!app.exists()) {
                     app = new File("C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe");
-                } 
+                }
                 if (!app.exists()) {
                     app = new File("/usr/bin/google-chrome");
-                } 
-                
+                }
+
                 ChromeDriverService options = new ChromeDriverService.Builder().usingDriverExecutable(app).withEnvironment(environment).build();
                 driver = new ChromeDriver(options);
                 options.start();
                 break;
             case PHANTOMJS:
-//                driver = new PhantomJSDriver(
-//                        ResolvingPhantomJSDriverService.createDefaultService(), // service resolving phantomjs binary automatically
-//                        DesiredCapabilities.phantomjs());
+                driver = new PhantomJSDriver(
+                        ResolvingPhantomJSDriverService.createDefaultService(), // service resolving phantomjs binary automatically
+                        DesiredCapabilities.phantomjs());
+                break;
         }
         EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(driver);
         eventFiringWebDriver.register(eventListener);
@@ -173,17 +177,17 @@ public abstract class AbstractSeleniumWebITCase {
         this.driver = eventFiringWebDriver;
     }
 
-//    /**
-//     * @return firefox profile that has CSS rendering disabled.
-//     */
-//    public final FirefoxProfile firefoxProfileNoCss() {
-//        // http://stackoverflow.com/questions/3526361/firefoxdriver-how-to-disable-javascript-css-and-make-sendkeys-type-instantly
-//        FirefoxProfile profile = new FirefoxProfile();
-//        profile.setPreference("permissions.default.stylesheet", 2);
-//        // profile.setPreference("permissions.default.image", 2);
-//        return profile;
-//    }
-//
+    // /**
+    // * @return firefox profile that has CSS rendering disabled.
+    // */
+    // public final FirefoxProfile firefoxProfileNoCss() {
+    // // http://stackoverflow.com/questions/3526361/firefoxdriver-how-to-disable-javascript-css-and-make-sendkeys-type-instantly
+    // FirefoxProfile profile = new FirefoxProfile();
+    // profile.setPreference("permissions.default.stylesheet", 2);
+    // // profile.setPreference("permissions.default.image", 2);
+    // return profile;
+    // }
+    //
 
     @Rule
     public TestName testName = new TestName();
