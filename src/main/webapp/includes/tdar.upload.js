@@ -66,7 +66,7 @@ TDAR.fileupload = function() {
                 //list of existing and new files that are not deleted or serving as a file replacement
                 //FIXME: needs to not include files that were uploaded but failed part way.
                 validFiles: function() {
-                    var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file');
+                    var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file, .hidden');
                     
                     var files = $rows.map(function(){
                         var file = {};
