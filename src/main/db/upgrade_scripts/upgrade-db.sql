@@ -88,3 +88,16 @@ alter table geospatial add column currentnessUpdateNotes text;
 alter table geospatial add column projection varchar(50);
 alter table geospatial add column scale varchar(100);
 alter table geospatial add column spatial_reference_system varchar(50);
+
+create index ires_provider on information_resource (provider_institution_id);
+create index ires_publisher on information_resource (publisher_id);
+create index ires_copyright on information_resource (copyright_holder_id);
+create index creatorid on resource_creator (creator_id);
+
+begin transaction;
+update information_resource set provider_institution_id=null where provider_institution_id=11015;
+update information_resource set publisher_id=null where publisher_id=11015;
+update person set institution_id = null where institution_id=11015;
+delete from resource_creator where creator_id=11015;
+delete from creator where id=11015;
+commit;
