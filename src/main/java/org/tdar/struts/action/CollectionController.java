@@ -175,6 +175,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         // for (Resource resource : getPersistable().getResources()) {
         // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
         // }
+        //FIXME: update visible flag, using below to initialize transient children
         setParentId(getPersistable().getParentId());
         return SUCCESS;
     }
@@ -233,6 +234,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (Persistable.Base.isNullOrTransient(getId()))
             return;
         List<ResourceCollection> findAllChildCollections;
+        //FIXME: reconcile
+        getResourceCollectionService().findAllChildCollections(getPersistable(), CollectionType.SHARED);
         if (isAuthenticated()) {
             findAllChildCollections = getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED);
             // FIXME: not needed?

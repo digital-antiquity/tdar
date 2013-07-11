@@ -89,13 +89,7 @@
 <br/>
 <div class="row">
     <div class="span6">
-        <h3>Getting Started with ${siteAcronym}</h3>
-        <ul>
-        <li><a href="${documentationUrl}">a tutorial that can help you get started</a>.</li>
-        <li> <a href="<@s.url value="/search/results?query=&resourceTypes=PROJECT"/>">browse</a> all projects</li>
-        <li> <a href="<@s.url value="/browse/collections"/>">browse</a> all collections</li>
-        <li> <a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
-        </ul>
+        <#include "/${themeDir}/homepage-bottom-left.dec" />
     </div>
     <div class="span6">
     	<@common.resourceBarGraph />

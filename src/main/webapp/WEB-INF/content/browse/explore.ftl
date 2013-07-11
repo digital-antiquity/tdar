@@ -42,7 +42,7 @@
 	<script>
 	        var timelineData = []; 
 	        <#list timelineData as cache>
-	        	<#if (cache.count > 0)>
+	        	<#if (cache.count > 1 && cache.key != 0 && cache.key < 2500 )>
 	        	<#noescape>
 			        timelineData.push(["${cache.key?c}",${(cache.count!0)?string(",##0")},"${cache.key?c}",${(cache.count!0)?string(",##0")}]);
 	        	</#noescape>

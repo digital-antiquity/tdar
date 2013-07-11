@@ -217,15 +217,15 @@
 	
    <div class="" id="collection-section">
    <h2>Collections You Created </h2>
-      <@listCollections resourceCollections>
+      <@common.listCollections collections=resourceCollections>
           <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
-      </@listCollections>
+      </@common.listCollections>
    </div>
    <br/>
    <#if sharedResourceCollections?? && !sharedResourceCollections.empty >
      <div class="">
      <h2>Collections Shared With You</h2>
-       <@listCollections sharedResourceCollections />
+       <@common.listCollections collections=sharedResourceCollections />
     </div>
   </#if>
 
@@ -264,29 +264,6 @@
 </div>
 </#macro>
 
-<#macro collectionListItem collection>
-	<#compress><li>
-    <a href="<@s.url value="/collection/${collection.id?c}"/>">
-    <#if collection.name?? && collection.name != ''>${collection.name!"no title"}<#t/><#else>No Title</#if> (${collection.resources?size})</a>
-          <#if collection.transientChildren?has_content>
-			<ul>
-		        <#list collection.transientChildren as child>
-		        	<@collectionListItem child />
-				</#list>
-			</ul>          	
-          </#if>
-	</li></#compress>
-</#macro>
-
-<#macro listCollections resourceCollections_ >
-      <ul>
-        <#list resourceCollections_ as collection>
-        	<@collectionListItem collection />
-        </#list>
-      <#nested>
-      </ul>
-
-</#macro>
 <script>
 $(document).ready(function() {
 	$("[data-dismiss-cookie]").each(function(){

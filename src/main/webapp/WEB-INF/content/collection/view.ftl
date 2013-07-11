@@ -6,16 +6,12 @@
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 
 <head>
-<@search.headerLinks includeRss=false />
-<title>${resourceCollection.name!"untitled collection"}</title>
-<meta name="lastModifiedDate" content="$Date$"/>
-<@view.canonical resourceCollection />
-<#assign rssUrl>/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!"untitled")?url}</#assign>
-<@search.rssUrlTag url=rssUrl />
-<style>
-//ul.resource-list {list-style:none;margin-left:0px !important}
-</style>
-
+	<@search.headerLinks includeRss=false />
+	<title>${resourceCollection.name!"untitled collection"}</title>
+	<meta name="lastModifiedDate" content="$Date$"/>
+	<@view.canonical resourceCollection />
+	<#assign rssUrl>/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!"untitled")?url}</#assign>
+	<@search.rssUrlTag url=rssUrl />
 </head>
 <body>
 <#if editable>
@@ -36,21 +32,26 @@
 
 <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>
-<#if resourceCollection.visible || viewable>
+<#if (resourceCollection.visible || viewable) && collections?has_content>
 <!-- Don't show header if header doesn't exist -->
+    <div id="sidebar-right" parse="true">
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+			<h3>Child Collections</h3>
+			<@common.listCollections collections=collections showOnlyVisible=true />
+	</div>
+
 <#if resourceCollection.parent?? || resourceCollection.description?? || collections??>
     <div class="glide">
         <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
         <@common.description resourceCollection.description />
-    
-    <#if (collections?has_content) >
-    <B>Collections Contained in this Collection</B>
-    <ul>
-      <#list collections as collection_>
-       <li><a href="<@s.url value="/collection/${collection_.id?c}"/>">${collection_.name}</a></li>
-      </#list>
-    </ul>
-    </#if>
   </div>
 </#if>
 

@@ -1084,6 +1084,33 @@ this bit of freemarker is voodoo:
 </#macro>
 
 
+
+<#macro collectionListItem collection=collection showOnlyVisible=false>
+	<#if collection.visible || collection.viewable || showOnlyVisible==false >
+	<#compress><li>
+    <a href="<@s.url value="/collection/${collection.id?c}"/>">
+    <#if collection.name?? && collection.name != ''>${collection.name!"no title"}<#t/><#else>No Title</#if> (${collection.resources?size})</a>
+          <#if collection.transientChildren?has_content>
+			<ul>
+		        <#list collection.transientChildren as child>
+		        	<@collectionListItem child />
+				</#list>
+			</ul>          	
+          </#if>
+	</li></#compress>
+    	</#if>
+</#macro>
+
+<#macro listCollections collections=resourceCollections_ showOnlyVisible=false >
+  <ul>
+    <#list collections as collection>
+	    	<@collectionListItem collection=collection showOnlyVisible=showOnlyVisible/>
+    </#list>
+  <#nested>
+  </ul>
+</#macro>
+
+
 </#escape>
 
 

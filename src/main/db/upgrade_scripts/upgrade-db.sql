@@ -99,5 +99,6 @@ update information_resource set provider_institution_id=null where provider_inst
 update information_resource set publisher_id=null where publisher_id=11015;
 update person set institution_id = null where institution_id=11015;
 delete from resource_creator where creator_id=11015;
+delete from institution where id=11015;
 delete from creator where id=11015;
 commit;

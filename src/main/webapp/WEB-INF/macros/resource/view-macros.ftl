@@ -554,11 +554,11 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 <#macro altText irfile>
-${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if>
+${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if><#if irfile.fileCreatedDate?has_content>(${fileCreatedDate})</#if>
 </#macro>
 
 <#macro imageGallery>
-<div class="well slider">
+<div class="slider">
  <#local numIndicatorsPerSection = 4 />
 <div id="myCarousel" class="image-carousel carousel slide pagination-centered">
  
@@ -594,10 +594,10 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 		</#if>
 	</#list> 
 	</div><!--/carousel-inner-->
- 
 	<a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
 	<a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
 </div><!--/myCarousel-->
+ <br/>
  
 </div><!--/well-->
  <#if authenticatedUser??>
@@ -605,7 +605,7 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 		<#list resource.visibleFilesWithThumbnails as irfile>
 			<img  id="bigImage" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
 			<div id="downloadText">
-			<@altText irfile/>
+			<@altText irfile/> 
 			</div>
 			<#break>
 		</#list>
