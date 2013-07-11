@@ -8,6 +8,8 @@
 
 
 <#macro footer>
+        <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Limit by Resource Type" facetParam="resourceTypes" />
+
 <#if (totalRecords > 0)>
 
 <br/>

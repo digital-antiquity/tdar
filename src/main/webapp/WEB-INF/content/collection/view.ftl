@@ -32,7 +32,8 @@
 
 <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>
-<#if (resourceCollection.visible || viewable) && collections?has_content>
+<#if (resourceCollection.visible || viewable)>
+<#if collections?has_content>
 <!-- Don't show header if header doesn't exist -->
     <div id="sidebar-right" parse="true">
         <br/>
@@ -47,6 +48,7 @@
 			<h3>Child Collections</h3>
 			<@common.listCollections collections=collections showOnlyVisible=true />
 	</div>
+</#if>
 
 <#if resourceCollection.parent?? || resourceCollection.description?? || collections??>
     <div class="glide">
@@ -75,6 +77,7 @@
 			<#assign mapSize="1000" />
 		</#if>
          
+        <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Limit by Resource Type" facetParam="resourceTypes" />
 		<div class="tdarresults">
 		    <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
 		        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />

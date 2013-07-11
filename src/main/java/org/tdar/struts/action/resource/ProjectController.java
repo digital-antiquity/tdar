@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -14,10 +15,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAccessType;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.search.query.QueryFieldNames;
@@ -54,6 +59,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private SortOption sortField;
     private String mode = "ProjectBrowse";
     private PaginationHelper paginationHelper;
+    private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
 
     /**
      * Projects contain no additional metadata beyond basic Resource metadata so saveBasicResourceMetadata() should work.
@@ -83,7 +89,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
             results = { @Result(
                     name = SUCCESS,
                     location = "json.ftl",
-                    params = {  "contentType", "application/json" },
+                    params = { "contentType", "application/json" },
                     type = "freemarker"
                     ) }
             )
@@ -279,13 +285,24 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
-        return null;
+        List<FacetGroup<? extends Facetable>> group = new ArrayList<>();
+        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
+        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
+        return group;
     }
 
     public PaginationHelper getPaginationHelper() {
         if (paginationHelper == null)
             paginationHelper = PaginationHelper.withSearchResults(this);
         return paginationHelper;
+    }
+
+    public ArrayList<ResourceType> getResourceTypeFacets() {
+        return resourceTypeFacets;
+    }
+
+    public void setResourceTypeFacets(ArrayList<ResourceType> resourceTypeFacets) {
+        this.resourceTypeFacets = resourceTypeFacets;
     }
 
 }

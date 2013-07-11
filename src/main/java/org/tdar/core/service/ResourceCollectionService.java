@@ -33,7 +33,6 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
-import org.tdar.search.query.SortOption;
 
 /**
  * @author Adam Brin
@@ -321,8 +320,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
 
             if (collectionToAdd != null && collectionToAdd.isValid()) {
-                if (Persistable.Base.isNotNullOrTransient(collectionToAdd) && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
-                    throw new TdarRecoverableRuntimeException(RESOURCE_COLLECTION_RIGHTS_ERROR + collectionToAdd.getTitle() );
+                if (Persistable.Base.isNotNullOrTransient(collectionToAdd)
+                        && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
+                    throw new TdarRecoverableRuntimeException(RESOURCE_COLLECTION_RIGHTS_ERROR + collectionToAdd.getTitle());
                 }
                 if (collectionToAdd.isTransient() && shouldSave) {
                     save(collectionToAdd);
@@ -354,18 +354,22 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     /**
      * Recursively build the transient child collection fields of a specified resource collection, and return a list
      * containing the parent collection and all descendants
-     * @param collection the parent collection
-     * @param collectionType the  type of collections to return (e.g. internal, shared, public)
-     * @return  a list containing the provided 'parent' collection and any descendant collections (if any).  Futhermore
-     *          this method iteratively populates the transient children resource collection fields of the specified
-     *          collection.
+     * 
+     * @param collection
+     *            the parent collection
+     * @param collectionType
+     *            the type of collections to return (e.g. internal, shared, public)
+     * @return a list containing the provided 'parent' collection and any descendant collections (if any). Futhermore
+     *         this method iteratively populates the transient children resource collection fields of the specified
+     *         collection.
      */
-    public List<ResourceCollection> findAllChildCollections(ResourceCollection collection, CollectionType collectionType) {
+    public List<ResourceCollection> findAllChildCollections(ResourceCollection collection, Person authenticatedUser, CollectionType collectionType) {
         List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
         List<ResourceCollection> toEvaluate = new ArrayList<ResourceCollection>();
         toEvaluate.add(collection);
         while (!toEvaluate.isEmpty()) {
             ResourceCollection child = toEvaluate.get(0);
+            authenticationAndAuthorizationService.applyTransientViewableFlag(child, authenticatedUser);
             collections.add(child);
             toEvaluate.remove(0);
             child.setTransientChildren(findDirectChildCollections(child.getId(), null, collectionType));
@@ -374,25 +378,22 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return collections;
     }
 
-
-    private  ResourceCollection getRootResourceCollection(ResourceCollection node)  {
+    private ResourceCollection getRootResourceCollection(ResourceCollection node) {
         return node.getHierarchicalResourceCollections().get(0);
     };
 
     /**
      * Return the root resource collection of the provided resource collection. This method also populates the
      * transient children resource collection for every node in the tree.
-     *
+     * 
      * @param anyNode
      * @return
      */
-    public ResourceCollection getFullyInitializedRootResourceCollection(ResourceCollection anyNode) {
-        ResourceCollection root  = getRootResourceCollection(anyNode);
-        findAllChildCollections(getRootResourceCollection(anyNode), CollectionType.SHARED);
+    public ResourceCollection getFullyInitializedRootResourceCollection(ResourceCollection anyNode, Person authenticatedUser) {
+        ResourceCollection root = getRootResourceCollection(anyNode);
+        findAllChildCollections(getRootResourceCollection(anyNode), authenticatedUser, CollectionType.SHARED);
         return root;
     }
-
-
 
     public List<Long> findAllPublicActiveCollectionIds() {
         return getDao().findAllPublicActiveCollectionIds();
@@ -408,17 +409,17 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return users;
     }
 
-    public void reconcileCollectionTree(Collection<ResourceCollection> collection, List<Long> collectionIds) {
-            Iterator<ResourceCollection> iter = collection.iterator();
-            while (iter.hasNext()) {
-                ResourceCollection rc = iter.next();
-                List<Long> list = rc.getParentIdList();
-                list.remove(rc.getId());
-                if (CollectionUtils.containsAny(collectionIds, list)) {
-                    iter.remove();
-                }
-                findAllChildCollections(rc, ResourceCollection.CollectionType.SHARED);
+    public void reconcileCollectionTree(Collection<ResourceCollection> collection, Person authenticatedUser, List<Long> collectionIds) {
+        Iterator<ResourceCollection> iter = collection.iterator();
+        while (iter.hasNext()) {
+            ResourceCollection rc = iter.next();
+            List<Long> list = rc.getParentIdList();
+            list.remove(rc.getId());
+            if (CollectionUtils.containsAny(collectionIds, list)) {
+                iter.remove();
             }
+            findAllChildCollections(rc, authenticatedUser, ResourceCollection.CollectionType.SHARED);
+        }
     }
 
 }

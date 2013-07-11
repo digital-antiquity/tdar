@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false submitLabel="Search">
 
  <@s.textfield placeholder="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge"/>
@@ -212,3 +213,75 @@
 </#macro>
 
 
+<#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="">
+<#if (facetlist?? && !facetlist.empty)>
+<h4>${label}:</h4>
+<ul class="media-list tools">
+    <#list facetlist as facet>
+        <#assign facetLabel = facet />
+        <#if facet.plural?has_content>
+            <#assign facetLabel = facet.plural />
+        <#elseif facet.label?has_content>
+            <#assign facetLabel = facet.label />
+        </#if>
+        <li class="media">
+            <#if (facetlist?size > 1)>
+				
+                <div class="media-body">
+                
+                <a rel="noindex" href="<@s.url includeParams="all">
+                    <@s.param name="${facetParam}">${facet}</@s.param>
+                    <@s.param name="startRecord" value="0"/>
+                    <#if facetParam != "documentType">
+                        <@s.param name="documentType" value=""/>
+                    </#if>
+                    <#if facetParam != "integratableOptions">
+                        <@s.param name="integratableOptions" value=""/>
+                    </#if>
+                    <#nested>
+                </@s.url>">
+                <i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
+                ${facetLabel}</a> <span>(${facet.count})</span></div>
+            <#elseif currentValues?size == 1>
+                <@removeFacet facetlist=currentValues facetParam=facetParam />
+            <#else>
+                <div class="media-body">${facetLabel} <span>(${facet.count})</span></div>
+            </#if>
+        </li>
+    </#list>
+</ul>
+</#if>
+
+</#macro>
+
+<#macro removeFacet facetlist="" label="Facet Label" facetParam="">
+    <#if facetlist?has_content>
+    <#if (facetlist?is_collection)>
+        <#if facetlist?size == 1>
+            <#assign facet= facetlist.get(0) />
+        </#if>
+    <#elseif (facetlist?is_string) >
+        <#assign facet= facetlist />
+    </#if>
+    <#if facet?has_content>
+        <#assign facetText=facet/>
+        <#if facet.plural?has_content><#assign facetText=facet.plural/>
+        <#elseif facet.label?has_content><#assign facetText=facet.label/>
+        </#if>
+        <a rel="noindex" href="<@s.url includeParams="all">
+            <@s.param name="${facetParam}"value="" />
+            <@s.param name="startRecord" value="0"/>
+            <#if facetParam != "documentType">
+                <@s.param name="documentType" value=""/>
+            </#if>
+            <#if facetParam != "integratableOptions">
+                <@s.param name="integratableOptions" value=""/>
+            </#if>
+            <#nested>
+        </@s.url>"><i class="pull-left search-list-checkedbox-grey"></i> 
+                       <div class="media-body">${facetText}</div></a>
+    </#if>
+    </#if>
+</#macro>
+
+</#escape>

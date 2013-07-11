@@ -71,8 +71,8 @@ public class DashboardController extends AuthenticationAware.Base {
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
         collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
-        getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), collectionIds);
-        getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), collectionIds);
+        getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), getAuthenticatedUser(), collectionIds);
+        getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),  collectionIds);
 
         try {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();

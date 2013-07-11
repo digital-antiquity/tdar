@@ -43,6 +43,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private Long parentId;
     private List<Resource> fullUserProjects;
     private List<ResourceCollection> collections;
+    private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
 
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
@@ -235,9 +236,9 @@ public class CollectionController extends AbstractPersistableController<Resource
             return;
         List<ResourceCollection> findAllChildCollections;
         //FIXME: reconcile
-        getResourceCollectionService().findAllChildCollections(getPersistable(), CollectionType.SHARED);
         if (isAuthenticated()) {
-            findAllChildCollections = getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED);
+            getResourceCollectionService().findAllChildCollections(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
+            findAllChildCollections = getPersistable().getTransientChildren();
             // FIXME: not needed?
             // boolean granularPermissions = false;
             // if (granularPermissions) {
@@ -251,19 +252,19 @@ public class CollectionController extends AbstractPersistableController<Resource
             // }
             // }
             // }
+            if (isEditor()) {
+                List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollections(getPersistable(),
+                        getAuthenticatedUser(),    CollectionType.SHARED));
+                collectionIds.add(getId());
+                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null,
+                        Arrays.asList(Status.ACTIVE, Status.DRAFT)));
+            }
         } else {
             findAllChildCollections = getResourceCollectionService().findDirectChildCollections(getId(), true, CollectionType.SHARED);
         }
         setCollections(findAllChildCollections);
         Collections.sort(collections);
 
-        if (isEditor()) {
-            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollections(getPersistable(),
-                    CollectionType.SHARED));
-            collectionIds.add(getId());
-            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null,
-                    Arrays.asList(Status.ACTIVE, Status.DRAFT)));
-        }
 
         if (getPersistable() != null) {
             // FIXME: logic is right here, but this feels "wrong"
@@ -465,7 +466,10 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
-        return null;
+        List<FacetGroup<? extends Facetable>> group = new ArrayList<>();
+        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
+        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
+        return group;
     }
 
     public PaginationHelper getPaginationHelper() {
@@ -477,6 +481,14 @@ public class CollectionController extends AbstractPersistableController<Resource
     public String getParentCollectionName() {
         return parentCollectionName;
 
+    }
+
+    public ArrayList<ResourceType> getResourceTypeFacets() {
+        return resourceTypeFacets;
+    }
+
+    public void setResourceTypeFacets(ArrayList<ResourceType> resourceTypeFacets) {
+        this.resourceTypeFacets = resourceTypeFacets;
     }
 
 }
