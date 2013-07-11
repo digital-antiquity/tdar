@@ -124,6 +124,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     private static final long serialVersionUID = -5308517783896369040L;
+    public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
     private transient Float score;
     private transient Explanation explanation;
 
@@ -148,7 +149,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sort_order", length = 25)
-    private SortOption sortBy = SortOption.TITLE;
+    private SortOption sortBy = DEFAULT_SORT_OPTION;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "orientation", length = 50)

@@ -311,7 +311,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     collection.markUpdated(resource.getSubmitter());
                     collection.setType(CollectionType.SHARED);
                     if (collection.getSortBy() == null) {
-                        collection.setSortBy(SortOption.RESOURCE_TYPE);
+                        collection.setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
                     }
                     collection.setVisible(true);
                     collectionToAdd = collection;
