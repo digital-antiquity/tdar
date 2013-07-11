@@ -94,6 +94,7 @@ create index ires_publisher on information_resource (publisher_id);
 create index ires_copyright on information_resource (copyright_holder_id);
 create index creatorid on resource_creator (creator_id);
 
+-- remove blank creator 2013-07-10
 begin transaction;
 update information_resource set provider_institution_id=null where provider_institution_id=11015;
 update information_resource set publisher_id=null where publisher_id=11015;
@@ -102,3 +103,5 @@ delete from resource_creator where creator_id=11015;
 delete from institution where id=11015;
 delete from creator where id=11015;
 commit;
+-- cleanup date normalized issue with API Controller 2013-07-11
+update information_resource set date_created_normalized =round(date_created_normalized/10) * 10 where right(cast ( date_created_normalized as varchar),1) != '0';
