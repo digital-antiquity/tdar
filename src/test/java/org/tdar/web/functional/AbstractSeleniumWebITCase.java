@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
@@ -42,6 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 
+import javax.annotation.Nullable;
+
 public abstract class AbstractSeleniumWebITCase {
 
     public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
@@ -52,6 +56,18 @@ public abstract class AbstractSeleniumWebITCase {
 
     WebDriver driver;
     protected Logger logger = LoggerFactory.getLogger(getClass());
+
+
+    // Predicates that can be used as arguments for FluentWait.until.
+    private Predicate<WebDriver> pageReady = new Predicate<WebDriver>(){
+        @Override
+        public boolean apply(@Nullable WebDriver webDriver) {
+            String readyState = (String)((JavascriptExecutor) webDriver).executeScript("return document.readyState");
+            return "complete".equals(readyState);
+        }
+    };
+
+    private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
 
     // FIXME: it seems silly that you can't hook into some kind of "
     private WebDriverEventListener eventListener = new WebDriverEventListener() {
@@ -324,6 +340,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     public String getText() {
         if (pageText == null) {
+            logger.trace("getting body.innerText for url:{}", getDriver().getCurrentUrl());
             WebElement body = waitFor("body");
             pageText = body.getText();
         }
@@ -497,9 +514,40 @@ public abstract class AbstractSeleniumWebITCase {
         reindexed = true;
     }
 
+    /**
+     * Submit a "tDAR edit page" style form (if no javascript errors since last pageload)
+     *
+     * Considerations:  this function assumes a the layout of a typical edit page on tDAR.  For example,  it expects
+     *      the submit button ID value is "submitButton".
+     */
     public void submitForm() {
         reportJavascriptErrors();
         find("#submitButton").click();
+        waitForPageload();
+    }
+
+
+    /**
+     * Block until document loaded (readystate === true).  This is usually unnecesssary since most click() actions
+     * block anyway.  Use it for situations where an event handler causes navigation (e.g. jquery validate success)
+     * @param timeout
+     */
+    private void waitForPageload(int timeout) {
+        //if called too soon,  page navigation might not have happened yet -  give it a second.
+        if(pageReady.apply(getDriver())) {
+            try {
+                WebDriverWait wait = new WebDriverWait(getDriver(), 1, 100 );
+                wait.until(pageNotReady);
+            } catch (Exception ignored) {}
+
+        }
+
+        WebDriverWait wait = new WebDriverWait(getDriver(),  timeout );
+        wait.until(pageReady);
+    }
+
+    public void waitForPageload() {
+        waitForPageload(60);
     }
 
     public List<String> getJavascriptErrors() {
