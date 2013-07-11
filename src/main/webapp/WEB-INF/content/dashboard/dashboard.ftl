@@ -201,9 +201,9 @@
 <#macro browseResourceSection>
 	<div class="" id="project-list">
 	    <h2>Browse Resources</h2>
-	    <form action=''>
-	    <@edit.resourceDataTable />
-	    </form>
+	    <div>
+	        <@edit.resourceDataTable />
+	    </div>
 	</div>
 </#macro>
 
