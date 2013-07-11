@@ -3,29 +3,29 @@ package org.tdar.struts.result;
 import java.io.Writer;
 
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts2.ServletActionContext;
-
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
-import com.opensymphony.xwork2.util.logging.Logger;
-import com.opensymphony.xwork2.util.logging.LoggerFactory;
-
 import edu.asu.lib.jaxb.JaxbDocument;
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
+import org.slf4j.Logger;
 
+@SuppressWarnings("unused")
 public class JaxbDocumentResult implements Result {
 
-	private static final long serialVersionUID = -8983164414828858380L;
+    private static final long serialVersionUID = -8983164414828858380L;
 
-	private static final Logger LOG = LoggerFactory.getLogger(JaxbDocumentResult.class);
-
+    public static final String UTF_8 = "UTF-8";
+    public static final String CONTENT_TYPE_XML = "application/xml;charset=UTF-8";
+    public static final String FMT_ERROR_DOCUMENT_NOT_FOUND = ("Can not find a edu.asu.lib.jaxb.JaxbDocument " +
+            "with the name [%s] in the invocation stack. " +
+            "Check the <param name=\"documentName\"> tag specified for this action.");
     public static final String DEFAULT_PARAM = "documentName";
 
+    private Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
     private String documentName;
     private Boolean formatOutput;
-    private transient JaxbDocument jaxbDocument;
-    
+
     public JaxbDocumentResult() {
     	super();
     } 
@@ -54,33 +54,22 @@ public class JaxbDocumentResult implements Result {
 
 	@Override
 	public void execute(ActionInvocation invocation) throws Exception {
-		
-		jaxbDocument = (JaxbDocument) invocation.getStack().findValue(documentName);
-        
+        JaxbDocument jaxbDocument = (JaxbDocument) invocation.getStack().findValue(documentName);
 		if (jaxbDocument == null) {
-            String msg = ("Can not find a edu.asu.lib.jaxb.JaxbDocument " +
-            	"with the name [" + documentName + "] in the invocation stack. " +
-                "Check the <param name=\"documentName\"> tag specified for this action.");
-            LOG.error(msg);
+            String msg = String.format(FMT_ERROR_DOCUMENT_NOT_FOUND, documentName);
+            logger.error(msg);
             throw new IllegalArgumentException(msg);
         }
-        
-		
-		Writer writer = null;
+        HttpServletResponse resp = ServletActionContext.getResponse();
+        resp.setCharacterEncoding(UTF_8);
+        resp.setContentType(CONTENT_TYPE_XML);
+        Writer writer = null;
 		try {
-			HttpServletResponse resp = ServletActionContext.getResponse();
 			writer = resp.getWriter();
-            resp.setContentType("application/xml");
             JaxbDocumentWriter.write(jaxbDocument, writer, formatOutput);
-
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("Serving Jaxb result [" + documentName + "]");
-            }
-            
+            logger.trace("Serving Jaxb result [{}]", documentName);
         } finally {
         	if (writer != null) writer.close();
         }
-		
 	}
-
 }
