@@ -26,7 +26,7 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
     public void teardown() {
         logout();
     }
-
+    
     @Test
     public void testAbstractLogin() {
         assertTrue(getText().contains("Welcome back,"));

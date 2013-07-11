@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
@@ -34,6 +35,7 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
@@ -57,12 +59,11 @@ public abstract class AbstractSeleniumWebITCase {
     WebDriver driver;
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
-
     // Predicates that can be used as arguments for FluentWait.until.
-    private Predicate<WebDriver> pageReady = new Predicate<WebDriver>(){
+    private Predicate<WebDriver> pageReady = new Predicate<WebDriver>() {
         @Override
         public boolean apply(@Nullable WebDriver webDriver) {
-            String readyState = (String)((JavascriptExecutor) webDriver).executeScript("return document.readyState");
+            String readyState = (String) ((JavascriptExecutor) webDriver).executeScript("return document.readyState");
             return "complete".equals(readyState);
         }
     };
@@ -153,8 +154,17 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         WebDriver driver = null;
-        Browser browser = Browser.FIREFOX;
+        Browser browser = Browser.PHANTOMJS;
         String xvfbPort = System.getProperty("display.port");
+        String browser_ = System.getProperty("browser");
+        if (StringUtils.isNotBlank(browser_)) {
+            try {
+                browser = Browser.valueOf(browser_);
+                logger.debug("seting browser to: {}", browser);
+            } catch (Exception e) {
+                logger.error("{}", e);
+            }
+        }
         Map<String, String> environment = new HashMap<String, String>();
         if (StringUtils.isNotBlank(xvfbPort)) {
             environment.put("DISPLAY", xvfbPort);
@@ -181,6 +191,8 @@ public abstract class AbstractSeleniumWebITCase {
                 driver = new ChromeDriver(options);
                 options.start();
                 break;
+            case IE:
+                driver = new InternetExplorerDriver();
             case PHANTOMJS:
                 driver = new PhantomJSDriver(
                         ResolvingPhantomJSDriverService.createDefaultService(), // service resolving phantomjs binary automatically
@@ -516,9 +528,9 @@ public abstract class AbstractSeleniumWebITCase {
 
     /**
      * Submit a "tDAR edit page" style form (if no javascript errors since last pageload)
-     *
-     * Considerations:  this function assumes a the layout of a typical edit page on tDAR.  For example,  it expects
-     *      the submit button ID value is "submitButton".
+     * 
+     * Considerations: this function assumes a the layout of a typical edit page on tDAR. For example, it expects
+     * the submit button ID value is "submitButton".
      */
     public void submitForm() {
         reportJavascriptErrors();
@@ -526,23 +538,24 @@ public abstract class AbstractSeleniumWebITCase {
         waitForPageload();
     }
 
-
     /**
-     * Block until document loaded (readystate === true).  This is usually unnecesssary since most click() actions
-     * block anyway.  Use it for situations where an event handler causes navigation (e.g. jquery validate success)
+     * Block until document loaded (readystate === true). This is usually unnecesssary since most click() actions
+     * block anyway. Use it for situations where an event handler causes navigation (e.g. jquery validate success)
+     * 
      * @param timeout
      */
     private void waitForPageload(int timeout) {
-        //if called too soon,  page navigation might not have happened yet -  give it a second.
-        if(pageReady.apply(getDriver())) {
+        // if called too soon, page navigation might not have happened yet - give it a second.
+        if (pageReady.apply(getDriver())) {
             try {
-                WebDriverWait wait = new WebDriverWait(getDriver(), 1, 100 );
+                WebDriverWait wait = new WebDriverWait(getDriver(), 1, 100);
                 wait.until(pageNotReady);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
 
         }
 
-        WebDriverWait wait = new WebDriverWait(getDriver(),  timeout );
+        WebDriverWait wait = new WebDriverWait(getDriver(), timeout);
         wait.until(pageReady);
     }
 
