@@ -264,7 +264,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         
             <table id="uploadFiles" class="files table tableFormat">
             </table>
-            <table id="files" class="files sortable tableFormat">
+            <table id="files" class="files sortable">
                 <thead>
                     <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
                     <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
@@ -880,7 +880,7 @@ jquery validation hooks?)
                     Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  
                 </div>
 	</#if>
-        <table id="files" role="presentation" class="tableFormat table table-striped sortable">
+        <table id="files" role="presentation" class="table table-striped sortable">
             <!--
             <thead>
             <tr>
@@ -944,16 +944,6 @@ jquery validation hooks?)
         </td>
         <td>
             
-          <div class="btn-group">
-            <button class="btn btn-warning disabled dropdown-toggle replace-button" disabled="" data-toggle="dropdown">Replace <span class="caret"></span></button>
-            <ul class="dropdown-menu" id="tempul">
-              <li><a href="#">file 1</a></li>
-              <li><a href="#">file 2</a></li>
-              <li class="divider"></li>
-              <li><a href="#">Restore Original</a></li>
-            </ul>
-          </div> 
-
         <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}"/>
         <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}"/>
         <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}"/>
@@ -1015,7 +1005,7 @@ jquery validation hooks?)
                   </#list>
               </optgroup>
               </#if>
-              
+
               <optgroup label="Projects you have been given access to">
                   <#list fullUserProjects?sort_by("titleSort") as editableProject>
                       <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@common.truncate editableProject.title 70 /></option>
@@ -1229,26 +1219,19 @@ $(function() {
 {% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
 {% rowclass += TDAR.fileupload.getRowVisibility() ? "" : " hidden"; %}
     <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
-        {% if (file.error) { %}        
             <td colspan="2">
-                  <div>
-                    <span class="name input-xlarge uneditable-input">{%=file.name%}</span>
-                    <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date" value="{%=file.fileCreatedDate%}">
-                    <span class="size label label-info">{%=o.formatFileSize(file.size)%}</span>
-                  </div>                
-                  <textarea class="input-block-level" name="fileProxies[{%=idx%}].description" rows="1" placeholder="Enter a description here">{%=file.description%}</textarea>
-            </td>
-            <td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
-        {% } else { %}
-            <td colspan="2">
+                {% if (file.error) { %}
+                <div class="error"><span class="label label-important">Error</span> {%=file.error%}</div>
+                {% } %}
+
                 <div>
+
+                    <div><em class="replacement-text"></em></div>
                     <span class="name input-xlarge uneditable-input">{%=file.name%}</span>
-                    <span class="replacement-text"></span>
                     <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date input-small" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}">
                     <span class="size label label-info">{%=o.formatFileSize(file.size)%}</span>
                 </div>
                 <textarea class="input-block-level" name="fileProxies[{%=idx%}].description" rows="1" placeholder="Enter a description here">{%=file.description%}</textarea>
-
             </td>
             <td colspan="2">
                 <#-- FIXME:supposedly struts 2.1+ allows custom data attributes but I get a syntax error.  What gives? -->
@@ -1257,8 +1240,14 @@ $(function() {
                 onchange="TDAR.fileupload.updateFileAction(this)" 
                 cssClass="fileProxyConfidential input-small"/>
             </td>
-        {% } %}
         <td>
+
+            {%if (file.fileId) { %}
+            <@edit.fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button btn btn-small btn-warning"/>
+            <button type="button" style="display:none; width: 8em; text-align:left" class="btn btn-small btn-warning undo-replace-button" title="Restore Original File">Restore</button>
+            {% } %}
+
+
                 <div class="delete">
                     <button class="btn btn-danger delete-button btn-small" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}" style="width:8em; text-align:left ">
                         <i class="icon-trash icon-white"></i>
@@ -1266,11 +1255,7 @@ $(function() {
                     </button>
                 </div>
             
-                {%if (file.fileId) { %}
-                <@edit.fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button btn btn-small btn-warning"/>
-                <button type="button" style="display:none; width: 8em; text-align:left" class="btn btn-small btn-warning undo-replace-button">Restore Original</button>
-                {% } %}
-                
+
             <div class="fileProxyFields">
                 <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}"/>
                 <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}"/>

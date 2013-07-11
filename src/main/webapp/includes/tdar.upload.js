@@ -36,7 +36,7 @@ TDAR.fileupload = function() {
             autoUpload: true,
             maxNumberOfFiles: TDAR.maxUploadFiles,
             getNumberOfFiles: function() {
-                return this.filesContainer.children().not(".deleted-file").length;
+                return this.filesContainer.children().not(".deleted-file, .hidden").length;
             },
             destroy: _destroy
 
