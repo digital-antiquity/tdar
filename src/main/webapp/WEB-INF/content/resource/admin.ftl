@@ -27,7 +27,7 @@ var data = [];
 		</#list>
 </script>
 </#noescape>
-	<@common.lineChart data="results" graphLabel="views &amp; downloads" />
+	<@common.barGraph data="data" graphLabel="views &amp; downloads" xaxis="date" graphHeight=200/>
 <table class="tableFormat table">
     <tr>
         <th>views</th>
