@@ -1238,7 +1238,7 @@ $(function() {
                 <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" name="fileProxies[{%=idx%}].restriction" 
                 style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  
                 onchange="TDAR.fileupload.updateFileAction(this)" 
-                cssClass="fileProxyConfidential input-small"/>
+                cssClass="fileProxyConfidential input-small confidential-contact-required"/>
             </td>
         <td>
 

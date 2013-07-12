@@ -143,3 +143,25 @@ $.validator.addMethod("columnEncoding", function(value, element) {
         return false;
     }
 });
+
+//To mark a file confidential you must have at least one "contact" person/institution identified 
+$.validator.addMethod(
+    "confidential-contact-required",
+    function(value, element){
+        if(value != "CONFIDENTIAL") return true;
+        var institutions = $(".creatorInstitution").not(".hidden").toArray();;
+        var persons = $(".creatorPerson").not(".hidden").toArray();
+        var grepForValidContacts = function(creators) {
+            return    $.grep(creators, function(elem, idx){
+                var hasId = !!$(elem).find(".validIdRequired").val();
+                var isContact = $(elem).find(".creator-role-select").val() === "CONTACT";
+                return hasId && isContact;
+            });
+        };
+
+        var contactCount  = grepForValidContacts(institutions).length + grepForValidContacts(persons).length;
+        return contactCount > 0;
+
+    },
+    "You must have at least one person/institution listed as a 'contact' when marking a file 'confidential'"
+);
