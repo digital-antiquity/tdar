@@ -2630,7 +2630,7 @@ INSERT INTO resource_creator (id, role, sequence_number, creator_id, resource_id
 -- ====================================================================================================================----
 -- added by jim 6/1/2013
 -- FIXME add field names so we're not dealing with insertion order bugs
-INSERT INTO collection VALUES (1575, '2013-07-01 16:49:15.583', '2013-07-01 16:49:15.583', 'this is a test', 'sample collection', 'LIST', 'TITLE', 'SHARED', true, 8092, NULL, 8092);
+INSERT INTO collection (id, date_created, date_updated, description, name, orientation, sort_order, collection_type, visible, owner_id, parent_id, updater_id) VALUES (1575, '2013-07-01 16:49:15.583', '2013-07-01 16:49:15.583', 'this is a test', 'sample collection', 'LIST', 'TITLE', 'SHARED', true, 8092, NULL, 8092);
 INSERT INTO resource VALUES (4289, '2013-07-01 16:42:32.355', '2013-07-01 16:42:32.355', 'this is a test ', NULL, 0, 'ACTIVE', 'SENSORY_DATA', 0, 'ACTIVE', 'sample sensorydata', '', 8092, 8092, 8092, NULL);
 INSERT INTO resource VALUES (4290, '2013-07-01 16:44:49.712', '2013-07-01 16:44:49.712', 'this is a test', NULL, 0, 'ACTIVE', 'VIDEO', 0, 'ACTIVE', 'sample video', '', 8092, 8092, 8092, NULL);
 INSERT INTO resource VALUES (4291, '2013-07-01 16:46:42.454', '2013-07-01 16:46:42.454', 'test', NULL, 0, 'ACTIVE', 'GEOSPATIAL', 0, 'ACTIVE', 'sample geospatial', '', 8092, 8092, 8092, NULL);
