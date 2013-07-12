@@ -31,7 +31,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.FileSystemResourceDao;
 import org.tdar.core.exception.PdfCoverPageGenerationException;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.AsciiTransliterator;
 
 /*
  * A central service to help handle all PDF creation functions
@@ -156,7 +156,7 @@ public class PdfService implements Serializable {
                 template = createCoverPage(submitter, template, document);
 
                 // merge the two PDFs
-                
+
                 return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
             } else {
                 throw new PdfCoverPageGenerationException("file type was not valid or file was null");
@@ -246,11 +246,12 @@ public class PdfService implements Serializable {
      * Format:
      * <B>Field</B>: Label
      */
-    public int writeLabelPairOnPage(PDPageContentStream content, String label, String text, FontHelper fontHelper, int xFromLeft, int yFromBottom)
+    public int writeLabelPairOnPage(PDPageContentStream content, String label, String utf8Text, FontHelper fontHelper, int xFromLeft, int yFromBottom)
             throws IOException {
         if (StringUtils.isBlank(label)) {
             label = "";
         }
+        String text = transliterate(utf8Text);
         content.beginText();
         content.setFont(fontHelper.getBold(), fontHelper.getFontSize());
         content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
@@ -275,12 +276,19 @@ public class PdfService implements Serializable {
         return yFromBottom;
     }
 
+    private String transliterate(String utf8Text) {
+        AsciiTransliterator transliterator = new AsciiTransliterator();
+        String text = transliterator.process(utf8Text).trim();
+        return text;
+    }
+
     /*
      * adds text to the pdf. you pass the content, the fontHelper obejct, and where to put the page, and whether it's bold or not it'll pass back the new
      * line position for text below that will take into account the single-spacing line height of the text. It will also take care of wrapping of long values
      */
-    public int writeOnPage(PDPageContentStream content, String text, FontHelper fontHelper, boolean bold, int xFromLeft, int yFromBottom) throws IOException {
-
+    public int writeOnPage(PDPageContentStream content, String utf8Text, FontHelper fontHelper, boolean bold, int xFromLeft, int yFromBottom)
+            throws IOException {
+        String text = transliterate(utf8Text);
         content.beginText();
         content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
 
@@ -297,7 +305,8 @@ public class PdfService implements Serializable {
     /*
      * The actual "write" method for the text, wraps by word ... could be brittle there in that it
      */
-    private int writeTextOnPage(PDPageContentStream content, String text, FontHelper fontHelper, int xFromLeft, int yFromBottom) throws IOException {
+    private int writeTextOnPage(PDPageContentStream content, String utf8Text, FontHelper fontHelper, int xFromLeft, int yFromBottom) throws IOException {
+        String text = transliterate(utf8Text);
 
         if (text.length() > fontHelper.charsPerLine) {
             text = WordUtils.wrap(text, fontHelper.getCharsPerLine(), "\r\n", true);
