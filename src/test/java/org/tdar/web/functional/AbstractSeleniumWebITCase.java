@@ -154,7 +154,7 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         WebDriver driver = null;
-        Browser browser = Browser.PHANTOMJS;
+        Browser browser = Browser.FIREFOX;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
         if (StringUtils.isNotBlank(browser_)) {
