@@ -122,6 +122,10 @@ public class Project extends Resource implements Sortable {
     private SortOption sortBy = SortOption.RESOURCE_TYPE;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "secondary_sort_order", length = 25)
+    private SortOption secondarySortBy;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "orientation", length = 50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
@@ -168,6 +172,14 @@ public class Project extends Resource implements Sortable {
 
     public void setOrientation(DisplayOrientation orientation) {
         this.orientation = orientation;
+    }
+
+    public SortOption getSecondarySortBy() {
+        return secondarySortBy;
+    }
+
+    public void setSecondarySortBy(SortOption secondarySortBy) {
+        this.secondarySortBy = secondarySortBy;
     }
 
 }

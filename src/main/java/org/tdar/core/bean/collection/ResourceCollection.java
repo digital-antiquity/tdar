@@ -152,6 +152,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private SortOption sortBy = DEFAULT_SORT_OPTION;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "secondary_sort_order", length = 25)
+    private SortOption secondarySortBy;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "orientation", length = 50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
@@ -663,5 +667,13 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setTransientChildren(List<ResourceCollection> transientChildren) {
         this.transientChildren = transientChildren;
+    }
+
+    public SortOption getSecondarySortBy() {
+        return secondarySortBy;
+    }
+
+    public void setSecondarySortBy(SortOption secondarySortBy) {
+        this.secondarySortBy = secondarySortBy;
     }
 }

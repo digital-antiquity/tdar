@@ -279,6 +279,9 @@ public class CollectionController extends AbstractPersistableController<Resource
             setSortField(getPersistable().getSortBy());
             if (getSortField() != SortOption.RELEVANCE) {
                 setSecondarySortField(SortOption.TITLE);
+                if (getPersistable().getSecondarySortBy() != null) {
+                    setSecondarySortField(getPersistable().getSecondarySortBy());
+                }
             }
             try {
                 getSearchService().handleSearch(qb, this);

@@ -105,3 +105,7 @@ delete from creator where id=11015;
 commit;
 -- cleanup date normalized issue with API Controller 2013-07-11
 update information_resource set date_created_normalized =round(date_created_normalized/10) * 10 where right(cast ( date_created_normalized as varchar),1) != '0';
+
+-- 2013-07-13 secondary sort option
+alter table project add secondary_sort_order varchar(25);
+alter table collection add secondary_sort_order varchar(25);

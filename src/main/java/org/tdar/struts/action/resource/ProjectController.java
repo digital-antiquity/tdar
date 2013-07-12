@@ -15,14 +15,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.search.query.QueryFieldNames;
@@ -108,6 +105,9 @@ public class ProjectController extends AbstractResourceController<Project> imple
             ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser());
             setSortField(getProject().getSortBy());
             setSecondarySortField(SortOption.TITLE);
+            if (getProject().getSecondarySortBy() != null) {
+                setSecondarySortField(getProject().getSecondarySortBy());
+            }
             try {
                 getSearchService().handleSearch(qb, this);
             } catch (SearchPaginationException e) {
