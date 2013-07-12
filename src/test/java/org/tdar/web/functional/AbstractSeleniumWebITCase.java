@@ -154,7 +154,7 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         WebDriver driver = null;
-        Browser browser = Browser.FIREFOX;
+        Browser browser = Browser.CHROME;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
         if (StringUtils.isNotBlank(browser_)) {
@@ -179,6 +179,7 @@ public abstract class AbstractSeleniumWebITCase {
                 break;
             case CHROME:
                 /* yes, this is ugly */
+                /* ubuntu install instructions http://www.liberiangeek.net/2011/12/install-google-chrome-using-apt-get-in-ubuntu-11-10-oneiric-ocelot/ */
                 File app = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
                 if (!app.exists()) {
                     app = new File("C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe");
