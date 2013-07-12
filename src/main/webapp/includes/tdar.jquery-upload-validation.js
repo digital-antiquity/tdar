@@ -5,7 +5,7 @@
  */
 var FileuploadValidator;
 (function(console) {
-    "option explicit";
+    "use strict";
 
     //creates when-callback that returns true when file list has at least file with provided extension (in varargs)
     var _hasFileWithExtension = function() {

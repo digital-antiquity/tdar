@@ -38,7 +38,7 @@ function _fakestats(str) {
 }
 
 $(function() {
-    "option explicit";
+    "use strict";
 
     //init the fileupload (using our init funcition)
     QUnit.begin = function() {
