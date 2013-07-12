@@ -188,7 +188,7 @@ public abstract class AbstractSeleniumWebITCase {
                     app = new File("/usr/bin/google-chrome");
                 }
 
-                ChromeDriverService options = new ChromeDriverService.Builder().usingDriverExecutable(app).withEnvironment(environment).build();
+                ChromeDriverService options = new ChromeDriverService.Builder().usingDriverExecutable(app).usingAnyFreePort().withEnvironment(environment).build();
                 driver = new ChromeDriver(options);
                 options.start();
                 break;

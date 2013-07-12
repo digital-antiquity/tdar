@@ -225,21 +225,20 @@ drop table test;
 
 -- added by jim 6/1/2013
 --DONT-PROCESS-- INSERT INTO collection (id, date_created, date_updated, description, name, orientation, sort_order, collection_type, visible, owner_id, parent_id, updater_id) VALUES (1575, '2013-07-01 16:49:15.583', '2013-07-01 16:49:15.583', 'this is a test', 'sample collection', 'LIST', 'TITLE', 'SHARED', true, 8092, NULL, 8092);
---DONT-PROCESS-- INSERT INTO resource VALUES (4289, '2013-07-01 16:42:32.355', '2013-07-01 16:42:32.355', 'this is a test ', NULL, 0, 'ACTIVE', 'SENSORY_DATA', 0, 'ACTIVE', 'sample sensorydata', '', 8092, 8092, 8092, NULL);
---DONT-PROCESS-- INSERT INTO resource VALUES (4290, '2013-07-01 16:44:49.712', '2013-07-01 16:44:49.712', 'this is a test', NULL, 0, 'ACTIVE', 'VIDEO', 0, 'ACTIVE', 'sample video', '', 8092, 8092, 8092, NULL);
---DONT-PROCESS-- INSERT INTO resource VALUES (4291, '2013-07-01 16:46:42.454', '2013-07-01 16:46:42.454', 'test', NULL, 0, 'ACTIVE', 'GEOSPATIAL', 0, 'ACTIVE', 'sample geospatial', '', 8092, 8092, 8092, NULL);
---DONT-PROCESS-- INSERT INTO resource VALUES (4292, '2013-07-01 17:21:35.881', '2013-07-01 17:21:35.881', 'this is a test', NULL, 0, 'ACTIVE', 'IMAGE', 0, 'ACTIVE', 'sample image', '', 8092, 8092, 8092, NULL);
+--DONT-PROCESS-- INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id, external_id) VALUES (4289, '2013-07-01 16:42:32.355', '2013-07-01 16:42:32.355', 'this is a test ', NULL, 0, 'ACTIVE', 'SENSORY_DATA', 0, 'ACTIVE', 'sample sensorydata', '', 8092, 8092, 8092, NULL);
+--DONT-PROCESS-- INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id, external_id) VALUES (4290, '2013-07-01 16:44:49.712', '2013-07-01 16:44:49.712', 'this is a test', NULL, 0, 'ACTIVE', 'VIDEO', 0, 'ACTIVE', 'sample video', '', 8092, 8092, 8092, NULL);
+--DONT-PROCESS-- INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id, external_id) VALUES (4291, '2013-07-01 16:46:42.454', '2013-07-01 16:46:42.454', 'test', NULL, 0, 'ACTIVE', 'GEOSPATIAL', 0, 'ACTIVE', 'sample geospatial', '', 8092, 8092, 8092, NULL);
+--DONT-PROCESS-- INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id, external_id) VALUES (4292, '2013-07-01 17:21:35.881', '2013-07-01 17:21:35.881', 'this is a test', NULL, 0, 'ACTIVE', 'IMAGE', 0, 'ACTIVE', 'sample image', '', 8092, 8092, 8092, NULL);
 
 --DONT-PROCESS-- INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:42:34.693', 4289);
 --DONT-PROCESS-- INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:44:51.07', 4290);
 --DONT-PROCESS-- INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:46:43.537', 4291);
 --DONT-PROCESS-- INSERT INTO resource_access_statistics ( date_accessed, resource_id) VALUES ('2013-07-01 16:46:43.537', 4292);
---DONT-PROCESS-- INSERT INTO information_resource VALUES (NULL, 2013, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4289, NULL, NULL, NULL, NULL, NULL);
---DONT-PROCESS-- INSERT INTO information_resource VALUES ('', 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4290, NULL, NULL, NULL, NULL, NULL);
---DONT-PROCESS-- INSERT INTO information_resource VALUES (NULL, 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4291, NULL, NULL, NULL, NULL, NULL);
---DONT-PROCESS-- INSERT INTO information_resource VALUES (NULL, 2012, 2010, false, false, false, false, false, false, false, false, false, false, false, NULL, NULL, NULL, NULL, NULL, '', NULL, 4292, NULL, NULL, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO information_resource (copy_location, date_created, date_created_normalized, mappedDataKeyValue,id) VALUES (NULL, 2013, 2010, '', 4289);
+--DONT-PROCESS-- INSERT INTO information_resource (copy_location, date_created, date_created_normalized, mappedDataKeyValue,id) VALUES ('', 2012, 2010,   '', 4290);
+--DONT-PROCESS-- INSERT INTO information_resource (copy_location, date_created, date_created_normalized, mappedDataKeyValue,id) VALUES (NULL, 2012, 2010, '', 4291);
+--DONT-PROCESS-- INSERT INTO information_resource (copy_location, date_created, date_created_normalized, mappedDataKeyValue,id) VALUES (NULL, 2012, 2010, '', 4292);
 
--- FIXME add field names so we're not dealing with insertion order bugs
 --DONT-PROCESS-- INSERT INTO dataset (id) values(4291);
 --DONT-PROCESS-- INSERT INTO dataset (id) values(4289);
 
@@ -247,7 +246,6 @@ drop table test;
 --DONT-PROCESS-- INSERT INTO video VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 4290);
 --DONT-PROCESS-- INSERT INTO geospatial VALUES ('hipster-level currentness', 'bogus projection information', '', '', 4291);
 --DONT-PROCESS-- INSERT INTO image VALUES (4292);
--- end added by jim 6/1/2013
 -- end added by jim 6/1/2013
 -- ab add 6/2/2103
 --DONT-PROCESS-- INSERT INTO collection_resource(resource_id, collection_id) VALUES(4289,1575),(4290,1575),(4291,1575),(4292,1575);
