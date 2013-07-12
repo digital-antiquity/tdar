@@ -153,9 +153,11 @@ $.validator.addMethod(
         var persons = $(".creatorPerson").not(".hidden").toArray();
         var grepForValidContacts = function(creators) {
             return    $.grep(creators, function(elem, idx){
-                var hasId = !!$(elem).find(".validIdRequired").val();
+                var id = $(elem).find(".validIdRequired").val();
+                var hasId = parseInt(id) > 0;
                 var isContact = $(elem).find(".creator-role-select").val() === "CONTACT";
-                return hasId && isContact;
+                var match =  hasId && isContact;
+                return match;
             });
         };
 
