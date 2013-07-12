@@ -26,6 +26,8 @@ public interface SearchResultHandler<I extends Indexable> {
     
     SortOption getSortField();
 
+    void setSortField(SortOption sortField);
+    
     SortOption getSecondarySortField();
 
     /**

@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -27,6 +29,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 
@@ -54,6 +57,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private String mode = "CollectionBrowse";
     private PaginationHelper paginationHelper;
     private String parentCollectionName;
+    private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
     @Override
     public boolean isEditable() {
@@ -276,6 +280,8 @@ public class CollectionController extends AbstractPersistableController<Resource
             // the visibilty fence should take care of visible vs. shared above
             ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                     getResourceCollection(), getAuthenticatedUser());
+            getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
+
             setSortField(getPersistable().getSortBy());
             if (getSortField() != SortOption.RELEVANCE) {
                 setSecondarySortField(SortOption.TITLE);
@@ -492,6 +498,14 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public void setResourceTypeFacets(ArrayList<ResourceType> resourceTypeFacets) {
         this.resourceTypeFacets = resourceTypeFacets;
+    }
+
+    public ArrayList<ResourceType> getSelectedResourceTypes() {
+        return selectedResourceTypes;
+    }
+
+    public void setSelectedResourceTypes(ArrayList<ResourceType> selectedResourceTypes) {
+        this.selectedResourceTypes = selectedResourceTypes;
     }
 
 }

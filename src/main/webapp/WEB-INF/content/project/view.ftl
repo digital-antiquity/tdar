@@ -8,16 +8,17 @@
 
 
 <#macro footer>
-        <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Limit by Resource Type" facetParam="resourceTypes" />
+        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Limit by Resource Type" facetParam="selectedResourceTypes" />
 
 <#if (totalRecords > 0)>
 
 <br/>
-<h3>There are ${paginationHelper.totalNumberOfItems?c} Resources within this Project</h3>
+<h3>There are ${paginationHelper.totalNumberOfItems?c} <#if selectedResourceTypes?has_content>
+<#list selectedResourceTypes as type>${type.plural} </#list> <#else>Resources</#if> within this Project</h3>
 
     <#if ( results?has_content )>
               <@rlist.listResources resourcelist=results listTag="ol" headerTag="h4" titleTag="h5" 
-              sortfield=project.sortBy  orientation=project.orientation mapPosition="left" />
+              sortfield=sortField  orientation=project.orientation mapPosition="left" />
     </#if>
 
     <#if ( paginationHelper.pageCount > 1)>

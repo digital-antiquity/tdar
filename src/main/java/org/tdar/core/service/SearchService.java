@@ -59,6 +59,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.SearchPaginationException;
@@ -739,44 +740,14 @@ public class SearchService {
     }
 
 
-    public List<ResourceCollection> findEditableCollectionsForUser(Long userid) {
-        QueryBuilder qb = new ResourceCollectionQueryBuilder();
-        qb.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_TYPE, ResourceCollection.CollectionType.SHARED));
-        qb.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, userid));
-
-        logger.debug("yo check out my query! {}", qb.getQuery());
-
-        return searchAndFetchAllResults(qb);
-    }
-
-    /**
-     * Perform a full text search and return a list of hibernate objects. Besides a max resultsize of MAX_FTQ_RESULTS,
-     * this method attempts to immediately return all results.
-     * @param qb
-     * @return
-     */
-    private List searchAndFetchAllResults(QueryBuilder qb) {
-        FullTextQuery ftq = null;
-        try {
-            ftq = search(qb);
-        } catch (ParseException e) {
-            logger.error("error in collection search", e);
-            return Collections.EMPTY_LIST;
+    public void addResourceTypeFacetToViewPage(ResourceQueryBuilder qb, List<ResourceType> selectedResourceTypes, SearchResultHandler<?> handler) {
+        if (CollectionUtils.isNotEmpty(selectedResourceTypes)) {
+            qb.append(new FieldQueryPart<ResourceType>(QueryFieldNames.RESOURCE_TYPE, "Resource Type", Operator.OR, selectedResourceTypes));
+            // If we sort by resource type, then change the primary sort field to the secondary as we're faceting by resource type
+            if (handler.getSortField() == SortOption.RESOURCE_TYPE || handler.getSortField() == SortOption.RESOURCE_TYPE_REVERSE) {
+                handler.setSortField(handler.getSecondarySortField());
+            }
         }
-
-        logger.debug("results size:{}, querstring:{}", ftq.getResultSize(), ftq.getQueryString());
-
-        ftq.setFirstResult(0);
-        ftq.setMaxResults(Math.max(ftq.getResultSize(), MAX_FTQ_RESULTS));
-        //ftq.setProjection(new String[] {FullTextQuery.THIS, FullTextQuery.OBJECT_CLASS, FullTextQuery.SCORE});
-        ftq.setProjection(FullTextQuery.THIS);
-        List list = ftq.list();
-        List hibObjects = new ArrayList<>();
-        for (Object[] obj : (List<Object[]>) list) {
-            logger.debug("adding item: {}", obj);
-            hibObjects.add(obj[0]);
-        }
-        return hibObjects;
     }
 
 }

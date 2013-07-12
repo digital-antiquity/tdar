@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -26,6 +28,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
@@ -57,6 +60,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private String mode = "ProjectBrowse";
     private PaginationHelper paginationHelper;
     private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
+    private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
     /**
      * Projects contain no additional metadata beyond basic Resource metadata so saveBasicResourceMetadata() should work.
@@ -108,6 +112,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
             if (getProject().getSecondarySortBy() != null) {
                 setSecondarySortField(getProject().getSecondarySortBy());
             }
+            getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
+            
             try {
                 getSearchService().handleSearch(qb, this);
             } catch (SearchPaginationException e) {
@@ -303,6 +309,14 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     public void setResourceTypeFacets(ArrayList<ResourceType> resourceTypeFacets) {
         this.resourceTypeFacets = resourceTypeFacets;
+    }
+
+    public ArrayList<ResourceType> getSelectedResourceTypes() {
+        return selectedResourceTypes;
+    }
+
+    public void setSelectedResourceTypes(ArrayList<ResourceType> selectedResourceTypes) {
+        this.selectedResourceTypes = selectedResourceTypes;
     }
 
 }

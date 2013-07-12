@@ -77,9 +77,9 @@
 			<#assign mapSize="1000" />
 		</#if>
          
-        <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Limit by Resource Type" facetParam="resourceTypes" />
+        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Limit by Resource Type" facetParam="selectedResourceTypes" />
 		<div class="tdarresults">
-		    <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
+		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
 		        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />
 		</div>
 

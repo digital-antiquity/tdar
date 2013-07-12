@@ -142,16 +142,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals(3, count);
     }
 
-
-    @Test
-    @Rollback
-    public void testEditableCollections() throws Exception {
-        testResourceCollectionController();
-        List<ResourceCollection> rcs =  searchService.findEditableCollectionsForUser(getAdminUser().getId());
-        Assert.assertFalse("collection list should not be empty", rcs.isEmpty());
-    }
-
-
     @Test
     @Rollback
     public void testResourceCollectionPermissionsController() throws Exception
