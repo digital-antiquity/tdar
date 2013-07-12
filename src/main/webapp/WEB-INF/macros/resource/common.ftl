@@ -300,11 +300,11 @@ $(document).ready(function(){
   var defaults_ = {
       fontSize:10,
   	  seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+      title:"${graphLabel?js_string}",
       seriesDefaults: {
         renderer: jQuery.jqplot.PieRenderer, 
         rendererOptions: {
           fill: true,
-          title:"${graphLabel?js_string}",
           animate: !$.jqplot.use_excanvas,
           showDataLabels: true, 
           // Add a margin to seperate the slices.
@@ -333,12 +333,14 @@ $(document).ready(function(){
       },
       cursor: {
           style:"pointer",
-       	  show: false,
+       	  showTooltip: false,
           useAxesFormatters: false
       },
       highlighter: {
-          useAxesFormatters: false,
-          showTooltip:false
+		  show: true,
+		  formatString:'%s (%s)', 
+		  tooltipLocation:'ne', 
+          useAxesFormatters: false
       }
     };
 
@@ -427,7 +429,6 @@ $(document).ready(function(){
  			title: "${graphLabel?js_string}",
             animate: !$.jqplot.use_excanvas,
             seriesDefaults:{
-//                renderer:$.jqplot.BarRenderer,
                 pointLabels: { 
                 	show: true, 
                 	location: 'n', 
@@ -550,10 +551,11 @@ $(document).ready(function(){
                 }
             },
             highlighter: { show: false },
-            cursor: {
-            	show: false,
-                style:"pointer"
-            }
+		      cursor: {
+		          style:"pointer",
+		       	  showTooltip: false,
+		          useAxesFormatters: false
+		      },
 
         };
 		<#nested/>
