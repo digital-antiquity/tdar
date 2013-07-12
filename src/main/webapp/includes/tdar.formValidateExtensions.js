@@ -148,7 +148,7 @@ $.validator.addMethod("columnEncoding", function(value, element) {
 $.validator.addMethod(
     "confidential-contact-required",
     function(value, element){
-        if(value != "CONFIDENTIAL") return true;
+        if(value === "PUBLIC") return true;
         var institutions = $(".creatorInstitution").not(".hidden").toArray();;
         var persons = $(".creatorPerson").not(".hidden").toArray();
         var grepForValidContacts = function(creators) {
