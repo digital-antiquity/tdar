@@ -2631,24 +2631,24 @@ INSERT INTO resource_creator (id, role, sequence_number, creator_id, resource_id
 -- added by jim 6/1/2013
 -- FIXME add field names so we're not dealing with insertion order bugs
 INSERT INTO collection (id, date_created, date_updated, description, name, orientation, sort_order, collection_type, visible, owner_id, parent_id, updater_id) VALUES (1575, '2013-07-01 16:49:15.583', '2013-07-01 16:49:15.583', 'this is a test', 'sample collection', 'LIST', 'TITLE', 'SHARED', true, 8092, NULL, 8092);
-INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id, external_id) VALUES (4289, '2013-07-01 16:42:32.355', '2013-07-01 16:42:32.355', 'this is a test ', NULL, 0, 'ACTIVE', 'SENSORY_DATA', 0, 'ACTIVE', 'sample sensorydata', '', 8092, 8092, 8092, NULL);
-INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id, external_id) VALUES (4290, '2013-07-01 16:44:49.712', '2013-07-01 16:44:49.712', 'this is a test', NULL, 0, 'ACTIVE', 'VIDEO', 0, 'ACTIVE', 'sample video', '', 8092, 8092, 8092, NULL);
-INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id, external_id) VALUES (4291, '2013-07-01 16:46:42.454', '2013-07-01 16:46:42.454', 'test', NULL, 0, 'ACTIVE', 'GEOSPATIAL', 0, 'ACTIVE', 'sample geospatial', '', 8092, 8092, 8092, NULL);
-INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id, external_id) VALUES (4292, '2013-07-01 17:21:35.881', '2013-07-01 17:21:35.881', 'this is a test', NULL, 0, 'ACTIVE', 'IMAGE', 0, 'ACTIVE', 'sample image', '', 8092, 8092, 8092, NULL);
+INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id) VALUES (4289, '2013-07-01 16:42:32.355', '2013-07-01 16:42:32.355', 'this is a test ', NULL, 0, 'ACTIVE', 'SENSORY_DATA', 0, 'ACTIVE', 'sample sensorydata', '', 8092, 8092, 8092);
+INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id) VALUES (4290, '2013-07-01 16:44:49.712', '2013-07-01 16:44:49.712', 'this is a test', NULL, 0, 'ACTIVE', 'VIDEO', 0, 'ACTIVE', 'sample video', '', 8092, 8092, 8092);
+INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id) VALUES (4291, '2013-07-01 16:46:42.454', '2013-07-01 16:46:42.454', 'test', NULL, 0, 'ACTIVE', 'GEOSPATIAL', 0, 'ACTIVE', 'sample geospatial', '', 8092, 8092, 8092);
+INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id) VALUES (4292, '2013-07-01 17:21:35.881', '2013-07-01 17:21:35.881', 'this is a test', NULL, 0, 'ACTIVE', 'IMAGE', 0, 'ACTIVE', 'sample image', '', 8092, 8092, 8092);
 
 INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:42:34.693', 4289);
 INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:44:51.07', 4290);
 INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:46:43.537', 4291);
 INSERT INTO resource_access_statistics ( date_accessed, resource_id) VALUES ('2013-07-01 16:46:43.537', 4292);
-INSERT INTO information_resource (copy_location, date_created, date_created_normalized, mappedDataKeyValue ,id) VALUES (NULL, 2013, 2010, '', 4289);
-INSERT INTO information_resource (copy_location, date_created, date_created_normalized, mappedDataKeyValue ,id) VALUES ('', 2012, 2010,   '', 4290);
-INSERT INTO information_resource (copy_location, date_created, date_created_normalized, mappedDataKeyValue ,id) VALUES (NULL, 2012, 2010, '', 4291);
-INSERT INTO information_resource (copy_location, date_created, date_created_normalized, mappedDataKeyValue ,id)  VALUES (NULL, 2012, 2010, '', 4292);
+INSERT INTO information_resource (copy_location, date_created, date_created_normalized ,id, external_reference) VALUES (NULL, 2013, 2010, 4289, false);
+INSERT INTO information_resource (copy_location, date_created, date_created_normalized ,id, external_reference) VALUES ('', 2012, 2010,   4290, false);
+INSERT INTO information_resource (copy_location, date_created, date_created_normalized ,id, external_reference) VALUES (NULL, 2012, 2010, 4291, false);
+INSERT INTO information_resource (copy_location, date_created, date_created_normalized ,id, external_reference) VALUES (NULL, 2012, 2010, 4292, false);
 INSERT INTO dataset (id) values(4291);
 INSERT INTO dataset (id) values(4289);
-INSERT INTO sensory_data VALUES (NULL, '', '', '', '', NULL, NULL, NULL, '', NULL, '', false, '', false, false, '', false, false, NULL, false, '', '', '', '', NULL, false, false, false, false, '', NULL, '', NULL, '', false, '', NULL, NULL, NULL, '', NULL, NULL, NULL, NULL, false, 4289);
-INSERT INTO video VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 4290);
-INSERT INTO geospatial VALUES ('hipster-level currentness', 'bogus projection information', '', '', 4291);
+INSERT INTO sensory_data (id, turntable_used , mesh_holes_filled , mesh_rgb_included , mesh_smoothing , mesh_data_reduction , premesh_color_editions , premesh_overlap_reduction , premesh_smoothing , premesh_subsampling , rgb_preserved_from_original, mesh_color_editions , mesh_healing_despiking ) VALUES (4289,false,false,false,false,false,false,false,false,false,false,false, false);
+INSERT INTO video (id) VALUES (4290);
+INSERT INTO geospatial (currentnessUpdateNotes,projection,id) VALUES ('hipster-level currentness', 'bogus projection information',4291);
 INSERT INTO image VALUES (4292);
 -- end added by jim 6/1/2013
 -- ab add 6/2/2103
