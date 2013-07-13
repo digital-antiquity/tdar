@@ -185,6 +185,9 @@ public abstract class AbstractSeleniumWebITCase {
                     app = new File("C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe");
                 }
                 if (!app.exists()) {
+                    app = new File("/usr/local/bin/chromedriver");
+                }
+                if (!app.exists()) {
                     app = new File("/usr/bin/google-chrome");
                 }
 
