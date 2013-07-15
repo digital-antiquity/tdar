@@ -154,9 +154,8 @@ $.validator.addMethod(
         var grepForValidContacts = function(creators) {
             return    $.grep(creators, function(elem, idx){
                 var id = $(elem).find(".validIdRequired").val();
-                var hasId = parseInt(id) > 0;
                 var isContact = $(elem).find(".creator-role-select").val() === "CONTACT";
-                var match =  hasId && isContact;
+                var match =  isContact;
                 return match;
             });
         };

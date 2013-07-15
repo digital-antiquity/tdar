@@ -22,11 +22,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.tdar.core.bean.coverage.CoverageType;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
@@ -233,6 +235,10 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
             }
         }
 
+        //add a person to satisfy the confidential file requirement
+        addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
+
+
         logger.info(getDriver().getPageSource());
         submitForm();
 
@@ -332,6 +338,25 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
             find(".expandable-hitarea").visibleElements().click();
         }
         assertTrue("trying to expand all listview subtrees", giveupCount < 10);
+    }
+
+
+    private void addPersonWithRole(Person p, String prefix, ResourceCreatorRole role) {
+        setname(prefix + ".person.firstName", p.getFirstName());
+        setname(prefix + ".person.lastName", p.getLastName());
+        setname(prefix + ".person.email", p.getEmail());
+        setname(prefix + ".person.institution.name", p.getInstitutionName());
+        setname(prefix + ".role", role.name());
+
+        //FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
+        //waitFor(".ui-menu-item a").click();
+    }
+
+    private void setname(String fld, String value) {
+        if(StringUtils.isNotBlank(value)) {
+            find(By.name(fld)).val(value);
+        }
+
     }
 
 }
