@@ -32,7 +32,7 @@ public class ResourceEvaluator implements Serializable {
     private boolean includeDeletedFilesInCounts = false;
     private boolean includeAllVersionsInCounts = false;
     private List<ResourceType> uncountedResourceTypes = Arrays.asList(ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.PROJECT);
-    private List<Status> uncountedResourceStatuses = Arrays.asList();
+    private List<Status> uncountedResourceStatuses = Arrays.asList(Status.DELETED);
     private long resourcesUsed = 0;
     private long filesUsed = 0;
     private long spaceUsedInBytes = 0;
