@@ -806,7 +806,7 @@ jquery validation hooks?)
         <ul>
             <li>To attach files to this resource,  click the button labeled "Add Files..." </li>
             <#if multipleFileUploadEnabled>
-                <li>You may upload up to ${maxUploadFilesPerRecord} for this resource type</li>
+                <li>You may upload up to ${maxUploadFilesPerRecord} files for this resource type</li>
             <#else>
                 <#--FIXME:  i'm pretty sure async upload for single files is untested, and wont work as described here -->
                 <li> To replace a file, simply upload the updated version</li>
@@ -816,24 +816,21 @@ jquery validation hooks?)
             </#if>
         </ul>
 
-        <h3>Deleting Files</h3>
-        You can remove files by clicking on the button labeled "Delete".  If you change your mind or if you mistakenly
-        clicked on the delete button, fear not: you can restore the file by clicking the button a 2nd time (the button
-        will now be labeled "Undelete..."
-
         <#if fileProxies?size &gt; 0>
-        <p>
         <h3>Replacing Files</h3>
-            <ol>
-                <li>Locate the row in the files table that corresponds to the file you would like to replace</li>
-                <li>Click on the button labeled "Replace...". ${siteAcronym} will prompt you for a new file</li>
-                <li>Once the upload is complete, you must submit the form to confirm your changes</li>
-                <li><em>Conversely</em>, to undo this action and restore the original file,  simply click the
-                    button again (which will now be labeled  "Restore Original")</li>
-            </ol>
-        </p>
+        <ol>
+            <li>In the list of files, locate the row (or file tab) that corresponds to the file you would like to replace.</li>
+            <li>In that row, click on the button labeled "Replace". tDAR will prompt you for a new file.</li>
+            <li>Once the upload is complete, you must save the form to confirm your changes.Click on the "Save" button in the upper right hand portion of the screen.</li>
+            <li>To undo this action and restore the original file, simply click the button again (which will now be labeled "Restore Original").</li>
+        </ol>
 
         </#if>
+
+        <h3>Deleting Files</h3>
+        You can remove files by clicking on the button labeled "Delete". If you change your mind or if you
+        mistakenly clicked on the delete button, do not worry. You can restore the file by clicking the button a
+        second time (the button will now be labeled "Undelete").
 
     </span>
     </div>
