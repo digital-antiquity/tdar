@@ -53,6 +53,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private List<I> results = Collections.emptyList();
     private int totalRecords;
     private SortOption sortField;
+    private SortOption defaultSort = SortOption.getDefaultSortOption();
     private SortOption secondarySortField = SortOption.TITLE;
     private boolean debug = false;
     private ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
@@ -466,6 +467,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      */
     public boolean isHideFacetsAndSort() {
         return true;
+    }
+
+    public SortOption getDefaultSort() {
+        return defaultSort;
+    }
+
+    public void setDefaultSort(SortOption defaultSort) {
+        this.defaultSort = defaultSort;
     }
 
 }

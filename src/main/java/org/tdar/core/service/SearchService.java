@@ -138,7 +138,7 @@ public class SearchService {
 
         if (sortOptions == null || sortOptions.length == 0) {
             // if no sort specified we sort by descending score
-            ftq.setSort(new Sort(new SortField(SortOption.RELEVANCE.getSortField(), SortOption.RELEVANCE.getLuceneSortType())));
+            ftq.setSort(new Sort(new SortField(SortOption.getDefaultSortOption().getSortField(), SortOption.getDefaultSortOption().getLuceneSortType())));
         }
         else {
             List<SortField> sortFields = new ArrayList<SortField>();

@@ -47,6 +47,9 @@ public enum SortOption {
     private boolean reversed;
     private Class<? extends Indexable> context;
 
+    public static SortOption getDefaultSortOption() {
+        return RELEVANCE;
+    }
     private SortOption(Class<? extends Indexable> context, String label, String sortField, boolean reversed) {
         this(context, label, sortField, SortField.STRING, reversed);
     }

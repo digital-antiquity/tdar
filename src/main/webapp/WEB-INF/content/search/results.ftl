@@ -10,20 +10,26 @@
 <body>
 
     <div id="titlebar" parse="true">
-        <#if searchPhrase?? && !explore>
-            <h1>Search Results: <span>${searchPhrase}</span></h1>
-            
-        <#elseif explore && exploreKeyword?? && exploreKeyword.definition?has_content >
-            <h1>${exploreKeyword.label?html}</h1>
+        <h1>
+        	<#if searchPhrase?? && !explore>
+            	Search Results: <span>${searchPhrase}</span>
+	        <#elseif explore && exploreKeyword?? && exploreKeyword.definition?has_content >
+	            ${exploreKeyword.label?html}
+	        <#elseif query?has_content>
+	        ${lookupSource.proper} Search Results: <span>${query?html}</span>
+	        <#else>
+	        Search Results: ${(searchSubtitle!"all records")?html}
+	        </#if>
+	        <#if sortField?? && sortField != defaultSort>
+	        	<span class="smaller">; sorted by ${sortField.label}</span>
+	        </#if>
+        </h1>
+        <#if explore && exploreKeyword?? && exploreKeyword.definition?has_content >
             <div class="glide">
                 <#if exploreKeyword.definition??>
 		            <p>${exploreKeyword.definition?html}</p>
                 </#if>
             </div>
-        <#elseif query?has_content>
-        <h1>${lookupSource.proper} Search Results: <span>${query?html}</span></h1>
-        <#else>
-        <h1>Search Results: ${(searchSubtitle!"all records")?html}</h1>
         </#if>
     </div>
 

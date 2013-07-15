@@ -232,20 +232,20 @@ $(document).ready(function(){
     <#elseif fieldType = 'DATE_CREATED'>
         <div class="term retain ${fieldType} controls-row">
             <div class="span3">
-                <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy' labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="After"/>
+                <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy' labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"/>
             </div>
             <div class="span3">
-             <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy'labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Before"/>
+             <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy'labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"/>
             </div>
         </div>            
     
     <#elseif fieldType?starts_with("DATE_")>
         <div class="term retain ${fieldType} controls-row">
             <div class="span3">
-                <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="After"/>
+                <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"/>
             </div>
             <div class="span3">
-                <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Before"/>
+                <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"/>
             </div>
         </div>            
     <#elseif fieldType="PROJECT">
