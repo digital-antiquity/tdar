@@ -1,6 +1,7 @@
 package org.tdar.core.dao;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -119,10 +121,12 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         }
     }
 
-    public void updateAccountInfo(Account account) {
+    public void updateAccountInfo(Account account, ResourceEvaluator re) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_QUOTA_INIT);
         query.setParameter("accountId", account.getId());
-        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT, Status.DUPLICATE, Status.FLAGGED_ACCOUNT_BALANCE));
+        @SuppressWarnings("unchecked")
+        List<Status> statuses = new ArrayList<Status>(CollectionUtils.disjunction(Arrays.asList(Status.values()), re.getUncountedResourceStatuses()));
+        query.setParameterList("statuses", statuses);
         Long totalFiles = 0L;
         Long totalSpaceInBytes = 0L;
         for (Object objs : query.list()) {
