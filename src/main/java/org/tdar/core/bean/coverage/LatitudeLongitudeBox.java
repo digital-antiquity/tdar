@@ -224,11 +224,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public void setMinimumLatitude(Double minimumLatitude) {
-        if (isValidLatitude(minimumLatitude)) {
-            this.minimumLatitude = minimumLatitude;
-        } else {
+        if (minimumLatitude != null && !isValidLatitude(minimumLatitude)) {
             throw new TdarRuntimeException("specified latitude is not a valid latitude");
         }
+        this.minimumLatitude = minimumLatitude;
     }
 
     @Deprecated
@@ -240,11 +239,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public void setMaximumLatitude(Double maximumLatitude) {
-        if (isValidLatitude(maximumLatitude)) {
-            this.maximumLatitude = maximumLatitude;
-        } else {
+        if (maximumLatitude != null & !isValidLatitude(maximumLatitude)) {
             throw new TdarRuntimeException("specified latitude is not a valid latitude");
         }
+        this.maximumLatitude = maximumLatitude;
     }
 
     @Deprecated
@@ -256,11 +254,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public void setMinimumLongitude(Double minimumLongitude) {
-        if (isValidLongitude(minimumLongitude)) {
-            this.minimumLongitude = minimumLongitude;
-        } else {
-            throw new TdarRuntimeException("specified latitude is not a valid longitude");
+        if (minimumLongitude!= null && !isValidLongitude(minimumLongitude)) {
+            throw new TdarRuntimeException("specified longitude is not a valid longitude");
         }
+        this.minimumLongitude = minimumLongitude;
     }
 
     @Deprecated
@@ -272,25 +269,25 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public void setMaximumLongitude(Double maximumLongitude) {
-        if (isValidLongitude(maximumLongitude)) {
-            this.maximumLongitude = maximumLongitude;
-        } else {
-            throw new TdarRuntimeException("specified latitude is not a valid longitude");
+        if (maximumLongitude!= null && !isValidLongitude(maximumLongitude)) {
+            throw new TdarRuntimeException("specified longitude is not a valid longitude");
         }
+        this.maximumLongitude = maximumLongitude;
     }
 
     @Transient
     public boolean isValidLatitude(Double latitude) {
-        // FIXME: verify that this works for extreme cases (+/- 180)
+        // FIXME: verify that this works at extreme case (+/- 90)
         return latitude != null && latitude >= MIN_LATITUDE && latitude <= MAX_LATITUDE;
     }
 
     @Transient
     public boolean isValidLongitude(Double longitude) {
-        // FIXME: verify that this works at extreme case (+/- 90)
+        // FIXME: verify that this works for extreme cases (+/- 180)
         return longitude != null && longitude >= MIN_LONGITUDE && longitude <= MAX_LONGITUDE;
     }
 
+    @Override
     public boolean isValid() {
         if (isValidLatitude(maximumLatitude)
                 && isValidLatitude(minimumLatitude)
@@ -314,6 +311,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return min < max;
     }
 
+    @Override
     public String toString() {
         return String.format("Latitude [%s to %s], Longitude [%s to %s]", minimumLatitude, maximumLatitude, minimumLongitude, maximumLongitude);
     }
@@ -385,20 +383,24 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return false;
     }
 
+    @Override
     public boolean isValidForController() {
         return true;
     }
 
+    @Override
     @XmlTransient
     @JSONTransient
     public boolean isObfuscated() {
         return obfuscated;
     }
 
+    @Override
     public void setObfuscated(boolean obfuscated) {
         this.obfuscated = obfuscated;
     }
 
+    @Override
     public List<Obfuscatable> obfuscate() {
         setMaximumLatitude(getMaxObfuscatedLatitude());
         setMinimumLatitude(getMinObfuscatedLatitude());
