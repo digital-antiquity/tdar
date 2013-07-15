@@ -202,7 +202,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     @Transactional
     public void updateAccountInfo(Account account) {
-        getDao().updateAccountInfo(account);
+        getDao().updateAccountInfo(account, getResourceEvaluator());
     }
 
     @Transactional
@@ -214,7 +214,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
         }
         /* evaluate resources based on the model, and update their counts of files and space */
-        getResourceEvaluator(resourcesToEvaluate);
+        ResourceEvaluator resourceEvaluator = getResourceEvaluator(resourcesToEvaluate);
         saveOrUpdateAll(resourcesToEvaluate);
 
         /* make sure the account associations are properly set for each resource in the bunch */
@@ -225,7 +225,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
 
         /* update the account info in the database */
-        getDao().updateAccountInfo(account);
+        getDao().updateAccountInfo(account,resourceEvaluator);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
 
         account.initTotals();
@@ -418,11 +418,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             logger.debug("Skipping {} in eval b/c it's not counted", resource.getId());
             return true;
         }
-        Object[] log = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() };
-        logger.info("HELPER: space used: {} avail:{} files used: {} avail {}", log);
+        logger.info("mode: {}", mode);
+        Object[] log = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() , space, files, resource.getId(), resource.getStatus()};
+        logger.info("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})", log);
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes
         if (helper.getModel().getCountingSpace() && helper.getAvailableSpaceInBytes() - space < 0) {
-            logger.info("space used:{} space available:{} resourceId:{}", space, helper.getAvailableSpaceInBytes(), resource.getId());
+            logger.info("OVERAGE ==> space used:{} space available:{} resourceId:{}", space, helper.getAvailableSpaceInBytes(), resource.getId());
             return false;
         }
         if (helper.getModel().getCountingFiles() && helper.getAvailableNumberOfFiles() - files < 0) {
