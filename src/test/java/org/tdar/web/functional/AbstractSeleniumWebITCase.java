@@ -47,6 +47,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -205,6 +208,9 @@ public abstract class AbstractSeleniumWebITCase {
                 DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
                 driver = new InternetExplorerDriver(configureCapabilities(ieCapabilities));
                 driver.manage().timeouts().implicitlyWait(90, TimeUnit.SECONDS);
+                if (TdarConfiguration.getInstance().isHttpsEnabled()) {
+                    Assert.fail("please disable https before testing this");
+                }
                 break;
             case PHANTOMJS:
                 driver = new PhantomJSDriver(
@@ -216,12 +222,6 @@ public abstract class AbstractSeleniumWebITCase {
         eventFiringWebDriver.register(eventListener);
 
         this.driver = eventFiringWebDriver;
-
-        if (browser == Browser.IE) {
-            setIgnoreJavascriptErrors(true);
-            fakeSSLCertIE();
-            setIgnoreJavascriptErrors(false);
-        }
     }
 
     private Capabilities configureCapabilities(DesiredCapabilities caps) {
@@ -402,9 +402,9 @@ public abstract class AbstractSeleniumWebITCase {
 
     private void fakeSSLCertIE() {
         gotoPage("https://" + TestConstants.DEFAULT_HOST + ":" + TestConstants.DEFAULT_SECURE_PORT + "/");
-        driver.get("javascript:document.getElementById('overridelink').click()");
-        waitFor("body");
-        logger.info(getText());
+//        driver.get("javascript:document.getElementById('overridelink').click()");
+//        waitFor("body");
+//        logger.info(getText());
     }
 
     public void logout() {
