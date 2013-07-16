@@ -1,11 +1,9 @@
 package org.tdar.web.functional;
-import org.junit.Before;
-import org.junit.After;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.tdar.TestConstants;
-
-import static  org.junit.Assert.*;
 
 /**
  * User: jimdevos
@@ -24,7 +22,7 @@ public class BrowseSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         //we could do this implicitly by going to any other page but this makes the test faster
         reportJavascriptErrors();
     }
-
+    
     @Test
     public void testOntology() {
         browseTest("/ontology/3029");

@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Predicate;
@@ -154,7 +155,7 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         WebDriver driver = null;
-        Browser browser = Browser.FIREFOX;
+        Browser browser = Browser.CHROME;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
         if (StringUtils.isNotBlank(browser_)) {
@@ -182,7 +183,8 @@ public abstract class AbstractSeleniumWebITCase {
                 /* ubuntu install instructions http://www.liberiangeek.net/2011/12/install-google-chrome-using-apt-get-in-ubuntu-11-10-oneiric-ocelot/ */
                 File app = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
                 if (!app.exists()) {
-                    app = new File("C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe");
+//                    app = new File("C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe");
+                    app = new File("c:\\opt\\workspace\\chromedriver.exe");
                 }
                 if (!app.exists()) {
                     app = new File("/usr/local/bin/chromedriver");
@@ -191,12 +193,17 @@ public abstract class AbstractSeleniumWebITCase {
                     app = new File("/usr/bin/google-chrome");
                 }
 
-                ChromeDriverService options = new ChromeDriverService.Builder().usingDriverExecutable(app).usingAnyFreePort().withEnvironment(environment).build();
+                ChromeDriverService options = new ChromeDriverService.Builder().usingDriverExecutable(app).usingAnyFreePort().withEnvironment(environment)
+                        .build();
                 driver = new ChromeDriver(options);
                 options.start();
                 break;
             case IE:
-                driver = new InternetExplorerDriver();
+                System.setProperty("webdriver.ie.driver", "c:\\opt\\workspace\\IEDriverServer.exe");
+                DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
+                driver = new InternetExplorerDriver(ieCapabilities);
+                driver.manage().timeouts().implicitlyWait(90, TimeUnit.SECONDS);
+                break;
             case PHANTOMJS:
                 driver = new PhantomJSDriver(
                         ResolvingPhantomJSDriverService.createDefaultService(), // service resolving phantomjs binary automatically
@@ -262,6 +269,7 @@ public abstract class AbstractSeleniumWebITCase {
      * createObsoluteUrl
      */
     public String absoluteUrl(String path) {
+
         String currentUrl = driver.getCurrentUrl();
         logger.debug("current url: {}", currentUrl);
         if (currentUrl.length() == 0 || StringUtils.equalsIgnoreCase("about:blank", currentUrl)) {
@@ -273,7 +281,24 @@ public abstract class AbstractSeleniumWebITCase {
         } catch (MalformedURLException e) {
             Assert.fail("could not go to url: " + currentUrl);
         }
-        String absoluteUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + path;
+        /*
+         * With the WebDrivers, sometimes the port is not the port, often it's the webdriver port that's proxying things for us,
+         * thus, we need to rewrite the port ...
+         */
+        int port = url.getPort();
+        switch (port) {
+            case 443:
+            case 80:
+            case 8080:
+            case TestConstants.DEFAULT_PORT:
+            case TestConstants.DEFAULT_SECURE_PORT:
+                break;
+            default:
+                port = TestConstants.DEFAULT_PORT;
+                break;
+        }
+
+        String absoluteUrl = String.format("%s://%s:%s%s", url.getProtocol() , url.getHost() , port , path);
         return absoluteUrl;
     }
 

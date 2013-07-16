@@ -8,6 +8,7 @@ public interface TestConstants {
     public static Long PARENT_PROJECT_ID = 3805L;
     public static Long TEST_INSTITUTION_ID = 12088L;
     public final static int DEFAULT_PORT = 8180;
+    public final static int DEFAULT_SECURE_PORT = 8143;
     public final static String DEFAULT_BASE_URL = "http://localhost:" + DEFAULT_PORT;
 
     public final static String TEST_ROOT_DIR = "src/test/resources/";
