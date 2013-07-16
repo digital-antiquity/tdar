@@ -68,6 +68,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
     protected String extractPage(int pageNum, InformationResourceFileVersion originalFile, PDDocument document) {
         // File pdfFile = new File(sourceFile);
+        @SuppressWarnings("unused")
         File pdfFile = originalFile.getTransientFile();
         String imageFormat = "jpg";
         String color = "rgb";

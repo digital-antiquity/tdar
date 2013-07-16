@@ -30,7 +30,6 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 
@@ -161,18 +160,18 @@ public interface Persistable extends Serializable {
          */
         public static boolean isEqual(Persistable a, Persistable b) {
             Logger logger = LoggerFactory.getLogger(a.getClass());
-            //null is never equal to anything
+            // null is never equal to anything
             if (a == null || b == null) {
                 logger.trace("false b/c one is null");
                 return false;
             }
-            
-            //objects  that are the same are equal
+
+            // objects that are the same are equal
             if (a == b) {
                 logger.trace("object equality");
                 return true;
             }
-            
+
             /*
              * Some tests are failing b/c javaasist subclass? or bytecode manipulation of tDAR classes:
              * eg: AdvancedSearchControllerITCase.testResourceCreatorPerson:
@@ -186,8 +185,8 @@ public interface Persistable extends Serializable {
 
             EqualsBuilder equalsBuilder = new EqualsBuilder();
 
-            if(a.getEqualityFields().isEmpty()) {
-                if(isTransient(a) || isTransient(b)) {
+            if (a.getEqualityFields().isEmpty()) {
+                if (isTransient(a) || isTransient(b)) {
                     return false;
                 } else {
                     equalsBuilder.append(a.getId(), b.getId());
@@ -198,7 +197,7 @@ public interface Persistable extends Serializable {
                 logger.trace("comparing equality fields {} != {} ", selfEqualityFields, candidateEqualityFields);
                 equalsBuilder.append(selfEqualityFields, candidateEqualityFields);
             }
-            
+
             return equalsBuilder.isEquals();
         }
 

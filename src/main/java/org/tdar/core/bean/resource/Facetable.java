@@ -1,6 +1,6 @@
 package org.tdar.core.bean.resource;
 
-public  interface  Facetable<F extends Facetable> {
+public  interface  Facetable<F extends Facetable<?>> {
 
     public Integer getCount();
     

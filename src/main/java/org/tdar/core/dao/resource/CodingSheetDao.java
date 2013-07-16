@@ -35,9 +35,10 @@ public class CodingSheetDao extends ResourceDao<CodingSheet> {
         return query.executeUpdate();
     }
 
+    @SuppressWarnings("unchecked")
     public List<CodingSheet> findAllUsingOntology(Ontology ontology, List<Status> statuses) {
         if (Persistable.Base.isNullOrTransient(ontology)) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY);
         query.setParameter("ontologyId", ontology.getId());

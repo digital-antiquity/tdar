@@ -168,6 +168,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         return (Coupon) query.uniqueResult();
     }
     
+    @SuppressWarnings("unchecked")
     public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_INVOICE_FOR_COUPON);
         query.setParameter("code", coupon.getCode().toLowerCase());

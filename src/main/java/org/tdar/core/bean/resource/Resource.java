@@ -1170,6 +1170,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return "";
     }
 
+    @SuppressWarnings("unchecked")
     @JSONTransient
     @Fields({
             @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),

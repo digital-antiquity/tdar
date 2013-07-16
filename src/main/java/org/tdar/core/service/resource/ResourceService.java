@@ -136,7 +136,6 @@ public class ResourceService extends GenericService {
         logResourceModification(modifiedResource, person, message, null);
     }
 
-    
     @Transactional(readOnly = true)
     public List<Resource> findAllSparseActiveResources() {
         return datasetDao.findAllSparseActiveResources();
@@ -226,7 +225,8 @@ public class ResourceService extends GenericService {
             Set<GeographicKeyword> managedKeywords = geoSearchService.extractAllGeographicInfo(latLong);
             logger.debug(resource.getId() + " :  " + managedKeywords + " " + managedKeywords.size());
             kwds.addAll(
-                    getGenericDao().findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS), FindOptions.FIND_FIRST_OR_CREATE));
+                    getGenericDao().findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
+                            FindOptions.FIND_FIRST_OR_CREATE));
         }
         Persistable.Base.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
     }
@@ -294,7 +294,7 @@ public class ResourceService extends GenericService {
                     H existing = idMap.get(hasResource_.getId());
                     /*
                      * If we're not transient, compare the two beans on all of their local properties (non-recursive) -- if there are differences
-                     * copy. otherwise, move on.  Question -- it may be more work to compare than to just "copy"... is it worth it?
+                     * copy. otherwise, move on. Question -- it may be more work to compare than to just "copy"... is it worth it?
                      */
                     if (Persistable.Base.isNotNullOrTransient(existing) && !EqualsBuilder.reflectionEquals(existing, hasResource_)) {
                         try {
@@ -492,6 +492,7 @@ public class ResourceService extends GenericService {
         return datasetDao.getUsageStatsForResource(granularity, start, end, minCount, resourceIds);
     }
 
+    @SuppressWarnings("unchecked")
     @Transactional
     public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
         if (Persistable.Base.isNullOrTransient(resource))

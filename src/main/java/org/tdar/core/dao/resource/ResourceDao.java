@@ -32,7 +32,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
@@ -61,6 +60,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         super(resourceClass);
     }
 
+    @SuppressWarnings("unchecked")
     public Set<Long> findResourcesSubmittedByUser(Person person) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_SUBMITTER);
         query.setLong("submitterId", person.getId());
@@ -148,13 +148,13 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
     }
 
     public Number countActiveResources(ResourceType type) {
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE, type.getResourceClass().getSimpleName(), type.name()));
+        Query query = getCurrentSession().createQuery(
+                String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE, type.getResourceClass().getSimpleName(), type.name()));
         return (Number) query.uniqueResult();
     }
 
-
     public Number countActiveResourcesWithFiles(ResourceType type) {
-        if (type == ResourceType.PROJECT) 
+        if (type == ResourceType.PROJECT)
             return 0;
         Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE_WITH_FILES, type.name()));
         return (Number) query.uniqueResult();
@@ -170,7 +170,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
                 Object[] objs = (Object[]) o;
                 if (objs == null || objs[0] == null)
                     continue;
-                cache.add(new HomepageGeographicKeywordCache((String) objs[0], (Level) objs[1], (Long) objs[2],(Long) objs[3]));
+                cache.add(new HomepageGeographicKeywordCache((String) objs[0], (Level) objs[1], (Long) objs[2], (Long) objs[3]));
             } catch (Exception e) {
                 logger.debug("cannot get iso counts:", e);
             }
@@ -298,6 +298,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         Query query = setupStatsQuery(granularity, start, end, minCount, false);
         for (Object obj_ : query.list()) {
             Object[] obj = (Object[]) obj_;
+            @SuppressWarnings("deprecation")
             AggregateViewStatistic view = new AggregateViewStatistic((Date) obj[3], (Number) obj[4], new Resource((Long) obj[0], (String) obj[1],
                     (ResourceType) obj[2]));
             markReadOnly(view.getResource());
@@ -306,6 +307,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return toReturn;
     }
 
+    @SuppressWarnings("unchecked")
     public List<AggregateViewStatistic> getUsageStatsForResource(DateGranularity granularity, Date start, Date end, Long minCount, List<Long> resourceIds) {
         Query query = getCurrentSession().getNamedQuery(RESOURCE_ACCESS_HISTORY);
         query.setParameter("start", start);
@@ -315,8 +317,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return query.list();
     }
 
-    
-    public List<AggregateDownloadStatistic> getDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long ... irFileIds) {
+    @SuppressWarnings("unchecked")
+    public List<AggregateDownloadStatistic> getDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long... irFileIds) {
         Query query = getCurrentSession().getNamedQuery(FILE_DOWNLOAD_HISTORY);
         query.setParameter("start", start);
         query.setParameter("end", end);
@@ -352,17 +354,17 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             List<Long> projectId,
             List<Status> statuses) {
         List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
-        List<VersionType> types_ = new ArrayList<VersionType>(Arrays.asList(VersionType.values()));
+        // List<VersionType> types_ = new ArrayList<VersionType>(Arrays.asList(VersionType.values()));
 
-//        if (CollectionUtils.isNotEmpty(types)) {
-//            types_ = types;
-//        }
+        // if (CollectionUtils.isNotEmpty(types)) {
+        // types_ = types;
+        // }
 
         if (CollectionUtils.isNotEmpty(statuses)) {
             statuses_ = statuses;
         }
 
-        Object[] params = { resourceId, projectId, personId, collectionId, statuses_};
+        Object[] params = { resourceId, projectId, personId, collectionId, statuses_ };
         logger.trace("admin stats [resources: {} projects: {} people: {} collections: {} statuses: {}  ]", params);
         Query query = null;
         if (CollectionUtils.isNotEmpty(resourceId)) {
@@ -385,7 +387,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             return null;
         }
         query.setParameterList("statuses", statuses_);
-//        query.setParameterList("types", types_);
+        // query.setParameterList("types", types_);
         List<?> list = query.list();
         for (Object obj_ : list) {
             Object[] obj = (Object[]) obj_;

@@ -22,6 +22,7 @@ public class ContextSwitchingController extends AuthenticationAware.Base {
     private static final long serialVersionUID = -7284453639481489970L;
     private String configurationFile;
 
+    @SuppressWarnings("deprecation")
     @Override
     @Actions({
             @Action(value = "denied", results = { @Result(name = SUCCESS, params = { "contentType", "text/plain" }, type = "freemarker",

@@ -1059,4 +1059,10 @@ public abstract class InformationResource extends Resource {
         }
         return files;
     }
+    
+    @Transient
+    @XmlTransient
+    public Set<ResourceCreator> getContacts() {
+        return getResourceCreators(ResourceCreatorRole.CONTACT);
+    }
 }

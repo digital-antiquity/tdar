@@ -30,7 +30,7 @@ public class CreatePdfATask extends AbstractTask {
         cmdLine.addArgument("-dPDFACompatibilityPolicy=1");
         cmdLine.addArgument("-sOutputFile=${outFile}");
         cmdLine.addArgument("${file}");
-        HashMap map = new HashMap();
+        HashMap<String,File> map = new HashMap<>();
         map.put("file", new File("invoice.pdf"));
         map.put("outFile", new File("invoice.pdfa"));
         cmdLine.setSubstitutionMap(map);
@@ -46,6 +46,7 @@ public class CreatePdfATask extends AbstractTask {
         // some time later the result handler callback was invoked so we
         // can safely request the exit value
         resultHandler.waitFor();
+        @SuppressWarnings("unused")
         int exitValue = resultHandler.getExitValue();
     }
 

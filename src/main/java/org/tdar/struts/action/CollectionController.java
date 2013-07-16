@@ -5,9 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -29,7 +27,6 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 
@@ -91,7 +88,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         // parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
         ResourceCollection parent = getResourceCollectionService().find(parentId);
-        if (Persistable.Base.isNotNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(parent) && (parent.getParentIdList().contains(persistable.getId()) || parent.getId().equals(persistable.getId()))) {
+        if (Persistable.Base.isNotNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(parent)
+                && (parent.getParentIdList().contains(persistable.getId()) || parent.getId().equals(persistable.getId()))) {
             addActionError("cannot set a parent collection of self or it's child");
             return INPUT;
         }
@@ -180,7 +178,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         // for (Resource resource : getPersistable().getResources()) {
         // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
         // }
-        //FIXME: update visible flag, using below to initialize transient children
+        // FIXME: update visible flag, using below to initialize transient children
         setParentId(getPersistable().getParentId());
         return SUCCESS;
     }
@@ -195,7 +193,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
         // }
         setParentId(getPersistable().getParentId());
-        if(Persistable.Base.isNotNullOrTransient(getParentId())) {
+        if (Persistable.Base.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
         }
         return SUCCESS;
@@ -203,9 +201,9 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public String loadAddMetadata() {
-        if(Persistable.Base.isNotNullOrTransient(parentId)) {
+        if (Persistable.Base.isNotNullOrTransient(parentId)) {
             ResourceCollection parent = getResourceCollectionService().find(parentId);
-            if(parent != null) {
+            if (parent != null) {
                 parentCollectionName = parent.getName();
             }
         }
@@ -239,7 +237,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (Persistable.Base.isNullOrTransient(getId()))
             return;
         List<ResourceCollection> findAllChildCollections;
-        //FIXME: reconcile
+        // FIXME: reconcile
         if (isAuthenticated()) {
             getResourceCollectionService().findAllChildCollections(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
             findAllChildCollections = getPersistable().getTransientChildren();
@@ -258,7 +256,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             // }
             if (isEditor()) {
                 List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollections(getPersistable(),
-                        getAuthenticatedUser(),    CollectionType.SHARED));
+                        getAuthenticatedUser(), CollectionType.SHARED));
                 collectionIds.add(getId());
                 setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null,
                         Arrays.asList(Status.ACTIVE, Status.DRAFT)));
@@ -268,7 +266,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
         setCollections(findAllChildCollections);
         Collections.sort(collections);
-
 
         if (getPersistable() != null) {
             // FIXME: logic is right here, but this feels "wrong"
@@ -473,6 +470,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         return ListUtils.EMPTY_LIST;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         List<FacetGroup<? extends Facetable>> group = new ArrayList<>();

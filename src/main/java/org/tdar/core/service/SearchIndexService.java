@@ -232,6 +232,7 @@ public class SearchIndexService {
         return divisor;
     }
 
+    @SuppressWarnings("unchecked")
     public <C extends Indexable> void index(C... indexable) {
         indexCollection(Arrays.asList(indexable));
     }
@@ -270,6 +271,7 @@ public class SearchIndexService {
         indexAll(getDefaultUpdateReceiver(), getDefaultClassesToIndex(), person);
     }
 
+    @SuppressWarnings("unchecked")
     public void indexAll(Person person, Class<? extends Indexable>... classes) {
         indexAll(getDefaultUpdateReceiver(), Arrays.asList(classes), person);
     }

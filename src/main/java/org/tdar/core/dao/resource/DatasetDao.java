@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -237,11 +236,13 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return (Number) createCriteria.list().get(0);
     }
 
+    @SuppressWarnings("unchecked")
     public List<Long> findAllResourceIdsWithFiles() {
         Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATIONRESOURCES_WITH_FILES);
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Resource> findAllSparseActiveResources() {
         Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_ACTIVE_RESOURCES);
         return query.list();

@@ -109,7 +109,6 @@ public class ReflectionService {
         return set;
     }
 
-    @SuppressWarnings("unchecked")
     public void warmUp(Object obj, int i) {
         logger.debug("warming up: {} ", obj);
         Set<Field> fields = findFieldsWithAnnotation(obj.getClass(), Arrays.asList(ManyToMany.class, ManyToOne.class, OneToMany.class, OneToOne.class), true);
@@ -296,6 +295,7 @@ public class ReflectionService {
         return getAnnotationFromMethodOrClass(method, annotationClass) != null;
     }
 
+    @SafeVarargs
     public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws NoSuchBeanDefinitionException, ClassNotFoundException {
         List<Class<?>> toReturn = new ArrayList<Class<?>>();
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);

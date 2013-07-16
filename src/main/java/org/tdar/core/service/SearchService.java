@@ -51,7 +51,6 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -69,7 +68,11 @@ import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.*;
+import org.tdar.search.query.builder.DynamicQueryComponent;
+import org.tdar.search.query.builder.InstitutionQueryBuilder;
+import org.tdar.search.query.builder.PersonQueryBuilder;
+import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AbstractHydrateableQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.InstitutionQueryPart;
@@ -104,7 +107,7 @@ public class SearchService {
 
     private transient ConcurrentMap<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>> parserCacheMap = new ConcurrentHashMap<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>>();
 
-    public static int  MAX_FTQ_RESULTS = 50_000;
+    public static int MAX_FTQ_RESULTS = 50_000;
 
     public void logParserMap() {
         for (Map.Entry<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>> entry : parserCacheMap.entrySet()) {
@@ -380,6 +383,7 @@ public class SearchService {
         resultHandler.setResults(toReturn);
     }
 
+    @SuppressWarnings("rawtypes")
     private <F extends Facetable> void processFacets(FullTextQuery ftq, SearchResultHandler<?> resultHandler) {
         if (resultHandler.getFacetFields() == null)
             return;
@@ -556,15 +560,16 @@ public class SearchService {
 
     /**
      * Constructs a new MultiFieldQueryParser and sets it on the QueryBuilder parameter.
-     *
+     * 
      * Currently caches the QueryBuilder's class with a Pair<String[] field names, PerFieldAnalyzerWrapper> used to construct the
      * MultiFieldQueryParser.
-     *
+     * 
      * The MultiFieldQueryParser cannot be cached as it is not thread-safe. PerFieldAnalyzerWrapper is not thread-safe either (has an internal HashMap) but
      * appears to be safely usable by multiple threads as long as we don't add more analyzers to it (TODO: need to verify this).
-     *
+     * 
      * @param qb
      */
+    @SuppressWarnings("deprecation")
     private void setupQueryParser(QueryBuilder qb) {
         Pair<String[], PerFieldAnalyzerWrapper> pair = parserCacheMap.get(qb.getClass());
         if (pair == null) {
@@ -721,24 +726,23 @@ public class SearchService {
     }
 
     public QueryBuilder generateQueryForRelatedResources(Creator creator, Person user) {
-            QueryBuilder queryBuilder = new ResourceQueryBuilder();
-            queryBuilder.setOperator(Operator.AND);
+        QueryBuilder queryBuilder = new ResourceQueryBuilder();
+        queryBuilder.setOperator(Operator.AND);
 
-            SearchParameters params = new SearchParameters(Operator.OR);
-            // could use "creator type" to filter; but this doesn't cover the creator type "OTHER"
-            for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
-                if (role == ResourceCreatorRole.UPDATER) {
-                    continue;
-                }
-                params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
+        SearchParameters params = new SearchParameters(Operator.OR);
+        // could use "creator type" to filter; but this doesn't cover the creator type "OTHER"
+        for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
+            if (role == ResourceCreatorRole.UPDATER) {
+                continue;
             }
-            queryBuilder.append(params);
-            ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-            authenticationAndAuthorizationService.initializeReservedSearchParameters(reservedSearchParameters, user);
-            queryBuilder.append(reservedSearchParameters);
-            return queryBuilder;
+            params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
+        }
+        queryBuilder.append(params);
+        ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
+        authenticationAndAuthorizationService.initializeReservedSearchParameters(reservedSearchParameters, user);
+        queryBuilder.append(reservedSearchParameters);
+        return queryBuilder;
     }
-
 
     public void addResourceTypeFacetToViewPage(ResourceQueryBuilder qb, List<ResourceType> selectedResourceTypes, SearchResultHandler<?> handler) {
         if (CollectionUtils.isNotEmpty(selectedResourceTypes)) {

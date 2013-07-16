@@ -131,6 +131,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         ConversionStatisticsManager statisticsManager = new ConversionStatisticsManager(dataTable.getDataTableColumns());
 
         try {
+            @SuppressWarnings("unused")
             int rowCount = collection.size();
             while (iterator.hasNext()) {
                 HashMap<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();

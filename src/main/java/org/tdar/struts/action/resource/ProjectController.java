@@ -5,9 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -28,7 +26,6 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
@@ -113,7 +110,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
                 setSecondarySortField(getProject().getSecondarySortBy());
             }
             getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
-            
+
             try {
                 getSearchService().handleSearch(qb, this);
             } catch (SearchPaginationException e) {
@@ -289,6 +286,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return options;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         List<FacetGroup<? extends Facetable>> group = new ArrayList<>();

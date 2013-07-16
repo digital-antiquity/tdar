@@ -400,6 +400,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         this.permission = permission;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         return null;

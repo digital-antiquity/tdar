@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,20 +71,20 @@ public class DashboardController extends AuthenticationAware.Base {
         List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
         collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
         getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), getAuthenticatedUser(), collectionIds);
-        getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),  collectionIds);
+        getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
 
         try {
-        Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
-        if (isEditor() && indexingTask != null) {
-            String properName = "unknown user";
-            try {
-                indexingTask.getUser().getProperName();
-            } catch (Exception e) {
-                logger.warn("reindexing user could not be determined");
+            Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
+            if (isEditor() && indexingTask != null) {
+                String properName = "unknown user";
+                try {
+                    indexingTask.getUser().getProperName();
+                } catch (Exception e) {
+                    logger.warn("reindexing user could not be determined");
+                }
+                String msg = String.format("%s is RE-INDEXING %s (%s)", properName, getSiteAcronym(), indexingTask.getStartDate());
+                addActionMessage(msg);
             }
-            String msg = String.format("%s is RE-INDEXING %s (%s)", properName, getSiteAcronym(), indexingTask.getStartDate());
-            addActionMessage(msg);
-        }
         } catch (Throwable t) {
             logger.error("what???", t);
         }

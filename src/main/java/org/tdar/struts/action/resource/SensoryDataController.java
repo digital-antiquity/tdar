@@ -11,7 +11,6 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.SensoryData.RgbCapture;
@@ -46,17 +45,17 @@ public class SensoryDataController extends AbstractInformationResourceController
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         super.loadCustomMetadata();
-         sensoryDataScans = new ArrayList<SensoryDataScan>(getPersistable().getSensoryDataScans());
-         sensoryDataImages = new ArrayList<SensoryDataImage>(getPersistable().getSensoryDataImages());
-         Collections.sort(sensoryDataImages);
-         Collections.sort(sensoryDataScans);
+        sensoryDataScans = new ArrayList<SensoryDataScan>(getPersistable().getSensoryDataScans());
+        sensoryDataImages = new ArrayList<SensoryDataImage>(getPersistable().getSensoryDataImages());
+        Collections.sort(sensoryDataImages);
+        Collections.sort(sensoryDataScans);
     }
-    
+
     /**
      * Save basic metadata of the registering concept.
      * 
      * @param concept
-     * @throws TdarActionException 
+     * @throws TdarActionException
      */
     @Override
     protected String save(SensoryData sensoryData) throws TdarActionException {

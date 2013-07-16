@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.TdarValidationException;
 import org.tdar.struts.action.AbstractPersistableController;
 
 @Component
@@ -27,7 +26,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
         if (hasActionErrors())
             return INPUT;
 
-        //name has a unique key; so we need to be careful with it
+        // name has a unique key; so we need to be careful with it
         persistable.setName(getName());
         if (Persistable.Base.isNullOrTransient(persistable)) {
             getGenericService().save(persistable);
@@ -37,15 +36,15 @@ public class InstitutionController extends AbstractPersistableController<Institu
         return SUCCESS;
     }
 
-     @Override
-     public void validate() {
-         if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
-             Institution findInstitutionByName = getEntityService().findInstitutionByName(name);
-             if (findInstitutionByName != null) {
-                 addActionError(String.format("Cannot rename institution to %s because it already exists", name));
-             }
-         }
-     }
+    @Override
+    public void validate() {
+        if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
+            Institution findInstitutionByName = getEntityService().findInstitutionByName(name);
+            if (findInstitutionByName != null) {
+                addActionError(String.format("Cannot rename institution to %s because it already exists", name));
+            }
+        }
+    }
 
     @Override
     protected void delete(Institution persistable) {
@@ -68,7 +67,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
         }
         return SUCCESS;
     }
-    
+
     public Institution getInstitution() {
         return getPersistable();
     }

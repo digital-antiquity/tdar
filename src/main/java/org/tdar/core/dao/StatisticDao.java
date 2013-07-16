@@ -73,6 +73,7 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         return toReturn;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Pair<Long, Long>> getUserLoginStats() {
         Query query = getCurrentSession().getNamedQuery(QUERY_LOGIN_STATS);
         List<Pair<Long, Long>> toReturn = new ArrayList<Pair<Long, Long>>();

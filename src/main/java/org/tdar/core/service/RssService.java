@@ -97,7 +97,7 @@ public class RssService implements Serializable {
         return feed.getEntries();
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({ "unused", "unchecked" })
     public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, String rssUrl, GeoRssMode mode,
             boolean includeEnclosures) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
@@ -113,7 +113,6 @@ public class RssService implements Serializable {
         link.setHref(urlService.getBaseUrl() + "/includes/opensearch.xml");
         link.setType("application/opensearchdescription+xml");
         osm.setLink(link);
-        @SuppressWarnings("unchecked")
         List<Module> modules = feed.getModules();
         modules.add(osm);
         feed.setModules(modules);

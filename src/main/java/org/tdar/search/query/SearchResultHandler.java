@@ -94,6 +94,7 @@ public interface SearchResultHandler<I extends Indexable> {
 
     List<String> getProjections();
 
+    @SuppressWarnings("rawtypes")
     List<FacetGroup<? extends Facetable>> getFacetFields();
 
 }

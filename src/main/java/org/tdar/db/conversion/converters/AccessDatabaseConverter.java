@@ -183,6 +183,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                             // http://www.giser.net/wp-content/uploads/2011/01/extended-shapefile-format.pdf
                             // this does not work, see ogrpgeogeometry.cpp in ( extended_shapefile_format.pdf)
                             // and http://stackoverflow.com/questions/11483189/transact-sql-function-for-convert-from-esri-personal-geodatabase-shape-column-to
+                            @SuppressWarnings("unused")
                             com.vividsolutions.jts.geom.Geometry g = null;
                             try {
                                 g = new WKBReader(factory).read(Hex.encodeHexString(data).getBytes());

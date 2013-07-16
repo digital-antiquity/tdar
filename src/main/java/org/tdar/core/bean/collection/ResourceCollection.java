@@ -189,7 +189,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private ResourceCollection parent;
 
     private transient List<ResourceCollection> transientChildren;
-    
+
     @Column(nullable = false)
     private boolean visible = true;
 

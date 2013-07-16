@@ -840,6 +840,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         return ListUtils.EMPTY_LIST;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         return null;

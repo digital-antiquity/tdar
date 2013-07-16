@@ -219,6 +219,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /*
      * 
      */
+    @SuppressWarnings("unchecked")
     protected List<Creator> getCreatorResults() {
         return (List<Creator>) results;
     }
