@@ -62,6 +62,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         testArchiveFormat(store, "ark_hm_headpot_scans.tar");
         testArchiveFormat(store, "ark_hm_headpot_scans.zip");
         testArchiveFormat(store, "ark_hm_headpot_scans.tgz");
+        testArchiveFormat(store, "ark_hm_headpot_scans.tar.bz2");
     }
 
     public void testArchiveFormat(PairtreeFilestore store, String filename) throws InstantiationException, IllegalAccessException, IOException, Exception {
