@@ -13,8 +13,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
+import javax.annotation.Nullable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -38,6 +38,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.events.WebDriverEventListener;
@@ -47,7 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 
-import javax.annotation.Nullable;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 
 public abstract class AbstractSeleniumWebITCase {
 
@@ -183,7 +185,7 @@ public abstract class AbstractSeleniumWebITCase {
                 /* ubuntu install instructions http://www.liberiangeek.net/2011/12/install-google-chrome-using-apt-get-in-ubuntu-11-10-oneiric-ocelot/ */
                 File app = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
                 if (!app.exists()) {
-//                    app = new File("C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe");
+                    // app = new File("C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe");
                     app = new File("c:\\opt\\workspace\\chromedriver.exe");
                 }
                 if (!app.exists()) {
@@ -201,19 +203,31 @@ public abstract class AbstractSeleniumWebITCase {
             case IE:
                 System.setProperty("webdriver.ie.driver", "c:\\opt\\workspace\\IEDriverServer.exe");
                 DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
-                driver = new InternetExplorerDriver(ieCapabilities);
+                driver = new InternetExplorerDriver(configureCapabilities(ieCapabilities));
                 driver.manage().timeouts().implicitlyWait(90, TimeUnit.SECONDS);
                 break;
             case PHANTOMJS:
                 driver = new PhantomJSDriver(
                         ResolvingPhantomJSDriverService.createDefaultService(), // service resolving phantomjs binary automatically
-                        DesiredCapabilities.phantomjs());
+                        configureCapabilities(DesiredCapabilities.phantomjs()));
                 break;
         }
         EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(driver);
         eventFiringWebDriver.register(eventListener);
 
         this.driver = eventFiringWebDriver;
+
+        if (browser == Browser.IE) {
+            setIgnoreJavascriptErrors(true);
+            fakeSSLCertIE();
+            setIgnoreJavascriptErrors(false);
+        }
+    }
+
+    private Capabilities configureCapabilities(DesiredCapabilities caps) {
+        caps.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+        caps.setCapability("initialBrowserUrl", "about:blank");
+        return caps;
     }
 
     // /**
@@ -270,9 +284,27 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public String absoluteUrl(String path) {
 
-        String currentUrl = driver.getCurrentUrl();
+        String currentUrl = null;
+
+        /* IF URL is valid (absolute url already), use it */
+        try {
+            URL url = new URL(path);
+            return path;
+        } catch (Exception e) {
+            logger.trace("exception: {}", e);
+        }
+
+        /* try and get the current URL from the driver (may not work if the driver is intialized to localhost:99999 or about:blank) */
+        try {
+            currentUrl = driver.getCurrentUrl();
+        } catch (NullPointerException npe) {
+            logger.trace("url is null");
+        }
         logger.debug("current url: {}", currentUrl);
-        if (StringUtils.isBlank(currentUrl) || currentUrl.startsWith("about:") || currentUrl.startsWith("data:")) {
+
+        /* check for special cases */
+        // || currentUrl.startsWith("data:") || currentUrl.startsWith("javascript:")
+        if (StringUtils.isBlank(currentUrl) || !currentUrl.startsWith("http")) {
             currentUrl = DEFAULT_BASE_URL;
         }
         URL url = null;
@@ -298,7 +330,7 @@ public abstract class AbstractSeleniumWebITCase {
                 break;
         }
 
-        String absoluteUrl = String.format("%s://%s:%s%s", url.getProtocol() , url.getHost() , port , path);
+        String absoluteUrl = String.format("%s://%s:%s%s", url.getProtocol(), url.getHost(), port, path);
         return absoluteUrl;
     }
 
@@ -361,10 +393,18 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void login(String username, String password) {
+
         gotoPage("/login");
         find("#loginUsername").sendKeys(username);
         find("#loginPassword").sendKeys(password);
         find("#btnLogin").click();
+    }
+
+    private void fakeSSLCertIE() {
+        gotoPage("https://" + TestConstants.DEFAULT_HOST + ":" + TestConstants.DEFAULT_SECURE_PORT + "/");
+        driver.get("javascript:document.getElementById('overridelink').click()");
+        waitFor("body");
+        logger.info(getText());
     }
 
     public void logout() {
@@ -415,7 +455,8 @@ public abstract class AbstractSeleniumWebITCase {
         T result = null;
         try {
             result = executeJavascript(functionBody, arguments);
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
+            logger.debug("ignored JS exception: {}", ignored);
         }
         return result;
     }
@@ -611,7 +652,7 @@ public abstract class AbstractSeleniumWebITCase {
         List<String> errors = getJavascriptErrors();
         if (errors == null)
             return;
-        logger.trace("javascript error report for {}", driver.getCurrentUrl());
+        logger.error("javascript error report for {}", driver.getCurrentUrl());
         for (String error : errors) {
             logger.error("javascript error: {}", error);
         }
