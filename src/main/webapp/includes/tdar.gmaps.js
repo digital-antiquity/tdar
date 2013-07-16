@@ -404,6 +404,14 @@ TDAR.maps = function() {
         }
         gmap.fitBounds(rect.getBounds());
     };
+
+    var _clearResourceRect = function(mapDiv) {
+        var rect = $(mapDiv).data("resourceRect");
+        if(rect) {
+            rect.setMap();
+        }
+        return !!rect;
+    };
     
     var _setupMapResult = function() {
         //$(".google-map", '#articleBody').one("mapready", function(e, myMap) {
@@ -456,6 +464,7 @@ TDAR.maps = function() {
         googleApiKey: false,
         defaults: _defaults,
         updateResourceRect: _updateResourceRect,
+        clearResourceRect: _clearResourceRect,
         setupEditMap: _setupEditMap,
         setupMapResult: _setupMapResult,
         addBound: _addBound,

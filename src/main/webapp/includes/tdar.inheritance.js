@@ -296,19 +296,22 @@ function _inheritSpatialInformation(formId, json) {
     console.log("inherit spatial information(%s, %s)", formId, json);
     var mapdiv = $('#editmapv3')[0];
     var mapReadyCallback = function(){
-        
+
         console.log("map ready callback");
         _clearFormSection('#divSpatialInformation');
         TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
         _populateSection(formId, json.spatialInformation);
         _disableSection('#divSpatialInformation');
-        
+
         // clear the existing redbox and draw new one;
+        TDAR.maps.clearResourceRect(mapdiv);
         _populateLatLongTextFields();
-        
+
         var si = json.spatialInformation;
-        TDAR.maps.updateResourceRect(mapdiv,  si.miny, si.minx, si.maxy, si.maxx);
-        
+        if(si.miny != null && si.minx != null && si.maxy != null && si.maxx != null) {
+            TDAR.maps.updateResourceRect(mapdiv,  si.miny, si.minx, si.maxy, si.maxx);
+        }
+
         _disableMap();
     };
 
@@ -317,9 +320,9 @@ function _inheritSpatialInformation(formId, json) {
         $(mapdiv).one("mapready", mapReadyCallback)
     } else {
         mapReadyCallback();
-    } 
-        
-    
+    }
+
+
 }
 
 function _inheritTemporalInformation(formId, json) {
@@ -333,15 +336,15 @@ function _inheritTemporalInformation(formId, json) {
 
 function _applyInheritance(formSelector) {
     var $form = $(formSelector);
-    //collection of 'options' objects for each inheritance section. options contain info about 
+    //collection of 'options' objects for each inheritance section. options contain info about
     //the a section (checkbox selector, div selector,  callbacks for isSafe, inheritSection, enableSection);
     $form.data("inheritOptionsList", []);
-    
+
     //hack:  formId is no longer global, and updateInheritableSections() needs it...
     var formId = $(formSelector).attr("id");
-    
-    
-    
+
+
+
     // if we are editing, set up the initial form values
 //    if (project) {
 //        json = _convertToFormJson(project);
@@ -367,13 +370,13 @@ function _applyInheritance(formSelector) {
         } else {
             TDAR.inheritance.project = _getBlankProject();
             TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);
-            _updateInheritableSections(TDAR.inheritance.json, formId);
+            _updateInheritableSections(formId, TDAR.inheritance.json);
         }
         _enableOrDisableInheritAllSection();
         _updateInheritanceCheckboxes();
     });
-    
-    
+
+
     _updateInheritanceCheckboxes();
     _enableOrDisableInheritAllSection();
     _processInheritance(formSelector);
@@ -385,7 +388,7 @@ function _applyInheritance(formSelector) {
     // FIXME: forward-references to function statements are not advised. replace
     // with forward-reference to function expression/variable?
     $cbSelectAllInheritance.click(_selectAllInheritanceClicked);
-    
+
     _projectChangedCallback(TDAR.inheritance.project);
 }
 
@@ -423,26 +426,26 @@ function _getBlankProject() {
 //update the project json variable and update the inherited sections
 function _projectChangedCallback(data) {
     TDAR.inheritance.project = data;
-    
+
     // if user picked blank option, then clear the sections
     if (!TDAR.inheritance.project.id) {
         TDAR.inheritance.project = _getBlankProject();
     } else  if (TDAR.inheritance.project.resourceType === 'INDEPENDENT_RESOURCES_PROJECT') {
         TDAR.inheritance.project = _getBlankProject();
-    } 
+    }
 
     TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);
     var formId = $('#projectId').closest('form').attr("id");
-    _updateInheritableSections(formId);
+    _updateInheritableSections(formId, TDAR.inheritance.json);
 }
 
 
 function _processInheritance(formId) {
     //declare options for each inheritSection; including the top-level div, criteria for overwrite "safety", how populate controls, etc.
-    var optionsList = [ 
+    var optionsList = [
         {
             //todo:  derive section name from section header
-            sectionName: "Site Information",  
+            sectionName: "Site Information",
             cbSelector : '#cbInheritingSiteInformation',
             divSelector : '#siteSection',
             mappedData : "siteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -450,7 +453,7 @@ function _processInheritance(formId) {
                 var allKeywords = TDAR.inheritance.json.siteInformation.siteNameKeywords.concat(TDAR.inheritance.json.siteInformation.uncontrolledSiteTypeKeywords);
                 return _inheritingCheckboxesIsSafe('#divSiteInformation', TDAR.inheritance.json.siteInformation.approvedSiteTypeKeywordIds) &&
                         _inheritingRepeatRowsIsSafe('#divSiteInformation', allKeywords);
-    
+
             },
             inheritSectionCallback : function() {
                 _inheritSiteInformation("#siteSection", TDAR.inheritance.json);
@@ -526,14 +529,14 @@ function _processInheritance(formId) {
             isSafeCallback : function() {
                 var $resourceNoteSection = $('#resourceNoteSection');
                 var projectNotes = TDAR.inheritance.json.noteInformation.resourceNotes;
-                
+
                 //it's always safe to overwrite an empty section
                 var $textareas = $resourceNoteSection.find('textarea');
                 if($textareas.length === 1 && $.trim($textareas.first().val()).length === 0) {
                     return true;
                 }
-                
-                //distill the resourcenote objects to one array and the form section to another array, then compare the two arrays. 
+
+                //distill the resourcenote objects to one array and the form section to another array, then compare the two arrays.
                 var formVals = [], projectVals = [];
                 projectVals = projectVals.concat($.map(projectNotes, function(note){
                     return note.type;
@@ -541,20 +544,20 @@ function _processInheritance(formId) {
                 projectVals = projectVals.concat($.map(projectNotes, function(note){
                     return note.note;
                 }));
-                
-                
+
+
                 $resourceNoteSection.find('select').each(function(){
                     formVals.push($(this).val());
                 });
-                
+
                 $resourceNoteSection.find('textarea').each(function(){
                     formVals.push($.trim($(this).val()));
                 });
-                
-                //FIXME: ignoreOrder should be false, but I'm pretty sure server doesn't preserve order. turn this on once fixed. 
+
+                //FIXME: ignoreOrder should be false, but I'm pretty sure server doesn't preserve order. turn this on once fixed.
                 return $.compareArray(projectVals, formVals, true);
-                
-                
+
+
             },
             inheritSectionCallback : function() {
                 _inheritNoteInformation('#resourceNoteSection', TDAR.inheritance.json);
@@ -571,19 +574,19 @@ function _processInheritance(formId) {
                 if($textareas.length === 2 && $.trim($textareas[0].value).length === 0  && $.trim($textareas[1].value).length === 0)  {
                     return true;
                 }
-                
+
                 var formVals = [], projectVals = [];
                 $textareas.each(function() {
                     formVals.push($.trim(this.value));
                 });
-                
+
                 projectVals = projectVals.concat($.map(TDAR.inheritance.json.collectionInformation.sourceCollections, function(obj) {
                     return obj.text;
                 }));
                 projectVals = projectVals.concat($.map(TDAR.inheritance.json.collectionInformation.relatedComparativeCollections, function(obj) {
                     return obj.text;
                 }));
-                
+
                 //FIXME: array comparison shouldn't ignore order if server side maintains sequence order... does it?
                 return $.compareArray(formVals, projectVals, true);
             },
@@ -628,13 +631,13 @@ function _processInheritance(formId) {
                 _enableMap();
             }
         }
-        
+
     ];
-    
+
     $.each(optionsList, function(idx, options){
         TDAR.inheritance.registerInheritSection(options);
     });
-    
+
     //We don't want to have an editable map when resource inherits spatialInformation, however, the map won't be available immediately after pageload. So
     //we wait till the map is loaded and ready
     $('#editmapv3').one('mapready', function(e) {
@@ -671,9 +674,9 @@ function _enableAll() {
 }
 
 //todo: this duplicates code (see all the calls to bindCheckbox); use  inheritOptionsList instead
-function _updateInheritableSections(formId) {
+function _updateInheritableSections(formId, projectJson) {
     //HACK: temporary fix for TDAR-2268 - our form populate js is overwriting the ID field with data.id
-    var jsonid = TDAR.inheritance.json.id;
+    var jsonid = projectJson.id;
 //    console.log(json);
     TDAR.inheritance.id = null;
     delete(TDAR.inheritance.id);
@@ -682,8 +685,8 @@ function _updateInheritableSections(formId) {
     var labelText = "Inherit values from parent project";
     var selectedProjectName = "Select a project above to enable inheritance";
     if (jsonid > 0) {
-        labelText = 'Inherit values from parent project "' + TDAR.ellipsify(TDAR.inheritance.json.title, 60) + '"';
-        selectedProjectName = "Inherit metadata from " + TDAR.inheritance.json.title;
+        labelText = 'Inherit values from parent project "' + TDAR.ellipsify(projectJson.title, 60) + '"';
+        selectedProjectName = "Inherit metadata from " + projectJson.title;
     }
     
     //update inheritance checkbox labels with new project name (don't clobber checkbox in the process)
