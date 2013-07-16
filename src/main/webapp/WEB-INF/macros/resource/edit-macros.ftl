@@ -24,16 +24,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
         <h4>Choose a Project</h4>
         <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
+            <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
+            truncate="70" value='${_projectId}' required=true  cssClass="required input-xxlarge" />
         </div>
-        <div class="control-group">
-            <label class="control-label">Project</label>
-            <div class="controls controls-row">
-                <@s.select theme="simple" title="Please select a project" emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-                truncate="70" value='${_projectId}' required="true"  cssClass="required input-xxlarge" />
-                
-            </div>
-        </div>
-            
+
         <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
