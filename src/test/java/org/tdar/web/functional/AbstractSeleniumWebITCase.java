@@ -272,7 +272,7 @@ public abstract class AbstractSeleniumWebITCase {
 
         String currentUrl = driver.getCurrentUrl();
         logger.debug("current url: {}", currentUrl);
-        if (currentUrl.length() == 0 || StringUtils.equalsIgnoreCase("about:blank", currentUrl)) {
+        if (StringUtils.isBlank(currentUrl) || currentUrl.startsWith("about:") || currentUrl.startsWith("data:")) {
             currentUrl = DEFAULT_BASE_URL;
         }
         URL url = null;
