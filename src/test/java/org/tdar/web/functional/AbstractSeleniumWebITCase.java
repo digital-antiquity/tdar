@@ -6,7 +6,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -45,16 +50,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.Filestore;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 public abstract class AbstractSeleniumWebITCase {
 
-    private TdarConfiguration tdar = TdarConfiguration.getInstance();
+    private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
     public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
 
@@ -186,13 +189,13 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         WebDriver driver = null;
-        Browser browser = Browser.FIREFOX;
+        Browser browser = Browser.CHROME;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
         if (StringUtils.isNotBlank(browser_)) {
             try {
                 browser = Browser.valueOf(browser_);
-                logger.debug("seting browser to: {}", browser);
+                logger.debug("set browser to: {}", browser);
             } catch (Exception e) {
                 logger.error("{}", e);
             }
@@ -344,17 +347,36 @@ public abstract class AbstractSeleniumWebITCase {
      * the base URL.
      * @see URL#URL(java.net.URL, String)
      */
-    private String absoluteUrl(String path) throws MalformedURLException {
-        URL baseUrl = new URL(getBaseUrl());
-        URL url = new URL(baseUrl, path);
-        return url.toString();
-    }
+//    private String absoluteUrl(String path) throws MalformedURLException {
+//        URL baseUrl = new URL(getBaseUrl());
+//        URL url = new URL(baseUrl, path);
+//        return url.toString();
+//    }
 
+    /*
+     * createAbsoluteUrl
+     */
+    public String absoluteUrl(String path) {
+        String currentUrl = driver.getCurrentUrl();
+        logger.debug("current url: {}", currentUrl);
+        if (StringUtils.isBlank(currentUrl) || !StringUtils.startsWith("http", currentUrl)) {
+            currentUrl = DEFAULT_BASE_URL;
+        }
+        URL url = null;
+        try {
+            url = new URL(currentUrl);
+        } catch (MalformedURLException e) {
+            Assert.fail("could not go to url: " + currentUrl);
+        }
+        String absoluteUrl = String.format("%s://%s:%s%s", url.getProtocol() , url.getHost() , url.getPort() , path);
+        return absoluteUrl;
+    }
+    
     public String getBaseUrl() {
-        String scheme = tdar.isHttpsEnabled() ? "https" : "http";
-        String host = tdar.getHostName();
-        int port = tdar.isHttpsEnabled() ? tdar.getHttpsPort() : tdar.getPort();
-        String url = String.format("%s://%s:%s/", scheme, host, port);
+//        String scheme = tdar.isHttpsEnabled() ? "https" : "http";
+        String host = tdarConfiguration.getHostName();
+//        int port = tdar.isHttpsEnabled() ? tdar.getHttpsPort() : tdar.getPort();
+        String url = String.format("%s://%s:%s/", "http", host, tdarConfiguration.getPort());
         return url;
     }
 
@@ -364,7 +386,7 @@ public abstract class AbstractSeleniumWebITCase {
             url = absoluteUrl(path);
             logger.debug("going to {}", url);
             driver.get(absoluteUrl(path));
-        } catch (MalformedURLException e) {
+        } catch (Exception e) {
             Assert.fail(String.format("gotoPage() failed. base:%s   path:%s", getBaseUrl(), path));
         }
     }
