@@ -27,6 +27,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -312,21 +314,50 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     }
 
     @Test
-    @Ignore
-    public void testAddAnotherClick() {
+    //create a project, fill out a couple inheritable sections, then inherit
+    public void testBasicInheritance() {
+        gotoPage("/project/add");
+        String projectName = "project abc";
+        find("#resourceRegistrationTitle").val(projectName);
+        String description = "project abc description";
+        find("#resourceDescription").val(description);
+
+
+        //set some map bounds
+        find("#viewCoordinatesCheckbox").click();
+        find("#maxy").val("36°33′45″N");
+        find("#maxx").val("095°58′36″W");
+        find("#miny").val("32°03′50″N");
+        find("#minx").val("101°07′05″W");
+        find("#locate").click();
+
+        //add a keyword
+        find("#metadataForm_otherKeywords_0_").val("foobar");
+        submitForm();
+
+
+        //now create a document and inherit everything.
         gotoPage("/document/add");
-        String fieldName = "resourceNotes[5].note";
-        WebElementSelection elems = find(By.name(fieldName));
+        find("#projectId").val(projectName);
 
-        assertEquals(elems.size(), 0);
-        assertTrue(isIndexedField(fieldName));
 
-        // find element, or click until found.
-        WebElement elem = findOrCreateIndexedField(fieldName);
-        assertNotNull(elem);
+        //inherit everything
+        WebDriverWait wait = new WebDriverWait(driver,5);
+        WebElement cb = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("cbSelectAllInheritance")));
+        cb.click();
 
-        assertEquals(elem.getAttribute("name"), fieldName);
+        //okay, now inherit nothing
+        cb.click();
+
+        //check some of the fields to see if we populated the page with project information
+        find("#viewCoordinatesCheckbox").click();
+        assertTrue("geo bounds should be set", StringUtils.isNotBlank(find("#maxy").val()));
+        assertTrue("other keywords should be set", StringUtils.isNotBlank(find("#metadataForm_otherKeywords_0_").val()));
+
+
+
     }
+
 
     /**
      * jquery treeview plugin has no method for "expand-all" because it is horrible.
