@@ -140,6 +140,17 @@ TDAR.fileupload = function() {
             });
         }
 
+        //disable submit button during file transfer;
+        var $submitButtons = $(".submitButton");
+        $fileupload.bind("fileuploadsent", function() {
+            $submitButtons.prop("disabled", true)
+
+        //re-enable when complete regardless of outcome
+        }).bind("fileuploadfinished", function() {
+               $submitButtons.prop("disabled", false);
+        });
+
+
 
         return helper;
     };

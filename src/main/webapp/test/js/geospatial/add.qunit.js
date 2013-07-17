@@ -73,7 +73,7 @@
                 basic.helper = helper;
             },
             teardown: function() {
-                basic.validator.clearErrors();
+                basic.validator.clearErrorDisplay();
                 basic.validator = null;
             }
         }
@@ -148,7 +148,7 @@
                 gis.helper = helper;
             },
             teardown: function() {
-                gis.validator.clearErrors();
+                gis.validator.clearErrorDisplay();
                 gis.validator = null;
             }
         };

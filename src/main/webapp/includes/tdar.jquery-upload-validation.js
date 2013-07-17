@@ -134,8 +134,8 @@ var FileuploadValidator;
             });
 
             if(this.validateOnChange) {
-                //validate on the fileupload custom events (and the fileuploadreplaced event we added)
-                $(this.fileupload).bind("fileuploadcompleted fileuploaddestroyed fileuploadreplaced", function() {
+                //validate on the fileupload custom events
+                $(this.fileupload).bind("fileuploadcompleted fileuploaddestroyed", function() {
                     self.validate();
                 });
 
@@ -207,18 +207,19 @@ var FileuploadValidator;
                     }
                 }
 
-                this.clearErrors();
-                _updateHighlighting(self, files);
                 if(this.errors.length) {
                     this.showErrors();
                 }
             }
 
+            this.clearErrorDisplay();
+            _updateHighlighting(self, files);
+
             //if we have no errors, or the only errors are mere suggestions,  then the uploads are valid
             return this.errors.length === 0 || this.errors.length === this.suggestions.length;
         },
 
-        clearErrors: function() {
+        clearErrorDisplay: function() {
             $(this.errorContainer)
                 .find("ul").empty()
                 .end().hide();
