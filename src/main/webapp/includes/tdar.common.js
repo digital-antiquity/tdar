@@ -1099,6 +1099,11 @@ var _sortFilesAlphabetically= function() {
         }).appendTo("body").fadeIn(200);
     }
     */
+
+    function _coordinatesCheckboxClicked(elem) {
+
+        $('#explicitCoordinatesDiv').toggle(elem.checked);
+    }
     
     $.extend(self, {
         "initEditPage": _initEditPage,
@@ -1127,7 +1132,8 @@ var _sortFilesAlphabetically= function() {
         "htmlDoubleEncode":_htmlDoubleEncode,
         "applyWatermarks": _applyWatermarks,
         "replaceAttribute": _replaceAttribute,
-        "delayJiraButton": _delayJiraButton
+        "delayJiraButton": _delayJiraButton,
+        "coordinatesCheckboxClicked": _coordinatesCheckboxClicked
     });
     
     return self;

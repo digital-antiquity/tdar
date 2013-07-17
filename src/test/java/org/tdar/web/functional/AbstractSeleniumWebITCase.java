@@ -6,10 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -57,6 +54,7 @@ import com.google.common.base.Predicates;
 
 public abstract class AbstractSeleniumWebITCase {
 
+    private TdarConfiguration tdar = TdarConfiguration.getInstance();
     public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
 
@@ -84,10 +82,14 @@ public abstract class AbstractSeleniumWebITCase {
             return "complete".equals(readyState);
         }
     };
-
     private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
 
-    // FIXME: it seems silly that you can't hook into some kind of "
+    /**
+     * afterClickOn() element is invalid if the clicked-on element caused the browser to navigate to new page, so we
+     * we can't inspect it.  So we use this field to signal whether afterClickOn() should call afterPageChange()
+     */
+    private Set<WebElement> clickElems = new HashSet<>();
+
     private WebDriverEventListener eventListener = new WebDriverEventListener() {
         public void afterNavigateTo(String url, WebDriver driver) {
             afterPageChange();
@@ -115,11 +117,6 @@ public abstract class AbstractSeleniumWebITCase {
         public void afterFindBy(By by, WebElement element, WebDriver driver) {
         }
 
-        public void afterClickOn(WebElement element, WebDriver driver) {
-            if (elementCausesNavigation(element)) {
-                afterPageChange();
-            }
-        }
 
         public void beforeChangeValueOf(WebElement element, WebDriver driver) {
         }
@@ -139,7 +136,15 @@ public abstract class AbstractSeleniumWebITCase {
 
         public void beforeClickOn(WebElement element, WebDriver driver) {
             if (elementCausesNavigation(element)) {
+                clickElems.add(element);
                 beforePageChange();
+            }
+        }
+
+        public void afterClickOn(WebElement element, WebDriver driver) {
+            //if beforeClickOn() put this element here, we are on the other side of page change.
+            if(clickElems.remove(element)) {
+                afterPageChange();
             }
         }
 
@@ -322,65 +327,34 @@ public abstract class AbstractSeleniumWebITCase {
         return filename;
     }
 
-    /*
-     * createObsoluteUrl
+    /**
+     * returns absolute url based on getBaseUrl() and provided path.  If path is actually a complete url itself, ignore
+     * the base URL.
+     * @see URL#URL(java.net.URL, String)
      */
-    public String absoluteUrl(String path) {
+    private String absoluteUrl(String path) throws MalformedURLException {
+        URL baseUrl = new URL(getBaseUrl());
+        URL url = new URL(baseUrl, path);
+        return url.toString();
+    }
 
-        String currentUrl = null;
-
-        /* IF URL is valid (absolute url already), use it */
-        try {
-            URL url = new URL(path);
-            return path;
-        } catch (Exception e) {
-            logger.trace("exception: {}", e);
-        }
-
-        /* try and get the current URL from the driver (may not work if the driver is intialized to localhost:99999 or about:blank) */
-        try {
-            currentUrl = driver.getCurrentUrl();
-        } catch (NullPointerException npe) {
-            logger.trace("url is null");
-        }
-        logger.debug("current url: {}", currentUrl);
-
-        /* check for special cases */
-        // || currentUrl.startsWith("data:") || currentUrl.startsWith("javascript:")
-        if (StringUtils.isBlank(currentUrl) || !currentUrl.startsWith("http")) {
-            currentUrl = DEFAULT_BASE_URL;
-        }
-        URL url = null;
-        try {
-            url = new URL(currentUrl);
-        } catch (MalformedURLException e) {
-            Assert.fail("could not go to url: " + currentUrl);
-        }
-        /*
-         * With the WebDrivers, sometimes the port is not the port, often it's the webdriver port that's proxying things for us,
-         * thus, we need to rewrite the port ...
-         */
-        int port = url.getPort();
-        switch (port) {
-            case 443:
-            case 80:
-            case 8080:
-            case TestConstants.DEFAULT_PORT:
-            case TestConstants.DEFAULT_SECURE_PORT:
-                break;
-            default:
-                port = TestConstants.DEFAULT_PORT;
-                break;
-        }
-
-        String absoluteUrl = String.format("%s://%s:%s%s", url.getProtocol(), url.getHost(), port, path);
-        return absoluteUrl;
+    public String getBaseUrl() {
+        String scheme = tdar.isHttpsEnabled() ? "https" : "http";
+        String host = tdar.getHostName();
+        int port = tdar.isHttpsEnabled() ? tdar.getHttpsPort() : tdar.getPort();
+        String url = String.format("%s://%s:%s/", scheme, host, port);
+        return url;
     }
 
     public void gotoPage(String path) {
-        String url = absoluteUrl(path);
-        logger.debug("going to {}", url);
-        driver.get(absoluteUrl(path));
+        String url = null;
+        try {
+            url = absoluteUrl(path);
+            logger.debug("going to {}", url);
+            driver.get(absoluteUrl(path));
+        } catch (MalformedURLException e) {
+            Assert.fail(String.format("gotoPage() failed. base:%s   path:%s", getBaseUrl(), path));
+        }
     }
 
     public WebElement waitFor(String selector) {

@@ -120,8 +120,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             ></div>
         <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip">
         <br />
-            
-            <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="$('#explicitCoordinatesDiv').toggle(this.checked);" label='Enter / View Coordinates' labelposition='right'  />
+
+            <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
             
             <div id='explicitCoordinatesDiv' style='text-align:center;'>
             
