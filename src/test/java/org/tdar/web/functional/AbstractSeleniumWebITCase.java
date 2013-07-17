@@ -301,10 +301,6 @@ public abstract class AbstractSeleniumWebITCase {
         if(!screenshotsAllowed) return;
         if(screenidx > MAX_SCREENSHOTS_PER_TEST) return;
 
-        String name = testName.getMethodName();
-        if(filename != null) {
-            name = filename;
-        }
         screenidx++;
         //this is necessary since we take since onException() calls takeScreenshot()
         screenshotsAllowed = false;
@@ -313,7 +309,7 @@ public abstract class AbstractSeleniumWebITCase {
             // Now you can do whatever you need to do with it, for example copy somewhere
             File dir = new File("target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName());
             dir.mkdirs();
-            FileUtils.copyFile(scrFile, new File(dir, screenshotFilename(name, "png")));
+            FileUtils.copyFile(scrFile, new File(dir, screenshotFilename(filename, "png")));
         } catch (Exception e) {
             logger.error("could not take screenshot", e);
         } finally {
@@ -322,9 +318,25 @@ public abstract class AbstractSeleniumWebITCase {
 
     }
 
-    private String screenshotFilename(String suffix, String ext ) {
-        String filename = String.format("%03d-%s.%s", screenidx, Filestore.BaseFilestore.sanitizeFilename(suffix), ext);
-        return filename;
+    private String screenshotFilename(String filename, String ext ) {
+        //try to use url path for title  otherwise testname
+        String name = null;
+        try {
+            URL url = new URL(getDriver().getCurrentUrl());
+            name = url.getPath();
+            if("".equals(name) || "/".equals(name)) {
+                name = "(root)";
+            }
+        } catch (MalformedURLException ignored) {
+            name = testName.getMethodName();
+        }
+
+        if(filename != null) {
+            name = filename;
+        }
+
+        String fullname = String.format("%03d-%s.%s", screenidx, Filestore.BaseFilestore.sanitizeFilename(name), ext);
+        return fullname;
     }
 
     /**
