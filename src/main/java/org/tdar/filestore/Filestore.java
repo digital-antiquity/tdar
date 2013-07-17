@@ -32,6 +32,8 @@ import org.tdar.core.exception.TdarRuntimeException;
 
 public interface Filestore {
 
+    public static final String FILENAME_SANITIZE_REGEX = "([\\W&&[^\\s\\-\\+\\.]])";
+
     public enum StorageMethod {
         NO_ROTATION,
         ROTATE,
@@ -145,34 +147,25 @@ public interface Filestore {
          * @return
          */
         public static String sanitizeFilename(String filename) {
-            filename = filename.toLowerCase();
             String ext = FilenameUtils.getExtension(filename);
-            String basename = FilenameUtils.getBaseName(filename);
+            String basename = filename.toLowerCase();
 
-            // // make sure that the total length does not exceed 128 characters
-            // if (basename.length() > 122)
-            // basename = basename.substring(0, 121);
+            // // make sure that the total length does not exceed 255 characters
+            if (filename.length() > 250) {
+                basename = basename.substring(0, 250) + "." + ext;
+            }
 
-            // replace all whitespace with dashes
-            // basename = basename.replaceAll("\\s", "-");
+            /*
+             * replace all whitespace with dashes
+             * replace all characters that are not alphanumeric, underscore "_", or
+             * dash "-" with a single dash "-".
+             */
+            basename = filename.replaceAll("[^\\w\\-\\.\\+\\_]", "-");
+            basename = StringUtils.replace(basename, "-.", ".");
 
-            // replace all characters that are not alphanumeric, underscore "_", or
-            // dash "-" with a single dash "-".
-            basename = basename.replaceAll("[^\\w\\-]+", "-");
-
-            basename = StringUtils.removeEnd(basename, "-");
-
-            StringBuilder builder = new StringBuilder(basename);
-
-            // ensure that the first letter of the basename is alphabetic
-            // if (!StringUtils.isAlpha(String.valueOf(basename.charAt(0)))) {
-            // builder.insert(0, 'a');
-            // }
-            builder.append('.').append(ext);
-
-            return builder.toString();
+            return basename; // builder.toString();
         }
-        
+
         /*
          * This method extracts out the MimeType from the file using Tika, the previous version tried to parse the file
          * but this doesn't need to be so complex.

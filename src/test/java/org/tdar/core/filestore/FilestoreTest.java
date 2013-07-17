@@ -68,9 +68,10 @@ public class FilestoreTest {
 
     @Test
     public void sanitizeFilenameTest() {
-        assertEquals(PairtreeFilestore.sanitizeFilename("abc.txt"), "abc.txt");
-        assertEquals(PairtreeFilestore.sanitizeFilename("abc'.txt"), "abc_.txt");
-        assertEquals(PairtreeFilestore.sanitizeFilename("abc\"a!@#$%^&*()_{}[]+<>?/\\\\.txt"), "abc_a_______________+______.txt");
+        assertEquals("abc.txt", PairtreeFilestore.sanitizeFilename("abc.txt"));
+        assertEquals("abc.txt", PairtreeFilestore.sanitizeFilename("abc'.txt"));
+        assertEquals( "abc.tar.gz", PairtreeFilestore.sanitizeFilename("abc.tar.gz"));
+        assertEquals("abc-a----------_----+-----.txt", PairtreeFilestore.sanitizeFilename("abc\"a!@#$%^&*()_{}[]+<>?/\\\\.txt"));
     }
 
     @Test
