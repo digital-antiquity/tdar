@@ -27,7 +27,8 @@ var data = [];
 		</#list>
 </script>
 </#noescape>
-	<@common.barGraph data="data" graphLabel="views &amp; downloads" xaxis="date" graphHeight=200/>
+    <#-- The '&' is being escaped, hence no need for '&amp;' -->
+	<@common.barGraph data="data" graphLabel="views & downloads" xaxis="date" graphHeight=200/>
 <table class="tableFormat table">
     <tr>
         <th>views</th>
