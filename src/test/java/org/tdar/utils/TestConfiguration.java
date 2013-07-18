@@ -1,5 +1,8 @@
 package org.tdar.utils;
 
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +29,21 @@ public class TestConfiguration {
 
     private TestConfiguration() {
         this(System.getProperty("test.config", "test.properties"));
+        Properties sysprop = System.getProperties();
+        Properties properties = assistant.getProperties();
+        /*
+         * Theoretically allow the configuration Assistant access to specifically overriden properties without polluting it with all of System.properties
+         */
+        for (Entry<Object, Object> entry : properties.entrySet()) {
+            try {
+                String key = (String) entry.getKey();
+                if (sysprop.contains(key)) {
+                    properties.put(key, entry.getValue());
+                }
+            } catch (Exception e) {
+                logger.error("{}", e);
+            }
+        }
     }
 
     /*
