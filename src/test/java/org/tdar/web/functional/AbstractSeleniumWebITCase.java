@@ -114,7 +114,6 @@ public abstract class AbstractSeleniumWebITCase {
         public void afterFindBy(By by, WebElement element, WebDriver driver) {
         }
 
-
         public void beforeChangeValueOf(WebElement element, WebDriver driver) {
         }
 
@@ -388,7 +387,7 @@ public abstract class AbstractSeleniumWebITCase {
     public String getBaseUrl(boolean https) {
         String scheme = https ? "https" : "http";
         String host = tdarConfiguration.getHostName();
-        int port = tdarConfiguration.isHttpsEnabled() ? tdarConfiguration.getHttpsPort() : tdarConfiguration.getPort();
+        int port = https ? tdarConfiguration.getHttpsPort() : tdarConfiguration.getPort();
         String url = String.format("%s://%s:%s/", scheme, host, port);
         return url;
     }
@@ -424,7 +423,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public void gotoPage(String path) {
         if(path.startsWith(CONTEXTUAL_BASE_URL_INDICATOR)) {
-            assertCurrentUrl();
+            //assertCurrentUrl();
             gotoPage(getCurrentUrl(), path.substring(1));
         } else {
             gotoPage(getBaseUrl(), path);
