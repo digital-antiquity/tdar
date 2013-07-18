@@ -37,7 +37,7 @@ public class TestConfiguration {
         for (Entry<Object, Object> entry : properties.entrySet()) {
             try {
                 String key = (String) entry.getKey();
-                if (sysprop.contains(key)) {
+                if (sysprop.contains(key) || key.startsWith("tdar.")) {
                     properties.put(key, entry.getValue());
                 }
             } catch (Exception e) {
@@ -69,55 +69,55 @@ public class TestConfiguration {
     }
 
     public String getHostName() {
-        return assistant.getStringProperty("host.name", "localhost");
+        return assistant.getStringProperty("tdar.host.name", "localhost");
     }
 
     public boolean isHttpsEnabled() {
-        return assistant.getBooleanProperty("https.enabled", true);
+        return assistant.getBooleanProperty("tdar.https.enabled", true);
     }
 
     public int getHttpsPort() {
-        return assistant.getIntProperty("https.port", 8143);
+        return assistant.getIntProperty("tdar.https.port", 8143);
     }
 
     public int getPort() {
-        return assistant.getIntProperty("http.port", 8180);
+        return assistant.getIntProperty("tdar.http.port", 8180);
     }
 
     public String getAdminUsername() {
-        return assistant.getStringProperty("admin.username", "admin");
+        return assistant.getStringProperty("tdar.admin.username", "admin");
     }
 
     public String getAdminPassword() {
-        return assistant.getStringProperty("admin.password", "admin");
+        return assistant.getStringProperty("tdar.admin.password", "admin");
     }
 
     public Long getAdminUserId() {
-        return assistant.getLongProperty("admin.id", 8093L);
+        return assistant.getLongProperty("tdar.admin.id", 8093L);
     }
 
     public String getUsername() {
-        return assistant.getStringProperty("user.username", "test@tdar.org");
+        return assistant.getStringProperty("tdar.user.username", "test@tdar.org");
     }
 
     public String getPassword() {
-        return assistant.getStringProperty("user.password", "test");
+        return assistant.getStringProperty("tdar.user.password", "test");
     }
 
     public Long getUserId() {
-        return assistant.getLongProperty("user.id", 8092L);
+        return assistant.getLongProperty("tdar.user.id", 8092L);
     }
 
     public String getEditorUsername() {
-        return assistant.getStringProperty("editor.username", "editor");
+        return assistant.getStringProperty("tdar.editor.username", "editor");
     }
 
     public String getEditorPassword() {
-        return assistant.getStringProperty("editor.password", "editor");
+        return assistant.getStringProperty("tdar.editor.password", "editor");
     }
 
     public Long getEditorUserId() {
-        return assistant.getLongProperty("editor.id", 8093L);
+        return assistant.getLongProperty("tdar.editor.id", 8093L);
     }
 
     public String getBaseUrl() {
