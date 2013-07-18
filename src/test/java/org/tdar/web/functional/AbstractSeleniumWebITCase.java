@@ -23,7 +23,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -40,16 +48,17 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
+import org.tdar.utils.TestConfiguration;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 public abstract class AbstractSeleniumWebITCase {
 
-    private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
+    public static final TestConfiguration CONFIG = TestConfiguration.getInstance();
+//    private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
     public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
     public static String PATH_OUTPUT_ROOT = "target/selenium";
@@ -386,14 +395,14 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public String getBaseUrl(boolean https) {
         String scheme = https ? "https" : "http";
-        String host = tdarConfiguration.getHostName();
-        int port = https ? tdarConfiguration.getHttpsPort() : tdarConfiguration.getPort();
+        String host = CONFIG.getHostName();
+        int port = https ? CONFIG.getHttpsPort() : CONFIG.getPort();
         String url = String.format("%s://%s:%s/", scheme, host, port);
         return url;
     }
 
     public String getBaseUrl() {
-        return getBaseUrl(tdarConfiguration.isHttpsEnabled());
+        return getBaseUrl(CONFIG.isHttpsEnabled());
     }
 
     public String getCurrentUrl() {
@@ -505,7 +514,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void login() {
-        login(TestConstants.USERNAME, TestConstants.PASSWORD);
+        login(CONFIG.getUsername(), CONFIG.getPassword());
     }
 
     public void login(String username, String password) {
@@ -517,7 +526,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     private void fakeSSLCertIE() {
-        gotoPage("https://" + TestConstants.DEFAULT_HOST + ":" + TestConstants.DEFAULT_SECURE_PORT + "/");
+        gotoPage("https://" + CONFIG.getHostName() + ":" + CONFIG.getHttpsPort() + "/");
 //        driver.get("javascript:document.getElementById('overridelink').click()");
 //        waitFor("body");
 //        logger.info(getText());
@@ -695,7 +704,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void loginAdmin() {
-        login(TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_PASSWORD);
+        login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
     }
 
     public boolean hasReindexedOnce() {
