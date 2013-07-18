@@ -21,6 +21,7 @@ nb-configuration.xml
 nbactions*
 glassfish-web.xml
 .DS_Store
+libpeerconnection.log
 
 syntax: regexp
 ^src/main/webapp/robots\.txt$
