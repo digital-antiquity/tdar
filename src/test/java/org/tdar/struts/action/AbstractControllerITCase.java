@@ -53,6 +53,7 @@ import org.tdar.struts.action.resource.ImageController;
 import org.tdar.struts.action.resource.OntologyController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
+import org.tdar.utils.TestConfiguration;
 
 public abstract class AbstractControllerITCase extends AbstractIntegrationTestCase {
 
@@ -213,8 +214,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis,  Long id) {
-        
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) {
+
         AbstractInformationResourceController controller = null;
         Long ticketId = -1L;
         if (cls.equals(Ontology.class)) {
@@ -234,7 +235,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         if (controller == null)
             return null;
 
-        if (Persistable.Base.isNotNullOrTransient(id )) {
+        if (Persistable.Base.isNotNullOrTransient(id)) {
             controller.setId(id);
         }
         controller.prepare();
@@ -254,19 +255,19 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         } else {
             File file = new File(getTestFilePath(), filename);
             assertTrue("file not found:" + getTestFilePath() + "/" + filename, file.exists());
-            if (FilenameUtils.getExtension(filename).equals("txt") && (controller instanceof AbstractSupportingInformationResourceController<?> )) {
+            if (FilenameUtils.getExtension(filename).equals("txt") && (controller instanceof AbstractSupportingInformationResourceController<?>)) {
                 AbstractSupportingInformationResourceController<?> asc = (AbstractSupportingInformationResourceController<?>) controller;
                 asc.setFileInputMethod(asc.FILE_INPUT_METHOD);
                 try {
-                asc.setFileTextInput(FileUtils.readFileToString(file));
-                } catch(Exception e) {
+                    asc.setFileTextInput(FileUtils.readFileToString(file));
+                } catch (Exception e) {
                     Assert.fail(e.getMessage());
                 }
             } else {
-            files.add(file);
-            filenames.add(filename);
-            controller.setUploadedFiles(files);
-            controller.setUploadedFilesFileName(filenames);
+                files.add(file);
+                filenames.add(filename);
+                controller.setUploadedFiles(files);
+                controller.setUploadedFilesFileName(filenames);
             }
         }
         try {
@@ -326,7 +327,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     @Override
     protected Long getUserId() {
-        return TestConstants.USER_ID;
+        return TestConfiguration.getInstance().getUserId();
     }
 
     public String setupValidUserInController(UserAccountController controller) {

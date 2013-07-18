@@ -37,20 +37,6 @@ public class ConfigurationAssistant implements Serializable {
         this.properties = properties;
     }
 
-    /**
-     * Create a new ConfigurationAssistant and populate it from multiple properties objects. the result is a union of
-     * all properties held by the constituent properties objects.  In the event of property name collision
-     * the properties in argument[n] are effectively overriden by argument[n+1].
-     *
-     * @param properties
-     */
-    public ConfigurationAssistant(Properties ... properties) {
-        this();
-        for(Properties props : properties) {
-            this.properties.putAll(props);
-        }
-    }
-
     public Properties getProperties() {
         return properties;
     }

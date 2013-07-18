@@ -106,6 +106,7 @@ import org.tdar.filestore.Filestore;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.TestConfiguration;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
 
@@ -500,11 +501,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected Long getUserId() {
-        return TestConstants.USER_ID;
+        return TestConfiguration.getInstance().getUserId();
     }
 
     protected Person getBasicUser() {
-        return getUser(TestConstants.USER_ID);
+        return getUser(getUserId());
     }
 
     protected Person getAdminUser() {
@@ -524,7 +525,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected Long getAdminUserId() {
-        return TestConstants.ADMIN_USER_ID;
+        return TestConfiguration.getInstance().getAdminUserId();
     }
 
     public void setHttpServletRequest(HttpServletRequest httpServletRequest) {

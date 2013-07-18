@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -55,6 +54,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.utils.TestConfiguration;
 import org.w3c.tidy.Tidy;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
@@ -91,6 +91,8 @@ import com.gargoylesoftware.htmlunit.util.NameValuePair;
  */
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
+    private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
+
     public static final String RESTRICTED_ACCESS_TEXT = "This resource is restricted from general view";
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
@@ -107,23 +109,23 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static String PROJECT_ID_FIELDNAME = "projectId";
     protected static final String MY_TEST_ACCOUNT = "my test account";
     protected static final String THIS_IS_A_TEST_DESCIPTION = "this is a test desciption";
-//    "link isn't allowed in <div> elements",
-    protected String[] ignores = {"<header>", "<nav>", "<section>", "<article>", "<aside>", "<footer>", "</header>", "</nav>",
+    // "link isn't allowed in <div> elements",
+    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<footer>", "</header>", "</nav>",
             "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
-            "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which", 
-            "Warning: '<' + '/' + letter not allowed here", /*javascript */
+            "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
+            "Warning: '<' + '/' + letter not allowed here", /* javascript */
             "missing </a> before <div>",
             "discarding unexpected </div",
             "discarding unexpected </a>",
             "missing </div> before link",
-            "discarding unexpected </span>", "missing </span> before ", 
-            "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */ 
+            "discarding unexpected </span>", "missing </span> before ",
+            "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */
             "input repeated attribute" /* radiobutton duplicate css */,
             "inserting implicit <br>",
             "replacing element</p>",
             "discarding unexpected hr"
-            };
-    //            "unescaped & or unknown entity" /*add back later */,
+    };
+    // "unescaped & or unknown entity" /*add back later */,
 
     protected Set<String> encodingErrorExclusions = new HashSet<String>();
 
@@ -146,7 +148,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      * instance of tDAR instead of running "integration" tests.
      */
     public static String getBaseUrl() {
-        return System.getProperty("tdar.baseurl", DEFAULT_BASE_URL);
+        return CONFIG.getBaseUrl();
     }
 
     public Page getPage(String localPath) {
@@ -977,6 +979,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     /**
      * assert provided string is valid json and return a JSONObject, otherwise call fail()
+     * 
      * @param json
      * @return
      */
@@ -1118,8 +1121,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         gotoPage("/");
         clickLinkOnPage("Log In");
         setMainForm("loginForm");
-        user = System.getProperty("tdar.user", user);
-        pass = System.getProperty("tdar.pass", pass);
+        user = CONFIG.getUsername(user);
+        pass = CONFIG.getPassword(pass);
         // logger.info(user + ":" + pass);
         setInput("loginUsername", user);
         setInput("loginPassword", pass);
@@ -1184,7 +1187,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void reindexUnauthenticated() {
         String url = getCurrentUrlPath();
         logout();
-        login(TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_PASSWORD);
+        login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
         reindex();
         logout();
         gotoPage(url);

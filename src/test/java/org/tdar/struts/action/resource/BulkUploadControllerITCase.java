@@ -58,6 +58,7 @@ import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
+import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.bulkUpload.BulkUploadTemplate;
 
 /**
@@ -159,7 +160,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
                 assertEquals(1, resource.getResourceCreators().size());
                 ResourceCreator creator = resource.getResourceCreators().iterator().next();
                 assertEquals(ResourceCreatorRole.CREATOR, creator.getRole());
-                assertEquals(TestConstants.USER_ID, creator.getCreator().getId());
+                assertEquals(TestConfiguration.getInstance().getUserId(), creator.getCreator().getId());
                 manifest_gc = true;
             }
             if (resource.getTitle().equals("Handbooks of Archaeology and Antiqvities")) {
@@ -181,7 +182,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
                 assertEquals(ResourceCreatorRole.SPONSOR, map.get(0).getRole());
                 assertEquals(TestConstants.TEST_INSTITUTION_ID, map.get(0).getCreator().getId());
                 assertEquals(ResourceCreatorRole.LAB_DIRECTOR, map.get(1).getRole());
-                assertEquals(TestConstants.ADMIN_USER_ID, map.get(1).getCreator().getId());
+                assertEquals(TestConfiguration.getInstance().getAdminUserId(), map.get(1).getCreator().getId());
                 manifest_book = true;
             }
             assertSourceAndComparitiveCollections(resource);
@@ -575,10 +576,10 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             Resource resource = resourceService.find(detail.getFirst());
             Set<ResourceCollection> resourceCollections = resource.getResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
-            for(ResourceCollection rc : resourceCollections) {
+            for (ResourceCollection rc : resourceCollections) {
                 logger.debug("\t\t ");
             }
-            
+
             collections.addAll(resourceCollections);
         }
         assertEquals("we should have a total of 3 collections (2 internal +1 shared)", 3, collections.size());

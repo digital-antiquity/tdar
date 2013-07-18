@@ -16,11 +16,13 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.utils.TestConfiguration;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 public class AccountUsageWebITCase extends AbstractWebTestCase {
 
+    private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     private static float BYTES_PER_MEGABYTE = 1048576F;
 
     @Test
@@ -65,7 +67,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
         assertTrue(accountId != "-1");
         logger.info(getCurrentUrlPath());
-        
+
         setInput("numberOfFiles", "1");
         submitForm("Create Voucher");
         String code = getHtmlPage().getDocumentElement().querySelector("td.voucherCode").getFirstChild().toString();
@@ -75,7 +77,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("code", code);
         submitForm();
         invoiceId = testAccountPollingResponse("0", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        
+
         gotoPage("/logout");
     }
 
@@ -101,7 +103,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         String viewUrl = internalPage.getUrl().getPath();
         gotoPage("/logout");
 
-        login(TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_PASSWORD);
+        login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
 
         gotoPage("/document/" + docid + "/edit");
         assertTextPresent(accountName);

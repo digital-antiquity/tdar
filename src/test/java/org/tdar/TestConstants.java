@@ -1,17 +1,15 @@
 package org.tdar;
 
 public interface TestConstants {
-    public static final String DEFAULT_HOST = "localhost";
+//    public static final String DEFAULT_HOST = "localhost";
     /** id for a user that has admin rights **/
-    public static Long ADMIN_USER_ID = 8093L;
-    public static Long USER_ID = 8092L;
+//    public static Long ADMIN_USER_ID = 8093L;
+//    public static Long USER_ID = 8092L;
     /** id for project that has children **/
     public static Long PARENT_PROJECT_ID = 3805L;
     public static Long TEST_INSTITUTION_ID = 12088L;
-    public final static int DEFAULT_PORT = 8180;
-    public final static int DEFAULT_SECURE_PORT = 8143;
-    public final static String DEFAULT_BASE_URL ="http://" + DEFAULT_HOST + ":" + DEFAULT_PORT;
-
+//    public final static int DEFAULT_PORT = 8180;
+//    public final static int DEFAULT_SECURE_PORT = 8143;
     public final static String TEST_ROOT_DIR = "src/test/resources/";
 
     public static String FILESTORE_PATH = "target/generated/filestore/";
@@ -31,12 +29,12 @@ public interface TestConstants {
     public static String TEST_CODING_SHEET_DIR = TEST_ROOT_DIR + "coding sheet/";
     public static final String TEST_DATA_INTEGRATION_DIR = TEST_ROOT_DIR + "data_integration_tests/";
 
-    public static String USERNAME = "test@tdar.org";
-    public static String PASSWORD = "test";
+//    public static String USERNAME = "test@tdar.org";
+//    public static String PASSWORD = "test";
     public static Long ADMIN_PROJECT_ID = 1L;
     public static Long PROJECT_ID = 2L;
-    public static String ADMIN_USERNAME = "admin@tdar.org";
-    public static String ADMIN_PASSWORD = "admin";
+//    public static String ADMIN_USERNAME = "admin@tdar.org";
+//    public static String ADMIN_PASSWORD = "admin";
     public static Long ADMIN_INDEPENDENT_PROJECT_ID = 1L;
     public static final String TEST_DOCUMENT_NAME = "pia-09-lame-1980.pdf";
     public static final String TEST_DOCUMENT = TEST_DOCUMENT_DIR + TEST_DOCUMENT_NAME;
