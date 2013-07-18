@@ -387,6 +387,14 @@ public class WebElementSelection implements Iterable<WebElement>{
         }
     }
 
+    /**
+     * return first element of selection as Select object.
+     * @return
+     */
+    public Select toSelect() {
+        return new Select(first());
+    }
+
     private static boolean isFormElement(WebElement elem) {
         return FORM_ELEMENT_NAMES.contains(elem.getTagName());
     }

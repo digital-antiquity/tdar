@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
@@ -322,7 +323,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         String description = "project abc description";
         find("#resourceDescription").val(description);
 
-
         //set some map bounds
         //find("#viewCoordinatesCheckbox").click();
         //hack: programmatic click doesn't set elem.checked before firing handler.  need to click label instead.
@@ -337,16 +337,12 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         //add a keyword
         find("#metadataForm_otherKeywords_0_").val("foobar");
 
-//        int seconds = 1000 * 100;
-//        Thread.sleep(seconds);
-
-
         submitForm();
 
         //now create a document and inherit everything.
         gotoPage("/document/add");
-        find("#projectId").val(projectName);
-
+        logger.debug("expecting to be on document add page: {}", getDriver().getCurrentUrl());
+        find("#projectId").toSelect().selectByVisibleText(projectName);
 
         //inherit everything
         WebDriverWait wait = new WebDriverWait(driver,5);

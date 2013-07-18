@@ -35,6 +35,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -60,6 +61,7 @@ public abstract class AbstractSeleniumWebITCase {
     private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
     public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
+    public static String PATH_OUTPUT_ROOT = "target/selenium";
 
     private String pageText = null;
 
@@ -204,6 +206,9 @@ public abstract class AbstractSeleniumWebITCase {
         if (StringUtils.isNotBlank(xvfbPort)) {
             environment.put("DISPLAY", xvfbPort);
         }
+
+
+
         switch (browser) {
             case FIREFOX:
                 FirefoxBinary fb = new FirefoxBinary();
@@ -213,6 +218,7 @@ public abstract class AbstractSeleniumWebITCase {
                 driver = new FirefoxDriver(fb, new FirefoxProfile());
                 break;
             case CHROME:
+                //http://peter.sh/experiments/chromium-command-line-switches
                 /* yes, this is ugly */
                 /* ubuntu install instructions http://www.liberiangeek.net/2011/12/install-google-chrome-using-apt-get-in-ubuntu-11-10-oneiric-ocelot/ */
                 File app = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
@@ -227,10 +233,22 @@ public abstract class AbstractSeleniumWebITCase {
                     app = new File("/usr/bin/google-chrome");
                 }
 
-                ChromeDriverService options = new ChromeDriverService.Builder().usingDriverExecutable(app).usingAnyFreePort().withEnvironment(environment)
-                        .build();
-                driver = new ChromeDriver(options);
-                options.start();
+                ChromeDriverService service = new ChromeDriverService
+                        .Builder()
+                            .usingDriverExecutable(app)
+                            .usingPort(9515)
+                            .withEnvironment(environment)
+                            .build();
+                ChromeOptions copts = new ChromeOptions();
+                File dir = new File(PATH_OUTPUT_ROOT, "profiles/chrome");
+                String profilePath = dir.getAbsolutePath();
+                logger.debug("chrome profile path set to: {}", profilePath);
+                copts.addArguments(
+                        "user-data-dir=" + profilePath,  //use specific profile path (random by default?)
+                        //"bwsi" //browse without signin
+                        "noerrdialogs");
+                driver = new ChromeDriver(service, copts);
+                service.start();
                 break;
             case IE:
                 System.setProperty("webdriver.ie.driver", "c:\\opt\\workspace\\IEDriverServer.exe");
