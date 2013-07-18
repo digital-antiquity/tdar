@@ -1,7 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#global itemPrefix="codingSheet"/>
 <#global inheritanceEnabled=true />
-<#global multipleUpload=false />
 <#global hideAuthors=true/>
 <#global hideRelatedCollections=true/>
 <#global hideKeywordsAndIdentifiersSection=true/>

@@ -1133,7 +1133,8 @@ var _sortFilesAlphabetically= function() {
         "applyWatermarks": _applyWatermarks,
         "replaceAttribute": _replaceAttribute,
         "delayJiraButton": _delayJiraButton,
-        "coordinatesCheckboxClicked": _coordinatesCheckboxClicked
+        "coordinatesCheckboxClicked": _coordinatesCheckboxClicked,
+        "refreshInputDisplay": _refreshInputDisplay
     });
     
     return self;
