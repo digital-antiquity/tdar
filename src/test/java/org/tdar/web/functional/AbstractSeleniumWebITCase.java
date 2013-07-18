@@ -1,7 +1,5 @@
 package org.tdar.web.functional;
 
-import static org.tdar.TestConstants.DEFAULT_BASE_URL;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -25,14 +23,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.UnhandledAlertException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -68,6 +59,7 @@ public abstract class AbstractSeleniumWebITCase {
     //package privates
     boolean screenshotsAllowed = true;
     boolean ignoreJavascriptErrors = false;
+    private boolean ignoreModals = false;
     WebDriver driver;
 
     //prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
@@ -136,7 +128,7 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
         public void onException(Throwable throwable, WebDriver driver) {
-            takeScreenshot();
+            takeScreenshot("ERROR " + throwable.getClass().getSimpleName());
         }
 
         public void beforeClickOn(WebElement element, WebDriver driver) {
@@ -172,12 +164,16 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     private void afterPageChange() {
+        if(ignoreModals) {
+            dismissModal();
+        }
         takeScreenshot();
     }
 
     private void clearPageCache() {
         pageText = null;
     }
+
 
     private enum Browser {
         FIREFOX, CHROME, SAFARI, IE, PHANTOMJS;
@@ -191,7 +187,7 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         WebDriver driver = null;
-        Browser browser = Browser.CHROME;
+        Browser browser = Browser.FIREFOX;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
         if (StringUtils.isNotBlank(browser_)) {
@@ -371,43 +367,97 @@ public abstract class AbstractSeleniumWebITCase {
 //        return url.toString();
 //    }
 
-    /*
-     * createAbsoluteUrl
+    /**
+     * return absolute url based upon context (i.e. base url) and path.
+     * @param base
+     * @param path
+     * @return
      */
-    public String absoluteUrl(String path) {
-        String currentUrl = driver.getCurrentUrl();
-        logger.debug("current url: {}", currentUrl);
-        if (StringUtils.isBlank(currentUrl) || !StringUtils.startsWith("http", currentUrl)) {
-            currentUrl = DEFAULT_BASE_URL;
-        }
-        URL url = null;
-        try {
-            url = new URL(currentUrl);
-        } catch (MalformedURLException e) {
-            Assert.fail("could not go to url: " + currentUrl);
-        }
-        String absoluteUrl = String.format("%s://%s:%s%s", url.getProtocol() , url.getHost() , url.getPort() , path);
-        return absoluteUrl;
+    public String absoluteUrl(String base, String path) throws MalformedURLException {
+        String abs = null;
+        URL context = new URL(base);
+        URL url = new URL(context, path);
+        abs = url.toString();
+        return abs;
     }
-    
-    public String getBaseUrl() {
-//        String scheme = tdar.isHttpsEnabled() ? "https" : "http";
+
+
+    /**
+     * @return string representing a fully qualified URL, based upon TdarConfiguration settings
+     */
+    public String getBaseUrl(boolean https) {
+        String scheme = https ? "https" : "http";
         String host = tdarConfiguration.getHostName();
-//        int port = tdar.isHttpsEnabled() ? tdar.getHttpsPort() : tdar.getPort();
-        String url = String.format("%s://%s:%s/", "http", host, tdarConfiguration.getPort());
+        int port = tdarConfiguration.isHttpsEnabled() ? tdarConfiguration.getHttpsPort() : tdarConfiguration.getPort();
+        String url = String.format("%s://%s:%s/", scheme, host, port);
         return url;
     }
 
+    public String getBaseUrl() {
+        return getBaseUrl(tdarConfiguration.isHttpsEnabled());
+    }
+
+    public String getCurrentUrl() {
+        return getDriver().getCurrentUrl();
+    }
+
+    /**
+     * for our purposes, any protocol other than http[s] is considered invalid
+     */
+    private void assertCurrentUrl() {
+        String url = getCurrentUrl();
+        Assert.assertTrue("gotoPage url should be http or https", url.startsWith("http:") || url.startsWith("https:"));
+    }
+
+    private static final String CONTEXTUAL_BASE_URL_INDICATOR = "~";
+    /**
+     * Navigate to a page using specified path. The type of path determines the destination URL <pre>
+     *     - if path is fully-qualified,  this becomes the destination URL
+     *     - if path is relative,  the destination is resolved by using the *default* base url and the path
+     *     - if path is relative and is prefixed with "~", this method uses the *current*
+     *       location of the webdriver as the base url, and resolves the destination using the base URL and the path
+     * </pre>
+     *
+     * This method fails the current test if the destination URL is malformed.
+     *
+     * @param path string representing relative path, "~" + path, or fully-qualified URL
+     */
     public void gotoPage(String path) {
-        String url = null;
-        try {
-            url = absoluteUrl(path);
-            logger.debug("going to {}", url);
-            driver.get(absoluteUrl(path));
-        } catch (Exception e) {
-            Assert.fail(String.format("gotoPage() failed. base:%s   path:%s", getBaseUrl(), path));
+        if(path.startsWith(CONTEXTUAL_BASE_URL_INDICATOR)) {
+            assertCurrentUrl();
+            gotoPage(getCurrentUrl(), path.substring(1));
+        } else {
+            gotoPage(getBaseUrl(), path);
         }
     }
+
+    /**
+     *
+     * @param base fully-qualified URL to use as the "base" URL, if path is relative.
+     * @param path relative path or fully qualified URL
+     */
+    public void gotoPage(String base, String path) {
+        try {
+            String url = absoluteUrl(base, path);
+            logger.debug("going to: {}", url);
+            driver.get(url);
+        } catch(MalformedURLException ex) {
+            String err = String.format("bad url:: base:%s\tpath:%s", base, path);
+            logger.error(err, ex);
+            Assert.fail(err);
+        }
+    }
+
+//    public void gotoPage(String path) {
+//        String url = null;
+//        try {
+//            url = absoluteUrl(path);
+//            logger.debug("going to {}", url);
+//            driver.get(absoluteUrl(path));
+//        } catch (Exception e) {
+//            Assert.fail(String.format("gotoPage() failed. base:%s   path:%s", getBaseUrl(), path));
+//        }
+//    }
 
     public WebElement waitFor(String selector) {
         return waitFor(selector, 10);
@@ -749,4 +799,27 @@ public abstract class AbstractSeleniumWebITCase {
     public void setScreenshotsAllowed(boolean val) {
         screenshotsAllowed = val;
     }
+
+    /**
+     * Dismiss (by clicking OK/Accept) if browser is displaying a modal
+     * @return true if modal was present and was dismissed, otherwise false
+     */
+    public boolean dismissModal() {
+        try {
+            driver.switchTo().alert().accept();
+        } catch (NoAlertPresentException ignored) {
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * when set, this test case will attempt to automatically dismiss any modal windows encountered during navigation
+     * @param ignoreModals
+     */
+    public void setIgnoreModals(boolean ignoreModals) {
+        this.ignoreModals = ignoreModals;
+    }
+
 }

@@ -38,10 +38,6 @@ import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
 
-//TODO: implement a workaround for file uploads, including tricking fileupload ui to render new file proxy rows   
-//TODO: click on 'add row' buttons to create the element names referenced in the docValMap. 
-//TODO: refactor the block-of-doom on near line 220.  
-
 public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
@@ -148,7 +144,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         // look for these values in end product (and the edit form), but the system may alter the form field names (e.g. due to culling nulls in lists)
         docUnorderdValMap.put("resourceNotes[5].type", ResourceNoteType.RIGHTS_ATTRIBUTION.name());
         docUnorderdValMap.put("resourceNotes[5].note", "I'm not internationally known, but I'm known to rock a microphone.");
-
     }
 
     private void prepIndexedFields(Collection<String> fieldNames) {
@@ -241,7 +236,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         //add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
 
-
         logger.info(getDriver().getPageSource());
         submitForm();
 
@@ -311,7 +305,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         // make sure our 'async' file was added to the resource
         assertTrue(sourceContains(TEST_DOCUMENT_NAME));
-
     }
 
     @Test
@@ -346,7 +339,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         //inherit everything
         WebDriverWait wait = new WebDriverWait(driver,5);
-        WebElement cb = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("cbSelectAllInheritance")));
+        WebElement cb = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#cbSelectAllInheritance")));
         cb.click();
 
         //okay, now inherit nothing
@@ -354,13 +347,10 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         //check some of the fields to see if we populated the page with project information
         find("#viewCoordinatesCheckbox").click();
-        assertTrue("geo bounds should be set", StringUtils.isNotBlank(find("#maxy").val()));
+        Thread.sleep(1000); //wait for coordinates to appear.
+        assertTrue("geo bounds should be set", StringUtils.isNotBlank(find("#d_maxy").val()));
         assertTrue("other keywords should be set", StringUtils.isNotBlank(find("#metadataForm_otherKeywords_0_").val()));
-
-
-
     }
-
 
     /**
      * jquery treeview plugin has no method for "expand-all" because it is horrible.
@@ -373,7 +363,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         }
         assertTrue("trying to expand all listview subtrees", giveupCount < 10);
     }
-
 
     private void addPersonWithRole(Person p, String prefix, ResourceCreatorRole role) {
         setname(prefix + ".person.firstName", p.getFirstName());
