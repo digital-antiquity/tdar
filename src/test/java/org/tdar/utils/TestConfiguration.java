@@ -1,9 +1,10 @@
 package org.tdar.utils;
 
+import java.io.File;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.ConfigurationAssistant;
@@ -19,7 +20,6 @@ import org.tdar.core.configuration.ConfigurationAssistant;
  * @version $Rev$
  */
 public class TestConfiguration {
-    @SuppressWarnings("unused")
     private final transient static Logger logger = LoggerFactory.getLogger(TestConfiguration.class);
 
     private ConfigurationAssistant assistant;
@@ -37,11 +37,20 @@ public class TestConfiguration {
         for (Entry<Object, Object> entry : properties.entrySet()) {
             try {
                 String key = (String) entry.getKey();
-                if (sysprop.contains(key) || key.startsWith("tdar.")) {
-                    properties.put(key, entry.getValue());
+                if (sysprop.contains(key)) {
+                    properties.put(key, sysprop.getProperty(key));
+                    logger.debug("overriding [{}] with [{}]", key, sysprop.getProperty(key));
                 }
             } catch (Exception e) {
                 logger.error("{}", e);
+            }
+        }
+
+        for (Entry<Object, Object> entry : sysprop.entrySet()) {
+            String key = (String) entry.getKey();
+            if (key.startsWith("tdar.")) {
+                properties.put(key, sysprop.getProperty(key));
+                logger.debug("overriding [{}] with [{}]", key, sysprop.getProperty(key));
             }
         }
     }
@@ -49,11 +58,15 @@ public class TestConfiguration {
     /*
      * Do not use this except for via the @MultipleTdarConfigurationRunner
      */
-    @Deprecated
-    public void setConfigurationFile(String configurationFile) {
+    private void setConfigurationFile(String configurationFile) {
         assistant = new ConfigurationAssistant();
-        assistant.loadProperties(configurationFile);
-        this.configurationFile = configurationFile;
+        if (StringUtils.isNotBlank(configurationFile)) {
+            File config = new File(configurationFile);
+            if (config.exists()) {
+                assistant.loadProperties(configurationFile);
+                this.configurationFile = configurationFile;
+            }
+        }
     }
 
     public String getConfigurationFile() {
