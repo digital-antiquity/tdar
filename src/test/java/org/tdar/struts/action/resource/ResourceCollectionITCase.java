@@ -907,7 +907,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         }
         // FIXME: this fails but clearly, above it works
         // assertTrue(internalResourceCollection.getResources().contains(dataset));
-        seen.remove(TestConstants.USER_ID);
+        seen.remove(getUserId());
         seen.remove(getAdminUserId());
         assertTrue("should have seen all user ids already", seen.isEmpty());
     }

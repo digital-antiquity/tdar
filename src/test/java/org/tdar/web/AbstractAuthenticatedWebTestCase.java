@@ -1,18 +1,16 @@
 package org.tdar.web;
 
-import static org.tdar.TestConstants.ADMIN_PASSWORD;
-import static org.tdar.TestConstants.ADMIN_USERNAME;
-import static org.tdar.TestConstants.PASSWORD;
-import static org.tdar.TestConstants.USERNAME;
-
 import org.junit.After;
 import org.junit.Before;
+import org.tdar.utils.TestConfiguration;
 
 /**
  * @author Adam Brin
  * 
  */
 public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCase {
+
+    private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
     @Before
     public void setUp() {
@@ -26,15 +24,15 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
     }
 
     public void login() {
-        login(USERNAME, PASSWORD);
+        login(CONFIG.getUsername(), CONFIG.getPassword());
     }
 
     public static String getUsername() {
-        return USERNAME;
+        return CONFIG.getUsername();
     }
 
     public static String getPassword() {
-        return PASSWORD;
+        return CONFIG.getPassword();
     }
 
     public void loginAdmin() {
@@ -42,15 +40,15 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
     }
 
     public void loginEditor() {
-        login("editor@tdar.org","editor");
+        login(CONFIG.getEditorUsername(), CONFIG.getEditorPassword());
     }
 
     public static String getAdminUsername() {
-        return ADMIN_USERNAME;
+        return CONFIG.getAdminUsername();
     }
 
     public static String getAdminPassword() {
-        return ADMIN_PASSWORD;
+        return CONFIG.getAdminPassword();
     }
 
     @After

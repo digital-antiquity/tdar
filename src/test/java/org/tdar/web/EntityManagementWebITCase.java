@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.utils.TestConfiguration;
 
 public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase {
 
@@ -36,7 +37,7 @@ public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase 
 
     @Test
     public void testPersonLoggedOut() {
-        Long id = entityService.findByEmail(TestConstants.USERNAME).getId();
+        Long id = entityService.findByEmail(TestConfiguration.getInstance().getUsername()).getId();
         String personEditUrl = String.format(ENTITY_PERSON_EDIT, id);
         String personViewUrl = ENTITY_VIEW + id;
 
