@@ -74,7 +74,9 @@ $(document).ready(function() {
    TDAR.common.switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
    
    $("#MetadataForm").submit(function() {
-   	$("#MetadataForm_invoice_billingPhone").val($("#MetadataForm_invoice_billingPhone").val().replace(/([^\d]+)/ig,"") );
+   if ($("#MetadataForm_invoice_billingPhone").val()) {
+	   	$("#MetadataForm_invoice_billingPhone").val($("#MetadataForm_invoice_billingPhone").val().replace(/([^\d]+)/ig,"") );
+   	}
    });
 
    if (${((invoice.calculatedCost!0) <= 0)?string}) {
