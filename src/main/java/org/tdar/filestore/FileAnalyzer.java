@@ -111,7 +111,7 @@ public class FileAnalyzer {
     public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws Exception {
         Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null) {
-            String message = String.format(NO_WORKFLOW_FOUND, (Object[])informationResourceFileVersions);
+            String message = String.format(NO_WORKFLOW_FOUND, java.util.Arrays.toString(informationResourceFileVersions));
             throw new TdarRecoverableRuntimeException(message);
         }
         if (informationResourceFileVersions == null) {
