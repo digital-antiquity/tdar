@@ -164,5 +164,5 @@ $.validator.addMethod(
         return contactCount > 0;
 
     },
-    "You must have at least one person/institution listed as a 'contact' when marking a file 'confidential'"
+    "You must have at least one person/institution listed as a 'contact' under <b>Individual and Institutional Roles</b> when marking a file 'confidential'"
 );
