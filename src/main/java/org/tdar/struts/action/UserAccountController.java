@@ -47,9 +47,11 @@ import com.opensymphony.xwork2.Preparable;
 @Result(name = "new", type = "redirect", location = "new")
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
 
-    public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@.]{5,40}$";
+    public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{5,40}$";
+    public static final String EMAIL_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{4,40}$";
 
     public static final String USERNAME_INVALID = "Username invalid, usernames must be at least 5 characters and can only have letters and numbers";
+    public static final String EMAIL_INVALID = "Email invalid, usernames must be at least 5 characters and can only have letters and numbers";
 
     private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
 
@@ -320,6 +322,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             
             if (!person.getUsername().matches(USERNAME_VALID_REGEX)) {
                 addActionError(USERNAME_INVALID);
+            }
+
+            if (!person.getEmail().matches(EMAIL_VALID_REGEX)) {
+                addActionError(EMAIL_INVALID);
             }
 
         }
