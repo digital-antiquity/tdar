@@ -320,11 +320,11 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro culturalTerms showInherited=true inline=false>
 <div data-tooltipcontent="#culturehelp">
 <@helptext.cultureTerms />
-    <h2>Cultural Terms</h2>
+    <h2>${culturalTermsLabel!"Cultural Terms"}</h2>
     <@inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
     <div id="divCulturalInformation" >
         <div class="control-group">
-            <label class="control-label">Culture</label>
+            <label class="control-label">${culturalTermsLabel!"Culture"}</label>
             <div class="controls">
                 <@s.checkboxlist theme="hier" name="approvedCultureKeywordIds" keywordList="approvedCultureKeywords" />
             </div>
@@ -777,12 +777,13 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 FIXME: this appears to only be used for Datasets.  Most of it has been extracted out
 to singleFileUpload, continue lifting useful logic here into singleFileUpload (e.g.,
 jquery validation hooks?)
+MARTIN: it's also used by the FAIMS Archive type on edit.
 -->
 <#macro upload uploadLabel="File" showMultiple=false divTitle="Upload File" showAccess=true>
     <@sharedUploadFile>
       <@singleFileUpload>
           <div class="field indentFull">
-          <@s.select name="fileProxies[0].restriction" id="cbConfidential" labelposition="right" label="This item has access restrictions" listValue="label" list=fileAccessRestrictions  />
+          <@s.select name="fileProxies[0].restriction" id="cbConfidential" labelposition="right" label="This item has access restrictions" listValue="label" list=fileAccessRestrictions />
           <div><b>NOTE:</b> by changing this from 'public', all of the metadata will be visible to users, they will not be able to view or download this file.  
           You may explicity grant read access to users below.</div>
           <br />     
