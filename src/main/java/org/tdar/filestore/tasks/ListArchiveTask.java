@@ -57,7 +57,6 @@ public class ListArchiveTask extends AbstractTask {
     }
 
     private void listFiles(StringBuilder archiveContents, File archiveFile, File originalFile) {
-        // admin tab missing : and regenerate url off of that. line 112... Java 7 Tomcat 7 JAI needs to be installed as well...
         if (!archiveFile.isDirectory()) {
             getLogger().debug("listFiles passed in a file, not a directory : " + archiveFile.getName());
             return;
