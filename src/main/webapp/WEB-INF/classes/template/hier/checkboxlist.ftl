@@ -39,19 +39,20 @@
         <li>
         <#if kidnode.keyword.selectable>
 <input type="checkbox" name="${parameters.name?html}" value="${itemKeyStr?html}" id="${parameters.name?html}-${itemCount}"<#rt/>
-        <#if targetList?seq_contains(itemKey) || targetList?seq_contains(itemKey?string) >
+           <#--if the itemKey is a number > 999, the 'string' operation formats for the local: which won't match the number in the targetList. Hence the 'c' -->
+           <#if targetList?seq_contains(itemKey) || targetList?seq_contains(itemKey?string) || targetList?seq_contains(itemKey?c) >
  checked="checked"<#rt/>
-        </#if>
-        <#if parameters.disabled?default(false)>
+           </#if>
+           <#if parameters.disabled?default(false)>
  disabled="disabled"<#rt/>
-        </#if>
-        <#if itemTitle??>
+           </#if>
+           <#if itemTitle??>
  title="${itemTitle}"<#rt/>
-        <#elseif parameters.title??>
+           <#elseif parameters.title??>
  title="${parameters.title?html}"<#rt/>
-        </#if>
-        <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
-        <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
+           </#if>
+           <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
+           <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
 />
 <label for="${parameters.name?html}-${itemCount}" class="checkboxLabel" <#if itemTitle??>title="${itemTitle}"</#if> >${itemLabel?html}</label>
         <#else>
