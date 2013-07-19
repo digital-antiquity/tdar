@@ -50,6 +50,7 @@ public class LoginController extends AuthenticationAware.Base {
     @Actions({
             @Action("/login/")
     })
+    @HttpsOnly
     public String execute() {
         logger.debug("Executing /login/ .");
         if (isAuthenticated()) {
