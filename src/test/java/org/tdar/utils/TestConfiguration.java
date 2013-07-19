@@ -151,4 +151,8 @@ public class TestConfiguration {
         return pass;
     }
 
+    public String getBaseSecureUrl() {
+        return String.format("https://%s:%s/", getHostName(), getHttpsPort());
+    }
+
 }
