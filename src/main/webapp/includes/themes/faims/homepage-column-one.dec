@@ -5,3 +5,16 @@
     <p>If you wish to deposit data contact <a href="mailto:repository@fedarch.org?subject=FAIMS%20deposit">repository@fedarch.org</a>.</p>
   </div>
 </#if>
+
+<h3>Browse Your Field Of Research</h3>
+<div class="container">
+  <div class="row">
+    <div class="offset1 span10">
+        <!-- if you want to search in with in child categories, use keywords and not id's -->
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&groups[0].approvedCultureKeywordIdLists[0]=210101&explore=true">Aboriginal Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&groups[0].approvedCultureKeywordIdLists[0]=210108&explore=true">Historical Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&groups[0].approvedCultureKeywordIdLists[0]=210105&explore=true">Classical Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&groups[0].approvedCultureKeywordIdLists[0]=210110&explore=true">Maritime Archaeology</a>
+    </div>
+  </div>
+</div>

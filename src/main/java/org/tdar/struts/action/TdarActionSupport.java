@@ -592,7 +592,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().isViewRowSupported();
     }
 
-    public Long getGuestUserId(){
+    public Long getGuestUserId() {
         return getTdarConfiguration().getGuestUserId();
+    }
+
+    public String getCulturalTermsLabel() {
+        return getTdarConfiguration().isViewRowSupported() ? "Field of Research" : null;
     }
 }

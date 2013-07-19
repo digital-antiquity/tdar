@@ -119,8 +119,8 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 
 <#macro cultureTerms>
     <div id="culturehelp" class="hidden">
-        <h2>Cultural Terms</h2>
-        Keyword list: Select the archaeological &quot;cultures&quot; discussed in the document. Use the Other field if needed. 
+        <h2>${culturalTermsLabel!"Cultural Terms"}</h2>
+        Keyword list: Select the archaeological &quot;${culturalTermsLabel!"cultures"}&quot; discussed in the document. Use the Other field if needed. 
         <a href="${culturalTermsHelpUrl}">view all controlled terms</a>
     </div>
 

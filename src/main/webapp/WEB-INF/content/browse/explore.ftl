@@ -73,7 +73,7 @@
      </#list>
 </ul>
 
-<h2>Browse by Culture</h2>
+<h2>Browse by ${culturalTermsLabel!"Culture"}</h2>
 <ul class="inline">
      <#list cultureKeywords as keyword>
          <@searchFor "groups[0].approvedCultureKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />

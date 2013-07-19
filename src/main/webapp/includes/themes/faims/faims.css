@@ -124,12 +124,12 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 h3.mobile-import-mid-red::before {
-    background: url(/includes/themes/faims/images/mobile.gif) no-repeat;
-    display: inline-block;
-    width: 34px;
-    height: 37px;
-    content: "";
-    margin-bottom: -2px;
+	background: url(/includes/themes/faims/images/mobile.gif) no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
 }
 
 body {
@@ -138,17 +138,34 @@ body {
 	font-size: 15px;
 }
 
+/* Buttons, or links that should look like buttons... */
 a.button,.tdar-button,header nav li.button a {
-	background-color: #dc9530;
+	-moz-box-shadow: 0px 1px 0px 0px grey;
+	-webkit-box-shadow: 0px 1px 0px 0px grey;
+	box-shadow: 0px 1px 0px 0px grey;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	border: 1px solid #eeb44f;
+	background-image: none;
+	background-color: #fb9e25;
+	color: #ffffff;
 	font-family: 'TeXGyreAdventorRegular', Arial, sans-serif;
-}
-
-footer a, a {
-	color: #001ca8;
+	text-decoration: none;
+	text-shadow: 1px 0px 0px #cc9f52;
 }
 
 a.button:hover,.tdar-button:hover,header nav li.button a:hover {
-	background-color: orange;
+	background-color: #dc9530;
+}
+
+a.button:active,.tdar-button:active,header nav li.button a:active {
+	position: relative;
+	top: 1px;
+}
+
+footer a,a {
+	color: #001ca8;
 }
 
 a.external {
@@ -163,12 +180,12 @@ form .required {
 
 label .required {
 	color: red;
-	background-color:transparent;
+	background-color: transparent;
 }
 
 /* specifically required to close up the next element on copyright holder rows, as we've removed the "Add another" button */
 #copyrightHolderRow__ {
-    margin-bottom: -20px;
+	margin-bottom: -20px;
 }
 
 .faims_xml_logo {
@@ -178,4 +195,14 @@ label .required {
 	border-width: medium;
 	width: 3em;
 	text-align: center;
+}
+
+.research_link {
+	margin: 5px;
+}
+
+#titlebar h1, article h1 {
+    font-size: 25px;
+    letter-spacing: -1px;
+    line-height: 34px;
 }
