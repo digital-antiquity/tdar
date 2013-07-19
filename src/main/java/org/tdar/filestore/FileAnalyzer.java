@@ -34,7 +34,6 @@ import org.tdar.struts.data.FileProxy;
 @Component
 public class FileAnalyzer {
 
-    private static final String NO_WORKFLOW_FOUND = "no workflow could be found for these files %s";
     private List<Workflow> workflows;
     private Map<String, Workflow> fileExtensionToWorkflowMap = new HashMap<String, Workflow>();
     private Map<FileType, List<String>> primaryExtensionList = new HashMap<>();
@@ -109,10 +108,12 @@ public class FileAnalyzer {
     }
 
     public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws Exception {
+        String [] t = {"test"};
+        t.toString();
         Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null) {
-            String message = String.format(NO_WORKFLOW_FOUND, (Object[])informationResourceFileVersions);
-            throw new TdarRecoverableRuntimeException(message);
+            throw new TdarRecoverableRuntimeException(String.format("no workflow could be found for these files %s", 
+                    java.util.Arrays.toString(informationResourceFileVersions)));
         }
         if (informationResourceFileVersions == null) {
             throw new TdarRecoverableRuntimeException("File version was null, this should not happen");
@@ -124,7 +125,7 @@ public class FileAnalyzer {
         return messageService.sendFileProcessingRequest(workflow, informationResourceFileVersions);
     }
 
-    private void checkFilesExist(InformationResourceFileVersion[] informationResourceFileVersions) throws FileNotFoundException, IOException {
+    private void checkFilesExist(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
         for (InformationResourceFileVersion version : informationResourceFileVersions) {
             File file = version.getTransientFile();
 
