@@ -597,6 +597,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public String getCulturalTermsLabel() {
-        return getTdarConfiguration().isViewRowSupported() ? "Field of Research" : null;
+        return getTdarConfiguration().getCulturalTermsLabel();
     }
 }

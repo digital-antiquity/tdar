@@ -11,10 +11,10 @@
   <div class="row">
     <div class="offset1 span10">
         <!-- if you want to search in with in child categories, use keywords and not id's -->
-        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&groups[0].approvedCultureKeywordIdLists[0]=210101&explore=true">Aboriginal Archaeology</a>
-        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&groups[0].approvedCultureKeywordIdLists[0]=210108&explore=true">Historical Archaeology</a>
-        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&groups[0].approvedCultureKeywordIdLists[0]=210105&explore=true">Classical Archaeology</a>
-        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&groups[0].approvedCultureKeywordIdLists[0]=210110&explore=true">Maritime Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210101&amp;explore=true">Aboriginal Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210108&amp;explore=true">Historical Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210105&amp;explore=true">Classical Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210110&amp;explore=true">Maritime Archaeology</a>
     </div>
   </div>
 </div>

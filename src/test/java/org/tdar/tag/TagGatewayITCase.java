@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.TdarActionSupport;
@@ -28,7 +27,7 @@ import org.w3c.dom.Element;
 
 public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
 
-    private static final String WSDL_LOCATION = TestConfiguration.getInstance().getBaseUrl() + "/services/TagGatewayService?wsdl";
+    private static final String WSDL_LOCATION = TestConfiguration.getInstance().getBaseUrl() + "services/TagGatewayService?wsdl";
     private static final String SERVICE_NAMESPACE = "http://archaeologydataservice.ac.uk/tag/schema";
     private static final String SERVICE_NAME = "TagGatewayService";
     private TagGatewayPort port;

@@ -325,11 +325,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return getUser(getUserId());
     }
 
-    @Override
-    protected Long getUserId() {
-        return TestConfiguration.getInstance().getUserId();
-    }
-
     public String setupValidUserInController(UserAccountController controller) {
         return setupValidUserInController(controller, "testuser@example.com");
     }

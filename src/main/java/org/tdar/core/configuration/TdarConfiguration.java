@@ -640,4 +640,8 @@ public class TdarConfiguration {
     public String getCreatorFOAFDir() {
         return getPersonalFileStoreLocation() + "/creatorInfo";
     }
+
+    public String getCulturalTermsLabel() {
+        return assistant.getStringProperty("cultural.terms.label", "Cultural Terms" );
+    }
 }
