@@ -98,7 +98,7 @@ public class TestConfiguration {
     }
 
     public String getAdminUsername() {
-        return assistant.getStringProperty("tdar.admin.username", "admin");
+        return assistant.getStringProperty("tdar.admin.username", "admin@tdar.org");
     }
 
     public String getAdminPassword() {
@@ -122,7 +122,7 @@ public class TestConfiguration {
     }
 
     public String getEditorUsername() {
-        return assistant.getStringProperty("tdar.editor.username", "editor");
+        return assistant.getStringProperty("tdar.editor.username", "editor@tdar.org");
     }
 
     public String getEditorPassword() {
