@@ -189,14 +189,17 @@ public class UserRegistrationITCase<E> extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testInvalidUsers() {
-        List<String> emails = Arrays.asList("a", "a b", "adam brin", "abcd1234!");
+        List<String> emails = Arrays.asList("a", "a b", "adam brin", "abcd1234!","http://","!#####/bin/ls");
         for (String email : emails) {
+            logger.info("TRYING =======> {}",email);
+            controller = generateNewInitializedController(UserAccountController.class);
             controller.setTimeCheck(System.currentTimeMillis() - 10000);
             String execute = setupValidUserInController(controller, email);
 //            assertFalse("user " + email + " succeeded??", TdarActionSupport.SUCCESS.equals(execute));
+            logger.info("errors:{}", controller.getActionErrors());
             assertTrue(controller.getActionErrors().size() > 0);
         }
-
+        setIgnoreActionErrors(true);
     }
 
     @Test

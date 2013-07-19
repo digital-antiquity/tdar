@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Assert;
@@ -359,7 +360,11 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
         controller.validate();
-        String execute = controller.create();
+        String execute = null;
+        // technically this is more appropriate -- only call create if validate passes
+        if (CollectionUtils.isEmpty(controller.getActionErrors())) {
+            controller.create();
+        }
 
         return execute;
     }
