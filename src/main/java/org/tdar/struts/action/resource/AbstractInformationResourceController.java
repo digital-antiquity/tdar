@@ -77,7 +77,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private Language resourceLanguage;
     private Language metadataLanguage;
     private List<Language> languages;
-    private List<FileProxy> fileProxies = new ArrayList<FileProxy>();
+    private List<FileProxy> fileProxies = new ArrayList<>();
 
     // previously uploaded files list in json format, needed by blueimp jquery file upload
     private String filesJson = "";
@@ -199,7 +199,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * @return a List<FileProxy> representing the final set of fully initialized FileProxy objects
      */
     protected List<FileProxy> getFileProxiesToProcess() {
-        List<FileProxy> fileProxiesToProcess = new ArrayList<FileProxy>();
+        List<FileProxy> fileProxiesToProcess = new ArrayList<>();
         // Possible scenarios:
         FileProxy textInputFileProxy = processTextInput();
 
@@ -279,7 +279,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public ArrayList<LicenseType> getLicenseTypesList() {
-        return new ArrayList<LicenseType>(Arrays.asList(LicenseType.values()));
+        return new ArrayList<>(Arrays.asList(LicenseType.values()));
     }
 
     public LicenseType getDefaultLicenseType() {
@@ -316,7 +316,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public List<String> getUploadedFilesFileName() {
         if (uploadedFilesFileNames == null) {
-            uploadedFilesFileNames = new ArrayList<String>();
+            uploadedFilesFileNames = new ArrayList<>();
         }
         return uploadedFilesFileNames;
     }
@@ -357,7 +357,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             return;
         }
 
-        List<FileProxy> fileProxies = new ArrayList<FileProxy>();
+        List<FileProxy> fileProxies = new ArrayList<>();
         for (InformationResourceFile informationResourceFile : getResource().getInformationResourceFiles()) {
             if (!informationResourceFile.isDeleted()) {
                 fileProxies.add(new FileProxy(informationResourceFile));
@@ -389,7 +389,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     private void initializeFileProxies() {
-        fileProxies = new ArrayList<FileProxy>();
+        fileProxies = new ArrayList<>();
         for (InformationResourceFile informationResourceFile : getPersistable().getInformationResourceFiles()) {
             if (!informationResourceFile.isDeleted()) {
                 fileProxies.add(new FileProxy(informationResourceFile));
@@ -454,7 +454,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         logger.info("get potential parents");
         if (potentialParents == null) {
             Person submitter = getAuthenticatedUser();
-            potentialParents = new ArrayList<Resource>();
+            potentialParents = new ArrayList<>();
             boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
             potentialParents.addAll(getProjectService().findSparseTitleIdProjectListByPerson(submitter, canEditAnything));
             if (!getProject().equals(Project.NULL) && !potentialParents.contains(getProject())) {
@@ -599,6 +599,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             addActionError("Please enter a valid creation year for " + resourceTypeLabel);
         }
         if (isCopyrightMandatory()) {
+            // first check to see if the form has copyright holders specified
             if (copyrightHolderProxies != null && copyrightHolderProxies.getActualCreatorType() != null) {
                 ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
                 logger.info("{} {}", copyrightHolderProxies, transientCreator);
@@ -606,8 +607,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                     logger.debug("No copyright holder set for {}", getPersistable());
                     addActionError("Please enter a copyright holder!");
                 }
-            } else {
-                addActionError("Please enter a copyright holder!");
+            // and if not on a form (the reprocess below, for example, then check the persistable itself
+            } else if (getPersistable().getCopyrightHolder() == null){
+                addActionError("The required copyright holder is missing!");
             }
         }
     }
@@ -618,7 +620,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // FIXME: trying to avoid concurrent modification exceptions
         // NOTE: this processes deleted ones again too
         // NOTE2: this is ignored in the quota on purpose -- it's on us
-        getInformationResourceService().reprocessInformationResourceFiles(new ArrayList<InformationResourceFile>(getResource().getInformationResourceFiles()));
+        getInformationResourceService().reprocessInformationResourceFiles(new ArrayList<>(getResource().getInformationResourceFiles()));
 
         return SUCCESS;
     }
