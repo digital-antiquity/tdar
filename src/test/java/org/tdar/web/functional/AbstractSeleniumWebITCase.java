@@ -1,10 +1,18 @@
 package org.tdar.web.functional;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -49,9 +57,6 @@ import org.tdar.utils.TestConfiguration;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 
 public abstract class AbstractSeleniumWebITCase {
 
@@ -191,7 +196,7 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         WebDriver driver = null;
-        Browser browser = Browser.CHROME;
+        Browser browser = Browser.FIREFOX;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
         if (StringUtils.isNotBlank(browser_)) {
