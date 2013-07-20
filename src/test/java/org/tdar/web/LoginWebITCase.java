@@ -5,6 +5,7 @@ package org.tdar.web;
 
 import org.junit.Test;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.action.UserAccountController;
 
 /**
@@ -36,7 +37,7 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testInvalidLoginInvalidEmail() {
         logout();
         login("BAD USERNAME", "BAD PASSWORD", true);
-        assertTextPresent(UserAccountController.EMAIL_INVALID);
+        assertTextPresent(AuthenticationAndAuthorizationService.USERNAME_INVALID);
         assertTextNotPresent("Your submitted projects");
     }
 

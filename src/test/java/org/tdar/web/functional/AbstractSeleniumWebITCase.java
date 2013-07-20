@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
@@ -72,7 +73,7 @@ public abstract class AbstractSeleniumWebITCase {
     boolean screenshotsAllowed = true;
     boolean ignoreJavascriptErrors = false;
     private boolean ignoreModals = false;
-    WebDriver driver;
+    public static WebDriver driver;
 
     // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
@@ -196,7 +197,7 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         WebDriver driver = null;
-        Browser browser = Browser.FIREFOX;
+        Browser browser = Browser.CHROME;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
         if (StringUtils.isNotBlank(browser_)) {
@@ -526,13 +527,6 @@ public abstract class AbstractSeleniumWebITCase {
         find("#btnLogin").click();
     }
 
-    private void fakeSSLCertIE() {
-        gotoPage("https://" + CONFIG.getHostName() + ":" + CONFIG.getHttpsPort() + "/");
-        // driver.get("javascript:document.getElementById('overridelink').click()");
-        // waitFor("body");
-        // logger.info(getText());
-    }
-
     public void logout() {
         gotoPage("/logout");
     }
@@ -698,7 +692,7 @@ public abstract class AbstractSeleniumWebITCase {
     public int clickElementUntil(WebElement element, By findBy, int max) {
         int i = 0;
         while (find(findBy).size() == 0 && i < max) {
-            element.click();
+            WebElementSelection.click(element);
             i++;
         }
         return i;
@@ -776,14 +770,14 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public void reportJavascriptErrors() {
         List<String> errors = getJavascriptErrors();
-        if (errors == null)
+        if (CollectionUtils.isEmpty(errors))
             return;
         logger.error("javascript error report for {}", driver.getCurrentUrl());
         for (String error : errors) {
             logger.error("javascript error: {}", error);
         }
-        if (!errors.isEmpty() && !ignoreJavascriptErrors) {
-            Assert.fail("Encountered javascript errors on page: " + driver.getCurrentUrl());
+        if ( !ignoreJavascriptErrors) {
+            Assert.fail("ENCOUNTERED JAVASCRIPT ERRORS ON PAGE: " + driver.getCurrentUrl() + "\r\n [" + errors + "]");
         }
     }
 

@@ -47,6 +47,7 @@ import org.tdar.web.SessionData;
 @Service
 public class AuthenticationAndAuthorizationService extends AbstractConfigurableService<AuthenticationProvider> implements Accessible {
 
+    public static final String USERNAME_INVALID = "Username Invalid, cannot authenticated user";
     public static final String YOU_ARE_NOT_ALLOWED_TO_SEARCH_FOR_RESOURCES_WITH_THE_SELECTED_STATUS = "You are not allowed to search for resources with the selected status";
     private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<Person, TdarGroup>();
     private final Logger logger = Logger.getLogger(getClass());
@@ -503,7 +504,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public AuthenticationStatus authenticatePerson(String loginUsername, String loginPassword, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
         if (!isValidUsername(loginUsername)) {
-            throw new TdarRecoverableRuntimeException("Username Invalid, cannot authenticated user");
+            throw new TdarRecoverableRuntimeException(USERNAME_INVALID);
         }
 
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
