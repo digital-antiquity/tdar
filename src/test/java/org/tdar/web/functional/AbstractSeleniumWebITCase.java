@@ -56,25 +56,24 @@ import static org.junit.Assert.*;
 public abstract class AbstractSeleniumWebITCase {
 
     public static final TestConfiguration CONFIG = TestConfiguration.getInstance();
-//    private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
+    // private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
     public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
     public static String PATH_OUTPUT_ROOT = "target/selenium";
 
     private String pageText = null;
 
-    //package privates
+    // package privates
     boolean screenshotsAllowed = true;
     boolean ignoreJavascriptErrors = false;
     private boolean ignoreModals = false;
     WebDriver driver;
 
-    //prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
+    // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
 
-    //protect against infinite loops killing our disk space
+    // protect against infinite loops killing our disk space
     static int MAX_SCREENSHOTS_PER_TEST = 100;
-
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -90,7 +89,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     /**
      * afterClickOn() element is invalid if the clicked-on element caused the browser to navigate to new page, so we
-     * we can't inspect it.  So we use this field to signal whether afterClickOn() should call afterPageChange()
+     * we can't inspect it. So we use this field to signal whether afterClickOn() should call afterPageChange()
      */
     private Set<WebElement> clickElems = new HashSet<>();
 
@@ -145,8 +144,8 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
         public void afterClickOn(WebElement element, WebDriver driver) {
-            //if beforeClickOn() put this element here, we are on the other side of page change.
-            if(clickElems.remove(element)) {
+            // if beforeClickOn() put this element here, we are on the other side of page change.
+            if (clickElems.remove(element)) {
                 afterPageChange();
             }
         }
@@ -170,7 +169,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     private void afterPageChange() {
-        if(ignoreModals) {
+        if (ignoreModals) {
             dismissModal();
         }
         takeScreenshot();
@@ -179,7 +178,6 @@ public abstract class AbstractSeleniumWebITCase {
     private void clearPageCache() {
         pageText = null;
     }
-
 
     private enum Browser {
         FIREFOX, CHROME, SAFARI, IE, PHANTOMJS;
@@ -193,7 +191,7 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         WebDriver driver = null;
-        Browser browser = Browser.FIREFOX;
+        Browser browser = Browser.CHROME;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
         if (StringUtils.isNotBlank(browser_)) {
@@ -209,8 +207,6 @@ public abstract class AbstractSeleniumWebITCase {
             environment.put("DISPLAY", xvfbPort);
         }
 
-
-
         switch (browser) {
             case FIREFOX:
                 FirefoxBinary fb = new FirefoxBinary();
@@ -220,40 +216,33 @@ public abstract class AbstractSeleniumWebITCase {
                 driver = new FirefoxDriver(fb, new FirefoxProfile());
                 break;
             case CHROME:
-                //http://peter.sh/experiments/chromium-command-line-switches
+                // http://peter.sh/experiments/chromium-command-line-switches
                 /* yes, this is ugly */
                 /* ubuntu install instructions http://www.liberiangeek.net/2011/12/install-google-chrome-using-apt-get-in-ubuntu-11-10-oneiric-ocelot/ */
                 File app = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
-                if (!app.exists()) {
-                    // app = new File("C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe");
-                    app = new File("c:\\opt\\workspace\\chromedriver.exe");
-                }
+                app = new File(CONFIG.getChromeDriverPath());
                 if (!app.exists()) {
                     app = new File("/usr/local/bin/chromedriver");
                 }
                 if (!app.exists()) {
                     app = new File("/usr/bin/google-chrome");
                 }
-
+                logger.info("usign app: {} ", app);
                 ChromeDriverService service = new ChromeDriverService
-                        .Builder()
-                            .usingDriverExecutable(app)
-                            .usingPort(9515)
-                            .withEnvironment(environment)
-                            .build();
+                        .Builder().usingDriverExecutable(app).usingPort(9515).withEnvironment(environment).build();
                 ChromeOptions copts = new ChromeOptions();
                 File dir = new File(PATH_OUTPUT_ROOT, "profiles/chrome");
                 String profilePath = dir.getAbsolutePath();
                 logger.debug("chrome profile path set to: {}", profilePath);
                 copts.addArguments(
-                        "user-data-dir=" + profilePath,  //use specific profile path (random by default?)
-                        //"bwsi" //browse without signin
+                        "user-data-dir=" + profilePath, // use specific profile path (random by default?)
+                        // "bwsi" //browse without signin
                         "noerrdialogs");
                 driver = new ChromeDriver(service, copts);
                 service.start();
                 break;
             case IE:
-                System.setProperty("webdriver.ie.driver", "c:\\opt\\workspace\\IEDriverServer.exe");
+                System.setProperty("webdriver.ie.driver", CONFIG.getIEDriverPath());
                 DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
                 driver = new InternetExplorerDriver(configureCapabilities(ieCapabilities));
                 driver.manage().timeouts().implicitlyWait(90, TimeUnit.SECONDS);
@@ -321,11 +310,13 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     protected void takeScreenshot(String filename) {
-        if(!screenshotsAllowed) return;
-        if(screenidx > MAX_SCREENSHOTS_PER_TEST) return;
+        if (!screenshotsAllowed)
+            return;
+        if (screenidx > MAX_SCREENSHOTS_PER_TEST)
+            return;
 
         screenidx++;
-        //this is necessary since we take since onException() calls takeScreenshot()
+        // this is necessary since we take since onException() calls takeScreenshot()
         screenshotsAllowed = false;
         try {
             File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
@@ -341,20 +332,20 @@ public abstract class AbstractSeleniumWebITCase {
 
     }
 
-    private String screenshotFilename(String filename, String ext ) {
-        //try to use url path for title  otherwise testname
+    private String screenshotFilename(String filename, String ext) {
+        // try to use url path for title otherwise testname
         String name = null;
         try {
             URL url = new URL(getDriver().getCurrentUrl());
             name = url.getPath();
-            if("".equals(name) || "/".equals(name)) {
+            if ("".equals(name) || "/".equals(name)) {
                 name = "(root)";
             }
         } catch (MalformedURLException ignored) {
             name = testName.getMethodName();
         }
 
-        if(filename != null) {
+        if (filename != null) {
             name = filename;
         }
 
@@ -363,18 +354,20 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * returns absolute url based on getBaseUrl() and provided path.  If path is actually a complete url itself, ignore
+     * returns absolute url based on getBaseUrl() and provided path. If path is actually a complete url itself, ignore
      * the base URL.
+     * 
      * @see URL#URL(java.net.URL, String)
      */
-//    private String absoluteUrl(String path) throws MalformedURLException {
-//        URL baseUrl = new URL(getBaseUrl());
-//        URL url = new URL(baseUrl, path);
-//        return url.toString();
-//    }
+    // private String absoluteUrl(String path) throws MalformedURLException {
+    // URL baseUrl = new URL(getBaseUrl());
+    // URL url = new URL(baseUrl, path);
+    // return url.toString();
+    // }
 
     /**
      * return absolute url based upon context (i.e. base url) and path.
+     * 
      * @param base
      * @param path
      * @return
@@ -386,7 +379,6 @@ public abstract class AbstractSeleniumWebITCase {
         abs = url.toString();
         return abs;
     }
-
 
     /**
      * @return string representing a fully qualified URL, based upon TdarConfiguration settings
@@ -416,21 +408,25 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     private static final String CONTEXTUAL_BASE_URL_INDICATOR = "~";
+
     /**
-     * Navigate to a page using specified path. The type of path determines the destination URL <pre>
+     * Navigate to a page using specified path. The type of path determines the destination URL
+     * 
+     * <pre>
      *     - if path is fully-qualified,  this becomes the destination URL
      *     - if path is relative,  the destination is resolved by using the *default* base url and the path
      *     - if path is relative and is prefixed with "~", this method uses the *current*
      *       location of the webdriver as the base url, and resolves the destination using the base URL and the path
      * </pre>
-     *
+     * 
      * This method fails the current test if the destination URL is malformed.
-     *
-     * @param path string representing relative path, "~" + path, or fully-qualified URL
+     * 
+     * @param path
+     *            string representing relative path, "~" + path, or fully-qualified URL
      */
     public void gotoPage(String path) {
-        if(path.startsWith(CONTEXTUAL_BASE_URL_INDICATOR)) {
-            //assertCurrentUrl();
+        if (path.startsWith(CONTEXTUAL_BASE_URL_INDICATOR)) {
+            // assertCurrentUrl();
             gotoPage(getCurrentUrl(), path.substring(1));
         } else {
             gotoPage(getBaseUrl(), path);
@@ -438,32 +434,34 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     *
-     * @param base fully-qualified URL to use as the "base" URL, if path is relative.
-     * @param path relative path or fully qualified URL
+     * 
+     * @param base
+     *            fully-qualified URL to use as the "base" URL, if path is relative.
+     * @param path
+     *            relative path or fully qualified URL
      */
     public void gotoPage(String base, String path) {
         try {
             String url = absoluteUrl(base, path);
             logger.debug("going to: {}", url);
             driver.get(url);
-        } catch(MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             String err = String.format("bad url:: base:%s\tpath:%s", base, path);
             logger.error(err, ex);
             Assert.fail(err);
         }
     }
 
-//    public void gotoPage(String path) {
-//        String url = null;
-//        try {
-//            url = absoluteUrl(path);
-//            logger.debug("going to {}", url);
-//            driver.get(absoluteUrl(path));
-//        } catch (Exception e) {
-//            Assert.fail(String.format("gotoPage() failed. base:%s   path:%s", getBaseUrl(), path));
-//        }
-//    }
+    // public void gotoPage(String path) {
+    // String url = null;
+    // try {
+    // url = absoluteUrl(path);
+    // logger.debug("going to {}", url);
+    // driver.get(absoluteUrl(path));
+    // } catch (Exception e) {
+    // Assert.fail(String.format("gotoPage() failed. base:%s   path:%s", getBaseUrl(), path));
+    // }
+    // }
 
     public WebElement waitFor(String selector) {
         return waitFor(selector, 10);
@@ -525,9 +523,9 @@ public abstract class AbstractSeleniumWebITCase {
 
     private void fakeSSLCertIE() {
         gotoPage("https://" + CONFIG.getHostName() + ":" + CONFIG.getHttpsPort() + "/");
-//        driver.get("javascript:document.getElementById('overridelink').click()");
-//        waitFor("body");
-//        logger.info(getText());
+        // driver.get("javascript:document.getElementById('overridelink').click()");
+        // waitFor("body");
+        // logger.info(getText());
     }
 
     public void logout() {
@@ -808,6 +806,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     /**
      * Dismiss (by clicking OK/Accept) if browser is displaying a modal
+     * 
      * @return true if modal was present and was dismissed, otherwise false
      */
     public boolean dismissModal() {
@@ -819,29 +818,29 @@ public abstract class AbstractSeleniumWebITCase {
         return true;
     }
 
-
     /**
      * when set, this test case will attempt to automatically dismiss any modal windows encountered during navigation
+     * 
      * @param ignoreModals
      */
     public void setIgnoreModals(boolean ignoreModals) {
         this.ignoreModals = ignoreModals;
     }
 
-
     /**
      * convenience method to fill out form fields in bulk
-     * e.g.  fillout(name, val, name, val, name, val)
+     * e.g. fillout(name, val, name, val, name, val)
+     * 
      * @param namevals
      * @return WebElementSelection containing the fields referenced in the list
      */
-    public WebElementSelection fillout(Object ... namevals) {
+    public WebElementSelection fillout(Object... namevals) {
         WebElementSelection selection = new WebElementSelection(new LinkedList<WebElement>());
         assertEquals("name/value pair array must be even", namevals.length % 2, 0);
-        for(int i = 0; i < namevals.length; i+=2) {
+        for (int i = 0; i < namevals.length; i += 2) {
             String key = (String) namevals[i];
-            Object val = namevals[i+1];
-            if(val == null) {
+            Object val = namevals[i + 1];
+            if (val == null) {
                 val = "";
             }
             WebElementSelection elems = find(key);

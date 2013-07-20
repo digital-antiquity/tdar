@@ -155,4 +155,12 @@ public class TestConfiguration {
         return String.format("https://%s:%s/", getHostName(), getHttpsPort());
     }
 
+    public String getChromeDriverPath() {
+        return assistant.getStringProperty("tdar.chromedriver.path","/Applications/chromedriver");
+    }
+
+    public String getIEDriverPath() {
+        return assistant.getStringProperty("tdar.iedriver.path","c:\\opt\\workspace\\IEDriverServer.exe");
+    }
+
 }
