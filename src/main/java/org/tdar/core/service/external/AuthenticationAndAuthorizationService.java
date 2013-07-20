@@ -482,9 +482,30 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         NEW;
     }
 
+    public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{5,40}$";
+    public static final String EMAIL_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{4,40}$";
+
+    public boolean isValidUsername(String username) {
+        if (StringUtils.isBlank(username))
+            return false;
+
+        return username.matches(USERNAME_VALID_REGEX);
+    }
+
+    public boolean isValidEmail(String email) {
+        if (StringUtils.isBlank(email))
+            return false;
+
+        return email.matches(EMAIL_VALID_REGEX);
+    }
+
     @Transactional
     public AuthenticationStatus authenticatePerson(String loginUsername, String loginPassword, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
+        if (!isValidUsername(loginUsername)) {
+            throw new TdarRecoverableRuntimeException("Username Invalid, cannot authenticated user");
+        }
+
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
         if (result.isValid()) {
             Person person = personDao.findByUsername(loginUsername);

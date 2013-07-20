@@ -47,9 +47,6 @@ import com.opensymphony.xwork2.Preparable;
 @Result(name = "new", type = "redirect", location = "new")
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
 
-    public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{5,40}$";
-    public static final String EMAIL_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{4,40}$";
-
     public static final String USERNAME_INVALID = "Username invalid, usernames must be at least 5 characters and can only have letters and numbers";
     public static final String EMAIL_INVALID = "Email invalid, usernames must be at least 5 characters and can only have letters and numbers";
 
@@ -319,13 +316,15 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 logger.info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
                 person.setUsername(normalizedUsername);
             }
-            
-            if (!person.getUsername().matches(USERNAME_VALID_REGEX)) {
+
+            if (!getAuthenticationAndAuthorizationService().isValidUsername(person.getUsername())) {
                 addActionError(USERNAME_INVALID);
+                return;
             }
 
-            if (!person.getEmail().matches(EMAIL_VALID_REGEX)) {
+            if (!getAuthenticationAndAuthorizationService().isValidEmail(person.getEmail())) {
                 addActionError(EMAIL_INVALID);
+                return;
             }
 
         }
@@ -342,7 +341,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         if (StringUtils.isBlank(person.getLastName())) {
             addActionError("Please enter your last name");
         }
-
 
         // validate email + confirmation
         if (isUsernameRegistered(person.getUsername())) {

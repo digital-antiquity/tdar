@@ -54,7 +54,6 @@ import org.tdar.struts.action.resource.ImageController;
 import org.tdar.struts.action.resource.OntologyController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
-import org.tdar.utils.TestConfiguration;
 
 public abstract class AbstractControllerITCase extends AbstractIntegrationTestCase {
 
@@ -363,7 +362,9 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         String execute = null;
         // technically this is more appropriate -- only call create if validate passes
         if (CollectionUtils.isEmpty(controller.getActionErrors())) {
-            controller.create();
+            execute = controller.create();
+        } else {
+            logger.error("errors: {} ", controller.getActionErrors());
         }
 
         return execute;
