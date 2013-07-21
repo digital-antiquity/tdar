@@ -64,27 +64,41 @@ public class UrlService {
     }
 
     public static String getCurrentAbsoluteUrlPath(HttpServletRequest servletRequest) {
+        Logger logger = LoggerFactory.getLogger(UrlService.class);
         String activePage = "";
         // using getAttribute allows us to get the orginal url out of the page when a forward has taken place.
-        String queryString = "?" + servletRequest.getAttribute("javax.servlet.forward.query_string");
-        String requestURI = "" + servletRequest.getAttribute("javax.servlet.forward.request_uri");
-        Logger logger = LoggerFactory.getLogger(UrlService.class);
-        logger.info("|- requestUrl {}, queryString {} ", requestURI, queryString);
-        if (requestURI == "null") {
+        String queryString = getAttribute(servletRequest, "javax.servlet.forward.query_string");
+        String requestURI = getAttribute(servletRequest, "javax.servlet.forward.request_uri");
+        logger.debug("|- requestUrl {}, queryString {} ", requestURI, queryString);
+        if (StringUtils.isBlank(requestURI)) {
             // using getAttribute allows us to get the orginal url out of the page when a include has taken place.
-            queryString = "?" + servletRequest.getAttribute("javax.servlet.include.query_string");
-            requestURI = "" + servletRequest.getAttribute("javax.servlet.include.request_uri");
-            logger.info(" |-- requestUrl {}, queryString {} ", requestURI, queryString);
+            queryString = getAttribute(servletRequest, "javax.servlet.include.query_string");
+            requestURI = getAttribute(servletRequest, "javax.servlet.include.request_uri");
+            logger.debug(" |-- requestUrl {}, queryString {} ", requestURI, queryString);
         }
-        if (requestURI == "null") {
-            queryString = "?" + servletRequest.getQueryString();
+        if (StringUtils.isBlank(requestURI)) {
+            queryString = servletRequest.getQueryString();
             requestURI = servletRequest.getRequestURI();
-            logger.info(" |--- requestUrl {}, queryString {} ", requestURI, queryString);
+            logger.debug(" |--- requestUrl {}, queryString {} ", requestURI, queryString);
         }
-        if (queryString.equals("?null"))
-            queryString = "";
+        activePage = requestURI;
+        if (StringUtils.isNotBlank(queryString)) {
+            activePage += "?" + queryString;
+        }
         logger.info("returning: {} ", activePage);
-        activePage = requestURI + queryString;
         return activePage;
+    }
+
+    private static String getAttribute(HttpServletRequest servletRequest, String attribute) {
+        Logger logger = LoggerFactory.getLogger(UrlService.class);
+        try {
+            Object attr = servletRequest.getAttribute(attribute);
+            if (attr != null && StringUtils.isNotBlank((String) attr)) {
+                return (String) attr;
+            }
+        } catch (Exception e) {
+            logger.debug("parsing attr:{}", e);
+        }
+        return null;
     }
 }
