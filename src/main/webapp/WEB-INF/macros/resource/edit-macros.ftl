@@ -253,7 +253,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
         
             <div class="">
-            <p><span class="label">Note:</span> You can only have <strong>${maxUploadFilesPerRecord}</strong> per record</p> 
+            <p><span class="label">Note:</span> You can only have <strong><#if !multipleFileUploadEnabled>1 file<#else>${maxUploadFilesPerRecord} files</#if> </strong> per record</p> 
             </div>
         
             <table id="uploadFiles" class="files table tableFormat">
@@ -787,6 +787,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
           <div><b>NOTE:</b> by changing this from 'public', all of the metadata will be visible to users, they will not be able to view or download this file.  
           You may explicity grant read access to users below.</div>
           <br />     
+          
+          Date                    <@s.textfield name="fileProxies[0].fileCreatedDate" class="date input-small" placeholder="mm/dd/yyyy" />
+	          Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="1" placeholder="Enter a description here" />
+          
+          
           </div>
       </@singleFileUpload>
     </@sharedUploadFile>
@@ -801,7 +806,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <ul>
             <li>To attach files to this resource,  click the button labeled "Add Files..." </li>
             <#if multipleFileUploadEnabled>
-                <li>You may upload up to ${maxUploadFilesPerRecord} files for this resource type</li>
+                <li>You may upload up to <#if !multipleFileUploadEnabled>1 file<#else>${maxUploadFilesPerRecord} files</#if> for this resource type</li>
             <#else>
                 <#--FIXME:  i'm pretty sure async upload for single files is untested, and wont work as described here -->
                 <li> To replace a file, simply upload the updated version</li>
@@ -924,7 +929,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         
             <div class="controls">
                 <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right" 
-                style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential" style="padding-left: 20px;" />
+                style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential confidential-contact-required" style="padding-left: 20px;" />
+
+                    <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" class="date input-small" placeholder="mm/dd/yyyy" />
+	                <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" />
+
             </div> 
         </div>
         </td>
