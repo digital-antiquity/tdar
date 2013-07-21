@@ -483,7 +483,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         NEW;
     }
 
-    public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{5,40}$";
+    public static final String USERNAME_REGEX = "^[a-zA-Z0-9+@\\.\\-_]";
+    public static final String USERNAME_VALID_REGEX = USERNAME_REGEX + "{5,40}$";
     public static final String EMAIL_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{4,40}$";
 
     public boolean isValidUsername(String username) {
@@ -491,6 +492,16 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             return false;
 
         return username.matches(USERNAME_VALID_REGEX);
+    }
+
+    /*
+     * This is separate to ensure that legacy usernames are supported...
+     */
+    public boolean isPossibleValidUsername(String username) {
+        if (StringUtils.isBlank(username))
+            return false;
+
+        return username.matches(USERNAME_REGEX+"{2,40}$");
     }
 
     public boolean isValidEmail(String email) {
@@ -503,7 +514,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     @Transactional
     public AuthenticationStatus authenticatePerson(String loginUsername, String loginPassword, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
-        if (!isValidUsername(loginUsername)) {
+        if (!isPossibleValidUsername(loginUsername)) {
             throw new TdarRecoverableRuntimeException(USERNAME_INVALID);
         }
 
