@@ -614,8 +614,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
     <#else>
     <div class="well-alt" id="accountsection">
-        <h2>Choose an account to bill from:</h2>
-        <@s.select name="accountId" list="%{activeAccounts}" title="Choose a valid account to bill from" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required"/>
+        <h2>Choose an account to bill from</h2>
+        <@s.select name="accountId" list="%{activeAccounts}" label="Account" title="Choose an account to bill from" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required"/>
     </div>
     </#if>
 </#if>
