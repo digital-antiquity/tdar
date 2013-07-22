@@ -312,6 +312,15 @@ var FileuploadValidator;
 
 
 
+    
+    TDAR.fileupload.addDataTableValidation = function(validator) {
+
+        //only one image metadata file
+        validator.addRule("filecount",
+            {max: 1, extension:["accdb", "mdb", "xls", "xlsx","gdb"]},
+            "You may only upload one spreadsheet or access database (MDB, ACCDB, XLS, GDB, XLSX)");
+
+    };
 
 
     //FIXME: move me to a component that only gets added to GIS
@@ -392,6 +401,7 @@ var FileuploadValidator;
             {max: 1, extension:["jpg", "jpeg", "tif", "tiff"]},
             "You may only upload one image record (JPG or TIFF)");
 
+        TDAR.fileupload.addDataTableValidation(validator);
     };
 
 })(console);

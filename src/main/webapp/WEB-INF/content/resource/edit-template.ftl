@@ -320,6 +320,10 @@ TDAR.inheritance.applyInheritance(formSelector);
     </#if>
     
     <#if local_.localJavascript?? && local_.localJavascript?is_macro>
+
+	<#if resource.resourceType.dataTableSupported>
+	TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
+	</#if>
 	<@local_.localJavascript />
 	</#if>
 });
