@@ -124,7 +124,7 @@ public class FileAnalyzer {
         return messageService.sendFileProcessingRequest(workflow, informationResourceFileVersions);
     }
 
-    private void checkFilesExist(InformationResourceFileVersion[] informationResourceFileVersions) throws FileNotFoundException, IOException {
+    private void checkFilesExist(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
         for (InformationResourceFileVersion version : informationResourceFileVersions) {
             File file = version.getTransientFile();
 
