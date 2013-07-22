@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,11 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SupportsResource;
-import org.tdar.core.bean.resource.CategoryVariable;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.*;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -70,13 +67,16 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             addActionError("Please enter your " + getPersistable().getResourceType().getLabel() + " into the text area.");
             return null;
         }
-
-        if (ObjectUtils.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
-            logger.info("incoming and current file input text is the same, skipping further actions");
-            return null;
-        } else {
-            logger.info("processing updated text input for {}", getPersistable());
+        InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion();
+        if(latestUploadedTextVersion != null && latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR) {
+            if (ObjectUtils.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
+                logger.info("incoming and current file input text is the same, skipping further actions");
+                return null;
+            } else {
+                logger.info("processing updated text input for {}", getPersistable());
+            }
         }
+
 
         try {
             // process the String uploaded via the fileTextInput box verbatim as the UPLOADED_TEXT version
@@ -177,17 +177,29 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         return SUCCESS;
     }
 
+    protected InformationResourceFileVersion getLatestUploadedTextVersion() {
+        InformationResourceFileVersion version = null;
+        Collection<InformationResourceFileVersion> versions = getPersistable().getLatestVersions(VersionType.UPLOADED_TEXT);
+        if(!versions.isEmpty()) {
+            version = getPersistable().getLatestVersions(VersionType.UPLOADED_TEXT).iterator().next();
+
+        }
+        return version;
+    }
+
     protected String getLatestUploadedTextVersionText() {
         // in order for this to work we need to be generating text versions
         // of these files for both text input and file uploads
-        for (InformationResourceFileVersion version : getPersistable().getLatestVersions(VersionType.UPLOADED_TEXT)) {
+        String versionText = "";
+        InformationResourceFileVersion version = getLatestUploadedTextVersion();
+        if(version != null) {
             try {
-                return FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
-            } catch (Exception e) {
+                versionText =  FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+            } catch (IOException e) {
                 logger.debug("an error occurred when trying to load the text version of a file", e);
             }
         }
-        return "";
+        return versionText;
     }
     
     @Override
