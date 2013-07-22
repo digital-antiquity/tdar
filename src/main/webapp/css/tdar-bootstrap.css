@@ -986,6 +986,7 @@ h3.collection-mid-black::before {
 	margin: 0px;
 	padding: 2px 15px 2px 15px;
 	font-weight: 700;
+	top: 45%;
 }
 
 .resizable.resize-vertical {
