@@ -344,14 +344,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
     }
 
-    @Override
-    public String loadAddMetadata() {
-        String toReturn = super.loadAddMetadata();
-        loadFilesJson();
-        return toReturn;
-    }
-
-    // jtd: not putting this in the getFilesJson because I want any exceptions to occur prior to rendering
     private void loadFilesJson() {
         if (Persistable.Base.isNullOrTransient(getResource())) {
             return;
@@ -669,6 +661,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public String getFilesJson() {
+        loadFilesJson();
         return filesJson;
     }
 
