@@ -8,12 +8,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.ElementNotVisibleException;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.MoveTargetOutOfBoundsException;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,25 +34,20 @@ public class WebElementSelection implements Iterable<WebElement> {
 
     public final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public WebElementSelection(List<WebElement> webElements) {
+    WebDriver driver;
+
+    public WebElementSelection(List<WebElement> webElements, WebDriver driver) {
         elements = new ArrayList<WebElement>();
         if (webElements != null) {
             elements.addAll(webElements);
         }
+        this.driver = driver;
     }
 
-    private WebElementSelection() {
-        this(Collections.<WebElement> emptyList());
+    private WebElementSelection(WebDriver driver)  {
+        this(Collections.<WebElement>emptyList(), driver);
     }
 
-    private static WebElementSelection $() {
-        return new WebElementSelection();
-    }
-
-    private static WebElementSelection $(WebElement... elems) {
-        WebElementSelection sel = new WebElementSelection(Arrays.asList(elems));
-        return sel;
-    }
 
     @Override
     public Iterator<WebElement> iterator() {
@@ -74,34 +66,29 @@ public class WebElementSelection implements Iterable<WebElement> {
      */
     public void click() {
         for (WebElement elem : this) {
-            WebElementSelection.click(elem);
+            try {
+                elem.click();
+            } catch (ElementNotVisibleException ex) {
+                //if element isn't visible, maybe a scrollspy is in the way?
+                logger.debug("element not visible.  attempting to scoot...");
+                scoot(0, -200);
+                elem.click();
+            }
         }
     }
 
-    /*
-     * This is ugly, but... sometimes, the thing you want to click on... well, it's under the scrollspy and there's nothing you can do.
-     * So, the best way to deal with this that I can think of at the moment is to make the Driver static, and then call it through this shared method
-     * where effectively we're trying to click, and if there's something in front or back, we try and scroll up or down to get it outside of that 
-     * things, if after a few tries we're not successful... we just error out.
+
+    /**
+     * attempt to scroll the browser in the specified direction. This method fails silently.
+     * @param dx
+     * @param dy
      */
-    public static void click(WebElement elem) {
-        Logger log = LoggerFactory.getLogger(WebElementSelection.class);
-        try {
-            elem.click();
-        } catch (Exception e) {
-            if (e.getMessage().contains("Other element")) {
-                // try and scroll up if you're having issues clicking on something, it's likely because the scrollspy is in the way
-                log.debug("element is 'under' another element, trying to scoot... <{} id={}/> {} ", elem.getTagName(), elem.getAttribute("id"), elem);
-                JavascriptExecutor jsx = (JavascriptExecutor) AbstractSeleniumWebITCase.driver;
-                jsx.executeScript("window.scrollBy(0,-200)", "");
-                try {
-                    elem.click();
-                } catch (Exception e2) {
-                    // try and scroll up if you're having issues clicking on something, it's likely because the scrollspy is in the way
-                    log.debug("element is 'under' another element, trying to scoot...");
-                    jsx.executeScript("window.scrollBy(0,400)", "");
-                }
-            }
+    private void scoot(int dx, int dy) {
+        Actions actions = new Actions(driver);
+        try{
+            actions.moveByOffset(dx, dy);
+        } catch(MoveTargetOutOfBoundsException ex) {
+
         }
     }
 
@@ -208,7 +195,7 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return selection containing combined results of all findElements(By) from each element in the selection.
      */
     public WebElementSelection find(By by) {
-        return new WebElementSelection(findElements(by));
+        return new WebElementSelection(findElements(by), driver);
     }
 
     /**
@@ -392,7 +379,7 @@ public class WebElementSelection implements Iterable<WebElement> {
 
                                     // ...click to *uncheck* if element has unequal value and is currently checked
                                     (elem.getAttribute("value").equals(val) && elem.isSelected())) {
-                                WebElementSelection.click(elem);
+                                elem.click();
                             }
                             break;
                         case "select":
@@ -457,8 +444,8 @@ public class WebElementSelection implements Iterable<WebElement> {
         if (isEmpty())
             return this;
         if (StringUtils.equalsIgnoreCase("body", getTagName()))
-            return new WebElementSelection();
-        return new WebElementSelection(first().findElements(By.xpath("..")));
+            return new WebElementSelection(driver);
+        return new WebElementSelection(first().findElements(By.xpath("..")), driver);
     }
 
     /**
@@ -473,7 +460,7 @@ public class WebElementSelection implements Iterable<WebElement> {
             lineage.add(parent.first());
             parent = parent.parent();
         }
-        return new WebElementSelection(lineage);
+        return new WebElementSelection(lineage, driver);
     }
 
     /**
@@ -503,7 +490,7 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return filtered selection containing parent elements of this selections's first item.
      */
     public WebElementSelection parentsWithClass(String cssClass) {
-        WebElementSelection parents = new WebElementSelection();
+        WebElementSelection parents = new WebElementSelection(driver);
         for (WebElement parent : parents()) {
             if (hasClass(parent, cssClass)) {
                 parents.elements.add(parent);
@@ -518,7 +505,7 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return
      */
     public WebElementSelection visibleElements() {
-        WebElementSelection subset = new WebElementSelection(elements);
+        WebElementSelection subset = new WebElementSelection(driver);
         Iterator<WebElement> iterator = subset.iterator();
         while (iterator.hasNext()) {
             WebElement elem = iterator.next();

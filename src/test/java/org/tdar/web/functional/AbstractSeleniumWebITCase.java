@@ -73,7 +73,7 @@ public abstract class AbstractSeleniumWebITCase {
     boolean screenshotsAllowed = true;
     boolean ignoreJavascriptErrors = false;
     private boolean ignoreModals = false;
-    public static WebDriver driver;
+    WebDriver driver;
 
     // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
@@ -489,7 +489,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     public WebElementSelection find(By by) {
         logger.trace("find start: {}", by);
-        WebElementSelection selection = new WebElementSelection(driver.findElements(by));
+        WebElementSelection selection = new WebElementSelection(driver.findElements(by), driver);
         logger.debug("criteria:{}\t  size:{}", by, selection.size());
         logger.trace("find   end: {}", by);
         return selection;
@@ -504,7 +504,7 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public WebElementSelection find(WebElement... elems) {
-        return new WebElementSelection(Arrays.asList(elems));
+        return new WebElementSelection(Arrays.asList(elems), driver);
     }
 
     public WebElement findFirst(String selector) {
@@ -692,7 +692,7 @@ public abstract class AbstractSeleniumWebITCase {
     public int clickElementUntil(WebElement element, By findBy, int max) {
         int i = 0;
         while (find(findBy).size() == 0 && i < max) {
-            WebElementSelection.click(element);
+            element.click();
             i++;
         }
         return i;
@@ -834,7 +834,7 @@ public abstract class AbstractSeleniumWebITCase {
      * @return WebElementSelection containing the fields referenced in the list
      */
     public WebElementSelection fillout(Object... namevals) {
-        WebElementSelection selection = new WebElementSelection(new LinkedList<WebElement>());
+        WebElementSelection selection = new WebElementSelection(new LinkedList<WebElement>(), driver);
         assertEquals("name/value pair array must be even", namevals.length % 2, 0);
         for (int i = 0; i < namevals.length; i += 2) {
             String key = (String) namevals[i];
