@@ -80,15 +80,6 @@ TDAR.repeatrow = function() {
         var nextId = currentId + 1;
         var newRowId = nextId;
         
-        //FIXME: bit.ly/Qk6UPe
-        if ($element.attr("id") != undefined && $element.attr("id").indexOf("_") != -1) {
-            while ("a" != "b") {
-                newRowId = $element.attr("id").substring(0, $element.attr("id").lastIndexOf('_' + currentId + '_')) + "_" + nextId + '_';
-                if ($(newRowId).length == 0)
-                    break;
-            }
-        }
-        
         var cloneIdAttr = elementIdAttr.replace(rex, "$1" + nextId + "$3");
         
         //TODO: remove error/warning labels from $clone (e.g.  form validation fails on last row, then you click 'add new row').
