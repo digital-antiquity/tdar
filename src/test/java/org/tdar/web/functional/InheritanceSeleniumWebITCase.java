@@ -9,7 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static org.junit.Assert.*;
 
-public class InheritenceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
+public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     @Test
     //create a project, fill out a couple inheritable sections, then inherit
     public void testBasicInheritance() throws InterruptedException {
