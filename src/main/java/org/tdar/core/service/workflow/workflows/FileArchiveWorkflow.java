@@ -31,6 +31,7 @@ public class FileArchiveWorkflow extends BaseWorkflow {
         return FileType.FILE_ARCHIVE;
     }
 
+    @Override
     public boolean isEnabled() {
         return true;
     }

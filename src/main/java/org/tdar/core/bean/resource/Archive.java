@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.search.annotations.Indexed;
 
 /**
- * A compressed archive. If from FAIMS the hope is that it will unpacked and its constituent parts imported as separate documents.
+ * A compressed archive. From FAIMS, the hope is that it will unpacked and its constituent parts imported as separate documents.
  * @author Martin Paulo
  */
 @Entity

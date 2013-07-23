@@ -39,8 +39,7 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Set<String> getValidFileExtensions() {
-        Set<String> extensionsForTypes = new HashSet<>(analyzer.getExtensionsForType(ResourceType.ARCHIVE));
-        return extensionsForTypes;
+        return analyzer.getExtensionsForType(ResourceType.ARCHIVE);
     }
 
     public void setArchive(final Archive archive) {
@@ -62,4 +61,5 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
     public boolean isMultipleFileUploadEnabled() {
         return false;
     }
+
 }
