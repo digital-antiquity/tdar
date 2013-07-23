@@ -329,7 +329,9 @@ public abstract class AbstractSeleniumWebITCase {
             // Now you can do whatever you need to do with it, for example copy somewhere
             File dir = new File("target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName());
             dir.mkdirs();
-            FileUtils.copyFile(scrFile, new File(dir, screenshotFilename(filename, "png")));
+            String finalFilename =  screenshotFilename(filename, "png");
+            logger.debug("saving screenshot: dir:{}, name:", dir, finalFilename);
+            FileUtils.copyFile(scrFile, new File(dir,finalFilename));
         } catch (Exception e) {
             logger.error("could not take screenshot", e);
         } finally {
@@ -800,6 +802,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void setScreenshotsAllowed(boolean val) {
+        logger.debug("screenshots allowed:{}", val);
         screenshotsAllowed = val;
     }
 

@@ -31,7 +31,7 @@ TDAR.repeatrow = function() {
             $(_options.rowSelector, parentElement).addClass("repeat-row");
             
             var btnLabel =$(parentElement).data("add-another") || _options.addAnother;
-            var $button = _button(btnLabel);
+            var $button = _button(btnLabel, parentElement.id + "AddAnotherButton");
             $('button', $button).click(function() {
                 var element = $(_options.rowSelector, parentElement).last();
                 var $clone = _cloneSection(element, parentElement);
@@ -176,10 +176,14 @@ TDAR.repeatrow = function() {
     
     
     // private: return a dom button
-    var _button = function(label) {
+    var _button = function(label, id) {
+        var buttonId = id;
+        if(!id) {
+            buttonId = "btn" + label.replace(" ", "").toLowerCase();
+        }
         var html = "<div class='control-group add-another-control'>" +
                 "<div class='controls'>" +
-                "<button class='btn' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" +
+                "<button class='btn addanother' id='" + buttonId + "' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" +
                 "</div>" +
                 "</div>";
        return $(html);

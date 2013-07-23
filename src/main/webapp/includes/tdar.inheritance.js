@@ -241,7 +241,7 @@ function _inheritInformation(formId, json, sectionId, tableId) {
             TDAR.inheritance.resetRepeatable("#" + 'approved' + tableId + 'Repeatable', json['approved' + tableId].length);
         }
         var simpleId = tableId;
-        simpleId[0] = simpleId[0].toLowerCase();
+        simpleId = simpleId[0].toLowerCase() + simpleId.substr(1);
         if (document.getElementById(simpleId + "Repeatable") !== null) {
             TDAR.inheritance.resetRepeatable("#" + simpleId + 'Repeatable', json[simpleId].length);
         }
@@ -738,10 +738,10 @@ function _selectAllInheritanceClicked() {
 //TODO: Alert box might be better because user could inspect sections prior to decision, but managing state would be way harder 
 //(e.g. user changes additional values before they finally click 'okay' or 'cancel').
 function _displayOverwritePrompt(optionsList, okaySelected, cancelSelected) {
-    $modalDiv = $('#inheritOverwriteAlert');
+    var $modalDiv = $('#inheritOverwriteAlert');
     
     //populate list of conflicting sections
-    $ul = $("<ul></ul>");
+    var $ul = $("<ul></ul>");
     $.each(optionsList, function(idx, options){
         $ul.append("<li>" + options.sectionName + "</li>");
     });
