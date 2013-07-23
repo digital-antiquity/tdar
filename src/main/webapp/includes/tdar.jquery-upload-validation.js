@@ -129,7 +129,7 @@ var FileuploadValidator;
             if(!this.fileupload) errs.push("fileupload element not found");
             if(!this.helper) errs.push("fileupload helper not found - did you call registerFileUpload yet?");
             this.inputSelector = this.helper.inputSelector;
-            errs.forEach(function(err){
+            $.each(errs, function(idx, err){
                 console.error(err);
             });
 
@@ -229,7 +229,7 @@ var FileuploadValidator;
             var self = this;
             var $container = $(this.errorContainer);
             var $ul = $container.find("ul");
-            this.errors.forEach(function(error, idx) {
+            $.each(this.errors, function(idx, error) {
                 var $error = $(self.errorWrapper);
                 if(error.file) {
                     $error.append("<b>" + error.file.filename + ": </b>");
