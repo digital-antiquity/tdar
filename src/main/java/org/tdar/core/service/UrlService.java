@@ -69,23 +69,23 @@ public class UrlService {
         // using getAttribute allows us to get the orginal url out of the page when a forward has taken place.
         String queryString = getAttribute(servletRequest, "javax.servlet.forward.query_string");
         String requestURI = getAttribute(servletRequest, "javax.servlet.forward.request_uri");
-        logger.debug("|- requestUrl {}, queryString {} ", requestURI, queryString);
+        logger.trace("|- requestUrl {}, queryString {} ", requestURI, queryString);
         if (StringUtils.isBlank(requestURI)) {
             // using getAttribute allows us to get the orginal url out of the page when a include has taken place.
             queryString = getAttribute(servletRequest, "javax.servlet.include.query_string");
             requestURI = getAttribute(servletRequest, "javax.servlet.include.request_uri");
-            logger.debug(" |-- requestUrl {}, queryString {} ", requestURI, queryString);
+            logger.trace(" |-- requestUrl {}, queryString {} ", requestURI, queryString);
         }
         if (StringUtils.isBlank(requestURI)) {
             queryString = servletRequest.getQueryString();
             requestURI = servletRequest.getRequestURI();
-            logger.debug(" |--- requestUrl {}, queryString {} ", requestURI, queryString);
+            logger.trace(" |--- requestUrl {}, queryString {} ", requestURI, queryString);
         }
         activePage = requestURI;
         if (StringUtils.isNotBlank(queryString)) {
             activePage += "?" + queryString;
         }
-        logger.info("returning: {} ", activePage);
+        logger.debug("returning: {} ", activePage);
         return activePage;
     }
 
