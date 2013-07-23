@@ -11,11 +11,13 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
 import de.schlichtherle.truezip.file.TArchiveDetector;
-import de.schlichtherle.truezip.file.TConfig;
 import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.fs.archive.tar.TarBZip2Driver;
+import de.schlichtherle.truezip.socket.sl.IOPoolLocator;
 
 /**
  * @author Adam Brin
@@ -26,6 +28,20 @@ public class ListArchiveTask extends AbstractTask {
     private static final long serialVersionUID = 5392550508417818439L;
 
     private long effectiveSize = 0l;
+
+    /**
+     * @return The extensions that the wrapped instance of TrueZip is able understand.
+     */
+    public static String[] getUnderstoodExtensions() {
+        return getArchiveDetector().toString().split("\\|");
+    }
+
+    /**
+     * @return ALL + .bz2, because bizarrely, out of the box, only 'tar.bz2' is supported: <i>not</i> '.bz2'
+     */
+    private static TArchiveDetector getArchiveDetector() {
+        return new TArchiveDetector(TArchiveDetector.ALL, "bz2", new TarBZip2Driver(IOPoolLocator.SINGLETON));
+    }
 
     /*
      * (non-Javadoc)
@@ -43,8 +59,11 @@ public class ListArchiveTask extends AbstractTask {
 
             // list all of the contents
             // http://blog.msbbc.co.uk/2011/09/java-getting-started-with-truezip-api.html
-            TConfig.get().setArchiveDetector(TArchiveDetector.ALL);
-            TFile archiveFile = new TFile(f_, TArchiveDetector.ALL);
+            TFile archiveFile = new TFile(f_, getArchiveDetector());
+            if (!archiveFile.isDirectory()) {
+                // logging an error means that this error is most likely never seen
+                throw new TdarRecoverableRuntimeException("Could not detect the archive type for: " + archiveFile.getName());
+            }
 
             listFiles(archiveContents, archiveFile, archiveFile);
 
@@ -57,10 +76,6 @@ public class ListArchiveTask extends AbstractTask {
     }
 
     private void listFiles(StringBuilder archiveContents, File archiveFile, File originalFile) {
-        if (!archiveFile.isDirectory()) {
-            getLogger().debug("listFiles passed in a file, not a directory : " + archiveFile.getName());
-            return;
-        }
         for (File file : archiveFile.listFiles()) {
             getLogger().trace(file.getPath());
             setEffectiveSize(getEffectiveSize() + file.length());

@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.filestore.tasks.ListArchiveTask;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
 
@@ -67,13 +68,20 @@ public class FilestoreTest {
     }
 
     @Test
+    @SuppressWarnings("static-method")
     public void sanitizeFilenameTest() {
         assertEquals("abc.txt", PairtreeFilestore.sanitizeFilename("abc.txt"));
         assertEquals("abc.txt", PairtreeFilestore.sanitizeFilename("abc'.txt"));
         assertEquals( "abc.tar.gz", PairtreeFilestore.sanitizeFilename("abc.tar.gz"));
         assertEquals( "abc.tar.bz2", PairtreeFilestore.sanitizeFilename("abc.tar.bz2"));
         assertEquals( "abc-tar.bz2", PairtreeFilestore.sanitizeFilename("abc-tar.bz2"));
+        assertEquals( "abc.tar.bz2", PairtreeFilestore.sanitizeFilename("abc-.tar.bz2"));
         assertEquals("abc-a----------_----+-----.txt", PairtreeFilestore.sanitizeFilename("abc\"a!@#$%^&*()_{}[]+<>?/\\\\.txt"));
+        for (String archiveExtension: ListArchiveTask.getUnderstoodExtensions()) {
+            String fileName = "test." + archiveExtension;
+            String sanitizedFileName = PairtreeFilestore.sanitizeFilename(fileName);
+            assertEquals("Oh-oh: filename should not have altered from: " + fileName + " to: " + sanitizedFileName, fileName, sanitizedFileName);
+        }
     }
 
     @Test

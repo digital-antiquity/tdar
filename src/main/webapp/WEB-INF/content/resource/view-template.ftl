@@ -83,7 +83,7 @@
 	</#if>
 	<#if (files?size > 0 ) && authenticatedUser??  && (administrator || editable) >
 	<div class="alert alert-error">
-	<h3>The following Files have Processing Errors</h3>
+	<h3>The following files have processing errors</h3>
 	<p>These errors occured <i>in the past</i>, when the file was initially processed. 
 	Please contact your system administrator and request them to investigate the errors.</p>
 	<ul><#list files as file>
