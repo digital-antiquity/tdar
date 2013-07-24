@@ -100,7 +100,7 @@ TDAR.fileupload = function() {
         _registerReplaceButton(_options.formSelector);
 
         //update the proxy action if user updates fileproxy metadata
-        $(_options.formSelector).on("change", "select,textarea,input[type=text],input[type=date]", function(e) {
+        $filesContainer.on("change", "select,textarea,input[type=text],input[type=date]", function(e) {
             _updateFileAction(this);
         });
         
@@ -295,9 +295,11 @@ TDAR.fileupload = function() {
     }
 
     var _registerReplaceButton = function(formSelector) {
+
         console.log("registering replace button")
 
-        //invoke the fileupload widgets "send" method
+        //invoke the fileupload widget's "send" method
+        //FIXME: this would be more efficient if we passed the specific div that holds the upload section (instead of entire form)
         $(formSelector).on('change', '.replace-file' , function (e) {
             console.log("triggering file upload");
 
