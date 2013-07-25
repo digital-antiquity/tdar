@@ -71,7 +71,7 @@ View freemarker macros
 </#if>
 </#macro>
 
-<#macro createFileLink irfile newline=false >
+<#macro createFileLink irfile newline=false showDownloadCount=true showSize=true >
     <#assign version=irfile />
          <#if version.latestUploadedVersion?? >
             <#assign version=version.latestUploadedVersion />        
@@ -88,8 +88,8 @@ View freemarker macros
          <#if (!version.viewable || !version.informationResourceFile.public )>
             <span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
          </#if>
-        (<@common.convertFileSize version.fileLength />)
-        <@downloadCount version />
+        <#if showSize>(<@common.convertFileSize version.fileLength />)</#if>
+        <#if showDownloadCount><@downloadCount version /></#if>
 </#macro>
 
 <#macro createArchiveFileLink resource newline=false >
@@ -130,82 +130,159 @@ View freemarker macros
 
 </#macro>
 
-<#macro uploadedFileInfo>
-  <#if (resource.totalNumberOfFiles?has_content)>
-                <h3 class="downloads">
-                    Downloads
-                    <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles?c}</span>
-                </h3>
-    <#if resource.totalNumberOfFiles != 0>
-      <@embargoCheck/>
-    </#if>
-        <ul class="downloads media-list">
-        <#assign extensionMap = { 'pdf':'page-white-acrobat', 'doc':'page-white-word','docx':'page-white-word' ,
-                        'mdb':'page-white-key','mdbx':'page-white-key','accdb':'page-white-key',
+<#macro fileInfoSection extended windowSize=4>
+        <#local extensionMap = {
+                        'pdf':'page-white-acrobat',
+                        'doc':'page-white-word',
+                        'docx':'page-white-word' ,
+                        'mdb':'page-white-key',
+                        'mdbx':'page-white-key','accdb':'page-white-key',
                         'xls':'page-excel','xlsx':'page-excel',
-                        'zip':'page-white-zip','tar':'page-white-zip','tgz':'page-white-zip',
-        				'DOCUMENT','page-white-text',
+                        'zip':'page-white-zip',
+                        'tar':'page-white-zip',
+                        'tgz':'page-white-zip',
+        				'DOCUMENT':'page-white-text',
                         'DATASET':'page-white-text',
                         'CODING_SHEET':'page-white-text',
                         'IMAGE':'page-white-picture',
                         'SENSORY_DATA':'page-white-picture',
-                        'ONTOLOGY','page-white-text',
+                        'ONTOLOGY':'page-white-text',
                         'GEOSPATIAL':'page-white-picture',
                         'ARCHIVE':'page-white-zip'
           } />
-
         <#local showAll = ""/>
         <#local visibleCount = 0>
+        <#local ext = "" >
         <#list resource.informationResourceFiles as irfile>
-         <#if (visibleCount > 4)><#local showAll = "view-hidden-extra-files"/></#if>
-              <#if irfile.latestUploadedOrArchivalVersion??>
-                  <#if !irfile.deleted><#local visibleCount = 1 + visibleCount /></#if>
-                      <#local ext = extensionMap[irfile.latestUploadedOrArchivalVersion.extension?lower_case ]!'' />
-                      <#if !ext?has_content>
-                      <#local ext = extensionMap[resource.resourceType ] />
-                      </#if>
-                    <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
-                        <i class="iconf ${ext} pull-left"></i>
-                        <div class="media-body"><@createFileLink irfile true /></div>
-				<#else>
-				${irfile}
+              <#if (visibleCount > windowSize)><#local showAll = "view-hidden-extra-files"/></#if>
+              <#if !irfile.deleted><#local visibleCount = 1 + visibleCount /></#if>
+              <#local ext = extensionMap[irfile.latestUploadedOrArchivalVersion.extension?lower_case ]!'' />
+              <#if !ext?has_content>
+                <#local ext = extensionMap[resource.resourceType ] />
               </#if>
-              <#if irfile.latestTranslatedVersion?? && resource.resourceType == 'DATASET' >
-                <blockquote>
-                  <b>Translated version</b> <@createFileLink irfile.latestTranslatedVersion /></br>
-                   Data column(s) in this dataset have been associated with coding sheet(s) and translated: 
-                  <#if sessionData?? && sessionData.authenticated>
-			        <br/><small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> - <b>Note: this process may take some time</b>)</small>
-                  </#if>
-                </blockquote>
-                    </li>
-            </#if>
+              <#nested irfile, showAll, ext>
         </#list>
-        <#if (resource.informationResourceFiles?size > 1)>
-        <li class="archiveLink media">
-        	<i class="iconf page-white-zip pull-left"></i>
-        	<div class="media-body"><@createArchiveFileLink resource=resource /></div>
-        </li>
-        </#if>
-        <#if (resource.totalNumberOfFiles == 0)>
-            <li class="citationNote">This Resource is a citation<#if resource.copyLocation?has_content> a physical copy is located at ${resource.copyLocation}</#if></li>
-        </#if>
-
-        </ul>
-		<#if showAll != '' || hasDeletedFiles>
-         <div id="downloadsMoreArea">
-	        <#if showAll != ''>
-	            <a href="#" id="showAllFiles" onClick="$('.view-hidden-extra-files, #showAllFiles').toggle();return false;">show all files</a>
-			</#if>
-	        <#if hasDeletedFiles && sessionData?? && sessionData.authenticated>
-	            <a href="#" id="showHiddenFiles" onClick="$('.view-deleted-file, #showHiddenFiles').toggle();return false;">show deleted files</a>
-	        </#if>
-         </div>
-        </#if>
-    <#nested>
-</#if>
 </#macro>
 
+
+<#--FIXME: update function to account for sensory-data and GIS, which may also have translated files -->
+<#function hasTranslatedVersion irfile>
+    <#return (irfile.latestTranslatedVersion?? && resource.resourceType == 'DATASET')>
+</#function>
+
+<#macro translatedFileSection irfile>
+    <#if hasTranslatedVersion(irfile) >
+    <blockquote>
+        <b>Translated version</b> <@createFileLink irfile.latestTranslatedVersion /></br>
+        Data column(s) in this dataset have been associated with coding sheet(s) and translated:
+        <#if sessionData?? && sessionData.authenticated>
+            <br><small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> - <b>Note: this process may take some time</b>)</small>
+        </#if>
+    </blockquote>
+    </#if>
+</#macro>
+
+<#macro uploadedFileInfo >
+    <#if (resource.totalNumberOfFiles!0) &gt; 0 >
+    <h3 class="downloads">
+        Downloads
+        <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles?c}</span>
+    </h3>
+
+    <div id="fileSummaryContainer">
+        <@embargoCheck/>
+        <#local showAll = "">
+        <ul class="downloads media-list">
+        <@fileInfoSection extended=false; irfile, showAll, ext>
+            <#local showAll = showAll>
+            <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
+                <#--fixme: I think this if-block is always true (and if it was false this section would format weird) -->
+                <#if irfile.latestUploadedOrArchivalVersion??>
+                    <i class="iconf ${ext} pull-left"></i>
+                    <div class="media-body"><@createFileLink irfile true /></div>
+                </#if>
+                <@translatedFileSection irfile />
+            </li>
+        </@fileInfoSection>
+            <#if (resource.informationResourceFiles?size > 1)>
+                <li class="archiveLink media">
+                    <i class="iconf page-white-zip pull-left"></i>
+                    <div class="media-body"><@createArchiveFileLink resource=resource /></div>
+                </li>
+            </#if>
+            <#--fixme: I'm pretty sure this if-block is always false  -->
+            <#if (resource.totalNumberOfFiles == 0)>
+                <li class="citationNote">This Resource is a citation<#if resource.copyLocation?has_content> a physical copy is located at ${resource.copyLocation}</#if></li>
+            </#if>
+
+        </ul>
+        <#if showAll != '' || hasDeletedFiles>
+            <div id="downloadsMoreArea">
+                <a href="#" id="showAllFiles" onClick="$('.view-hidden-extra-files, #showAllFiles').toggle();return false;">show all files</a>
+            </div>
+        </#if>
+    </div>
+    </#if>
+</#macro>
+
+<#function hasRestrictedFiles>
+ <#return !(resource.publicallyAccessible)>
+<#--  <#return !(resource.publicallyAccessible) && !ableToViewConfidentialFiles> -->
+</#function>
+
+<#function contactInformationAvailable>
+    <#return !contactProxies.empty>
+</#function>
+
+<#macro extendedFileInfo>
+    <#if (resource.totalNumberOfFiles?has_content)>
+    <div id="extendedFileInfoContainer">
+        <h3>File Information</h3>
+        <table class="table tableFormat">
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Size</th>
+                    <th>Creation Date</th>
+                    <th>Access</></th>
+                    <th>Downloaded #</th>
+                </tr>
+            </thead>
+        <tbody>
+        <@fileInfoSection extended=true; irfile, showAll, ext>
+            <tr>
+                <td><i class="iconf page-white-zip"> </i></td>
+                <td><@createFileLink irfile false false false /></td>
+                <td>
+                    ${irfile.description!""}
+                    <@translatedFileSection irfile />
+                </td>
+                <td><@common.convertFileSize version.fileLength /></td>
+                <td>${(irfile.fileCreatedDate)!""}</td>
+                <td>${irfile.restriction.label}</td>
+                <td>${((irfile.transientDownloadCount)!0)}</td>
+
+            </tr>
+        </@fileInfoSection>
+        </tbody>
+        </table>
+        <#if (hasRestrictedFiles() && contactInformationAvailable())>
+        <div class="well restricted-files-contacts">
+            <h4>Regarding Restricted Files</h4>
+            <p>At least one of the files for this resource is restricted from public view. For more information regarding
+                access to these files, please reference the contact information below</p>
+            <@showCreatorProxy proxyList=contactProxies />
+        </div>
+        </#if>
+
+    </div>
+
+
+
+    </#if>
+</#macro>
 
 <#macro codingRules>
 <#if codingSheet.id != -1>
@@ -552,9 +629,8 @@ No coding rules have been entered for this coding sheet yet.
 
 </#if> 
 </#macro>
-
 <#macro altText irfile>
-${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if><#if irfile.fileCreatedDate?has_content>(${fileCreatedDate})</#if>
+${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if>(${irfile.fileCreatedDate!""})
 </#macro>
 
 <#macro imageGallery>
@@ -629,7 +705,8 @@ $(document).ready(function() {
 </#macro>
 
 
-<#macro embargoCheck showNotice=true> 
+<#macro embargoCheck showNotice=true>
+    <#if resource.totalNumberOfFiles != 0>
   <!-- FIXME: CHECK -->
     <#assign embargoDate='' />
     <#list resource.confidentialFiles as file>
@@ -651,6 +728,7 @@ $(document).ready(function() {
        </#if>
    </#if>
       <#nested/>
+    </#if>
 </#macro>
 
 <#macro shortDate _date includeTime=false>
@@ -882,4 +960,4 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#macro>
 
 </#escape>
-<#-- NOTHING SHOULD GO AFTER THIS --> 
+<#-- NOTHING SHOULD GO AFTER THIS -->

@@ -300,6 +300,8 @@
     <@view.additionalInformation resource />
     
     <@view.infoResourceAccessRights />
+
+    <@view.extendedFileInfo />
     
 
 
@@ -352,8 +354,7 @@
                         ${resource.id?c}
                     </li>
                 </ul>
-
-            </div>
+        </div>
 
 
 

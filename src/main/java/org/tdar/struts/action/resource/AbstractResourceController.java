@@ -145,6 +145,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<ResourceCreatorProxy> creditProxies;
+    private List<ResourceCreatorProxy> contactProxies;
+
 
     private List<ResourceAnnotation> resourceAnnotations;
     private Long activeResourceCount;
@@ -174,6 +176,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 authorshipProxies.add(proxy);
             } else {
                 creditProxies.add(proxy);
+            }
+
+            if(ResourceCreatorRole.CONTACT == proxy.getRole()) {
+                getContactProxies().add(proxy);
             }
         }
     }
@@ -913,6 +919,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return authorshipProxies;
     }
 
+    public List<ResourceCreatorProxy> getContactProxies() {
+        if(CollectionUtils.isEmpty(contactProxies)) {
+            contactProxies = new ArrayList<>();
+        }
+        return contactProxies;
+    }
+
     public ResourceCreatorProxy getBlankCreatorProxy() {
         return new ResourceCreatorProxy();
     }
@@ -1127,4 +1140,5 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public void setResourceRelationships(List<ResourceRelationship> resourceRelationships) {
         this.resourceRelationships = resourceRelationships;
     }
+
 }
