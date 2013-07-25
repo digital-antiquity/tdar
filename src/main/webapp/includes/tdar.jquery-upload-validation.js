@@ -207,12 +207,12 @@ var FileuploadValidator;
                     }
                 }
 
-                if(this.errors.length) {
-                    this.showErrors();
-                }
             }
 
             this.clearErrorDisplay();
+            if(this.errors.length) {
+                this.showErrors();
+            }
             _updateHighlighting(self, files);
 
             //if we have no errors, or the only errors are mere suggestions,  then the uploads are valid
