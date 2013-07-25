@@ -92,7 +92,7 @@
 	</p>
 	</#if>
 	<#if creator.url?has_content>
-		<a href="${creator.url?html}">${creator.url?html}</a>
+		<a href="${creator.url?html}" onclick="TDAR.common.outboundLink(this);" >${creator.url?html}</a>
 	</#if>
     <br/>
         <#if creator.creatorType.person>

@@ -997,16 +997,30 @@ var _sortFilesAlphabetically= function() {
         $("#" + mapId + "-img").after(mapString);
     }
     */
-    var _registerDownload = function(url, tdarId) {
-        if (typeof _gaq == 'undefined')
-            return;
-        var command = [ '_trackEvent', 'Download', url ];
-        if (tdarId)
-            command.push(tdarId);
+
+    var _gaevent = function() {
+        if(!_gaq || arguments.length < 1) {return true;}
+        var args = Array.prototype.slice.call(arguments, 0);
+        var command = ['_trackEvent'];
+        command.push(args);
         var errcount = _gaq.push(command);
-        if (errcount) {
-            console.warn("_trackEvent command failed for" + url);
+        //console.trace("_trackEvent:%s", args[0]);
+        if(errcount) {
+            console.warn("_trackEvent failed:%s", args[0]);
         }
+        return true;
+    }
+
+    var _registerDownload = function(url, tdarId) {
+        if(tdarId) {
+            _gaevent("Download", url, tdarId);
+        } else {
+            _gaevent("Download", url);
+        }
+    }
+
+    var _outboundLink = function(elem){
+        _gaevent("outboundLink", elem.href, window.location);
     }
 
     var _changeSubcategory = function(categoryIdSelect, subCategoryIdSelect) {
@@ -1121,6 +1135,8 @@ var _sortFilesAlphabetically= function() {
         "setAdhocTarget": _setAdhocTarget,
         "changeSubcategory": _changeSubcategory ,
         "registerDownload": _registerDownload,
+        "gaevent": _gaevent,
+        "outboundLink": _outboundLink,
         "setupSupportingResourceForm": _setupSupportingResourceForm,
         "toggleDiv": _toggleDiv,
         "switchType": _switchType,

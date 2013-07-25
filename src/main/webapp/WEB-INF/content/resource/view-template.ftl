@@ -137,10 +137,11 @@
   <@common.description resource.description />
 
 <hr />
-
+<#noescape>
 <#if resource.url! != ''>
-    <p><strong>URL:</strong><a itemprop="url" href="${resource.url?html}" title="${resource.url?html}"><@common.truncate resource.url?html 80 /></a></p><br/>
+    <p><strong>URL:</strong><a itemprop="url" href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" title="${resource.url?html}"><@common.truncate resource.url?html 80 /></a></p><br/>
 </#if>
+</#noescape>
 
 
 <#if local_.afterBasicInfo?? && local_.afterBasicInfo?is_macro>

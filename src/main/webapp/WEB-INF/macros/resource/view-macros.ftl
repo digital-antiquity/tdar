@@ -189,7 +189,7 @@ View freemarker macros
     </h3>
     <div id="fileSummaryContainer">
         <ul class="downloads media-list">
-        <#if (resource.totalNumberOfFiles!0) &gt; 0 >
+        <#if ((resource.totalNumberOfFiles!0) > 0) >
 
             <@embargoCheck/>
             <@fileInfoSection extended=false; irfile, showAll, ext>
