@@ -123,9 +123,9 @@
 <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
 <div class="row">
 	<div class="span4">
-		<@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" />
+		<@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" cssClass="input-small"/>
 	    <@s.hidden name="id" value="${account.id?c!-1}" />    
-		<@s.textfield name="exipres" cssClass="date  datepicker" label="Date Expires"/>
+		<@s.textfield name="exipres" cssClass="date  input-small datepicker" label="Date Expires" />
 	</div>
 	<div class="span4">    
 		<@s.textfield name="numberOfFiles" cssClass="integer" label="Number of Files"/>

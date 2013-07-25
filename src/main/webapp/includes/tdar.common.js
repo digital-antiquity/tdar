@@ -838,7 +838,9 @@ var _sortFilesAlphabetically= function() {
         if (parseInt(TDAR.common.currentTime)) {
         TDAR.common.currentTime += 60;
         var remainingTime = TDAR.common.sessionTimeout - TDAR.common.currentTime;
-        console.log("remaining time in session:" + remainingTime);
+        if (remainingTime % 300 == 0) {
+            console.log("remaining time in session:" + remainingTime);
+        }
         if (remainingTime == 300) {
             var dialog = $('<div id=timeoutDialog></div>')
                     .html(

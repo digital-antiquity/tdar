@@ -133,7 +133,8 @@
 
 <script>
 $(document).ready(function(){
-    TDAR.common.initEditPage($('#MetadataForm')[0]);
+// FIXME: removed because of IE8 validation error
+//    TDAR.common.initEditPage($('#MetadataForm')[0]);
     TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/cart/api"/>");
     TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete"), true, false);
 });
