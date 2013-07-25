@@ -61,6 +61,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
     @Autowired
     private TargetDatabase tdarDataImportDatabase;
 
+    public String normalizeTableName(String name) {
+        return tdarDataImportDatabase.normalizeTableOrColumnNames(name);
+    }
+    
     public void assignMappedDataForInformationResource(InformationResource resource) {
         String key = resource.getMappedDataKeyValue();
         DataTableColumn column = resource.getMappedDataKeyColumn();

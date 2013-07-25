@@ -277,17 +277,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         getDao().synchronize();
     }
 
-    private void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove) {
-        logger.info("deleting unmerged tables: {}", tablesToRemove);
-        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
-        for (DataTable table : tablesToRemove) {
-            columnsToUnmap.addAll(table.getDataTableColumns());
-        }
-        // first unmap all columns from the removed tables
-        getDao().unmapAllColumnsInProject(dataset.getProject(), columnsToUnmap);
-        dataset.getDataTables().removeAll(tablesToRemove);
-    }
-
     private Collection<DataTable> reconcileTables(Dataset dataset, Dataset transientDatasetToPersist) {
         HashMap<String, DataTable> existingTablesMap = new HashMap<String, DataTable>();
         for (DataTable existingDataTable : dataset.getDataTables()) {

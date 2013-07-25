@@ -9,18 +9,23 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.dao.resource.ResourceDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -51,11 +56,14 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Autowired
     private InformationResourceFileDao informationResourceFileDao;
     @Autowired
+    private DatasetDao datasetDao;
+
+    @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
     protected FileAnalyzer analyzer;
 
-//    private MessageService messageService;
+    // private MessageService messageService;
 
     @Transactional(readOnly = false)
     private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
@@ -113,23 +121,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 }
             }
         }
-        if (resource.getResourceType().isCompositeFilesEnabled()) {
-            try {
-                analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
-            } catch (Exception e) {
-                logger.warn("caught exception {} while analyzing file {}\n {}", e, filesToProcess, ExceptionUtils.getStackTrace(e));
-            }
-        } else {
-            for (InformationResourceFileVersion version : filesToProcess) {
-                try {
-                    analyzer.processFile(version);
-                } catch (Exception e) {
-                    logger.warn("caught exception {} while analyzing file {}", e, version);
-                }
-
-            }
-        }
-
+        processFiles(resource, filesToProcess);
         WorkflowResult result = new WorkflowResult(fileProxiesToProcess);
         result.addActionErrorsAndMessages(listener);
 
@@ -142,6 +134,27 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
         }
         return result;
+    }
+
+    private void processFiles(T resource, List<InformationResourceFileVersion> filesToProcess) {
+        if (!CollectionUtils.isEmpty(filesToProcess)) {
+            if (resource.getResourceType().isCompositeFilesEnabled()) {
+                try {
+                    analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
+                } catch (Exception e) {
+                    logger.warn("caught exception {} while analyzing file {}\n {}", e, filesToProcess, ExceptionUtils.getStackTrace(e));
+                }
+            } else {
+                for (InformationResourceFileVersion version : filesToProcess) {
+                    try {
+                        analyzer.processFile(version);
+                    } catch (Exception e) {
+                        logger.warn("caught exception {} while analyzing file {}", e, version);
+                    }
+
+                }
+            }
+        }
     }
 
     @Transactional
@@ -174,6 +187,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             case DELETE:
                 irFile.markAsDeleted();
                 getDao().update(irFile);
+                if (informationResource instanceof Dataset) {
+                    unmapDataTablesForFile((Dataset) informationResource, irFile);
+                }
                 break;
             case NONE:
                 logger.debug("Taking no action on {} with proxy {}", informationResource, proxy);
@@ -184,11 +200,42 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         proxy.setInformationResourceFile(irFile);
     }
 
+    @Transactional(readOnly = true)
+    private void unmapDataTablesForFile(Dataset dataset, InformationResourceFile irFile) {
+        String fileName = irFile.getFileName();
+        switch (FilenameUtils.getExtension(fileName).toLowerCase()) {
+            case "tab":
+            case "csv":
+            case "txt":
+                String name = FilenameUtils.getBaseName(fileName);
+                name = datasetDao.normalizeTableName(name);
+                DataTable dt = dataset.getDataTableByGenericName(name);
+                logger.info("removing {}", dt);
+                cleanupUnusedTablesAndColumns(dataset, Arrays.asList(dt));
+                // dataset.getDataTableByGenericName(name)
+                break;
+            default:
+                cleanupUnusedTablesAndColumns(dataset, dataset.getDataTables());
+        }
+    }
+
     @Transactional
     public void processMetadataForFileProxies(InformationResource informationResource, FileProxy... proxies) throws IOException {
         for (FileProxy proxy : proxies) {
             processFileProxyMetadata(informationResource, proxy);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove) {
+        logger.info("deleting unmerged tables: {}", tablesToRemove);
+        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
+        for (DataTable table : tablesToRemove) {
+            columnsToUnmap.addAll(table.getDataTableColumns());
+        }
+        // first unmap all columns from the removed tables
+        datasetDao.unmapAllColumnsInProject(dataset.getProject(), columnsToUnmap);
+        dataset.getDataTables().removeAll(tablesToRemove);
     }
 
     private void setInformationResourceFileMetadata(InformationResourceFile irFile, FileProxy fileProxy) {
@@ -209,7 +256,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             irFile.setDescription(fileProxy.getDescription());
             irFile.setFileCreatedDate(fileProxy.getFileCreatedDate());
         }
-        
+
         if (sequenceNumber == null) {
             logger.warn("No sequence number set on file proxy {}, existing sequence number was {}", fileProxy, irFile.getSequenceNumber());
         }
@@ -243,7 +290,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             getDao().synchronize();
             try {
                 boolean result = analyzer.processFile(original);
-//                messageService.sendFileProcessingRequest(workflow, original);
+                // messageService.sendFileProcessingRequest(workflow, original);
             } catch (Exception e) {
                 logger.warn("caught exception {} while analyzing file {}", e, original.getFilename());
             }
@@ -275,13 +322,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     /**
-     * @param analyzer the analyzer to set
+     * @param analyzer
+     *            the analyzer to set
      */
     @Autowired
     public void setAnalyzer(FileAnalyzer analyzer) {
         this.analyzer = analyzer;
     }
-
-
 
 }

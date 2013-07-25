@@ -17,6 +17,8 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
@@ -53,7 +55,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     private Integer startRecord = 0;
     private Integer recordsPerPage = 10;
-    
+
     public enum PostSaveColumnMapActions implements HasLabel {
         SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"),
         SAVE_MAP_THIS("Save, and return to this edit page", "Save, and return to this edit page");
@@ -82,8 +84,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             this.ontologyLabel = ontologyLabel;
         }
 
-        public String getResultName(boolean gotoView, InformationResource resource) {
-            if (resource.getTotalNumberOfActiveFiles() > 1) {
+        public String getResultName(boolean gotoView, Dataset resource) {
+            Logger logger = LoggerFactory.getLogger(getClass());
+            logger.info(" {} {} ", resource.getTotalNumberOfActiveFiles(), resource.getDataTables());
+            if (resource.getTotalNumberOfActiveFiles() < 1 || CollectionUtils.isEmpty(resource.getDataTables())) {
                 return AbstractDatasetController.SAVE_VIEW;
             }
             return name();
@@ -151,6 +155,14 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         return SUCCESS;
     }
 
+    public void resolvePostSaveAction(Dataset persistable) {
+        if (isHasFileProxyChanges()) {
+            if (persistable.getTotalNumberOfActiveFiles() > 0 || CollectionUtils.isNotEmpty(persistable.getDataTables())) {
+                setSaveSuccessPath("columns");
+            }
+        }
+    }
+
     @SkipValidation
     @Action(value = COLUMNS, results = { @Result(name = SUCCESS, location = "../dataset/edit-column-metadata.ftl") })
     public String editColumnMetadata() throws TdarActionException {
@@ -168,10 +180,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         // load existing column metadata if any.
         DataTable currentDataTable = getDataTable();
         List<DataTableColumn> columns = new ArrayList<>(currentDataTable.getSortedDataTableColumns());
-        //FIXME: replace with Pagination helper
-        
+        // FIXME: replace with Pagination helper
+
         setPaginationHelper(PaginationHelper.withStartRecord(columns.size(), getRecordsPerPage(), 100, getStartRecord()));
-        
+
         if (CollectionUtils.size(columns) > getRecordsPerPage()) {
             columns = columns.subList(paginationHelper.getFirstItem(), paginationHelper.getLastItem() + 1);
         }
@@ -223,7 +235,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         this.columnsToRemap = updateResults.getSecond();
         getResourceService().saveRecordToFilestore(getDataResource());
         postSaveColumnMetadataCleanup();
-        return getPostSaveAction().getResultName(!updateResults.getFirst(), getPersistable());
+        return getPostSaveAction().getResultName(!updateResults.getFirst(), (Dataset) getPersistable());
     }
 
     private List<DataTableColumn> columnsToRemap;
@@ -278,9 +290,9 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
                     @Result(name = TdarActionSupport.SUCCESS,
                             type = "stream",
                             params = {
-                                "contentDisposition", "attachment; filename=\"${dataTable.name}.xml\"",
-                                "contentType", "text/xml",
-                                "inputName", "xmlStream",
+                                    "contentDisposition", "attachment; filename=\"${dataTable.name}.xml\"",
+                                    "contentType", "text/xml",
+                                    "inputName", "xmlStream",
                             }),
                     @Result(name = TdarActionSupport.ERROR, type = "httpheader", params = { "error", "404" }),
             })
@@ -289,7 +301,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         xmlStream = null;
         if (!getTdarConfiguration().isXmlExportEnabled()) {
             return ERROR;
-        }        
+        }
         if (Persistable.Base.isNullOrTransient(dataTableId)) {
             return ERROR;
         }
@@ -529,6 +541,4 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         this.recordsPerPage = recordsPerPage;
     }
 
-
-    
 }

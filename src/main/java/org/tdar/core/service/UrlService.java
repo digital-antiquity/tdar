@@ -85,7 +85,7 @@ public class UrlService {
         if (StringUtils.isNotBlank(queryString)) {
             activePage += "?" + queryString;
         }
-        logger.debug("returning: {} ", activePage);
+        logger.trace("returning: {} ", activePage);
         return activePage;
     }
 

@@ -51,10 +51,8 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
                 fileChanged = true;
             }
         }
-        // logger.debug("{}", getFileProxies());
-        if (fileChanged) {
-            setSaveSuccessPath("columns");
-        }
+
+        resolvePostSaveAction(getPersistable());
         return SUCCESS;
     }
 
