@@ -83,8 +83,13 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     public void execute() {
         List<Creator> creators = genericDao.findAll(getPersistentClass(), getNextBatch());
         List<Long> userIdsToIgnoreInLargeTasks = getTdarConfiguration().getUserIdsToIgnoreInLargeTasks();
+        boolean seen = false;
         for (Creator creator : creators) {
-            logger.info("~~~~~ " + creator + " ~~~~~~");
+            logger.trace("~~~~~ " + creator + " ~~~~~~");
+            if (!seen) {
+                logger.debug("~~~~~ " + creator + " ~~~~~~");
+                seen = true;
+            }
             if (userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
                 continue;
             }

@@ -23,6 +23,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -349,9 +350,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     public List<ResourceType> getAllResourceTypes() {
-        ArrayList<ResourceType> arrayList = new ArrayList<ResourceType>(Arrays.asList(ResourceType.values()));
-        arrayList.remove(ResourceType.VIDEO);
-        return arrayList;
+        return getResourceService().getAllResourceTypes();
     }
 
     public List<IntegratableOptions> getIntegratableOptions() {

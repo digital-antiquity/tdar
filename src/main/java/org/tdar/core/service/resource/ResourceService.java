@@ -505,4 +505,16 @@ public class ResourceService extends GenericService {
         return datasetDao.findAllResourceIdsWithFiles();
     }
 
+    public List<ResourceType> getAllResourceTypes() {
+        ArrayList<ResourceType> arrayList = new ArrayList<ResourceType>(Arrays.asList(ResourceType.values()));
+        if (TdarConfiguration.getInstance().isVideoEnabled()) {
+            arrayList.remove(ResourceType.VIDEO);
+        }
+        
+        if (TdarConfiguration.getInstance().isArchiveFileEnabled()) {
+            arrayList.remove(ResourceType.ARCHIVE);
+        }
+        return arrayList;
+    }
+
 }

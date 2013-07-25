@@ -82,7 +82,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             this.ontologyLabel = ontologyLabel;
         }
 
-        public String getResultName(boolean gotoView) {
+        public String getResultName(boolean gotoView, InformationResource resource) {
+            if (resource.getTotalNumberOfActiveFiles() > 1) {
+                return AbstractDatasetController.SAVE_VIEW;
+            }
             return name();
         }
     }
@@ -220,7 +223,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         this.columnsToRemap = updateResults.getSecond();
         getResourceService().saveRecordToFilestore(getDataResource());
         postSaveColumnMetadataCleanup();
-        return getPostSaveAction().getResultName(!updateResults.getFirst());
+        return getPostSaveAction().getResultName(!updateResults.getFirst(), getPersistable());
     }
 
     private List<DataTableColumn> columnsToRemap;

@@ -596,6 +596,10 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("archive.enabled", false);
     }
     
+    public boolean isVideoEnabled() {
+        return assistant.getBooleanProperty("video.enabled", false);
+    }
+
     public boolean isXmlExportEnabled() {
         return assistant.getBooleanProperty("xml.export.enabled", false);
     }
@@ -644,4 +648,5 @@ public class TdarConfiguration {
     public String getCulturalTermsLabel() {
         return assistant.getStringProperty("cultural.terms.label", "Cultural Terms" );
     }
+
 }

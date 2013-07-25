@@ -345,9 +345,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     public List<ResourceType> getResourceTypes() {
-        List<ResourceType> toReturn = new ArrayList<ResourceType>();
-        toReturn.addAll(Arrays.asList(ResourceType.values()));
-        return toReturn;
+        return getResourceService().getAllResourceTypes();
     }
 
     @Override
