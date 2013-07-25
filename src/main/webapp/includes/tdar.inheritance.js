@@ -209,7 +209,7 @@ function _inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
 
     // not okay to populate if the incoming list is a different size as the
     // current list
-    $tableRows = $('.repeat-row', '#coverageDateRepeatable');
+    var $tableRows = $('.repeat-row', '#coverageDateRepeatable');
     if (temporalInformation.coverageDates.length !== $tableRows.length)
         return false;
 
@@ -812,7 +812,7 @@ function _enableOrDisableInheritAllSection() {
 }
 
 //Enforce the correct state of 'inherit all' checkbox. It should only be checked iff. every inherit-section is checked.
-function updateSelectAllCheckboxState() {
+function _updateSelectAllCheckboxState() {
     var $cbSelectAllInheritance = $('#cbSelectAllInheritance');
     if (!$cbSelectAllInheritance.data('isUpdatingSections')) {
         var $uncheckedBoxes = $('.divInheritSection input[type=checkbox]').not(":checked");

@@ -400,6 +400,7 @@ TDAR.maps = function() {
             $(mapDiv).data("resourceRect", rect);
         } else {
             var bounds = _bounds(swlat, swlng, nelat, nelng);
+            rect.setMap(gmap);
             rect.setBounds(bounds);
         }
         gmap.fitBounds(rect.getBounds());
