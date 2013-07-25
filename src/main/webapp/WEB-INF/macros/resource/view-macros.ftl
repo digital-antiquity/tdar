@@ -165,9 +165,8 @@ View freemarker macros
 </#macro>
 
 
-<#--FIXME: update function to account for sensory-data and GIS, which may also have translated files -->
 <#function hasTranslatedVersion irfile>
-    <#return (irfile.latestTranslatedVersion?? && resource.resourceType == 'DATASET')>
+    <#return (irfile.latestTranslatedVersion?? && resource.resourceType.dataTableSupported)>
 </#function>
 
 <#macro translatedFileSection irfile>
@@ -183,46 +182,42 @@ View freemarker macros
 </#macro>
 
 <#macro uploadedFileInfo >
-    <#if (resource.totalNumberOfFiles!0) &gt; 0 >
+    <#local showAll = "">
     <h3 class="downloads">
         Downloads
         <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles?c}</span>
     </h3>
-
     <div id="fileSummaryContainer">
-        <@embargoCheck/>
-        <#local showAll = "">
         <ul class="downloads media-list">
-        <@fileInfoSection extended=false; irfile, showAll, ext>
-            <#local showAll = showAll>
-            <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
-                <#--fixme: I think this if-block is always true (and if it was false this section would format weird) -->
-                <#if irfile.latestUploadedOrArchivalVersion??>
+        <#if (resource.totalNumberOfFiles!0) &gt; 0 >
+
+            <@embargoCheck/>
+            <@fileInfoSection extended=false; irfile, showAll, ext>
+                <#local showAll = showAll>
+                <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
                     <i class="iconf ${ext} pull-left"></i>
                     <div class="media-body"><@createFileLink irfile true /></div>
-                </#if>
-                <@translatedFileSection irfile />
-            </li>
-        </@fileInfoSection>
-            <#if (resource.informationResourceFiles?size > 1)>
-                <li class="archiveLink media">
-                    <i class="iconf page-white-zip pull-left"></i>
-                    <div class="media-body"><@createArchiveFileLink resource=resource /></div>
+                    <@translatedFileSection irfile />
                 </li>
-            </#if>
-            <#--fixme: I'm pretty sure this if-block is always false  -->
-            <#if (resource.totalNumberOfFiles == 0)>
-                <li class="citationNote">This Resource is a citation<#if resource.copyLocation?has_content> a physical copy is located at ${resource.copyLocation}</#if></li>
-            </#if>
+            </@fileInfoSection>
+                <#if (resource.informationResourceFiles?size > 1)>
+                    <li class="archiveLink media">
+                        <i class="iconf page-white-zip pull-left"></i>
+                        <div class="media-body"><@createArchiveFileLink resource=resource /></div>
+                    </li>
+                </#if>
 
+        </#if>
         </ul>
+        <#if (resource.totalNumberOfFiles == 0)>
+            <li class="citationNote">This resource is a citation<#if resource.copyLocation?has_content> a physical copy is located at ${resource.copyLocation}</#if></li>
+        </#if>
         <#if showAll != '' || hasDeletedFiles>
             <div id="downloadsMoreArea">
                 <a href="#" id="showAllFiles" onClick="$('.view-hidden-extra-files, #showAllFiles').toggle();return false;">show all files</a>
             </div>
         </#if>
     </div>
-    </#if>
 </#macro>
 
 <#function hasRestrictedFiles>
