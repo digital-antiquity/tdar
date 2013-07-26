@@ -191,7 +191,7 @@ View freemarker macros
         <ul class="downloads media-list">
         <#if ((resource.totalNumberOfFiles!0) > 0) >
 
-            <@embargoCheck/>
+            <li><@embargoCheck/></li>
             <@fileInfoSection extended=false; irfile, showAll, ext>
                 <#local showAll = showAll>
                 <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
@@ -711,15 +711,15 @@ $(document).ready(function() {
     </#list>
   <#if !resource.publicallyAccessible && !ableToViewConfidentialFiles>
         <#if showNotice>
-<li>            <span class="label label-inverse">Restricted Access</span> 
+            <span class="label label-inverse">Restricted Access</span> 
                 Some or all of this resource's attached file(s) are <b>not</b> publicly accessible.
-                <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if> </li>
+                <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if> 
        </#if>
    <#else>
         <#if showNotice && (!resource.publicallyAccessible) && !resource.citationRecord >
-          <li>  <span class="label label-inverse">Restricted Access</span> 
+            <span class="label label-inverse">Restricted Access</span> 
             <em>This resource is restricted from general view; however, you have been granted access to it.</em>
-            <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if></li> 
+            <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if>
        </#if>
    </#if>
       <#nested/>

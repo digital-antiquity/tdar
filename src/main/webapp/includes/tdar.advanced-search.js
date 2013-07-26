@@ -68,6 +68,7 @@ function _initAdvancedSearch() {
         var $repeatable = $(this);
         var $select = $row.find('.searchType');
         $select.val($select.find("option:first").val()).trigger("change");
+        $select.removeAttr("readonly");
         updateAttributesForRow($row, $repeatable.data('groupnum'), idx);
     });
 
