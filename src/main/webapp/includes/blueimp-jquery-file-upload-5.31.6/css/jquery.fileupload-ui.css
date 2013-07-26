@@ -65,3 +65,9 @@
     max-width: 80px;
   }
 }
+
+/* callout for ie10 fileupoad 'doubleclick' bug */
+body        .fileinput-button span.lbl.ie10bug  {display:none;}
+body.ie10   .fileinput-button span.lbl.ie10bug  {display:inline-block; font-size: 8pt;}
+body.ie10   .fileinput-button span.lbl          {display:none;}
+

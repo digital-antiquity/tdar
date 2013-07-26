@@ -854,7 +854,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             <!-- The fileinput-button span is used to style the file input field as button -->
             <span class="btn btn-success fileinput-button">
                 <i class="icon-plus icon-white"></i>
-                <span>Add files...</span>
+                <span class="lbl">Add files...</span>
+                <span class="ie10bug lbl">Double-click to add files ...</span>
+
             <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" class="${inputFileCss}">
             </span>
         </div>
