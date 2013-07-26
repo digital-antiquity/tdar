@@ -191,7 +191,7 @@ View freemarker macros
         <ul class="downloads media-list">
         <#if ((resource.totalNumberOfFiles!0) > 0) >
 
-            <li><@embargoCheck/></li>
+            <#if resource.hasConfidentialFiles()><li><@embargoCheck/></li></#if>
             <@fileInfoSection extended=false; irfile, showAll, ext>
                 <#local showAll = showAll>
                 <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
