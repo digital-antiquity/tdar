@@ -308,9 +308,9 @@
 
         <div id="sidebar-right" parse="true">
                 <i class="${resource.resourceType?lower_case}-bg-large"></i>    
-                
-                <@view.uploadedFileInfo />
-
+                <#if !resource.resourceType.project>
+    	            <@view.uploadedFileInfo />
+				</#if>
                 <h3>Basic Information</h3>
 
                 <p>
