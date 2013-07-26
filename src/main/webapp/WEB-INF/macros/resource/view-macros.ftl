@@ -185,7 +185,7 @@ View freemarker macros
     <#local showAll = "">
     <h3 class="downloads">
         Downloads
-        <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles?c}</span>
+        <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles!0?c}</span>
     </h3>
     <div id="fileSummaryContainer">
         <ul class="downloads media-list">
