@@ -626,7 +626,7 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 <#macro altText irfile>
 ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if>
-<#if irfile.fileCreatedDate??>(${irfile.fileCreatedDate!""})</#if>
+<#if irfile.fileCreatedDate??>(${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")})</#if>
 </#macro>
 
 <#macro imageGallery>
