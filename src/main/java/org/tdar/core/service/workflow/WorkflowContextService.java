@@ -124,6 +124,9 @@ public class WorkflowContextService {
             irFile.setInformationResource(genericDao.find(InformationResource.class, ctx.getInformationResourceId()));
             irFile.setWorkflowContext(ctx);
 
+            // logger.info("end status: {}", irFile.getStatus());
+            irFile = genericDao.merge(irFile);
+            // logger.info("end status: {}", irFile.getStatus());
             if (ctx.isProcessedSuccessfully()) {
                 logger.info("clearing status?: {}", irFile.getStatus());
                 irFile.setStatus(FileStatus.PROCESSED);
@@ -136,9 +139,6 @@ public class WorkflowContextService {
                 irFile.setErrorMessage(ctx.getExceptionAsString());
             }
             genericDao.saveOrUpdate(irFile);
-            // logger.info("end status: {}", irFile.getStatus());
-            irFile = genericDao.merge(irFile);
-            // logger.info("end status: {}", irFile.getStatus());
         }
         try {
             logger.debug(ctx.toXML());
