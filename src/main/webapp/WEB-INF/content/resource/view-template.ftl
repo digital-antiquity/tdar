@@ -302,8 +302,9 @@
     
     <@view.infoResourceAccessRights />
 
-    <@view.extendedFileInfo />
-    
+    <#if !resource.resourceType.project>
+	    <@view.extendedFileInfo />
+	</#if>    
 
 
         <div id="sidebar-right" parse="true">
