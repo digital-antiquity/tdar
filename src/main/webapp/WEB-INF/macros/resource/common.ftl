@@ -580,7 +580,7 @@ $(document).ready(function(){
         $('#graph${id}').bind('jqplotDataClick', 
             function (ev, seriesIndex, pointIndex, data) {
                 $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
-            window.location.href="<@s.url value="/search/results?${searchKey}="/>" +data[2] <#if context>+  "&amp;userSubmitterContext=true"</#if>;
+            window.location.href="<@s.url value="/search/results?${searchKey}="/>" +data[2] <#if context>+  "&amp;useSubmitterContext=true"</#if>;
             }
         );
 </#macro>

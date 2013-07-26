@@ -625,7 +625,8 @@ No coding rules have been entered for this coding sheet yet.
 </#if> 
 </#macro>
 <#macro altText irfile>
-${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if>(${irfile.fileCreatedDate!""})
+${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if>
+<#if irfile.fileCreatedDate??>(${irfile.fileCreatedDate!""})</#if>
 </#macro>
 
 <#macro imageGallery>
@@ -656,7 +657,7 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 			  <span class="primary-thumbnail thumbnail-border">
 			  	<span class="thumbnail-center-spacing"></span>
 			  <img class="thumbnailLink img-polaroid" alt="<@altText irfile />" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" style="max-width:100%;" 
-			  	onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"  />
+			  	onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"  <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>/>
 			  	                </span>
 			  	</div>
 		<#if ((irfile_index + 1) % numIndicatorsPerSection) == 0 || !irfile_has_next>
@@ -674,7 +675,10 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
  <#if authenticatedUser??>
 	<div class="bigImage pagination-centered">
 		<#list resource.visibleFilesWithThumbnails as irfile>
+			<div class="imageContainer">
 			<img  id="bigImage" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
+			<span id="confidentialLabel"><#if !irfile.public>${irfile.restriction.label}</#if></span>
+			</div>
 			<div id="downloadText">
 			<@altText irfile/> 
 			</div>
