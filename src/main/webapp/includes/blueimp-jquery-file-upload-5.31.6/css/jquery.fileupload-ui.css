@@ -67,7 +67,8 @@
 }
 
 /* callout for ie10 fileupoad 'doubleclick' bug */
-body        .fileinput-button span.lbl.ie10bug  {display:none;}
-body.ie10   .fileinput-button span.lbl.ie10bug  {display:inline-block; font-size: 8pt;}
-body.ie10   .fileinput-button span.lbl          {display:none;}
+html        .btn-lbl-doubleclick  {display:none;}
+html.ie10   .btn-lbl-doubleclick  {display:inline-block; font-size: 9pt;}
+html.ie10   .btn-lbl-singleclick  {display:none;}
+html.ie10   .fileinput-button     {width:150pt}
 

@@ -12,7 +12,13 @@ TDAR.fileupload = function() {
 
     //main file upload registration function
     var _registerUpload  = function(options) {
-        
+
+        //FIXME: workaround for ie10 doubleclick bug.  remove this once fixed (https://github.com/blueimp/jQuery-File-Upload/issues/1180)
+        var ie_version =  _getIEVersion();
+        if(ie_version.major == 10) {
+            $('html').addClass("ie10")
+        }
+
         //combine options w/ defaults
         var _options = $.extend({formSelector: "#resourceMetadataForm"}, options);
 
@@ -338,7 +344,19 @@ TDAR.fileupload = function() {
     var _applyDateInputs = function($elements) {
         $elements.datepicker({dateFormat: "mm/dd/yy"});
     }
-    
+
+    function _getIEVersion(){
+        var agent = navigator.userAgent;
+        var reg = /MSIE\s?(\d+)(?:\.(\d+))?/i;
+        var matches = agent.match(reg);
+        if (matches != null) {
+            return { major: matches[1], minor: matches[2] };
+        }
+        return { major: "-1", minor: "-1" };
+    }
+
+
+
     //expose public elements
     return {
         "registerUpload": _registerUpload,
