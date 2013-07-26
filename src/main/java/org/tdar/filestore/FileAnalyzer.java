@@ -3,6 +3,7 @@ package org.tdar.filestore;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,9 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.HasExtension;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
-import org.tdar.core.bean.resource.HasExtension;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -141,6 +142,14 @@ public class FileAnalyzer {
 
     public boolean processFile(InformationResourceFile irFile) throws Exception {
         return processFile(irFile.getLatestUploadedVersion());
+    }
+
+    public boolean processFile(InformationResourceFile... irFiles) throws Exception {
+        List<InformationResourceFileVersion> versions = new ArrayList<>();
+        for (InformationResourceFile irf : irFiles) {
+            versions.add(irf.getLatestUploadedOrArchivalVersion());
+        }
+        return processFile(versions.toArray(new InformationResourceFileVersion[0]));
     }
 
     @Autowired

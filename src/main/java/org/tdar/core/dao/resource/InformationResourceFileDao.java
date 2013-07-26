@@ -10,6 +10,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
@@ -59,6 +60,15 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         Criteria createCriteria = getCriteria(FileDownloadStatistic.class).setProjection(Projections.rowCount())
                 .add(Restrictions.eq("reference", irFile));
         return (Number) createCriteria.list().get(0);
+    }
+
+    public void deleteTranslatedFiles(Dataset dataset) {
+        // FIXME: CALLING THIS REPEATEDLY WILL CAUSE SQL ERRORS DUE TO KEY
+        // ISSUES (DELETE NOT
+        // HAPPENING BEFORE INSERT)
+        for (InformationResourceFile irFile : dataset.getInformationResourceFiles()) {
+            deleteTranslatedFiles(irFile);
+        }
     }
 
     public void deleteTranslatedFiles(InformationResourceFile irFile) {

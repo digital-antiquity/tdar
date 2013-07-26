@@ -468,6 +468,18 @@ public abstract class InformationResource extends Resource {
         return informationResourceFiles.iterator().next();
     }
 
+    @JSONTransient
+    @XmlTransient
+    public Set<InformationResourceFile> getActiveInformationResourceFiles() {
+        HashSet<InformationResourceFile> files = new HashSet<>();
+        for (InformationResourceFile file : informationResourceFiles) {
+            if (!file.isDeleted()) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
+
     public void setInformationResourceFiles(Set<InformationResourceFile> informationResourceFiles) {
         this.informationResourceFiles = informationResourceFiles;
     }
@@ -1059,7 +1071,7 @@ public abstract class InformationResource extends Resource {
         }
         return files;
     }
-    
+
     @Transient
     @XmlTransient
     public Set<ResourceCreator> getContacts() {

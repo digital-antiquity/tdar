@@ -270,6 +270,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().isArchiveFileEnabled();
     }
 
+    public boolean isVideoEnabled() {
+        return getTdarConfiguration().isVideoEnabled();
+    }
+
     public boolean isLicensesEnabled() {
         return getTdarConfiguration().getLicenseEnabled();
     }

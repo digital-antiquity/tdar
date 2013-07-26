@@ -41,7 +41,7 @@
     <div class="row">
         <div class="span4">
             <h3 class="geospatial-mid-red"><@link "geospatial" "Geospatial" /></h3>
-            Geospatial
+            GIS files, shape files, personal geodatabases, and geo-rectified images.
         </div>
         <div class="span4">
                 <h3 class="sensory_data-mid-red"><@link "sensory-data" "Sensory Data / 3D Scan" /></h3>
@@ -49,7 +49,7 @@
         </div>
     </div>
     <div class="row">
-     <#if administrator>
+     <#if videoEnabled>
         <div class="span4">
             <h3 class="video-mid-red"><@link "video" "Video" /></h3>
             A video
