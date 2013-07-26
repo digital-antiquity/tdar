@@ -208,10 +208,10 @@ View freemarker macros
                 </#if>
 
         </#if>
-        </ul>
         <#if (resource.totalNumberOfFiles == 0)>
             <li class="citationNote">This resource is a citation<#if resource.copyLocation?has_content> a physical copy is located at ${resource.copyLocation}</#if></li>
         </#if>
+        </ul>
         <#if showAll != '' || hasDeletedFiles>
             <div id="downloadsMoreArea">
                 <a href="#" id="showAllFiles" onClick="$('.view-hidden-extra-files, #showAllFiles').toggle();return false;">show all files</a>
