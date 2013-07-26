@@ -654,8 +654,8 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 			<div class="row-fluid">
 		</#if>
 			  <div class="span3">
-			  <span class="primary-thumbnail thumbnail-border">
-			  	<span class="thumbnail-center-spacing"></span>
+			  <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>">
+			  	<span class="thumbnail-center-spacing "></span>
 			  <img class="thumbnailLink img-polaroid" alt="<@altText irfile />" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" style="max-width:100%;" 
 			  	onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"  <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>/>
 			  	                </span>
@@ -675,12 +675,14 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
  <#if authenticatedUser??>
 	<div class="bigImage pagination-centered">
 		<#list resource.visibleFilesWithThumbnails as irfile>
-			<div class="imageContainer">
+			<div>
+			<span id="imageContainer">
 			<img  id="bigImage" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
-			<span id="confidentialLabel"><#if !irfile.public>${irfile.restriction.label}</#if></span>
+			<span id="confidentialLabel"><#if !irfile.public>This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</#if></span>
 			</div>
 			<div id="downloadText">
 			<@altText irfile/> 
+			</span>
 			</div>
 			<#break>
 		</#list>
@@ -692,8 +694,14 @@ $(document).ready(function() {
 	$(".thumbnailLink").click(function() {
 	var $this = $(this);
 		$("#bigImage").attr('src',$this.data('url'));
-		$("#confidentialLabel").html($this.data("access-rights"));
+		var rights = "";
+		if ($this.data("access-rights")) {
+			rights = "This file is <em>" + $this.data("access-rights") + "</em> but you have rights to it";
+		} 
+		$("#confidentialLabel").html(rights);
 		$("#downloadText").html($this.attr('alt'));
+		$(".thumbnail-border-selected").removeClass("thumbnail-border-selected");
+		$this.parent().addClass("thumbnail-border-selected");
 		});
 });
 </script>

@@ -1279,6 +1279,9 @@ vertical-align: middle;
 	border:1px solid #eee;
 }
 
+.thumbnail-border:hover, .thumbnail-border-selected {
+	border: 1px solid #aeaeae;
+}
 
 .table-row-separator-above {
 	border-top: 2px DASHED #AAA;
@@ -1382,4 +1385,18 @@ background: #333333;
 
 .smaller {
 	font-size:50% !important;
+}
+
+#confidentialLabel {
+	position: absolute;
+	bottom: 0px;
+	background-color: white;
+	right: 0px;
+	padding: 1px 10px 1px 10px;
+}
+
+#imageContainer {
+	position: relative;
+	border: 1px solid #AAA;
+	display: inline-block;
 }
