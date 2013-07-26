@@ -93,7 +93,9 @@ View freemarker macros
 </#macro>
 
 <#macro createArchiveFileLink resource newline=false >
-          <a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="TDAR.common.registerDownload('/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}', '${id?c}')" 
+          <a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"
+          <#-- fixme:should we change the google analytics event name, or will this be a pain? -->
+          <#--<a href="<@s.url value='/filestore/${resource.id?c}/show-download-landing'/>" target="_blank" onclick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"-->
           title="download all as zip">Download All</a>
          <#if resource.hasConfidentialFiles() >
             <span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
@@ -212,10 +214,10 @@ View freemarker macros
             <li class="citationNote">This resource is a citation<#if resource.copyLocation?has_content> a physical copy is located at ${resource.copyLocation}</#if></li>
         </#if>
         </ul>
-        <#if showAll != '' || hasDeletedFiles>
-            <div id="downloadsMoreArea">
-                <a href="#" id="showAllFiles" onClick="$('.view-hidden-extra-files, #showAllFiles').toggle();return false;">show all files</a>
-            </div>
+        <#if showAll != ''>
+        <div id="downloadsMoreArea">
+            <a href="#allfiles">show all files</a>
+        </div>
         </#if>
     </div>
 </#macro>
@@ -232,7 +234,7 @@ View freemarker macros
 <#macro extendedFileInfo>
     <#if (resource.totalNumberOfFiles?has_content)>
     <div id="extendedFileInfoContainer">
-        <h3>File Information</h3>
+        <a id="allfiles"><h3>File Information</h3></a>
         <table class="table tableFormat">
             <thead>
                 <tr>

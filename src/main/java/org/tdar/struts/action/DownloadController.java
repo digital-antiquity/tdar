@@ -41,6 +41,8 @@ public class DownloadController extends AuthenticationAware.Base implements Down
 
     public static final String GET = "get";
     private static final long serialVersionUID = 7548544212676661097L;
+    private static final String DOWNLOAD_ALL_LANDING = "show-download-landing";
+    public static final String DOWNLOAD_ALL = "downloadAllAsZip";
     private transient InputStream inputStream;
     private String contentType;
     private String fileName;
@@ -115,7 +117,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         return SUCCESS;
     }
 
-    @Action(value = "downloadAllAsZip")
+    @Action(value = DOWNLOAD_ALL)
     public String downloadZipArchive() throws TdarActionException {
         if (getInformationResourceId() == null)
             return ERROR;
@@ -134,6 +136,12 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         setFileName(String.format("files-%s.zip",getInformationResourceId()));
         return SUCCESS;
     }
+
+    @Action(value = DOWNLOAD_ALL_LANDING)
+    public String showDownloadAllLandingPage() {
+        return SUCCESS;
+    }
+
 
     @Override
     public InputStream getInputStream() {
