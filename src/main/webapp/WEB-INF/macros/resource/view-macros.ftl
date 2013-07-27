@@ -234,7 +234,7 @@ View freemarker macros
 <#macro extendedFileInfo>
     <#if (resource.totalNumberOfFiles?has_content)>
     <div id="extendedFileInfoContainer">
-        <a id="allfiles"><h3>File Information</h3></a>
+        <h3 id="allfiles">File Information</h3>
         <table class="table tableFormat">
             <thead>
                 <tr>
