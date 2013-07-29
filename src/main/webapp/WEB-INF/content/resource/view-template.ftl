@@ -299,12 +299,13 @@
     <@view.unapiLink resource />
     <@view.resourceCollections />
     <@view.additionalInformation resource />
-    
-    <@view.infoResourceAccessRights />
 
     <#if !resource.resourceType.project>
 	    <@view.extendedFileInfo />
 	</#if>    
+    
+    <@view.infoResourceAccessRights />
+
 
 
         <div id="sidebar-right" parse="true">
