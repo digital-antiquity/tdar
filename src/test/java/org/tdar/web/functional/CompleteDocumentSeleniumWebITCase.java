@@ -15,19 +15,19 @@ import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
@@ -41,6 +41,9 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     public static Map<String, String> docUnorderdValMap = new HashMap<String, String>();
     public static List<String> alternateTextLookup = new ArrayList<String>();
     public static List<String> alternateCodeLookup = new ArrayList<String>();
+
+    public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
+    public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
 
     public CompleteDocumentSeleniumWebITCase() {
         docValMap = new LinkedHashMap<String, String>();
@@ -57,22 +60,22 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         docValMap.put("authorshipProxies[0].person.id", "");
         docValMap.put("authorshipProxies[0].role", ResourceCreatorRole.AUTHOR.name());
         alternateTextLookup.add(ResourceCreatorRole.AUTHOR.getLabel());
-        // docValMap.put("authorshipProxies[1].person.institution.name", "SOME INSTITUTION");
-        // docValMap.put("authorshipProxies[1].person.firstName", "test");
-        // docValMap.put("authorshipProxies[1].person.lastName", "test");
-        // docValMap.put("authorshipProxies[1].personRole", "AUTHOR");
-        // docValMap.put("authorshipProxies[1].person.email", "testabc1233@test.com");
-        // docValMap.put("authorshipProxies[1].person.id", "");
+        docValMap.put("authorshipProxies[1].person.institution.name", "SOME INSTITUTION");
+        docValMap.put("authorshipProxies[1].person.firstName", "test");
+        docValMap.put("authorshipProxies[1].person.lastName", "test");
+        docValMap.put("authorshipProxies[1].personRole", "AUTHOR");
+        docValMap.put("authorshipProxies[1].person.email", "testabc1233@test.com");
+        docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
-        // docValMap.put("authorizedUsers[0].user.id", "121");
-        // docValMap.put("authorizedUsers[1].user.id", "5349");
-        // docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        // docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        // docValMap.put("authorizedUsers[0].user.properName", "Michelle Elliott");
-        // docValMap.put("authorizedUsers[1].user.properName", "Joshua Watts");
-        // alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
-        // alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
+        docValMap.put("authorizedUsers[0].user.id", "121");
+        docValMap.put("authorizedUsers[1].user.id", "5349");
+        docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+        docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
+        docValMap.put("authorizedUsers[0].user.properName", "Michelle Elliott");
+        docValMap.put("authorizedUsers[1].user.properName", "Joshua Watts");
+        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
+        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         alternateTextLookup.add(Language.SPANISH.getLabel());
@@ -141,14 +144,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         docUnorderdValMap.put("resourceNotes[5].note", "I'm not internationally known, but I'm known to rock a microphone.");
     }
 
-    private void prepIndexedFields(Collection<String> fieldNames) {
-        for (String fieldName : fieldNames) {
-            if (isIndexedField(fieldName)) {
-                findOrCreateIndexedField(fieldName);
-            }
-        }
-    }
-
     private void prepIndexedFields() {
         prepIndexedFields(docValMap.keySet());
         prepIndexedFields(docMultiValMap.keySet());
@@ -207,13 +202,8 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         gotoPage("/document/add");
         expandAllTreeviews();
         prepIndexedFields();
-        File uploadFile = new File(TEST_DOCUMENT);
-
-        clearFileInputStyles();
-        find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
-        waitFor(".delete-button");
-        find("#proxy0_conf").val(FileAccessRestriction.CONFIDENTIAL.name());
-
+        uploadFile(FileAccessRestriction.CONFIDENTIAL, new File(TEST_DOCUMENT));
+        
         docValMap.putAll(docUnorderdValMap);
 
         // fill in various text fields
@@ -300,36 +290,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         // make sure our 'async' file was added to the resource
         assertTrue(sourceContains(TEST_DOCUMENT_NAME));
-    }
-
-    /**
-     * jquery treeview plugin has no method for "expand-all" because it is horrible.
-     */
-    private void expandAllTreeviews() {
-        int giveupCount = 0;
-        // yes, you really have to do this. the api has no "expand all" method.
-        while (!find(".expandable-hitarea").visibleElements().isEmpty() && giveupCount++ < 10) {
-            find(".expandable-hitarea").visibleElements().click();
-        }
-        assertTrue("trying to expand all listview subtrees", giveupCount < 10);
-    }
-
-    private void addPersonWithRole(Person p, String prefix, ResourceCreatorRole role) {
-        setname(prefix + ".person.firstName", p.getFirstName());
-        setname(prefix + ".person.lastName", p.getLastName());
-        setname(prefix + ".person.email", p.getEmail());
-        setname(prefix + ".person.institution.name", p.getInstitutionName());
-        setname(prefix + ".role", role.name());
-
-        // FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
-        // waitFor(".ui-menu-item a").click();
-    }
-
-    private void setname(String fld, String value) {
-        if (StringUtils.isNotBlank(value)) {
-            find(By.name(fld)).val(value);
-        }
-
     }
 
 }

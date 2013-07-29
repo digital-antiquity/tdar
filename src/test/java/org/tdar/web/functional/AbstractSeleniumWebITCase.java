@@ -1,12 +1,14 @@
 package org.tdar.web.functional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -52,6 +53,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
 import org.tdar.utils.TestConfiguration;
@@ -63,8 +67,6 @@ public abstract class AbstractSeleniumWebITCase {
 
     public static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     // private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
-    public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
-    public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
     public static String PATH_OUTPUT_ROOT = "target/selenium";
 
     private String pageText = null;
@@ -329,9 +331,9 @@ public abstract class AbstractSeleniumWebITCase {
             // Now you can do whatever you need to do with it, for example copy somewhere
             File dir = new File("target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName());
             dir.mkdirs();
-            String finalFilename =  screenshotFilename(filename, "png");
+            String finalFilename = screenshotFilename(filename, "png");
             logger.debug("saving screenshot: dir:{}, name:", dir, finalFilename);
-            FileUtils.copyFile(scrFile, new File(dir,finalFilename));
+            FileUtils.copyFile(scrFile, new File(dir, finalFilename));
         } catch (Exception e) {
             logger.error("could not take screenshot", e);
         } finally {
@@ -778,7 +780,7 @@ public abstract class AbstractSeleniumWebITCase {
         for (String error : errors) {
             logger.error("javascript error: {}", error);
         }
-        if ( !ignoreJavascriptErrors) {
+        if (!ignoreJavascriptErrors) {
             Assert.fail("ENCOUNTERED JAVASCRIPT ERRORS ON PAGE: " + driver.getCurrentUrl() + "\r\n [" + errors + "]");
         }
     }
@@ -851,6 +853,63 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
         return selection;
+    }
+
+    public void replaceFirstFile(File uploadFile, File file) {
+        clearFileInputStyles();
+        find("#fileupload0").sendKeys(file.getAbsolutePath());
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        waitFor(".delete-button");
+    }
+
+    public void uploadFile(FileAccessRestriction restriction, File uploadFile) {
+        clearFileInputStyles();
+        find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
+        waitFor(".delete-button");
+        find("#proxy0_conf").val(restriction.name());
+    }
+
+    protected void prepIndexedFields(Collection<String> fieldNames) {
+        for (String fieldName : fieldNames) {
+            if (isIndexedField(fieldName)) {
+                findOrCreateIndexedField(fieldName);
+            }
+        }
+    }
+
+    /**
+     * jquery treeview plugin has no method for "expand-all" because it is horrible.
+     */
+    protected void expandAllTreeviews() {
+        int giveupCount = 0;
+        // yes, you really have to do this. the api has no "expand all" method.
+        while (!find(".expandable-hitarea").visibleElements().isEmpty() && giveupCount++ < 10) {
+            find(".expandable-hitarea").visibleElements().click();
+        }
+        assertTrue("trying to expand all listview subtrees", giveupCount < 10);
+    }
+
+    protected void addPersonWithRole(Person p, String prefix, ResourceCreatorRole role) {
+        setname(prefix + ".person.firstName", p.getFirstName());
+        setname(prefix + ".person.lastName", p.getLastName());
+        setname(prefix + ".person.email", p.getEmail());
+        setname(prefix + ".person.institution.name", p.getInstitutionName());
+        setname(prefix + ".role", role.name());
+
+        // FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
+        // waitFor(".ui-menu-item a").click();
+    }
+
+    protected void setname(String fld, String value) {
+        if (StringUtils.isNotBlank(value)) {
+            find(By.name(fld)).val(value);
+        }
+
     }
 
 }
