@@ -8,7 +8,6 @@ package org.tdar.web.functional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
@@ -23,13 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -233,7 +228,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
             }
         }
 
-        //add a person to satisfy the confidential file requirement
+        // add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
 
         logger.info(getDriver().getPageSource());
@@ -326,12 +321,12 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         setname(prefix + ".person.institution.name", p.getInstitutionName());
         setname(prefix + ".role", role.name());
 
-        //FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
-        //waitFor(".ui-menu-item a").click();
+        // FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
+        // waitFor(".ui-menu-item a").click();
     }
 
     private void setname(String fld, String value) {
-        if(StringUtils.isNotBlank(value)) {
+        if (StringUtils.isNotBlank(value)) {
             find(By.name(fld)).val(value);
         }
 
