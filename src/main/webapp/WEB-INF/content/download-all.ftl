@@ -4,18 +4,14 @@
 <#assign download ="/filestore/downloadAllAsZip?informationResourceId=${informationResourceId?c}" />
 <html>
 <head>
-    <title>Download: ${fileName?html}</title>
+    <title>Download All Files</title>
 </head>
 <body>
 <div class="hero-unit">
     <h1>Download all Files</h1>
     <p>The download you requested will begin momentarily</p>
-    <dl class="dl-horizontal">
-        <dt>Requested File</dt>
-        <dd><a href="${download}" class="manual-download" >${fileName?html}</a></dd>
-    </dl>
-    <p>Your files are being prepared. Note that this process may take longer for resources with large numbers of files.</p>
-    <a class="btn btn-large btn-primary" href="<@s.url value="/dashboard" />">Take me to my dashboard</a>
+    <p>Your files are being prepared. Note that this process may take up to five minutes or longer for resources with large numbers of files.</p>
+    <button type="button" class="btn btn-primary" onclick="console.log('closing');window.close()">Click here to close this window</button>
 </div>
 <div class="row">
 </div>

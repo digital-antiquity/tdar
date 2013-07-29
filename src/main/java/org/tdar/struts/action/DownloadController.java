@@ -137,7 +137,8 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         return SUCCESS;
     }
 
-    @Action(value = DOWNLOAD_ALL_LANDING)
+    @Action(value = DOWNLOAD_ALL_LANDING, results = {
+            @Result(name = SUCCESS, type = "freemarker", location = "/WEB-INF/content/download-all.ftl")})
     public String showDownloadAllLandingPage() {
         return SUCCESS;
     }

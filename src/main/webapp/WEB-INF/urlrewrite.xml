@@ -137,8 +137,8 @@
 		<to>/browse/creators/$2/rdf</to>
 	</outbound-rule>
 
-	<rule>
-		<from>^/filestore/(\d+)/(\w+)</from>
+    <rule>
+		<from>^/filestore/(\d+)/([\w\-]+)</from>
 		<to>/filestore/$2?informationResourceFileId=$1</to>
 	</rule>
 
