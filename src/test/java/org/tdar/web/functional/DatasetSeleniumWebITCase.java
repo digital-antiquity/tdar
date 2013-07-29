@@ -7,6 +7,7 @@
 package org.tdar.web.functional;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     public static String REGEX_DATASET_VIEW = ".+\\/dataset\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DATASET_VIEW);
     public static String REGEX_DATASET_EDIT = ".+\\/dataset\\/\\d+$";
+    public static String REGEX_RESOURCE_SAVE = ".+save.action$";
     public static String REGEX_DATASET_COLUMNS = ".+\\/dataset\\/\\d+/columns$";
     public static Pattern PATTERN_DOCUMENT_EDIT = Pattern.compile(REGEX_DATASET_EDIT);
 
@@ -103,12 +105,16 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
         String path = getDriver().getCurrentUrl();
         logger.info(find("body").getText());
-        assertTrue("expecting to be on edit page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_EDIT));
+        assertTrue("expecting to be on edit page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_RESOURCE_SAVE));
 
         // assertEquals("count of edit buttons", 1, find(By.partialLinkText("EDIT")).size());
         // find(By.partialLinkText("EDIT")).click();
 
-        replaceFirstFile(uploadFile, new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "tab_mapping_dataset.tab"));
+        WebElementSelection sel = find(".replace-file");
+        showAsyncFileInput(sel.first());
+        File replaceFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "tab_mapping_dataset.tab");
+        sel.sendKeys(replaceFile.getAbsolutePath());
+        waitFor(".undo-replace-button");
 
         submitForm();
 
@@ -116,5 +122,9 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         logger.info(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         logger.trace(find("body").getText());
+        submitForm();
+        assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
+        assertFalse("no errors present", getText().toLowerCase().contains("error"));
+        assertFalse("no errors present", getText().toLowerCase().contains("exception"));
     }
 }

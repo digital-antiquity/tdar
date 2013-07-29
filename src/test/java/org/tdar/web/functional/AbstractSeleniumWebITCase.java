@@ -610,6 +610,7 @@ public abstract class AbstractSeleniumWebITCase {
         showAsyncFileInput(input);
     }
 
+
     /**
      * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget. Typically in selenium you "upload" a file using
      * the sendKeys() method, but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
@@ -855,17 +856,17 @@ public abstract class AbstractSeleniumWebITCase {
         return selection;
     }
 
-    public void replaceFirstFile(File uploadFile, File file) {
-        clearFileInputStyles();
-        find("#fileupload0").sendKeys(file.getAbsolutePath());
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        waitFor(".delete-button");
-    }
+//    public void replaceFirstFile(File uploadFile, File file) {
+//        clearFileInputStyles();
+//        find("#fileupload0").sendKeys(file.getAbsolutePath());
+//        try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        waitFor(".delete-button");
+//    }
 
     public void uploadFile(FileAccessRestriction restriction, File uploadFile) {
         clearFileInputStyles();
