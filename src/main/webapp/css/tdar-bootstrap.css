@@ -18,8 +18,10 @@ section.row.cols {
 	display: block; //
 	width: 300px;
 	height: 1.8em;
-	right: 0px;
 	bottom: 0px;
+    /* //FIXME: 100px shift is unnecessary if we can put legend inside of .worldmap */
+	right: 100px;
+
 }
 
 .mapcontainer .legendText {
@@ -180,9 +182,6 @@ table.dataTable {
 
 div.mapcontainer {
 	position: relative;
-	right: 0px;
-	float: right;
-	margin-right: 40px;
 }
 
 div.mapcontainer img {

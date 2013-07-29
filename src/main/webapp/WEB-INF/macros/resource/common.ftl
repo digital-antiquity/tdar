@@ -586,7 +586,7 @@ $(document).ready(function(){
 </#macro>
 
 <#macro worldMap forceAddSchemeHostAndPort=false>
-<div class="mapcontainer" style="margin-left:-40px;position:relative;right:0px">
+<div class="mapcontainer" style="">
 <script type="text/javascript">
 $(function() {
 
