@@ -128,10 +128,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      */
     public void setTransientViewableStatus(InformationResource ir, Person p) {
         getAuthenticationAndAuthorizationService().applyTransientViewableFlag(ir, p);
-        for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
-            getInformationResourceFileService().updateTransientDownloadCount(irf);
-            if (irf.isDeleted()) {
-                setHasDeletedFiles(true);
+        if (Persistable.Base.isNotNullOrTransient(p)) {
+            for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
+                getInformationResourceFileService().updateTransientDownloadCount(irf);
+                if (irf.isDeleted()) {
+                    setHasDeletedFiles(true);
+                }
             }
         }
     }
@@ -378,7 +380,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         setAllowedToViewConfidentialFiles(getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getPersistable()));
         initializeFileProxies();
         try {
-        getDatasetService().assignMappedDataForInformationResource(getResource());
+            getDatasetService().assignMappedDataForInformationResource(getResource());
         } catch (Exception e) {
             logger.error("could not attach additional dataset data to resource", e);
         }
@@ -603,8 +605,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                     logger.debug("No copyright holder set for {}", getPersistable());
                     addActionError("Please enter a copyright holder!");
                 }
-            // and if not on a form (the reprocess below, for example, then check the persistable itself
-            } else if (getPersistable().getCopyrightHolder() == null){
+                // and if not on a form (the reprocess below, for example, then check the persistable itself
+            } else if (getPersistable().getCopyrightHolder() == null) {
                 addActionError("The required copyright holder is missing!");
             }
         }

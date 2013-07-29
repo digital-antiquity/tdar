@@ -167,12 +167,8 @@ View freemarker macros
 </#macro>
 
 
-<#function hasTranslatedVersion irfile>
-    <#return (irfile.latestTranslatedVersion?? && resource.resourceType.dataTableSupported)>
-</#function>
-
 <#macro translatedFileSection irfile>
-    <#if hasTranslatedVersion(irfile) >
+    <#if irfile.hasTranslatedVersion >
     <blockquote>
         <b>Translated version</b> <@createFileLink irfile.latestTranslatedVersion /></br>
         Data column(s) in this dataset have been associated with coding sheet(s) and translated:
@@ -233,6 +229,7 @@ View freemarker macros
 
 <#macro extendedFileInfo>
     <#if (resource.totalNumberOfFiles?has_content)>
+    <#local showDownloads = authenticatedUser?? />
     <div id="extendedFileInfoContainer">
         <h3 id="allfiles">File Information</h3>
         <table class="table tableFormat">
@@ -240,28 +237,35 @@ View freemarker macros
                 <tr>
                     <th>&nbsp;</th>
                     <th>Name</th>
-                    <th>Description</th>
                     <th>Size</th>
                     <th>Creation Date</th>
                     <th>Access</></th>
-                    <th>Downloaded #</th>
+					<#if showDownloads>
+    	                <th>Downloads</th>
+                    </#if>
                 </tr>
             </thead>
         <tbody>
         <@fileInfoSection extended=true; irfile, showAll, ext>
+        <#local twoRow = (irfile.hasTranslatedVersion || irfile.description?has_content ) />
             <tr>
-                <td><i class="iconf page-white-zip"> </i></td>
+                <td <#if twoRow>rowspan=2</#if>><i class="iconf page-white-zip"> </i></td>
                 <td><@createFileLink irfile false false false /></td>
-                <td>
+                <td><@common.convertFileSize version.fileLength /></td>
+                <td><@printCreatedDate irfile /></td>
+                <td>${irfile.restriction.label}</td>
+                
+                <#if irfile.transientDownloadCount?? >
+                	<td>${((irfile.transientDownloadCount)!0)}</td>
+				</#if>
+            </tr>
+            <#if twoRow>
+				<tr>
+                <td colspan=<#if showDownloads>5<#else>4</#if>>
                     ${irfile.description!""}
                     <@translatedFileSection irfile />
                 </td>
-                <td><@common.convertFileSize version.fileLength /></td>
-                <td>${(irfile.fileCreatedDate)!""}</td>
-                <td>${irfile.restriction.label}</td>
-                <td>${((irfile.transientDownloadCount)!0)}</td>
-
-            </tr>
+                </tr>			</#if>            
         </@fileInfoSection>
         </tbody>
         </table>
@@ -474,7 +478,7 @@ No coding rules have been entered for this coding sheet yet.
         <#assign downloads = irfile.transientDownloadCount />    
     </#if>
 
-    <#if (irfile.informationResourceFile?has_content && irfile.informationResourceFile.transientDownloadCount > 0 )>
+    <#if (irfile.informationResourceFile?has_content && (irfile.informationResourceFile.transientDownloadCount!0) > 0 )>
         <#assign downloads = irfile.informationResourceFile.transientDownloadCount />    
     </#if>
     <#if (downloads > 0)>
@@ -628,9 +632,12 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 <#macro altText irfile>
 ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if>
-<#if irfile.fileCreatedDate??>(${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")})</#if>
+<#if irfile.fileCreatedDate??>(<@printCreatedDate irfile/>)</#if>
 </#macro>
 
+<#macro printCreatedDate irfile>
+	<#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")}</#if>
+</#macro>
 <#macro imageGallery>
 <div class="slider">
  <#local numIndicatorsPerSection = 4 />
@@ -674,7 +681,7 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
  <br/>
  
 </div><!--/well-->
- <#if authenticatedUser??>
+ <#if authenticatedUser?? >
 	<div class="bigImage pagination-centered">
 		<#list resource.visibleFilesWithThumbnails as irfile>
 			<div>
