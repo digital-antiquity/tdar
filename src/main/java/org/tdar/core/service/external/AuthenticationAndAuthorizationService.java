@@ -402,6 +402,9 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public boolean canDownload(InformationResourceFile irFile, Person person) {
         if (irFile == null)
             return false;
+        if (irFile.isDeleted() && Persistable.Base.isTransient(person)) {
+            return false;
+        }
         if (!irFile.isPublic() && !canViewConfidentialInformation(person, irFile.getInformationResource())) {
             return false;
         } else {
