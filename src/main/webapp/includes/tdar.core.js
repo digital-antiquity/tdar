@@ -87,3 +87,31 @@ TDAR.namespace = function() {
     return Class;
   };
 })();
+
+/**
+ * load SCRIPT asynchronously,
+ *
+ * returns $.promise if jquery library is available
+ */
+TDAR.loadScript = function(url) {
+    var head = document.getElementsByTagName("head")[0];
+    var script = document.createElement("script");
+    var deferred, promise;
+
+    if(typeof jQuery === "function") {
+        deferred = $.Deferred()
+        promise = deferred.promise();
+
+        script.onload = function() {
+            deferred.resolve();
+        };
+
+        script.onerror = function(err) {
+            deferred.rejectWith(err);
+        };
+    }
+
+    script.src = url;
+    head.appendChild(script);
+    return promise;
+}

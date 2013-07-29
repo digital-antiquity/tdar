@@ -313,7 +313,9 @@ ${_stacktrace?html}
     </#if>
     
     <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
-		<script type="text/javascript" src="${jiraScriptLink}"></script>
+		<script type="text/javascript">
+            TDAR.loadScript('${jiraScriptLink}');
+		</script>
 	</#if>
     
     <#if qunit>
