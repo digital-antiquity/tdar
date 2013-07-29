@@ -133,6 +133,29 @@ View freemarker macros
 </#macro>
 
 <#macro fileInfoSection extended windowSize=4>
+        <#local showAll = ""/>
+        <#local visibleCount = 0>
+        <#list resource.informationResourceFiles as irfile>
+              <#if (visibleCount > windowSize)><#local showAll = "view-hidden-extra-files"/></#if>
+              <#if !irfile.deleted><#local visibleCount = 1 + visibleCount /></#if>
+              <#nested irfile, showAll>
+        </#list>
+</#macro>
+
+
+<#macro translatedFileSection irfile>
+    <#if irfile.hasTranslatedVersion >
+    <blockquote>
+        <b>Translated version</b> <@createFileLink irfile.latestTranslatedVersion /></br>
+        Data column(s) in this dataset have been associated with coding sheet(s) and translated:
+        <#if sessionData?? && sessionData.authenticated>
+            <br><small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> - <b>Note: this process may take some time</b>)</small>
+        </#if>
+    </blockquote>
+    </#if>
+</#macro>
+
+<#macro fileIcon irfile=file extraClass="" >
         <#local extensionMap = {
                         'pdf':'page-white-acrobat',
                         'doc':'page-white-word',
@@ -152,31 +175,12 @@ View freemarker macros
                         'GEOSPATIAL':'page-white-picture',
                         'ARCHIVE':'page-white-zip'
           } />
-        <#local showAll = ""/>
-        <#local visibleCount = 0>
-        <#local ext = "" >
-        <#list resource.informationResourceFiles as irfile>
-              <#if (visibleCount > windowSize)><#local showAll = "view-hidden-extra-files"/></#if>
-              <#if !irfile.deleted><#local visibleCount = 1 + visibleCount /></#if>
+		      <#local ext = "" >
               <#local ext = extensionMap[irfile.latestUploadedOrArchivalVersion.extension?lower_case ]!'' />
               <#if !ext?has_content>
                 <#local ext = extensionMap[resource.resourceType ] />
               </#if>
-              <#nested irfile, showAll, ext>
-        </#list>
-</#macro>
-
-
-<#macro translatedFileSection irfile>
-    <#if irfile.hasTranslatedVersion >
-    <blockquote>
-        <b>Translated version</b> <@createFileLink irfile.latestTranslatedVersion /></br>
-        Data column(s) in this dataset have been associated with coding sheet(s) and translated:
-        <#if sessionData?? && sessionData.authenticated>
-            <br><small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> - <b>Note: this process may take some time</b>)</small>
-        </#if>
-    </blockquote>
-    </#if>
+              <i class="iconf ${ext} ${extraClass!""}"></i>
 </#macro>
 
 <#macro uploadedFileInfo >
@@ -190,10 +194,10 @@ View freemarker macros
         <#if ((resource.totalNumberOfFiles!0) > 0) >
 
             <#if resource.hasConfidentialFiles()><li><@embargoCheck/></li></#if>
-            <@fileInfoSection extended=false; irfile, showAll, ext>
+            <@fileInfoSection extended=false; irfile, showAll>
                 <#local showAll = showAll>
                 <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
-                    <i class="iconf ${ext} pull-left"></i>
+                    <@fileIcon irfile=irfile extraClass="pull-left" />
                     <div class="media-body"><@createFileLink irfile true /></div>
                     <@translatedFileSection irfile />
                 </li>
@@ -249,7 +253,7 @@ View freemarker macros
         <@fileInfoSection extended=true; irfile, showAll, ext>
         <#local twoRow = (irfile.hasTranslatedVersion || irfile.description?has_content ) />
             <tr>
-                <td <#if twoRow>rowspan=2</#if>><i class="iconf page-white-zip"> </i></td>
+                <td <#if twoRow>rowspan=2</#if>><@fileIcon irfile=irfile /></td>
                 <td><@createFileLink irfile false false false /></td>
                 <td><@common.convertFileSize version.fileLength /></td>
                 <td><@printCreatedDate irfile /></td>
