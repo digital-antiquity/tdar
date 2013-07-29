@@ -1400,3 +1400,7 @@ background: #333333;
 	border: 1px solid #AAA;
 	display: inline-block;
 }
+
+tr.DELETED {
+	text-decoration: line-through;
+}

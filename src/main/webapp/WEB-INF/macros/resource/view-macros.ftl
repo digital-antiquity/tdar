@@ -252,7 +252,7 @@ View freemarker macros
         <tbody>
         <@fileInfoSection extended=true; irfile, showAll, ext>
         <#local twoRow = (irfile.hasTranslatedVersion || irfile.description?has_content ) />
-            <tr>
+            <tr class="${irfile.status}">
                 <td <#if twoRow>rowspan=2</#if>><@fileIcon irfile=irfile /></td>
                 <td><@createFileLink irfile false false false /></td>
                 <td><@common.convertFileSize version.fileLength /></td>
@@ -264,7 +264,7 @@ View freemarker macros
 				</#if>
             </tr>
             <#if twoRow>
-				<tr>
+            <tr class="${irfile.status}">
                 <td colspan=<#if showDownloads>5<#else>4</#if>>
                     ${irfile.description!""}
                     <@translatedFileSection irfile />
@@ -645,10 +645,16 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 <#macro imageGallery>
 <div class="slider">
  <#local numIndicatorsPerSection = 4 />
+<#local numIndicators = ((resource.visibleFilesWithThumbnails?size!0) / numIndicatorsPerSection)?ceiling  />
+<div class="hidden">
+<p><strong># Indicators per section: </strong>${numIndicatorsPerSection}</p>
+<p><strong># Visible Thumbnails: </strong>${resource.visibleFilesWithThumbnails?size!0}</p>
+<p><strong># Indicators: </strong>${numIndicators}</p>
+</div>
+
 <div id="myCarousel" class="image-carousel carousel slide pagination-centered">
  
 	<ol class="carousel-indicators ">
-	    <#local numIndicators = ((resource.visibleFilesWithThumbnails?size!0) / numIndicatorsPerSection)?ceiling -1 />
 	    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
 
 	    <#if (numIndicators > 1)>
