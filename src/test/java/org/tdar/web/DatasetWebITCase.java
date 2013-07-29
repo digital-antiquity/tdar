@@ -178,7 +178,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.remove("uploadedFiles");
         uploadFileToPersonalFilestore(ticketId, filename);
 
-        gotoPage("/dataset/add");
+            gotoPage("/dataset/add");
         addCopyrightHolder(docValMap);
         setInput("ticketId", ticketId);
         addFileProxyFields(0, FileAccessRestriction.PUBLIC, filename);

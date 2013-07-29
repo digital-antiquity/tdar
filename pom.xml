@@ -15,7 +15,7 @@
 		<spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
 		<postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
 		<!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
-		<apache.cxf.version>2.7.4</apache.cxf.version>
+		<apache.cxf.version>2.7.6</apache.cxf.version>
 		<clover.version>3.1.11</clover.version>
 		<!-- /end managed versions -->
 		<jvm.args>-Xms256m -Xmx2560m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
@@ -27,7 +27,7 @@
 		<jetty.stop.port>12919</jetty.stop.port>
 		<use.test.classpath>false</use.test.classpath>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<geotools.version>9.3</geotools.version>
+		<geotools.version>9.4</geotools.version>
 		<tika.version>1.4</tika.version>
 		<batik.version>1.7</batik.version>
 		<odata4j.version>0.7.0</odata4j.version>
@@ -247,12 +247,12 @@
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
-			<version>1.9.1</version>
+			<version>1.9.2</version>
 		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.47t</version>
+			<version>1.48a</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.media.jai</groupId>
@@ -724,7 +724,7 @@
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>1.2.13</version>
+			<version>1.2.14</version>
 		</dependency>
 		<!-- OpenCSV -->
 		<dependency>
