@@ -12,7 +12,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
@@ -278,7 +280,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             InformationResourceFile irFile = fileIterator.next();
             InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
             Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
-            // List<InformationResourceFileVersion> toDelete = new ArrayList<InformationResourceFileVersion>();
             while (iterator.hasNext()) {
                 InformationResourceFileVersion version = iterator.next();
                 if (!version.equals(original) && !version.isUploaded() && !version.isArchival()) {
@@ -289,10 +290,17 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             // this is a known case where we need to purge the session
             getDao().synchronize();
             try {
-                boolean result = analyzer.processFile(original);
-                // messageService.sendFileProcessingRequest(workflow, original);
+                original.setTransientFile(filestore.retrieveFile(original));
+                if (!analyzer.processFile(original)) {
+                    logger.error("could not reprocess file: " + original.getFilename());
+                }
             } catch (Exception e) {
-                logger.warn("caught exception {} while analyzing file {}", e, original.getFilename());
+                // is a logged error enough?
+                // because the user doesn't get to see the failure...
+                logger.error("caught exception {} while analyzing file {}", e, original.getFilename());
+                // however, 
+                // throw new TdarRecoverableRuntimeException(e);
+                // doesn't result in a nice error message shown to the user...
             }
         }
 
