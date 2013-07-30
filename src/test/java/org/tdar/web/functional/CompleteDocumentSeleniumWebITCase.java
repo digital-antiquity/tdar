@@ -21,8 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.WebElement;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
@@ -63,7 +66,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         docValMap.put("authorshipProxies[1].person.institution.name", "SOME INSTITUTION");
         docValMap.put("authorshipProxies[1].person.firstName", "test");
         docValMap.put("authorshipProxies[1].person.lastName", "test");
-        docValMap.put("authorshipProxies[1].personRole", "AUTHOR");
+        docValMap.put("authorshipProxies[1].role", ResourceCreatorRole.AUTHOR.name());
         docValMap.put("authorshipProxies[1].person.email", "testabc1233@test.com");
         docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put("document.description", "A resource description");
@@ -72,8 +75,8 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         docValMap.put("authorizedUsers[1].user.id", "5349");
         docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("authorizedUsers[0].user.properName", "Michelle Elliott");
-        docValMap.put("authorizedUsers[1].user.properName", "Joshua Watts");
+        docValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
+        docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
@@ -214,7 +217,12 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         // check various keyword checkboxes
         for (String key : docMultiValMap.keySet()) {
             for (String val : docMultiValMap.get(key)) {
+                try {
                 find(By.name(key)).val(val);
+                } catch (ElementNotVisibleException en) {
+                    logger.error("element not visible: {} {}", key, val);
+                    Assert.fail("could not find " + key + " because it was not visible");
+                }
             }
         }
 

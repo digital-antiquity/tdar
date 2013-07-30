@@ -671,6 +671,9 @@ public abstract class AbstractSeleniumWebITCase {
         WebElementSelection elem = find(By.name(fieldName));
         if (elem.isEmpty()) {
             WebElement zeroElem = getZerothElement(fieldName);
+            if (zeroElem == null) {
+                Assert.fail(fieldName + " is null");
+            }
             String repeatLastRowId = find(zeroElem).parentsWithClass("repeatLastRow").getAttribute("id");
             String buttonSelector = "#" + repeatLastRowId + " + .add-another-control button";
             // selector for button after container (e.g. "#resourceNotesSection + .add-another-control button")
