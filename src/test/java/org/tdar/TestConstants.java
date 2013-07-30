@@ -17,6 +17,7 @@ public interface TestConstants {
     public static final String TEST_BULK_DIR = TEST_ROOT_DIR + "bulk/";
     public static String TEST_SENSORY_DIR = TEST_ROOT_DIR + "sensory/";
     public static final String TEST_DOCUMENT_DIR = TEST_ROOT_DIR + "documents/";
+    public static final String TEST_ARCHIVE_DIR = TEST_ROOT_DIR + "archive/";
     public static final String TEST_GIS_DIR = "gis/";
     public static final String TEST_SHAPEFILE_DIR = TEST_ROOT_DIR +  TEST_GIS_DIR + "shapefiles/tijeras/";
     public static String TEST_GEOTIFF_DIR = TEST_ROOT_DIR +  TEST_GIS_DIR + "geotiff/";
@@ -49,6 +50,8 @@ public interface TestConstants {
     public static String DOCUENT_DATE_CREATED = "document.date";
     public static String TEST_DOCUMENT_ID = "4232";
     public static String TEST_KML = TEST_ROOT_DIR +  TEST_GIS_DIR + "kml/doc.kml";
+    
+    public static String FAULTY_ARCHIVE = "broken.zip";
 
     public static final String DOCUMENT_FIELD_TITLE = "document.title";
     public static final String DOCUMENT_FIELD_DESCRIPTION = "document.description";

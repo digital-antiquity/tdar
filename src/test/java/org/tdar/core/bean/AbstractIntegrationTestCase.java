@@ -309,16 +309,21 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             }
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
             // VersionType.UPLOADED);
+            
+            // Martin: refresh reloads the object and all it's collections from the databases. It's really not the right call here, as Hibernate might not
+            // have saved them yet ...
+            // genericService.refresh(ir);
+            // possibly the original find is wanted? (Why do we think that the ir has left the session?) 
+            // ir = genericService.find(ir.getClass(), ir.getId());
+            for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
+                assertTrue(irf.getId() != null);
+                for (InformationResourceFileVersion irfv : irf.getInformationResourceFileVersions()) {
+                    assertTrue(irfv.getId() != null);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
-        }
-        genericService.refresh(ir);// = genericService.find(ir.getClass(), ir.getId());
-        for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
-            assertTrue(irf.getId() != null);
-            for (InformationResourceFileVersion irfv : irf.getInformationResourceFileVersions()) {
-                assertTrue(irfv.getId() != null);
-            }
         }
         return ir;
     }
@@ -327,7 +332,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewInformationResource(cls, false);
     }
 
-    private <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) {
+    protected <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) {
         Person submitter = getUser();
         if (createUser) {
             submitter = createAndSaveNewPerson("test@user.com", "");
