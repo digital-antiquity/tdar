@@ -309,6 +309,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             }
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
             // VersionType.UPLOADED);
+            genericService.synchronize();
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());

@@ -22,7 +22,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 public class ArchiveITCase extends AbstractIntegrationTestCase {
 
     public Archive generateArchiveFileAndUser() {
-        Archive result = createAndSaveNewInformationResource(Archive.class, true);
+        Archive result = createAndSaveNewInformationResource(Archive.class, false);
         assertTrue(result.getResourceType() == ResourceType.ARCHIVE);
         File file = new File(TestConstants.TEST_ARCHIVE_DIR + TestConstants.FAULTY_ARCHIVE);
         assertTrue("testing " + TestConstants.FAULTY_ARCHIVE + " exists", file.exists());
