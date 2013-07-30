@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.tanesha.recaptcha.ReCaptcha;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.struts2.convention.annotation.Action;
@@ -12,6 +14,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
@@ -25,6 +28,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.interceptor.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -86,12 +90,12 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private String passwordResetURL;
     private ContributorRequest contributorRequest;
 
-    // private String recaptcha_challenge_field;
-    // private String recaptcha_response_field;
-    // private String recaptcha_public_key;
-    //
-    // @Autowired
-    // private ObfuscationService obfuscationService;
+    private String recaptcha_challenge_field;
+    private String recaptcha_response_field;
+
+    @Autowired
+    private RecaptchaService reCaptchaService;
+    private String reCaptchaText;
 
     @Action(value = "new", interceptorRefs = @InterceptorRef("basicStack"),
             results = {
@@ -103,6 +107,11 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         setTimeCheck(System.currentTimeMillis());
         if (isAuthenticated()) {
             return "authenticated";
+        }
+
+        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
+            ReCaptcha recaptcha = reCaptchaService.generateRecaptcha();
+            reCaptchaText = recaptcha.createRecaptchaHtml(null, null);
         }
         return SUCCESS;
     }
@@ -176,6 +185,15 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         if (person == null || !isPostRequest()) {
             return INPUT;
         }
+
+        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
+            boolean reCaptchaResponse = reCaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
+            if (reCaptchaResponse == false) {
+                throw new TdarRecoverableRuntimeException("Captcha Response is not valid");
+            }
+
+        }
+
         try {
             Person findByUsername = getEntityService().findByUsername(person.getUsername());
             // short circut the login process -- if there username and password are registered and valid -- just move on.
@@ -525,29 +543,21 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         this.contributorRequest = contributorRequest;
     }
 
-    // public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {
-    // this.recaptcha_challenge_field = recaptcha_challenge_field;
-    // }
-    //
-    // public String getRecaptcha_challenge_field() {
-    // return recaptcha_challenge_field;
-    // }
-    //
-    // public void setRecaptcha_response_field(String recaptcha_response_field) {
-    // this.recaptcha_response_field = recaptcha_response_field;
-    // }
-    //
-    // public String getRecaptcha_response_field() {
-    // return recaptcha_response_field;
-    // }
-    //
-    // public void setRecaptcha_public_key(String recaptcha_public_key) {
-    // this.recaptcha_public_key = recaptcha_public_key;
-    // }
-    //
-    // public String getRecaptcha_public_key() {
-    // return TdarConfiguration.getInstance().getRecaptchaPublicKey();
-    // }
+    public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {
+        this.recaptcha_challenge_field = recaptcha_challenge_field;
+    }
+
+    public String getRecaptcha_challenge_field() {
+        return recaptcha_challenge_field;
+    }
+
+    public void setRecaptcha_response_field(String recaptcha_response_field) {
+        this.recaptcha_response_field = recaptcha_response_field;
+    }
+
+    public String getRecaptcha_response_field() {
+        return recaptcha_response_field;
+    }
 
     public boolean isEditable() {
         return getAuthenticatedUser().equals(person)
@@ -558,6 +568,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     // actual humans get a form that is never too old while still locking out spambots.
     public long getRegistrationTimeout() {
         return ONE_HOUR_IN_MS;
+    }
+
+    public String getReCaptchaText() {
+        return reCaptchaText;
+    }
+
+    public void setReCaptchaText(String reCaptchaText) {
+        this.reCaptchaText = reCaptchaText;
     }
 
 }

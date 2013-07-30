@@ -124,6 +124,10 @@ label.error {display:block;}
     <@s.hidden name="timeCheck"/>
     <textarea name="comment" class="tdarCommentDescription"></textarea>
     
+    <#if reCaptchaText?has_content>
+	    ${reCaptchaText}
+    </#if>
+    
     <div class="form-actions">
         <input type="submit" class='btn btn-primary  submitButton' name="submitAction" value="Save">
         <p class="help-block">
