@@ -281,7 +281,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             InformationResourceFile irFile = fileIterator.next();
             InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
             Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
-            // List<InformationResourceFileVersion> toDelete = new ArrayList<InformationResourceFileVersion>();
             while (iterator.hasNext()) {
                 InformationResourceFileVersion version = iterator.next();
                 if (!version.equals(original) && !version.isUploaded() && !version.isArchival()) {
@@ -292,7 +291,10 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             // this is a known case where we need to purge the session
             getDao().synchronize();
             try {
-                boolean result = analyzer.processFile(original);
+                original.setTransientFile(filestore.retrieveFile(original));
+                if (!analyzer.processFile(original)) {
+                    logger.error("could not reprocess file: " + original.getFilename());
+                }
                 // messageService.sendFileProcessingRequest(workflow, original);
             } catch (Exception e) {
                 logger.warn("caught exception {} while analyzing file {}", e, original.getFilename());
