@@ -92,7 +92,7 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         query.setWhat(domestic);
         results = port.getTopRecords(sessionId, query, 5);
         meta = results.getMeta();
-        assertEquals(6, meta.getTotalRecords()); // there should be 6 Project records matching domestic
+        assertEquals(7, meta.getTotalRecords()); // there should be 6 Project records matching domestic
         query.setWhat(null);
 
         Where where = new Where(); // look in AZ and NM
