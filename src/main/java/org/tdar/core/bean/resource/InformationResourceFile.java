@@ -589,14 +589,4 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         this.fileCreatedDate = fileCreatedDate;
     }
 
-    public boolean isHasTranslatedVersion() {
-        try {
-        if (getLatestTranslatedVersion() != null && getInformationResource().getResourceType().isDataTableSupported()) {
-            return true;
-        }
-        } catch (Exception e) {
-            logger.error("cannot tell if file has translated version {}", e);
-        }
-        return false;
-    }
 }
