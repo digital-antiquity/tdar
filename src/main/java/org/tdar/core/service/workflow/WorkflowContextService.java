@@ -141,7 +141,9 @@ public class WorkflowContextService {
             genericDao.saveOrUpdate(irFile);
         }
         try {
-            logger.debug(ctx.toXML());
+            if (logger.isDebugEnabled()) {
+                logger.debug(ctx.toXML());
+            }
         } catch (Exception e) {
             logger.error("XMLException: {}", e);
         }
@@ -163,7 +165,9 @@ public class WorkflowContextService {
         ctx.setXmlService(xmlService);
         w.initializeWorkflowContext(ctx, versions); // handle any special bits here
         try {
-            logger.trace(ctx.toXML());
+            if (logger.isTraceEnabled()) {
+                logger.trace(ctx.toXML());
+            }
         } catch (Exception e) {
             logger.error("XML Exception: {}", e);
         }
