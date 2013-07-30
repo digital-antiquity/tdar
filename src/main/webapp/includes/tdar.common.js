@@ -463,7 +463,7 @@ var _sortFilesAlphabetically= function() {
                 collapsed : true
         });
         // expand ancestors if any children are selected
-        $treeviews.find("input:checked").parents(".hitarea").trigger("click");
+        $treeviews.find("input:checked").parentsUntil(".treeview", "li").find("> .hitarea").trigger("click");
     };
     
    var _submitButtonStartWait = function(){

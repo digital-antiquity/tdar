@@ -505,7 +505,7 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return
      */
     public WebElementSelection visibleElements() {
-        WebElementSelection subset = new WebElementSelection(driver);
+        WebElementSelection subset = new WebElementSelection(elements, driver);
         Iterator<WebElement> iterator = subset.iterator();
         while (iterator.hasNext()) {
             WebElement elem = iterator.next();
