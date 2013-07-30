@@ -145,7 +145,7 @@ public abstract class InformationResource extends Resource {
     @OrderBy("sequenceNumber asc")
     @JSONTransient
     @IndexedEmbedded
-    private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<InformationResourceFile>();
+    private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<>();
 
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
@@ -250,7 +250,7 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @XmlTransient
-    private Map<DataTableColumn, String> relatedDatasetData = new HashMap<DataTableColumn, String>();
+    private Map<DataTableColumn, String> relatedDatasetData = new HashMap<>();
 
     public Language getMetadataLanguage() {
         return metadataLanguage;

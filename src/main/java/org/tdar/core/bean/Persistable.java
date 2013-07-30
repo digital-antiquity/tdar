@@ -357,6 +357,7 @@ public interface Persistable extends Serializable {
             return sequenceNumber.compareTo(other.sequenceNumber);
         }
 
+        @Override
         @XmlAttribute
         public Integer getSequenceNumber() {
             if (sequenceNumber == null) {
@@ -365,6 +366,7 @@ public interface Persistable extends Serializable {
             return sequenceNumber;
         }
 
+        @Override
         public void setSequenceNumber(Integer sequenceNumber) {
             this.sequenceNumber = sequenceNumber;
         }

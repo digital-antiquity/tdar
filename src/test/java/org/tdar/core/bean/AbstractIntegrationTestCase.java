@@ -327,7 +327,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewInformationResource(cls, false);
     }
 
-    private <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) {
+    protected <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) {
         Person submitter = getUser();
         if (createUser) {
             submitter = createAndSaveNewPerson("test@user.com", "");
