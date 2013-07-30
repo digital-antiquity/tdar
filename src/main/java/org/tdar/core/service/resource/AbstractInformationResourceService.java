@@ -67,6 +67,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     // private MessageService messageService;
 
+    // Martin: according to the Spring documentation all these private methods marked as @Transactional totally ignored.
+    // They must be public to have the annotation recognised?
+    // See: http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/transaction.html#transaction-declarative-annotations
     @Transactional(readOnly = false)
     private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
