@@ -165,7 +165,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @SkipValidation
     @Action(value = "checkstatus", results = {
-            @Result(name = "wait", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) })
+            @Result(name = WAIT, type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) })
     public String checkStatus() {
         AsyncUpdateReceiver reciever = bulkUploadService.checkAsyncStatus(getTicketId());
         if (reciever != null) {
@@ -176,7 +176,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 List<Pair<Long, String>> details = reciever.getDetails();
                 setDetails(details);
             }
-            return "wait";
+            return WAIT;
         } else {
             return ERROR;
         }

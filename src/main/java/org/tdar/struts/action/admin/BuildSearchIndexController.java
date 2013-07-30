@@ -59,7 +59,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     @IgnoreActivity
     @Action(value = "checkstatus", results = {
-            @Result(name = "wait", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }),
+            @Result(name = WAIT, type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }),
             @Result(name = "success", type = "freemarker", location = "checkstatus-done.ftl", params = { "contentType", "application/json" }) },
             interceptorRefs = { @InterceptorRef(value = "editAuthenticatedStack"), @InterceptorRef(value = "execAndWait") })
     public String checkStatus() {
