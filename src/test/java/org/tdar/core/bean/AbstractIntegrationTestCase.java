@@ -312,7 +312,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             
             // Martin: refresh reloads the object and all it's collections from the databases. It's really not the right call here, as Hibernate might not
             // have saved them yet ...
-            // genericService.refresh(ir);
+            genericService.refresh(ir);
             // possibly the original find is wanted? (Why do we think that the ir has left the session?) 
             // ir = genericService.find(ir.getClass(), ir.getId());
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
