@@ -21,7 +21,7 @@ vim:sts=2:sw=2
     -1 denotes no reload check, default -1) -->
    	<init-param>
 	    <param-name>confReloadCheckInterval</param-name>
-	    <param-value>0</param-value>
+	    <param-value>-1</param-value>
 	</init-param>    
     <init-param>
         <param-name>logLevel</param-name>
