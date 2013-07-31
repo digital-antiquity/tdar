@@ -32,10 +32,21 @@
         <script type="text/javascript">
             window.__errorMessages = [];
             window.onerror = function(msg, url, line) {
+			    if (typeof(msg) === 'object' && msg.srcElement && msg.target) {
+		            if(msg.srcElement == '[object HTMLScriptElement]' && msg.target == '[object HTMLScriptElement]'){
+		                msg = 'Error loading script';
+		            }else{
+		                msg = 'Event Error - target:' + msg.target + ' srcElement:' + msg.srcElement;
+		            }
+		        }
                 __errorMessages.push(msg + " url:" + url + " line:" + line);
                 return false; //dont suppress default event handler
             }
         </script>
+
+<script>
+a</script>
+
         </#if>
 		<#-- dev only
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
