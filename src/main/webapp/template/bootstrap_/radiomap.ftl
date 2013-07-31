@@ -21,6 +21,15 @@
  * under the License.
  */
 -->
+<#macro debugparms>
+<dl style="border: 1px greenyellow solid;">
+    <#list parameters?keys as parm>
+    <dt>${parm}</dt>
+    <dd>${parameters[parm]}</dd>
+    </#list>
+</dl>
+</#macro>
+<#--<@debugparms />-->
 <@s.iterator value="parameters.list" status='radioNumber'>
     <#if parameters.listKey??>
         <#assign itemKey = stack.findValue(parameters.listKey)/>
