@@ -310,7 +310,7 @@ TDAR.inheritance.applyInheritance(formSelector);
         $(validate).rules("add", {
             extension: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
             messages: {
-                accept: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
+                extension: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
             }
         });
     } 

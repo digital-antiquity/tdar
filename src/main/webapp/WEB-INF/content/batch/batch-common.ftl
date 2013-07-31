@@ -16,7 +16,7 @@
 	            </ol>
 	            </div>
 	            <br/>
-	                <@s.file label="Upload a Mapping File" cssClass="validateFileType" labelposition='top' name='uploadedFiles' size='40'/>
+	                <@s.file label="Upload a Mapping File" cssClass="bulkValidateFileType" labelposition='top' name='uploadedFiles' size='40'/>
 	<#else>
 	<@s.hidden name="templateFilename" />
 	<strong>Template File</strong>:${templateFilename}
@@ -26,12 +26,12 @@
 
 <script>
 $(function() {
-    var validate = $('.validateFileType');
+    var validate = $('.bulkValidateFileType');
     if ($(validate).length > 0) {
         $(validate).rules("add", {
-            accept : "xls|xlsx",
+            extension : "xls|xlsx",
             messages : {
-                accept : "Please enter a valid file (xls,xlsx)"
+                extension : "Please enter a valid file (xls,xlsx)"
             }
         }); // end rules
     }
