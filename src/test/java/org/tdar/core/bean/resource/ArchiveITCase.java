@@ -34,7 +34,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testReprocessFaultyArchive() {
+    public void testReplaceFaultyArchive() {
         InformationResource ir = generateArchiveFileAndUser();
         final Set<InformationResourceFile> irFiles = ir.getInformationResourceFiles();
         assertEquals(irFiles.size(), 1);
@@ -81,6 +81,32 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         assertTrue(map.containsKey(VersionType.INDEXABLE_TEXT));
 
         assertEquals(map.get(VersionType.UPLOADED).getFilename(), TestConstants.FAULTY_ARCHIVE);
+    }
+
+    
+    @Test
+    @Rollback(true)
+    public void testReprocessFaultyArchive() {
+        InformationResource ir = generateArchiveFileAndUser();
+        final Set<InformationResourceFile> irFiles = ir.getInformationResourceFiles();
+        assertEquals(irFiles.size(), 1);
+        InformationResourceFile irFile = irFiles.iterator().next();
+        irFile = genericService.find(InformationResourceFile.class, irFile.getId());
+        assertNotNull("IrFile is null", irFile);
+        assertEquals(FileStatus.PROCESSING_WARNING, irFile.getStatus());
+
+        irFile.setStatus(FileStatus.DELETED);
+        irFile.setErrorMessage("blah");
+        genericService.saveOrUpdate(irFile);
+        genericService.synchronize();
+        ActionMessageErrorListener listener = new ActionMessageErrorListener();
+        informationResourceService.reprocessInformationResourceFiles(irFiles,listener);
+        genericService.synchronize();
+        
+        irFile = genericService.find(InformationResourceFile.class, irFile.getId());
+        assertNotNull("IrFile is null", irFile);
+        assertEquals(FileStatus.PROCESSING_WARNING, irFile.getStatus());
+
     }
 
 }
