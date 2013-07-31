@@ -1034,7 +1034,7 @@ this bit of freemarker is voodoo:
 <#--Collapse action messages them when in dev mode; they are typically annoying struts exceptions -->
 <#macro actionmessage>
     <#if production!false>
-    <@s.actionmessage theme="bootstrap" />
+    <@s.actionmessage  />
     <#else>
         <#if (actionMessages?size>0) >
         <!-- FIXME: make this smarter to show messages that don't match "struts.devMode to false" -->
@@ -1043,7 +1043,7 @@ this bit of freemarker is voodoo:
             <a href="#" data-toggle="collapse" data-target="#actionmessageContainer">System Notifications</a>
         </div>
         <div id="actionmessageContainer" class="collapse">
-        <@s.actionmessage theme="bootstrap" />
+        <@s.actionmessage />
         </div>   
         </#if>
     </#if>

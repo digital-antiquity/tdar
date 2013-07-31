@@ -253,7 +253,7 @@
     <h2>Survey Information</h2>
     <div id="divScannerTechnologyOptions">
         <@s.radio name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"
-        list='%{scannerTechnologyTypes}' label="Scan Technology" theme="bootstrap" />
+        list='%{scannerTechnologyTypes}' label="Scan Technology" />
     </div>
 
     <div class="conditional-scantype phase_based time_of_flight triangulation">
@@ -290,7 +290,7 @@
     </div>
     <div class="conditional-scantype phase_based time_of_flight triangulation" data-tiplabel='RGB Data Capture Information' data-tooltipcontent="Please specify it is (1) internal or external and (2) describe any additional lighting systems used if applicable">
         <@s.radio name='sensoryData.rgbCapture'  listValue="label"
-                    list='%{rgbCaptureOptions}' label="RGB Capture" theme="bootstrap" />
+                    list='%{rgbCaptureOptions}' label="RGB Capture" />
         <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="Lighting Setup Information" labelposition="top" rows="5" />
     </div>
     <div data-tiplabel="Description of Final Datasets for Archive" data-tooltipcontent="What datasets will be archived (include file names if possible).">

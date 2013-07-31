@@ -37,9 +37,9 @@ $(document).ready(function() {
 <#local formAction><@getFormUrl absolutePath="/login/process"/></#local>
 <@s.form id='loginForm' method="post" action="${formAction}" cssClass="${cssClass}">
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
-    <@s.textfield theme="bootstrap" spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
-    <@s.password theme="bootstrap" id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
-    <@s.checkbox  name="userCookieSet" label="Stay logged-in the next time I visit this page" />
+    <@s.textfield spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
+    <@s.password id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
+    <@s.checkbox name="userCookieSet" label="Stay logged-in the next time I visit this page" />
     
     <div class="form-actions">
         <button type="submit" class="button btn btn-primary input-small submitButton" name="_tdar.Login" id="btnLogin">Login</button>

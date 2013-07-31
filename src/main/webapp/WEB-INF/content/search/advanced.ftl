@@ -155,7 +155,7 @@ $(document).ready(function(){
                 <table id="groups[${groupid}].investigationTypeTable[${fieldIndex}]" class="field">
                 <tbody>
                     <tr><td>
-                        <@s.checkboxlist theme="bootstrap_" name='groups[${groupid}].investigationTypeIdLists[${fieldIndex}]' list='allInvestigationTypes' listKey='id' listValue='label'  numColumns=2  cssClass="smallIndent" />
+                        <@s.checkboxlist name='groups[${groupid}].investigationTypeIdLists[${fieldIndex}]' list='allInvestigationTypes' listKey='id' listValue='label'  numColumns=2  cssClass="smallIndent" />
                     </td></tr>
                 </tbody>
                 </table>
@@ -173,7 +173,7 @@ $(document).ready(function(){
                 <table id="groups[${groupid}].materialTypeTable[${fieldIndex}]" class="field">
                 <tbody>
                     <tr><td>
-                        <@s.checkboxlist theme="bootstrap_" name='groups[${groupid}].materialKeywordIdLists[${fieldIndex}]' list='allMaterialKeywords' listKey='id' listValue='label'  numColumns=2 />
+                        <@s.checkboxlist name='groups[${groupid}].materialKeywordIdLists[${fieldIndex}]' list='allMaterialKeywords' listKey='id' listValue='label'  numColumns=2 />
                     </td></tr>
                 </tbody>
                 </table>

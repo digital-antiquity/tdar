@@ -310,7 +310,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <h2>Material Types</h2>
     <@inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
     <div id="divMaterialInformation">
-        <@s.checkboxlist theme="bootstrap_" name='materialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
+        <@s.checkboxlist theme="bootstrap" name='materialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
             spanClass="span2" numColumns="3" />
     </div>      
 </div>
@@ -353,7 +353,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id="divInvestigationInformation">
     
         <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" spanClass="span3" 
-    theme="bootstrap_"        label="Select Type(s)" listTitle="definition" />
+    theme="bootstrap"        label="Select Type(s)" listTitle="definition" />
     </div>
 </div>
 <@helptext.investigationType />

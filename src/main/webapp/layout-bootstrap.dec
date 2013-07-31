@@ -193,7 +193,7 @@
             <#if ((actionErrors![])?size > 0)>
             <h3>${siteAcronym} encountered the following problems with your submission</h3>
 				<#-- fixme -- @s.actionerrors need to be here, but in some cases, it duplicates errors -->
-            	<@s.actionerror theme="bootstrap" cssClass="action-errors" />
+            	<@s.actionerror cssClass="action-errors" />
             <#if ((stackTraces![])?size > 0)>
             <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggleClass('hidden');return false;" class="btn btn-mini btn-warning btn-invert">Show/Hide Details</a>
             <div id="stackTraceList" class="<#if production>hidden</#if>">
@@ -207,7 +207,7 @@ ${_stacktrace?html}
             </div>
             </#if>
             </#if>
-            <@s.fielderror theme="bootstrap" />
+            <@s.fielderror />
         </div>
     </div>
 
