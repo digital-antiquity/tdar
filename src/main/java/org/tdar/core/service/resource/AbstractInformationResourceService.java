@@ -275,7 +275,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional(readOnly = false)
-    public void reprocessInformationResourceFiles(Collection<InformationResourceFile> informationResourceFiles) {
+    public void reprocessInformationResourceFiles(Collection<InformationResourceFile> informationResourceFiles, ActionMessageErrorSupport listener) {
         Iterator<InformationResourceFile> fileIterator = informationResourceFiles.iterator();
         while (fileIterator.hasNext()) {
             InformationResourceFile irFile = fileIterator.next();
@@ -294,10 +294,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 original.setTransientFile(filestore.retrieveFile(original));
                 if (!analyzer.processFile(original)) {
                     logger.error("could not reprocess file: " + original.getFilename());
+                    // fixme: add listener...
                 }
                 // messageService.sendFileProcessingRequest(workflow, original);
             } catch (Exception e) {
                 logger.warn("caught exception {} while analyzing file {}", e, original.getFilename());
+                // fixme: add listener...
             }
         }
 

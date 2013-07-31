@@ -618,7 +618,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // FIXME: trying to avoid concurrent modification exceptions
         // NOTE: this processes deleted ones again too
         // NOTE2: this is ignored in the quota on purpose -- it's on us
-        getInformationResourceService().reprocessInformationResourceFiles(new ArrayList<>(getResource().getInformationResourceFiles()));
+        getInformationResourceService().reprocessInformationResourceFiles(new ArrayList<>(getResource().getInformationResourceFiles()), this);
 
         return SUCCESS;
     }

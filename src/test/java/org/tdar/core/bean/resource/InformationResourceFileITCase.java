@@ -24,6 +24,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.workflow.ActionMessageErrorListener;
 
 public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
@@ -139,7 +140,8 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertEquals(map.get(VersionType.UPLOADED).getFilename(), TestConstants.TEST_DOCUMENT_NAME);
 
         genericService.synchronize();
-        informationResourceService.reprocessInformationResourceFiles(ir.getInformationResourceFiles());
+        ActionMessageErrorListener listener = new ActionMessageErrorListener();
+        informationResourceService.reprocessInformationResourceFiles(ir.getInformationResourceFiles(), listener);
 
         map = new HashMap<VersionType, InformationResourceFileVersion>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
