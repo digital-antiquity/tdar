@@ -44,9 +44,6 @@
             }
         </script>
 
-<script>
-a</script>
-
         </#if>
 		<#-- dev only
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
