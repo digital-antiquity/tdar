@@ -150,14 +150,17 @@ $(function(){
 	    
 	</div>
     </#if>
-	<div class="well-alt">
-	    <h2>Abstract / Description</h2>
-	    <div id="t-abstract" class="clear"
-	        data-tiplabel="Abstract / Description"
-	        data-tooltipcontent="Short description of the <@edit.resourceTypeLabel />.">
-	            <@s.textarea rows="4" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
-	    </div>
-	</div>
+    
+	<#if !bulkUpload >
+		<div class="well-alt">
+		    <h2>Abstract / Description</h2>
+		    <div id="t-abstract" class="clear"
+		        data-tiplabel="Abstract / Description"
+		        data-tooltipcontent="Short description of the <@edit.resourceTypeLabel />.">
+		            <@s.textarea rows="4" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+		    </div>
+		</div>
+    </#if>
 
     <#if resource.resourceType.label?lower_case != 'project'>
         <@edit.copyrightHolders 'Primary Copyright Holder' copyrightHolderProxies />
