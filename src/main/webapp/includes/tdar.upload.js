@@ -23,7 +23,7 @@ TDAR.fileupload = function() {
         var _options = $.extend({formSelector: "#resourceMetadataForm"}, options);
 
         //pass off our options to fileupload options (to allow easy passthrough of page-specific (options e.g. acceptFileTypes)
-        var $fileupload = $(_options.formSelector).fileupload($.extend({
+        var $fileupload = $(_options.inputSelector).fileupload($.extend({
             formData: function(){
                 var ticketId, data;
                 ticketId = $('#ticketId').val();

@@ -276,7 +276,7 @@ $(function(){
 	       informationResourceId: id, 
 	       acceptFileTypes: acceptFileTypes, 
 	       formSelector: formSelector,
-	       inputSelector: '#fileAsyncUpload'
+	       inputSelector: '#divFileUpload'
 	       });
 
         var fileValidator = new FileuploadValidator("metadataForm");
