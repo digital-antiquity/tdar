@@ -125,22 +125,9 @@
 </#macro>
 
 <#macro localJavascript>
-        var $form = $("#metadataForm");
-        TDAR.common.setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
-        TDAR.autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
-
-
-    <#if validFileExtensions??>
-    var validate = $('.validateFileType');
-    if ($(validate).length > 0) {
-        $(validate).rules("add", {
-            accept: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
-            messages: {
-                accept: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
-            }
-        });
-    }
-    </#if>
+    var $form = $("#metadataForm");
+    TDAR.common.setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
+    TDAR.autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
 </#macro>
 
 </body>

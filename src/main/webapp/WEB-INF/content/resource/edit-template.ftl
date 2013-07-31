@@ -9,9 +9,6 @@
 
 <meta name="lastModifiedDate" content="$Date$"/>
 
-<style>
-// .deleteButton, .replaceButton {display:none;}
-</style>
 <#noescape>
 <#assign _filesJson = "''">
 <#if filesJson?has_content>
@@ -319,11 +316,11 @@ TDAR.inheritance.applyInheritance(formSelector);
     } 
     </#if>
     
-    <#if local_.localJavascript?? && local_.localJavascript?is_macro>
-
 	<#if resource.resourceType.dataTableSupported>
-	TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
+    TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
 	</#if>
+
+    <#if local_.localJavascript?? && local_.localJavascript?is_macro>
 	<@local_.localJavascript />
 	</#if>
 });
