@@ -18,6 +18,8 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
+import org.tdar.core.service.workflow.ActionMessageErrorListener;
+import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 
 public class ArchiveITCase extends AbstractIntegrationTestCase {
 
@@ -61,7 +63,8 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(map.get(VersionType.UPLOADED).getFilename(), TestConstants.FAULTY_ARCHIVE);
 
         genericService.synchronize();
-        informationResourceService.reprocessInformationResourceFiles(irFiles);
+        ActionMessageErrorListener listener = new ActionMessageErrorListener();
+        informationResourceService.reprocessInformationResourceFiles(irFiles,listener);
         
         map = new HashMap<>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
