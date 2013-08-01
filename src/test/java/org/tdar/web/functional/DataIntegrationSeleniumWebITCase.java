@@ -41,8 +41,6 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
 
     @Test
     public void testDataIntegration() {
-        Long spitalId = uploadSparseResource(SPITALFIELDS_DATASET_NAME, "Spitalfields Description", ResourceType.DATASET, "1923", -1, new File(
-                TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME));
 
         Long faunaId = uploadSparseResource(FAUNA_ELEMENT, "Fauna Element Description", ResourceType.ONTOLOGY, "1920", -1, new File(
                 TestConstants.TEST_DATA_INTEGRATION_DIR + FAUNA_ELEMENT_NAME));
@@ -50,6 +48,8 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         Long taxonId = uploadSparseResource(FAUNA_TAXON, "Fauna Taxon Description", ResourceType.ONTOLOGY, "1920", -1, new File(
                 TestConstants.TEST_DATA_INTEGRATION_DIR + FAUNA_TAXON_NAME));
 
+        Long spitalId = uploadSparseResource(SPITALFIELDS_DATASET_NAME, "Spitalfields Description", ResourceType.DATASET, "1923", -1, new File(
+                TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME));
         assertTrue(getCurrentUrl().contains("columns"));
         WebElementSelection option = null;
         for (WebElement option_ : find(By.id("table_select")).find(By.tagName("option"))) {
@@ -136,7 +136,8 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     }
 
     private void mapCodingSheetToOntology(Map<String, String> map) {
-        find(By.linkText("map ontology")).click();
+        logger.info(getSource());
+        find(By.className("mappingLink")).find(By.tagName("a")).click();
 
         WebElementSelection nodePairs = find(By.className("mappingPair"));
         for (Entry<String, String> entry : map.entrySet()) {
@@ -157,9 +158,11 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     }
 
     private WebElementSelection findMatchingElementBy(WebElementSelection parentElement, String matchingText, By selector) {
+        logger.info("looking for {} in {} ({})", matchingText, selector.toString(),parentElement.size());
         for (WebElement element_ : parentElement) {
             WebElementSelection element = new WebElementSelection(element_, driver);
             WebElementSelection name = element.find(selector);
+            logger.info(name.getText());
             if (name.getText().equals(matchingText)) {
                 return element;
             }

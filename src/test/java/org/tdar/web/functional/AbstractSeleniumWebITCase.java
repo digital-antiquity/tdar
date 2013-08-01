@@ -852,8 +852,8 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void uploadFile(FileAccessRestriction restriction, File uploadFile) {
-        find("#fileUploadField").val(uploadFile.getAbsolutePath());
-        find("#inputMethodId").val("file");
+        find("#inputMethodId").find("[value=file]").click();
+        find("#fileUploadField").sendKeys(uploadFile.getAbsolutePath());
     }
 
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
@@ -919,8 +919,8 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public boolean selectAutocompleteValue (WebElement field, String textEntry, String partialMenuItemTest) {
         field.sendKeys(textEntry);
-        field.sendKeys(Keys.ARROW_DOWN);
         waitFor(4); //kludge
+        field.sendKeys(Keys.ARROW_DOWN);
         WebElementSelection menuItems = null;
         try {
             menuItems = waitFor("ul.ui-autocomplete li.ui-menu-item", 20);
