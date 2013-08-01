@@ -83,15 +83,16 @@ function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
     };
 
     options.customRender = function(ul, item) {
-        //        console.log(item);
-        var institution = "";
-        if (item.institution != undefined && item.institution.name != undefined) {
-            institution = item.institution.name;
-        }
+        var htmlDoubleEncode = TDAR.common.htmlDoubleEncode,
+            encProperName = htmlDoubleEncode(item.properName),
+            encEmail = htmlDoubleEncode(item.email),
+            institution = item.institution ? item.institution.name || "" : "";
+
         //double-encode on custom render
+        //FIXME: use tmpl maybe?
         var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
-                "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + TDAR.common.htmlDoubleEncode(item.properName) + "(" +
-                TDAR.common.htmlDoubleEncode(item.email) + ")</span><br/><span class='institution'>" + TDAR.common.htmlDoubleEncode(institution) + "</span></p>";
+                "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + encProperName + "</span><span class='email'>(" +
+                encEmail + ")</span><br/><span class='institution'>" + htmlDoubleEncode(institution) + "</span></p>";
         if (item.id == -1 && options.showCreate) {
             htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
                     "<span class='name'><em>Create a new person record</em></span> </p>";

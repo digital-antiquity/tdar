@@ -193,22 +193,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
-<#macro combineValues list=[]>
-    <#compress>
-        <#list list as item>
-            <#if item_index !=0>,</#if>"${item?html}"
-        </#list>
-    </#compress>
-</#macro>
-<#macro combineValues2 list=[]>
-    <#compress>
-        <#list list as item>
-            <#if item_index !=0>,</#if>${item?html}
-        </#list>
-    </#compress>
-</#macro>
-
-
 <#macro generalKeywords showInherited=true>
 
 <div  
@@ -226,13 +210,13 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <div class="control-group">
             <label class="control-label">Other Keywords</label>
             <div class="controls">
-                <input type=text" name="test" id="otherKeywords" style="width:500px" value="<@combineValues2 otherKeywords/>"/>
+                <input type=text" name="test" id="otherKeywords" style="width:500px" value="${otherKeywords?join(","}"/>
             </div>
         </div>
         <script>
         $(document).ready(function() {
             $("#otherKeywords").select2({
-                tags:[<@combineValues otherKeywords />],
+                tags:[${otherKeywords?join(","}],
                 tokenSeparators: [";"]});
         });
         </script>

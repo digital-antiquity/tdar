@@ -1152,7 +1152,10 @@ var _sortFilesAlphabetically= function() {
         "replaceAttribute": _replaceAttribute,
         "delayJiraButton": _delayJiraButton,
         "coordinatesCheckboxClicked": _coordinatesCheckboxClicked,
-        "refreshInputDisplay": _refreshInputDisplay
+        "refreshInputDisplay": _refreshInputDisplay,
+
+        //I don't like how  Javascript Templates puts "tmpl" in global scope, so I'm aliasing it here.
+        "tmpl": tmpl
     });
     
     return self;

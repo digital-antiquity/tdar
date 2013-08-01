@@ -2,19 +2,13 @@ package org.tdar.web.functional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -28,15 +22,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.UnhandledAlertException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -255,7 +241,7 @@ public abstract class AbstractSeleniumWebITCase {
                 driver = new InternetExplorerDriver(configureCapabilities(ieCapabilities));
                 driver.manage().timeouts().implicitlyWait(90, TimeUnit.SECONDS);
                 if (TdarConfiguration.getInstance().isHttpsEnabled()) {
-                    Assert.fail("please disable https before testing this");
+                    fail("please disable https before testing this");
                 }
                 break;
             case PHANTOMJS:
@@ -458,7 +444,7 @@ public abstract class AbstractSeleniumWebITCase {
         } catch (MalformedURLException ex) {
             String err = String.format("bad url:: base:%s\tpath:%s", base, path);
             logger.error(err, ex);
-            Assert.fail(err);
+            fail(err);
         }
     }
 
@@ -473,18 +459,23 @@ public abstract class AbstractSeleniumWebITCase {
     // }
     // }
 
-    public WebElement waitFor(String selector) {
+    public WebElementSelection waitFor(String selector) {
         return waitFor(selector, 10);
     }
 
-    public WebElement waitFor(String cssSelector, int timeoutInSeconds) {
+    public WebElementSelection waitFor(String cssSelector, int timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         List<WebElement> elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(cssSelector)));
-        WebElement result = null;
-        if (!elements.isEmpty()) {
-            result = elements.get(0);
+        WebElementSelection selection = new WebElementSelection(elements, driver);
+        return selection;
+    }
+
+    public void waitFor(int timeInSeconds) {
+        try {
+            Thread.sleep( timeInSeconds * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        return result;
     }
 
     public WebElementSelection find(String selector) {
@@ -546,7 +537,7 @@ public abstract class AbstractSeleniumWebITCase {
     public String getText() {
         if (pageText == null) {
             logger.trace("getting body.innerText for url:{}", getDriver().getCurrentUrl());
-            WebElement body = waitFor("body");
+            WebElement body = waitFor("body").first();
             pageText = body.getText();
         }
         return pageText;
@@ -672,7 +663,7 @@ public abstract class AbstractSeleniumWebITCase {
         if (elem.isEmpty()) {
             WebElement zeroElem = getZerothElement(fieldName);
             if (zeroElem == null) {
-                Assert.fail(fieldName + " is null");
+                fail(fieldName + " is null");
             }
             String repeatLastRowId = find(zeroElem).parentsWithClass("repeatLastRow").getAttribute("id");
             String buttonSelector = "#" + repeatLastRowId + " + .add-another-control button";
@@ -785,7 +776,7 @@ public abstract class AbstractSeleniumWebITCase {
             logger.error("javascript error: {}", error);
         }
         if (!ignoreJavascriptErrors) {
-            Assert.fail("ENCOUNTERED JAVASCRIPT ERRORS ON PAGE: " + driver.getCurrentUrl() + "\r\n [" + errors + "]");
+            fail("ENCOUNTERED JAVASCRIPT ERRORS ON PAGE: " + driver.getCurrentUrl() + "\r\n [" + errors + "]");
         }
     }
 
@@ -915,5 +906,49 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
     }
+
+    /**
+     * attempt populate a autocomplete-style control by performing the actions necessary to spawn the autocomplete
+     * menu and then choosing (clicking) on the desired choice).  This method was written with jQuery autocomplete
+     * plugin in mind,  and will look for certain elements and class-names used by that plugin.
+     *
+     * @param field an autocomplete field (e.g. a text form field)
+     * @param textEntry the characters that the method will "type" in the text field in order to prompt the autocomplete
+     *                  options to appear
+     * @param partialMenuItemTest a string containing the text to look for in the menu items.  This method will
+     *                            click on the first menu item with a partial match (case-insensitive).
+     * @return true if the method found the menu item and clicked on it, false if the menu-item was not found
+     *
+     * @throws org.openqa.selenium.TimeoutException   If the method timed out while waiting for the autocomplete
+     *                            menu to appear.
+     *
+     */
+    public boolean selectAutocompleteValue (WebElement field, String textEntry, String partialMenuItemTest) {
+        field.sendKeys(textEntry);
+        waitFor(4); //kludge
+        WebElementSelection menuItems = null;
+        try {
+            menuItems = waitFor("ul.ui-autocomplete li.ui-menu-item", 10);
+        } catch(TimeoutException tex) {
+            fail("could not set value on  " + field + "because autocomplete never appeared or was dismissed too soon");
+        }
+
+        String partialText = partialMenuItemTest.toLowerCase();
+        WebElement firstMatch = null;
+        for(WebElement menuItem : menuItems) {
+            String text = menuItem.getText().toLowerCase();
+            if(text.contains(partialText)) {
+                firstMatch = menuItem;
+                break;
+            }
+        }
+        boolean wasFound = firstMatch != null;
+        if(wasFound) {
+            firstMatch.click();
+            waitFor(2);
+        }
+        return wasFound;
+    }
+
 
 }

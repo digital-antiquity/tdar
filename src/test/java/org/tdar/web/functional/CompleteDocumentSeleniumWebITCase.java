@@ -6,9 +6,7 @@
 
 package org.tdar.web.functional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 
@@ -20,9 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import junit.framework.Assert;
-
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
@@ -31,10 +27,12 @@ import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import static org.tdar.core.bean.entity.permissions.GeneralPermissions.*;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
+
 
 public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     public static HashMap<String, String> docValMap;
@@ -71,12 +69,12 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
-        docValMap.put("authorizedUsers[0].user.id", "121");
-        docValMap.put("authorizedUsers[1].user.id", "5349");
-        docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
-        docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
+//        docValMap.put("authorizedUsers[0].user.id", "121");
+//        docValMap.put("authorizedUsers[1].user.id", "5349");
+//        docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+//        docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
+//        docValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
+//        docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
@@ -221,10 +219,25 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
                 find(By.name(key)).val(val);
                 } catch (ElementNotVisibleException en) {
                     logger.error("element not visible: {} {}", key, val);
-                    Assert.fail("could not find " + key + " because it was not visible");
+                    fail("could not find " + key + " because it was not visible");
                 }
             }
         }
+
+        //add some authusers
+        find("#accessRightsRecordsAddAnotherButton").click();
+        find("#accessRightsRecordsAddAnotherButton").click();
+
+        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission",  "Michelle Elliott", "michelle.elliott@asu.edu", MODIFY_RECORD);
+        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "michelle.elliott@asu.edu", VIEW_ALL);
+
+       //FIXME: yeah i know this is a kludge - add the names to the map so we can check that the users were added
+        docValMap.put("authorizedUsers[0].user.id", "121");
+        docValMap.put("authorizedUsers[1].user.id", "5349");
+        docValMap.put("authorizedUsers[0].generalPermission", MODIFY_RECORD.name());
+        docValMap.put("authorizedUsers[1].generalPermission", VIEW_ALL.name());
+        docValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
+        docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
 
         // add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
@@ -298,6 +311,20 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         // make sure our 'async' file was added to the resource
         assertTrue(sourceContains(TEST_DOCUMENT_NAME));
+    }
+
+
+    private void addAuthuser(String nameField, String selectField, String name, String email,  GeneralPermissions permissions) {
+
+        WebElement blankField = find(By.name(nameField)).first();
+        if(!selectAutocompleteValue(blankField, name, email)) {
+            String fmt = "Failed to add authuser %s because selenium failed to select a user from the autocomplete " +
+                    "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
+                    "menu.";
+            fail(String.format(fmt, email));
+        }
+        find(By.name(selectField)).val(permissions.name());
+
     }
 
 }

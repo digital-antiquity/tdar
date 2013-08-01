@@ -62,6 +62,15 @@ public class WebElementSelection implements Iterable<WebElement> {
     }
 
     /**
+     *
+     * @return last element of the selection, or null if this selection is empty.
+     */
+    public WebElement last() {
+        if(elements.isEmpty()) return null;
+        return get(elements.size() - 1);
+    }
+
+    /**
      * click on every item in the selection
      */
     public void click() {
