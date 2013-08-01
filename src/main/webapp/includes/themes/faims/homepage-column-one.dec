@@ -1,0 +1,20 @@
+<#if !production >
+  <div class="alert alert-error"> 
+    <p><strong>Warning!</strong> This is a test site, for the purpose of debugging software in the process of development. 
+    Features may not work as expected and data may be lost at any time.</p>
+    <p>If you wish to deposit data contact <a href="mailto:repository@fedarch.org?subject=FAIMS%20deposit">repository@fedarch.org</a>.</p>
+  </div>
+</#if>
+
+<h3>Browse Your Field Of Research</h3>
+<div class="container">
+  <div class="row">
+    <div class="offset1 span10">
+        <!-- if you want to search in with in child categories, use keywords and not id's -->
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210101&amp;explore=true">Aboriginal Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210108&amp;explore=true">Historical Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210105&amp;explore=true">Classical Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210110&amp;explore=true">Maritime Archaeology</a>
+    </div>
+  </div>
+</div>

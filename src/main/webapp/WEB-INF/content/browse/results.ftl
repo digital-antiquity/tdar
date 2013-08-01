@@ -1,0 +1,222 @@
+<#escape _untrusted as _untrusted?html>
+<#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
+<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+
+<head>
+<#-- @search.initResultPagination/ -->
+ <@search.headerLinks includeRss=false />
+<style>
+//ul.resource-list {list-style:none;margin-left:0px !important}
+</style>
+
+<title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
+
+
+<#if creator?? >
+<link rel="meta" type="application/rdf+xml" title="FOAF" href="rdf"/>
+</#if>
+</head>
+
+
+<@nav.creatorToolbar "view" />
+
+		
+
+<@view.pageStatusCallout />
+
+<#if creator??>
+<#if nodeModel?has_content>
+	<#assign collaborators=nodeModel["creatorInfoLog/collaborators/*"] />
+	<#assign keywords= nodeModel["creatorInfoLog/keywords/*"] />
+	<#if keywords?has_content || collaborators?has_content>
+        <div id="sidebar-right" parse="true">
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <#-- fixme -- some of these may show the h3 w/o contents if count == 1 -->
+        <#if collaborators?has_content>
+			<h3>Related Creators</h3>
+			<ul>
+			<#list collaborators as collab>
+			<#if (collab.@count?number >= nodeModel.creatorInfoLog.@creatorMedian?number && collab.@count?number  >1)>
+			<li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a></li>
+			</#if>
+			</#list> 
+			</uL>
+		</#if>
+
+        <#if keywords?has_content>
+			<h3>Related Keywords</h3>
+			<ul>
+			<#list keywords as keyword>
+			<#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
+			
+			<#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !keyword.@name?contains("Fips "))>
+			<li>${keyword.@name}</li>
+			</#if>
+			</#if>
+			</#list>
+			</ul> 
+		</#if>
+</div>
+</#if>
+</#if>
+
+<h1><#if creator.properName??>${creator.properName}</#if></h1>
+<#assign scope="http://schema.org/Person"/>
+<#if creator.creatorType.institution >
+	<#assign scope="http://schema.org/Organization"/>
+</#if>
+
+<div itemscope itemtype="${scope}">
+    <meta itemprop="name" content="${creator.properName}" />
+
+    <#if creator.institution??>
+	
+    <a itemprop="affiliation" href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
+    </#if>
+    
+    <@common.description creator.description />
+
+	<#if creator.synonyms?has_content>
+	<p>Alternate Names: <#list creator.synonyms as syn> <#if syn_index !=0>,</#if>${syn.properName}</#list>
+	</p>
+	</#if>
+	<#if creator.url?has_content>
+		<a href="${creator.url?html}" onclick="TDAR.common.outboundLink(this);" >${creator.url?html}</a>
+	</#if>
+    <br/>
+        <#if creator.creatorType.person>
+           <#if authenticated && (editor ||  id == authenticatedUser.id ) >
+           
+           <h3>Future Contact Information</h3>
+           <#if creator.proxyInstitution?has_content>
+		     <a href="<@s.url value="${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
+          <#else>
+        	None Specified   
+           </#if>
+           <p>${creator.proxyNote!""}</p>
+                <table class='tableFormat table'>
+                <tr>
+                    <td>
+                            <B>Registered Public Archaeologist</B>:${creator.rpaNumber!"no"}
+                    </td>
+                    <td>
+                        <#assign registered = false />
+                        <#if creator.registered?has_content>
+                            <#assign registered = creator.registered>
+                        </#if>
+                        <#if registered && (editor || id == authenticatedUser.id)>
+                            <#if creator.lastLogin?has_content>
+                                <@view.datefield "Last Login"  creator.lastLogin />
+                            <#else>
+                                <@view.textfield "Last Login"  "No record" />
+                            </#if>                    
+                        <#else>
+                            <@view.boolean "Registered User" registered />
+                        </#if>
+                    </td>
+                </tr>
+                <tr>
+                    <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
+                        <td itemprop="email">
+                            <@view.textfield "Email" creator.email />
+                        </td>
+                    <#else>
+                        <td>
+                            <@view.textfield "Email" "Not Shown" />
+                        </td>
+                    </#if>
+                    <#if creator.phonePublic || (editor || id == authenticatedUser.id)>
+                        <td itemprop="telephone">
+                            <@view.textfield "Phone" creator.phone true />
+                        </td>
+                    <#else>
+                        <td>
+                            <@view.textfield "Phone" "Not Shown" />
+                        </td>
+                    </#if>
+                </tr>
+                <tr>
+                    <td colspan=2>
+                    <#escape x as x?html>
+                    <@view.textfield "Contributor Reason" creator.contributorReason true />
+                    </#escape>
+                </td>
+                </tr>
+                </table>
+
+				
+                <@common.resourceUsageInfo />
+				<#if (editor || id == authenticatedUser.id) >
+
+<#if creator.registered >
+<div class="row">
+	<div class="span6">
+	       <@common.billingAccountList accounts />
+		</div>
+		<div class="span6">
+			<h2>Group Membership</h2>
+			<ul>
+			<#list groups as group>
+				<li>${group}</li>
+			</#list>
+			</ul>
+	</div>
+</div>				
+</#if>					<#if creator.addresses?has_content >
+					<h3>Addresses</h3>
+					<div class="row">
+						<#list creator.addresses  as address>
+						    <div class="span3">
+						        <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
+						    </div>
+						</#list>
+					</div>
+					</#if>
+				</#if>
+            </#if>
+		<br/>        
+        </#if>
+</div>
+</#if>
+<#if ( results?? && results?size > 0) >
+<div id="divResultsSortControl">
+    <div class="row">
+        <div class="span4">
+            <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
+        </div>
+        <div class="span5">
+            <#if !hideFacetsAndSort>
+            <div class="form-horizontal pull-right">
+               <@search.sortFields true/>
+            </div>
+            </#if>
+        </div>
+    </div>
+</div>
+
+<#if editor && creatorXml?has_content>
+${creatorXml?html}
+
+</#if>
+
+<div class="tdarresults">
+<@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" orientation="LIST"/>
+</div>
+<@search.basicPagination "Results"/>
+<#else>
+	<#if (creator.properName)?has_content>
+	No Resources associated with ${creator.properName}
+	</#if>
+</#if>
+</#escape>
