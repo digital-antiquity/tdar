@@ -157,11 +157,11 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     @Test
     public void testAuthUser() {
         gotoPage("/document/add");
-        setname("document.title", "My Sample Document");
-        setname("document.documentType", "OTHER");
-        setname("document.description", "A resource description");
-        setname("document.date", "1923");
-        setname("projectId", "-1");
+        setFieldByName("document.title", "My Sample Document");
+        setFieldByName("document.documentType", "OTHER");
+        setFieldByName("document.description", "A resource description");
+        setFieldByName("document.date", "1923");
+        setFieldByName("projectId", "-1");
         find("#accessRightsRecordsAddAnotherButton").click();
         find("#accessRightsRecordsAddAnotherButton").click();
         addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",

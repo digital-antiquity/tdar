@@ -890,17 +890,17 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     protected void addPersonWithRole(Person p, String prefix, ResourceCreatorRole role) {
-        setname(prefix + ".person.firstName", p.getFirstName());
-        setname(prefix + ".person.lastName", p.getLastName());
-        setname(prefix + ".person.email", p.getEmail());
-        setname(prefix + ".person.institution.name", p.getInstitutionName());
-        setname(prefix + ".role", role.name());
+        setFieldByName(prefix + ".person.firstName", p.getFirstName());
+        setFieldByName(prefix + ".person.lastName", p.getLastName());
+        setFieldByName(prefix + ".person.email", p.getEmail());
+        setFieldByName(prefix + ".person.institution.name", p.getInstitutionName());
+        setFieldByName(prefix + ".role", role.name());
 
         // FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
         // waitFor(".ui-menu-item a").click();
     }
 
-    protected void setname(String fld, String value) {
+    protected void setFieldByName(String fld, String value) {
         if (StringUtils.isNotBlank(value)) {
             find(By.name(fld)).val(value);
         }
