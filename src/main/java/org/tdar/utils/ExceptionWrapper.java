@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Java exceptions are serializable: in the traditional sense of byte flattening... However, when attempting to transfer them via XML the lack of a no
+ * args constructor in the StackTraceElement class causes problems. Hence this wrapper, which wraps exceptions flattened to Strings, thus allowing them to be 
+ * transferred across process boundaries in an XML format.
+ */
 @XmlRootElement
 public class ExceptionWrapper implements Serializable {
 
@@ -14,7 +19,8 @@ public class ExceptionWrapper implements Serializable {
     private boolean fatal;
     private String stackTrace;
 
-    public ExceptionWrapper() {}
+    public ExceptionWrapper() {
+    }
     
     public ExceptionWrapper(String string, String fullStackTrace) {
         setMessage(string);
