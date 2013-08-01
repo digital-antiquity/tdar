@@ -42,10 +42,13 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         setFieldByName("dataset.description", description);
         setFieldByName("dataset.date", date);
         uploadFile(FileAccessRestriction.PUBLIC, file);
+//        asc.setFileInputMethod(asc.FILE_INPUT_METHOD);
+
         setFieldByName("projectId", Integer.toString(projectId));
         submitForm();
         String currentUrl = getCurrentUrl();
         String part = currentUrl.substring(currentUrl.indexOf(resourceType.getUrlNamespace())+ resourceType.getUrlNamespace().length() + 1);
+
         logger.info("part: {}",part);
         if (part.contains("/")) {
             part = part.substring(0,part.indexOf("/"));
