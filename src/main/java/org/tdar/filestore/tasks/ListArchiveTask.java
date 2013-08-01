@@ -62,7 +62,7 @@ public class ListArchiveTask extends AbstractTask {
             TFile archiveFile = new TFile(f_, getArchiveDetector());
             if (!archiveFile.isDirectory()) {
                 // logging an error means that this error is most likely never seen
-                throw new TdarRecoverableRuntimeException("Could not detect the archive type for: " + archiveFile.getName());
+                throw new TdarRecoverableRuntimeException("Could find files within the archive?" + archiveFile.getName());
             }
 
             listFiles(archiveContents, archiveFile, archiveFile);
