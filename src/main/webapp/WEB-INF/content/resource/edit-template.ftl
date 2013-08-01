@@ -88,7 +88,8 @@ $(function(){
 	    <div data-tiplabel="Title"
 	    data-tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
 	        <@s.textfield label="Title" id="resourceRegistrationTitle"  
-	            title="A title is required for all ${resource.resourceType.label}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
+	            title="A title is required for all ${resource.resourceType.label}s" name='${itemPrefix}.title'
+	             cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
 	    </div>
 	    <#if resource.resourceType != 'PROJECT'>
 	    <div data-tiplabel="Year" data-tooltipcontent="Four digit year, e.g. 1966 or 2005.">

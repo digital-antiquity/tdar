@@ -252,12 +252,12 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", VIEW_ALL);
 
         // FIXME: yeah i know this is a kludge - add the names to the map so we can check that the users were added
-        docValMap.put("authorizedUsers[0].user.id", "121");
-        docValMap.put("authorizedUsers[1].user.id", "5349");
-        docValMap.put("authorizedUsers[0].generalPermission", MODIFY_RECORD.name());
-        docValMap.put("authorizedUsers[1].generalPermission", VIEW_ALL.name());
-        docValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
-        docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
+        docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
+        docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
+        docUnorderdValMap.put("authorizedUsers[0].generalPermission", MODIFY_RECORD.name());
+        docUnorderdValMap.put("authorizedUsers[1].generalPermission", VIEW_ALL.name());
+        docUnorderdValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
+        docUnorderdValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
 
         // add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
