@@ -121,7 +121,7 @@ public class FileAnalyzer {
         checkFilesExist(informationResourceFileVersions);
 
         logger.debug("using workflow: {}", workflow);
-        // return workflow;
+        // Martin: if this is ever going to run asynchronously, this should this return anything?
         return messageService.sendFileProcessingRequest(workflow, informationResourceFileVersions);
     }
 
