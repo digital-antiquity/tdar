@@ -928,11 +928,11 @@ public abstract class AbstractSeleniumWebITCase {
         waitFor(4); //kludge
         WebElementSelection menuItems = null;
         try {
-            menuItems = waitFor("ul.ui-autocomplete li.ui-menu-item", 10);
+            menuItems = waitFor("ul.ui-autocomplete li.ui-menu-item", 20);
         } catch(TimeoutException tex) {
-            fail("could not set value on  " + field + "because autocomplete never appeared or was dismissed too soon");
+            fail("could not set value on  " + field + " because autocomplete never appeared or was dismissed too soon");
         }
-
+        logger.info("menuItems: {} ", menuItems);
         String partialText = partialMenuItemTest.toLowerCase();
         WebElement firstMatch = null;
         for(WebElement menuItem : menuItems) {
@@ -943,8 +943,9 @@ public abstract class AbstractSeleniumWebITCase {
             }
         }
         boolean wasFound = firstMatch != null;
+        logger.info("match: {} ", firstMatch);
         if(wasFound) {
-            firstMatch.click();
+            (firstMatch.findElement(By.tagName("a"))).click();
             waitFor(2);
         }
         return wasFound;
