@@ -18,6 +18,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Action;
+import org.openqa.selenium.interactions.Actions;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
@@ -25,16 +27,19 @@ import org.tdar.struts.action.DataIntegrationITCase;
 
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
+    private static final String SPITALFIELDS_DATASET_NAME = "Spitalfields Dataset";
+    private static final String ALEXANDRIA_DATASET_NAME = "Alexandria Dataset";
     private static final String FAUNA_ELEMENT = "Fauna Element";
     private static final String FAUNA_TAXON = "Fauna Taxon";
     private static final String ALEXANDRIA_DB_NAME = "qrybonecatalogueeditedkk.xls";
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
     public static final String FAUNA_ELEMENT_NAME = "fauna-element-updated---default-ontology-draft.owl";
     public static final String FAUNA_TAXON_NAME = "fauna-taxon---tag-uk-updated---default-ontology-draft.owl";
+    private static final String GENERATED = "Generated identity coding sheet for ";
 
     @Test
     public void testDataIntegration() {
-        Long spitalId = uploadSparseResource("Spitalfields", "Spitalfields Description", ResourceType.DATASET, "1923", -1, new File(
+        Long spitalId = uploadSparseResource(SPITALFIELDS_DATASET_NAME, "Spitalfields Description", ResourceType.DATASET, "1923", -1, new File(
                 TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME));
 
         Long faunaId = uploadSparseResource(FAUNA_ELEMENT, "Fauna Element Description", ResourceType.ONTOLOGY, "1920", -1, new File(
@@ -64,14 +69,13 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         submitForm();
         find(By.className("bookmark-label")).click();
         String datasetViewUrl = getCurrentUrl();
-        find(By.linkText("Generated identity coding sheet for Species Common name")).click();
+        find(By.linkText(GENERATED + "Species Common name")).click();
         mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
         gotoPage(datasetViewUrl);
-        find(By.linkText("Generated identity coding sheet for Bone Common name")).click();
+        find(By.linkText(GENERATED + "Bone Common name")).click();
         mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
 
-
-        Long alexId = uploadSparseResource("Alexandria", "Alexandria Description", ResourceType.DATASET, "1924", -1, new File(
+        Long alexId = uploadSparseResource(ALEXANDRIA_DATASET_NAME, "Alexandria Description", ResourceType.DATASET, "1924", -1, new File(
                 TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_DB_NAME));
         find(By.linkText("2")).click();
         mapColumnToOntology("Taxon", FAUNA_TAXON);
@@ -79,26 +83,59 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         submitForm();
         find(By.className("bookmark-label")).click();
         datasetViewUrl = getCurrentUrl();
-        find(By.linkText("Generated identity coding sheet for Taxon")).click();
+        find(By.linkText(GENERATED + "Taxon")).click();
         mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
         gotoPage(datasetViewUrl);
-        find(By.linkText("Generated identity coding sheet for BELEMENT")).click();
+        find(By.linkText(GENERATED + "BELEMENT")).click();
         mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
+
+        find(By.linkText("Integrate")).click();
+        find(By.linkText(ALEXANDRIA_DATASET_NAME)).click();
+        find(By.linkText(SPITALFIELDS_DATASET_NAME)).click();
+        submitForm();
+        find(By.id("addColumn")).click(); // 3 columns
+        find(By.id("addColumn")).click();
+        WebElementSelection columns = find(By.id("drplist")).find(By.tagName("td"));
+
+        WebElement column = columns.get(0);
+        WebElementSelection draggables = find(By.className("drg"));
+        WebElement taxon = findMatchingElementBy(draggables, "Taxon", By.className("name")).first();
+        WebElement scn = findMatchingElementBy(draggables, "Species Common Name", By.className("name")).first();
+        dragAndDrop(taxon, column);
+        dragAndDrop(scn, column);
+
+        column = columns.get(1);
+        WebElement belement = findMatchingElementBy(draggables, "BELEMENT", By.className("name")).first();
+        WebElement bcn = findMatchingElementBy(draggables, "Bone Common Name", By.className("name")).first();
+        dragAndDrop(bcn, column);
+        dragAndDrop(belement, column);
+
+        column = columns.get(2);
+        WebElement bclass = findMatchingElementBy(draggables, "BCLASS", By.className("name")).first();
+        WebElement scode = findMatchingElementBy(draggables, "Site code", By.className("name")).first();
+        dragAndDrop(bclass, column);
+        dragAndDrop(scode, column);
+        submitForm();
+        
     }
 
-    private void mapCodingSheetToOntology(Map<String,String> map) {
+    private void dragAndDrop(WebElement draggable, WebElement target) {
+        Actions builder = new Actions(driver);
+        Action dragAndDrop = builder.clickAndHold(draggable)
+                .moveToElement(target)
+                .release(target)
+                .build();
+
+        dragAndDrop.perform();
+    }
+
+    private void mapCodingSheetToOntology(Map<String, String> map) {
         find(By.linkText("map ontology")).click();
 
         WebElementSelection nodePairs = find(By.className("mappingPair"));
-        for (Entry<String,String> entry : map.entrySet()) {
+        for (Entry<String, String> entry : map.entrySet()) {
             WebElementSelection match = null;
-            for (WebElement element_ : nodePairs) {
-                WebElementSelection element = new WebElementSelection(element_, driver);
-                WebElementSelection name = element.find(By.className("codingSheetTerm"));
-                if (name.getText().equals(entry.getKey())) {
-                    match = element;
-                }
-            }
+            match = findMatchingElementBy(nodePairs, entry.getKey(), By.className("codingSheetTerm"));
             if (match == null) {
                 fail("could not find element name: " + entry.getKey());
             }
@@ -113,15 +150,20 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         submitForm();
     }
 
-    private void mapColumnToOntology(String columnName, String ontologyName) {
-        WebElementSelection column = null;
-        for (WebElement columnDiv_ : find(By.className("datatablecolumn"))) {
-            WebElementSelection columnDiv = new WebElementSelection(columnDiv_, driver);
-            if (!columnDiv.find(By.className("displayName")).first().getText().contains(columnName)) {
-                continue;
+    private WebElementSelection findMatchingElementBy(WebElementSelection nodePairs, String entry, By selector) {
+        for (WebElement element_ : nodePairs) {
+            WebElementSelection element = new WebElementSelection(element_, driver);
+            WebElementSelection name = element.find(selector);
+            if (name.getText().equals(entry)) {
+                return element;
             }
-            column = columnDiv;
         }
+        fail("could not find matching child element by:" + entry);
+        return null;
+    }
+
+    private void mapColumnToOntology(String columnName, String ontologyName) {
+        WebElementSelection column = findMatchingElementBy(find(By.className("datatablecolumn")), columnName, By.className("displayName"));
 
         WebElement ontologyField = column.find(By.className("ontologyfield")).first();
         if (!selectAutocompleteValue(ontologyField, ontologyName, ontologyName)) {

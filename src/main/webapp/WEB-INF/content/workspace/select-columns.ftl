@@ -162,7 +162,9 @@ Drag columns from your selected data tables onto the integration table .
 			                 <#if column.measurementUnit??>hasMeasurement="${column.measurementUnit}"</#if> 
 			                 title="${description?html}"
 			                 <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>hasCount="true"</#if> 
-			                 table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}. </span>${column.displayName} <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
+			                 table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}. </span>
+							<span class="name">${column.displayName}</span>
+		    			     <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
 			               <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id"  value="${column.id?c}"/></span>
 			                   <#assign count = count+1 />
 			                </div> </td>
