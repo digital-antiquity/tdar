@@ -48,7 +48,7 @@ div.orgChart div.node.level3 {
         </div>
 	</div>
 	<div id="divHints">
-	<em>click and drag to pan across the ontology, darker nodes contain more children, click on a node to expand children</em>
+	<em>Click on a node to expand children</em>
 	</div>
 	<@view.ontology />
 
