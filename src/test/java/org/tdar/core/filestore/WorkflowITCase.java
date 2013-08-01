@@ -38,10 +38,10 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void test() throws InterruptedException, InstantiationException, IllegalAccessException, IOException {
+    public void test() throws InterruptedException {
         // List<File>;
         final PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-        final List<File> versions = new ArrayList<File>();
+        final List<File> versions = new ArrayList<>();
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon_mac.tif"));
         versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
@@ -54,6 +54,7 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
             final File version = versions.get(i);
             testers[i] = new AsynchTester(new Runnable() {
                 @Override
+                @SuppressWarnings("synthetic-access")
                 public void run() {
                     runInNewTransactionWithoutResult(new TransactionCallback<Object>() {
                         @Override
