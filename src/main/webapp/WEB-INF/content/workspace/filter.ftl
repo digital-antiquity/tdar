@@ -80,7 +80,7 @@ checks, absent values are indicated with red x's.
     </#list>
     <tr class="<#if disabled>disabled</#if>">
     <td style="white-space: nowrap;">
-    <label class="inline-label" for='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'>
+    <label class="inline-label nodeLabel" for='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'>
     <#list 1..numberOfParents as indentationLevel>
         &nbsp;&nbsp;&nbsp;&nbsp;
     </#list>
@@ -88,7 +88,7 @@ checks, absent values are indicated with red x's.
     name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes[${ontologyNode_index}].id' value='${ontologyNode.id?c}'
     <#if checkForUser>canautocheck="true"</#if>     <#if disabled>disabled="disabled"</#if> />
     <#assign totalCheckboxCount=totalCheckboxCount+1>
-        <#if !disabled><b></#if>
+        <#if !disabled><b class="nodeName"></#if>
             ${ontologyNode.displayName} <!--(${ontologyNode.index})-->
         <#if !disabled></b></#if>
     </label>

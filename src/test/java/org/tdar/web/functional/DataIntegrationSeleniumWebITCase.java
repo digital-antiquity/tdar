@@ -36,6 +36,8 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     public static final String FAUNA_ELEMENT_NAME = "fauna-element-updated---default-ontology-draft.owl";
     public static final String FAUNA_TAXON_NAME = "fauna-taxon---tag-uk-updated---default-ontology-draft.owl";
     private static final String GENERATED = "Generated identity coding sheet for ";
+    String[] selectedNodeNames = new String[] { "Felis catus (Cat)", "Canis familiaris (Dog)", "Ovis aries (Sheep)", "Atlas", "Axis", "Carpal", "Tooth",
+    "Ulna" };
 
     @Test
     public void testDataIntegration() {
@@ -116,16 +118,20 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         dragAndDrop(bclass, column);
         dragAndDrop(scode, column);
         submitForm();
-        
+
+        WebElementSelection nodes = find(By.className("nodeLabel"));
+        for (String nodeName : selectedNodeNames) {
+            findMatchingElementBy(nodes, nodeName, By.className("nodeName")).click();
+        }
+        submitForm();
+        assertTrue(getText().contains("Summary of Integration Results"));
+//        find(By.id("downloadLink")).click();
     }
 
     private void dragAndDrop(WebElement draggable, WebElement target) {
+        //http://stackoverflow.com/questions/14210051/how-to-automate-drag-drop-functionality-using-selenium-web-driver
         Actions builder = new Actions(driver);
-        Action dragAndDrop = builder.clickAndHold(draggable)
-                .moveToElement(target)
-                .release(target)
-                .build();
-
+        Action dragAndDrop = builder.clickAndHold(draggable).moveToElement(target).release(target).build();
         dragAndDrop.perform();
     }
 
