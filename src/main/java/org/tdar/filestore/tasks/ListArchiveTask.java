@@ -7,6 +7,7 @@
 package org.tdar.filestore.tasks;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -49,7 +50,7 @@ public class ListArchiveTask extends AbstractTask {
      * @see org.tdar.filestore.tasks.Task#run(java.io.File)
      */
     @Override
-    public void run() throws Exception {
+    public void run() throws IOException {
         for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
             File f_ = version.getTransientFile();
             // take the file
