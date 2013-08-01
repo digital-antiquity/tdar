@@ -65,7 +65,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return PATH;
     }
 
-    public Map<String, String> getElementValueMap() {
+    public static Map<String, String> getElementValueMap() {
         HashMap<String, String> elementValueMap = new HashMap<String, String>();
         elementValueMap.put("Atlas", "Atlas");
         elementValueMap.put("Axis", "Axis");
@@ -82,7 +82,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return elementValueMap;
     }
 
-    public Map<String, String> getHierarchyElementMap() {
+    public static Map<String, String> getHierarchyElementMap() {
         Map<String, String> elementValueMap = getElementValueMap();
         elementValueMap.put("TARSAL", "Tarsal");
         elementValueMap.put("ASTRAGALUS", "Astragalus");
@@ -105,7 +105,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return elementValueMap;
     }
 
-    public Map<String, String> getTaxonValueMap() {
+    public static Map<String, String> getTaxonValueMap() {
         HashMap<String, String> taxonValueMap = new HashMap<String, String>();
         taxonValueMap.put("cat", "Felis catus (Cat)");
         taxonValueMap.put("CAT", "Felis catus (Cat)");

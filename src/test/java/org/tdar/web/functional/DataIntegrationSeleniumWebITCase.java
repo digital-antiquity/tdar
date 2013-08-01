@@ -6,11 +6,13 @@
 
 package org.tdar.web.functional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,8 +21,7 @@ import org.openqa.selenium.WebElement;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
+import org.tdar.struts.action.DataIntegrationITCase;
 
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
@@ -61,18 +62,55 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         mapColumnToOntology("Species Common name", FAUNA_TAXON);
         mapColumnToOntology("Bone Common name", FAUNA_ELEMENT);
         submitForm();
-
+        find(By.className("bookmark-label")).click();
+        String datasetViewUrl = getCurrentUrl();
         find(By.linkText("Generated identity coding sheet for Species Common name")).click();
-        find(By.linkText("map ontology")).click();
-        
-        
+        mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
+        gotoPage(datasetViewUrl);
+        find(By.linkText("Generated identity coding sheet for Bone Common name")).click();
+        mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
+
+
         Long alexId = uploadSparseResource("Alexandria", "Alexandria Description", ResourceType.DATASET, "1924", -1, new File(
                 TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_DB_NAME));
         find(By.linkText("2")).click();
         mapColumnToOntology("Taxon", FAUNA_TAXON);
         mapColumnToOntology("BELEMENT", FAUNA_ELEMENT);
         submitForm();
+        find(By.className("bookmark-label")).click();
+        datasetViewUrl = getCurrentUrl();
+        find(By.linkText("Generated identity coding sheet for Taxon")).click();
+        mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
+        gotoPage(datasetViewUrl);
+        find(By.linkText("Generated identity coding sheet for BELEMENT")).click();
+        mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
+    }
 
+    private void mapCodingSheetToOntology(Map<String,String> map) {
+        find(By.linkText("map ontology")).click();
+
+        WebElementSelection nodePairs = find(By.className("mappingPair"));
+        for (Entry<String,String> entry : map.entrySet()) {
+            WebElementSelection match = null;
+            for (WebElement element_ : nodePairs) {
+                WebElementSelection element = new WebElementSelection(element_, driver);
+                WebElementSelection name = element.find(By.className("codingSheetTerm"));
+                if (name.getText().equals(entry.getKey())) {
+                    match = element;
+                }
+            }
+            if (match == null) {
+                fail("could not find element name: " + entry.getKey());
+            }
+            WebElement ontologyNode = match.find(By.className("ontologyValue")).first();
+            if (!selectAutocompleteValue(ontologyNode, entry.getValue(), entry.getValue())) {
+                String fmt = "Failed to map ontology %s because selenium failed to select a user from the autocomplete " +
+                        "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
+                        "menu.";
+                fail(String.format(fmt, entry.getValue()));
+            }
+        }
+        submitForm();
     }
 
     private void mapColumnToOntology(String columnName, String ontologyName) {
