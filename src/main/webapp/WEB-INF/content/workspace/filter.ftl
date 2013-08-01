@@ -101,9 +101,9 @@ checks, absent values are indicated with red x's.
     <#list ontologyNode.columnHasValueArray as hasValue>
     <td>
         <#if hasValue>
-        <@edit.img "/images/checked.gif" />
+    	    <img src="<@s.url value="/images/checked.gif" />"/>
         <#else>
-        <@edit.img "/images/unchecked.gif" />
+    	    <img src="<@s.url value="/images/unchecked.gif" />"/>
         </#if>
     </td>
     </#list>
