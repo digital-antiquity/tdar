@@ -54,6 +54,10 @@
 	</#if>
 
 	<@view.canonical resource />
+
+	<#if local_.head?? && local_.head?is_macro>
+		<@local_.head />
+	</#if>
   </head>
 
 

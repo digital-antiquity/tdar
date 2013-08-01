@@ -59,7 +59,7 @@ div.orgChart div.node {
     padding               : 0 4px;
     width                 : 96px;
     height                : 60px;
-    background-color      : #ffffcf;
+//    background-color      : #ffffcf;
     line-height           : 1.3em;
     border-radius         : 8px;
     box-shadow            : 4px 4px 6px #888888;
@@ -67,10 +67,6 @@ div.orgChart div.node {
     -moz-box-shadow       : 4px 4px 6px #888888;
     -webkit-border-radius : 8px;
     -webkit-box-shadow    : 4px 4px 6px #888888;
-}
-
-div.orgChart div.hasChildren {
-    background-color      : #ffff98;
 }
 
 div.orgChart.interactive div.hasChildren {

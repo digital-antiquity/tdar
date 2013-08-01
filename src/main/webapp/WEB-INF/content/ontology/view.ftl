@@ -1,5 +1,36 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/${themeDir}/settings.ftl" as settings />
+<#macro head>
+<style>
+div.orgChart div.hasChildren {
+    background-color      : #${settings.barColors[1]};
+}
+
+div.orgChart div.node {
+    background-color      : #${settings.barColors[0]};
+}
+
+div.orgChart div.node.level1 {
+    background-color: ${settings.barColors[0]};
+}
+
+div.orgChart div.node.level1.special {
+    background-color: white;
+}
+
+div.orgChart div.node.level2 {
+    background-color: ${settings.barColors[3]};
+}
+
+div.orgChart div.node.level3 {
+    background-color: ${settings.barColors[4]};
+}
+
+</style>
+</#macro>
+
+
 <#macro afterBasicInfo>
 <#if codingSheetsWithMappings?has_content>
 	<h3>This Ontology is used by the following Coding Sheets</h3>
