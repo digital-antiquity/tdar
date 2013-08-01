@@ -60,8 +60,9 @@ public class GenericDao {
         // FIXME: push guard checks into Service layer.
         if (id == null)
             return null;
-        logger.trace("{}", getCurrentSession().get(cls, id));
-        E obj = cls.cast(getCurrentSession().get(cls, id));
+        final Object objectInSession = getCurrentSession().get(cls, id);
+        logger.trace("{}", objectInSession);
+        E obj = cls.cast(objectInSession);
         logger.trace("object: {}", obj);
         return obj;
     }
