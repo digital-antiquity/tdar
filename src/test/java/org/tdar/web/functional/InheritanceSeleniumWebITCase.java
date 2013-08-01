@@ -84,12 +84,12 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         driver.findElement(By.id("metadataForm_coverageDates_2__endDate")).sendKeys("2001");
         driver.findElement(By.id("metadataForm_coverageDates_2__description")).clear();
         driver.findElement(By.id("metadataForm_coverageDates_2__description")).sendKeys("coverage date 3 - calendar");
-        driver.findElement(By.id("investigationTypeIds-1")).click();
-        driver.findElement(By.id("investigationTypeIds-9")).click();
-        driver.findElement(By.id("investigationTypeIds-20")).click();
-        driver.findElement(By.id("materialKeywordIds-1")).click();
-        driver.findElement(By.id("materialKeywordIds-8")).click();
-        driver.findElement(By.id("materialKeywordIds-15")).click();
+        driver.findElement(By.id("metadataForm_investigationTypeIds1")).click();
+        driver.findElement(By.id("metadataForm_investigationTypeIds9")).click();
+        driver.findElement(By.id("metadataForm_investigationTypeIds20")).click();
+        driver.findElement(By.id("metadataForm_materialKeywordIds1")).click();
+        driver.findElement(By.id("metadataForm_materialKeywordIds8")).click();
+        driver.findElement(By.id("metadataForm_materialKeywordIds15")).click();
         driver.findElement(By.id("approvedCultureKeywordIds-1")).click();
         driver.findElement(By.id("approvedCultureKeywordIds-16")).click();
         driver.findElement(By.id("approvedCultureKeywordIds-22")).click();
