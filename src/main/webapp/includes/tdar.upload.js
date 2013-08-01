@@ -103,7 +103,7 @@ TDAR.fileupload = function() {
         //add reference to helper object  to form and inputFile
         $(_options.formSelector).add(_options.inputSelector).data('fileuploadHelper', helper);
 
-        _registerReplaceButton(_options.formSelector);
+        _registerReplaceButton(_options.formSelector,_options.inputSelector);
 
         //update the proxy action if user updates fileproxy metadata
         $filesContainer.on("change", "select,textarea,input[type=text],input[type=date]", function(e) {
@@ -300,19 +300,19 @@ TDAR.fileupload = function() {
         $row.find(".replace-file-button, .undo-replace-button").toggle();
     }
 
-    var _registerReplaceButton = function(formSelector) {
+    var _registerReplaceButton = function(formSelector,inputSelector) {
 
         console.log("registering replace button")
 
         //invoke the fileupload widget's "send" method
         //FIXME: this would be more efficient if we passed the specific div that holds the upload section (instead of entire form)
-        $(formSelector).on('change', '.replace-file' , function (e) {
+        $(inputSelector).on('change', '.replace-file' , function (e) {
             console.log("triggering file upload");
 
             //tell filupload-ui to hide this upload from files table
             _nextRowVisibility = false;
 
-            $(formSelector).fileupload('send', {
+            $(inputSelector).fileupload('send', {
                 files: e.target.files || [{name: this.value}],
                 fileInput: $(this),
                 $replaceTarget: $(this).closest(".existing-file")
@@ -320,7 +320,7 @@ TDAR.fileupload = function() {
         });
 
         //when browser uploads replacement file uploaded succesfully, update file proxy fields to indicate incoming file is replacement
-        $(formSelector).bind("fileuploadcompleted", function(e, data) {
+        $(inputSelector).bind("fileuploadcompleted", function(e, data) {
             if(!data.$replaceTarget) return;
             var file = data.files[0];
             var $originalRow = data.$replaceTarget;
@@ -329,13 +329,13 @@ TDAR.fileupload = function() {
         });
 
         //regardless of success/failure,  perform this cleanup after replacement upload terminates
-        $(formSelector).bind("fileuploadfinished", function() {
+        $(inputSelector).bind("fileuploadfinished", function() {
             //tell filupload-ui to stop hiding uploads
             _nextRowVisibility = true;
         });
 
         //
-        $(formSelector).on("click", ".undo-replace-button", function(e) {
+        $(inputSelector).on("click", ".undo-replace-button", function(e) {
             console.log("undo replace click");
             _cancelReplaceFile($(this).closest(".existing-file"));
         });
