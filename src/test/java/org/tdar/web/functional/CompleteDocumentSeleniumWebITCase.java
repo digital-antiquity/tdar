@@ -220,7 +220,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         gotoPage("/document/add");
         expandAllTreeviews();
         prepIndexedFields();
-        uploadFile(FileAccessRestriction.CONFIDENTIAL, new File(TEST_DOCUMENT));
+        uploadFileAsync(FileAccessRestriction.CONFIDENTIAL, new File(TEST_DOCUMENT));
 
         docValMap.putAll(docUnorderdValMap);
 

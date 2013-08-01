@@ -44,6 +44,14 @@ public class WebElementSelection implements Iterable<WebElement> {
         this.driver = driver;
     }
 
+    public WebElementSelection(WebElement webElement, WebDriver driver) {
+        elements = new ArrayList<WebElement>();
+        if (webElement != null) {
+            elements.add(webElement);
+        }
+        this.driver = driver;
+    }
+
     private WebElementSelection(WebDriver driver)  {
         this(Collections.<WebElement>emptyList(), driver);
     }

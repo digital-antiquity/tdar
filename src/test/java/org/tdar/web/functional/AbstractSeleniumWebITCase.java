@@ -850,19 +850,12 @@ public abstract class AbstractSeleniumWebITCase {
         return selection;
     }
 
-//    public void replaceFirstFile(File uploadFile, File file) {
-//        clearFileInputStyles();
-//        find("#fileupload0").sendKeys(file.getAbsolutePath());
-//        try {
-//            Thread.sleep(10000);
-//        } catch (InterruptedException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        waitFor(".delete-button");
-//    }
-
     public void uploadFile(FileAccessRestriction restriction, File uploadFile) {
+        find("#fileUploadField").val(uploadFile.getAbsolutePath());
+        find("#inputMethodId").val("file");
+    }
+
+    public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
         clearFileInputStyles();
         find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
         waitFor(".delete-button");
