@@ -933,6 +933,7 @@ public abstract class AbstractSeleniumWebITCase {
         } catch(TimeoutException tex) {
             fail("could not set value on  " + field + " because autocomplete never appeared or was dismissed too soon");
         }
+
         logger.info("menuItems: {} ({})", menuItems, menuItems.size());
         String partialText = partialMenuItemTest.toLowerCase();
         WebElement firstMatch = null;
@@ -944,6 +945,7 @@ public abstract class AbstractSeleniumWebITCase {
                 break;
             }
         }
+
         boolean wasFound = firstMatch != null;
         logger.info("match: {} ", firstMatch);
         if(wasFound) {
@@ -952,6 +954,5 @@ public abstract class AbstractSeleniumWebITCase {
         }
         return wasFound;
     }
-
 
 }

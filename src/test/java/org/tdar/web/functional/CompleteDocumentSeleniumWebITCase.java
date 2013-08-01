@@ -6,10 +6,8 @@
 
 package org.tdar.web.functional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.*;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_RECORD;
@@ -235,7 +233,9 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         for (String key : docMultiValMap.keySet()) {
             for (String val : docMultiValMap.get(key)) {
                 try {
+                    logger.trace("setting value for field: {} - start", key);
                     find(By.name(key)).val(val);
+                    logger.trace("setting value for field: {} - end", key);
                 } catch (ElementNotVisibleException en) {
                     logger.error("element not visible: {} {}", key, val);
                     fail("could not find " + key + " because it was not visible");
@@ -251,7 +251,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
                 MODIFY_RECORD);
         addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", VIEW_ALL);
 
-        // FIXME: yeah i know this is a kludge - add the names to the map so we can check that the users were added
         docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
         docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
         docUnorderdValMap.put("authorizedUsers[0].generalPermission", MODIFY_RECORD.name());
@@ -326,11 +325,17 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
             }
         }
 
-        // FIXME: need assert for 'friendly' role name
-        // FIXME: need assert for 'friendly' creatorType
+        //specific checks for auth users we added earlier
+        String sectionText = find("#divAccessRights").getText().toLowerCase();
+        logger.debug("\n\n------ access rights text ---- \n" + sectionText);
+
+        assertThat(sectionText, containsString("joshua watts"));
+        assertThat(sectionText, containsString("michelle elliott"));
+        assertThat(sectionText, containsString(VIEW_ALL.getLabel().toLowerCase()));
+        assertThat(sectionText, containsString(MODIFY_RECORD.getLabel().toLowerCase()));
 
         // make sure our 'async' file was added to the resource
-        assertTrue(sourceContains(TEST_DOCUMENT_NAME));
+        assertThat(getSource(), containsString(TEST_DOCUMENT_NAME));
     }
 
     private void addAuthuser(String nameField, String selectField, String name, String email, GeneralPermissions permissions) {

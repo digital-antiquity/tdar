@@ -524,4 +524,17 @@ public class WebElementSelection implements Iterable<WebElement> {
         }
         return subset;
     }
+
+    /**
+     * return  index of first occurance of the specified element within this selection
+     * @param element
+     * @return index position of specified element within selection (or -1 if the speciied element was not found)
+     */
+    public int indexOf(WebElement element) {
+        return elements.indexOf(element);
+    }
+
+    public int indexOf(WebElementSelection selection) {
+        return indexOf(selection.first());
+    }
 }
