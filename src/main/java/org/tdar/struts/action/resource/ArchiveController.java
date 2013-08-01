@@ -1,6 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
