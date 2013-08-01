@@ -37,7 +37,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     public static final String FAUNA_TAXON_NAME = "fauna-taxon---tag-uk-updated---default-ontology-draft.owl";
     private static final String GENERATED = "Generated identity coding sheet for ";
     String[] selectedNodeNames = new String[] { "Felis catus (Cat)", "Canis familiaris (Dog)", "Ovis aries (Sheep)", "Atlas", "Axis", "Carpal", "Tooth",
-    "Ulna" };
+            "Ulna" };
 
     @Test
     public void testDataIntegration() {
@@ -125,11 +125,11 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         }
         submitForm();
         assertTrue(getText().contains("Summary of Integration Results"));
-//        find(By.id("downloadLink")).click();
+        // find(By.id("downloadLink")).click();
     }
 
     private void dragAndDrop(WebElement draggable, WebElement target) {
-        //http://stackoverflow.com/questions/14210051/how-to-automate-drag-drop-functionality-using-selenium-web-driver
+        // http://stackoverflow.com/questions/14210051/how-to-automate-drag-drop-functionality-using-selenium-web-driver
         Actions builder = new Actions(driver);
         Action dragAndDrop = builder.clickAndHold(draggable).moveToElement(target).release(target).build();
         dragAndDrop.perform();
@@ -156,15 +156,15 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         submitForm();
     }
 
-    private WebElementSelection findMatchingElementBy(WebElementSelection nodePairs, String entry, By selector) {
-        for (WebElement element_ : nodePairs) {
+    private WebElementSelection findMatchingElementBy(WebElementSelection parentElement, String matchingText, By selector) {
+        for (WebElement element_ : parentElement) {
             WebElementSelection element = new WebElementSelection(element_, driver);
             WebElementSelection name = element.find(selector);
-            if (name.getText().equals(entry)) {
+            if (name.getText().equals(matchingText)) {
                 return element;
             }
         }
-        fail("could not find matching child element by:" + entry);
+        fail("could not find matching child element by:" + matchingText);
         return null;
     }
 
@@ -182,9 +182,9 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
 
     private Long uploadSparseResource(String title, String description, ResourceType resourceType, String date, int projectId, File file) {
         gotoPage(String.format("/%s/add", resourceType.getUrlNamespace()));
-        setFieldByName("dataset.title", title);
-        setFieldByName("dataset.description", description);
-        setFieldByName("dataset.date", date);
+        setFieldByName(resourceType.getFieldName() + ".title", title);
+        setFieldByName(resourceType.getFieldName() + ".description", description);
+        setFieldByName(resourceType.getFieldName() + ".date", date);
         if (resourceType.isSupporting()) {
             uploadFile(FileAccessRestriction.PUBLIC, file);
         } else {
