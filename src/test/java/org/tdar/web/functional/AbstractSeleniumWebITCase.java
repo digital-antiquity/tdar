@@ -925,6 +925,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public boolean selectAutocompleteValue (WebElement field, String textEntry, String partialMenuItemTest) {
         field.sendKeys(textEntry);
+        field.sendKeys(Keys.ARROW_DOWN);
         waitFor(4); //kludge
         WebElementSelection menuItems = null;
         try {
@@ -932,11 +933,12 @@ public abstract class AbstractSeleniumWebITCase {
         } catch(TimeoutException tex) {
             fail("could not set value on  " + field + " because autocomplete never appeared or was dismissed too soon");
         }
-        logger.info("menuItems: {} ", menuItems);
+        logger.info("menuItems: {} ({})", menuItems, menuItems.size());
         String partialText = partialMenuItemTest.toLowerCase();
         WebElement firstMatch = null;
         for(WebElement menuItem : menuItems) {
             String text = menuItem.getText().toLowerCase();
+            logger.info(text);
             if(text.contains(partialText)) {
                 firstMatch = menuItem;
                 break;

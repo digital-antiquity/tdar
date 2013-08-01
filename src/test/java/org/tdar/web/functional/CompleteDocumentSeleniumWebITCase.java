@@ -155,6 +155,22 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     }
 
     @Test
+    public void testAuthUser() {
+        gotoPage("/document/add");
+        setname("document.title", "My Sample Document");
+        setname("document.documentType", "OTHER");
+        setname("document.description", "A resource description");
+        setname("document.date", "1923");
+        setname("projectId", "-1");
+        find("#accessRightsRecordsAddAnotherButton").click();
+        find("#accessRightsRecordsAddAnotherButton").click();
+        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+                MODIFY_RECORD);
+        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", VIEW_ALL);
+        submitForm();
+    }
+    
+    @Test
     public void testCreateDocumentEditSavehasResource() {
         gotoPage("/document/add");
         WebElement form = find("#metadataForm").first();
@@ -233,7 +249,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "michelle.elliott@asu.edu", VIEW_ALL);
+        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", VIEW_ALL);
 
         // FIXME: yeah i know this is a kludge - add the names to the map so we can check that the users were added
         docValMap.put("authorizedUsers[0].user.id", "121");
