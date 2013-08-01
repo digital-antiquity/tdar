@@ -27,6 +27,7 @@ vim:sts=2:sw=2:
         <prop key="hibernate.dialect">${hibernate.dialect}</prop>
         <prop key="hibernate.jdbc.batch_size">30</prop>
         <prop key="hibernate.show_sql">false</prop>
+        <prop key="hibernate.format_sql">false</prop>
         <!--
         <prop key='hibernate.cache.use_second_level_cache'>true</prop>
         <prop key='hibernate.cache.provider_class'>org.hibernate.cache.EhCacheProvider</prop>

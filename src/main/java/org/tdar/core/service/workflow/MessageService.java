@@ -11,6 +11,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.WorkflowContext;
@@ -28,6 +29,7 @@ public class MessageService {
     // private Queue toPersist;
 
     private WorkflowContextService workflowContextService;
+    
     @Autowired
     private GenericDao genericDao;
 
@@ -102,7 +104,7 @@ public class MessageService {
      * 
      * @param informationResourceFileVersions
      * @param workflow2
-     * @return
+     * @return Martin: given that at some future date this might be pushing stuff onto a queue, it shouldn't return anything?
      */
     public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResourceFileVersion... informationResourceFileVersions) {
         WorkflowContext ctx = workflowContextService.initializeWorkflowContext(workflow, informationResourceFileVersions);
@@ -128,10 +130,15 @@ public class MessageService {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();
             ctx.setXmlService(xmlService);
             success = workflow_.run(ctx);
+            // Martin: the following mandates that we wait for run to complete.
+            // Surely the plan is to immediately show the user a result page with "your request is being processed" and then
+            // to use AJAX to poll the server for the result via a status bar? Or an email. And the following is to be moved to 
+            // be part of that call back process?
             workflowContextService.processContext(ctx);
         } catch (Exception e) {
             // trying to get a more useful debug message...
             logger.warn("Unhandled exception while processing file: " + informationResourceFileVersions, e);
+            throw new TdarRecoverableRuntimeException("There was an unexpected error when processing the file.");
         }
         // }
         return success;

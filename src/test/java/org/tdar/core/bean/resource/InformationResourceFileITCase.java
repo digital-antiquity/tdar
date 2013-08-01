@@ -111,7 +111,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     
     @Test
     @Rollback(true)
-    public void testReprocessInformationResourceFile() throws InstantiationException, IllegalAccessException {
+    public void testReprocessInformationResourceFile() throws Exception {
         InformationResource ir = generateDocumentWithFileAndUser();
 
         assertEquals(ir.getInformationResourceFiles().size(), 1);
@@ -124,8 +124,8 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertEquals(1, irFile.getLatestVersion().intValue());
 
         assertEquals(irFile.getInformationResourceFileType(), FileType.DOCUMENT);
-        List<Long> irfvids = new ArrayList<Long>();
-        Map<VersionType, InformationResourceFileVersion> map = new HashMap<VersionType, InformationResourceFileVersion>();
+        List<Long> irfvids = new ArrayList<>();
+        Map<VersionType, InformationResourceFileVersion> map = new HashMap<>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             map.put(irfv.getFileVersionType(), irfv);
             irfvids.add(irfv.getId());
@@ -141,9 +141,9 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
         genericService.synchronize();
         ActionMessageErrorListener listener = new ActionMessageErrorListener();
-        informationResourceService.reprocessInformationResourceFiles(ir.getInformationResourceFiles(), listener);
+        informationResourceService.reprocessInformationResourceFiles(irFile, listener);
 
-        map = new HashMap<VersionType, InformationResourceFileVersion>();
+        map = new HashMap<>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             logger.debug("version: {}", irfv);
             map.put(irfv.getFileVersionType(), irfv);

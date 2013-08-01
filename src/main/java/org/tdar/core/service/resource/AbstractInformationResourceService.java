@@ -20,10 +20,10 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
@@ -36,6 +36,7 @@ import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.BaseFilestore;
+import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
 
@@ -97,11 +98,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    public WorkflowResult importFileProxiesAndProcessThroughWorkflow(T resource, Person user, Long ticketId, ActionMessageErrorSupport listener,
+    public void importFileProxiesAndProcessThroughWorkflow(T resource, Person user, Long ticketId, ActionMessageErrorSupport listener,
             List<FileProxy> fileProxiesToProcess) throws Exception {
         if (CollectionUtils.isEmpty(fileProxiesToProcess)) {
             logger.debug("Nothing to process, returning.");
-            return new WorkflowResult(fileProxiesToProcess);
+            return;
         }
 
         processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
@@ -125,8 +126,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             }
         }
         processFiles(resource, filesToProcess);
-        WorkflowResult result = new WorkflowResult(fileProxiesToProcess);
-        result.addActionErrorsAndMessages(listener);
+        new WorkflowResult(fileProxiesToProcess).addActionErrorsAndMessages(listener);
 
         // getDao().refreshAll(resource.getInformationResourceFiles());
         /*
@@ -136,7 +136,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
             personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
         }
-        return result;
     }
 
     private void processFiles(T resource, List<InformationResourceFileVersion> filesToProcess) {
@@ -275,34 +274,27 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional(readOnly = false)
-    public void reprocessInformationResourceFiles(Collection<InformationResourceFile> informationResourceFiles, ActionMessageErrorSupport listener) {
-        Iterator<InformationResourceFile> fileIterator = informationResourceFiles.iterator();
-        while (fileIterator.hasNext()) {
-            InformationResourceFile irFile = fileIterator.next();
-            InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
-            Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
-            while (iterator.hasNext()) {
-                InformationResourceFileVersion version = iterator.next();
-                if (!version.equals(original) && !version.isUploaded() && !version.isArchival()) {
-                    iterator.remove();
-                    informationResourceFileDao.delete(version);
-                }
-            }
-            // this is a known case where we need to purge the session
-            getDao().synchronize();
-            try {
-                original.setTransientFile(filestore.retrieveFile(original));
-                if (!analyzer.processFile(original)) {
-                    logger.error("could not reprocess file: " + original.getFilename());
-                    // fixme: add listener...
-                }
-                // messageService.sendFileProcessingRequest(workflow, original);
-            } catch (Exception e) {
-                logger.warn("caught exception {} while analyzing file {}", e, original.getFilename());
-                // fixme: add listener...
+    public void reprocessInformationResourceFiles(InformationResourceFile irFile, ActionMessageErrorSupport listener) throws Exception {
+        InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
+        Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
+        while (iterator.hasNext()) {
+            InformationResourceFileVersion version = iterator.next();
+            if (!version.equals(original) && !version.isUploaded() && !version.isArchival()) {
+                iterator.remove();
+                informationResourceFileDao.delete(version);
             }
         }
-
+        // this is a known case where we need to purge the session
+        getDao().synchronize();
+        if ((original.getTransientFile() == null) || (!original.getTransientFile().exists())) {
+            // If we are reprocessing, the transient file might not exist. JAI install...
+            original.setTransientFile(filestore.retrieveFile(original));
+        }
+        analyzer.processFile(original);
+        final WorkflowContext workflowContext = irFile.getWorkflowContext();
+        if (!workflowContext.isProcessedSuccessfully()) {
+            new WorkflowResult(workflowContext).addActionErrorsAndMessages(listener);
+        }
     }
 
     @Transactional(readOnly = false)

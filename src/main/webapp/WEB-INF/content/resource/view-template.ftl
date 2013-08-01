@@ -82,19 +82,18 @@
 		<#assign files = resource.filesWithProcessingErrors />
 	</#if>
 	<#if (files?size > 0 ) && authenticatedUser??  && (administrator || editable) >
-	<div class="alert alert-error">
-	<h3>The following files have processing errors</h3>
-	<p>These errors occured <i>in the past</i>, when the file was initially processed. 
-	Please contact your system administrator and request them to investigate the errors.</p>
-	<ul><#list files as file>
-		<li>${file.fileName}<br /> 
-		    <strong>Error recorded:</strong></br />
-		    ${file.errorMessage!""}</li>
-		</#list>
-	</ul>
-	<br/>
-	</div>
-</#if>
+        <div class="alert alert-error">
+            <h3>The following files have processing errors</h3>
+            <p>These errors occured <i>in the past</i>, when the file was initially processed. 
+               Please contact your system administrator and request them to investigate the errors.</p>
+            <ul><#list files as file>
+                    <li>${file.fileName}<br /> 
+                    <strong>Error recorded:</strong></br />
+                    ${file.errorMessage!""}</li>
+                </#list>
+            </ul><br/>
+        </div>
+    </#if>
 </#if>
 
 <@view.pageStatusCallout />

@@ -52,6 +52,7 @@ public interface TestConstants {
     public static String TEST_KML = TEST_ROOT_DIR +  TEST_GIS_DIR + "kml/doc.kml";
     
     public static String FAULTY_ARCHIVE = "broken.zip";
+    public static String GOOD_ARCHIVE = "good.zip";
 
     public static final String DOCUMENT_FIELD_TITLE = "document.title";
     public static final String DOCUMENT_FIELD_DESCRIPTION = "document.description";

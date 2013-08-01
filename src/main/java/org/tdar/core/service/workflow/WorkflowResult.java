@@ -25,24 +25,40 @@ public class WorkflowResult implements Serializable {
     @Transient
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    private boolean success = true; // deliberately assume the happy case
+
     public WorkflowResult(List<FileProxy> fileProxiesToProcess) {
         if (CollectionUtils.isNotEmpty(fileProxiesToProcess)) {
             for (FileProxy proxy : fileProxiesToProcess) {
                 InformationResourceFile file = proxy.getInformationResourceFile();
                 if (file != null) {
-                    WorkflowContext context = file.getWorkflowContext();
-                    if (context != null) {
-                        if (context.isErrorFatal()) {
-                            setFatalErrors(Boolean.TRUE);
-                        }
-                        getExceptions().addAll(context.getExceptions());
-                    }
+                    copyContextResults(file.getWorkflowContext());
                 }
             }
             logger.warn("EXCEPTIONS: {}", getExceptions());
         }
     }
 
+    public WorkflowResult(WorkflowContext context) {
+        copyContextResults(context);
+    }
+    
+    //public WorkflowResult
+
+    private void copyContextResults(WorkflowContext context) {
+        if (context != null) {
+            success  = (!success) ? false : context.isProcessedSuccessfully();
+            if (context.isErrorFatal()) {
+                setFatalErrors(Boolean.TRUE);
+            }
+            getExceptions().addAll(context.getExceptions());
+        }
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+    
     public void addActionErrorsAndMessages(ActionMessageErrorSupport actionSupport) {
         for (ExceptionWrapper exception : getExceptions()) {
             if (getFatalErrors()) {
@@ -52,7 +68,6 @@ public class WorkflowResult implements Serializable {
             }
             actionSupport.getStackTraces().add(exception.getStackTrace());
         }
-
     }
 
     public Boolean getFatalErrors() {
