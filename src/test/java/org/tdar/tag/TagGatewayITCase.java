@@ -93,6 +93,7 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         results = port.getTopRecords(sessionId, query, 5);
         meta = results.getMeta();
         assertTrue("size should be 6 or 7", meta.getTotalRecords() >= 6); // there should be 6 Project records matching domestic
+        assertTrue("size should be 6 or 7", meta.getTotalRecords() < 8); // there should be 6 Project records matching domestic
         query.setWhat(null);
 
         Where where = new Where(); // look in AZ and NM
