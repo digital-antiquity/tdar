@@ -1,28 +1,60 @@
 (function(common, fileupload, $){
     "use strict";
-    var _tcount = 0;
+
+    var basic = {
+            helper: {},
+            fileuploadSelector: "#divFileUpload",
+            formSelector: "#metadataForm",
+            inputSelector: "#fileAsyncUpload",
+            form: null,
+            setup: function() {
+                _pageinit();
+
+                var helper = basic.helper = $(basic.fileuploadSelector).data("fileuploadHelper");
+                basic.form = $(basic.formSelector);
+                ok(basic.form.length, "form exists");
+
+                //dont show modal when validation fails
+                basic.form.validate().showErrors = function(errorMap, errorList) {
+                };
+            },
+
+            teardown: function() {
+                //$("#metadataForm").fileupload("destroy");
+            },
+
+            fillOutRequiredFields: function() {
+                $("#resourceRegistrationTitle").val("a title")
+                _fillout({
+                    "#resourceRegistrationTitle": "a title",
+                    "#dateCreated": "2002",
+                    "#resourceDescription": "sample image",
+                    "#projectId": "-1"
+                });
+            }
+    };
+
+    //HACK: kill any initial fileupload registration.  we will do this in our test.
+    try {
+        $(basic.fileuploadSelector).fileupload("destroy");
+    } catch(err) {
+        console.log("tried to destroy fileupload:: %s", err);
+    }
 
     function _pageinit() {
         //hack:  mimic the one-time initialization that happens on the edit page.
-        if(_tcount++ === 0) {
-            console.log("skipping initEditPage... it's already done");
-        } else {
-            console.log("running initEditPage");
-            common.initEditPage($("#metadataForm")[0]);
+        console.log("running initEditPage");
+        common.initEditPage($(basic.formSelector)[0]);
 
-            var helper = TDAR.fileupload.registerUpload({
-                informationResourceId: -1,
-                acceptFileTypes: /\.(aaa|bbb|ccc|jpg|jpeg|tif|tiff)$/i,
-                formSelector:"#metadataForm",
-                inputSelector: '#fileAsyncUpload'
-            });
+        var helper = TDAR.fileupload.registerUpload({
+            informationResourceId: -1,
+            acceptFileTypes: /\.(aaa|bbb|ccc|jpg|jpeg|tif|tiff)$/i,
+            formSelector: basic.fileuploadSelector,
+            inputSelector: basic.inputSelector
+        });
 
-            console.log("initEditPage done");
-            console.dir(helper);
-
-
-
-        }
+        console.log("initEditPage done");
+        console.dir(helper);
     }
 
     function _mockUpload(helper, filename) {
@@ -71,35 +103,6 @@
     }
 
 
-    var basic = {
-        helper: {},
-        form: null,
-        setup: function() {
-            _pageinit();
-
-            var helper = basic.helper = $("#metadataForm").data("fileuploadHelper");
-            basic.form = $("#metadataForm");
-            ok(basic.form.length, "form exists");
-
-            //dont show modal when validation fails
-            basic.form.validate().showErrors = function(errorMap, errorList) {
-            };
-
-        },
-        teardown: function() {
-            //$("#metadataForm").fileupload("destroy");
-
-        },
-        fillOutRequiredFields: function() {
-            $("#resourceRegistrationTitle").val("a title")
-            _fillout({
-                "#resourceRegistrationTitle": "a title",
-                "#dateCreated": "2002",
-                "#resourceDescription": "sample image",
-                "#projectId": "-1"
-            });
-        }
-    };
 
     module("basic", basic);
 $(function() {

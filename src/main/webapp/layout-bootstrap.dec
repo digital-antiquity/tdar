@@ -345,16 +345,17 @@ ${_stacktrace?html}
     <#if qunit>
         <script src="/includes/qunit-1.11.0.js"></script>
     </#if>
-    
+
     <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
 		<script type="text/javascript">
             TDAR.loadScript('${jiraScriptLink}');
 		</script>
 	</#if>
-    
+
     <#if qunit>
         <#-- close the test fixture div -->
         </div>
+        <script src="/test/js/tdar.commontest.js"></script>
         <script src="/test/js${namespace}/${actionName}.qunit.js"></script>
     </#if>
 	

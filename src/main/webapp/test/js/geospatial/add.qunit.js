@@ -55,19 +55,23 @@
     }
 
     $(function() {
+    //HACK:kill the initial fileupload widget.  we will recreate them in our tests already, ...
+    //FIXME: ideally we should call out to the actual code that initializes the fileupload, but this is currently inlined
+        try {
+            $("divFileupload").fileupload("destroy");
+        } catch(err) {
+            console.log("tried to destroy the initial fileupload but failed: %s", err);
+        }
 
         var basic = {
             //qunit destroys fixture dom on teardown.  need to re-register fileupload widget
             setup: function() {
-                var helper = $("#metadataForm").data("fileuploadHelper");
-                if(!helper) {
-                    helper = TDAR.fileupload.registerUpload({
+                var helper = TDAR.fileupload.registerUpload({
                         informationResourceId: -1,
                         acceptFileTypes: /\.[a-z]+$/i,
                         formSelector:"#metadataForm",
                         inputSelector: '#fileAsyncUpload'
                     });
-                }
                 basic.validator = new FileuploadValidator("metadataForm");
                 basic.validator.addRule("nodupes");
                 basic.helper = helper;

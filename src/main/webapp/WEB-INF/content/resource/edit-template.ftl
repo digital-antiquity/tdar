@@ -280,7 +280,9 @@ $(function(){
 	       informationResourceId: id, 
 	       acceptFileTypes: acceptFileTypes, 
 	       formSelector: formSelector,
-	       inputSelector: '#divFileUpload'
+//	       inputSelector: '#divFileUpload',
+	       inputSelector: '#fileAsyncUpload',
+           fileuploadSelector: '#divFileUpload'
 	       });
 
         var fileValidator = new FileuploadValidator("metadataForm");
