@@ -12,6 +12,13 @@
 	<@view.canonical resourceCollection />
 	<#assign rssUrl>/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!"untitled")?url}</#assign>
 	<@search.rssUrlTag url=rssUrl />
+	
+	<style>
+		i.search-list-checkbox-grey {background-image:none!important;}
+		li.media { display:inline-block}
+	</style>
+
+	
 </head>
 <body>
 <#if editable>
@@ -77,7 +84,8 @@
 			<#assign mapSize="1000" />
 		</#if>
          
-        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Limit by Resource Type" facetParam="selectedResourceTypes" />
+        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Browse by Resource Type(s)" facetParam="selectedResourceTypes" />
+
 		<div class="tdarresults">
 		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
 		        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />

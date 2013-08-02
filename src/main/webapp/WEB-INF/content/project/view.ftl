@@ -5,10 +5,16 @@
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 
+<#macro head>
+<style>
+i.search-list-checkbox-grey {background-image:none!important;}
+li.media { display:inline-block}
+</style>
+</#macro>
 
 
 <#macro footer>
-        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Limit by Resource Type" facetParam="selectedResourceTypes" />
+        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Browse by Resource Type(s)" facetParam="selectedResourceTypes" />
 
 <#if (totalRecords > 0)>
 
