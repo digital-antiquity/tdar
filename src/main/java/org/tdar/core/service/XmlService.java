@@ -83,7 +83,7 @@ public class XmlService implements Serializable {
 
     // FIXME: I should cache this file and use it!!!
     public File generateSchema() throws IOException, JAXBException, NoSuchBeanDefinitionException, ClassNotFoundException {
-        final File tempFile = File.createTempFile("tdar-schema", ".xsd");
+        final File tempFile = File.createTempFile("tdar-schema", ".xsd", TdarConfiguration.getInstance().getTempDirectory());
         JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
 
         // WRITE OUT SCHEMA

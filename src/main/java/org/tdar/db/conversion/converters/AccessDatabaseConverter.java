@@ -26,6 +26,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationshipType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
@@ -82,7 +83,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
     public void dumpData() throws Exception {
         // start dumping ...
         Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
-        setIndexedContentsFile(new File(FileUtils.getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
+        setIndexedContentsFile(new File(TdarConfiguration.getInstance().getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
         FileOutputStream fileOutputStream = new FileOutputStream(getIndexedContentsFile());
         BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(fileOutputStream);
         for (String tableName : getDatabase().getTableNames()) {

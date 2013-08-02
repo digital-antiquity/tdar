@@ -161,7 +161,7 @@ public class WorkflowContextService {
         ctx.setInformationResourceId(versions[0].getInformationResourceId());
         ctx.setWorkflowClass(w.getClass());
         // ctx.setInformationResourceFileId(version.getInformationResourceFileId());
-        ctx.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
+        ctx.setWorkingDirectory(TdarConfiguration.getInstance().getTempDirectory());
         ctx.setXmlService(xmlService);
         w.initializeWorkflowContext(ctx, versions); // handle any special bits here
         try {

@@ -81,7 +81,7 @@ public class DownloadService {
     }
 
     public void generateZipArchive(InformationResource resource) throws IOException {
-        generateZipArchive(resource, File.createTempFile(slugify(resource), ".zip"));
+        generateZipArchive(resource, File.createTempFile(slugify(resource), ".zip", TdarConfiguration.getInstance().getTempDirectory()));
     }
 
     @Transactional
@@ -112,7 +112,7 @@ public class DownloadService {
 
         try {
         if (irFileVersions.length > 1) {
-            resourceFile = File.createTempFile("archiveDownload", ".zip");
+            resourceFile = File.createTempFile("archiveDownload", ".zip", TdarConfiguration.getInstance().getTempDirectory());
             generateZipArchive(files, resourceFile);
             mimeType = "application/zip";
         }

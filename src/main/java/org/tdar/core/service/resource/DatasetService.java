@@ -50,6 +50,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
@@ -159,7 +160,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
         try {
-            File tempFile = File.createTempFile("translated", ".xls");
+            File tempFile = File.createTempFile("translated", ".xls", TdarConfiguration.getInstance().getTempDirectory());
             translatedFileOutputStream = new FileOutputStream(tempFile);
             SheetProxy sheetProxy = toExcel(dataset, translatedFileOutputStream);
             String filename = FilenameUtils.getBaseName(file.getLatestUploadedVersion().getFilename()) + "_translated." + sheetProxy.getExtension();

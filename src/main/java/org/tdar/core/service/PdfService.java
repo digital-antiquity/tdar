@@ -169,7 +169,7 @@ public class PdfService implements Serializable {
     // simply merges the list of files in that order
     private File mergePDFs(File... files) throws IOException, FileNotFoundException, COSVisitorException {
         PDFMergerUtility merger = new PDFMergerUtility();
-        File outputFile = File.createTempFile(files[0].getName(), DOT_PDF);
+        File outputFile = File.createTempFile(files[0].getName(), DOT_PDF, TdarConfiguration.getInstance().getTempDirectory());
         merger.setDestinationStream(new FileOutputStream(outputFile));
         for (File file : files) {
             merger.addSource(file);
@@ -232,7 +232,7 @@ public class PdfService implements Serializable {
                 LEFT_MARGIN, cursorPositionFromBottom);
 
         content.close();
-        File tempFile = File.createTempFile(COVER_PAGE, DOT_PDF);
+        File tempFile = File.createTempFile(COVER_PAGE, DOT_PDF, TdarConfiguration.getInstance().getTempDirectory());
         doc.save(new FileOutputStream(tempFile));
         doc.close();
         return tempFile;

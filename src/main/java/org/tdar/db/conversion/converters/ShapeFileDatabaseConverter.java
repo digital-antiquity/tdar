@@ -87,7 +87,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
     public void dumpData() throws Exception {
         // start dumping ...
         // Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
-        setIndexedContentsFile(new File(FileUtils.getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
+        setIndexedContentsFile(new File(TdarConfiguration.getInstance().getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
         FileOutputStream fileOutputStream = new FileOutputStream(getIndexedContentsFile());
         BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(fileOutputStream);
         DataTable dataTable = createDataTable(getFilename());

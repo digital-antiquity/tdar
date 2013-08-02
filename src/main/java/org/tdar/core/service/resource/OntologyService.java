@@ -339,7 +339,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
                 }
             }
             try {
-                tempFile = File.createTempFile("temp", ".xml");
+                tempFile = File.createTempFile("temp", ".xml", TdarConfiguration.getInstance().getTempDirectory());
                 FileUtils.writeStringToFile(tempFile, stringWriter.toString());
                 getLogger().trace("{}", stringWriter);
             } catch (IOException e) {
