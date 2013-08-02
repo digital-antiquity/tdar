@@ -93,8 +93,12 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
 
         find(By.linkText("Integrate")).click();
-        find(By.linkText(ALEXANDRIA_DATASET_NAME)).click();
-        find(By.linkText(SPITALFIELDS_DATASET_NAME)).click();
+        WebElementSelection datsets = find(By.className("datatableListItem"));
+        for (WebElement dataset : datsets) {
+            if (StringUtils.equals(dataset.getText(), ALEXANDRIA_DATASET_NAME) || StringUtils.equals(dataset.getText(), SPITALFIELDS_DATASET_NAME)) {
+                dataset.click();
+            }
+        }
         submitForm();
         find(By.id("addColumn")).click(); // 3 columns
         find(By.id("addColumn")).click();
@@ -145,12 +149,17 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             if (match == null) {
                 continue;
             }
+            
             WebElement ontologyNode = match.find(By.className("ontologyValue")).first();
-            if (!selectAutocompleteValue(ontologyNode, entry.getValue(), entry.getValue())) {
+            String value = entry.getValue();
+            if (value.indexOf("(") != -1) {
+            value = value.substring(0,value.indexOf("("));
+            }
+            if (!selectAutocompleteValue(ontologyNode, value, value)) {
                 String fmt = "Failed to map ontology %s because selenium failed to select a user from the autocomplete " +
                         "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
                         "menu.";
-                fail(String.format(fmt, entry.getValue()));
+                fail(String.format(fmt, value));
             }
         }
         submitForm();
