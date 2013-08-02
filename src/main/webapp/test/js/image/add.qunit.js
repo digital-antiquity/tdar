@@ -111,13 +111,13 @@ $(function() {
     test("confidential file should not submit unless we have a contact", function() {
         basic.fillOutRequiredFields();
         _upload("foo.jpg");
-        ok($('.fileProxyConfidential').length === 1, "should only be one file row");
+        equal($('.fileProxyConfidential').length, 1, "should only be one file row");
 
         $('.fileProxyConfidential').val("CONFIDENTIAL");
-        ok(!basic.form.valid(), "form should be no bueno because file is confidential");
+        ok(!basic.form.valid(), "form validation should return false, because we have at least one confidential file but zero contacts");
 
         $('.fileProxyConfidential').val("EMBARGOED");
-        ok(!basic.form.valid(), "form should be no bueno because file is confidential");
+        ok(!basic.form.valid(), "form validation should return false, because we have at least one confidential file but zero contacts");
 
         $('.fileProxyConfidential').val("PUBLIC");
         ok(basic.form.valid(), 'form should be valid now because file is public');

@@ -149,15 +149,32 @@ $.validator.addMethod(
     "confidential-contact-required",
     function(value, element){
         if(value === "PUBLIC") return true;
-        var institutions = $(".creatorInstitution").not(".hidden").toArray();;
-        var persons = $(".creatorPerson").not(".hidden").toArray();
+        var $table = $('#creditTable');
+        var institutions = $table.find(".creatorInstitution").not(".hidden").toArray();
+        var persons = $table.find(".creatorPerson").not(".hidden").toArray();
         var grepForValidContacts = function(creators) {
-            return    $.grep(creators, function(elem, idx){
-                var id = $(elem).find(".validIdRequired").val();
-                var isContact = $(elem).find(".creator-role-select").val() === "CONTACT";
-                var match =  isContact;
-                return match;
+            //first, filter out the rows that don't have the 'contact' role selected
+            var contactRows = $.grep(creators, function(row, idx){
+
+                var isContact = $(row).find(".creator-role-select").val() === "CONTACT";
+                return isContact;
             });
+
+            //now make sure those contacts aren't blank
+            var validContacts = $.grep(contactRows, function(row, idx){
+                var isValid;
+                if($(row).hasClass("creatorPerson")) {
+                    //person must have firstname, lastname specified
+                    var nonBlanks = $(row).find("[name $= lastName][value != ''],[name $= firstName][value != '']");
+                    isValid = nonBlanks.length == 2;
+                } else {
+                    //institution must not be blank
+                    isValid = $(row).find("[name $= institution.name][value != '']").length != 0;
+                }
+                return isValid;
+            });
+
+            return validContacts;
         };
 
         var contactCount  = grepForValidContacts(institutions).length + grepForValidContacts(persons).length;
