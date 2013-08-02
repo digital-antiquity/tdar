@@ -141,7 +141,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
         genericService.synchronize();
         ActionMessageErrorListener listener = new ActionMessageErrorListener();
-        informationResourceService.reprocessInformationResourceFiles(irFile, listener);
+        informationResourceService.reprocessInformationResourceFiles(ir, listener);
 
         map = new HashMap<>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {

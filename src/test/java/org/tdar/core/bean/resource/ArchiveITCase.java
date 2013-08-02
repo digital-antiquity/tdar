@@ -52,7 +52,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
 
         // and the file is reprocessed 
         ActionMessageErrorListener listener = new ActionMessageErrorListener();
-        informationResourceService.reprocessInformationResourceFiles(irFile, listener);
+        informationResourceService.reprocessInformationResourceFiles(ir, listener);
         
         // then in memory, the following is true:
         irFile = genericService.find(InformationResourceFile.class, irFile.getId());
@@ -81,7 +81,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(irFile);
         genericService.synchronize();
         ActionMessageErrorListener listener = new ActionMessageErrorListener();
-        informationResourceService.reprocessInformationResourceFiles(irFile, listener);
+        informationResourceService.reprocessInformationResourceFiles(ir, listener);
         genericService.synchronize();
 
         irFile = genericService.find(InformationResourceFile.class, irFile.getId());
