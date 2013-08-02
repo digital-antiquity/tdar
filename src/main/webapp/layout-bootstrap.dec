@@ -31,17 +31,42 @@
         <#if !production>
         <script type="text/javascript">
             window.__errorMessages = [];
+            var stringify = function(obj) {
+
+                var censor = function(key, val) {
+                    if(key === "") return val;
+                    if(typeof val === "object") {
+                        return;
+                    }
+                    if(typeof val === "string" && val.length > 80 * 100) {
+                        return val.substr(0, 80 * 100);
+                    }
+                    return val;
+                }
+
+
+                var str = JSON.stringify(obj, censor, "    ");
+                return str;
+            };
+
             var errs = window.__errorMessages;
             window.onerror = function(msg, url, line) {
-                if(typeof msg === "object") {
-                    for(var key in msg) {
-                        var val = msg[key];
-                        errs.push("error event " + key + ":" + val );
+                //is msg really an  "error" Event? (e.g. script failed to load/parse)
+                if(typeof msg === "object" && (typeof JSON !== "undefined") ) {
+                    if(!msg.target) {
+                        msg.target = {src: "na", text:"na"};
                     }
+                    var t = msg.target;
+                    errs.push("msg:" + msg.message + "\n src:" + t.src  + "\n text:" + t.text);
+
+                    if(msg.stopPropagation) msg.stopPropagation();
+
+                //just a regular error - capture msg, url, line#
                 } else {
                     errs.push(msg + " url:" + url + " line:" + line);
+                    console.log("logged error message");
+                    return false;
                 }
-                return false;
             };
         </script>
 
