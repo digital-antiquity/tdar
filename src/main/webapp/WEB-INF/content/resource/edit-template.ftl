@@ -289,6 +289,11 @@ $(function(){
     </#if>
     </#if>
 
+
+  	$(".singleFileUpload .date").datepicker({dateFormat: "mm/dd/yy"});
+  	$(".existing-file .date").datepicker({dateFormat: "mm/dd/yy"});
+
+
     TDAR.common.initEditPage(form);
     
     //register maps, if any

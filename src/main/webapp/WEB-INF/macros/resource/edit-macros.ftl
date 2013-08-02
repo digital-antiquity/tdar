@@ -767,15 +767,14 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 <#macro upload uploadLabel="File" showMultiple=false divTitle="Upload File" showAccess=true>
     <@sharedUploadFile>
       <@singleFileUpload>
-          <div class="field indentFull">
+          <div class="field indentFull singleFileUpload">
           <@s.select name="fileProxies[0].restriction" id="cbConfidential" labelposition="right" label="This item has access restrictions" listValue="label" list=fileAccessRestrictions />
           <div><b>NOTE:</b> by changing this from 'public', all of the metadata will be visible to users, they will not be able to view or download this file.  
           You may explicity grant read access to users below.</div>
           <br />     
           
-          Date                    <@s.textfield name="fileProxies[0].fileCreatedDate" class="date input-small" placeholder="mm/dd/yyyy" />
-	          Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="1" placeholder="Enter a description here" />
-          
+          Date                    <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" />
+	          Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" />
           
           </div>
       </@singleFileUpload>
@@ -918,7 +917,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right" 
                 style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential confidential-contact-required" style="padding-left: 20px;" />
 
-                    <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" class="date input-small" placeholder="mm/dd/yyyy" />
+                    <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" />
 	                <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" />
 
             </div> 
