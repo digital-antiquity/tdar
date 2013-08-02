@@ -274,6 +274,10 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional(readOnly = false)
+    public void reprocessInformationResourceFiles(InformationResource irFile, ActionMessageErrorSupport listener) throws Exception {
+    }
+    
+    @Transactional(readOnly = false)
     public void reprocessInformationResourceFiles(InformationResourceFile irFile, ActionMessageErrorSupport listener) throws Exception {
         InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
         Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
