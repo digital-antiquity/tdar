@@ -42,8 +42,6 @@ public class WorkflowResult implements Serializable {
     public WorkflowResult(WorkflowContext context) {
         copyContextResults(context);
     }
-    
-    //public WorkflowResult
 
     private void copyContextResults(WorkflowContext context) {
         if (context != null) {
