@@ -27,8 +27,8 @@
             <td>
                 <@s.checkbox id="datatable_checkbox_${table.id?c}" name="tableIds" fieldValue="${table.id?c}"/>
             </td>
-            <td><label class="datatableListItem" for="datatable_checkbox_${table.id?c}">${dataset.title}</label></td>
-            <td>${table.displayName}
+            <td><label class="datatableListItem" for="datatable_checkbox_${table.id?c}">${dataset.title} - ${table.displayName}</label></td>
+            <td>
              &nbsp;(<a href="#" class="column_toggle" > show/hide columns</a>)            
                   <div class="datatable_columns" id="datatable_columns_${table.id?c}" style="display:none;">
                     <@listDataTableColumns table.getDataTableColumns() />

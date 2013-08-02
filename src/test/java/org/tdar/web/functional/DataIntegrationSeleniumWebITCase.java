@@ -28,6 +28,7 @@ import org.tdar.struts.action.DataIntegrationITCase;
 
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
+    private static final String MAIN_TABLE = "Main table";
     private static final String SPITALFIELDS_DATASET_NAME = "Spitalfields Dataset";
     private static final String ALEXANDRIA_DATASET_NAME = "Alexandria Dataset";
     private static final String FAUNA_ELEMENT = "Fauna Element";
@@ -54,7 +55,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         assertTrue(getCurrentUrl().contains("columns"));
         WebElementSelection option = null;
         for (WebElement option_ : find(By.id("table_select")).find(By.tagName("option"))) {
-            if (option_.getText().contains("Main table")) {
+            if (option_.getText().contains(MAIN_TABLE)) {
                 option = new WebElementSelection(option_, driver);
                 break;
             }
@@ -95,7 +96,8 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         find(By.linkText("Integrate")).click();
         WebElementSelection datsets = find(By.className("datatableListItem"));
         for (WebElement dataset : datsets) {
-            if (StringUtils.equals(dataset.getText(), ALEXANDRIA_DATASET_NAME) || StringUtils.equals(dataset.getText(), SPITALFIELDS_DATASET_NAME)) {
+            if (StringUtils.equals(dataset.getText(), ALEXANDRIA_DATASET_NAME + " - qrybonecatalogueeditedkk")
+                    || StringUtils.equals(dataset.getText(), SPITALFIELDS_DATASET_NAME + " - " + MAIN_TABLE)) {
                 dataset.click();
             }
         }
@@ -149,11 +151,11 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             if (match == null) {
                 continue;
             }
-            
+
             WebElement ontologyNode = match.find(By.className("ontologyValue")).first();
             String value = entry.getValue();
             if (value.indexOf("(") != -1) {
-            value = value.substring(0,value.indexOf("("));
+                value = value.substring(0, value.indexOf("("));
             }
             if (!selectAutocompleteValue(ontologyNode, value, value)) {
                 String fmt = "Failed to map ontology %s because selenium failed to select a user from the autocomplete " +
