@@ -320,6 +320,14 @@ ${_stacktrace?html}
                 return false;
             });
             
+            // for the last 60 pixels of the searchboxes, make it submit the parent form
+            $(".searchbox").click(function(e){
+	            var $t = $(e.target); 
+	            var ar = $(e.target).offset().left + $t.width() - 60; 
+	            if (e.pageX > ar) {
+	            	$t.parents("form").submit();
+	            }
+            });
             $(document).click(function(){  
               $('.welcome-drop').hide();
             });
