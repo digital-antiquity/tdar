@@ -51,9 +51,11 @@ TDAR.maps = function() {
         _deferredApi = $.Deferred();
         var script = document.createElement("script");
         script.type = "text/javascript";
-        script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&key=" +
-                TDAR.maps.googleApiKey +
-                "&sensor=false&callback=TDAR.maps._apiLoaded";
+        if(TDAR.maps.googleApiKey) {
+            script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&key=" + TDAR.maps.googleApiKey + "&sensor=false&callback=TDAR.maps._apiLoaded";
+        } else {
+            script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&sensor=false&callback=TDAR.maps._apiLoaded";
+        }
         document.body.appendChild(script);
         console.log("loading gmap api");
         return _deferredApi.promise();

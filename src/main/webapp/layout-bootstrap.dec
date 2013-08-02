@@ -31,26 +31,11 @@
         <#if !production>
         <script type="text/javascript">
             window.__errorMessages = [];
-            var stringify = function(obj) {
-
-                var censor = function(key, val) {
-                    if(key === "") return val;
-                    if(typeof val === "object") {
-                        return;
-                    }
-                    if(typeof val === "string" && val.length > 80 * 100) {
-                        return val.substr(0, 80 * 100);
-                    }
-                    return val;
-                }
-
-
-                var str = JSON.stringify(obj, censor, "    ");
-                return str;
-            };
 
             var errs = window.__errorMessages;
             window.onerror = function(msg, url, line) {
+                console.error("You've Got Errors!");
+                console.error(msg, url, line);
                 //is msg really an  "error" Event? (e.g. script failed to load/parse)
                 if(typeof msg === "object" && (typeof JSON !== "undefined") ) {
                     if(!msg.target) {
@@ -337,8 +322,8 @@ ${_stacktrace?html}
         </script>
     <@header.scripts production />
     <script type="text/javascript">
-    //this is temporary - our localhost v2 api key apparently incompatible with v3 api key.
-    TDAR.maps.googleApiKey = "AIzaSyB532T66Gm5utEfPxiexOWhDc9tr2kyzsI";
+    //FIXME: this is a temporary hack! omitting the api key to see if this resolves some issues in build
+    //TDAR.maps.googleApiKey = "AIzaSyB532T66Gm5utEfPxiexOWhDc9tr2kyzsI";
     TDAR.maps.defaults.center.lat = ${mapDefaultLat};
     TDAR.maps.defaults.center.lng = ${mapDefaultLng};
     TDAR.maps.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};

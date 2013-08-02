@@ -911,12 +911,17 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#macro>
 
 
+<#function staticGoogleMapUrl boundingBox apikey>
+    <#local bb=boundingBox>
+    <#local bbvals="${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}">
+    <#return "//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bbvals}&sensor=false&key=${googleMapsApiKey}">
+</#function>
+
 <#macro tdarCitation resource=resource showLabel=true count=0 forceAddSchemeHostAndPort=false>
   <div class="item <#if count==0>active</#if>">
       <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
-	<#assign bb=resource.firstActiveLatitudeLongitudeBox />
-		<img alt="map" class="pull-right" src="//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}&sensor=false&key=${googleMapsApiKey}" />
+    <img alt="map" class="pull-right" src="${staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}" />
 <#else>
       <a href="${url}" target="_top"><@firstThumbnail resource true /></a> 
 </#if>
