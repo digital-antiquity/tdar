@@ -1,15 +1,10 @@
 package org.tdar.core.bean.resource;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -33,7 +28,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback(true)
+    @Rollback
     public void replicateFaultyArchiveIssue() throws Exception {
         InformationResource ir = generateArchiveFileAndUser(TestConstants.FAULTY_ARCHIVE);
         // Martin: in my scenario, the file results in a processing error.
@@ -63,8 +58,11 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         irFile = genericService.find(InformationResourceFile.class, irFile.getId());
         assertEquals(FileStatus.PROCESSED, irFile.getStatus());
         
-        // however, in the database the file status has not been persisted...
-        // I'm not sure how to demonstrate this in the test environment, where everything is rolled back
+        // However, in the database the file status change has not been persisted... 
+        // And the transaction around reprocessInformationResourceFiles has been committed
+        // And there is no other transaction in progress.
+        // I'm not yet sure how to demonstrate this in the test environment, 
+        // I'll have to play with @AfterTransaction, and make the test properly transactional...
     }
 
     @Test
