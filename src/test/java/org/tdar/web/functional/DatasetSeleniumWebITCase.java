@@ -96,7 +96,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
             }
         }
 
-        FileAccessRestriction restriction = FileAccessRestriction.CONFIDENTIAL;
+        FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
         File uploadFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "too_many_columns.tab");
 
         uploadFileAsync(restriction, uploadFile);
