@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -136,15 +137,13 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     }
 
     private void mapCodingSheetToOntology(Map<String, String> map) {
-        logger.info(getSource());
         find(By.className("mappingLink")).find(By.tagName("a")).click();
 
         WebElementSelection nodePairs = find(By.className("mappingPair"));
         for (Entry<String, String> entry : map.entrySet()) {
-            WebElementSelection match = null;
-            match = findMatchingElementBy(nodePairs, entry.getKey(), By.className("codingSheetTerm"));
+            WebElementSelection match = findMatchingElementBy(nodePairs, entry.getKey(), By.className("codingSheetTerm"));
             if (match == null) {
-                fail("could not find element name: " + entry.getKey());
+                continue;
             }
             WebElement ontologyNode = match.find(By.className("ontologyValue")).first();
             if (!selectAutocompleteValue(ontologyNode, entry.getValue(), entry.getValue())) {
@@ -158,21 +157,26 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     }
 
     private WebElementSelection findMatchingElementBy(WebElementSelection parentElement, String matchingText, By selector) {
-        logger.info("looking for {} in {} ({})", matchingText, selector.toString(),parentElement.size());
+        logger.info("looking for {} in {} ({})", matchingText, selector.toString(), parentElement.size());
         for (WebElement element_ : parentElement) {
             WebElementSelection element = new WebElementSelection(element_, driver);
             WebElementSelection name = element.find(selector);
-            logger.info(name.getText());
+            logger.info("{} {} ({})", name.getText(), name.val(), name.toList().size());
             if (name.getText().equals(matchingText)) {
                 return element;
             }
+            if (StringUtils.equals(name.val(), matchingText)) {
+                return element;
+            }
         }
-        fail("could not find matching child element by:" + matchingText);
         return null;
     }
 
     private void mapColumnToOntology(String columnName, String ontologyName) {
         WebElementSelection column = findMatchingElementBy(find(By.className("datatablecolumn")), columnName, By.className("displayName"));
+        if (column == null) {
+            return;
+        }
 
         WebElement ontologyField = column.find(By.className("ontologyfield")).first();
         if (!selectAutocompleteValue(ontologyField, ontologyName, ontologyName)) {
