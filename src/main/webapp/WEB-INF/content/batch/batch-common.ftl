@@ -2,7 +2,7 @@
 
 <#macro printTemplate>
 	<div class="glide">
-	<#if !ticketId?has_content || ticketId != -1 >
+	<#if !ticketId?has_content || ticketId == -1 >
 	    <h3>Upload record specific metadata</h3>
 	        <div data-tiplabel="Upload your document(s)"  data-tooltipcontent="The metadata entered on this form is tied to that 
 	            one file. Documents must be in the following types: xls,xlsx">

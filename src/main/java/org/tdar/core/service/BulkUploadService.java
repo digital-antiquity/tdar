@@ -433,7 +433,7 @@ public class BulkUploadService {
         Iterator<CellMetadata> fields = nameSet.iterator();
         while (fields.hasNext()) {
             CellMetadata field = fields.next();
-            logger.info(field.getName() + " " + field.getDisplayName());
+            logger.trace(field.getName() + " " + field.getDisplayName());
             if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
                 if (StringUtils.isNotBlank(field.getDisplayName())
                         && (field.getDisplayName().equals(BulkImportField.LICENSE_TEXT) || field.getDisplayName().equals(BulkImportField.LICENSE_TYPE))) {
