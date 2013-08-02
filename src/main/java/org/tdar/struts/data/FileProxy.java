@@ -19,6 +19,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * $Id$
@@ -209,7 +210,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public static File createTempFileFromString(String fileTextInput) throws IOException {
-        File tempFile = File.createTempFile("textInput", ".txt");
+        File tempFile = File.createTempFile("textInput", ".txt", TdarConfiguration.getInstance().getTempDirectory());
         FileUtils.writeStringToFile(tempFile, fileTextInput);
         return tempFile;
     }
