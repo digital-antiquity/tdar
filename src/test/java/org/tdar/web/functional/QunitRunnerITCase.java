@@ -50,6 +50,9 @@ public class QunitRunnerITCase extends AbstractBasicSeleniumWebITCase {
         File dir = new File("src/main/webapp/test/js");
         for (File file : FileUtils.listFiles(dir, null, true)) {
             String path = file.getPath();
+            if (path.contains("tdar.commontest.js")) {
+                continue;
+            }
             path = path.replace("\\", "/");
             path = path.replace("src/main/webapp/test/js/", "");
             path = path.replace(".qunit.js", "?qunit");
