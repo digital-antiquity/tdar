@@ -420,6 +420,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAsUnauthenticatedUser() {
+        genericService.synchronize();
+
         setIgnoreActionErrors(true);
         testResourceCounts(null);
     }
@@ -427,6 +429,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAsBasicUser() {
+        genericService.synchronize();
+
         // testing as a user who did not create their own stuff
         setIgnoreActionErrors(true);
         Person p = new Person("a", "test", "anoter@test.user.com");
@@ -439,6 +443,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback(true)
     public void testResultCountsAsBasicContributor() {
         // testing as a user who did create their own stuff
+        genericService.synchronize();
         setIgnoreActionErrors(true);
         testResourceCounts(getBasicUser());
     }
@@ -446,6 +451,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAdmin() {
+        genericService.synchronize();
         testResourceCounts(getAdminUser());
     }
 

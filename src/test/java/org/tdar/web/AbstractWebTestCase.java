@@ -614,7 +614,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         if (contents.contains(text)) {
             logger.trace("text " + text + " found in " + contents);
         }
-        assertFalse("text should not be present [" + text + "] in page:" + internalPage.getUrl(), contents.contains(text));
+        assertFalse("text should not be present [" + text + "] in page:" + internalPage.getUrl() + "\r\n" + getPageText(), contents.contains(text));
     }
 
     /**
