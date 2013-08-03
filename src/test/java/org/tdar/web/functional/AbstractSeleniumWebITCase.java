@@ -140,8 +140,8 @@ public abstract class AbstractSeleniumWebITCase {
         public void afterClickOn(WebElement element, WebDriver driver) {
             // if beforeClickOn() put this element here, we are on the other side of page change.
             if (clickElems.remove(element)) {
-                //FIXME: this fails, I think because the page has not finished rendering?  commenting out for now...
-                //afterPageChange();
+                // FIXME: this fails, I think because the page has not finished rendering? commenting out for now...
+                // afterPageChange();
             }
         }
 
@@ -473,9 +473,9 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void waitFor(int timeInSeconds) {
         try {
-            Thread.sleep( timeInSeconds * 1000);
+            Thread.sleep(timeInSeconds * 1000);
         } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         }
     }
 
@@ -602,7 +602,6 @@ public abstract class AbstractSeleniumWebITCase {
         showAsyncFileInput(input);
     }
 
-
     /**
      * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget. Typically in selenium you "upload" a file using
      * the sendKeys() method, but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
@@ -724,11 +723,12 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public void submitForm() {
         reportJavascriptErrors();
-        WebElementSelection find = find("#submitButton");
-        if (find.isEmpty()) {
-        find = find(".submitButton");
+        WebElementSelection button = find("#submitButton");
+        if (button.size() == 0) {
+            button = find(".submitButton");
         }
-        find.click();
+        // important for the class selector above
+        button.first().click();
         waitForPageload();
     }
 
@@ -907,38 +907,42 @@ public abstract class AbstractSeleniumWebITCase {
 
     /**
      * attempt populate a autocomplete-style control by performing the actions necessary to spawn the autocomplete
-     * menu and then choosing (clicking) on the desired choice).  This method was written with jQuery autocomplete
-     * plugin in mind,  and will look for certain elements and class-names used by that plugin.
-     *
-     * @param field an autocomplete field (e.g. a text form field)
-     * @param textEntry the characters that the method will "type" in the text field in order to prompt the autocomplete
-     *                  options to appear
-     * @param partialMenuItemTest a string containing the text to look for in the menu items.  This method will
-     *                            click on the first menu item with a partial match (case-insensitive).
+     * menu and then choosing (clicking) on the desired choice). This method was written with jQuery autocomplete
+     * plugin in mind, and will look for certain elements and class-names used by that plugin.
+     * 
+     * @param field
+     *            an autocomplete field (e.g. a text form field)
+     * @param textEntry
+     *            the characters that the method will "type" in the text field in order to prompt the autocomplete
+     *            options to appear
+     * @param partialMenuItemTest
+     *            a string containing the text to look for in the menu items. This method will
+     *            click on the first menu item with a partial match (case-insensitive).
      * @return true if the method found the menu item and clicked on it, false if the menu-item was not found
-     *
-     * @throws org.openqa.selenium.TimeoutException   If the method timed out while waiting for the autocomplete
-     *                            menu to appear.
-     *
+     * 
+     * @throws org.openqa.selenium.TimeoutException
+     *             If the method timed out while waiting for the autocomplete
+     *             menu to appear.
+     * 
      */
-    public boolean selectAutocompleteValue (WebElement field, String textEntry, String partialMenuItemTest) {
+    public boolean selectAutocompleteValue(WebElement field, String textEntry, String partialMenuItemTest) {
         field.sendKeys(textEntry);
-        waitFor(4); //kludge
+        waitFor(4); // kludge
         field.sendKeys(Keys.ARROW_DOWN);
         WebElementSelection menuItems = null;
         try {
             menuItems = waitFor("ul.ui-autocomplete li.ui-menu-item", 20);
-        } catch(TimeoutException tex) {
+        } catch (TimeoutException tex) {
             fail("could not set value on  " + field + " because autocomplete never appeared or was dismissed too soon");
         }
 
         logger.info("menuItems: {} ({})", menuItems, menuItems.size());
         String partialText = partialMenuItemTest.toLowerCase();
         WebElement firstMatch = null;
-        for(WebElement menuItem : menuItems) {
+        for (WebElement menuItem : menuItems) {
             String text = menuItem.getText().toLowerCase();
             logger.info(text);
-            if(text.contains(partialText)) {
+            if (text.contains(partialText)) {
                 firstMatch = menuItem;
                 break;
             }
@@ -946,7 +950,7 @@ public abstract class AbstractSeleniumWebITCase {
 
         boolean wasFound = firstMatch != null;
         logger.info("match: {} ", firstMatch);
-        if(wasFound) {
+        if (wasFound) {
             (firstMatch.findElement(By.tagName("a"))).click();
             waitFor(2);
         }

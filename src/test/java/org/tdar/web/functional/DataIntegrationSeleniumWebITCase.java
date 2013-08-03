@@ -44,6 +44,8 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
 
     @Test
     public void testDataIntegration() {
+        boolean skip = false;
+        if (!skip) {
         Long faunaId = uploadSparseResource(FAUNA_ELEMENT, "Fauna Element Description", ResourceType.ONTOLOGY, "1920", -1, new File(
                 TestConstants.TEST_DATA_INTEGRATION_DIR + FAUNA_ELEMENT_NAME));
 
@@ -92,7 +94,8 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         gotoPage(datasetViewUrl);
         find(By.linkText(GENERATED + "BELEMENT")).click();
         mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
-
+        }
+        
         find(By.linkText("Integrate")).click();
         WebElementSelection datsets = find(By.className("datatableListItem"));
         for (WebElement dataset : datsets) {
@@ -104,7 +107,8 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
                 dataset.click();
             }
         }
-        find(".submitButton").click();
+
+        submitForm();
         find(By.id("addColumn")).click(); // 3 columns
         find(By.id("addColumn")).click();
         WebElementSelection columns = find(By.id("drplist")).find(By.tagName("td"));
@@ -132,10 +136,15 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
 
         WebElementSelection nodes = find(By.className("nodeLabel"));
         for (String nodeName : selectedNodeNames) {
-            findMatchingElementBy(nodes, nodeName, By.className("nodeName")).click();
+            logger.info("node: {}  in : {}", nodeName, nodes);
+            WebElementSelection node = findMatchingElementBy(nodes, nodeName, By.className("nodeName"));
+            if (node != null) {
+                logger.info("found: {}", nodeName);
+                node.click();
+            }
         }
 
-        submitForm();
+        find(".submitButton").click();
         assertTrue(getText().contains("Summary of Integration Results"));
         // find(By.id("downloadLink")).click();
     }

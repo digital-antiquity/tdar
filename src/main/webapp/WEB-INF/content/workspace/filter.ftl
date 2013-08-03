@@ -88,8 +88,8 @@ checks, absent values are indicated with red x's.
     name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes[${ontologyNode_index}].id' value='${ontologyNode.id?c}'
     <#if checkForUser>canautocheck="true"</#if>     <#if disabled>disabled="disabled"</#if> />
     <#assign totalCheckboxCount=totalCheckboxCount+1>
-        <#if !disabled><b class="nodeName"></#if>
-            ${ontologyNode.displayName} <!--(${ontologyNode.index})-->
+        <#if !disabled><b></#if>
+            <span class="nodeName">${ontologyNode.displayName}</span> <!--(${ontologyNode.index})-->
         <#if !disabled></b></#if>
     </label>
     <#if ontologyNode.parent ><span class="right">
