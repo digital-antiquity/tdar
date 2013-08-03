@@ -96,12 +96,15 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         find(By.linkText("Integrate")).click();
         WebElementSelection datsets = find(By.className("datatableListItem"));
         for (WebElement dataset : datsets) {
-            if (StringUtils.contains(dataset.getText(), "qrybonecatalogueeditedkk")
-                    || StringUtils.contains(dataset.getText(), MAIN_TABLE)) {
+            String text = dataset.getText();
+            logger.info(text);
+            if (StringUtils.containsIgnoreCase(text, "qrybone")
+                    || StringUtils.containsIgnoreCase(text, MAIN_TABLE.toLowerCase())) {
+                logger.info("FOUND + CLICKING: {} ", text);
                 dataset.click();
             }
         }
-        submitForm();
+        find(".submitButton").click();
         find(By.id("addColumn")).click(); // 3 columns
         find(By.id("addColumn")).click();
         WebElementSelection columns = find(By.id("drplist")).find(By.tagName("td"));
