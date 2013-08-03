@@ -724,7 +724,11 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public void submitForm() {
         reportJavascriptErrors();
-        find("#submitButton").click();
+        WebElementSelection find = find("#submitButton");
+        if (find.isEmpty()) {
+        find = find(".submitButton");
+        }
+        find.click();
         waitForPageload();
     }
 

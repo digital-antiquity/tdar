@@ -28,6 +28,7 @@ import org.tdar.struts.action.DataIntegrationITCase;
 
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
+    private static final String BONE_COMMON_NAME = "Bone Common name";
     private static final String MAIN_TABLE = "Main table";
     private static final String SPITALFIELDS_DATASET_NAME = "Spitalfields Dataset";
     private static final String ALEXANDRIA_DATASET_NAME = "Alexandria Dataset";
@@ -43,7 +44,6 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
 
     @Test
     public void testDataIntegration() {
-
         Long faunaId = uploadSparseResource(FAUNA_ELEMENT, "Fauna Element Description", ResourceType.ONTOLOGY, "1920", -1, new File(
                 TestConstants.TEST_DATA_INTEGRATION_DIR + FAUNA_ELEMENT_NAME));
 
@@ -69,14 +69,14 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         assertTrue(getText().contains("Table Main table"));
 
         mapColumnToOntology("Species Common name", FAUNA_TAXON);
-        mapColumnToOntology("Bone Common name", FAUNA_ELEMENT);
+        mapColumnToOntology(BONE_COMMON_NAME, FAUNA_ELEMENT);
         submitForm();
         find(By.className("bookmark-label")).click();
         String datasetViewUrl = getCurrentUrl();
         find(By.linkText(GENERATED + "Species Common name")).click();
         mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
         gotoPage(datasetViewUrl);
-        find(By.linkText(GENERATED + "Bone Common name")).click();
+        find(By.linkText(GENERATED + BONE_COMMON_NAME)).click();
         mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
 
         Long alexId = uploadSparseResource(ALEXANDRIA_DATASET_NAME, "Alexandria Description", ResourceType.DATASET, "1924", -1, new File(
@@ -112,13 +112,13 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         WebElement column = columns.get(0);
         WebElementSelection draggables = find(By.className("drg"));
         WebElement taxon = findMatchingElementBy(draggables, "Taxon", By.className("name")).first();
-        WebElement scn = findMatchingElementBy(draggables, "Species Common Name", By.className("name")).first();
+        WebElement scn = findMatchingElementBy(draggables, "Species Common name", By.className("name")).first();
         dragAndDrop(taxon, column);
         dragAndDrop(scn, column);
 
         column = columns.get(1);
         WebElement belement = findMatchingElementBy(draggables, "BELEMENT", By.className("name")).first();
-        WebElement bcn = findMatchingElementBy(draggables, "Bone Common Name", By.className("name")).first();
+        WebElement bcn = findMatchingElementBy(draggables, BONE_COMMON_NAME, By.className("name")).first();
         dragAndDrop(bcn, column);
         dragAndDrop(belement, column);
 
@@ -127,12 +127,14 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         WebElement scode = findMatchingElementBy(draggables, "Site code", By.className("name")).first();
         dragAndDrop(bclass, column);
         dragAndDrop(scode, column);
+
         submitForm();
 
         WebElementSelection nodes = find(By.className("nodeLabel"));
         for (String nodeName : selectedNodeNames) {
             findMatchingElementBy(nodes, nodeName, By.className("nodeName")).click();
         }
+
         submitForm();
         assertTrue(getText().contains("Summary of Integration Results"));
         // find(By.id("downloadLink")).click();
