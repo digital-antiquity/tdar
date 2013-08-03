@@ -96,8 +96,8 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         find(By.linkText("Integrate")).click();
         WebElementSelection datsets = find(By.className("datatableListItem"));
         for (WebElement dataset : datsets) {
-            if (StringUtils.equals(dataset.getText(), ALEXANDRIA_DATASET_NAME + " - qrybonecatalogueeditedkk")
-                    || StringUtils.equals(dataset.getText(), SPITALFIELDS_DATASET_NAME + " - " + MAIN_TABLE)) {
+            if (StringUtils.contains(dataset.getText(), "qrybonecatalogueeditedkk")
+                    || StringUtils.contains(dataset.getText(), MAIN_TABLE)) {
                 dataset.click();
             }
         }
