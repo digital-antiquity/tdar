@@ -193,6 +193,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Project project = genericService.findRandom(Project.class, 1).get(0);
         Account account = setupAccountForPerson(getUser());
         controller.setRecord(text);
+        logger.info(text);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_IMAGE)));
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_IMAGE_NAME));
         controller.setAccountId(account.getId());
