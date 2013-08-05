@@ -130,7 +130,7 @@ public class FileAnalyzer {
             File file = version.getTransientFile();
 
             if (file == null) {
-                throw new FileNotFoundException(version + " -- file does not exist");
+                throw new FileNotFoundException(version + " -- file does not exist (its reference was null)");
             }
             if (!file.exists()) {
                 throw new FileNotFoundException(file.getCanonicalPath() + " does not exist");
