@@ -262,7 +262,11 @@ ${_stacktrace?html}
     TDAR.maps.googleApiKey = "AIzaSyB532T66Gm5utEfPxiexOWhDc9tr2kyzsI";
     TDAR.maps.defaults.center.lat = ${mapDefaultLat};
     TDAR.maps.defaults.center.lng = ${mapDefaultLng};
+    <#if (maxUploadedFilesPerRecord < resource.informationResourceFiles?size )>
+    TDAR.maxUploadFiles = ${resource.informationResourceFiles?size?c} + 1;
+    <#else> 
     TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
+    </#if>
     </script>
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
     <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor)>
