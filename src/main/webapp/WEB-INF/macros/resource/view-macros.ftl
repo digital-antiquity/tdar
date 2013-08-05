@@ -686,8 +686,10 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 		</#if>
 	</#list> 
 	</div><!--/carousel-inner-->
+	    <#if (numIndicators > 1)>
 	<a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
 	<a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+	</#if>
 </div><!--/myCarousel-->
  <br/>
  
