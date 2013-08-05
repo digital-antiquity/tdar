@@ -138,22 +138,17 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
     }
 
-    private void processFiles(T resource, List<InformationResourceFileVersion> filesToProcess) {
+    private void processFiles(T resource, List<InformationResourceFileVersion> filesToProcess) throws Exception {
         if (!CollectionUtils.isEmpty(filesToProcess)) {
             if (resource.getResourceType().isCompositeFilesEnabled()) {
-                try {
-                    analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
-                } catch (Exception e) {
-                    logger.warn("caught exception {} while analyzing file {}\n {}", e, filesToProcess, ExceptionUtils.getStackTrace(e));
-                }
+                analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
             } else {
                 for (InformationResourceFileVersion version : filesToProcess) {
-                    try {
-                        analyzer.processFile(version);
-                    } catch (Exception e) {
-                        logger.warn("caught exception {} while analyzing file {}", e, version);
-                    }
-
+                  if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
+                      // If we are re-processing, the transient file might not exist.
+                      version.setTransientFile(filestore.retrieveFile(version));
+                  }
+                    analyzer.processFile(version);
                 }
             }
         }
@@ -315,7 +310,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 //        // this is a known case where we need to purge the session
 //        getDao().synchronize();
 //        if ((original.getTransientFile() == null) || (!original.getTransientFile().exists())) {
-//            // If we are reprocessing, the transient file might not exist. JAI install...
+//            // If we are reprocessing, the transient file might not exist.
 //            original.setTransientFile(filestore.retrieveFile(original));
 //        }
 //        analyzer.processFile(original);
