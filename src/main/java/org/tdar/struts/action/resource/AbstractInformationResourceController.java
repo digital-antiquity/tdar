@@ -786,5 +786,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return isAbleToUploadFiles;
     }
 
+    public Integer getTotalNumberOfFiles() {
+        try {
+            return getResource().getInformationResourceFiles().size();
+        }catch (Exception e) {
+            logger.warn("something happened", e);
+        }
+        return 0;
+    }
 
 }

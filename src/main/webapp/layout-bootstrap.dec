@@ -262,8 +262,8 @@ ${_stacktrace?html}
     TDAR.maps.googleApiKey = "AIzaSyB532T66Gm5utEfPxiexOWhDc9tr2kyzsI";
     TDAR.maps.defaults.center.lat = ${mapDefaultLat};
     TDAR.maps.defaults.center.lng = ${mapDefaultLng};
-    <#if ((resource.informationResourceFiles)?has_content && maxUploadedFilesPerRecord!0 < resource.informationResourceFiles?size )>
-    TDAR.maxUploadFiles = ${resource.informationResourceFiles?size?c} + 1;
+    <#if ((totalNumberOfFiles)?has_content && maxUploadedFilesPerRecord!0 < totalNumberOfFiles )>
+    TDAR.maxUploadFiles = ${totalNumberOfFiles?size?c} + 1;
     <#else> 
     TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
     </#if>
