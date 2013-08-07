@@ -21,6 +21,7 @@
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.iframe-transport.js", 
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-process.js",
+                     "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-validate.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-ui.js",
                      "/includes/jquery.populate.js",
                      "/includes/jquery.tabby-0.12.js",
