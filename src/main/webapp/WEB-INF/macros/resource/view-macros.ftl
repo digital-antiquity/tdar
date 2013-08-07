@@ -916,7 +916,11 @@ ${_date?string('MM/dd/yyyy')}<#t>
 <#function staticGoogleMapUrl boundingBox apikey>
     <#local bb=boundingBox>
     <#local bbvals="${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}">
-    <#return "//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bbvals}&sensor=false&key=${googleMapsApiKey}">
+    <#local apikeyval="">
+    <#if googleMapsApiKey?has_content>
+        <#local apikeyval="&key=${googleMapsApiKey}">
+    </#if>
+    <#return "//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bbvals}&sensor=false${apikeyval}">
 </#function>
 
 <#macro tdarCitation resource=resource showLabel=true count=0 forceAddSchemeHostAndPort=false>

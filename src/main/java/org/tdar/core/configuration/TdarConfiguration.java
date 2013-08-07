@@ -431,7 +431,7 @@ public class TdarConfiguration {
     }
 
     public String getGoogleMapsApiKey() {
-        return assistant.getStringProperty("googlemaps.apikey", "ABQIAAAA9NaKjBJpcVyUYJMRSYQl8xS0DQCUA87cCG9n-o92VKwf-4ptwhSBrQY9Wnb4P_utINrjb3QZf1KuBw");
+        return assistant.getStringProperty("googlemaps.apikey");
     }
 
     public String getRecaptchaPrivateKey() {
