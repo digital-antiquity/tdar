@@ -2,7 +2,6 @@ package org.tdar.struts.action;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -19,16 +18,19 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
+import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.data.FileProxy;
 
 @SuppressWarnings("serial")
@@ -41,8 +43,8 @@ public class APIController extends AuthenticationAware.Base {
     @Autowired
     PersonalFilestoreService filestoreService;
 
-    private List<File> uploadFile = new ArrayList<File>();
-    private List<String> uploadFileFileName = new ArrayList<String>();
+    private List<File> uploadFile = new ArrayList<>();
+    private List<String> uploadFileFileName = new ArrayList<>();
     private String record;
     private String msg;
     private String status;
@@ -60,8 +62,8 @@ public class APIController extends AuthenticationAware.Base {
 
     private Resource importedRecord;
     private String message;
-    private List<String> restrictedFiles = new ArrayList<String>();
-    private FileAccessRestriction fileAccessRestriction = FileAccessRestriction.PUBLIC;
+    private List<String> restrictedFiles = new ArrayList<>();
+    private FileAccessRestriction fileAccessRestriction;
     private Long id;
     private InputStream inputStream;
 
@@ -93,18 +95,21 @@ public class APIController extends AuthenticationAware.Base {
     @Action(value = "upload", results = {
             @Result(name = SUCCESS, type = "freemarker", location = "/WEB-INF/content/api.ftl", params = { "contentType", "text/plain" }),
             @Result(name = ERROR, type = "freemarker", location = "/WEB-INF/content/api.ftl", params = { "contentType", "text/plain" }) })
-    public String upload() throws ClassNotFoundException, IOException {
-        if (StringUtils.isEmpty(getRecord())) {
-            logger.info("you must define a record");
-            status = StatusCode.BAD_REQUEST.getResultName();
-            getServletResponse().setStatus(StatusCode.BAD_REQUEST.getHttpStatusCode());
-            return ERROR;
+    public String upload() {
+        if (fileAccessRestriction == null) {
+            // If there is an error setting this field in the OGNL layer this method is still called...
+            // This check means that if there was such an error, then we are not going to default to a weaker access restriction. 
+            logger.info("file access restrictions not set");
+            return errorResponse(StatusCode.BAD_REQUEST);
+        } else if (StringUtils.isEmpty(getRecord())) {
+            logger.info("no record defined");
+            return errorResponse(StatusCode.BAD_REQUEST);
         }
-        List<FileProxy> proxies = new ArrayList<FileProxy>();
+        List<FileProxy> proxies = new ArrayList<>();
         for (int i = 0; i < uploadFileFileName.size(); i++) {
             FileProxy proxy = new FileProxy(uploadFileFileName.get(i), uploadFile.get(i), VersionType.UPLOADED, FileAction.ADD);
             if (restrictedFiles.contains(uploadFileFileName.get(i))) {
-                proxy.setRestriction(getFileAccessRestriction());
+                proxy.setRestriction(fileAccessRestriction);
             }
             proxies.add(proxy);
         }
@@ -112,7 +117,8 @@ public class APIController extends AuthenticationAware.Base {
         try {
             Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
-            Resource loadedRecord = importService.bringObjectOntoSession(incoming, getAuthenticatedUser(), proxies, projectId);
+            final Person authenticatedUser = getAuthenticatedUser();
+            Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId);
             updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
 
             setImportedRecord(loadedRecord);
@@ -129,7 +135,7 @@ public class APIController extends AuthenticationAware.Base {
             }
 
             getServletResponse().setStatus(statuscode);
-            getResourceService().logResourceModification(loadedRecord, getAuthenticatedUser(), message + " " + loadedRecord.getTitle());
+            getResourceService().logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
             return SUCCESS;
         } catch (Exception e) {
             getLogger().debug("an exception occured when processing the xml import", e);
@@ -140,14 +146,15 @@ public class APIController extends AuthenticationAware.Base {
             message = error.toString();
 
             if (e instanceof APIException) {
-                StatusCode code = ((APIException) e).getCode();
-                status = code.getResultName();
-                getServletResponse().setStatus(code.getHttpStatusCode());
-                return ERROR;
+                return errorResponse(((APIException) e).getCode());
             }
         }
-        status = StatusCode.UNKNOWN_ERROR.getResultName();
-        getServletResponse().setStatus(StatusCode.UNKNOWN_ERROR.getHttpStatusCode());
+        return errorResponse(StatusCode.UNKNOWN_ERROR);
+    }
+
+    private String errorResponse(StatusCode statusCode) {
+        status = statusCode.getResultName();
+        getServletResponse().setStatus(statusCode.getHttpStatusCode());
         return ERROR;
     }
 
