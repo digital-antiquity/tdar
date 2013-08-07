@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -261,6 +262,19 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
 
     public void setFileCreatedDate(Date fileCreatedDate) {
         this.fileCreatedDate = fileCreatedDate;
+    }
+
+    public boolean isDifferentFromFile(InformationResourceFile irfile) {
+        if (ObjectUtils.notEqual(irfile.getRestriction(), restriction)) {
+            return true;
+        }
+        if (ObjectUtils.notEqual(irfile.getDescription(), description)) {
+            return true;
+        }
+        if (ObjectUtils.notEqual(irfile.getFileCreatedDate(), fileCreatedDate)) {
+            return true;
+        }
+        return false;
     }
 
 }

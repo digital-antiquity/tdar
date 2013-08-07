@@ -776,7 +776,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
           <#if val??>
           	<#local val = fileProxies[0].fileCreatedDate?string("MM/dd/yyyy") />
           </#if>
-          Date                    <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
+              Date             <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
 	          Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" />
           
           </div>
@@ -910,7 +910,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential confidential-contact-required" style="padding-left: 20px;" />
                 <#local val = ""/>
                 <#if (proxy.fileCreatedDate)?has_content>
-					<#local val = proxy.fileCreatedDate?string("yyyy-MM-dd")>
+					<#local val = proxy.fileCreatedDate?string("MM/dd/yyyy")>
 				</#if>
                 <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
                 <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" />

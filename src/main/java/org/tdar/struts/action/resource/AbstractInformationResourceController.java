@@ -234,7 +234,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (CollectionUtils.isEmpty(uploadedFiles)) {
             // check for metadata change iff this resource has an existing file.
             InformationResourceFile file = getPersistable().getFirstInformationResourceFile();
-            if (file != null && (file.getRestriction() != singleFileProxy.getRestriction())) {
+            if (file != null && singleFileProxy.isDifferentFromFile(file)) {
                 singleFileProxy.setAction(FileAction.MODIFY_METADATA);
                 singleFileProxy.setFileId(file.getId());
                 toProcess.add(singleFileProxy);
