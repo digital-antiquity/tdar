@@ -142,7 +142,7 @@
         <th>name</th><th>email</th>
     </tr>
     <tr>
-    	<td>${account.owner.properName}</td><td>${account.owner.email}</td>
+    	<td>${account.owner.properName} (owner)</td><td>${account.owner.email}</td>
 	</tr>
 <#list account.authorizedMembers as member>
 <tr>
