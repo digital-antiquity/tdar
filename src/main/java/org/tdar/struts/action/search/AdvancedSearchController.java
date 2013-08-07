@@ -121,8 +121,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     private static final long serialVersionUID = 1L;
 
-    private List<SearchFieldType> allSearchFieldTypes = SearchFieldType
-            .getSearchFieldTypesByGroup();
+    private List<SearchFieldType> allSearchFieldTypes = SearchFieldType.getSearchFieldTypesByGroup();
     // basic searches go in "query"
     private String query = "";
 
@@ -342,11 +341,11 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 ll = getGroups().get(0).getLatitudeLongitudeBoxes().get(0);
             }
         }
-        
+
         if (ll != null && ll.isInitializedAndValid()) {
             setOrientation(DisplayOrientation.MAP);
         }
-        
+
         // legacy search by keyword
         // at the time of this writing the view layer only created links for
         // culture, site type, and siteName keywords. everything else
@@ -640,7 +639,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         List<FacetGroup<? extends Facetable>> group = new ArrayList<>();
-        //List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
+        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
         group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
         group.add(new FacetGroup<IntegratableOptions>(IntegratableOptions.class, QueryFieldNames.INTEGRATABLE, integratableOptionFacets,
                 IntegratableOptions.YES));
@@ -824,7 +823,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         try {
             exploreKeyword = getGenericService().find(type, NumberFormat.getInstance().parse(id).longValue());
         } catch (java.text.ParseException e) {
-            throw new TdarRecoverableRuntimeException("The ID "+ id +" was not parseable as a long.", e);
+            throw new TdarRecoverableRuntimeException("The ID " + id + " was not parseable as a long.", e);
         }
     }
 
