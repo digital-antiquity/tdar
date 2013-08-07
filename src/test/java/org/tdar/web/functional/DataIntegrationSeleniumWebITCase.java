@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -25,6 +26,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.DataIntegrationITCase;
+
 
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
@@ -43,6 +45,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             "Ulna" };
 
     @Test
+    @Ignore
     public void testDataIntegration() {
         boolean skip = false;
         if (!skip) {
