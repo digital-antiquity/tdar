@@ -251,7 +251,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <tbody>
                     <#list fileProxies as fileProxy>
                         <#if fileProxy??>
-                            <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
+                            <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
                         </#if>
                     </#list>
                     <#if fileProxies.empty>
@@ -772,8 +772,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
           <div><b>NOTE:</b> by changing this from 'public', all of the metadata will be visible to users, they will not be able to view or download this file.  
           You may explicity grant read access to users below.</div>
           <br />     
-          
-          Date                    <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" />
+          <#local val =fileProxies[0].fileCreatedDate />
+          <#if val??>
+          	<#local val = fileProxies[0].fileCreatedDate?string("MM/dd/yyyy") />
+          </#if>
+          Date                    <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
 	          Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" />
           
           </div>
@@ -876,7 +879,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             <tbody id="fileProxyUploadBody" class="files">
             <#list fileProxies as fileProxy>
                 <#if fileProxy??>
-                <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
+                <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
                 </#if>
             </#list>
             </tbody>
@@ -887,22 +890,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 </div>
 </#macro>
 
-<#macro fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1>
+<#macro fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1 proxy=proxy_ >
 <tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable template-download fade existing-file in">
-<#if ((resource.resourceType.dataset)!false) >
-    <td>
-    <a href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
-    (${filesize} bytes)
-        <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}"/>
-        <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}"/>
-        <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}"/>
-        <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value=${rowId} />
-    </td>
- 
-<#else>
+
             <td class="preview"></td>
             <td class="name">
-                        
                 <a href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
                  
                 <span class="replacement-text"></span>
@@ -916,9 +908,12 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             <div class="controls">
                 <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right" 
                 style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential confidential-contact-required" style="padding-left: 20px;" />
-
-                    <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" />
-	                <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" />
+                <#local val = ""/>
+                <#if (proxy.fileCreatedDate)?has_content>
+					<#local val = proxy.fileCreatedDate?string("yyyy-MM-dd")>
+				</#if>
+                <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
+                <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" />
 
             </div> 
         </div>
@@ -939,7 +934,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         </td>
 	</#if>
     </tr>
-</#if>
 </#macro>
 
 <#macro title>
