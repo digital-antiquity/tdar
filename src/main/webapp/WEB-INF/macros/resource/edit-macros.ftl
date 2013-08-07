@@ -772,8 +772,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
           <div><b>NOTE:</b> by changing this from 'public', all of the metadata will be visible to users, they will not be able to view or download this file.  
           You may explicity grant read access to users below.</div>
           <br />     
-          <#local val =fileProxies[0].fileCreatedDate />
-          <#if val??>
+          <#local val = ""/>
+          <#if (fileProxies[0].fileCreatedDate)?has_content>
           	<#local val = fileProxies[0].fileCreatedDate?string("MM/dd/yyyy") />
           </#if>
               Date             <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
