@@ -21,7 +21,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -46,7 +45,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 
 /**
@@ -78,6 +80,7 @@ public class CommandLineAPITool {
     @SuppressWarnings("unused")
     private static final String CORE_TDAR_ORG = "core.tdar.org";
     private static final String OPTION_HTTP = "http";
+    private static final String OPTION_SHOW_LOG = "log";
 
     private static final Logger logger = Logger.getLogger(CommandLineAPITool.class);
     private DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -93,21 +96,24 @@ public class CommandLineAPITool {
     private String httpProtocol = HTTPS_PROTOCOL;
 
     /**
-     * return codes
-     */
-
-    // TODO: get rid of magic numbers
-
-    /**
+     * The exit codes have the following meaning:
+     * <ul>
+     * <li>-1 : there was a problem encountered in the parsing of the arguments
+     * <li>0 : no issues were encountered and the run completed successfully
+     * <li>any number > 0 : the number of files that the tool was not able to import successfully.
+     * </ul>
+     * 
      * @param args
      */
     @SuppressWarnings("static-access")
     public static void main(String[] args) {
+
         CommandLineAPITool importer = new CommandLineAPITool();
 
         Options options = new Options();
         options.addOption(OptionBuilder.withArgName(OPTION_HELP).withDescription("print this message").create(OPTION_HELP));
         options.addOption(OptionBuilder.withArgName(OPTION_HTTP).withDescription("use the http protocol (default is https)").create(OPTION_HTTP));
+        options.addOption(OptionBuilder.withArgName(OPTION_SHOW_LOG).withDescription("send the log output to the screen as well").create(OPTION_SHOW_LOG));
         options.addOption(OptionBuilder.withArgName(OPTION_USERNAME).hasArg().withDescription(SITE_ACRONYM + " username")
                 .create(OPTION_USERNAME));
         options.addOption(OptionBuilder.withArgName(OPTION_PASSWORD).hasArg().withDescription(SITE_ACRONYM + " password")
@@ -140,11 +146,32 @@ public class CommandLineAPITool {
             if (hasNoOptions(line) || line.hasOption(OPTION_HELP)) {
                 showHelpAndExit(SITE_ACRONYM, options, EXIT_OK);
             }
-            
+
             if (hasUnrecognizedOptions(line)) {
                 showHelpAndExit(SITE_ACRONYM, options, EXIT_ARGUMENT_ERROR);
             }
-            
+
+            if (line.hasOption(OPTION_CONFIG)) {
+                // by looking at this first, we allow the command line to overwrite any of the values in the property file...
+                Properties properties = new Properties();
+                try {
+                    properties.load(new FileInputStream(line.getOptionValue(OPTION_CONFIG)));
+                    importer.setHostname(properties.getProperty(OPTION_HOST, null));
+                    importer.setUsername(properties.getProperty(OPTION_USERNAME, null));
+                    importer.setPassword(properties.getProperty(OPTION_PASSWORD, null));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    System.exit(EXIT_ARGUMENT_ERROR);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.exit(EXIT_ARGUMENT_ERROR);
+                }
+            }
+
+            if (line.hasOption(OPTION_SHOW_LOG)) {
+                copyLogOutputToScreen();
+            }
+
             if (line.hasOption(OPTION_HTTP)) {
                 importer.setHttpProtocol(HTTP_PROTOCOL);
             }
@@ -192,22 +219,6 @@ public class CommandLineAPITool {
                 }
             }
 
-            if (line.hasOption(OPTION_CONFIG)) {
-                Properties properties = new Properties();
-                try {
-                    properties.load(new FileInputStream(line.getOptionValue(OPTION_CONFIG)));
-                    importer.setHostname(properties.getProperty(OPTION_HOST, importer.getHostname()));
-                    importer.setUsername(properties.getProperty(OPTION_USERNAME, importer.getHostname()));
-                    importer.setPassword(properties.getProperty(OPTION_PASSWORD, importer.getHostname()));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    System.exit(EXIT_ARGUMENT_ERROR);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.exit(EXIT_ARGUMENT_ERROR);
-                }
-            }
-
             if (StringUtils.isEmpty(importer.getHostname())) {
                 throw new ParseException("no hostname specified");
             }
@@ -244,6 +255,12 @@ public class CommandLineAPITool {
             System.exit(errorCount);
         }
 
+    }
+
+    private static void copyLogOutputToScreen() {
+        logger.setLevel(Level.INFO);
+        ConsoleAppender console = new ConsoleAppender(new PatternLayout("%d [%p|%c|%C{1}] %m%n"));
+        logger.addAppender(console);
     }
 
     private static String getFileAccessRestrictionChoices() {
@@ -289,7 +306,7 @@ public class CommandLineAPITool {
 
             if (getHostname().equalsIgnoreCase(ALPHA_TDAR_ORG)) {
                 AuthScope scope = new AuthScope(getHostname(), 80);
-                UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(getUsername(), getPassword());
+                UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(ALPHA_USER_NAME, ALPHA_PASSWORD);
                 httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
                 logger.info("creating challenge/response authentication request for alpha");
                 HttpGet tdarIPAuth = new HttpGet(httpProtocol + getHostname() + "/");
@@ -297,37 +314,36 @@ public class CommandLineAPITool {
                 HttpResponse response = httpclient.execute(tdarIPAuth);
                 HttpEntity entity = response.getEntity();
                 entity.consumeContent();
-            } else {
-                // make tdar authentication call
-                HttpPost tdarAuth = new HttpPost(httpProtocol + getHostname() + "/login/process");
-                List<NameValuePair> postNameValuePairs = new ArrayList<>();
-                postNameValuePairs.add(new BasicNameValuePair("loginUsername", getUsername()));
-                postNameValuePairs.add(new BasicNameValuePair("loginPassword", getPassword()));
-
-                tdarAuth.setEntity(new UrlEncodedFormEntity(postNameValuePairs, HTTP.UTF_8));
-                HttpResponse response = httpclient.execute(tdarAuth);
-                HttpEntity entity = response.getEntity();
-                logger.trace("Login form get: " + response.getStatusLine());
-                logger.trace("Post logon cookies:");
-                List<Cookie> cookies = httpclient.getCookieStore().getCookies();
-                boolean sawCrowdAuth = false;
-                if (cookies.isEmpty()) {
-                    logger.trace("None");
-                } else {
-                    for (int i = 0; i < cookies.size(); i++) {
-                        if (cookies.get(i).getName().equals("crowd.token_key"))
-                            sawCrowdAuth = true;
-                        logger.trace("- " + cookies.get(i).toString());
-                    }
-                }
-    
-                if (!sawCrowdAuth) {
-                    logger.warn("unable to authenticate, check username and password " + getHostname());
-                    // System.exit(0);
-                }
-                logger.trace(EntityUtils.toString(entity));
-                entity.consumeContent();
             }
+            // make tdar authentication call
+            HttpPost tdarAuth = new HttpPost(httpProtocol + getHostname() + "/login/process");
+            List<NameValuePair> postNameValuePairs = new ArrayList<>();
+            postNameValuePairs.add(new BasicNameValuePair("loginUsername", getUsername()));
+            postNameValuePairs.add(new BasicNameValuePair("loginPassword", getPassword()));
+
+            tdarAuth.setEntity(new UrlEncodedFormEntity(postNameValuePairs, HTTP.UTF_8));
+            HttpResponse response = httpclient.execute(tdarAuth);
+            HttpEntity entity = response.getEntity();
+            logger.trace("Login form get: " + response.getStatusLine());
+            logger.trace("Post logon cookies:");
+            List<Cookie> cookies = httpclient.getCookieStore().getCookies();
+            boolean sawCrowdAuth = false;
+            if (cookies.isEmpty()) {
+                logger.trace("None");
+            } else {
+                for (int i = 0; i < cookies.size(); i++) {
+                    if (cookies.get(i).getName().equals("crowd.token_key"))
+                        sawCrowdAuth = true;
+                    logger.trace("- " + cookies.get(i).toString());
+                }
+            }
+
+            if (!sawCrowdAuth) {
+                logger.warn("unable to authenticate, check username and password " + getHostname());
+                // System.exit(0);
+            }
+            logger.trace(EntityUtils.toString(entity));
+            entity.consumeContent();
 
             for (File file : files) {
                 errorCount += processDirectory(file);
@@ -389,7 +405,7 @@ public class CommandLineAPITool {
 
     public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
         String path = record.getPath();
-        HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?uploadedItem=" + URLEncoder.encode(path));
+        HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?uploadedItem=" + URLEncoder.encode(path, "UTF-8"));
         MultipartEntity reqEntity = new MultipartEntity();
         boolean callSuccessful = true;
         if (seen.contains(path)) {
@@ -522,7 +538,8 @@ public class CommandLineAPITool {
     }
 
     /**
-     * @param httpProtocol the httpProtocol to set
+     * @param httpProtocol
+     *            the httpProtocol to set
      */
     private void setHttpProtocol(String httpProtocol) {
         this.httpProtocol = httpProtocol;
