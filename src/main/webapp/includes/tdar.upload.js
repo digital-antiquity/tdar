@@ -51,7 +51,7 @@ TDAR.fileupload = function() {
             autoUpload: true,
             maxNumberOfFiles: TDAR.maxUploadFiles,
             getNumberOfFiles: function() {
-                return this.filesContainer.children().not(".deleted-file, .hidden").length;
+                return this.filesContainer.children().not(".deleted-file, .hidden, .replace-target").length;
             },
             destroy: _destroy
 
@@ -279,11 +279,9 @@ TDAR.fileupload = function() {
         $fileAction.val("REPLACE");
 
         //store the replacement row in case we need to cancel this operation later
-        $targetRow.fadeOut(function() {
-            $targetRow.detach();
-            $originalRow.data("$targetRow", $targetRow);
-            $originalRow.find(".replace-file-button, .undo-replace-button").toggle();
-        });
+        $targetRow.detach();
+        $originalRow.data("$targetRow", $targetRow);
+        $originalRow.find(".replace-file-button, .undo-replace-button").toggle();
     }
 
     //to 'cancel' a file replacement, we need to restore state of the fileproxy,  and then create a new file proxy
@@ -312,17 +310,25 @@ TDAR.fileupload = function() {
 
         //invoke the fileupload widget's "send" method
         //FIXME: this would be more efficient if we passed the specific div that holds the upload section (instead of entire form)
-        $(fileuploadSelector).on('change', '.replace-file' , function (e) {
+        $(fileuploadSelector).on("change", ".replace-file" , function (e) {
             console.log("triggering file upload");
 
             //tell filupload-ui to hide this upload from files table
             _nextRowVisibility = false;
 
+            var $replaceTarget =  $(this).closest(".existing-file");
+
+            //temporarily omit the target when calculating file count (so we can replace a file even when we are at max upload cap)
+            $replaceTarget.addClass("replace-target");
+
             $(fileuploadSelector).fileupload('send', {
                 files: e.target.files || [{name: this.value}],
                 fileInput: $(this),
-                $replaceTarget: $(this).closest(".existing-file")
+                $replaceTarget: $replaceTarget
             });
+
+            $replaceTarget.removeClass("replace-target");
+
         });
 
         //when browser uploads replacement file uploaded succesfully, update file proxy fields to indicate incoming file is replacement

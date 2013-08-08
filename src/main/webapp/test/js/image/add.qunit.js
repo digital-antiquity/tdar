@@ -57,11 +57,16 @@
         console.dir(helper);
     }
 
-    function _mockUpload(helper, filename) {
+    function _mockUpload(helper, filename, options) {
+
         var mockFile = _mockFile(filename);
         var ctx = helper.context;
         var fnDone = $(ctx).fileupload('option', 'done');
-        fnDone.call(ctx, null, {result: {files: [mockFile]}});
+        var data = {result: $.extend({files: [mockFile]}, options)};
+        fnDone.call(ctx, null, data);
+        var $filesContainer = $($(basic.helper.context).fileupload("option","filesContainer"));
+        data.result.context = $filesContainer.find("tr").last();
+        $(ctx).trigger("fileuploadcompleted", data.result);
     };
 
     function _mockFile(name) {
@@ -75,6 +80,12 @@
 
         return $.extend(file, stats);
     };
+
+    function _mockReplace(helper, $targetRow, filename) {
+        $targetRow.addClass("replace-target");
+        _mockUpload(helper, filename, {$replaceTarget: $targetRow});
+        $targetRow.removeClass("replace-target");
+    }
 
 
     function _fakestats(str) {
@@ -104,8 +115,8 @@
 
 
 
-    module("basic", basic);
 $(function() {
+    module("basic", basic);
     test ("sanity check", function () {
         basic.fillOutRequiredFields();
         ok(basic.form.valid(), "form should have zero validation errors");
@@ -133,7 +144,41 @@ $(function() {
 
     });
 
+    test("replace file should work", function() {
+        _upload("one.jpg");
+        _upload("two.jpg");
+        var $filesContainer = $($(basic.helper.context).fileupload("option","filesContainer"));
+        var $replaceTarget = $filesContainer.find("tr").last();
+        _mockReplace(basic.helper, $replaceTarget, "two-replaced.jpg");
+        console.log("next object is last row");
+        console.dir($filesContainer.find("tr").last().html());
+        equal($filesContainer.find("tr").length, 2, "we should still only have two files after replace operation");
+    });
 
+
+    TDAR.maxUploadFiles = 2;
+
+    test("file upload should fail after reaching cap", function() {
+        _upload("one.jpg");
+        _upload("two.jpg");
+        _upload("three.jpg");
+
+        var $filesContainer = $($(basic.helper.context).fileupload("option","filesContainer"));
+        equal($filesContainer.find("tr").length, 3);
+        notEqual($replaceTarget.html().toLowerCase().indexOf("error"), -1, "the last row should contain an error message");
+    });
+
+    test("replace file works even if already at file cap", function() {
+        _upload("one.jpg");
+        _upload("two.jpg");
+
+        var $filesContainer = $($(basic.helper.context).fileupload("option","filesContainer"));
+        var $replaceTarget = $filesContainer.find("tr").last();
+        _mockReplace(basic.helper, $replaceTarget, "two-replaced.jpg");
+        equal($filesContainer.find("tr").length, 2, "we should still only have two files after replace operation");
+        equal($replaceTarget.html().toLowerCase().indexOf("error"), -1, "there should be no error text in the last row");
+
+    });
 
 
 });
