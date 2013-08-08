@@ -85,7 +85,9 @@
                     settings = this.options,
                     file = data.files[data.index],
                     numberOfFiles = settings.getNumberOfFiles();
-                if (numberOfFiles && $.type(options.maxNumberOfFiles) === 'number' &&
+                //FIXME: replace customization pending the result of this pull request
+                //https://github.com/blueimp/jQuery-File-Upload/pull/2501
+                if ($.type(numberOfFiles) === 'number' && $.type(options.maxNumberOfFiles) === 'number' &&
                         numberOfFiles + data.files.length > options.maxNumberOfFiles) {
                     file.error = settings.i18n('maxNumberOfFiles');
                 } else if (options.acceptFileTypes &&

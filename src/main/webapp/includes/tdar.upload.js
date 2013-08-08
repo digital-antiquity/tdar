@@ -164,8 +164,6 @@ TDAR.fileupload = function() {
                $submitButtons.prop("disabled", false);
         });
 
-
-
         return helper;
     };
     
@@ -362,8 +360,6 @@ TDAR.fileupload = function() {
         }
         return { major: "-1", minor: "-1" };
     }
-
-
 
     //expose public elements
     return {
