@@ -57,6 +57,20 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
  */
 public class CommandLineAPITool {
 
+    // The following are the names of the fields on the APIController that we set
+    /** The access restrictions that is to be applied to the uploaded files */
+    private static final String API_FIELD_FILE_ACCESS_RESTRICTION = "fileAccessRestriction";
+    /** The list of files that are to have the access restriction applied to them */
+    private static final String API_FIELD_RESTRICTED_FILES = "restrictedFiles";
+    /** The list of attachment files */
+    private static final String API_FIELD_UPLOAD_FILE = "uploadFile";
+    /** The meta-data describing the files, an xml file itself, adhering to the published schema */
+    private static final String API_FIELD_RECORD = "record";
+    /** The project to which the files are to be added. Will overwrite anything within the record */
+    private static final String API_FIELD_PROJECT_ID = "projectId";
+    /** The billing account ID that the upload is to be charge against */
+    private static final String API_FIELD_ACCOUNT_ID = "accountId";
+
     private static final String HTTP_PROTOCOL = "http://";
     private static final String HTTPS_PROTOCOL = "https://";
     private static final String ALPHA_PASSWORD = "alpha";
@@ -75,7 +89,7 @@ public class CommandLineAPITool {
     private static final String OPTION_ACCOUNTID = "accountid";
     private static final String OPTION_SLEEP = "sleep";
     private static final String OPTION_PROJECT_ID = "projectid";
-    private static final String OPTION_ACCESS_RESTRICTION = "fileAccessRestriction";
+    private static final String OPTION_ACCESS_RESTRICTION = API_FIELD_FILE_ACCESS_RESTRICTION;
     private static final String ALPHA_TDAR_ORG = "alpha.tdar.org";
     @SuppressWarnings("unused")
     private static final String CORE_TDAR_ORG = "core.tdar.org";
@@ -154,18 +168,10 @@ public class CommandLineAPITool {
             if (line.hasOption(OPTION_CONFIG)) {
                 // by looking at this first, we allow the command line to overwrite any of the values in the property file...
                 Properties properties = new Properties();
-                try {
-                    properties.load(new FileInputStream(line.getOptionValue(OPTION_CONFIG)));
-                    importer.setHostname(properties.getProperty(OPTION_HOST, null));
-                    importer.setUsername(properties.getProperty(OPTION_USERNAME, null));
-                    importer.setPassword(properties.getProperty(OPTION_PASSWORD, null));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    System.exit(EXIT_ARGUMENT_ERROR);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.exit(EXIT_ARGUMENT_ERROR);
-                }
+                properties.load(new FileInputStream(line.getOptionValue(OPTION_CONFIG)));
+                importer.setHostname(properties.getProperty(OPTION_HOST, null));
+                importer.setUsername(properties.getProperty(OPTION_USERNAME, null));
+                importer.setPassword(properties.getProperty(OPTION_PASSWORD, null));
             }
 
             if (line.hasOption(OPTION_SHOW_LOG)) {
@@ -229,9 +235,9 @@ public class CommandLineAPITool {
                 throw new ParseException("no password specified");
             }
 
-        } catch (ParseException exp) {
+        } catch (ParseException | IOException exp) {
             exp.printStackTrace();
-            System.err.println("ParseException: " + exp);
+            System.err.println("Exception: " + exp.getMessage());
             showHelpAndExit(SITE_ACRONYM, options, EXIT_ARGUMENT_ERROR);
         }
 
@@ -411,24 +417,24 @@ public class CommandLineAPITool {
         if (seen.contains(path)) {
             logger.debug("skipping: " + path);
         }
-        reqEntity.addPart("record", new StringBody(FileUtils.readFileToString(record)));
+        reqEntity.addPart(API_FIELD_RECORD, new StringBody(FileUtils.readFileToString(record)));
 
         if (projectId != null) {
-            logger.trace("setting projectId:" + projectId);
-            reqEntity.addPart("projectId", new StringBody(projectId.toString()));
+            logger.trace("setting " + API_FIELD_PROJECT_ID + ":" + projectId);
+            reqEntity.addPart(API_FIELD_PROJECT_ID, new StringBody(projectId.toString()));
         }
         if (accountId != null) {
-            logger.trace("setting accountId:" + accountId);
-            reqEntity.addPart("accountId", new StringBody(accountId.toString()));
+            logger.trace("setting " + API_FIELD_ACCOUNT_ID + ":" + accountId);
+            reqEntity.addPart(API_FIELD_ACCOUNT_ID, new StringBody(accountId.toString()));
         }
 
-        reqEntity.addPart("accessRestriction", new StringBody(getFileAccessRestriction().name()));
+        reqEntity.addPart(API_FIELD_FILE_ACCESS_RESTRICTION, new StringBody(getFileAccessRestriction().name()));
 
         if (!CollectionUtils.isEmpty(attachments)) {
             for (int i = 0; i < attachments.size(); i++) {
-                reqEntity.addPart("uploadFile", new FileBody(attachments.get(i)));
+                reqEntity.addPart(API_FIELD_UPLOAD_FILE, new FileBody(attachments.get(i)));
                 if (getFileAccessRestriction().isRestricted()) {
-                    reqEntity.addPart("restrictedFiles", new StringBody(attachments.get(i).getName()));
+                    reqEntity.addPart(API_FIELD_RESTRICTED_FILES, new StringBody(attachments.get(i).getName()));
                 }
             }
         }
