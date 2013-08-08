@@ -8,7 +8,6 @@ package org.tdar.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -53,7 +52,6 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 
 /**
  * @author Adam Brin
- * 
  */
 public class CommandLineAPITool {
 
@@ -71,6 +69,7 @@ public class CommandLineAPITool {
     /** The billing account ID that the upload is to be charge against */
     private static final String API_FIELD_ACCOUNT_ID = "accountId";
 
+    private static final String IMPORT_LOG_FILE = "import.log";
     private static final String HTTP_PROTOCOL = "http://";
     private static final String HTTPS_PROTOCOL = "https://";
     private static final String ALPHA_PASSWORD = "alpha";
@@ -101,13 +100,14 @@ public class CommandLineAPITool {
     private String hostname = ALPHA_TDAR_ORG; // DEFAULT SHOULD NOT BE CORE
     private String username = ALPHA_USER_NAME;
     private String password = ALPHA_PASSWORD;
-    private File logFile = new File("import.log");
+    private File logFile = new File(IMPORT_LOG_FILE);
     private Long projectId;
     private Long accountId;
     private long msSleepBetween;
     private FileAccessRestriction fileAccessRestriction = FileAccessRestriction.PUBLIC;
     private List<String> seen = new ArrayList<>();
     private String httpProtocol = HTTPS_PROTOCOL;
+    private File[] files;
 
     /**
      * The exit codes have the following meaning:
@@ -119,11 +119,76 @@ public class CommandLineAPITool {
      * 
      * @param args
      */
-    @SuppressWarnings("static-access")
     public static void main(String[] args) {
-
         CommandLineAPITool importer = new CommandLineAPITool();
+        Options options = buildCommandLineOptions();
+        try {
+            parseArguments(args, importer, options);
+            importer.verifyState();
+            int errorCount = importer.processFiles();
+            if (errorCount > 0) {
+                System.err.println("Exiting with errors...");
+                System.exit(errorCount);
+            }
+        } catch (ParseException | IOException exp) {
+            exp.printStackTrace();
+            System.err.println("Exception: " + exp.getMessage());
+            showHelpAndExit(SITE_ACRONYM, options, EXIT_ARGUMENT_ERROR);
+        }
+    }
 
+    private static void parseArguments(String[] args, CommandLineAPITool importer, Options options) throws ParseException, IOException {
+        System.err.println("args are: " + Arrays.toString(args));
+        CommandLineParser parser = new GnuParser();
+        CommandLine line = parser.parse(options, args);
+        if (hasNoOptions(line) || line.hasOption(OPTION_HELP)) {
+            showHelpAndExit(SITE_ACRONYM, options, EXIT_OK);
+        }
+        if (hasUnrecognizedOptions(line)) {
+            showHelpAndExit(SITE_ACRONYM, options, EXIT_ARGUMENT_ERROR);
+        }
+        if (line.hasOption(OPTION_SHOW_LOG)) {
+            copyLogOutputToScreen();
+        }
+        if (line.hasOption(OPTION_HTTP)) {
+            importer.setHttpProtocol(HTTP_PROTOCOL);
+        }
+        if (line.hasOption(OPTION_CONFIG)) {
+            // by looking at this option first, we allow the command line to overwrite any of the values in the property file...
+            setOptionsFromConfigFile(importer, line);
+        }
+        if (line.hasOption(OPTION_USERNAME)) {
+            importer.setUsername(line.getOptionValue(OPTION_USERNAME));
+        }
+        if (line.hasOption(OPTION_HOST)) {
+            System.err.println("Setting host to " + line.getOptionValue(OPTION_HOST));
+            importer.setHostname(line.getOptionValue(OPTION_HOST));
+        }
+        if (line.hasOption(OPTION_PASSWORD)) {
+            importer.setPassword(line.getOptionValue(OPTION_PASSWORD));
+        }
+        if (line.hasOption(OPTION_FILE)) {
+            importer.setFiles(line.getOptionValues(OPTION_FILE));
+        }
+        if (line.hasOption(OPTION_PROJECT_ID)) {
+            importer.setProjectId(new Long(line.getOptionValue(OPTION_PROJECT_ID)));
+        }
+        if (line.hasOption(OPTION_ACCOUNTID)) {
+            importer.setAccountId(new Long(line.getOptionValue(OPTION_ACCOUNTID)));
+        }
+        if (line.hasOption(OPTION_SLEEP)) {
+            importer.setMsSleepBetween(new Long(line.getOptionValue(OPTION_SLEEP)));
+        }
+        if (line.hasOption(OPTION_ACCESS_RESTRICTION)) {
+            importer.setFileAccessRestriction(FileAccessRestriction.valueOf(line.getOptionValue(OPTION_ACCESS_RESTRICTION)));
+        }
+        if (line.hasOption(OPTION_LOG_FILE)) {
+            importer.setLogFile(line.getOptionValue(OPTION_LOG_FILE));
+        }
+    }
+
+    @SuppressWarnings("static-access")
+    private static Options buildCommandLineOptions() {
         Options options = new Options();
         options.addOption(OptionBuilder.withArgName(OPTION_HELP).withDescription("print this message").create(OPTION_HELP));
         options.addOption(OptionBuilder.withArgName(OPTION_HTTP).withDescription("use the http protocol (default is https)").create(OPTION_HTTP));
@@ -138,129 +203,59 @@ public class CommandLineAPITool {
                 .create(OPTION_FILE));
         options.addOption(OptionBuilder.withArgName(OPTION_CONFIG).hasArg().withDescription("optional configuration file")
                 .create(OPTION_CONFIG));
-        options.addOption(OptionBuilder.withArgName(OPTION_PROJECT_ID).hasArg().withDescription(SITE_ACRONYM + " project id. to associate w/ resource")
+        options.addOption(OptionBuilder.withArgName(OPTION_PROJECT_ID).hasArg().withDescription("the project id. to associate w/ resource")
                 .create(OPTION_PROJECT_ID));
-        options.addOption(OptionBuilder.withArgName(OPTION_ACCOUNTID).hasArg().withDescription(SITE_ACRONYM + " the users billing account id to use")
+        options.addOption(OptionBuilder.withArgName(OPTION_ACCOUNTID).hasArg().withDescription("the users billing account id to use")
                 .create(OPTION_ACCOUNTID));
-        options.addOption(OptionBuilder.withArgName(OPTION_SLEEP).hasArg().withDescription(SITE_ACRONYM + " timeToSleep")
+        options.addOption(OptionBuilder.withArgName(OPTION_SLEEP).hasArg().withDescription("the time to wait between server calls, in milliseconds")
                 .create(OPTION_SLEEP));
-        options.addOption(OptionBuilder.withArgName(OPTION_LOG_FILE).hasArg().withDescription(SITE_ACRONYM + " logFile")
+        options.addOption(OptionBuilder.withArgName(OPTION_LOG_FILE).hasArg()
+                .withDescription("the name of the file to record successful file tranfers to (defaults to " + IMPORT_LOG_FILE + ")")
                 .create(OPTION_LOG_FILE));
         options.addOption(OptionBuilder.withArgName(OPTION_ACCESS_RESTRICTION).hasArg()
                 .withDescription("the access restriction to be applied - one of [" + getFileAccessRestrictionChoices() + "]")
                 .create(OPTION_ACCESS_RESTRICTION));
-        CommandLineParser parser = new GnuParser();
+        return options;
+    }
 
-        String[] filenames = {};
-        try {
-            // parse the command line arguments
-            System.err.println("args are: " + Arrays.toString(args));
-            CommandLine line = parser.parse(options, args);
-
-            if (hasNoOptions(line) || line.hasOption(OPTION_HELP)) {
-                showHelpAndExit(SITE_ACRONYM, options, EXIT_OK);
-            }
-
-            if (hasUnrecognizedOptions(line)) {
-                showHelpAndExit(SITE_ACRONYM, options, EXIT_ARGUMENT_ERROR);
-            }
-
-            if (line.hasOption(OPTION_CONFIG)) {
-                // by looking at this first, we allow the command line to overwrite any of the values in the property file...
-                Properties properties = new Properties();
-                properties.load(new FileInputStream(line.getOptionValue(OPTION_CONFIG)));
-                importer.setHostname(properties.getProperty(OPTION_HOST, null));
-                importer.setUsername(properties.getProperty(OPTION_USERNAME, null));
-                importer.setPassword(properties.getProperty(OPTION_PASSWORD, null));
-            }
-
-            if (line.hasOption(OPTION_SHOW_LOG)) {
-                copyLogOutputToScreen();
-            }
-
-            if (line.hasOption(OPTION_HTTP)) {
-                importer.setHttpProtocol(HTTP_PROTOCOL);
-            }
-
-            if (line.hasOption(OPTION_USERNAME)) {
-                importer.setUsername(line.getOptionValue(OPTION_USERNAME));
-            }
-
-            if (line.hasOption(OPTION_HOST)) {
-                System.err.println("Setting host to " + line.getOptionValue(OPTION_HOST));
-                importer.setHostname(line.getOptionValue(OPTION_HOST));
-            }
-
-            if (line.hasOption(OPTION_PASSWORD)) {
-                importer.setPassword(line.getOptionValue(OPTION_PASSWORD));
-            }
-
-            if (line.hasOption(OPTION_FILE)) {
-                filenames = line.getOptionValues(OPTION_FILE);
-            }
-
-            if (line.hasOption(OPTION_PROJECT_ID)) {
-                importer.setProjectId(new Long(line.getOptionValue(OPTION_PROJECT_ID)));
-            }
-
-            if (line.hasOption(OPTION_ACCOUNTID)) {
-                importer.setAccountId(new Long(line.getOptionValue(OPTION_ACCOUNTID)));
-            }
-
-            if (line.hasOption(OPTION_SLEEP)) {
-                importer.setMsSleepBetween(new Long(line.getOptionValue(OPTION_SLEEP)));
-            }
-
-            if (line.hasOption(OPTION_ACCESS_RESTRICTION)) {
-                importer.setFileAccessRestriction(FileAccessRestriction.valueOf(line.getOptionValue(OPTION_ACCESS_RESTRICTION)));
-            }
-
-            if (line.hasOption(OPTION_LOG_FILE)) {
-                importer.setLogFile(line.getOptionValue(OPTION_LOG_FILE));
-                try {
-                    importer.getSeen().addAll(FileUtils.readLines(importer.getLogFile()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.exit(EXIT_ARGUMENT_ERROR);
-                }
-            }
-
-            if (StringUtils.isEmpty(importer.getHostname())) {
-                throw new ParseException("no hostname specified");
-            }
-            if (StringUtils.isEmpty(importer.getUsername())) {
-                throw new ParseException("no username specified");
-            }
-            if (StringUtils.isEmpty(importer.getPassword())) {
-                throw new ParseException("no password specified");
-            }
-
-        } catch (ParseException | IOException exp) {
-            exp.printStackTrace();
-            System.err.println("Exception: " + exp.getMessage());
-            showHelpAndExit(SITE_ACRONYM, options, EXIT_ARGUMENT_ERROR);
-        }
-
-        File[] paths = new File[filenames.length];
-        for (int i = 0; i < filenames.length; i++) {
-            paths[i] = new File(filenames[i]);
-            if (!paths[i].exists()) {
-                System.err.println("Specified file does not exist: " + paths[i]);
-                System.exit(1);
+    private static void setOptionsFromConfigFile(CommandLineAPITool importer, CommandLine line) throws IOException {
+        Properties properties = new Properties();
+        properties.load(new FileInputStream(line.getOptionValue(OPTION_CONFIG)));
+        // we only want to set the properties that are actually in the file
+        for (Object key : properties.keySet()) {
+            final String option = (String) key;
+            switch (option) {
+                case OPTION_HOST:
+                    importer.setHostname(properties.getProperty(option));
+                    break;
+                case OPTION_USERNAME:
+                    importer.setUsername(properties.getProperty(option));
+                    break;
+                case OPTION_PASSWORD:
+                    importer.setPassword(properties.getProperty(option));
+                    break;
+                case OPTION_PROJECT_ID:
+                    importer.setProjectId(new Long(properties.getProperty(option)));
+                    break;
+                case OPTION_ACCOUNTID:
+                    importer.setAccountId(new Long(properties.getProperty(option)));
+                    break;
+                case OPTION_SLEEP:
+                    importer.setMsSleepBetween(new Long(properties.getProperty(option)));
+                    break;
+                case OPTION_LOG_FILE:
+                    importer.setLogFile(properties.getProperty(option));
+                    break;
+                case OPTION_ACCESS_RESTRICTION:
+                    importer.setFileAccessRestriction(FileAccessRestriction.valueOf((properties.getProperty(option))));
+                    break;
+                case OPTION_FILE:
+                    importer.setFiles(properties.getProperty(option).split(","));
+                    break;
+                default:
+                    throw new IOException("unknown property found in config file: " + option);
             }
         }
-
-        if (paths.length == 0) {
-            System.err.println("Nothing to do, no files or directories specified... Try -help for more options");
-            System.exit(1);
-        }
-
-        int errorCount = importer.test(paths);
-        if (errorCount > 0) {
-            System.err.println("Exiting with errors...");
-            System.exit(errorCount);
-        }
-
     }
 
     private static void copyLogOutputToScreen() {
@@ -302,10 +297,30 @@ public class CommandLineAPITool {
         System.exit(exitCode);
     }
 
+    private void verifyState() throws ParseException {
+        if (StringUtils.isEmpty(getHostname())) {
+            throw new ParseException("no hostname specified");
+        }
+        if (StringUtils.isEmpty(getUsername())) {
+            throw new ParseException("no username specified");
+        }
+        if (StringUtils.isEmpty(getPassword())) {
+            throw new ParseException("no password specified");
+        }
+        if (files.length == 0) {
+            throw new ParseException("Nothing to do, no files or directories specified...");
+        }
+        for (File path : files) {
+            if (!path.exists()) {
+                throw new ParseException("Specified file does not exist: " + path);
+            }
+        }
+    }
+
     /**
      * 
      */
-    private int test(File... files) {
+    private int processFiles() {
 
         int errorCount = 0;
         try {
@@ -523,8 +538,9 @@ public class CommandLineAPITool {
         return logFile;
     }
 
-    public void setLogFile(String logFile) {
+    public void setLogFile(String logFile) throws IOException {
         this.logFile = new File(logFile);
+        getSeen().addAll(FileUtils.readLines(this.logFile));
     }
 
     public List<String> getSeen() {
@@ -550,4 +566,12 @@ public class CommandLineAPITool {
     private void setHttpProtocol(String httpProtocol) {
         this.httpProtocol = httpProtocol;
     }
+
+    private void setFiles(String[] filenames) {
+        files = new File[filenames.length];
+        for (int i = 0; i < filenames.length; i++) {
+            files[i] = new File(filenames[i].trim());
+        }
+    }
+
 }
