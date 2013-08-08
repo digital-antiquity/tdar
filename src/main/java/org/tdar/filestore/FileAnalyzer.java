@@ -99,7 +99,7 @@ public class FileAnalyzer {
     public Workflow getWorkflow(HasExtension... irFileVersion) throws Exception {
         Workflow wf = null;
         for (HasExtension ex : irFileVersion) {
-            Workflow w = fileExtensionToWorkflowMap.get(ex.getExtension());
+            Workflow w = fileExtensionToWorkflowMap.get(ex.getExtension().toLowerCase());
             if (wf == null) {
                 wf = w;
             } else if (w != null && wf.getClass() != w.getClass()) {
@@ -159,9 +159,13 @@ public class FileAnalyzer {
         }
         for (Workflow workflow : workflows) {
             for (String validExtension : workflow.getValidExtensions()) {
-                Workflow previousWorkflow = fileExtensionToWorkflowMap.put(validExtension, workflow);
+                String normalizedExtension = validExtension.toLowerCase();
+                if(!normalizedExtension.equals(validExtension)) {
+                    logger.warn("extension had uppercase characters, normalizing from {} to {}", validExtension, normalizedExtension);
+                }
+                Workflow previousWorkflow = fileExtensionToWorkflowMap.put(normalizedExtension, workflow);
                 if (previousWorkflow != null) {
-                    logger.warn("associated {} with {}, replacing old workflow {}", new Object[] { workflow, validExtension, previousWorkflow });
+                    logger.warn("associated {} with {}, replacing old workflow {}", new Object[] { workflow, normalizedExtension, previousWorkflow });
                 }
             }
         }
