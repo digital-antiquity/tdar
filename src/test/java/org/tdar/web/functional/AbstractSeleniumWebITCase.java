@@ -127,6 +127,7 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
         public void onException(Throwable throwable, WebDriver driver) {
+            logger.error("hey there was an error", throwable);
             takeScreenshot("ERROR " + throwable.getClass().getSimpleName());
         }
 
@@ -167,7 +168,18 @@ public abstract class AbstractSeleniumWebITCase {
         if (ignoreModals) {
             dismissModal();
         }
+        removeAffix();
         takeScreenshot();
+    }
+
+
+    //temporary hack
+    private void removeAffix() {
+        try {
+            executeJavascript("$('#subnavbar').remove()");
+        } catch(Exception ex) {
+            logger.warn("js error", ex);
+        }
     }
 
     private void clearPageCache() {
