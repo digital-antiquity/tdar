@@ -172,14 +172,17 @@ function fnRenderTitle(oObj) {
     html += " " + objResource.status;
     }
     html += ')';
-    if (datatable_showDescription) {
-        html += '<br /> <p>' + TDAR.common.htmlEncode(TDAR.common.elipsify(objResource.description,80)) + '</p>';
-    }; 
     return html;
 }
 
+function fnRenderTitleAndDescription(oObj) {
+    var objResource = oObj.aData;
+    return fnRenderTitle(oObj) + '<br /> <p>' + TDAR.common.htmlEncode(TDAR.common.elipsify(objResource.description,80)) + '</p>';
+}
 
-function _setupDashboardDataTable() {
+function _setupDashboardDataTable(options) {
+    var _options = $.extend(options);
+
     // set the project selector to the last project viewed from this page
     // if not found, then select the first item
     var prevSelected = $.cookie("tdar_datatable_selected_project");
@@ -209,14 +212,16 @@ function _setupDashboardDataTable() {
         "sWrapper": "dataTables_wrapper form-inline"
     } );
 // sDom:'<"datatabletop"ilrp>t<>', //omit the search box
+
+      var _fnRenderTitle = _options.showDescription ? fnRenderTitleAndDescription : fnRenderTitle;
         
-      var aoColumns_ = [{ "mDataProp": "title",  sWidth: '65%', fnRender: fnRenderTitle, bUseRendered:false ,"bSortable":false},
+      var aoColumns_ = [{ "mDataProp": "title",  sWidth: '65%', fnRender: _fnRenderTitle, bUseRendered:false ,"bSortable":false},
           { "mDataProp": "resourceTypeLabel",  sWidth: '15%',"bSortable":false }];
           // make id the first column when datatable is selectable
-          if (datatable_isSelectable) {
+          if (_options.isSelectable) {
               aoColumns_.unshift({ "mDataProp": "id", tdarSortOption: "ID", sWidth:'5em' ,"bSortable":false});
           };
-    $dataTable = _registerLookupDataTable({
+      var $dataTable = _registerLookupDataTable({
         tableSelector: '#resource_datatable',
         sAjaxSource:'/lookup/resource',
         "bLengthChange": true,
@@ -234,10 +239,10 @@ function _setupDashboardDataTable() {
                     'term':$("#query").val(),
                     'projectId':$("#project-selector").val(),
                     'collectionId':$("#collection-selector").val(),
-                     useSubmitterContext: !datatable_isAdministrator
+                     useSubmitterContext: !_options.isAdministrator
             }
         },
-        selectableRows: datatable_isSelectable,
+        selectableRows: _options.isSelectable,
         rowSelectionCallback: function(id, obj, isAdded){
             if(isAdded) {
                 _rowSelected(obj);

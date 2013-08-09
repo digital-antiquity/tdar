@@ -1069,19 +1069,14 @@ var checked = $('#resource_datatable td input[type=checkbox]:checked');
 
 <#macro resourceDataTableJavascript showDescription=true selectable=false >
 <script type="text/javascript">
-
-var $dataTable = null; //define at page-level, set after onload
- 
-var datatable_isAdministrator = ${administrator?string};
-var datatable_isSelectable = ${selectable?string};
-var datatable_showDescription = ${showDescription?string};
- 
- 
-
 $(function() {
-    TDAR.datatable.setupDashboardDataTable();
+    TDAR.datatable.setupDashboardDataTable({
+        isAdministrator: ${(administrator!false)?string},
+        isSelectable: ${selectable?string},
+        showDescription: ${showDescription?string}
+    });
 });
-
+<#nested>
 </script>
 
 </#macro>
