@@ -6,6 +6,7 @@
  */
 package org.tdar.utils;
 
+import static java.lang.System.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -129,18 +130,18 @@ public class CommandLineAPITool {
             importer.verifyState();
             int errorCount = importer.processFiles();
             if (errorCount > 0) {
-                System.err.println("Exiting with errors...");
-                System.exit(errorCount);
+                err.println("Exiting with errors...");
+                exit(errorCount);
             }
         } catch (ParseException | IOException exp) {
             exp.printStackTrace();
-            System.err.println("Exception: " + exp.getMessage());
+            err.println("Exception: " + exp.getMessage());
             showHelpAndExit(SITE_ACRONYM, options, EXIT_ARGUMENT_ERROR);
         }
     }
 
     private static void parseArguments(String[] args, CommandLineAPITool importer, Options options) throws ParseException, IOException {
-        System.err.println("args are: " + Arrays.toString(args));
+        err.println("args are: " + Arrays.toString(args));
         CommandLineParser parser = new GnuParser();
         CommandLine line = parser.parse(options, args);
         if (hasNoOptions(line) || line.hasOption(OPTION_HELP)) {
@@ -163,7 +164,7 @@ public class CommandLineAPITool {
             importer.setUsername(line.getOptionValue(OPTION_USERNAME));
         }
         if (line.hasOption(OPTION_HOST)) {
-            System.err.println("Setting host to " + line.getOptionValue(OPTION_HOST));
+            err.println("Setting host to " + line.getOptionValue(OPTION_HOST));
             importer.setHostname(line.getOptionValue(OPTION_HOST));
         }
         if (line.hasOption(OPTION_PASSWORD)) {
@@ -284,7 +285,7 @@ public class CommandLineAPITool {
 
     private static boolean hasUnrecognizedOptions(CommandLine line) {
         if (line.getArgs().length > 0) {
-            System.err.println("Unrecognized arguments found: " + Arrays.toString(line.getArgs()));
+            err.println("Unrecognized arguments found: " + Arrays.toString(line.getArgs()));
             return true;
         }
         return false;
@@ -293,10 +294,10 @@ public class CommandLineAPITool {
     private static void showHelpAndExit(String siteAcronym, Options options, int exitCode) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp(siteAcronym + " cli api tool", options);
-        System.out.println("-------------------------------------------------------------------------------");
-        System.out.println("Visit " + TOOL_URL + " for documentation on how to use the " + siteAcronym + " commandline API Tool");
-        System.out.println("-------------------------------------------------------------------------------");
-        System.exit(exitCode);
+        out.println("-------------------------------------------------------------------------------");
+        out.println("Visit " + TOOL_URL + " for documentation on how to use the " + siteAcronym + " commandline API Tool");
+        out.println("-------------------------------------------------------------------------------");
+        exit(exitCode);
     }
 
     private void verifyState() throws ParseException {
@@ -313,10 +314,12 @@ public class CommandLineAPITool {
             throw new ParseException("Nothing to do, no files or directories specified...");
         }
         for (File path : files) {
+            out.print("."); // give a visual indicator of how many files there are...
             if (!path.exists()) {
                 throw new ParseException("Specified file does not exist: " + path);
             }
         }
+        out.println(); // end of visual indicator
         for (int i = 0; i < files.length; i++) {
             File current = files[i];
             for (int j = i +1; j < files.length; j++) {
@@ -372,14 +375,16 @@ public class CommandLineAPITool {
 
             if (!sawCrowdAuth) {
                 logger.warn("unable to authenticate, check username and password " + getHostname());
-                // System.exit(0);
+                // exit(0);
             }
             logger.trace(EntityUtils.toString(entity));
             entity.consumeContent();
 
             for (File file : files) {
+                out.print("*"); // give the user some sort of visual indicator as to progress
                 errorCount += processDirectory(file);
             }
+            out.println(); // end of progress indicator
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -470,7 +475,7 @@ public class CommandLineAPITool {
         HttpResponse response = httpclient.execute(apicall);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
-            System.err.println("Server returned error: [" + record.getAbsolutePath() + "]:" + response.getStatusLine().getReasonPhrase());
+            err.println("Server returned error: [" + record.getAbsolutePath() + "]:" + response.getStatusLine().getReasonPhrase());
             callSuccessful = false;
         }
         logger.info(record.toString() + " - " + response.getStatusLine());
@@ -483,7 +488,7 @@ public class CommandLineAPITool {
             }
         }
 
-        FileUtils.writeStringToFile(getLogFile(), path + " successful: " + callSuccessful + System.lineSeparator(), true);
+        FileUtils.writeStringToFile(getLogFile(), path + " successful: " + callSuccessful + lineSeparator(), true);
         logger.info("done: " + path);
         try {
             Thread.sleep(msSleepBetween);
