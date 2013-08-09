@@ -56,6 +56,8 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 public class CommandLineAPITool {
 
     // The following are the names of the fields on the APIController that we set
+    /** Set in the query. Not really needed. */
+    private static final String API_UPLOADED_ITEM = "uploadedItem";
     /** The access restrictions that is to be applied to the uploaded files */
     private static final String API_FIELD_FILE_ACCESS_RESTRICTION = "fileAccessRestriction";
     /** The list of files that are to have the access restriction applied to them */
@@ -434,7 +436,7 @@ public class CommandLineAPITool {
 
     public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
         String path = record.getPath();
-        HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?uploadedItem=" + URLEncoder.encode(path, "UTF-8"));
+        HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?"+API_UPLOADED_ITEM+"=" + URLEncoder.encode(path, "UTF-8"));
         MultipartEntity reqEntity = new MultipartEntity();
         boolean callSuccessful = true;
         if (seen.contains(path)) {
@@ -477,7 +479,7 @@ public class CommandLineAPITool {
             String resp = EntityUtils.toString(entity);
             entity.consumeContent();
             if (resp != null && resp != "") {
-                logger.debug(resp);
+                logger.info(resp);
             }
         }
 

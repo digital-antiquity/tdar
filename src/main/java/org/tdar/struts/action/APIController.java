@@ -299,4 +299,13 @@ public class APIController extends AuthenticationAware.Base {
         return message;
     }
 
+    // the command line tool passes this property in: but we don't need it.
+    public void setUploadedItem(String path) {
+        getLogger().debug("Path of uploaded item is: " + path);
+    }
+    
+    // the command line tool passes this property in: but we don't need it.
+    public void setUploadFileContentType(String type) {
+        getLogger().debug("Contenty type of uploaded item is: " + type);
+    }
 }
