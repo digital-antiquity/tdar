@@ -63,15 +63,20 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div data-tiplabel="${siteAcronym} Collections" data-tooltipcontent="#divResourceCollectionListTips">
         <div id="resourceCollectionTable" class="control-group repeatLastRow" addAnother="add another collection">
             <label class="control-label">Collection Name(s)</label>
-            <#list _resourceCollections as resourceCollection>
-            <@resourceCollectionRow resourceCollection resourceCollection_index/>
-            </#list>
+            <div class="controls">
+                <#list _resourceCollections as resourceCollection>
+                <@resourceCollectionRow resourceCollection resourceCollection_index/>
+                </#list>
+                <#if resource.resourceType.project>
+                <span class="help-inline"><em>Note</em>: adding this project to a collection will not include the resources within this project.</span>
+                </#if>
+            </div>
         </div>
     </div>
 </#macro>
 
 <#macro resourceCollectionRow resourceCollection collection_index = 0 type="internal">
-    <div id="resourceCollectionRow_${collection_index}_" class="controls controls-row repeat-row">
+    <div id="resourceCollectionRow_${collection_index}_" class="controls-row repeat-row">
             <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
             <@s.textfield theme="simple" id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
             autocompleteIdElement="#resourceCollectionRow_${collection_index}_id" maxlength=255

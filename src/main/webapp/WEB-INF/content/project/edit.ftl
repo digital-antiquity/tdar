@@ -24,6 +24,6 @@
 		<@s.select labelposition='top' label='Display Project contents as' name='project.orientation' 
 		     list='%{ResultsOrientations}'  listValue='label'  title="Display as" />
 	</#macro>
-	
 
 </#escape>
+

@@ -12,7 +12,6 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 
 
-<@edit.resourceDataTableJavascript false true />
 </head>
 <body>
 
@@ -116,10 +115,18 @@ The form will check for matches in the ${siteAcronym} database and populate the 
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
     <h2>Add/Remove Resources</h2>
+
     <@edit.resourceDataTable false true />
 
 
-    
+
+    <div id="divNoticeContainer"  style="display:none">
+        <div id="divAddProjectToCollectionNotice" class="alert">
+            <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="divAddProjectToCollectionNotice">×</button>
+            <em>Reminder:</em> Adding projects to a collection does not include the resources within a project.
+        </div>
+    </div>
+
     <div id="divSelectedResources">
     <#list resources as resource>
         <input type="hidden" name="resources.id" value="${resource.id?c}" id="hdnResourceId${resource.id?c}" />
@@ -136,6 +143,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     <@edit.submit fileReminder=false />
 </@s.form>
 
+<@edit.resourceDataTableJavascript false true />
 <#noescape>
 <script type='text/javascript'>
 	$(function(){
@@ -144,6 +152,15 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 	    TDAR.common.initEditPage(form);
 	    TDAR.datatable.registerResourceCollectionDataTable("#tblCollectionResources");
         TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate:false}, {permission:"ADMINISTER_GROUP"});
+
+        //remind users that adding a project does not also add the project's contents
+        $("#resource_datatable").on("change", ".datatable-checkbox.project", function() {
+            if($("#divNoticeContainer").is(":visible")) return;
+            if($(this).is(":checked")) {
+                $("#divNoticeContainer").show();
+            }
+        });
+
 
 
 	});
