@@ -32,6 +32,8 @@ import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.jaxb.JaxbParsingException;
+import org.tdar.utils.jaxb.JaxbValidationEvent;
 
 @SuppressWarnings("serial")
 @Namespace("/api")
@@ -98,7 +100,7 @@ public class APIController extends AuthenticationAware.Base {
     public String upload() {
         if (fileAccessRestriction == null) {
             // If there is an error setting this field in the OGNL layer this method is still called...
-            // This check means that if there was such an error, then we are not going to default to a weaker access restriction. 
+            // This check means that if there was such an error, then we are not going to default to a weaker access restriction.
             logger.info("file access restrictions not set");
             return errorResponse(StatusCode.BAD_REQUEST);
         } else if (StringUtils.isEmpty(getRecord())) {
@@ -138,13 +140,22 @@ public class APIController extends AuthenticationAware.Base {
             getResourceService().logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
             return SUCCESS;
         } catch (Exception e) {
+            message = "";
+            if (e instanceof JaxbParsingException) {
+                getLogger().debug("Could not parse the xml import", e);
+                final List<JaxbValidationEvent> events = ((JaxbParsingException) e).getEvents();
+                for (JaxbValidationEvent event : events) {
+                    message = message + event.toString() + "\r\n";
+                }
+                return errorResponse(StatusCode.BAD_REQUEST);
+            }
             getLogger().debug("an exception occured when processing the xml import", e);
-            StringBuilder error = new StringBuilder();
-            error.append(e.getMessage());
-            error.append("\r\n");
-            error.append(ExceptionUtils.getStackTrace(e));
-            message = error.toString();
-
+            Throwable exp = e;
+            do {
+                message = message + ((exp.getMessage() == null) ? " ? " : exp.getMessage());
+                exp = exp.getCause();
+                message = message + ((exp == null) ? "" : "\r\n");
+            } while (exp != null);
             if (e instanceof APIException) {
                 return errorResponse(((APIException) e).getCode());
             }
@@ -282,6 +293,10 @@ public class APIController extends AuthenticationAware.Base {
 
     public void setFileAccessRestriction(FileAccessRestriction fileAccessRestriction) {
         this.fileAccessRestriction = fileAccessRestriction;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
 }

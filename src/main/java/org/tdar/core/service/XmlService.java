@@ -70,6 +70,7 @@ public class XmlService implements Serializable {
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Class<?>[] jaxbClasses;
+    
 
     @Autowired
     JaxbPersistableConverter persistableConverter;
@@ -82,7 +83,7 @@ public class XmlService implements Serializable {
     }
 
     // FIXME: I should cache this file and use it!!!
-    public File generateSchema() throws IOException, JAXBException, NoSuchBeanDefinitionException, ClassNotFoundException {
+    public File generateSchema() throws IOException, JAXBException, NoSuchBeanDefinitionException {
         final File tempFile = File.createTempFile("tdar-schema", ".xsd", TdarConfiguration.getInstance().getTempDirectory());
         JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
 
@@ -155,7 +156,7 @@ public class XmlService implements Serializable {
         unmarshaller.setSchema(schema);
         unmarshaller.setAdapter(persistableConverter);
 
-        final List<JaxbValidationEvent> errors = new ArrayList<JaxbValidationEvent>();
+        final List<JaxbValidationEvent> errors = new ArrayList<>();
         unmarshaller.setEventHandler(new ValidationEventHandler() {
 
             @Override
