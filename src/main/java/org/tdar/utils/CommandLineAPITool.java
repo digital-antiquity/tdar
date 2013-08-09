@@ -6,10 +6,15 @@
  */
 package org.tdar.utils;
 
-import static java.lang.System.*;
+import static java.lang.System.err;
+import static java.lang.System.exit;
+import static java.lang.System.lineSeparator;
+import static java.lang.System.out;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -141,7 +146,7 @@ public class CommandLineAPITool {
     }
 
     private static void parseArguments(String[] args, CommandLineAPITool importer, Options options) throws ParseException, IOException {
-        err.println("args are: " + Arrays.toString(args));
+        logger.info("args are: " + Arrays.toString(args));
         CommandLineParser parser = new GnuParser();
         CommandLine line = parser.parse(options, args);
         if (hasNoOptions(line) || line.hasOption(OPTION_HELP)) {
@@ -195,7 +200,8 @@ public class CommandLineAPITool {
         Options options = new Options();
         options.addOption(OptionBuilder.withArgName(OPTION_HELP).withDescription("print this message").create(OPTION_HELP));
         options.addOption(OptionBuilder.withArgName(OPTION_HTTP).withDescription("use the http protocol (default is https)").create(OPTION_HTTP));
-        options.addOption(OptionBuilder.withArgName(OPTION_SHOW_LOG).withDescription("send the log output to the screen as well").create(OPTION_SHOW_LOG));
+        options.addOption(OptionBuilder.withArgName(OPTION_SHOW_LOG).withDescription("send the log output to the screen at the info level")
+                .create(OPTION_SHOW_LOG));
         options.addOption(OptionBuilder.withArgName(OPTION_USERNAME).hasArg().withDescription(SITE_ACRONYM + " username")
                 .create(OPTION_USERNAME));
         options.addOption(OptionBuilder.withArgName(OPTION_PASSWORD).hasArg().withDescription(SITE_ACRONYM + " password")
@@ -262,8 +268,11 @@ public class CommandLineAPITool {
     }
 
     private static void copyLogOutputToScreen() {
+        Logger.getRootLogger().removeAllAppenders();
+        ConsoleAppender console = new ConsoleAppender(new PatternLayout("%-5p [%t]: %m%n"));
+        console.setName("console");
+        console.setWriter(new OutputStreamWriter(System.out));
         logger.setLevel(Level.INFO);
-        ConsoleAppender console = new ConsoleAppender(new PatternLayout("%d [%p|%c|%C{1}] %m%n"));
         logger.addAppender(console);
     }
 
@@ -322,7 +331,7 @@ public class CommandLineAPITool {
         out.println(); // end of visual indicator
         for (int i = 0; i < files.length; i++) {
             File current = files[i];
-            for (int j = i +1; j < files.length; j++) {
+            for (int j = i + 1; j < files.length; j++) {
                 File other = files[j];
                 if (current.getAbsolutePath().equals(other.getAbsolutePath())) {
                     throw new ParseException("Duplicate path detected: " + current);
@@ -332,7 +341,7 @@ public class CommandLineAPITool {
     }
 
     /**
-     * 
+     * process all the files that were read in from the command line, and any nested sub-directories.
      */
     private int processFiles() {
 
@@ -441,7 +450,7 @@ public class CommandLineAPITool {
 
     public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
         String path = record.getPath();
-        HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?"+API_UPLOADED_ITEM+"=" + URLEncoder.encode(path, "UTF-8"));
+        HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "=" + URLEncoder.encode(path, "UTF-8"));
         MultipartEntity reqEntity = new MultipartEntity();
         boolean callSuccessful = true;
         if (seen.contains(path)) {
