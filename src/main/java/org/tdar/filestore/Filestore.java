@@ -147,7 +147,7 @@ public interface Filestore {
          * @return
          */
         public static String sanitizeFilename(String filename) {
-            String ext = FilenameUtils.getExtension(filename);
+            String ext = FilenameUtils.getExtension(filename).toLowerCase();
             String basename = filename.toLowerCase();
 
             // // make sure that the total length does not exceed 255 characters
