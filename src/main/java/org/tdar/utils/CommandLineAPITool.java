@@ -199,7 +199,7 @@ public class CommandLineAPITool {
                 .create(OPTION_PASSWORD));
         options.addOption(OptionBuilder.withArgName(OPTION_HOST).hasArg().withDescription("override default hostname of " + ALPHA_TDAR_ORG)
                 .create(OPTION_HOST));
-        options.addOption(OptionBuilder.withArgName(OPTION_FILE).hasArg().withDescription("the file(s) or directories to process")
+        options.addOption(OptionBuilder.withArgName(OPTION_FILE).hasArg().withDescription("the unique file(s) or directories to process")
                 .create(OPTION_FILE));
         options.addOption(OptionBuilder.withArgName(OPTION_CONFIG).hasArg().withDescription("optional configuration file")
                 .create(OPTION_CONFIG));
@@ -299,13 +299,13 @@ public class CommandLineAPITool {
 
     private void verifyState() throws ParseException {
         if (StringUtils.isEmpty(getHostname())) {
-            throw new ParseException("no hostname specified");
+            throw new ParseException("No hostname specified");
         }
         if (StringUtils.isEmpty(getUsername())) {
-            throw new ParseException("no username specified");
+            throw new ParseException("No username specified");
         }
         if (StringUtils.isEmpty(getPassword())) {
-            throw new ParseException("no password specified");
+            throw new ParseException("No password specified");
         }
         if (files.length == 0) {
             throw new ParseException("Nothing to do, no files or directories specified...");
@@ -313,6 +313,15 @@ public class CommandLineAPITool {
         for (File path : files) {
             if (!path.exists()) {
                 throw new ParseException("Specified file does not exist: " + path);
+            }
+        }
+        for (int i = 0; i < files.length; i++) {
+            File current = files[i];
+            for (int j = i +1; j < files.length; j++) {
+                File other = files[j];
+                if (current.getAbsolutePath().equals(other.getAbsolutePath())) {
+                    throw new ParseException("Duplicate path detected: " + current);
+                }
             }
         }
     }
@@ -410,8 +419,7 @@ public class CommandLineAPITool {
                     errorCount++;
                 }
             }
-        }
-        if (records.size() == 1) {
+        } else if (records.size() == 1) {
             logger.debug("processing : " + records);
             if (!makeAPICall(records.get(0), attachments)) {
                 errorCount++;
@@ -473,7 +481,7 @@ public class CommandLineAPITool {
             }
         }
 
-        FileUtils.writeStringToFile(getLogFile(), path + "\r\n", true);
+        FileUtils.writeStringToFile(getLogFile(), path + " successful: " + callSuccessful + System.lineSeparator(), true);
         logger.info("done: " + path);
         try {
             Thread.sleep(msSleepBetween);
