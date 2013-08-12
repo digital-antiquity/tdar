@@ -90,7 +90,6 @@ public interface Workflow {
                 }
                 for (Class<? extends Task> taskClass : phaseTasks) {
                     Task task = taskClass.newInstance();
-                    logger.info(" task: " + task.getClass().getName());
                     logger.info("{} - {}", phase.name(), task.getName());
                     StringBuilder message = new StringBuilder();
                     try {
