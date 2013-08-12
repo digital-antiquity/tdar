@@ -34,6 +34,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -57,6 +58,7 @@ import org.apache.log4j.PatternLayout;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 
 /**
+ * http://thegenomefactory.blogspot.com.au/2013/08/minimum-standards-for-bioinformatics.html
  * @author Adam Brin
  */
 public class CommandLineAPITool {
@@ -490,7 +492,7 @@ public class CommandLineAPITool {
         logger.info(record.toString() + " - " + response.getStatusLine());
         HttpEntity entity = response.getEntity();
         if (entity != null) {
-            String resp = EntityUtils.toString(entity);
+            String resp =  StringEscapeUtils.unescapeHtml4(EntityUtils.toString(entity));
             entity.consumeContent();
             if (resp != null && resp != "") {
                 logger.info(resp);
