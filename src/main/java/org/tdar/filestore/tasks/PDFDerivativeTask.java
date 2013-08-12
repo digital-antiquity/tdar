@@ -89,6 +89,8 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
             try {
                 PDFImageWriter imageWriter = new PDFImageWriter();
+                // The following library call will write "Writing: " + the file name to the System.out stream. Naughty!
+                // This is fixed in a later version of pdfbox, but we have a transitive dependency via Tika...
                 boolean success = imageWriter.writeImage(document, imageFormat, "", pageNum, pageNum, outputPrefix, imageType, resolution);
                 if (!success) {
                     getLogger().info("Error: no writer found for image format '" + imageFormat + "'");

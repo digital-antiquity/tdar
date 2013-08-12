@@ -15,20 +15,21 @@ import org.tdar.filestore.tasks.PDFDerivativeTask;
  */
 @Component
 public class PDFWorkflow extends BaseWorkflow {
-	
-	@Override
-	public FileType getInformationResourceFileType() {
-		return FileType.DOCUMENT;
-	}
 
-	public PDFWorkflow() {
-		registerFileExtension("pdf",ResourceType.DOCUMENT);
-		addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
+    @Override
+    public FileType getInformationResourceFileType() {
+        return FileType.DOCUMENT;
+    }
+
+    public PDFWorkflow() {
+        registerFileExtension("pdf", ResourceType.DOCUMENT);
+        addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
         addTask(PDFDerivativeTask.class, WorkflowPhase.CREATE_DERIVATIVE);
-	}
+    }
 
-	public boolean isEnabled() {
-		return true;
-	}
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
 }

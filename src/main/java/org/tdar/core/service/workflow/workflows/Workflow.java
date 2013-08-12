@@ -51,10 +51,10 @@ public interface Workflow {
         private Map<String, List<String>> requiredExtensions = new HashMap<>();
         private Map<String, List<String>> suggestedExtensions = new HashMap<>();
 
-        private Map<WorkflowPhase, List<Class<? extends Task>>> workflowPhaseToTasks = new HashMap<WorkflowPhase, List<Class<? extends Task>>>();
+        private Map<WorkflowPhase, List<Class<? extends Task>>> workflowPhaseToTasks = new HashMap<>();
         // this appears to be a folded version of resourceTypeToExtensions.values() ?
-        private Set<String> extensions = new HashSet<String>();
-        private Map<ResourceType, Set<String>> resourceTypeToExtensions = new HashMap<ResourceType, Set<String>>();
+        private Set<String> extensions = new HashSet<>();
+        private Map<ResourceType, Set<String>> resourceTypeToExtensions = new HashMap<>();
         // were we expecting that these Workflows would be serializable?
         private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -62,6 +62,7 @@ public interface Workflow {
             addTask(LoggingTask.class, WorkflowPhase.CLEANUP);
         }
 
+        @Override
         public boolean isEnabled() {
             return true;
         }
@@ -89,6 +90,7 @@ public interface Workflow {
                 }
                 for (Class<? extends Task> taskClass : phaseTasks) {
                     Task task = taskClass.newInstance();
+                    logger.info(" task: " + task.getClass().getName());
                     logger.info("{} - {}", phase.name(), task.getName());
                     StringBuilder message = new StringBuilder();
                     try {
@@ -110,6 +112,7 @@ public interface Workflow {
             return successful;
         }
 
+        @Override
         public void addTask(Class<? extends Task> task, WorkflowPhase phase) {
             List<Class<? extends Task>> taskList = workflowPhaseToTasks.get(phase);
             if (taskList == null) {
@@ -119,10 +122,12 @@ public interface Workflow {
             taskList.add(task);
         }
 
+        @Override
         public Set<String> getValidExtensions() {
             return extensions;
         }
 
+        @Override
         public Set<String> getValidExtensionsForResourceType(ResourceType type) {
             Set<String> validExtensions = resourceTypeToExtensions.get(type);
             if (validExtensions == null) {
@@ -131,10 +136,12 @@ public interface Workflow {
             return validExtensions;
         }
 
+        @Override
         public boolean canProcess(String extension) {
             return !extensions.isEmpty() && extensions.contains(extension.toLowerCase());
         }
 
+        @Override
         public void registerFileExtension(String fileExtension, ResourceType... resourceTypes) {
             if (resourceTypes == null || resourceTypes.length == 0) {
                 logger.warn("Trying to register a null resource type with file extension: {}", fileExtension);
@@ -165,14 +172,17 @@ public interface Workflow {
             return logger;
         }
 
+        @Override
         public void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] version) {
             return;
         }
 
+        @Override
         public boolean validateProxyCollection(FileProxy primary) {
             return true;
         }
 
+        @Override
         public Map<String, List<String>> getSuggestedExtensions() {
             return suggestedExtensions;
         }
@@ -181,6 +191,7 @@ public interface Workflow {
             this.suggestedExtensions = suggestedExtensions;
         }
 
+        @Override
         public Map<String, List<String>> getRequiredExtensions() {
             return requiredExtensions;
         }

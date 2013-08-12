@@ -54,18 +54,24 @@ public interface Task extends Serializable {
         private final transient Logger logger = LoggerFactory.getLogger(getClass());
         private WorkflowContext workflowContext;
 
+        @Override
         public void setWorkflowContext(WorkflowContext ctx) {
             this.workflowContext = ctx;
         }
 
+        @Override
         public WorkflowContext getWorkflowContext() {
             return workflowContext;
         }
 
+        @Override
         public void prepare() {
+            // override this to add your own prepare actions...
         }
 
+        @Override
         public void cleanup() {
+            // override this to add your own cleanup actions...
         }
 
         void deleteFile(File f) {
@@ -108,7 +114,7 @@ public interface Task extends Serializable {
             }
         }
 
-        void addDerivativeFile(InformationResourceFileVersion orginalVersion, File f, VersionType type) throws IOException {
+        void addDerivativeFile(InformationResourceFileVersion orginalVersion, File f, VersionType type) {
             if (f.length() > 0) {
                 getLogger().info("Writing file: " + f);
                 InformationResourceFileVersion version = generateInformationResourceFileVersionFromOriginal(orginalVersion, f, type);
