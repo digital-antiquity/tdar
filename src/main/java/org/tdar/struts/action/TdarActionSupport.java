@@ -589,7 +589,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public String getCurrentUrl() {
-        return UrlService.getCurrentAbsoluteUrlPath(servletRequest);
+        return urlService.getOriginalUrlPath(servletRequest);
     }
 
     public boolean isViewRowSupported() {

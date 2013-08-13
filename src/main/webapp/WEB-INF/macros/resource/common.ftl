@@ -109,14 +109,16 @@ TDAR.uri = function(path) {
 </#noescape>
 </#macro>
 
-
 <#macro loginButton class="">
- <a class="${class}" href="<@s.url value='/login'><#if currentUrl?has_content && currentUrl != '' && currentUrl != '/' && currentUrl != 'null'><@s.param name="url">${currentUrl}</@s.param></#if></@s.url>">Log In</a>
+    <#local _current = (currentUrl!'/') >
+    <#if _current == '/' || currentUrl?starts_with('/login')>
+        <a class="${class}" href="/login">Log In</a>
+    <#else>
+        <a class="${class}" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>">Log In</a>
+    </#if>
 </#macro>
 
 <#macro bootstrapNavbar>
-
-
             <div class="navbar">
               <div class="navbar-inner">
                 <div class="container">
@@ -555,7 +557,7 @@ $(document).ready(function(){
 		          style:"pointer",
 		       	  showTooltip: false,
 		          useAxesFormatters: false
-		      },
+		      }
 
         };
 		<#nested/>

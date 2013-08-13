@@ -1,5 +1,7 @@
 package org.tdar.core.service;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
+
+import java.net.URL;
 
 /*
  * This service attempts to centralize and support the creation of URL strings from within the java app. It's centralized here
@@ -63,6 +67,10 @@ public class UrlService {
         return String.format("%s/schema/current schema.xsd", getBaseUrl());
     }
 
+    @Deprecated
+    //FIXME: general consensus is that spring 'service' classes should not have static methods.
+    //FIXME: I don't think this method does what the name implies.  If it's *actual* functionality is needed we should consider renaming
+    //      but if we don't want this functionality we should remove it and replace usage with getOriginalUrlPath()
     public static String getCurrentAbsoluteUrlPath(HttpServletRequest servletRequest) {
         Logger logger = LoggerFactory.getLogger(UrlService.class);
         String activePage = "";
@@ -89,16 +97,32 @@ public class UrlService {
         return activePage;
     }
 
-    private static String getAttribute(HttpServletRequest servletRequest, String attribute) {
-        Logger logger = LoggerFactory.getLogger(UrlService.class);
-        try {
-            Object attr = servletRequest.getAttribute(attribute);
-            if (attr != null && StringUtils.isNotBlank((String) attr)) {
-                return (String) attr;
-            }
-        } catch (Exception e) {
-            logger.debug("parsing attr:{}", e);
+    /**
+     * return the path + queryString for the specified request  as originally requested by the client
+     * @param request
+     * @return
+     */
+    //TODO: do we want 'servlet path' instead of 'request URI'?
+    public String getOriginalUrlPath(HttpServletRequest request) {
+        String path = request.getServletPath();
+        String queryString = request.getQueryString();
+
+        String forwardPath = getAttribute(request, "javax.servlet.forward.request_uri");
+        if(forwardPath != null) {
+            path = forwardPath;
+            queryString = getAttribute(request, "javax.servlet.forward.query_string" );
         }
-        return null;
+
+        StringBuffer sb = new StringBuffer(path);
+        if(queryString != null)  {
+            sb.append("?").append(queryString);
+        }
+
+        return sb.toString();
+    }
+
+    private static String getAttribute(HttpServletRequest servletRequest, String attribute) {
+        Object attr = servletRequest.getAttribute(attribute);
+        return (String) attr;
     }
 }
