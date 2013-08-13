@@ -80,7 +80,8 @@ label.error {display:block;}
 		<p>Who should we contact if there's a question or problem in the future with records you've submitted?  Please provide the name of an institution we can contact if we cannot contact you about a question or issue with a record you uploaded.  
 		Examples might include:<ul>
 			<li>A request for access to a confidential record</li>
-			<li>Clarification of a preservation issue related to a file</li>
+			<li>Clarification of a copyright or ownership question</li>
+			<li>Other issues</li>
 		</ul></p>
         <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Proxy Institution"       name="proxyInstitutionName"     maxlength="255" value="${person.proxyInstitution!}"/>
 
