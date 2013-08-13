@@ -22,10 +22,13 @@ import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.utils.TestConfiguration;
 
 /**
  * @author Adam Brin
@@ -53,7 +56,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     }
 
     @Test
-    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR,  RunWithTdarConfiguration.CREDIT_CARD })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUpload() throws MalformedURLException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
@@ -84,9 +87,38 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         assertFalse(getPageCode().contains("resource creator is not"));
     }
 
-    @Test
-    public void testValidBulkUpload2() {
+    @Test //RunWithTdarConfiguration.TDAR, 
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
+    public void testValidBulkUploadWithProject() throws MalformedURLException {
+
+        String accountId = "";
         Map<String, String> extra = new HashMap<String, String>();
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            gotoPage("/cart/add");
+            setInput("invoice.numberOfMb", "200");
+            setInput("invoice.numberOfFiles", "20");
+            submitForm();
+            setInput("invoice.paymentMethod", "CREDIT_CARD");
+            String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+            accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+            extra.put("accountId", accountId);
+        }
+
+        ResourceType rt = ResourceType.PROJECT;
+        final String path = "/" + rt.getUrlNamespace() + "/add";
+        gotoPage(path);
+        setInput(String.format("%s.%s", rt.getFieldName(), "title"), "test");
+        setInput(String.format("%s.%s", rt.getFieldName(), "description"), "test");
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            try {
+              setInput("accountId", accountId);
+            } catch (Exception e) {
+//                hasInput = false;
+            }
+        }
+        submitForm();
+        Long projectId = extractTdarIdFromCurrentURL();
+
         extra.put("investigationTypeIds", "1");
         extra.put("coverageDates[0].startDate", "1200");
         extra.put("coverageDates[0].endDate", "1500");
@@ -103,7 +135,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
         extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
         extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
-        extra.put(PROJECT_ID_FIELDNAME, "3805");
+        extra.put(PROJECT_ID_FIELDNAME, projectId.toString());
         // extra.put("resource.inheritingInvestigationInformation","true");
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
