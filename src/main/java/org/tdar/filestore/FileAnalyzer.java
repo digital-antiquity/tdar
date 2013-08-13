@@ -96,7 +96,7 @@ public class FileAnalyzer {
         return null;
     }
 
-    public Workflow getWorkflow(HasExtension... irFileVersion) throws Exception {
+    public Workflow getWorkflow(HasExtension... irFileVersion) {
         Workflow wf = null;
         for (HasExtension ex : irFileVersion) {
             Workflow w = fileExtensionToWorkflowMap.get(ex.getExtension().toLowerCase());
@@ -109,7 +109,7 @@ public class FileAnalyzer {
         return wf;
     }
 
-    public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws Exception {
+    public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException  {
         Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null) {
             String message = String.format(NO_WORKFLOW_FOUND, java.util.Arrays.toString(informationResourceFileVersions));

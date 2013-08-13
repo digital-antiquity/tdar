@@ -1,5 +1,6 @@
 package org.tdar.core.service.resource;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +11,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -99,7 +99,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     @Transactional
     public void importFileProxiesAndProcessThroughWorkflow(T resource, Person user, Long ticketId, ActionMessageErrorSupport listener,
-            List<FileProxy> fileProxiesToProcess) throws Exception {
+            List<FileProxy> fileProxiesToProcess) throws IOException {
         if (CollectionUtils.isEmpty(fileProxiesToProcess)) {
             logger.debug("Nothing to process, returning.");
             return;
@@ -126,19 +126,20 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             }
         }
         processFiles(resource, filesToProcess);
+
+        /*
+         * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method 
+         */
         new WorkflowResult(fileProxiesToProcess).addActionErrorsAndMessages(listener);
 
         // getDao().refreshAll(resource.getInformationResourceFiles());
-        /*
-         * FIXME: Should I purge regardless of errors??? Really???
-         */
         if (ticketId != null) {
             PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
             personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
         }
     }
 
-    private void processFiles(T resource, List<InformationResourceFileVersion> filesToProcess) throws Exception {
+    private void processFiles(T resource, List<InformationResourceFileVersion> filesToProcess) throws IOException {
         if (!CollectionUtils.isEmpty(filesToProcess)) {
             if (resource.getResourceType().isCompositeFilesEnabled()) {
                 analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
