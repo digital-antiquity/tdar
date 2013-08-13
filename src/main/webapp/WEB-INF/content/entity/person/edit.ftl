@@ -77,7 +77,11 @@ label.error {display:block;}
         <@s.textarea label="Please provide a brief description of yourself" rows=6 cols='50' name='person.description' cssClass="input-xxlarge" id='description-id' />
 
 		<p><b>Proxy Contact Information</b></p>
-		<p></p>
+		<p>Who should we contact if there's a question or problem in the future with records you've submitted?  Please provide the name of an institution we can contact if we cannot contact you about a question or issue with a record you uploaded.  
+		Examples might include:<ul>
+			<li>A request for access to a confidential record</li>
+			<li>Clarification of a preservation issue related to a file</li>
+		</ul></p>
         <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Proxy Institution"       name="proxyInstitutionName"     maxlength="255" value="${person.proxyInstitution!}"/>
 
         <@s.textarea label="Proxy Note" rows=6 cols='50' name='person.proxyNote' cssClass="input-xxlarge"  />
