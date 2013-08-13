@@ -67,43 +67,13 @@ public class UrlService {
         return String.format("%s/schema/current schema.xsd", getBaseUrl());
     }
 
-    @Deprecated
-    //FIXME: general consensus is that spring 'service' classes should not have static methods.
-    //FIXME: I don't think this method does what the name implies.  If it's *actual* functionality is needed we should consider renaming
-    //      but if we don't want this functionality we should remove it and replace usage with getOriginalUrlPath()
-    public static String getCurrentAbsoluteUrlPath(HttpServletRequest servletRequest) {
-        Logger logger = LoggerFactory.getLogger(UrlService.class);
-        String activePage = "";
-        // using getAttribute allows us to get the orginal url out of the page when a forward has taken place.
-        String queryString = getAttribute(servletRequest, "javax.servlet.forward.query_string");
-        String requestURI = getAttribute(servletRequest, "javax.servlet.forward.request_uri");
-        logger.trace("|- requestUrl {}, queryString {} ", requestURI, queryString);
-        if (StringUtils.isBlank(requestURI)) {
-            // using getAttribute allows us to get the orginal url out of the page when a include has taken place.
-            queryString = getAttribute(servletRequest, "javax.servlet.include.query_string");
-            requestURI = getAttribute(servletRequest, "javax.servlet.include.request_uri");
-            logger.trace(" |-- requestUrl {}, queryString {} ", requestURI, queryString);
-        }
-        if (StringUtils.isBlank(requestURI)) {
-            queryString = servletRequest.getQueryString();
-            requestURI = servletRequest.getRequestURI();
-            logger.trace(" |--- requestUrl {}, queryString {} ", requestURI, queryString);
-        }
-        activePage = requestURI;
-        if (StringUtils.isNotBlank(queryString)) {
-            activePage += "?" + queryString;
-        }
-        logger.trace("returning: {} ", activePage);
-        return activePage;
-    }
-
     /**
      * return the path + queryString for the specified request  as originally requested by the client
      * @param request
      * @return
      */
     //TODO: do we want 'servlet path' instead of 'request URI'?
-    public String getOriginalUrlPath(HttpServletRequest request) {
+    public static String getOriginalUrlPath(HttpServletRequest request) {
         String path = request.getServletPath();
         String queryString = request.getQueryString();
 
