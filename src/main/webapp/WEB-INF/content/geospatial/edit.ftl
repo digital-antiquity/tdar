@@ -29,7 +29,7 @@ TDAR.fileupload.addGisValidation(TDAR.fileupload.validator);
 
     <span data-tiplabel="Scale" data-tooltipcontent="FILL ME IN" class="">
             <@s.textfield label="Scale" maxlength=50
-			name='geospatial.scale' cssClass="tdartext longfield input-xxlarge" />
+			name='geospatial.scale' cssClass="tdartext longfield  input-xxlarge" />
     </span>
 
 

@@ -397,6 +397,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             }
         }
     }
+    
+    public FileProxy getBlankFileProxy() {
+        return new FileProxy();
+    }
 
     protected void saveInformationResourceProperties() {
         // handle dataset availability + date made public
