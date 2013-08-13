@@ -333,6 +333,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (!isAbleToCreateBillableItem()) {
             return BILLING;
         }
+        
+        //FIXME:make this a preference...
+        if (getPersistable() instanceof HasStatus && isEditor() && !isAdministrator()) {
+            ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
+        }
+        
         checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         logAction("CREATING");
         return loadAddMetadata();
