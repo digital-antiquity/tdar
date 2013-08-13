@@ -296,30 +296,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     }
 
-//    @Transactional(readOnly = false)
-//    public void reprocessInformationResourceFiles(InformationResourceFile irFile, ActionMessageErrorSupport listener) throws Exception {
-//        InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
-//        Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
-//        while (iterator.hasNext()) {
-//            InformationResourceFileVersion version = iterator.next();
-//            if (!version.equals(original) && !version.isUploaded() && !version.isArchival()) {
-//                iterator.remove();
-//                informationResourceFileDao.delete(version);
-//            }
-//        }
-//        // this is a known case where we need to purge the session
-//        getDao().synchronize();
-//        if ((original.getTransientFile() == null) || (!original.getTransientFile().exists())) {
-//            // If we are reprocessing, the transient file might not exist.
-//            original.setTransientFile(filestore.retrieveFile(original));
-//        }
-//        analyzer.processFile(original);
-//        final WorkflowContext workflowContext = irFile.getWorkflowContext();
-//        if (!workflowContext.isProcessedSuccessfully()) {
-//            new WorkflowResult(workflowContext).addActionErrorsAndMessages(listener);
-//        }
-//    }
-
     @Transactional(readOnly = false)
     private InformationResourceFileVersion createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
         String filename = BaseFilestore.sanitizeFilename(fileProxy.getFilename());
