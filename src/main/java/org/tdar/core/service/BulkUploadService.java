@@ -204,6 +204,7 @@ public class BulkUploadService {
             logger.warn(AN_EXCEPTION_OCCURED_WHILE_PROCESSING_THE_MANIFEST_FILE, e);
         }
 
+//        image.setProject(Project.NULL);
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             Account account = genericDao.find(Account.class, accountId);
             try {
@@ -213,7 +214,7 @@ public class BulkUploadService {
                 throw t;
             }
         }
-
+        
         logger.info("bulk: setting final statuses and logging");
         for (Resource resource : resourcesCreated.values()) {
             receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
