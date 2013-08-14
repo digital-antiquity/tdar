@@ -111,14 +111,14 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private Boolean emailPublic = Boolean.FALSE;
 
     @IndexedEmbedded(depth = 1)
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, optional = true)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH}, optional = true)
     // FIXME: this causes PersonController to throw non-unique key violations again when changing from one persistent Institution
     // to another persistent Institution. WHY
     // @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
     private Institution institution;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, optional = true)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH}, optional = true)
     /* who to contact when owner is no longer 'reachable' */
     private Institution proxyInstitution;
 

@@ -246,19 +246,19 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     // @Boost(.5f)
     @IndexedEmbedded
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH})
     @JoinColumn(nullable = false, name = "submitter_id")
     @NotNull
     private Person submitter;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE,CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "uploader_id")
     @NotNull
     private Person uploader;
 
     // @Boost(.5f)
     @IndexedEmbedded
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH})
     @JoinColumn(name = "updater_id")
     @NotNull
     private Person updatedBy;
