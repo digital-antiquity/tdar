@@ -450,10 +450,11 @@ public class ResourceService extends GenericService {
     }
 
     @SuppressWarnings("unchecked")
+    @Transactional
     public <T extends HasResource<Resource>> Set<T> cloneSet(Resource resource, Set<T> targetCollection, Set<T> sourceCollection) {
         logger.debug("cloning: " + sourceCollection);
         for (T t : sourceCollection) {
-            getDao().detachFromSession(t);
+            getDao().detachFromSessionAndWarn(t);
             try {
                 T clone = (T) BeanUtils.cloneBean(t);
                 targetCollection.add(clone);

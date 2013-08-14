@@ -119,7 +119,7 @@ public class APIController extends AuthenticationAware.Base {
         try {
             Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
-            final Person authenticatedUser = getAuthenticatedUser();
+            Person authenticatedUser = getAuthenticatedUser();
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId);
             updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
 

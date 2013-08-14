@@ -397,6 +397,14 @@ public class GenericDao {
         session.evict(entity);
     }
 
+    public void detachFromSessionAndWarn(Object entity) {
+        Session session = getCurrentSession();
+        if (session.contains(entity)) {
+            logger.error("This entity should not be on the session: {}",entity);
+        }
+        session.evict(entity);
+    }
+
     /**
      * Deletes all persistent entities and removes them from the hibernate managed collection.
      * 

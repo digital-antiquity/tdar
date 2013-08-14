@@ -79,6 +79,7 @@ public class ImportService {
         return bringObjectOntoSession(incoming, authorizedUser, null, null);
     }
 
+    @Transactional
     public <R extends Resource> R bringObjectOntoSession(R incoming_, Person authorizedUser, Collection<FileProxy> proxies, Long projectId)
             throws APIException, IOException {
         R incomingResource = incoming_;
@@ -138,7 +139,8 @@ public class ImportService {
             }
         }
 
-        incomingResource.markUpdated(authorizedUser);
+        incomingResource.markUpdated(genericService.merge(authorizedUser));
+//        genericService.detachFromSession(authorizedUser);
         incomingResource = genericService.merge(incomingResource);
 
         Set<String> extensionsForType = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));

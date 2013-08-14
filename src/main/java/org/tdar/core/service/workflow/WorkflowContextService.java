@@ -1,6 +1,5 @@
 package org.tdar.core.service.workflow;
 
-import java.io.File;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
@@ -83,7 +82,9 @@ public class WorkflowContextService {
                     if (ctx.getTransientResource() == null) {
                         break;
                     }
-                    genericDao.detachFromSession(ctx.getTransientResource());
+                    //this should be a no-op; but just in case; the resource shouldn't be on the session to begin with
+                    //FIXME: look at removing
+                    genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
                     logger.info("resource: ", ctx.getTransientResource());
                     logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
                     datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());

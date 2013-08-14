@@ -390,7 +390,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             Institution incomingInstitution = new Institution(institution);
             incomingPerson.setInstitution(incomingInstitution);
             //FIXME: I believe this detach is unnecessary - object was never on the session
-            //getGenericService().detachFromSession(incomingInstitution);
+            // AB: OpenSessionInView makes me nervous with this, don't want to take a chance
+            getGenericService().detachFromSessionAndWarn(incomingInstitution);
         }
 
         // ignore email field for unauthenticated users.
@@ -399,7 +400,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             valid = true;
         }
         //FIXME: I believe this detach is unnecessary - object was never on the session
-        //getGenericService().detachFromSession(incomingPerson);
+        // AB: OpenSessionInView makes me nervous with this, don't want to take a chance
+        getGenericService().detachFromSessionAndWarn(incomingPerson);
 
         PersonQueryPart pqp = new PersonQueryPart();
         pqp.add(incomingPerson);

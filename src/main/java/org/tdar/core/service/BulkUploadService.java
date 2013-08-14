@@ -196,10 +196,10 @@ public class BulkUploadService {
             resourcesCreated = new TreeMap<String, Resource>(String.CASE_INSENSITIVE_ORDER);
         }
 
-        if (Persistable.Base.isNotNullOrTransient(image.getProject())) {
-            //ugh
-            genericDao.detachFromSession(image.getProject());
-        }
+//        if (Persistable.Base.isNotNullOrTransient(image.getProject())) {
+//            //ugh
+//            genericDao.detachFromSession(image.getProject());
+//        }
 
         logger.info("bulk: creating individual resources");
         count = processFileProxiesIntoResources(image, submitter, manifestProxy, fileProxies, receiver, resourcesCreated, count);

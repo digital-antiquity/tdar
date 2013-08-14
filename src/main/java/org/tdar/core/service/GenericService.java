@@ -250,6 +250,12 @@ public class GenericService {
     }
 
     @Transactional
+    public void detachFromSessionAndWarn(Object obj){
+        genericDao.detachFromSessionAndWarn(obj);
+    }
+
+
+    @Transactional
     public void saveOrUpdate(Object obj) {
         enforceValidation(obj);
         genericDao.saveOrUpdate(obj);

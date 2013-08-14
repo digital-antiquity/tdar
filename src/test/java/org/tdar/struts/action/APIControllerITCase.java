@@ -13,10 +13,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
@@ -27,7 +25,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
@@ -48,7 +45,6 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.search.query.SortOption;
 
 /**
  * @author Adam Brin
@@ -281,6 +277,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Long oldIRId = old.getFirstInformationResourceFile().getId();
         Long oldId = old.getId();
         genericService.detachFromSession(old);
+        genericService.detachFromSession(getAdminUser());
         old = null;
         APIController controller = generateNewInitializedController(APIController.class);
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
