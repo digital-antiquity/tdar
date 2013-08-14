@@ -241,7 +241,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     public List<Account> getAccounts() {
         if (accounts == null) {
             accounts = new ArrayList<Account>();
-            accounts.addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+            accounts.addAll(getAccountService().listAvailableAccountsForUser(getPersistable(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         }
         return accounts;
     }
