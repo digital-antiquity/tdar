@@ -573,8 +573,8 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         Long ontology_id = ontology.getId();
         genericService.refresh(ontology);
         logger.info("nodes;{}", ontology.getOntologyNodes());
-        genericService.detachFromSession(ontology);
         assertNotEmpty(ontology.getOntologyNodes());
+        genericService.detachFromSession(ontology);
         Dataset dataset = setupAndLoadResource("src/test/resources/data_integration_tests/periods-modified-sm-01182011.xlsx", Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
