@@ -16,7 +16,7 @@
 
 
 <#if creator?? >
-<link rel="meta" type="application/rdf+xml" title="FOAF" href="rdf"/>
+<link rel="meta" type="application/rdf+xml" title="FOAF" href="/browse/creators/${creator.id?c}/rdf"/>
 </#if>
 </head>
 
