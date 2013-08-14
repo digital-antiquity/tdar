@@ -152,10 +152,13 @@ public class Resource extends JsonModel.Base implements Persistable,
     private static final long serialVersionUID = -230400285817185637L;
 
     @Transient
+
     private transient boolean obfuscated;
     @Transient
+
     private transient boolean viewable;
     @Transient
+
     private transient Long transientAccessCount;
     // TODO: anything that gets returned in a tdar search should be included in
     // json results
@@ -1564,6 +1567,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return sb;
     }
 
+    @XmlTransient
     public Long getTransientAccessCount() {
         return transientAccessCount;
     }

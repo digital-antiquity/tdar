@@ -402,6 +402,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     }
 
     @Override
+    @XmlTransient
     public boolean isViewable() {
         return viewable;
     }

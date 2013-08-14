@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,13 +35,13 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
-import org.tdar.core.configuration.ConfigurationAssistant;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.XmlService;
@@ -310,13 +311,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     public void testInvalidFileType() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
-        Dataset doc = null;
-        for (Dataset dataset : genericService.findAll(Dataset.class, defaultMaxResults)) {
-            if (dataset != null) {
-                doc = dataset;
-                continue;
-            }
-        }
+        Dataset doc = findAResource(Dataset.class);
 
         String datasetXml = xmlService.convertToXML(doc);
         controller.setRecord(datasetXml);
@@ -350,13 +345,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     public void testInvalidInvestigationType() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
-        Document doc = null;
-        for (Document document : genericService.findAll(Document.class, defaultMaxResults)) {
-            if (document != null) {
-                doc = document;
-                continue;
-            }
-        }
+        Resource doc = findAResource(Document.class);
         @SuppressWarnings("null")
         Long docid = doc.getId();
         genericService.markReadOnly(doc);
@@ -372,15 +361,31 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
                 controller.getStatus());
     }
 
+    private <C> C findAResource(Class<C> cls) {
+        for (C c : genericService.findAll(cls, defaultMaxResults)) {
+            if (c != null) {
+                return c;
+            }
+        }
+        return null;
+    }
+
     @Test
     @Rollback(true)
-    public void testBadEnum() throws IOException {
+    public void testBadEnum() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
+        Document doc = findAResource(Document.class);
+        Long docid = doc.getId();
+        genericService.markReadOnly(doc);
+        doc.setResourceLanguage(Language.ENGLISH);
+        String docXml = xmlService.convertToXML(doc);
+        doc = null;
+        docXml = StringUtils.replace(docXml, Language.ENGLISH.name(),"FNGLISH");
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
-        controller.setRecord(FileUtils.readFileToString(new File(TestConstants.TEST_XML_DIR + "/bad-enum-document.xml")));
+        controller.setRecord(docXml);
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(StatusCode.UNKNOWN_ERROR.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.BAD_REQUEST.getResultName(), controller.getStatus());
     }
 
 }
