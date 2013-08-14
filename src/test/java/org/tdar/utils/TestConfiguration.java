@@ -163,4 +163,9 @@ public class TestConfiguration {
         return assistant.getStringProperty("tdar.iedriver.path","c:\\opt\\workspace\\IEDriverServer.exe");
     }
 
+
+    public ConfigurationAssistant getAssistant() {
+        return assistant;
+    }
+
 }
