@@ -200,7 +200,7 @@ public class XmlService implements Serializable {
             }
             res.addLiteral(FOAF.name, part.getName());
             res.addProperty(RDFS.seeAlso, String.format("%s/browse/creators/%s/rdf", baseUrl, part.getId()));
-            rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/count"), part.getCount().toString());
+            res.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/count"), part.getCount().toString());
             rdf.addProperty(FOAF.knows, res);
         }
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/creatorMedian"), log.getCreatorMedian().toString());
