@@ -184,7 +184,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         assertTrue(internalPage.getUrl().toString().contains("save.action"));
         assertTextPresentIgnoreCase("Bulk Upload Status");
-        logger.info(getPageCode());
+//        logger.info(getPageCode());
         assertTextPresentInCode("$.ajax");
         String statusPage = "/batch/checkstatus?ticketId=" + ticketId;
         gotoPage(statusPage);

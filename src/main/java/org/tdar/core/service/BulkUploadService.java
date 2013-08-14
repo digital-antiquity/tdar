@@ -47,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
@@ -133,6 +134,7 @@ public class BulkUploadService {
         save(image, submitter, ticketId, excelManifest, fileProxies, accountId);
     }
 
+    @Transactional
     public void save(final InformationResource image, final Person submitter,
             final Long ticketId, final File excelManifest,
             final Collection<FileProxy> fileProxies, Long accountId) {
@@ -194,6 +196,11 @@ public class BulkUploadService {
             resourcesCreated = new TreeMap<String, Resource>(String.CASE_INSENSITIVE_ORDER);
         }
 
+        if (Persistable.Base.isNotNullOrTransient(image.getProject())) {
+            //ugh
+            genericDao.detachFromSession(image.getProject());
+        }
+
         logger.info("bulk: creating individual resources");
         count = processFileProxiesIntoResources(image, submitter, manifestProxy, fileProxies, receiver, resourcesCreated, count);
 
@@ -204,9 +211,10 @@ public class BulkUploadService {
             logger.warn(AN_EXCEPTION_OCCURED_WHILE_PROCESSING_THE_MANIFEST_FILE, e);
         }
 
-//        image.setProject(Project.NULL);
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            Account account = genericDao.find(Account.class, accountId);
+            // transient
+            image.setAccount(null);
+            final Account account = genericDao.find(Account.class, accountId);
             try {
                 accountService.updateQuota(account, resourcesCreated.values().toArray(new Resource[0]));
             } catch (Throwable t) {
@@ -214,7 +222,7 @@ public class BulkUploadService {
                 throw t;
             }
         }
-        
+
         logger.info("bulk: setting final statuses and logging");
         for (Resource resource : resourcesCreated.values()) {
             receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
@@ -223,6 +231,7 @@ public class BulkUploadService {
 
             try {
                 resourceService.saveRecordToFilestore(resource);
+                genericDao.refresh(submitter);
                 resourceService.logResourceModification(resource, submitter, logMessage);
                 // FIXME: saveRecordToFilestore doesn't distinguish 'recoverable' from 'disastrous' exceptions. Until it does we just have to assume the worst.
                 resource.setReadyToIndex(true);
