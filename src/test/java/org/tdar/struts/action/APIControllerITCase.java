@@ -73,7 +73,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     public final static Long TEST_ID = 3794L;
 
     TestConfiguration config = TestConfiguration.getInstance();
-    int defaultMaxResults = config.getAssistant().getIntProperty("test.findall.max", 10);
+    int defaultMaxResults = config.getMaxAPIFindAll();
 
 
     @Test

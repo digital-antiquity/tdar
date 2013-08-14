@@ -129,17 +129,17 @@ public class BulkUploadService {
 
     @Async
     public void saveAsync(final InformationResource image,
-            final Person submitter, final Long ticketId,
+            final Long submitterId, final Long ticketId,
             final File excelManifest, final Collection<FileProxy> fileProxies, Long accountId) {
-        save(image, submitter, ticketId, excelManifest, fileProxies, accountId);
+        save(image, submitterId, ticketId, excelManifest, fileProxies, accountId);
     }
 
     @Transactional
-    public void save(final InformationResource image, final Person submitter,
+    public void save(final InformationResource image, final Long submitterId,
             final Long ticketId, final File excelManifest,
             final Collection<FileProxy> fileProxies, Long accountId) {
         Map<String, Resource> resourcesCreated = new HashMap<String, Resource>();
-
+        Person submitter=  genericDao.find(Person.class, submitterId);
         logger.debug("BEGIN ASYNC: " + image + fileProxies);
 
         // in an async method the image's persistent associations will have
@@ -196,11 +196,6 @@ public class BulkUploadService {
             resourcesCreated = new TreeMap<String, Resource>(String.CASE_INSENSITIVE_ORDER);
         }
 
-//        if (Persistable.Base.isNotNullOrTransient(image.getProject())) {
-//            //ugh
-//            genericDao.detachFromSession(image.getProject());
-//        }
-
         logger.info("bulk: creating individual resources");
         count = processFileProxiesIntoResources(image, submitter, manifestProxy, fileProxies, receiver, resourcesCreated, count);
 
@@ -212,8 +207,6 @@ public class BulkUploadService {
         }
 
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            // transient
-            image.setAccount(null);
             final Account account = genericDao.find(Account.class, accountId);
             try {
                 accountService.updateQuota(account, resourcesCreated.values().toArray(new Resource[0]));
