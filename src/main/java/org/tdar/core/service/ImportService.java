@@ -6,6 +6,7 @@
  */
 package org.tdar.core.service;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,7 +80,7 @@ public class ImportService {
     }
 
     public <R extends Resource> R bringObjectOntoSession(R incoming_, Person authorizedUser, Collection<FileProxy> proxies, Long projectId)
-            throws APIException, Exception {
+            throws APIException, IOException {
         R incomingResource = incoming_;
         boolean created = true;
         if (Persistable.Base.isNotTransient(incomingResource)) {
@@ -100,6 +101,7 @@ public class ImportService {
             }
 
             incomingResource.copyImmutableFieldsFrom(existing);
+            //FIXME: could be trouble:  the next line implicitly detaches the submitter we just copied to incomingResource
             genericService.detachFromSession(existing);
             created = false;
         }
