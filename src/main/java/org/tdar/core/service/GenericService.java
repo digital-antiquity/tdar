@@ -164,8 +164,8 @@ public class GenericService {
     }
 
     @Transactional(readOnly = true)
-    public <T> List<T> findAll(Class<T> persistentClass, int start, int numberOfRecords) {
-        return genericDao.findAll(persistentClass, start, numberOfRecords);
+    public <T> List<T> findAll(Class<T> persistentClass, int maxResults) {
+        return genericDao.findAll(persistentClass, maxResults);
     }
 
     @Transactional(readOnly=true)

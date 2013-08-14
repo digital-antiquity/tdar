@@ -176,15 +176,14 @@ public class GenericDao {
     }
 
     public <E> List<E> findAll(Class<E> cls) {
-        return findAll(cls, -1, -1);
+        return findAll(cls, -1);
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<E> findAll(Class<E> cls, int start, int numberOfRecords) {
+    public <E> List<E> findAll(Class<E> cls, int maxResults) {
         Query query = getCurrentSession().createQuery("from " + cls.getName());
-        if (numberOfRecords > 0) {
-            query.setFirstResult(start);
-            query.setMaxResults(numberOfRecords);
+        if (maxResults > 0) {
+            query.setMaxResults(maxResults);
         }
         return (List<E>) query.list();
     }

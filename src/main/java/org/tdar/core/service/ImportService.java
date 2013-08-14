@@ -138,8 +138,10 @@ public class ImportService {
                 reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource));
             }
         }
-
-        incomingResource.markUpdated(genericService.merge(authorizedUser));
+        logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(authorizedUser));
+        Person blessedAuthorizedUser = genericService.merge(authorizedUser);
+        logger.debug("comparing before/after merge:: before:{}        after:{}", System.identityHashCode(authorizedUser), System.identityHashCode(blessedAuthorizedUser));
+        incomingResource.markUpdated(blessedAuthorizedUser);
 //        genericService.detachFromSession(authorizedUser);
         incomingResource = genericService.merge(incomingResource);
 
