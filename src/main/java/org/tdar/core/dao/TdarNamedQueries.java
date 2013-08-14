@@ -124,6 +124,8 @@ public interface TdarNamedQueries {
     // generated HQL formats
     public static final String QUERY_CREATOR_MERGE_ID = "select merge_creator_id from %1$s where id=%2$s";
 
+    public static final String QUERY_KEYWORD_MERGE_ID = "select merge_keyword_id from %1$s where id=%2$s";
+
     // e.g."from Resource r1 where exists (from Resource r2 inner join r2.cultureKeywords ck where r2.id = r1.id and ck.id in (:idlist))"
     public static final String QUERY_HQL_MANY_TO_MANY_REFERENCES =
             "from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";

@@ -1,11 +1,13 @@
 package org.tdar.core.dao;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Table;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.hibernate.Query;
@@ -14,6 +16,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
@@ -33,6 +36,7 @@ public class GenericKeywordDao extends GenericDao {
     public static final String NAME = "name";
     public static final String INHERITANCE_TOGGLE_FIELDNAME = "INHERITANCE_TOGGLE";
 
+    @Transactional
     public <K extends HierarchicalKeyword<K>> List<K> findAllDescendants(Class<K> cls,K keyword) {
         String index = keyword.getIndex();
         if (StringUtils.isBlank(index))
@@ -43,15 +47,18 @@ public class GenericKeywordDao extends GenericDao {
         return findByCriteria(cls, criteria);
     }
 
+    @Transactional
     public <K extends Keyword> K findByLabel(Class<K> cls, String label) {
         // FIXME: turn this into a generic named query?
         return findByProperty(cls, "label", label);
     }
     
+    @Transactional
     public <K extends Keyword> List<K> findAllByLabels(Class<K> cls, List<String> labels) {
         return findAllFromList(cls, "label", labels);
     }
     
+    @Transactional
     protected <T extends Keyword> List<Pair<T, Integer>> getKeywordStats(String namedQuery) {
         List<Pair<T, Integer>> list = new ArrayList<Pair<T, Integer>>();
         Query q = getCurrentSession().getNamedQuery(namedQuery);
@@ -66,46 +73,57 @@ public class GenericKeywordDao extends GenericDao {
         return list;
     }
 
+    @Transactional
     public List<Pair<CultureKeyword, Integer>> getUncontrolledCultureKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_UNCONTROLLED);
     }
     
+    @Transactional
     public List<Pair<CultureKeyword, Integer>> getControlledCultureKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED);
     }
     
+    @Transactional
     public List<Pair<GeographicKeyword, Integer>> getGeographicKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_GEOGRAPHIC_KEYWORD);
     }
     
+    @Transactional
     public List<Pair<InvestigationType, Integer>> getInvestigationTypeStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_INVESTIGATION_TYPE);
     }
-    
+
+    @Transactional
     public List<Pair<MaterialKeyword, Integer>> getMaterialKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_MATERIAL_KEYWORD);
     }
 
+    @Transactional
     public List<Pair<OtherKeyword, Integer>> getOtherKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_OTHER_KEYWORD);
     }
 
+    @Transactional
     public List<Pair<SiteNameKeyword, Integer>> getSiteNameKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_SITE_NAME_KEYWORD);
     }
 
+    @Transactional
     public List<Pair<SiteTypeKeyword, Integer>> getControlledSiteTypeKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_SITE_TYPE_KEYWORD_CONTROLLED);
     }
     
+    @Transactional
     public List<Pair<SiteTypeKeyword, Integer>> getUncontrolledSiteTypeKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_SITE_TYPE_KEYWORD_UNCONTROLLED);
     }
     
+    @Transactional
     public List<Pair<TemporalKeyword, Integer>> getTemporalKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_TEMPORAL_KEYWORD);
     }
 
+    @Transactional(readOnly=false)
     public void updateOccuranceValues() {
         for (Class<?> cls : LookupSource.KEYWORD.getClasses()) {
             try {
@@ -124,6 +142,19 @@ public class GenericKeywordDao extends GenericDao {
             } catch (IllegalAccessException e) {
                 logger.error("could not update keywords",e);
             }
+        }
+    }
+
+    @Transactional
+    public Keyword findAuthority(Keyword kwd) {
+        Table table = AnnotationUtils.findAnnotation(kwd.getClass(), Table.class);
+        Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()));
+        @SuppressWarnings("unchecked")
+        List<BigInteger> result = (List<BigInteger>) query.list();
+        if (CollectionUtils.isEmpty(result)) {
+            return null;
+        } else {
+            return find(kwd.getClass(), result.get(0).longValue());
         }
     }
     

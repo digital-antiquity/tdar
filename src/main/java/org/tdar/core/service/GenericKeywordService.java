@@ -153,4 +153,9 @@ public class GenericKeywordService extends GenericService {
         cache.clear();
     }
 
+    @Transactional
+    public Keyword findAuthority(Keyword kwd) {
+        return genericKeywordDao.findAuthority(kwd);
+    }
+
 }

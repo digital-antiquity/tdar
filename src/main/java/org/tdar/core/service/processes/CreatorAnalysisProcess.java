@@ -35,6 +35,8 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.EmailService;
@@ -53,6 +55,12 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     @Autowired
     private SearchService searchService;
+
+    @Autowired
+    private GenericKeywordService genericKeywordService;
+
+    @Autowired
+    private EntityService entityService;
 
     @Autowired
     private XmlService xmlService;
@@ -312,10 +320,16 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             if (ObjectUtils.equals(creator, current) || creator == null || StringUtils.isBlank(creator.getProperName()))
                 continue;
 
-            if (CollectionUtils.isNotEmpty(userIdsToIgnoreInLargeTasks) && userIdsToIgnoreInLargeTasks.contains(current.getId())) {
+            if (CollectionUtils.isNotEmpty(userIdsToIgnoreInLargeTasks) && userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
                 continue;
             }
 
+            if (creator.isDuplicate()) {
+                creator = entityService.findAuthorityFromDuplicate(creator);
+            }
+            if (!creator.isActive()) 
+                continue;
+            
             Double count = collaborators.get(creator);
             if (count == null) {
                 count = 0.0;
@@ -327,6 +341,12 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     private void incrementKeywords(Map<Keyword, Double> keywords, Resource resource) {
         for (Keyword kwd : resource.getAllActiveKeywords()) {
+            if (kwd.isDuplicate()) {
+                kwd = genericKeywordService.findAuthority(kwd);
+            }
+            if (!kwd.isActive()) 
+                continue;
+            
             Double count = keywords.get(kwd);
             if (count == null) {
                 count = 0.0;
