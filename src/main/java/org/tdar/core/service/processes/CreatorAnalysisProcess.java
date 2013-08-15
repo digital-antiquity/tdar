@@ -317,7 +317,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     private void incrementCreators(Creator current, Map<Creator, Double> collaborators, Resource resource, List<Long> userIdsToIgnoreInLargeTasks) {
         for (Creator creator : resource.getRelatedCreators()) {
-            if (ObjectUtils.equals(creator, current) || creator == null || StringUtils.isBlank(creator.getProperName()))
+            if ( creator == null || ObjectUtils.equals(creator.getId(), current.getId()) || StringUtils.isBlank(creator.getProperName()))
                 continue;
 
             if (CollectionUtils.isNotEmpty(userIdsToIgnoreInLargeTasks) && userIdsToIgnoreInLargeTasks.contains(creator.getId())) {

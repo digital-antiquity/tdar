@@ -43,10 +43,17 @@
         <br/>
         <br/>
         <#-- fixme -- some of these may show the h3 w/o contents if count == 1 -->
+		<#assign sz = (results?size / 2)?ceiling >
+		<#if (sz < 10)>
+			<#assign sz = 10 >
+		</#if>
         <#if collaborators?has_content>
 			<h3>Related Creators</h3>
 			<ul>
 			<#list collaborators as collab>
+			<#if (collab_index >sz) >
+				<#break>
+			</#if>
 			<#if (collab.@count?number >= nodeModel.creatorInfoLog.@creatorMedian?number && collab.@count?number  >1)>
 			<li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a></li>
 			</#if>
@@ -58,6 +65,9 @@
 			<h3>Related Keywords</h3>
 			<ul>
 			<#list keywords as keyword>
+			<#if (keyword_index >sz) >
+				<#break>
+			</#if>
 			<#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
 			
 			<#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !keyword.@name?contains("Fips "))>

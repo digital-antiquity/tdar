@@ -44,12 +44,14 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public static final String INVOICE_IS_REQURIED = "an invoice is requried";
     private static final long serialVersionUID = 2912533895769561917L;
     public static final String NEW_ACCOUNT = "new_account";
+    private static final String LIST_INVOICES = "listInvoices";
     private Long invoiceId;
-    private Set<Account> accounts = new HashSet<Account>();
-    private List<Resource> resources = new ArrayList<Resource>();
+    private Set<Account> accounts = new HashSet<>();
+    private List<Invoice> invoices = new ArrayList<>();
+    private List<Resource> resources = new ArrayList<>();
 
     private AccountGroup accountGroup;
-    private List<Person> authorizedMembers = new ArrayList<Person>();
+    private List<Person> authorizedMembers = new ArrayList<>();
     private Long accountGroupId;
     private String name;
     private Integer quantity = 1;
@@ -103,6 +105,15 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
             getAccounts().addAll(getAccountService().findAll());
         }
+    }
+
+    @SkipValidation
+    @Action(value = LIST_INVOICES, results = { @Result(name = SUCCESS, location = "list-invoices.ftl") })
+    public String listInvoices() {
+        if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
+            getInvoices().addAll(getGenericService().findAll(Invoice.class));
+        }
+        return SUCCESS;
     }
 
     public Invoice getInvoice() {
@@ -311,6 +322,14 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public List<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(List<Invoice> invoices) {
+        this.invoices = invoices;
     }
 
 }
