@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Facetable;
@@ -23,6 +24,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -210,6 +212,16 @@ public class CollectionController extends AbstractPersistableController<Resource
         return SUCCESS;
     }
 
+    @SkipValidation
+    @Action(value = "listChildren", results = { @Result(name = SUCCESS, location = "list-children.ftl", params = { "contentType", "application/json" },
+            type = "freemarker") })
+    public String listChildren() {
+        setCollections(getResourceCollectionService().findDirectChildCollections(getId(),Boolean.TRUE,CollectionType.SHARED));
+        //FIXME: make this "json"
+        return SUCCESS;
+    }
+
+    
     @Override
     @SkipValidation
     @Action(value = EDIT, results = {
