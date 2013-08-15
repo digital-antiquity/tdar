@@ -52,25 +52,27 @@
 			<#assign sz = 10 >
 		</#if>
         <#if collaborators?has_content>
+		<!-- sz: ${sz} - num: ${num} - colab ${collaborators?size} --> 
 			<h3>Related Creators</h3>
 			<ul>
 			<#list collaborators as collab>
-			<#if (collab_index >sz) >
-				<#break>
+			<#if (collab_index > sz) >
+				<#break/>
 			</#if>
-			<#if (collab.@count?number >= nodeModel.creatorInfoLog.@creatorMedian?number && collab.@count?number  >1)>
-			<li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a></li>
-			</#if>
+				<#if (collab.@count?number >= nodeModel.creatorInfoLog.@creatorMedian?number && collab.@count?number  >1)>
+					<li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a></li>
+				</#if>
 			</#list> 
-			</uL>
+			</ul>
 		</#if>
 
         <#if keywords?has_content>
+		<!-- sz: ${sz} - num: ${num} - keywords ${keywords?size} --> 
 			<h3>Related Keywords</h3>
 			<ul>
 			<#list keywords as keyword>
 			<#if (keyword_index > sz) >
-				<#break>
+				<#break/>
 			</#if>
 			<#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
 			
