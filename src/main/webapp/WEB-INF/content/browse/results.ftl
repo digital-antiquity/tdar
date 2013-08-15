@@ -81,6 +81,9 @@
 			</#list>
 			</ul> 
 		</#if>
+		<div>
+		<small>Related Keywords and Creators are determined by looking at all of the Creators and Keywords associated with a Creator and highlighting the most commonly used.</small>
+		</div>
 </div>
 </#if>
 </#if>
