@@ -20,7 +20,7 @@
         <td><a href="<@s.url value="/admin/contributors"/>">Contributor Requests</a></td>
 		<td><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></td>
 
-		<#if billingManager>
+		<#if billingManager || editor>
 			<td><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></td>
 			<td><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></td>
 		</#if>
