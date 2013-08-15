@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -19,6 +20,8 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
@@ -37,6 +40,22 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
         }
         logger.info("people: {}", personSet);
         assertEquals(2, personSet.size());
+    }
+
+    @Test
+    @Ignore
+    // This was setup to test what goes on when you call merge, with a detached and non-detached version of an entity that an error happens
+    public void testHib() throws Exception {
+        Document doc = new Document();
+        doc.setTitle("t");
+        doc.setDescription("d");
+        doc.setDocumentType(DocumentType.OTHER);
+        doc.markUpdated(getAdminUser());
+        genericService.save(doc);
+        genericService.detachFromSession(doc);
+        Person admin = genericService.find(Person.class, getAdminUserId());
+        doc.setUploader(admin);
+        doc = genericService.merge(doc);
     }
 
     @Test
