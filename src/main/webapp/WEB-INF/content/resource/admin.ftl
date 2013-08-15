@@ -97,6 +97,7 @@ var data = [];
         <th>Restriction</th>
 		<th>Status</th>
 		<th>Size</th>
+		<th>Date Uploaded</th>
 		<th>MimeType</th>
         <th>Processing Errors?</th>
     </tr>
@@ -108,6 +109,7 @@ var data = [];
         <td>${file.restriction}</td>
         <td><#if file.status?has_content>${file.status!""}</#if></td>
        	<#assign orig = file.latestUploadedVersion />
+       	<td></td>
        	<td></td>
        	<td></td>
         <td><#if file.errorMessage?has_content>${file.errorMessage}</#if></td>
@@ -124,6 +126,7 @@ var data = [];
 	        <td></td>
 	       	<#assign orig = file.latestUploadedVersion />
 	       	<td>${vers.fileLength}</td>
+	       	<td>${vers.dateCreated}</td>
 	       	<td>${vers.mimeType}</td>
 			<td></td>
 		</tr>

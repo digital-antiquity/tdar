@@ -243,6 +243,7 @@ View freemarker macros
                     <th>Name</th>
                     <th>Size</th>
                     <th>Creation Date</th>
+                    <th>Date Uploaded</th>
                     <th>Access</></th>
 					<#if showDownloads>
     	                <th>Downloads</th>
@@ -257,6 +258,7 @@ View freemarker macros
                 <td><@createFileLink irfile false false false /></td>
                 <td><@common.convertFileSize version.fileLength /></td>
                 <td><@printCreatedDate irfile /></td>
+                <td>${irfile.latestUploadedVersion.dateCreated} </td>
                 <td>${irfile.restriction.label}</td>
                 
                 <#if irfile.transientDownloadCount?? >
@@ -265,7 +267,7 @@ View freemarker macros
             </tr>
             <#if twoRow>
             <tr class="${irfile.status!''}">
-                <td colspan=<#if showDownloads>5<#else>4</#if>>
+                <td colspan=<#if showDownloads>6<#else>5</#if>>
                     ${irfile.description!""}
                     <@translatedFileSection irfile />
                 </td>

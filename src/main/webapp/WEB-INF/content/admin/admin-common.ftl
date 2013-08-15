@@ -9,7 +9,7 @@
 <#setting url_escaping_charset="UTF-8">
 <#macro header>
 <div class="glide">
-    <h3>Statistics Menu</h3>
+    <h3> Menu</h3>
     <table cellpadding=4>
     <tr>
         <td><a href="<@s.url value="/admin/"/>">Admin Home</a> </td>
@@ -19,6 +19,11 @@
         <td><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a> </td>
         <td><a href="<@s.url value="/admin/contributors"/>">Contributor Requests</a></td>
 		<td><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></td>
+
+		<#if billingManager>
+			<td><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></td>
+			<td><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></td>
+		</#if>
         <#if administrator >
         <td><a href="<@s.url value="/admin/system/activity"/>">System Activity</a> </td>
             <td><a href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></td>
