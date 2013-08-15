@@ -141,7 +141,11 @@ function fnRenderIdColumn(oObj) {
     // in spite of the name, aData is an object corresponding to the current row
     var id = oObj.aData.id;
     var attrId = "cbEntityId_" + id;
-    var resourceType = oObj.aData.resourceType.toLowerCase();
+    var resourceType = oObj.aData.resourceType;
+    // not all things are resourceTypes that are rendered like this
+    if (resourceType) {
+        resourceType = resourceType.toLowerCase();
+    }
     console.log("resource type:%s", resourceType);
     return '<input type="checkbox" class="datatable-checkbox '+ resourceType + '" id="' + attrId + '" value="' + id + '" />' +
             '<label class="datatable-cell-unstyled" for="' + attrId + '">' + id + '</label>' ;
