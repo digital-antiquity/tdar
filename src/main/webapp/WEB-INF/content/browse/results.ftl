@@ -15,7 +15,7 @@
 <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 
 
-<#if creator?? >
+<#if creator?? && nodeModel?has_content>
 <link rel="meta" type="application/rdf+xml" title="FOAF" href="/browse/creators/${creator.id?c}/rdf"/>
 </#if>
 </head>
