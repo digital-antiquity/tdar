@@ -43,7 +43,11 @@
         <br/>
         <br/>
         <#-- fixme -- some of these may show the h3 w/o contents if count == 1 -->
-		<#assign sz = (results?size / 2)?ceiling >
+		<#assign num = results?size/>
+		<#if (num > recordsPerPage)>
+			<#assign num = recordsPerPage />
+		</#if>
+		<#assign sz = (num / 2)?ceiling >
 		<#if (sz < 10)>
 			<#assign sz = 10 >
 		</#if>
@@ -65,7 +69,7 @@
 			<h3>Related Keywords</h3>
 			<ul>
 			<#list keywords as keyword>
-			<#if (keyword_index >sz) >
+			<#if (keyword_index > sz) >
 				<#break>
 			</#if>
 			<#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>

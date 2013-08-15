@@ -598,7 +598,7 @@ public class TdarConfiguration {
     public Boolean isArchiveFileEnabled() {
         return assistant.getBooleanProperty("archive.enabled", false);
     }
-    
+
     public boolean isVideoEnabled() {
         return assistant.getBooleanProperty("video.enabled", false);
     }
@@ -606,7 +606,7 @@ public class TdarConfiguration {
     public boolean isXmlExportEnabled() {
         return assistant.getBooleanProperty("xml.export.enabled", false);
     }
-    
+
     public Boolean getShowJiraLink() {
         return assistant.getBooleanProperty("jira.link.show", true);
     }
@@ -626,13 +626,15 @@ public class TdarConfiguration {
     public Long getGuestUserId() {
         return assistant.getLongProperty("guest.user.id", -1L);
     }
-    
+
     public List<Long> getUserIdsToIgnoreInLargeTasks() {
         String users = assistant.getStringProperty("userids.to.ignore");
         List<Long> userIds = new ArrayList<Long>();
         for (String userid : users.split("[|,;]")) {
             try {
-                userIds.add(Long.parseLong(userid));
+                if (StringUtils.isNotBlank(userid)) {
+                    userIds.add(Long.parseLong(userid));
+                }
             } catch (Exception e) {
                 logger.warn("skipping: {} {}", userid, e);
             }
@@ -649,7 +651,7 @@ public class TdarConfiguration {
     }
 
     public String getCulturalTermsLabel() {
-        return assistant.getStringProperty("cultural.terms.label", "Cultural Terms" );
+        return assistant.getStringProperty("cultural.terms.label", "Cultural Terms");
     }
 
 }

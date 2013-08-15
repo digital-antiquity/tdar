@@ -1,13 +1,15 @@
 package org.tdar.core.service;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -217,7 +219,8 @@ public class XmlService implements Serializable {
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/keywordMedian"), log.getKeywordMedian().toString());
         File dir = new File(TdarConfiguration.getInstance().getCreatorFOAFDir());
         dir.mkdir();
-        FileWriter writer = new FileWriter(new File(dir, creator.getId() + ".foaf.xml"));
+        File file = new File(dir, creator.getId() + ".foaf.xml");
+        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         model.write(writer, "RDF/XML-ABBREV");
         IOUtils.closeQuietly(writer);
 

@@ -1,7 +1,10 @@
 package org.tdar.core.service.processes;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -114,7 +117,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                 while (results.next()) {
                     Resource resource = (Resource) results.get()[0];
                     incrementKeywords(keywords, resource);
-                    incrementCreators(creator, collaborators, resource,userIdsToIgnoreInLargeTasks);
+                    incrementCreators(creator, collaborators, resource, userIdsToIgnoreInLargeTasks);
                 }
             } catch (Exception e) {
                 logger.warn("Exception {}", e);
@@ -161,7 +164,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
             try {
                 xmlService.generateFOAF(creator, log);
-                xmlService.convertToXML(log, new FileWriter(new File(TdarConfiguration.getInstance().getCreatorFOAFDir() +"/" + creator.getId() + ".xml")));
+                File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + creator.getId() + ".xml");
+                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
+                xmlService.convertToXML(log, writer);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 logger.error("exception: {} ", e);
@@ -317,7 +322,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     private void incrementCreators(Creator current, Map<Creator, Double> collaborators, Resource resource, List<Long> userIdsToIgnoreInLargeTasks) {
         for (Creator creator : resource.getRelatedCreators()) {
-            if ( creator == null || ObjectUtils.equals(creator.getId(), current.getId()) || StringUtils.isBlank(creator.getProperName()))
+            if (creator == null || StringUtils.isBlank(creator.getProperName()))
                 continue;
 
             if (CollectionUtils.isNotEmpty(userIdsToIgnoreInLargeTasks) && userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
@@ -327,9 +332,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             if (creator.isDuplicate()) {
                 creator = entityService.findAuthorityFromDuplicate(creator);
             }
-            if (!creator.isActive()) 
+            if (ObjectUtils.equals(creator.getId(), current.getId()) || !creator.isActive())
                 continue;
-            
+
             Double count = collaborators.get(creator);
             if (count == null) {
                 count = 0.0;
@@ -344,9 +349,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             if (kwd.isDuplicate()) {
                 kwd = genericKeywordService.findAuthority(kwd);
             }
-            if (!kwd.isActive()) 
+            if (!kwd.isActive())
                 continue;
-            
+
             Double count = keywords.get(kwd);
             if (count == null) {
                 count = 0.0;
