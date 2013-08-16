@@ -121,7 +121,7 @@ TDAR.fileupload = function() {
         $(_options.fileuploadSelector).bind("fileuploadcompleted", function(e, data) {
             var $datefields = $(data.context).find(".date");
             _applyDateInputs($datefields);
-            
+            $(this).trigger("heightchange");
         });
         
         $(_options.fileuploadSelector).bind("fileuploaddone", function(e, data) {
