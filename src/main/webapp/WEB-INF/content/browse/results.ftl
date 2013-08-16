@@ -43,7 +43,7 @@
         <br/>
         <br/>
         <#-- fixme -- some of these may show the h3 w/o contents if count == 1 -->
-		<#assign num = results?size?c />
+		<#assign num = results?size />
 		<#if (num > recordsPerPage)>
 			<#assign num = recordsPerPage />
 		</#if>
