@@ -12,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Assert;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -151,6 +152,8 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         for (Object dis_ : CollectionUtils.disjunction(modsRecordsList, modsIdentifiersList)) {
             String dis = (String)dis_;
             logger.info(dis);
+            if (StringUtils.isBlank(dis))
+                continue;
             Resource find = genericService.find(Resource.class, Long.parseLong(dis));
             logger.info("found:{}",find);
             logger.info("found:{}",xmlService.convertToXML(find));
