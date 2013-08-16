@@ -288,6 +288,9 @@ public class TdarConfiguration {
         return assistant.getStringProperty("sysadmin.email", SYSTEM_ADMIN_EMAIL);
     }
 
+    /*
+     * One or many emails; split by semicolons
+     */
     public String getBillingAdminEmail() {
         return assistant.getStringProperty("billing.admin.email", SYSTEM_ADMIN_EMAIL);
     }
