@@ -43,7 +43,7 @@
         <br/>
         <br/>
         <#-- fixme -- some of these may show the h3 w/o contents if count == 1 -->
-		<#assign num = results?size/>
+		<#assign num = results?size?c />
 		<#if (num > recordsPerPage)>
 			<#assign num = recordsPerPage />
 		</#if>
@@ -55,11 +55,13 @@
 		<!-- sz: ${sz} - num: ${num} - colab ${collaborators?size} --> 
 			<h3>Related Creators</h3>
 			<ul>
+			<#assign seen_creators = 0/>
 			<#list collaborators as collab>
-			<#if (collab_index > sz) >
+			<#if (seen_creators > sz) >
 				<#break/>
 			</#if>
 				<#if (collab.@count?number >= nodeModel.creatorInfoLog.@creatorMedian?number && collab.@count?number  >1)>
+					<#assign seen_creators = seen_creators +1 />
 					<li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a></li>
 				</#if>
 			</#list> 
@@ -70,16 +72,18 @@
 		<!-- sz: ${sz} - num: ${num} - keywords ${keywords?size} --> 
 			<h3>Related Keywords</h3>
 			<ul>
+			<#assign seen_kwds = 0/>
 			<#list keywords as keyword>
-			<#if (keyword_index > sz) >
-				<#break/>
-			</#if>
-			<#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
-			
-			<#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !keyword.@name?contains("Fips "))>
-			<li>${keyword.@name}</li>
-			</#if>
-			</#if>
+				<#if (seen_kwds > sz) >
+					<#break/>
+				</#if>
+				<#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
+				
+				<#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !keyword.@name?contains("Fips "))>
+					<#assign seen_kwds = seen_kwds +1 />
+					<li>${keyword.@name}</li>
+				</#if>
+				</#if>
 			</#list>
 			</ul> 
 		</#if>
