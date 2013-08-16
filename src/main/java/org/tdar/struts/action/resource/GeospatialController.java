@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
@@ -72,12 +73,17 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
     @Override
     public Set<String> getValidFileExtensions() {
         Set<String> extensionsForTypes = analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET, ResourceType.IMAGE);
-        extensionsForTypes.add("shx");
-        extensionsForTypes.add("shp.xml");
-        extensionsForTypes.add("sbx");
-        extensionsForTypes.add("xml");
-        extensionsForTypes.add("dbf");
-        extensionsForTypes.add("sbn");
+        //FIXME: these should come from the analyzer
+        //Note: aux.xml and shp.xml omitted because we know view layer logic will accept any .xml (so will server, for that matter)
+        String[] geoexts  =  {"shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg", "jpw", "tfw", "aux", "aux"};
+        Collections.addAll(extensionsForTypes, geoexts);
+
+//        extensionsForTypes.add("shx");
+//        extensionsForTypes.add("shp.xml");
+//        extensionsForTypes.add("sbx");
+//        extensionsForTypes.add("xml");
+//        extensionsForTypes.add("dbf");
+//        extensionsForTypes.add("sbn");
         return extensionsForTypes;
     }
 
