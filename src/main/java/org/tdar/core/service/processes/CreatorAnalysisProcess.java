@@ -2,7 +2,6 @@ package org.tdar.core.service.processes;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -107,6 +106,8 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             Map<Creator, Double> collaborators = new HashMap<Creator, Double>();
             Map<Keyword, Double> keywords = new HashMap<Keyword, Double>();
             int total = 0;
+            if (!creator.isActive()) 
+                continue;
             QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null);
             try {
                 FullTextQuery search = searchService.search(query, null);
