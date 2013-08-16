@@ -115,9 +115,9 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             DataTableColumnType columnType = DataTableColumnType.BLOB;
             if (type.getBinding().isAssignableFrom(String.class)) {
                 columnType = DataTableColumnType.TEXT;
-            } else if (type.getBinding().isAssignableFrom(Double.class)) {
+            } else if (type.getBinding().isAssignableFrom(Double.class) || type.getBinding().isAssignableFrom(Float.class)) {
                 columnType = DataTableColumnType.DOUBLE;
-            } else if (type.getBinding().isAssignableFrom(Long.class)) {
+            } else if (type.getBinding().isAssignableFrom(Long.class) || type.getBinding().isAssignableFrom(Integer.class)) {
                 columnType = DataTableColumnType.BIGINT;
             } else if (type.getBinding().isAssignableFrom(MultiLineString.class)) {
                 columnType = DataTableColumnType.BLOB;
