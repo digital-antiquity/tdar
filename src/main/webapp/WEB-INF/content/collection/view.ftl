@@ -47,7 +47,7 @@
         <br/>
         <br/>
         <br/>
-        <br/>
+        <br/> <#-- Nooooooo!!!!! -->
         <br/>
         <br/>
         <br/>
@@ -83,9 +83,14 @@
 		<#if (totalRecords > 18)>
 			<#assign mapSize="1000" />
 		</#if>
-         
+        <#if selectedResourceTypes.empty>
         <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Browse by Resource Type(s)" facetParam="selectedResourceTypes" />
-
+        <#else>
+            <h4>
+                Browse by Resource Type(s): ${resourceTypeFacets[0].plural}
+                <sup><a style="text-decoration: " href="<@s.url value="view?id=${id?c}" />">[remove this filter]</a></sup>
+            </h4>
+        </#if>
 		<div class="tdarresults">
 		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
 		        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />

@@ -213,7 +213,7 @@
 </#macro>
 
 
-<#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="">
+<#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" liCssClass="media">
 <#if (facetlist?? && !facetlist.empty)>
 <h4>${label}:</h4>
 <ul class="media-list tools">
@@ -224,10 +224,10 @@
         <#elseif facet.label?has_content>
             <#assign facetLabel = facet.label />
         </#if>
-        <li class="media">
+        <li class="${liCssClass}">
             <#if (facetlist?size > 1)>
 				
-                <div class="media-body">
+                <span class="media-body">
                 
                 <a rel="noindex" href="<@s.url includeParams="all">
                     <@s.param name="${facetParam}">${facet}</@s.param>
@@ -241,11 +241,11 @@
                     <#nested>
                 </@s.url>">
                 <i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
-                ${facetLabel}</a> <span>(${facet.count})</span></div>
+                ${facetLabel}</a> <span>(${facet.count})</span></span>
             <#elseif currentValues?size == 1>
                 <@removeFacet facetlist=currentValues facetParam=facetParam />
             <#else>
-                <div class="media-body">${facetLabel} <span>(${facet.count})</span></div>
+                <span class="media-body">${facetLabel} <span>(${facet.count})</span></span>
             </#if>
         </li>
     </#list>
@@ -283,5 +283,4 @@
     </#if>
     </#if>
 </#macro>
-
 </#escape>
