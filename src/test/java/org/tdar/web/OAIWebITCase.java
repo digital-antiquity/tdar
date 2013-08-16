@@ -149,7 +149,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // check that the numbers make sense
         Assert.assertEquals("Number of identifiers matches number of records for tDAR format", tdarIdentifiers, tdarRecords);
 
-        for (Object dis_ : CollectionUtils.disjunction(modsRecordsList, modsIdentifiersList)) {
+        for (Object dis_ : CollectionUtils.subtract(modsRecordsList, modsIdentifiersList)) {
             String dis = (String)dis_;
             logger.info(dis);
             if (StringUtils.isBlank(dis))
