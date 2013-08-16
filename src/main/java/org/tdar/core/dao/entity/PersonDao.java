@@ -88,11 +88,14 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getClass().getSimpleName(), dup.getId()));
         @SuppressWarnings("unchecked")
         List<BigInteger> result = (List<BigInteger>) query.list();
-        if (CollectionUtils.isEmpty(result)) {
-            return null;
-        } else {
+        if (CollectionUtils.isNotEmpty(result)) {
+            try {
             return find(result.get(0).longValue());
+            } catch (Exception e) {
+                logger.error("could not find master for {} {}",dup, result);
+            }
         }
+        return null;
     }
 
     /**
