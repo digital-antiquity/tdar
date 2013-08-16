@@ -244,7 +244,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <div class="">
             <p><span class="label">Note:</span> You can only have <strong><#if !multipleFileUploadEnabled>1 file<#else>${maxUploadFilesPerRecord} files</#if> </strong> per record</p> 
             </div>
-        
             <table id="uploadFiles" class="files table tableFormat">
             </table>
             <table id="files" class="files sortable">
@@ -844,11 +843,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     <div class="row fileupload-buttonbar">
         <div class="span2">
             <!-- The fileinput-button span is used to style the file input field as button -->
-            <span class="btn btn-success fileinput-button">
+            <span class="btn btn-success fileinput-button btn-block">
                 <i class="icon-plus icon-white"></i>
                 <span class="btn-lbl-singleclick">Add files...</span>
                 <span class="btn-lbl-doubleclick">Double-click to add files ...</span>
-
             <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" class="${inputFileCss}">
             </span>
         </div>
@@ -864,23 +862,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </div>
     <!-- The loading indicator is shown during file processing -->
     <div class="fileupload-loading"></div>
-    <br />
         <!-- The table listing the files available for upload/download -->
-
-                <div class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
-                    Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  
-                </div>
 	</#if>
-        <table id="files" role="presentation" class="table table-striped sortable">
-            <!--
-            <thead>
-            <tr>
-               <th colspan="2">Name / Description / Date</th>
-               <th colspan="2">Access Restrictions</th>
-               <th colspan="2">Action</th>
-               </tr>
-            </thead>
-            -->
+        <table id="files" role="presentation" class="table table-striped table-bordered">
             <tbody id="fileProxyUploadBody" class="files">
             <#list fileProxies as fileProxy>
                 <#if fileProxy??>
@@ -896,7 +880,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 </#macro>
 
 <#macro fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1 proxy=blankFileProxy >
-<tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable template-download fade existing-file in">
+<tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable fade existing-file in">
 
             <td class="preview"></td>
             <td class="name">
@@ -1192,8 +1176,8 @@ $(function() {
 {% } %}
 </script>
 
-<!-- The template to display files available for download (uses tmpl.min.js) -->
-
+<#-- The template to display files available for download (uses tmpl.min.js) -->
+<#-- lets assume we are working with about span5 amount of space width -->
 <script id="template-download" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
 {% var idx = '' + TDAR.fileupload.getRowId();%}
@@ -1205,36 +1189,35 @@ $(function() {
                 <div class="error"><span class="label label-important">Error</span> {%=file.error%}</div>
                 {% } %}
 
-                <div class="control-group"><label class="control-label">Restriction</label>
+                <label class="control-label">Filename</label>
+                <div class="controls controls-row">
+                    <div class="span5">
+                        <div><em class="replacement-text "></em></div>
+                        <span class="name uneditable-input subtle inpux-xlarge">{%=file.name%}</span>
+                        <span class="help-inline">{%=o.formatFileSize(file.size)%}</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Restriction</label>
                     <div class="controls">
                         <#-- FIXME:supposedly struts 2.1+ allows custom data attributes but I get a syntax error.  What gives? -->
                         <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" theme="simple" name="fileProxies[{%=idx%}].restriction"
                             style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"
                             onchange="TDAR.fileupload.updateFileAction(this)"
-                            cssClass="fileProxyConfidential input-small confidential-contact-required"/>
-                    </div>
-
-                    <label class="control-label">Filename</label>
-                    <div class="controls controls-row">
-                        <div class="span3">
-                            <div><em class="replacement-text"></em></div>
-                            <span class="name uneditable-input subtle">{%=file.name%}</span>
-                        </div>
-                        <div class="span1">
-                            <span class="size label label-info">{%=o.formatFileSize(file.size)%}</span>
-                        </div>
+                            cssClass="fileProxyConfidential confidential-contact-required"/>
                     </div>
 
                     <label class="control-label" for="">Date Created</label>
                     <div class="controls controls-row">
-                         <div class="span4">
-                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date input-small" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}">
+                         <div class="span5">
+                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}">
                          </div>
                     </div>
 
                     <label class="control-label">Description</label>
                     <div class="controls controls-row">
-                        <div class="span4">
+                        <div class="span5">
                             <textarea class="input-block-level" name="fileProxies[{%=idx%}].description" rows="1" placeholder="Enter a description here">{%=file.description%}</textarea>
                         </div>
                     </div>

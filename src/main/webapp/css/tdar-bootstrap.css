@@ -90,11 +90,22 @@ left: 0!important;
 
 .uneditable-input.subtle {
     background-color: inherit;
-    border:1px solid rgba(128,128,128,0.1);
+    color: inherit;
+    border:1px solid rgba(128,128,128,0 .1);
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
 }
+
+/* make the file transfer data appear more muted/compact */
+.progress-extended {
+    font-size:  8pt;
+    line-height: 8pt;
+    position: relative;
+    bottom: 15px;
+    color: #555;
+}
+
 /* undo bootstrap's styling for certain elements when inside of a 'treeview' widget. */
 .treeview input[type=checkbox] {
 	margin: 0 0 0;
