@@ -85,6 +85,7 @@ label.error {display:block;}
 		</ul></p>
         <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Proxy Institution"       name="proxyInstitutionName"     maxlength="255" value="${person.proxyInstitution!}"/>
 
+		<p>If there are specific instructions, such as a person or position within the organization to contact, please provide additional information here</p>
         <@s.textarea label="Proxy Note" rows=6 cols='50' name='person.proxyNote' cssClass="input-xxlarge"  />
     </div>
 </div>
