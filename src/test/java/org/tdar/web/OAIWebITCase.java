@@ -154,6 +154,9 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             logger.info(dis);
             if (StringUtils.isBlank(dis))
                 continue;
+            if (dis.indexOf(":") != -1) {
+                dis = dis.substring(dis.lastIndexOf(":")+ 1);
+            }
             Resource find = genericService.find(Resource.class, Long.parseLong(dis));
             logger.info("found:{}",find);
             logger.info("found:{}",xmlService.convertToXML(find));
