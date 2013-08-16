@@ -872,7 +872,7 @@ public abstract class AbstractSeleniumWebITCase {
         find("#inputMethodId").find("[value=file]").click();
         find("#fileUploadField").sendKeys(uploadFile.getAbsolutePath());
     }
-
+    
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
         clearFileInputStyles();
         find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
