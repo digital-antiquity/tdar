@@ -1,4 +1,4 @@
-<#escape _untrusted as _untrusted?html>
+-<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/WEB-INF/content/${namespace}/edit.ftl" as local_ />

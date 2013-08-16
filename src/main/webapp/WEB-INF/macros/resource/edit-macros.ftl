@@ -1200,26 +1200,46 @@ $(function() {
 {% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
 {% rowclass += TDAR.fileupload.getRowVisibility() ? "" : " hidden"; %}
     <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
-            <td colspan="2">
+            <td colspan="4">
                 {% if (file.error) { %}
                 <div class="error"><span class="label label-important">Error</span> {%=file.error%}</div>
                 {% } %}
 
-                <div>
+                <div class="control-group"><label class="control-label">Restriction</label>
+                    <div class="controls">
+                        <#-- FIXME:supposedly struts 2.1+ allows custom data attributes but I get a syntax error.  What gives? -->
+                        <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" theme="simple" name="fileProxies[{%=idx%}].restriction"
+                            style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"
+                            onchange="TDAR.fileupload.updateFileAction(this)"
+                            cssClass="fileProxyConfidential input-small confidential-contact-required"/>
+                    </div>
 
-                    <div><em class="replacement-text"></em></div>
-                    <span class="name input-xlarge uneditable-input">{%=file.name%}</span>
-                    <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date input-small" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}">
-                    <span class="size label label-info">{%=o.formatFileSize(file.size)%}</span>
+                    <label class="control-label">Filename</label>
+                    <div class="controls controls-row">
+                        <div class="span3">
+                            <div><em class="replacement-text"></em></div>
+                            <span class="name uneditable-input subtle">{%=file.name%}</span>
+                        </div>
+                        <div class="span1">
+                            <span class="size label label-info">{%=o.formatFileSize(file.size)%}</span>
+                        </div>
+                    </div>
+
+                    <label class="control-label" for="">Date Created</label>
+                    <div class="controls controls-row">
+                         <div class="span4">
+                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date input-small" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}">
+                         </div>
+                    </div>
+
+                    <label class="control-label">Description</label>
+                    <div class="controls controls-row">
+                        <div class="span4">
+                            <textarea class="input-block-level" name="fileProxies[{%=idx%}].description" rows="1" placeholder="Enter a description here">{%=file.description%}</textarea>
+                        </div>
+                    </div>
                 </div>
-                <textarea class="input-block-level" name="fileProxies[{%=idx%}].description" rows="1" placeholder="Enter a description here">{%=file.description%}</textarea>
-            </td>
-            <td colspan="2">
-                <#-- FIXME:supposedly struts 2.1+ allows custom data attributes but I get a syntax error.  What gives? -->
-                <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" name="fileProxies[{%=idx%}].restriction" 
-                style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  
-                onchange="TDAR.fileupload.updateFileAction(this)" 
-                cssClass="fileProxyConfidential input-small confidential-contact-required"/>
+
             </td>
         <td>
 

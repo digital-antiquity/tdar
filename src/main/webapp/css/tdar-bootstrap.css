@@ -84,10 +84,13 @@ left: 0!important;
 }
 
 /* fix for file upload control to make it not make space for label */
-.template-download .controls {
-	margin-left: 0px !important;
-}
+/*.template-download .controls {*/
+	/*margin-left: 0px !important;*/
+/*}*/
 
+.uneditable-input.subtle {
+
+}
 /* undo bootstrap's styling for certain elements when inside of a 'treeview' widget. */
 .treeview input[type=checkbox] {
 	margin: 0 0 0;
