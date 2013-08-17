@@ -71,12 +71,12 @@ public class DashboardController extends AuthenticationAware.Base {
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
         collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
-        try {
-            getResourceCollectionService().reconcileCollectionTree2(getResourceCollections(), getAuthenticatedUser(), collectionIds);
-            getResourceCollectionService().reconcileCollectionTree2(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
-        } catch (ParseException e1) {
-            logger.error("parse exception: {} ", e1);
-        }
+            getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), getAuthenticatedUser(), collectionIds);
+            getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
+//            try {
+//        } catch (ParseException e1) {
+//            logger.error("parse exception: {} ", e1);
+//        }
 
         try {
             Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
