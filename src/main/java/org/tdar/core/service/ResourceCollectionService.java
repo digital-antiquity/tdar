@@ -6,10 +6,25 @@
  */
 package org.tdar.core.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotNullPredicate;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
+import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +39,9 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
 
 /**
  * @author Adam Brin
@@ -37,6 +55,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Autowired
     AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
+    @Autowired
+    SearchService searchService;
+    
     @Transactional
     public List<Resource> reconcileIncomingResourcesForCollection(ResourceCollection persistable, Person authenticatedUser, List<Resource> resources) {
         Map<Long, Resource> incomingIdMap = Persistable.Base.createIdMap(resources);
@@ -363,7 +384,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             authenticationAndAuthorizationService.applyTransientViewableFlag(child, authenticatedUser);
             collections.add(child);
             toEvaluate.remove(0);
-            child.setTransientChildren(findDirectChildCollections(child.getId(), null, collectionType));
+            child.setTransientChildren(new LinkedHashSet<ResourceCollection>(findDirectChildCollections(child.getId(), null, collectionType)));
             toEvaluate.addAll(child.getTransientChildren());
         }
         return collections;
@@ -410,6 +431,27 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 iter.remove();
             }
             findAllChildCollections(rc, authenticatedUser, ResourceCollection.CollectionType.SHARED);
+        }
+    }
+
+    public void reconcileCollectionTree2(List<ResourceCollection> resourceCollections, Person authenticatedUser, List<Long> collectionIds) throws ParseException {
+        Map<Long, ResourceCollection> idMap = Persistable.Base.createIdMap(resourceCollections);
+        ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
+        queryBuilder.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_TREE, Operator.OR,idMap.keySet()));
+        queryBuilder.setOperator(Operator.OR);
+        FullTextQuery search = searchService.search(queryBuilder,null);
+        ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
+        logger.info("{} {} {}", queryBuilder.toString(), search.getResultSize(), results);
+        while (results.next()) {
+            ResourceCollection coll = (ResourceCollection) results.get()[0];
+            if (collectionIds.contains(coll.getParentId())) {
+                resourceCollections.remove(coll);
+            }
+            ResourceCollection parent = idMap.get(coll.getParentId());
+            logger.info("coll: {} parent: {}", coll, parent);
+            if (parent != null) {
+                parent.getTransientChildren().add(coll);
+            }
         }
     }
 

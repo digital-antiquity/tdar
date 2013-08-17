@@ -3,7 +3,9 @@ package org.tdar.struts.action;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -15,7 +17,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Facetable;
@@ -24,7 +25,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -248,7 +248,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     public void loadExtraViewMetadata() {
         if (Persistable.Base.isNullOrTransient(getId()))
             return;
-        List<ResourceCollection> findAllChildCollections;
+        Set<ResourceCollection> findAllChildCollections;
         // FIXME: reconcile
         if (isAuthenticated()) {
             getResourceCollectionService().findAllChildCollections(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
@@ -274,9 +274,9 @@ public class CollectionController extends AbstractPersistableController<Resource
                         Arrays.asList(Status.ACTIVE, Status.DRAFT)));
             }
         } else {
-            findAllChildCollections = getResourceCollectionService().findDirectChildCollections(getId(), true, CollectionType.SHARED);
+            findAllChildCollections = new LinkedHashSet<ResourceCollection>(getResourceCollectionService().findDirectChildCollections(getId(), true, CollectionType.SHARED));
         }
-        setCollections(findAllChildCollections);
+        setCollections(new ArrayList<>(findAllChildCollections));
         Collections.sort(collections);
 
         if (getPersistable() != null) {

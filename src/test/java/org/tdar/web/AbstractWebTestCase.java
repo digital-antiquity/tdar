@@ -55,6 +55,9 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplat
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.utils.TestConfiguration;
+import org.w3c.css.sac.CSSException;
+import org.w3c.css.sac.CSSParseException;
+import org.w3c.css.sac.ErrorHandler;
 import org.w3c.tidy.Tidy;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
@@ -757,7 +760,28 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         webClient.getOptions().setTimeout(0);
         // webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
-
+        webClient.setCssErrorHandler(new ErrorHandler() {
+            @Override
+            public void warning(CSSParseException exception) throws CSSException {
+                if (exception.getURI().contains(getBaseUrl())) {
+                    logger.warn("CSS Warning:",exception);
+                }
+            }
+            
+            @Override
+            public void fatalError(CSSParseException exception) throws CSSException {
+                if (exception.getURI().contains(getBaseUrl())) {
+                    logger.error("CSS Fatal Error:",exception);
+                }
+            }
+            
+            @Override
+            public void error(CSSParseException exception) throws CSSException {
+                if (exception.getURI().contains(getBaseUrl())) {
+                    logger.error("CSS Error:",exception);
+                }
+            }
+        });;
         // reset encoding error exclusions for each test
         encodingErrorExclusions = new HashSet<String>();
         // <generated> gets emitted by cglib methods in stacktrace, let's not consider it to be a double encoding error.

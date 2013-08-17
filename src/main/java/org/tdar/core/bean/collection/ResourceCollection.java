@@ -188,7 +188,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @JoinColumn(name = "parent_id")
     private ResourceCollection parent;
 
-    private transient List<ResourceCollection> transientChildren;
+    private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
     @Column(nullable = false)
     
@@ -533,6 +533,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father, you.
      */
     @Transient
+    @Field(name = QueryFieldNames.COLLECTION_TREE)
+    @JSONTransient
+    @ElementCollection
+    @IndexedEmbedded
     public List<Long> getParentIdList() {
         ArrayList<Long> parentIdTree = new ArrayList<Long>();
         for (ResourceCollection collection : getHierarchicalResourceCollections()) {
@@ -662,11 +666,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     }
 
-    public List<ResourceCollection> getTransientChildren() {
+    public Set<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }
 
-    public void setTransientChildren(List<ResourceCollection> transientChildren) {
+    public void setTransientChildren(Set<ResourceCollection> transientChildren) {
         this.transientChildren = transientChildren;
     }
 

@@ -434,7 +434,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
                 if (!status.isActive()) { // if not active, check other permissions
                     logger.trace("item 'is not active': " + p.toString());
                     if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
-                        logger.debug("\tuser is special': " + p.toString());
+                        logger.trace("\tuser is special': " + p.toString());
                         viewable = true;
                     }
                 } else {
