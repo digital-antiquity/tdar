@@ -87,8 +87,15 @@
         <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Browse by Resource Type(s)" facetParam="selectedResourceTypes" />
         <#else>
             <h4>
-                Browse by Resource Type(s): ${resourceTypeFacets[0].plural}
-                <sup><a style="text-decoration: " href="<@s.url value="view?id=${id?c}" />">[remove this filter]</a></sup>
+There are ${paginationHelper.totalNumberOfItems?c}
+ <#if selectedResourceTypes?has_content>
+${resourceTypeFacets[0].plural}
+
+ <#else>Resources</#if> within this Project <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: " href="<@s.url includeParams="all">
+            <@s.param name="selectedResourceTypes"value="" />
+            <@s.param name="startRecord" value=""/>
+</@s.url>">[remove this filter]</a></sup>
+ </#if>
             </h4>
         </#if>
 		<div class="tdarresults">

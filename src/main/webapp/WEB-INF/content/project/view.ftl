@@ -14,13 +14,23 @@ li.media { display:inline-block}
 
 
 <#macro footer>
+        <#if selectedResourceTypes.empty>
         <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Browse by Resource Type(s)" facetParam="selectedResourceTypes" />
-
+		</#if>
 <#if (totalRecords > 0)>
 
 <br/>
-<h3>There are ${paginationHelper.totalNumberOfItems?c} <#if selectedResourceTypes?has_content>
-<#list selectedResourceTypes as type>${type.plural} </#list> <#else>Resources</#if> within this Project</h3>
+<h3>There are ${paginationHelper.totalNumberOfItems?c}
+
+
+ <#if selectedResourceTypes?has_content>
+${resourceTypeFacets[0].plural}
+ <#else>Resources</#if> within this Project <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: " href="<@s.url includeParams="all">
+            <@s.param name="selectedResourceTypes"value="" />
+            <@s.param name="startRecord" value=""/>
+</@s.url>">[remove this filter]</a></sup>
+ </#if>
+ </h3>
 
     <#if ( results?has_content )>
               <@rlist.listResources resourcelist=results listTag="ol" headerTag="h4" titleTag="h5" 

@@ -213,7 +213,7 @@
 </#macro>
 
 
-<#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" liCssClass="media">
+<#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" liCssClass="media" action=actionName>
 <#if (facetlist?? && !facetlist.empty)>
 <h4>${label}:</h4>
 <ul class="media-list tools">
@@ -229,7 +229,7 @@
 				
                 <span class="media-body">
                 
-                <a rel="noindex" href="<@s.url includeParams="all">
+                <a rel="noindex" href="<@s.url action=action includeParams="all">
                     <@s.param name="${facetParam}">${facet}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if facetParam != "documentType">

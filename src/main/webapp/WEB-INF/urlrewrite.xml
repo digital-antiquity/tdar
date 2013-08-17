@@ -198,7 +198,7 @@
 		<to>/$1/$3/$2</to>
 	</outbound-rule>
 	<outbound-rule>
-		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)&amp;(.*)$
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)(.+)$
 		</from>
 		<to>/$1/$3/$2?$4</to>
 	</outbound-rule>
@@ -335,7 +335,12 @@
 		<to>$1$2$3</to>
 	</outbound-rule>
 
-	<!-- <outbound-rule> <from>^/(.+)\.action\?(.*)$</from> <to>$1?$2</to> </outbound-rule> -->
+	<!--  be careful with this where possible (it could have issues with things like the TAG Gateway) -->
+	<outbound-rule>
+		<from>^/(search|project|collection)/(.+)\.action\?(.*)$</from>
+		<to>/$1/$2?$3</to>
+	</outbound-rule> 
+
 
 
 </urlrewrite>
