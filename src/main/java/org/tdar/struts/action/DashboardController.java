@@ -60,24 +60,38 @@ public class DashboardController extends AuthenticationAware.Base {
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
     private Set<Account> accounts = new HashSet<Account>();
     private Set<Account> overdrawnAccounts = new HashSet<Account>();
-
+    
+    // remove when we track down what exactly the perf issue is with the dashboard;
+    // toggles let us turn off specific queries / parts of homepage
+    private boolean hideGraphs = false;
+    private int rcDT = 0;
+    
+    
     @Override
     @Action("dashboard")
     public String execute() {
         setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
-        setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
+        if (!hideGraphs) {
+            setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
+        }
+        if (rcDT != -1) {
         getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
         collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
+        if (rcDT < 2) {
             getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), getAuthenticatedUser(), collectionIds);
             getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
-//            try {
-//        } catch (ParseException e1) {
-//            logger.error("parse exception: {} ", e1);
-//        }
-
+        } else {
+        try {
+            getResourceCollectionService().reconcileCollectionTree2(getResourceCollections(), getAuthenticatedUser(), collectionIds);
+            getResourceCollectionService().reconcileCollectionTree2(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
+        } catch (ParseException e1) {
+            logger.error("parse exception: {} ", e1);
+        }
+        }
+        }
         try {
             Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
             if (isEditor() && indexingTask != null) {
@@ -310,6 +324,22 @@ public class DashboardController extends AuthenticationAware.Base {
 
     public void setOverdrawnAccounts(Set<Account> overdrawnAccounts) {
         this.overdrawnAccounts = overdrawnAccounts;
+    }
+
+    public boolean isHideGraphs() {
+        return hideGraphs;
+    }
+
+    public void setHideGraphs(boolean hideGraphs) {
+        this.hideGraphs = hideGraphs;
+    }
+
+    public int getRcDT() {
+        return rcDT;
+    }
+
+    public void setRcDT(int rcDT) {
+        this.rcDT = rcDT;
     }
 
 }
