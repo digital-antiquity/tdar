@@ -64,7 +64,7 @@ public class DashboardController extends AuthenticationAware.Base {
     // remove when we track down what exactly the perf issue is with the dashboard;
     // toggles let us turn off specific queries / parts of homepage
     private boolean hideGraphs = false;
-    private int rcDT = 0;
+    private int rcDT = 2;
     
     
     @Override
@@ -75,6 +75,7 @@ public class DashboardController extends AuthenticationAware.Base {
         if (!hideGraphs) {
             setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
         }
+        logger.debug("\t collections");
         if (rcDT != -1) {
         getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
@@ -92,6 +93,7 @@ public class DashboardController extends AuthenticationAware.Base {
         }
         }
         }
+        logger.debug("\t - activity");
         try {
             Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
             if (isEditor() && indexingTask != null) {
@@ -118,7 +120,9 @@ public class DashboardController extends AuthenticationAware.Base {
         }
         activeResourceCount += getStatusCountForUser().get(Status.ACTIVE);
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
-        logger.trace("{}", resourceCollections);
+
+        logger.info("\t - done");
+
         return SUCCESS;
     }
 

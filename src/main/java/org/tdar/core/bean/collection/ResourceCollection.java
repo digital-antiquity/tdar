@@ -412,9 +412,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Transient
     public Long getParentId() {
-        if (parent == null)
+        if (getParent() == null)
             return null;
-        return parent.getId();
+        return getParent().getId();
     }
 
     @Override

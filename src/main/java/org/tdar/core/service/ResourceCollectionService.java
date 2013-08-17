@@ -449,11 +449,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             if (collectionIds.contains(coll.getParentId())) {
                 resourceCollections.remove(coll);
             }
-            ResourceCollection parent = idMap.get(coll.getParentId());
+            // hibernate should use the same identity for both of these ... and thus reconcile the thing inside and outside the map
+            ResourceCollection parent = coll.getParent();
             authenticationAndAuthorizationService.applyTransientViewableFlag(coll, authenticatedUser);
             if (parent != null) {
                 parent.getTransientChildren().add(coll);
             }
+//            logger.info("parent: {} child: {} ", parent, coll);
         }
     }
 
