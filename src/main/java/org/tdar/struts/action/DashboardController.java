@@ -12,7 +12,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -63,8 +62,6 @@ public class DashboardController extends AuthenticationAware.Base {
     
     // remove when we track down what exactly the perf issue is with the dashboard;
     // toggles let us turn off specific queries / parts of homepage
-    private boolean hideGraphs = false;
-    private int rcDT = 2;
     
     
     @Override
@@ -72,27 +69,20 @@ public class DashboardController extends AuthenticationAware.Base {
     public String execute() {
         setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
-        if (!hideGraphs) {
             setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
-        }
         logger.debug("\t collections");
-        if (rcDT != -1) {
         getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
         collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
-        if (rcDT < 2) {
             getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), getAuthenticatedUser(), collectionIds);
             getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
-        } else {
-        try {
-            getResourceCollectionService().reconcileCollectionTree2(getResourceCollections(), getAuthenticatedUser(), collectionIds);
-            getResourceCollectionService().reconcileCollectionTree2(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
-        } catch (ParseException e1) {
-            logger.error("parse exception: {} ", e1);
-        }
-        }
-        }
+//        try {
+//            getResourceCollectionService().reconcileCollectionTree2(getResourceCollections(), getAuthenticatedUser(), collectionIds);
+//            getResourceCollectionService().reconcileCollectionTree2(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
+//        } catch (ParseException e1) {
+//            logger.error("parse exception: {} ", e1);
+//        }
         logger.debug("\t - activity");
         try {
             Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
@@ -328,22 +318,6 @@ public class DashboardController extends AuthenticationAware.Base {
 
     public void setOverdrawnAccounts(Set<Account> overdrawnAccounts) {
         this.overdrawnAccounts = overdrawnAccounts;
-    }
-
-    public boolean isHideGraphs() {
-        return hideGraphs;
-    }
-
-    public void setHideGraphs(boolean hideGraphs) {
-        this.hideGraphs = hideGraphs;
-    }
-
-    public int getRcDT() {
-        return rcDT;
-    }
-
-    public void setRcDT(int rcDT) {
-        this.rcDT = rcDT;
     }
 
 }

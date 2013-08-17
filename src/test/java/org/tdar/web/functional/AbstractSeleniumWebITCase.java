@@ -794,7 +794,7 @@ public abstract class AbstractSeleniumWebITCase {
         }
         if (!ignoreJavascriptErrors) {
             //FIXME: uncomment the next line after we upgrade selenium to 2.35 (currently at 2.34)
-            //fail("ENCOUNTERED JAVASCRIPT ERRORS ON PAGE: " + driver.getCurrentUrl() + "\r\n [" + errors + "]");
+            fail("ENCOUNTERED JAVASCRIPT ERRORS ON PAGE: " + driver.getCurrentUrl() + "\r\n [" + errors + "]");
         }
     }
 

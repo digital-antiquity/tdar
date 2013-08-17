@@ -423,6 +423,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
          * If the Persistable supports the "Viewable" interface, then inject the
          * permissions into the transient property
          */
+        
+        //FIXME: it'd be nice if this took an array and could handle multiple lookups at once
         logger.trace("applying transient viewable flag to : " + p);
         if (p instanceof Viewable) {
             logger.trace("item is a 'viewable': " + p.toString());

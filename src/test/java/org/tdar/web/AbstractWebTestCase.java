@@ -764,24 +764,24 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             @Override
             public void warning(CSSParseException exception) throws CSSException {
                 if (exception.getURI().contains(getBaseUrl())) {
-                    logger.warn("CSS Warning:",exception);
+                    logger.trace("CSS Warning:",exception);
                 }
             }
             
             @Override
             public void fatalError(CSSParseException exception) throws CSSException {
                 if (exception.getURI().contains(getBaseUrl())) {
-                    logger.error("CSS Fatal Error:",exception);
+                    logger.warn("CSS Fatal Error:",exception);
                 }
             }
             
             @Override
             public void error(CSSParseException exception) throws CSSException {
                 if (exception.getURI().contains(getBaseUrl())) {
-                    logger.error("CSS Error:",exception);
+                    logger.debug("CSS Error:",exception);
                 }
             }
-        });;
+        });
         // reset encoding error exclusions for each test
         encodingErrorExclusions = new HashSet<String>();
         // <generated> gets emitted by cglib methods in stacktrace, let's not consider it to be a double encoding error.
