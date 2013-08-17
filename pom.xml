@@ -1390,6 +1390,7 @@
 					</excludes>
 					<forkMode>never</forkMode>
 					<skip>${maven.test.skip}</skip>
+					<runOrder>alphabetical</runOrder>
 					<systemProperties>
 						<property>
 							<name>maven.version</name>
@@ -1438,6 +1439,7 @@
 					</execution>
 				</executions>
 				<configuration>
+					<runOrder>alphabetical</runOrder>
 					<systemPropertyVariables>
 						<display.port>${display.port}</display.port>
 					</systemPropertyVariables>

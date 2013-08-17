@@ -113,7 +113,9 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         for (PropertyDescriptor descriptors : collection.getSchema().getDescriptors()) {
             PropertyType type = descriptors.getType();
             DataTableColumnType columnType = DataTableColumnType.BLOB;
-            if (type.getBinding().isAssignableFrom(String.class)) {
+
+            //FIXME: not 100% sure this is right
+            if (type.getBinding().isAssignableFrom(String.class) || type.getBinding().isAssignableFrom(MultiLineString.class)) {
                 columnType = DataTableColumnType.TEXT;
             } else if (type.getBinding().isAssignableFrom(Double.class) || type.getBinding().isAssignableFrom(Float.class)) {
                 columnType = DataTableColumnType.DOUBLE;
