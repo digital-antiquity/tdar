@@ -434,6 +434,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
     }
 
+    /*
+     * FIXME; this does not seem to find some of the deep collection children 
+     */
     public void reconcileCollectionTree2(List<ResourceCollection> resourceCollections, Person authenticatedUser, List<Long> collectionIds) throws ParseException {
         Map<Long, ResourceCollection> idMap = Persistable.Base.createIdMap(resourceCollections);
         ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
@@ -441,14 +444,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         queryBuilder.setOperator(Operator.OR);
         FullTextQuery search = searchService.search(queryBuilder,null);
         ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
-        logger.info("{} {} {}", queryBuilder.toString(), search.getResultSize(), results);
         while (results.next()) {
             ResourceCollection coll = (ResourceCollection) results.get()[0];
             if (collectionIds.contains(coll.getParentId())) {
                 resourceCollections.remove(coll);
             }
             ResourceCollection parent = idMap.get(coll.getParentId());
-            logger.info("coll: {} parent: {}", coll, parent);
+            authenticationAndAuthorizationService.applyTransientViewableFlag(coll, authenticatedUser);
             if (parent != null) {
                 parent.getTransientChildren().add(coll);
             }
