@@ -32,7 +32,7 @@
     <div class="news alert" id="alert-jar">
 		<button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-jar">&times;</button>
         <B>${siteAcronym} Update:</B>
-        Welcome to Jar! What's new?
+        Welcome to Jar! Learn all about what's new (GIS), and what's changed (User Profile Pages &amp; file replacement) <a href="http://www.tdar.org/news/2013/08/tdar-software-update-jar/">here</a>.
         <br/>
     </div>
 </div>
