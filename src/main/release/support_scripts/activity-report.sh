@@ -1,7 +1,7 @@
 #!/bin/sh
 # gives some understanding of what happened the day before by grepping and counting the number of views, searches, etc. from the tdar log files
 GREPDATE=`date -d yesterday +%Y-%m-%d`
-FILE="/var/log/tomcat6/tdar.$GREPDATE.log"
+FILE="/var/log/tomcat7/tdar.$GREPDATE.log"
 CREATING=`grep -c "CREATING" ${FILE}`
 SAVING=`grep -c "SAVING" ${FILE}`
 DELETING=`grep -c "DELETING" ${FILE}`
