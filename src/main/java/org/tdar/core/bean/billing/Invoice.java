@@ -30,6 +30,8 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 
+import com.google.common.base.Optional;
+
 /**
  * $Id$
  * 
@@ -253,6 +255,10 @@ public class Invoice extends Base implements Updatable {
         return totalFiles;
     }
 
+    private <T> T coalesce(T ...items) {
+        for(T i : items) if(i != null) return i;
+        return null;
+    }
     private void initTotals() {
         if (!initialized) {
             // if (coupon != null) {
@@ -262,22 +268,22 @@ public class Invoice extends Base implements Updatable {
             Long discountedSpace = 0L;
             Long discountedFiles = 0L;
             if (coupon != null) {
-                discountedFiles = coupon.getNumberOfFiles();
-                discountedSpace = coupon.getNumberOfMb();
+                discountedFiles = coalesce(coupon.getNumberOfFiles(),0L);
+                discountedSpace = coalesce(coupon.getNumberOfMb(),0L);
             }
 
             for (BillingItem item : getItems()) {
                 BillingActivity activity = item.getActivity();
-                Long numberOfFiles = activity.getNumberOfFiles();
-                Long space = activity.getNumberOfMb();
-                Long numberOfResources = activity.getNumberOfResources();
+                Long numberOfFiles = coalesce(activity.getNumberOfFiles(),0L);
+                Long space = coalesce(activity.getNumberOfMb(),0L);
+                Long numberOfResources = coalesce(activity.getNumberOfResources(),0L);
 
-                if (activity.getNumberOfFiles() > 0 && discountedFiles > 0) {
+                if (numberOfFiles > 0 && discountedFiles > 0) {
                     couponValue += activity.getPrice() * discountedFiles;
                     discountedFiles = 0L;
                 }
 
-                if (activity.getNumberOfMb() > 0 && discountedSpace > 0) {
+                if (space > 0 && discountedSpace > 0) {
                     couponValue += activity.getPrice() * discountedSpace;
                     discountedSpace = 0L;
                 }
