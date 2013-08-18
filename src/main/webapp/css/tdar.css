@@ -1698,10 +1698,6 @@ td.nowrap {
     background: url(/images/new.png) center right no-repeat;
 }
 
-.showcase-button-wrapper {
-    visibility: hidden;
-    display: none
-}
 
 .dataTables_paginate {
     float: none;
@@ -1994,14 +1990,6 @@ div#subtitle {
     white-space: nowrap;
 }
 
-.showcase-thumbnail-container,.showcase-thumbnail-restriction {
-    height: 110px !important;
-    overflow: hidden !important;
-}
-
-.showcase-thumbnail {
-    margin-bottom: 20px
-}
 
 .primary-thumbnail {
     float: right;

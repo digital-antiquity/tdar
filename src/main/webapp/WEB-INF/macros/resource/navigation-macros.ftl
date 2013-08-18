@@ -4,7 +4,6 @@ navigation freemarker macros
 -->
 <#escape _untrusted as _untrusted?html>
 <#import "list-macros.ftl" as list>
-<#import "edit-macros.ftl" as edit>
 
 
 <#macro loginForm cssClass="">
@@ -38,12 +37,12 @@ $(document).ready(function() {
 <#local formAction><@getFormUrl absolutePath="/login/process"/></#local>
 <@s.form id='loginForm' method="post" action="${formAction}" cssClass="${cssClass}">
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
-    <@s.textfield theme="bootstrap" spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
-    <@s.password theme="bootstrap" id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
-    <@s.checkbox  name="userCookieSet" label="Stay logged-in the next time I visit this page" />
+    <@s.textfield spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
+    <@s.password id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
+    <@s.checkbox name="userCookieSet" label="Stay logged-in the next time I visit this page" />
     
     <div class="form-actions">
-        <button type="submit" class="button btn btn-primary input-small submitButton" name="Login" id="btnLogin">Login</button>
+        <button type="submit" class="button btn btn-primary input-small submitButton" name="_tdar.Login" id="btnLogin">Login</button>
         <div class="pull-right">
             <div class="btn-group">
                 <a class="btn " href='<@s.url value="/account/new"/>'>Register </a> 
@@ -62,7 +61,7 @@ $(document).ready(function() {
     </#if>
   </#if>
   <#if (sessionData.authenticated)!false>
-    <div class="span12 resource-nav no-print " id="toolbars" parse="true">
+    <div class="span12 resource-nav  screen " id="toolbars" parse="true">
       <ul >
        <#if persistable??>
         <@makeViewLink namespace current />
@@ -104,14 +103,14 @@ $(document).ready(function() {
         </#if>
     
   <#if sessionData?? && sessionData.authenticated>
-    <div class="span12 resource-nav no-print " id="toolbars" parse="true">
+    <div class="span12 resource-nav  screen" id="toolbars" parse="true">
       <ul >
-    <@nav.makeLink "browse" "creators" "view" "view" current true />
+    <@makeLink "browse" "creators" "view" "view" current true />
 
     <#if "edit" != current>
-        <@nav.makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
+        <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
     <#else>
-        <@nav.makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
+        <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
     </#if>
       </ul>
     </div>
@@ -175,7 +174,7 @@ $(document).ready(function() {
 
 <#macro img url alt="">
 <img src='<@s.url value="${url}" />' <#t>
-    <#if alt != ""> alt='${alt}'</#if> <#t>
+    <#if alt != ""> alt='${alt}'<#else>alt='toolbar image'</#if> <#t>
  />
 </#macro>
 

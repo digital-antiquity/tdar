@@ -29,10 +29,10 @@
 --DONT-PROCESS-- SET SESSION AUTHORIZATION DEFAULT;
 --DONT-PROCESS-- set constraints all deferred;
 
---DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, location, url) VALUES (12088, NULL, NULL, NULL, NULL);
---DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, location, url) VALUES (8092, NULL, NULL, NULL, NULL);
---DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, location, url) VALUES (8093, NULL, NULL, NULL, NULL);
---DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, location, url) VALUES (8094, NULL, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (12088, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8092, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8093, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8094, NULL, NULL, NULL);
 
 --DONT-PROCESS-- INSERT INTO institution(id,  "name") values (12088, 'University of TEST');
 --DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8092, true, 'test@tdar.org', 'test', 'user', true, NULL, '', NULL, 12088);
@@ -223,6 +223,33 @@ drop table test;
 --DONT-PROCESS-- -- END extract from SQLExtract
 --DONT-PROCESS-- -- ====================================================================================================================----
 
+-- added by jim 6/1/2013
+--DONT-PROCESS-- INSERT INTO collection (id, date_created, date_updated, description, name, orientation, sort_order, collection_type, visible, owner_id, parent_id, updater_id) VALUES (1575, '2013-07-01 16:49:15.583', '2013-07-01 16:49:15.583', 'this is a test', 'sample collection', 'LIST', 'TITLE', 'SHARED', true, 8092, NULL, 8092);
+--DONT-PROCESS-- INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id) VALUES (4289, '2013-07-01 16:42:32.355', '2013-07-01 16:42:32.355', 'this is a test ', NULL, 0, 'ACTIVE', 'SENSORY_DATA', 0, 'ACTIVE', 'sample sensorydata', '', 8092, 8092, 8092);
+--DONT-PROCESS-- INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id) VALUES (4290, '2013-07-01 16:44:49.712', '2013-07-01 16:44:49.712', 'this is a test', NULL, 0, 'ACTIVE', 'VIDEO', 0, 'ACTIVE', 'sample video', '', 8092, 8092, 8092);
+--DONT-PROCESS-- INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id) VALUES (4291, '2013-07-01 16:46:42.454', '2013-07-01 16:46:42.454', 'test', NULL, 0, 'ACTIVE', 'GEOSPATIAL', 0, 'ACTIVE', 'sample geospatial', '', 8092, 8092, 8092);
+--DONT-PROCESS-- INSERT INTO resource (id, date_registered, date_updated, title, account_id , total_space_in_bytes, status, resource_type, total_files, previous_status, description, url, uploader_id, submitter_id, updater_id) VALUES (4292, '2013-07-01 17:21:35.881', '2013-07-01 17:21:35.881', 'this is a test', NULL, 0, 'ACTIVE', 'IMAGE', 0, 'ACTIVE', 'sample image', '', 8092, 8092, 8092);
+
+--DONT-PROCESS-- INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:42:34.693', 4289);
+--DONT-PROCESS-- INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:44:51.07', 4290);
+--DONT-PROCESS-- INSERT INTO resource_access_statistics (date_accessed, resource_id) VALUES ('2013-07-01 16:46:43.537', 4291);
+--DONT-PROCESS-- INSERT INTO resource_access_statistics ( date_accessed, resource_id) VALUES ('2013-07-01 16:46:43.537', 4292);
+--DONT-PROCESS-- INSERT INTO information_resource (copy_location, date_created, date_created_normalized ,id, external_reference) VALUES (NULL, 2013, 2010, 4289, false);
+--DONT-PROCESS-- INSERT INTO information_resource (copy_location, date_created, date_created_normalized ,id, external_reference) VALUES ('', 2012, 2010,   4290, false);
+--DONT-PROCESS-- INSERT INTO information_resource (copy_location, date_created, date_created_normalized ,id, external_reference) VALUES (NULL, 2012, 2010, 4291, false);
+--DONT-PROCESS-- INSERT INTO information_resource (copy_location, date_created, date_created_normalized ,id, external_reference) VALUES (NULL, 2012, 2010, 4292, false);
+--DONT-PROCESS-- INSERT INTO dataset (id) values(4291);
+--DONT-PROCESS-- INSERT INTO dataset (id) values(4289);
+--DONT-PROCESS-- INSERT INTO sensory_data (id, turntable_used , mesh_holes_filled , mesh_rgb_included , mesh_smoothing , mesh_data_reduction , premesh_color_editions , premesh_overlap_reduction , premesh_smoothing , premesh_subsampling , rgb_preserved_from_original, mesh_color_editions , mesh_healing_despiking ) VALUES (4289,false,false,false,false,false,false,false,false,false,false,false, false);
+--DONT-PROCESS-- INSERT INTO video (id) VALUES (4290);
+--DONT-PROCESS-- INSERT INTO geospatial (currentnessUpdateNotes,projection,id) VALUES ('hipster-level currentness', 'bogus projection information',4291);
+--DONT-PROCESS-- INSERT INTO image VALUES (4292);
+
+-- end added by jim 6/1/2013
+-- ab add 6/2/2103
+--DONT-PROCESS-- INSERT INTO collection_resource(resource_id, collection_id) VALUES(4289,1575),(4290,1575),(4291,1575),(4292,1575);
+
+
 --DONT-PROCESS-- SELECT setval('category_variable_id_seq', (SELECT MAX(id) FROM category_variable)+1);
 --DONT-PROCESS-- SELECT setval('contributor_request_id_seq', (SELECT MAX(id) FROM contributor_request)+1);
 --DONT-PROCESS-- SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
@@ -298,3 +325,4 @@ drop table test;
 --DONT-PROCESS-- SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);
 --DONT-PROCESS-- update pos_billing_activity set activity_type='PRODUCTION';
 --DONT-PROCESS-- update pos_billing_activity set activity_type = 'TEST' where name in ('good','error', 'decline', 'unknown');
+

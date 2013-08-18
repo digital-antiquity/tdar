@@ -1,8 +1,6 @@
 package org.tdar.core.bean.resource.sensory;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +10,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.SensoryData;
@@ -23,40 +22,49 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     private static final long serialVersionUID = -310445034386268598L;
 
     @Column(nullable = false)
+    @Length(max = 255)
     private String filename;
 
     @Column(name = "transformation_matrix")
+    @Length(max = 255)
     private String transformationMatrix;
 
     @Column(name = "monument_name")
+    @Length(max = 255)
     private String monumentName;
 
     @Column(name = "points_in_scan")
     private Long pointsInScan;
 
     @Column(name = "scan_notes")
+    @Length(max = 255)
     private String scanNotes;
 
-    @Column(name = "scanner_technology")
+    @Column(name = "scanner_technology", length = 255)
     @Enumerated(EnumType.STRING)
     private ScannerTechnologyType scannerTechnology;
 
     @Column(name = "triangulation_details")
+    @Length(max = 255)
     private String triangulationDetails;
 
     @Column
     private Double resolution;
 
     @Column(name = "tof_return")
+    @Length(max = 255)
     private String tofReturn;
 
     @Column(name = "phase_frequency_settings")
+    @Length(max = 255)
     private String phaseFrequencySettings;
 
     @Column(name = "phase_noise_settings")
+    @Length(max = 255)
     private String phaseNoiseSettings;
 
     @Column(name = "camera_exposure_settings")
+    @Length(max = 255)
     private String cameraExposureSettings;
 
     @Column(name = "scan_date")
@@ -193,10 +201,4 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     public String toString() {
         return filename + " (" + getId() + " )";
     }
-
-    @Override
-    public List<?> getEqualityFields() {
-        return Arrays.asList(getId());
-    }
-
 }

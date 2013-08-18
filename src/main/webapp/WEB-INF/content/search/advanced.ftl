@@ -1,7 +1,7 @@
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
-<#include "/WEB-INF/macros/resource/navigation-macros.ftl">
+<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 
 <#--FIXME: this method for determining active tab won't work if (for example) controller returns INPUT for collection/institution/person search -->
 <#function activeWhen _actionNames>
@@ -19,6 +19,7 @@
 
 </head>
 <body>
+<#escape _untrusted as _untrusted?html >
 <h1>Search ${siteAcronym}</h1>
 <div class="usual">
 
@@ -97,13 +98,13 @@
 $(document).ready(function(){
     //switch to the correct tab if coming from collection search
 
-    serializeFormState();
+    TDAR.advancedSearch.serializeFormState();
 
     if ($("#autosave").val() !== '') {
         $("#searchGroups").html($("#autosave").val());
         $('.add-another-control').remove();
     }
-    initAdvancedSearch();
+    TDAR.advancedSearch.initAdvancedSearch();
     
     //other view init stuff;
     if($('#large-google-map').length) {
@@ -231,20 +232,20 @@ $(document).ready(function(){
     <#elseif fieldType = 'DATE_CREATED'>
         <div class="term retain ${fieldType} controls-row">
             <div class="span3">
-                <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy' labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="After"/>
+                <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy' labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"/>
             </div>
             <div class="span3">
-             <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy'labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Before"/>
+             <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy'labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"/>
             </div>
         </div>            
     
     <#elseif fieldType?starts_with("DATE_")>
         <div class="term retain ${fieldType} controls-row">
             <div class="span3">
-                <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="After"/>
+                <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"/>
             </div>
             <div class="span3">
-                <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Before"/>
+                <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"/>
             </div>
         </div>            
     <#elseif fieldType="PROJECT">
@@ -300,7 +301,7 @@ $(document).ready(function(){
                 </select>
             </div>
         </div>
-        <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="setDefaultTerm" data-groupnum="0"  data-add-another="add another search term">
+        <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="TDAR.advancedSearch.setDefaultTerm" data-groupnum="0"  data-add-another="add another search term">
         
             <#if group_?is_hash >
                 <#list group_.fieldTypes as fieldType >
@@ -375,3 +376,4 @@ $(document).ready(function(){
 
 
 
+</#escape>

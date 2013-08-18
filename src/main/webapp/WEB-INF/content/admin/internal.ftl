@@ -9,7 +9,7 @@
 <div class="glide">
 <h3>Current Resource Breakdown</h3>
 <#assign currentResourceStatsKeys = currentResourceStats?keys?sort />
-<table class="tableFormat">
+<table class="tableFormat table">
 <thead>
   <tr>
     <th>Resource Type</th><th>Total #</th><th># with files</th><th># with confidential files</th>
@@ -32,7 +32,7 @@
 
 <div class="glide">
 <h3>Recent Logins </h3>
-<table class="tableFormat">
+<table class="tableFormat table">
 <thead>
   <tr>
     <th>User</th>
@@ -43,7 +43,7 @@
    <#list recentLogins as user>
      <tr>
        <td> <a href="<@s.url value="/browse/creators/${user.id?c}"/>">${user.properName}</a></td>
-       <td> ${user.email}</td>
+       <td> ${user.email!""}</td>
        <td> ${user.lastLogin!"never"} (${user.totalLogins!0})</td>
      </tr>
    </#list>
@@ -53,7 +53,7 @@
 
 <div class="glide">
     <h3>Recently Created or Updated Resources in the Last Week</h3>
-    <table class="tableFormat">
+	<table class="tableFormat table">
       <tr>
         <th>Id</th>
         <th>Title</th>

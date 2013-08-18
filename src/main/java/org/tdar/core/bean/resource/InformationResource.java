@@ -1,6 +1,5 @@
 package org.tdar.core.bean.resource;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,6 +19,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -38,7 +38,6 @@ import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DynamicBoost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
@@ -46,6 +45,7 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
@@ -65,7 +65,6 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.JSONTransient;
@@ -146,29 +145,30 @@ public abstract class InformationResource extends Resource {
     @OrderBy("sequenceNumber asc")
     @JSONTransient
     @IndexedEmbedded
-    private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<InformationResourceFile>();
+    private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<>();
 
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "metadata_language")
+    @Column(name = "metadata_language", length = 100)
     private Language metadataLanguage;
 
     @BulkImportField(label = "Resource Language", comment = BulkImportField.RESOURCE_LANGAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "resource_language")
+    @Column(name = "resource_language", length = 100)
     private Language resourceLanguage;
 
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "license_type")
+    @Column(name = "license_type", length = 128)
     @BulkImportField(label = BulkImportField.LICENSE_TYPE, required = true)
     private LicenseType licenseType;
 
     @Column(name = "license_text")
     @BulkImportField(label = BulkImportField.LICENSE_TEXT)
     @Type(type = "org.hibernate.type.StringClobType")
+    @Lob
     private String licenseText;
 
     @Column(name = "external_reference", nullable = true)
@@ -177,6 +177,7 @@ public abstract class InformationResource extends Resource {
 
     @BulkImportField(label = "Copy Located At", comment = BulkImportField.COPY_LOCATION_DESCRIPTION)
     @Column(name = "copy_location")
+    @Length(max = 255)
     private String copyLocation;
 
     @Column(name = "last_uploaded")
@@ -210,6 +211,7 @@ public abstract class InformationResource extends Resource {
 
     @BulkImportField(label = "Publisher Location")
     @Column(name = "publisher_location")
+    @Length(max = 255)
     private String publisherLocation;
 
     @JoinColumn(name = "copyright_holder_id")
@@ -218,19 +220,19 @@ public abstract class InformationResource extends Resource {
     private Creator copyrightHolder;
 
     // downward inheritance sections
-    @Column(name = "inheriting_investigation_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = InvestigationType.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingInvestigationInformation;
-    @Column(name = "inheriting_site_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = SiteNameKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSiteInformation;
-    @Column(name = "inheriting_material_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = MaterialKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingMaterialInformation;
-    @Column(name = "inheriting_other_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = OtherKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingOtherInformation;
-    @Column(name = "inheriting_cultural_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = CultureKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingCulturalInformation;
-    @Column(name = "inheriting_spatial_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSpatialInformation;
-    @Column(name = "inheriting_temporal_information", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = TemporalKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingTemporalInformation;
     @Column(name = "inheriting_note_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingNoteInformation;
@@ -243,11 +245,12 @@ public abstract class InformationResource extends Resource {
     private DataTableColumn mappedDataKeyColumn;
 
     @Column
+    @Length(max = 255)
     private String mappedDataKeyValue;
 
     @Transient
     @XmlTransient
-    private Map<DataTableColumn, String> relatedDatasetData = new HashMap<DataTableColumn, String>();
+    private Map<DataTableColumn, String> relatedDatasetData = new HashMap<>();
 
     public Language getMetadataLanguage() {
         return metadataLanguage;
@@ -356,16 +359,17 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
+    // @Boost(1.5f)
     @Fields({
-            @Field(boost = @Boost(1.5f), name = QueryFieldNames.PROJECT_TITLE),
+            @Field(name = QueryFieldNames.PROJECT_TITLE),
             @Field(name = QueryFieldNames.PROJECT_TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
-            })
+    })
     public String getProjectTitle() {
         return getProject().getTitleSort();
     }
-    
+
     @Transient
-    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) 
+    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getProjectTitleSort() {
         return getProject().getTitleSort() + " - " + getTitle();
     }
@@ -464,6 +468,18 @@ public abstract class InformationResource extends Resource {
         return informationResourceFiles.iterator().next();
     }
 
+    @JSONTransient
+    @XmlTransient
+    public Set<InformationResourceFile> getActiveInformationResourceFiles() {
+        HashSet<InformationResourceFile> files = new HashSet<>();
+        for (InformationResourceFile file : informationResourceFiles) {
+            if (!file.isDeleted()) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
+
     public void setInformationResourceFiles(Set<InformationResourceFile> informationResourceFiles) {
         this.informationResourceFiles = informationResourceFiles;
     }
@@ -520,26 +536,23 @@ public abstract class InformationResource extends Resource {
     @FieldBridge(impl = PersistentReaderBridge.class)
     @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
     @Transient
-    @Boost(0.5f)
+    // @Boost(0.5f)
     @XmlTransient
     @JSONTransient
-    public List<URI> getContent() {
+    public List<InformationResourceFileVersion> getContent() {
         logger.trace("getContent");
         List<InformationResourceFile> files = getPublicFiles();
         if (CollectionUtils.isEmpty(files)) {
             return null;
         }
         // List<InputStream> streams = new ArrayList<InputStream>();
-        List<URI> fileURIs = new ArrayList<URI>();
+        List<InformationResourceFileVersion> fileURIs = new ArrayList<InformationResourceFileVersion>();
         for (InformationResourceFile irFile : files) {
             try {
                 if (irFile.getRestriction().isRestricted())
                     continue;
                 InformationResourceFileVersion indexableVersion = irFile.getIndexableVersion();
-                if (indexableVersion.getFile().exists()) {
-                    fileURIs.add(indexableVersion.getFile().toURI());
-                    logger.debug("getting indexed content for " + getId() + ": length:" + ("" + indexableVersion.getIndexableContent()).length());
-                }
+                fileURIs.add(indexableVersion);
             } catch (Exception e) {
                 logger.trace("an exception occured while reading file: {} ", e);
             }
@@ -903,7 +916,17 @@ public abstract class InformationResource extends Resource {
     public List<String> getCreatorRoleIdentifiers() {
         List<String> list = super.getCreatorRoleIdentifiers();
         list.add(ResourceCreator.getCreatorRoleIdentifier(getResourceProviderInstitution(), ResourceCreatorRole.RESOURCE_PROVIDER));
+        list.add(ResourceCreator.getCreatorRoleIdentifier(getPublisher(), ResourceCreatorRole.PUBLISHER));
         return list;
+    }
+
+    @Override
+    @XmlTransient
+    public List<Creator> getRelatedCreators() {
+        List<Creator> creators = super.getRelatedCreators();
+        creators.add(getResourceProviderInstitution());
+        creators.add(getPublisher());
+        return creators;
     }
 
     public boolean isInheritingNoteInformation() {
@@ -1032,10 +1055,26 @@ public abstract class InformationResource extends Resource {
     public List<InformationResourceFile> getFilesWithProcessingErrors() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile file : getInformationResourceFiles()) {
+            if (file.getStatus() == FileStatus.PROCESSING_ERROR || file.getStatus() == FileStatus.PROCESSING_WARNING) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
+
+    public List<InformationResourceFile> getFilesWithFatalProcessingErrors() {
+        List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
+        for (InformationResourceFile file : getInformationResourceFiles()) {
             if (file.getStatus() == FileStatus.PROCESSING_ERROR) {
                 files.add(file);
             }
         }
         return files;
+    }
+
+    @Transient
+    @XmlTransient
+    public Set<ResourceCreator> getContacts() {
+        return getResourceCreators(ResourceCreatorRole.CONTACT);
     }
 }

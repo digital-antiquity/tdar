@@ -7,8 +7,8 @@ TDAR.repeatrow = function() {
     "use strict";
     
     /**
-     *  public: register a repeatrow element
-     *  This has the effect of adding a "add another"  button after each matched element.  Clicking the addnew button clones 
+     *  public: register a repeat-row element
+     *  This has the effect of adding a "add another"  button after each matched element.  Clicking the add another button clones 
      *  the element specified by options.rowSelector, and places it after that element in the dom.
      *  
      *  events: 
@@ -31,11 +31,11 @@ TDAR.repeatrow = function() {
             $(_options.rowSelector, parentElement).addClass("repeat-row");
             
             var btnLabel =$(parentElement).data("add-another") || _options.addAnother;
-            var $button = _button(btnLabel);
+            var $button = _button(btnLabel, parentElement.id + "AddAnotherButton");
             $('button', $button).click(function() {
                 var element = $(_options.rowSelector, parentElement).last();
                 var $clone = _cloneSection(element, parentElement);
-                var idx = $(parentElement).find('.repeat-row').length
+                var idx = $(parentElement).find('.repeat-row').length;
                 $(parentElement).trigger("repeatrowadded", [parentElement, $clone[0], idx]);
 
                 // set focus on the first input field (or designate w/ repeatrow-focus class).
@@ -55,7 +55,7 @@ TDAR.repeatrow = function() {
             TDAR.repeatrow.deleteRow(rowElem);
             $(parentElement).trigger('repeatrowdeleted');
         });
-    }
+    };
 
         
     // clone an element, append it to another element.  
@@ -80,15 +80,6 @@ TDAR.repeatrow = function() {
         var nextId = currentId + 1;
         var newRowId = nextId;
         
-        //FIXME: bit.ly/Qk6UPe
-        if ($element.attr("id") != undefined && $element.attr("id").indexOf("_") != -1) {
-            while ("a" != "b") {
-                newRowId = $element.attr("id").substring(0, $element.attr("id").lastIndexOf('_' + currentId + '_')) + "_" + nextId + '_';
-                if ($(newRowId).length == 0)
-                    break;
-            }
-        }
-        
         var cloneIdAttr = elementIdAttr.replace(rex, "$1" + nextId + "$3");
         
         //TODO: remove error/warning labels from $clone (e.g.  form validation fails on last row, then you click 'add new row').
@@ -105,15 +96,15 @@ TDAR.repeatrow = function() {
          */
 
         //remove any tags that shouldn't be copied
-        $clone
+        $clone;
         // skip any tags that with the repeat-row-skip attribute
         $clone.find('*').not(".repeat-row-skip").each(function() {
             var elem = this;
             $([ "id", "autoVal", "name", "autocompleteIdElement", "autocompleteParentElement" ]).each(function(i, attrName) {
-                // replace occurances of [num]
+                // replace occurrences of [num]
                 _replaceAttribute(elem, attrName, '[' + currentId + ']', '[' + nextId + ']');
 
-                // replace occurances of _num_
+                // replace occurrences of _num_
                 _replaceAttribute(elem, attrName, '_' + currentId + '_', '_' + nextId + '_');
             });
         });
@@ -123,11 +114,12 @@ TDAR.repeatrow = function() {
         _clearInputs($clone);
 
         return $clone;
-    }
+    };
     
     
     
-    // private: replace last occurance of str in attribute with rep
+    // private: replace last occurrence of str in attribute with rep
+    //FIXME: Can I be replaced with TDAR.common.replaceAttribute()??
     var _replaceAttribute = function(elem, attrName, str, rep) {
         var oldval = $(elem).attr(attrName);
         if (!oldval) return;
@@ -138,7 +130,7 @@ TDAR.repeatrow = function() {
                 oldval.length);
         var newval = beginPart + rep + endPart;
         $(elem).attr(attrName, newval);
-    }
+    };
     
 
     // private: clear input elements in a cloned element
@@ -158,6 +150,9 @@ TDAR.repeatrow = function() {
 
         // revert all select inputs to first option. 
         $("select", $element).find('option:first').attr("selected", "selected");
+        
+        // allow html5 polyfills for watermarks to be added.
+        TDAR.common.applyWatermarks($element);
     };
     
     
@@ -168,19 +163,22 @@ TDAR.repeatrow = function() {
         } else {
             _clearInputs($row);
         }
-    }
+    };
     
     
     // private: return a dom button
-    var _button = function(label) {
+    var _button = function(label, id) {
+        var buttonId = id;
+        if(!id) {
+            buttonId = "btn" + label.replace(" ", "").toLowerCase();
+        }
         var html = "<div class='control-group add-another-control'>" +
                 "<div class='controls'>" +
-                "<button class='btn' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" +
+                "<button class='btn addanother' id='" + buttonId + "' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" +
                 "</div>" +
-                "</div>"
+                "</div>";
        return $(html);
     };
-    
     
     
     //return public members
@@ -194,4 +192,32 @@ TDAR.repeatrow = function() {
     
 }();
 
+TDAR.namespace("supersecret");
 
+TDAR.supersecret.registerSplittables = function(rootSelector) {
+    var cloneSection = TDAR.repeatrow.cloneSection;
+    $(rootSelector).on("change", ".splittable", function(evt) {
+        if(!evt.target.value) return;
+        var inputElem = evt.target;
+        var $inputElem = $(inputElem);
+        var $repeatable = $inputElem.closest(".repeatLastRow");
+        var $lastRow = $repeatable.find(".repeat-row:last");
+        
+        var vals = $inputElem.val().split("||");
+        if(vals.length > 1) {
+            inputElem.value = vals.shift();
+        }
+        $.each(vals, function(idx, val){
+            var $clone = cloneSection($lastRow[0]);
+            //FIXME: I don't actually enter value
+            $clone.find(".splittable").val($.trim(val));
+        });
+    });
+};
+/*
+$(function() {
+    $('#metadataForm_temporalKeywords_0_').addClass("splittable");
+    TDAR.supersecret.registerSplittables('body');
+});
+
+*/

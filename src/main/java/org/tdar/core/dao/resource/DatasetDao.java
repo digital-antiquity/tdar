@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +38,7 @@ import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.resource.DatasetService;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
 /**
@@ -61,6 +61,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
     @Autowired
     private TargetDatabase tdarDataImportDatabase;
 
+    public String normalizeTableName(String name) {
+        return tdarDataImportDatabase.normalizeTableOrColumnNames(name);
+    }
+    
     public void assignMappedDataForInformationResource(InformationResource resource) {
         String key = resource.getMappedDataKeyValue();
         DataTableColumn column = resource.getMappedDataKeyColumn();
@@ -72,7 +76,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             @Override
             public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 while (rs.next()) {
-                    Map<DataTableColumn, String> results = convertResultSetRowToDataTableColumnMap(table, rs);
+                    Map<DataTableColumn, String> results = DatasetService.convertResultSetRowToDataTableColumnMap(table, rs);
                     return results;
                 }
                 return null;
@@ -83,27 +87,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
         resource.setRelatedDatasetData(dataTableQueryResults);
     }
 
-    /*
-     * Return a HashMap that maps data table columns to values
-     */
-    public Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs) throws SQLException {
-        Map<DataTableColumn, String> results = new HashMap<DataTableColumn, String>();
-        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-            DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
-            if (col != null && col.isVisible()) { // ignore if null (non translated version of translated)
-                results.put(col, null);
-            }
-        }
-        for (DataTableColumn key : results.keySet()) {
-            String val = "NULL";
-            Object obj = rs.getObject(key.getName());
-            if (obj != null) {
-                val = obj.toString();
-            }
-            results.put(key, val);
-        }
-        return results;
-    }
 
     public boolean canLinkDataToOntology(Dataset dataset) {
         if (dataset == null)
@@ -257,11 +240,13 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return (Number) createCriteria.list().get(0);
     }
 
+    @SuppressWarnings("unchecked")
     public List<Long> findAllResourceIdsWithFiles() {
         Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATIONRESOURCES_WITH_FILES);
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Resource> findAllSparseActiveResources() {
         Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_ACTIVE_RESOURCES);
         return query.list();

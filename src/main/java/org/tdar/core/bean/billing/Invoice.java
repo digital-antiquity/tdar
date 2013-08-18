@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasLabel;
@@ -107,11 +108,13 @@ public class Invoice extends Base implements Updatable {
     private String transactionId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_type")
+    @Column(name = "transaction_type", length = 255)
     private PaymentMethod paymentMethod;
 
     private Long billingPhone;
+
     @Column(name = "account_type")
+    @Length(max = 50)
     private String accountType;
 
     @Column(name = "transaction_date")
@@ -150,10 +153,14 @@ public class Invoice extends Base implements Updatable {
 
     private Float total;
 
+    @Length(max = 25)
     private String invoiceNumber;
+
+    @Length(max = 255)
     private String otherReason;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "transactionstatus", length = 25)
     private TransactionStatus transactionStatus = TransactionStatus.PREPARED;
 
     /**

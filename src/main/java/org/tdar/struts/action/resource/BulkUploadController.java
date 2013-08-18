@@ -111,10 +111,10 @@ public class BulkUploadController extends AbstractInformationResourceController<
         setupAccountForSaving();
         if (isAsync()) {
             logger.info("running asyncronously");
-            bulkUploadService.saveAsync(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
+            bulkUploadService.saveAsync(image, getAuthenticatedUser().getId(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         } else {
             logger.info("running inline");
-            bulkUploadService.save(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
+            bulkUploadService.save(image, getAuthenticatedUser().getId(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         }
         getGenericService().markReadOnly(getPersistable());
         getGenericService().detachFromSession(getPersistable());
@@ -165,7 +165,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @SkipValidation
     @Action(value = "checkstatus", results = {
-            @Result(name = "wait", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) })
+            @Result(name = WAIT, type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) })
     public String checkStatus() {
         AsyncUpdateReceiver reciever = bulkUploadService.checkAsyncStatus(getTicketId());
         if (reciever != null) {
@@ -176,7 +176,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 List<Pair<Long, String>> details = reciever.getDetails();
                 setDetails(details);
             }
-            return "wait";
+            return WAIT;
         } else {
             return ERROR;
         }
@@ -210,7 +210,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
         return SUCCESS;
     }
-
+    
     /**
      * Get the current concept.
      * 
@@ -226,7 +226,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Override
     public Collection<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT, ResourceType.VIDEO);
+        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT);
     }
 
     @Override

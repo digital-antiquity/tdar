@@ -17,6 +17,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
@@ -58,24 +59,45 @@ public class DashboardController extends AuthenticationAware.Base {
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
     private Set<Account> accounts = new HashSet<Account>();
     private Set<Account> overdrawnAccounts = new HashSet<Account>();
-
+    
+    // remove when we track down what exactly the perf issue is with the dashboard;
+    // toggles let us turn off specific queries / parts of homepage
+    
+    
     @Override
     @Action("dashboard")
     public String execute() {
         setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
-        setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
+            setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
+        logger.debug("\t collections");
         getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
-        // removing duplicates
-        Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
-        if (isEditor() && indexingTask != null) {
-            try {
-            String msg = String.format("%s is RE-INDEXING %s (%s)", indexingTask.getUser().getProperName(), getSiteAcronym(), indexingTask.getStartDate());
-            addActionMessage(msg);
-            } catch (Exception e) {
-                logger.error("exception in indexing note: {}", e);
+        List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
+        collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
+            getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), getAuthenticatedUser(), collectionIds);
+            getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
+//        try {
+//            getResourceCollectionService().reconcileCollectionTree2(getResourceCollections(), getAuthenticatedUser(), collectionIds);
+//            getResourceCollectionService().reconcileCollectionTree2(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
+//        } catch (ParseException e1) {
+//            logger.error("parse exception: {} ", e1);
+//        }
+        logger.debug("\t - activity");
+        try {
+            Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
+            if (isEditor() && indexingTask != null) {
+                String properName = "unknown user";
+                try {
+                    indexingTask.getUser().getProperName();
+                } catch (Exception e) {
+                    logger.warn("reindexing user could not be determined");
+                }
+                String msg = String.format("%s is RE-INDEXING %s (%s)", properName, getSiteAcronym(), indexingTask.getStartDate());
+                addActionMessage(msg);
             }
+        } catch (Throwable t) {
+            logger.error("what???", t);
         }
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);
@@ -88,7 +110,9 @@ public class DashboardController extends AuthenticationAware.Base {
         }
         activeResourceCount += getStatusCountForUser().get(Status.ACTIVE);
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
-        logger.trace("{}", resourceCollections);
+
+        logger.info("\t - done");
+
         return SUCCESS;
     }
 
@@ -250,9 +274,7 @@ public class DashboardController extends AuthenticationAware.Base {
     }
 
     public List<ResourceType> getResourceTypes() {
-        List<ResourceType> toReturn = new ArrayList<ResourceType>();
-        toReturn.addAll(Arrays.asList(ResourceType.values()));
-        return toReturn;
+        return getResourceService().getAllResourceTypes();
     }
 
     public List<SortOption> getResourceDatatableSortOptions() {

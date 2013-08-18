@@ -13,6 +13,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
@@ -32,15 +33,12 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         String orig = "SCIDD_Storage_Basin_Phase_2DR_redacted_pages.pdf";
         File origFile = new File(baseDir, orig);
         WorkflowContext ctx = new WorkflowContext();
-        ctx.setWorkingDirectory(new File(
-                // FileUtils.getTempDirectoryPath()
-                System.getProperty("java.io.tmpdir")
-                ));
+        ctx.setWorkingDirectory(TdarConfiguration.getInstance().getTempDirectory());
         task.setWorkflowContext(ctx);
         InformationResourceFileVersion vers = new InformationResourceFileVersion(VersionType.UPLOADED, origFile.getName(), 1, -1L, -1L);
-        ctx.setOriginalFile(vers);
+        ctx.getOriginalFiles().add(vers);
         try {
-            task.run(origFile);
+            task.run(vers);
         } catch (Throwable e) {
             throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, e);
         }
@@ -48,27 +46,31 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
     @Override
     public void run() throws Exception {
-        // unify the various "run" commands between main and inline
-        run(getWorkflowContext().getOriginalFile().getFile());
+        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+            run(version);
+        }
     }
 
     @Override
-    public void run(File originalFile) throws Exception {
+    public void run(InformationResourceFileVersion version) throws Exception {
+        File originalFile = version.getTransientFile();
         try {
             PDDocument document = openPDF("", originalFile);
-            File imageFile = new File(extractPage(1, originalFile, document));
+            File imageFile = new File(extractPage(1, version, document));
             // extractText(originalFile, document);
             closePDF(document);
             if (imageFile.exists()) {
-                processImage(imageFile);
+                processImage(version, imageFile);
             }
         } catch (Throwable t) {
             throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, t);
         }
     }
 
-    protected String extractPage(int pageNum, File pdfFile, PDDocument document) {
+    protected String extractPage(int pageNum, InformationResourceFileVersion originalFile, PDDocument document) {
         // File pdfFile = new File(sourceFile);
+        @SuppressWarnings("unused")
+        File pdfFile = originalFile.getTransientFile();
         String imageFormat = "jpg";
         String color = "rgb";
         int resolution;
@@ -78,7 +80,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             resolution = 96;
         }
 
-        String fn = getWorkflowContext().getOriginalFile().getFilename();
+        String fn = originalFile.getFilename();
         String outputPrefix = fn.substring(0, fn.lastIndexOf('.'));
         outputPrefix = new File(getWorkflowContext().getWorkingDirectory(), outputPrefix).toString();
 
@@ -87,6 +89,8 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
             try {
                 PDFImageWriter imageWriter = new PDFImageWriter();
+                // The following library call will write "Writing: " + the file name to the System.out stream. Naughty!
+                // This is fixed in a later version of pdfbox, but we have a transitive dependency via Tika...
                 boolean success = imageWriter.writeImage(document, imageFormat, "", pageNum, pageNum, outputPrefix, imageType, resolution);
                 if (!success) {
                     getLogger().info("Error: no writer found for image format '" + imageFormat + "'");
@@ -117,6 +121,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             if (document.isEncrypted()) {
                 getLogger().info("access permissions: " + document.getCurrentAccessPermission());
                 getLogger().info("security manager: " + document.getSecurityHandler());
+                getWorkflowContext().setErrorFatal(true);
                 throw new TdarRecoverableRuntimeException(ENCRYPTION_WARNING);
             }
 
@@ -128,6 +133,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             // }
             getWorkflowContext().setNumPages(document.getNumberOfPages());
         } catch (IOException e) {
+            getWorkflowContext().setErrorFatal(true);
             getLogger().info("IO Exception ocurred", e);
             // } catch (CryptographyException ce) {
             // getLogger().info(ce);

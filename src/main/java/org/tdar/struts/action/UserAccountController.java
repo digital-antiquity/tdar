@@ -1,6 +1,10 @@
 package org.tdar.struts.action;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import net.tanesha.recaptcha.ReCaptcha;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -10,6 +14,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
@@ -18,10 +23,12 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.interceptor.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -43,6 +50,11 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @Result(name = "new", type = "redirect", location = "new")
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
+
+    public static final String USERNAME_INVALID = "Username invalid, usernames must be at least 5 characters and can only have letters and numbers";
+    public static final String EMAIL_INVALID = "Email invalid, usernames must be at least 5 characters and can only have letters and numbers";
+
+    private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
 
     private static final long serialVersionUID = 1147098995283237748L;
 
@@ -78,12 +90,12 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private String passwordResetURL;
     private ContributorRequest contributorRequest;
 
-    // private String recaptcha_challenge_field;
-    // private String recaptcha_response_field;
-    // private String recaptcha_public_key;
-    //
-    // @Autowired
-    // private ObfuscationService obfuscationService;
+    private String recaptcha_challenge_field;
+    private String recaptcha_response_field;
+
+    @Autowired
+    private RecaptchaService reCaptchaService;
+    private String reCaptchaText;
 
     @Action(value = "new", interceptorRefs = @InterceptorRef("basicStack"),
             results = {
@@ -95,6 +107,11 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         setTimeCheck(System.currentTimeMillis());
         if (isAuthenticated()) {
             return "authenticated";
+        }
+
+        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
+            ReCaptcha recaptcha = reCaptchaService.generateRecaptcha();
+            reCaptchaText = recaptcha.createRecaptchaHtml(null, null);
         }
         return SUCCESS;
     }
@@ -113,12 +130,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     public String edit() {
         if (isAuthenticated()) {
             return SUCCESS;
-        } else {
-            return "new";
         }
+        return "new";
     }
 
-    
     @Action("view")
     @SkipValidation
     @HttpsOnly
@@ -132,13 +147,15 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return UNAUTHORIZED;
     }
 
-    @Action(value="welcome", results={
+    @Action(value = "welcome", results = {
             @Result(name = SUCCESS, location = "view.ftl")
     })
     @SkipValidation
     @HttpsOnly
     public String welcome() {
-        if (!isAuthenticated()) return "new";
+        if (!isAuthenticated()) {
+            return "new";
+        }
         person = getAuthenticatedUser();
         personId = person.getId();
         return SUCCESS;
@@ -168,18 +185,28 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         if (person == null || !isPostRequest()) {
             return INPUT;
         }
+
+        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
+            boolean reCaptchaResponse = reCaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
+            if (reCaptchaResponse == false) {
+                throw new TdarRecoverableRuntimeException("Captcha Response is not valid");
+            }
+
+        }
+
         try {
             Person findByUsername = getEntityService().findByUsername(person.getUsername());
-            // short circut the login process -- if there username and password are registered and valid -- just move on. 
+            // short circut the login process -- if there username and password are registered and valid -- just move on.
             if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
                 try {
-                AuthenticationStatus status = getAuthenticationAndAuthorizationService().authenticatePerson(findByUsername.getUsername(), password, getServletRequest(), getServletResponse(),
-                        getSessionData());
-                if (status == AuthenticationStatus.AUTHENTICATED) {
-                    return SUCCESS;
-                }
+                    AuthenticationStatus status = getAuthenticationAndAuthorizationService().authenticatePerson(findByUsername.getUsername(), password,
+                            getServletRequest(), getServletResponse(),
+                            getSessionData());
+                    if (status == AuthenticationStatus.AUTHENTICATED) {
+                        return SUCCESS;
+                    }
                 } catch (Exception e) {
-                    logger.warn("could not authenticate" ,e);
+                    logger.warn("could not authenticate", e);
                 }
             }
             reconcilePersonWithTransient(findByUsername, ERROR_USERNAME_ALREADY_REGISTERED);
@@ -214,9 +241,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
             boolean success = getAuthenticationAndAuthorizationService().getAuthenticationProvider().addUser(person, password);
             if (success) {
+                sendWelcomeEmail();
                 getLogger().info("Added user to auth service successfully.");
             } else {
-                //we assume that the add operation failed because user was already in crowd. Common scenario for dev/alpha, but not prod.
+                // we assume that the add operation failed because user was already in crowd. Common scenario for dev/alpha, but not prod.
                 getLogger().error("user {} already existed in auth service.  Not unusual unless it happens in prod context ", person);
             }
             // log person in.
@@ -247,13 +275,42 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return ERROR;
     }
 
+    private void sendWelcomeEmail() {
+        try {
+            String subject = String.format("Welcome to %s", TdarConfiguration.getInstance().getSiteAcronym());
+            getEmailService().sendTemplate(EMAIL_WELCOME_TEMPLATE, getWelcomeEmailValues(), subject, person);
+        } catch (Exception e) {
+            // we don't want to ruin the new user's experience with a nasty error message...
+            logger.error("Suppressed error that occured when trying to send welcome email", e);
+        }
+    }
+
+    protected Map<String, Object> getWelcomeEmailValues() {
+        Map<String, Object> result = new HashMap<>();
+        final TdarConfiguration config = TdarConfiguration.getInstance();
+        result.put("user", person);
+        result.put("config", config);
+        return result;
+    }
+
     private void reconcilePersonWithTransient(Person person_, String error) {
         if (person_ != null && Persistable.Base.isNullOrTransient(person)) {
+
             if (person_.isRegistered()) {
                 throw new TdarRecoverableRuntimeException(error);
             }
+
+            if (person_.getStatus() != Status.FLAGGED && person_.getStatus() != Status.DELETED && person_.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) {
+                person.setStatus(Status.ACTIVE);
+                person_.setStatus(Status.ACTIVE);
+            } else {
+                logger.error("user is not valid");
+                throw new TdarRecoverableRuntimeException(error);
+            }
+
             person.setId(person_.getId());
             person = getEntityService().merge(person);
+
         }
     }
 
@@ -270,13 +327,24 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Override
     public void validate() {
         logger.trace("calling validate");
-        
-        if(person != null && person.getUsername() != null) {
-            String normalizedUsername =  getAuthenticationAndAuthorizationService().normalizeUsername(person.getUsername());
-            if(!normalizedUsername.equals(person.getUsername())) {
+
+        if (person != null && person.getUsername() != null) {
+            String normalizedUsername = getAuthenticationAndAuthorizationService().normalizeUsername(person.getUsername());
+            if (!normalizedUsername.equals(person.getUsername())) {
                 logger.info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
                 person.setUsername(normalizedUsername);
             }
+
+            if (!getAuthenticationAndAuthorizationService().isValidUsername(person.getUsername())) {
+                addActionError(USERNAME_INVALID);
+                return;
+            }
+
+            if (!getAuthenticationAndAuthorizationService().isValidEmail(person.getEmail())) {
+                addActionError(EMAIL_INVALID);
+                return;
+            }
+
         }
 
         if (StringUtils.length(person.getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
@@ -291,6 +359,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         if (StringUtils.isBlank(person.getLastName())) {
             addActionError("Please enter your last name");
         }
+
         // validate email + confirmation
         if (isUsernameRegistered(person.getUsername())) {
             logger.debug("username was already registered: ", person.getUsername());
@@ -308,10 +377,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         } else if (!new EqualsBuilder().append(password, confirmPassword).isEquals()) {
             addActionError(ERROR_PASSWORDS_DONT_MATCH);
         }
-        
+
         checkForSpammers();
     }
-    
+
     /**
      * 
      */
@@ -388,8 +457,9 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         this.personId = personId;
     }
 
+    @Override
     public void prepare() {
-        if (Persistable.Base.isNullOrTransient(personId)){
+        if (Persistable.Base.isNullOrTransient(personId)) {
             getLogger().debug("prepare: creating new person");
             person = new Person();
         } else {
@@ -473,29 +543,21 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         this.contributorRequest = contributorRequest;
     }
 
-    // public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {
-    // this.recaptcha_challenge_field = recaptcha_challenge_field;
-    // }
-    //
-    // public String getRecaptcha_challenge_field() {
-    // return recaptcha_challenge_field;
-    // }
-    //
-    // public void setRecaptcha_response_field(String recaptcha_response_field) {
-    // this.recaptcha_response_field = recaptcha_response_field;
-    // }
-    //
-    // public String getRecaptcha_response_field() {
-    // return recaptcha_response_field;
-    // }
-    //
-    // public void setRecaptcha_public_key(String recaptcha_public_key) {
-    // this.recaptcha_public_key = recaptcha_public_key;
-    // }
-    //
-    // public String getRecaptcha_public_key() {
-    // return TdarConfiguration.getInstance().getRecaptchaPublicKey();
-    // }
+    public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {
+        this.recaptcha_challenge_field = recaptcha_challenge_field;
+    }
+
+    public String getRecaptcha_challenge_field() {
+        return recaptcha_challenge_field;
+    }
+
+    public void setRecaptcha_response_field(String recaptcha_response_field) {
+        this.recaptcha_response_field = recaptcha_response_field;
+    }
+
+    public String getRecaptcha_response_field() {
+        return recaptcha_response_field;
+    }
 
     public boolean isEditable() {
         return getAuthenticatedUser().equals(person)
@@ -506,6 +568,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     // actual humans get a form that is never too old while still locking out spambots.
     public long getRegistrationTimeout() {
         return ONE_HOUR_IN_MS;
+    }
+
+    public String getReCaptchaText() {
+        return reCaptchaText;
+    }
+
+    public void setReCaptchaText(String reCaptchaText) {
+        this.reCaptchaText = reCaptchaText;
     }
 
 }

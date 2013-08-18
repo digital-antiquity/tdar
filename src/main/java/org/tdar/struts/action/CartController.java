@@ -51,7 +51,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String A_BILING_ADDRESS_IS_REQUIRED = "a biling address is required";
     public static final String VALID_PHONE_NUMBER_IS_REQUIRED = "a valid phone number is required (212) 555-1212";
     public static final String ENTER_A_BILLING_ADDERESS = "please enter a billing adderess";
-    public static final String CANNOT_MODIFY = "cannot modify existing invocie";
+    public static final String CANNOT_MODIFY = "cannot modify existing invoice";
     public static final String VALID_PAYMENT_METHOD_IS_REQUIRED = "a valid payment method is required";
     private static final long serialVersionUID = 1592977664145682926L;
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
@@ -316,7 +316,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         // if the discount brings the total cost down to 0, then skip the credit card process
         if (invoice.getTotal() <= 0 && CollectionUtils.isNotEmpty(invoice.getItems())) {
             if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
-//                getAccountService().redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
+                // getAccountService().redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
                 getAccountService().checkCouponStillValidForCheckout(invoice.getCoupon(), invoice);
             }
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
@@ -393,9 +393,15 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     map.put("invoice", invoice);
                     map.put("date", new Date());
                     try {
-                        Person person = new Person("Billing", "Info", getTdarConfiguration().getBillingAdminEmail());
-                        getGenericService().markReadOnly(person);
-                        getEmailService().sendTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + SUBJECT, person);
+                        List<Person> people = new ArrayList<>();
+                        for (String email : StringUtils.split(getTdarConfiguration().getBillingAdminEmail(), ";")) {
+                            if (StringUtils.isBlank(email))
+                                continue;
+                            Person person = new Person("Billing", "Info", email.trim());
+                            getGenericService().markReadOnly(person);
+                            people.add(person);
+                        }
+                        getEmailService().sendTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + SUBJECT, people.toArray(new Person[0]));
                     } catch (Exception e) {
                         logger.error("could not send email: {} ", e);
                     }

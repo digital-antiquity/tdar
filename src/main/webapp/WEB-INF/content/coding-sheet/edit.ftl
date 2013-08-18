@@ -1,34 +1,27 @@
 <#escape _untrusted as _untrusted?html>
+<#global itemPrefix="codingSheet"/>
+<#global inheritanceEnabled=true />
+<#global hideAuthors=true/>
+<#global hideRelatedCollections=true/>
+<#global hideKeywordsAndIdentifiersSection=true/>
+
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/${themeDir}/local-helptext.ftl" as  helptext>
 
-<head>
-<@edit.title />
-
-<meta name="lastModifiedDate" content="$Id$"/>
-
-</head>
-<body>
-<@edit.sidebar />
-<@edit.subNavMenu>
-            <li><a href="#enter-data">Coding Rules</a></li>
-</@edit.subNavMenu>
-
-<@edit.resourceTitle />
-
-<@s.form name='resourceRegistrationForm' id='resourceRegistrationForm' method='post' enctype='multipart/form-data' action='save' cssClass="form-horizontal">
+<#macro subNavMenu>
+    <li class="hidden-tablet hidden-phone"><a href="#enter-data">Coding Rules</a></li>
+</#macro>
 
 
-<@edit.basicInformation "coding sheet" "codingSheet"/>
-<@edit.allCreators 'Coding Sheet Creators' authorshipProxies 'authorship' />
-<@edit.citationInfo "codingSheet" />
+<#macro beforeUpload>
 
     <span class="hidden" id="ontologyToolTip">
         If you would like to link this column to a ${siteAcronym} ontology, make that selection here. This is important if you (or other researchers) intend to integrate this dataset with other datasets using the ${siteAcronym} data integration tool. 
     </span>
 
-     <div id='divOntology' class="glide ontologyInfo" tooltipcontent="#ontologyToolTip" tiplabel="Ontology" >
+     <div id='divOntology' class="glide ontologyInfo" data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology" >
      
          <@edit.categoryVariable />
      
@@ -42,7 +35,7 @@
                 <#assign ontologyTxt="${ontology.title} (${ontology.id?c})"/>
             </#if>
             <@s.hidden name="ontology.id" value="${ontologyId}" id="oid" />
-            <@edit.combobox name="ontology.title"
+            <@common.combobox name="ontology.title"
                 label="Ontology Name" 
                 target="#divOntology"
                  value="${ontologyTxt}"  
@@ -59,14 +52,14 @@
                     
                         
                     <a class="btn btn-small"target="adhoc_1" 
-                        onclick="setAdhocTarget(this, '#divOntology');" 
+                        onclick="TDAR.common.setAdhocTarget(this, '#divOntology');" 
                         href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create An Ontology</a>
                 </div>
              </div>
     </div>
+</#macro>
 
-
-
+<#macro localSection>
 
 <div class="">
 <@view.codingRules />
@@ -129,40 +122,13 @@
         </#if>
 
 </@edit.manualTextInput>
+</#macro>
 
-<@edit.organizeResourceSection />
-
-<@edit.resourceNoteSection />
-<@helptext.resourceCreator />
-
-<@edit.fullAccessRights />
-
-<@edit.submit  fileReminder=false  />
-</@s.form>
-
-
-<@edit.resourceJavascript formSelector="#resourceRegistrationForm" selPrefix="#resourceRegistration" includeInheritance=true>
-    $(function() {
-        var $form = $("#resourceRegistrationForm");
-        setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
-        applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
-
-
-    <#if validFileExtensions??>
-    var validate = $('.validateFileType');
-    if ($(validate).length > 0) {
-        $(validate).rules("add", {
-            accept: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
-            messages: {
-                accept: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
-            }
-        });
-    }
-    </#if>
-
-    });
-       
-</@edit.resourceJavascript>
+<#macro localJavascript>
+    var $form = $("#metadataForm");
+    TDAR.common.setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
+    TDAR.autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
+</#macro>
 
 </body>
 </#escape>

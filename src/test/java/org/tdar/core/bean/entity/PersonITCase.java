@@ -1,17 +1,13 @@
 package org.tdar.core.bean.entity;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -31,7 +27,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testEmptyFind() {
-        Person p = genericService.find(Person.class, (Long)null);
+        Person p = genericService.find(Person.class, (Long) null);
         assertNull(p);
     }
 
@@ -69,20 +65,6 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         Person findOrSaveCreator3 = entityService.findOrSaveCreator(person3);
         logger.info("person: {} {}", findOrSaveCreator3, findOrSaveCreator3.getId());
         assertEquals(8608L , findOrSaveCreator3.getId().longValue());
-    }
-
-    @Test
-    @Rollback(true)
-    public void testFindDup() {
-        
-        Person person = createAndSaveNewPerson();
-        Person person2 = createAndSaveNewPerson("test@test.com","1");
-        person.getSynonyms().add(person2);
-        person2.setStatus(Status.DUPLICATE);
-        genericService.saveOrUpdate(person);
-        genericService.saveOrUpdate(person2);
-        genericService.synchronize();
-        assertEquals(person, entityService.findAuthorityFromDuplicate(person2));
     }
 
     @Test
@@ -174,48 +156,5 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         assertEquals("should have CreatorType.PERSON set on CreatorType", CreatorType.PERSON, person.getCreatorType());
         assertNotNull("should have a date created", person.getDateCreated());
     }
-    
-    @Test
-    @Rollback(true)
-    public void testPersonEqualsHashCode() {
-        final String emailPrefix = "uniquely";
-        LinkedHashSet<Person> personSet = new LinkedHashSet<Person>();
-        ArrayList<Long> ids = new ArrayList<Long>();
-        int numberOfPersonsToCreate = 10;
-        for (int i = 0; i < numberOfPersonsToCreate; i++) {
-            Person person = createAndSaveNewPerson(emailPrefix + i + TestConstants.DEFAULT_EMAIL, "");
-            personSet.add(person);
-            ids.add(person.getId());
-        }
-        assertEquals(numberOfPersonsToCreate, personSet.size());
-        ArrayList<Person> personList = new ArrayList<Person>(personSet);
-        for (int i = 0; i < numberOfPersonsToCreate; i++) {
-            Person persistedPerson = personList.get(i);
-            Person person = new Person();
-            assertNotSame(persistedPerson.hashCode(), person.hashCode());
-            person.setFirstName(TestConstants.DEFAULT_FIRST_NAME);
-            assertFalse(personSet.contains(person));
-            assertNotSame(persistedPerson.hashCode(), person.hashCode());
-            assertFalse(persistedPerson.equals(person));
-            person.setLastName(TestConstants.DEFAULT_LAST_NAME);
-            assertFalse(personSet.contains(person));
-            assertNotSame(persistedPerson.hashCode(), person.hashCode());
-            assertFalse(persistedPerson.equals(person));
-            
-            person.setEmail(emailPrefix + i + TestConstants.DEFAULT_EMAIL);
-            // FIXME: hack to get hashCode() to not think this is a transient instance and return
-            // Object.hashCode().. should rethink this.
-            person.setId(3L);
-            assertTrue(personSet + " should contain " + person, personSet.contains(person));
-            assertEquals(persistedPerson.hashCode(), person.hashCode());
-            assertTrue(personSet.contains(person));
-            assertEquals(persistedPerson, person);
-            
-            person.setId(ids.get(i));
-            assertTrue(personSet.contains(person));
-            assertEquals(personList.get(i), person);
-            assertEquals(persistedPerson.hashCode(), person.hashCode());
-        }
-    }
-    
+
 }

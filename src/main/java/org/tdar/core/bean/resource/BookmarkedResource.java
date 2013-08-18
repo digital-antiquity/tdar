@@ -11,6 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 
@@ -36,6 +37,7 @@ public class BookmarkedResource extends Persistable.Base {
     private Resource resource;
 
     // an alias for this bookmarked resource - if not present, uses the name of the resource.
+    @Length(max = 255)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -81,8 +83,8 @@ public class BookmarkedResource extends Persistable.Base {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<?> getEqualityFields() {
+        // ab probably okay as not nullable fields
         return Arrays.asList(person, resource);
     }
 

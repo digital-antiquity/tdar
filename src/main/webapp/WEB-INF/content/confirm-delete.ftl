@@ -26,11 +26,7 @@ Note: Did you know you don't need to delete a  record if you just want to update
 <#assign whatamideleting = "item" />
 </#if>
   <h2>Confirm deletion of ${whatamideleting}: ${persistable.name?html}</h2>
-  
-  <#if persistable.resourceType?? && persistable.resourceType.label?lower_case != "project">
-    <@view.projectAssociation resourceType="${persistable.resourceType.label?lower_case}" />
-  </#if>
-  
+    
   <#if !deleteable>
     <h4>This ${whatamideleting} cannot be deleted because it is still referenced by the following: </h4>
     <ul>

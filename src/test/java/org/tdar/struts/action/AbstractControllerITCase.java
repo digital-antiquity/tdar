@@ -11,10 +11,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingItem;
@@ -36,10 +41,12 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.struts.action.resource.CodingSheetController;
 import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.action.resource.DocumentController;
@@ -54,6 +61,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     public static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";
 
     public static final String REASON = "because";
+    @Autowired
+    protected SearchIndexService searchIndexService;
 
     @Before
     public final void init() {
@@ -82,10 +91,10 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return account;
     }
 
-//    public Account createAccountWithOneItem(Person person) {
-//        return createA
-//    }
-    
+    // public Account createAccountWithOneItem(Person person) {
+    // return createA
+    // }
+
     public Invoice createInvoice(Person person, TransactionStatus status, BillingItem... items) {
         Invoice invoice = new Invoice();
         invoice.setItems(new ArrayList<BillingItem>());
@@ -168,27 +177,52 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     Long uploadFile(String path, String name) {
+        String path_ = path;
+        String name_ = name;
+        if (name_.contains("src/test/")) {
+            path_ = FilenameUtils.getPath(name_);
+            name_ = FilenameUtils.getName(name_);
+        }
+        logger.info("name: {} path: {}", name_, path_);
         UploadController controller = generateNewInitializedController(UploadController.class);
         controller.setSessionData(getSessionData());
         controller.grabTicket();
         Long ticketId = controller.getPersonalFilestoreTicket().getId();
         logger.info("ticketId {}", ticketId);
         controller = generateNewInitializedController(UploadController.class);
-        controller.setUploadFile(Arrays.asList(new File(path + "/" + name)));
-        controller.setUploadFileFileName(Arrays.asList(name));
+        controller.setUploadFile(Arrays.asList(new File(path_ + name_)));
+        controller.setUploadFileFileName(Arrays.asList(name_));
         controller.setTicketId(ticketId);
-        controller.upload();
+        String upload = controller.upload();
+        assertEquals(TdarActionSupport.SUCCESS, upload);
         return ticketId;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls) {
+        return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, -1L);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) {
+        return setupAndLoadResource(filename, cls, permis, -1L);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) {
+        return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, id);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) {
+
         AbstractInformationResourceController controller = null;
         Long ticketId = -1L;
         if (cls.equals(Ontology.class)) {
             controller = generateNewInitializedController(OntologyController.class);
         } else if (cls.equals(Dataset.class)) {
             controller = generateNewInitializedController(DatasetController.class);
+            ticketId = uploadFile(getTestFilePath(), filename);
         } else if (cls.equals(Document.class)) {
             controller = generateNewInitializedController(DocumentController.class);
             ticketId = uploadFile(getTestFilePath(), filename);
@@ -201,6 +235,9 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         if (controller == null)
             return null;
 
+        if (Persistable.Base.isNotNullOrTransient(id)) {
+            controller.setId(id);
+        }
         controller.prepare();
         final Resource resource = controller.getResource();
         resource.setTitle(filename);
@@ -212,16 +249,26 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
         List<File> files = new ArrayList<File>();
         List<String> filenames = new ArrayList<String>();
-        File file = new File(getTestFilePath(), filename);
-        assertTrue("file not found:" + getTestFilePath() + "/" + filename, file.exists());
-        files.add(file);
-        filenames.add(filename);
         if (ticketId != -1) {
             controller.setTicketId(ticketId);
-            controller.setFileProxies(Arrays.asList(new FileProxy(filename, VersionType.UPLOADED, FileAccessRestriction.PUBLIC)));
+            controller.setFileProxies(Arrays.asList(new FileProxy(FilenameUtils.getName(filename), VersionType.UPLOADED, permis)));
         } else {
-            controller.setUploadedFiles(files);
-            controller.setUploadedFilesFileName(filenames);
+            File file = new File(getTestFilePath(), filename);
+            assertTrue("file not found:" + getTestFilePath() + "/" + filename, file.exists());
+            if (FilenameUtils.getExtension(filename).equals("txt") && (controller instanceof AbstractSupportingInformationResourceController<?>)) {
+                AbstractSupportingInformationResourceController<?> asc = (AbstractSupportingInformationResourceController<?>) controller;
+                asc.setFileInputMethod(asc.FILE_INPUT_METHOD);
+                try {
+                    asc.setFileTextInput(FileUtils.readFileToString(file));
+                } catch (Exception e) {
+                    Assert.fail(e.getMessage());
+                }
+            } else {
+                files.add(file);
+                filenames.add(filename);
+                controller.setUploadedFiles(files);
+                controller.setUploadedFilesFileName(filenames);
+            }
         }
         try {
             controller.setServletRequest(getServletPostRequest());
@@ -258,7 +305,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
         assertEquals(TdarActionSupport.SUCCESS, uploadController.upload());
         List<PersonalFilestoreFile> files = filestoreService.retrieveAllPersonalFilestoreFiles(uploadController.getTicketId());
-        assertEquals(files.size(), uploadFiles.size());
+        assertEquals("file count retrieved from personal filestore", uploadFiles.size(), files.size());
         // XXX: potentially assert that md5s and/or filenames are same across both file lists
         for (PersonalFilestoreFile personalFilestoreFile : files) {
             String filename = personalFilestoreFile.getFile().getName();
@@ -276,11 +323,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     @Override
     protected Person getUser() {
         return getUser(getUserId());
-    }
-
-    @Override
-    protected Long getUserId() {
-        return TestConstants.USER_ID;
     }
 
     public String setupValidUserInController(UserAccountController controller) {
@@ -317,8 +359,20 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
         controller.validate();
-        String execute = controller.create();
+        String execute = null;
+        // technically this is more appropriate -- only call create if validate passes
+        if (CollectionUtils.isEmpty(controller.getActionErrors())) {
+            execute = controller.create();
+        } else {
+            logger.error("errors: {} ", controller.getActionErrors());
+        }
 
         return execute;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void reindex() {
+        searchIndexService.purgeAll();
+        searchIndexService.indexAll(getAdminUser(), Resource.class, ResourceCollection.class);
     }
 }

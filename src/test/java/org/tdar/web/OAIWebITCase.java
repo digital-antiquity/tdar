@@ -3,13 +3,16 @@ package org.tdar.web;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Assert;
-
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -21,14 +24,16 @@ import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.XmlService;
 import org.tdar.struts.data.oai.OAIMetadataFormat;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class OAIWebITCase extends AbstractWebTestCase {
+public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Autowired
     SearchIndexService indexService;
@@ -39,11 +44,15 @@ public class OAIWebITCase extends AbstractWebTestCase {
     private String firstInstitutionIdentifier;
     private String firstResourceIdentifier;
 
+    private boolean indexed = false;
+
     @Before
     public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException {
-        // reindex
-        indexService.indexAll(getAdminUser());
-
+        if (!indexed) {
+            reindex();
+            gotoPage("/logout");
+            indexed = true;
+        }
         // establish namespace bindings for the XPath tests
         HashMap<String, String> namespaceBindings = new HashMap();
         namespaceBindings.put("oai", "http://www.openarchives.org/OAI/2.0/");
@@ -88,7 +97,8 @@ public class OAIWebITCase extends AbstractWebTestCase {
      * @throws XpathException
      * @throws NumberFormatException
      */
-    private int listIdentifiersOrRecords(String verb, String metadataPrefix) throws SAXException, IOException, ParserConfigurationException,
+    private int listIdentifiersOrRecords(String verb, String metadataPrefix, List<String> identifiers) throws SAXException, IOException,
+            ParserConfigurationException,
             NumberFormatException, XpathException {
         int totalRecordCount = 0;
         int pageCount = 0;
@@ -101,6 +111,7 @@ public class OAIWebITCase extends AbstractWebTestCase {
             Document response = getPageDOM();
             // count the number of records returned in this page
             int recordCount = Integer.valueOf(xpathEngine.evaluate("count(oai:OAI-PMH/oai:" + verb + "/*)", response));
+            identifiers.add(xpathEngine.evaluate("//oai:identifier", response));
             // must be > 0 (otherwise, repository is empty, or else the repository issued us with an unnecessary resumptionToken
             Assert.assertTrue(requestURI + " response returned > 0 records", (recordCount > 0));
             totalRecordCount += recordCount;
@@ -112,18 +123,48 @@ public class OAIWebITCase extends AbstractWebTestCase {
         return totalRecordCount;
     }
 
+    @Autowired
+    XmlService xmlService;
+    
     @Test
-    public void testHarvest() throws NumberFormatException, XpathException, SAXException, IOException, ParserConfigurationException {
+    public void testHarvest() throws Exception {
         // harvest all records using ListRecords and ListIdentifiers, in all 3 formats
-        int tdarIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "tdar");
-        int tdarRecords = listIdentifiersOrRecords("ListRecords", "tdar");
-        int modsIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "mods");
-        int modsRecords = listIdentifiersOrRecords("ListRecords", "mods");
-        int dcIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "oai_dc");
-        int dcRecords = listIdentifiersOrRecords("ListRecords", "oai_dc");
+        List<String> identifiers = new ArrayList<>();
+        int tdarIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "tdar", identifiers);
+        identifiers.clear();
+        int tdarRecords = listIdentifiersOrRecords("ListRecords", "tdar", identifiers);
+        identifiers.clear();
+        int modsIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "mods", identifiers);
+        List<String> modsIdentifiersList = new ArrayList<>(identifiers);
+        logger.info("mods identifiers: {}", identifiers);
+        identifiers.clear();
+        int modsRecords = listIdentifiersOrRecords("ListRecords", "mods", identifiers);
+        List<String> modsRecordsList = new ArrayList<>(identifiers);
+        logger.info("mods records: {}", identifiers);
+        identifiers.clear();
+        int dcIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "oai_dc", identifiers);
+        identifiers.clear();
+        int dcRecords = listIdentifiersOrRecords("ListRecords", "oai_dc", identifiers);
+        identifiers.clear();
         // check that the numbers make sense
         Assert.assertEquals("Number of identifiers matches number of records for tDAR format", tdarIdentifiers, tdarRecords);
-        Assert.assertEquals("Number of identifiers matches number of records for MODS format", modsIdentifiers, modsRecords);
+
+        for (Object dis_ : CollectionUtils.subtract(modsRecordsList, modsIdentifiersList)) {
+            String dis = (String)dis_;
+            logger.info(dis);
+            if (StringUtils.isBlank(dis))
+                continue;
+            if (dis.indexOf(":") != -1) {
+                dis = dis.substring(dis.lastIndexOf(":")+ 1);
+            }
+            Resource find = genericService.find(Resource.class, Long.parseLong(dis));
+            logger.info("found:{}",find);
+            logger.info("found:{}",xmlService.convertToXML(find));
+        }
+        
+        Assert.assertEquals(
+                String.format("Number of identifiers matches number of records for MODS format \n[%s] vs. \n[%s]", modsIdentifiersList, modsRecordsList),
+                modsIdentifiers, modsRecords);
         Assert.assertEquals("Number of identifiers matches number of records for DC format", dcIdentifiers, dcRecords);
         Assert.assertEquals("Number of identifiers for tDAR format matches number of identifiers for DC format", tdarIdentifiers, dcIdentifiers);
         // NB people and institutions are not disseminated in MODS, so the number should be smaller

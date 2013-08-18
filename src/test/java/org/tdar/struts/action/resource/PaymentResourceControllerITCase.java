@@ -33,7 +33,7 @@ import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.Pair;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 public class PaymentResourceControllerITCase extends AbstractResourceControllerITCase {
 
     private DocumentController controller;

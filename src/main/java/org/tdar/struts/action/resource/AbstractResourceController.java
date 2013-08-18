@@ -20,6 +20,7 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Sequence;
 import org.tdar.core.bean.Sequenceable;
@@ -31,7 +32,6 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -53,13 +53,16 @@ import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
+import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.AggregateDownloadStatistic;
@@ -67,6 +70,8 @@ import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.HttpsOnly;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 
@@ -87,6 +92,11 @@ import edu.asu.lib.mods.ModsDocument;
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
+    public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
+    public static final String ADMIN = "admin";
+    public static final String DC = "dc";
+    public static final String MODS = "mods";
+
     public static final String THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS = "this record is in draft and is only available to authorized users";
 
     private static final long serialVersionUID = 8620875853247755760L;
@@ -100,6 +110,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
     private List<ResourceCollection> effectiveResourceCollections = new ArrayList<ResourceCollection>();
 
+    private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
+    
     // containers for submitted data.
     private List<String> siteNameKeywords;
 
@@ -115,6 +127,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<String> otherKeywords;
 
     private ModsDocument modsDocument;
+    private Person submitter;
     private DublinCoreDocument dcDocument;
     private List<String> temporalKeywords;
     private List<String> geographicKeywords;
@@ -132,8 +145,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<ResourceCreatorProxy> creditProxies;
+    private List<ResourceCreatorProxy> contactProxies;
 
-    private Long submitterId;
 
     private List<ResourceAnnotation> resourceAnnotations;
     private Long activeResourceCount;
@@ -164,6 +177,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             } else {
                 creditProxies.add(proxy);
             }
+
+            if(ResourceCreatorRole.CONTACT == proxy.getRole()) {
+                getContactProxies().add(proxy);
+            }
         }
     }
 
@@ -185,6 +202,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public String loadAddMetadata() {
+        if (Persistable.Base.isNotNullOrTransient(getResource())) {
+            setSubmitter(getResource().getSubmitter());
+        } else {
+            setSubmitter(getAuthenticatedUser());
+        }
+
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             getAccountService().updateTransientAccountInfo(getResource());
             setActiveAccounts(new HashSet<Account>(determineActiveAccounts()));
@@ -210,6 +233,53 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return accounts;
     }
 
+    @Action(value = SAVE, results = {
+            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
+            @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
+            @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
+    })
+    @WriteableSession
+    @HttpsOnly
+    @Override
+    public String save() throws TdarActionException {
+        return super.save();
+    }
+
+    @SkipValidation
+    @HttpOnlyIfUnauthenticated
+    @Override
+    @Action(value = VIEW,
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, location = "../resource/view-template.ftl"),
+                    @Result(name = INPUT, type = "httpheader", params = { "error", "404" }),
+                    @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
+            })
+    public String view() throws TdarActionException {
+        return super.view();
+    }
+
+    @SkipValidation
+    @Action(value = ADD, results = {
+            @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
+            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD)
+    })
+    @HttpsOnly
+    @Override
+    public String add() throws TdarActionException {
+        return super.add();
+    }
+
+    @SkipValidation
+    @Action(value = EDIT, results = {
+            @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE)
+    })
+    @HttpsOnly
+    @Override
+    public String edit() throws TdarActionException {
+        return super.edit();
+    }
+
     @Override
     public String loadEditMetadata() throws TdarActionException {
         loadAddMetadata();
@@ -218,6 +288,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return SUCCESS;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String loadViewMetadata() throws TdarActionException {
         if (getResource() == null)
@@ -346,7 +417,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // don't judge me I hate this code too.
         if (getResource().isDraft()) {
             logger.trace("resource not viewable because it is draft: {}", getPersistable());
-            throw new TdarActionException(StatusCode.OK.withResultName("draft"), THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS);
+            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT), THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS);
         }
 
         return false;
@@ -443,25 +514,30 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             getResourceService().saveOrUpdate(getPersistable());
         }
 
-        if (Persistable.Base.isNotNullOrTransient(getSubmitterId())) {
-            Person uploader = getEntityService().find(getSubmitterId());
+        if (Persistable.Base.isNotNullOrTransient(getSubmitter())) {
+            Person uploader = getEntityService().find(getSubmitter().getId());
             getPersistable().setSubmitter(uploader);
             // if I change the owner, and the owner is me, then make sure I don't loose permissions on the record
-            if (uploader.equals(getAuthenticatedUser())) {
-                boolean found = false;
-                for (AuthorizedUser user : getAuthorizedUsers()) {
-                    if (user.getUser().equals(uploader)) {
-                        found = true;
-                    }
-                }
-                // if we're setting the sbumitter
-                if (!found) {
-                    getAuthorizedUsers().add(new AuthorizedUser(uploader, GeneralPermissions.MODIFY_RECORD));
-                }
-            }
+            // if (uploader.equals(getAuthenticatedUser())) {
+            // boolean found = false;
+            // for (AuthorizedUser user : getAuthorizedUsers()) {
+            // if (user.getUser().equals(uploader)) {
+            // found = true;
+            // }
+            // }
+            // // if we're setting the sbumitter
+            // if (!found) {
+            // getAuthorizedUsers().add(new AuthorizedUser(uploader, GeneralPermissions.MODIFY_RECORD));
+            // }
+            // }
         }
 
-        getResourceCollectionService().saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource());
+        // only modify these permissions if the user has the right to
+        if (getAuthenticationAndAuthorizationService().canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
+                GeneralPermissions.MODIFY_RECORD)) {
+            getResourceCollectionService().saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource());
+        }
+        ;
         saveKeywords();
         saveTemporalContext();
         saveSpatialContext();
@@ -551,7 +627,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Collections.sort(getResourceNotes());
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
-        getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForResource(getResource()));
+        getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
         initializeResourceCreatorProxyLists();
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
         loadEffectiveResourceCollections();
@@ -730,8 +806,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @SkipValidation
-    @Action(value = "mods", interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = "success", type = "jaxbdocument", params = { "documentName", "modsDocument", "formatOutput", "true" })
+    @Action(value = MODS, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+            @Result(name = SUCCESS, type = "jaxbdocument", params = { "documentName", "modsDocument", "formatOutput", "true" })
     })
     public String viewMods() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
@@ -747,8 +823,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @SkipValidation
-    @Action(value = "dc", interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = "success", type = "jaxbdocument", params = { "documentName", "dcDocument", "formatOutput", "true" })
+    @Action(value = DC, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+            @Result(name = SUCCESS, type = "jaxbdocument", params = { "documentName", "dcDocument", "formatOutput", "true" })
     })
     public String viewDc() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
@@ -843,6 +919,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return authorshipProxies;
     }
 
+    public List<ResourceCreatorProxy> getContactProxies() {
+        if(CollectionUtils.isEmpty(contactProxies)) {
+            contactProxies = new ArrayList<>();
+        }
+        return contactProxies;
+    }
+
     public ResourceCreatorProxy getBlankCreatorProxy() {
         return new ResourceCreatorProxy();
     }
@@ -907,6 +990,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public void setResourceAnnotations(List<ResourceAnnotation> resourceAnnotations) {
         this.resourceAnnotations = resourceAnnotations;
     }
+    
+    public List<ResourceType> getAllResourceTypes() {
+        return Arrays.asList(ResourceType.values());
+    }
 
     /**
      * @param resourceCollections
@@ -961,21 +1048,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return viewableResourceCollections;
     }
 
-    public Long getSubmitterId() {
-        return submitterId;
-    }
-
-    public void setSubmitterId(Long submitterId) {
-        this.submitterId = submitterId;
-    }
-
     @SkipValidation
-    @Action(value = "admin", results = {
-            @Result(name = SUCCESS, location = "../resource-admin.ftl")
+    @Action(value = ADMIN, results = {
+            @Result(name = SUCCESS, location = "../resource/admin.ftl")
     })
     public String viewAdmin() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ADMIN_INFO);
-        view();
+        //view();
         setResourceLogEntries(getResourceService().getLogsForResource(getPersistable()));
         setUsageStatsForResources(getResourceService().getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
                 Arrays.asList(getPersistable().getId())));
@@ -1045,4 +1124,21 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public void setDownloadStats(Map<String, List<AggregateDownloadStatistic>> downloadStats) {
         this.downloadStats = downloadStats;
     }
+
+    public Person getSubmitter() {
+        return submitter;
+    }
+
+    public void setSubmitter(Person submitter) {
+        this.submitter = submitter;
+    }
+
+    public List<ResourceRelationship> getResourceRelationships() {
+        return resourceRelationships;
+    }
+
+    public void setResourceRelationships(List<ResourceRelationship> resourceRelationships) {
+        this.resourceRelationships = resourceRelationships;
+    }
+
 }

@@ -182,6 +182,7 @@ public class AuthorityManagementService {
      *  and setters.
      *  
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T extends Dedupable> void updateReferrers(Person user, Class<? extends Dedupable> class1, Set<Long> dupeIds, Long authorityId, DupeMode dupeMode) {
         Activity activity = new Activity();
         activity.setName(String.format("update-referrers:: referredClass:%s\tauthorityId:%s", class1.getSimpleName(), authorityId));
@@ -275,7 +276,7 @@ public class AuthorityManagementService {
         return count;
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private <T extends Dedupable> void processSynonyms(T authority, Set<T> dupes, DupeMode markAndConsoldiateDups) {
         for (T dup : dupes) {
             authority.getSynonyms().addAll(dup.getSynonyms());
@@ -293,7 +294,7 @@ public class AuthorityManagementService {
         }
     }
 
-    private <T extends Dedupable> void logAndNotify(AuthorityManagementLog<T> logData) {
+    private <T extends Dedupable<?>> void logAndNotify(AuthorityManagementLog<T> logData) {
         logger.debug("{}", logData);
 
         // log the xml to filestore/logs

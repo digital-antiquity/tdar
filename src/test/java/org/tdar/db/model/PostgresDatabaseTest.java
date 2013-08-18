@@ -90,4 +90,23 @@ public class PostgresDatabaseTest {
       
       postgresDatabase.editRow(dataTable, rowId, data);
   }
+  
+    @Test
+    public final void tableAsXml() {
+        final DataTable dataTable = new DataTable();
+        final String xmlResult = "<xml />";
+        final String tableName = "Flint scrapers";
+        dataTable.setName(tableName);
+        final JdbcTemplate jdbcTemplate = context.mock(JdbcTemplate.class);
+        context.checking(new Expectations() {
+            {
+                oneOf(jdbcTemplate).queryForObject("select table_to_xml('" + tableName + "',true,false,'');", String.class);
+                will(returnValue(xmlResult));
+            }
+        });
+        PostgresDatabase postgresDatabase = new PostgresDatabase();
+        postgresDatabase.setJdbcTemplate(jdbcTemplate);
+        String xml = postgresDatabase.selectTableAsXml(dataTable);
+        org.junit.Assert.assertSame(xml, xmlResult);
+    }
 }

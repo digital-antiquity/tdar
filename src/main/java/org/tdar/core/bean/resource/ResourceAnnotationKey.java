@@ -19,6 +19,7 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
@@ -44,21 +45,23 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     private final static String[] JSON_PROPERTIES = { "id", "key", "label" };
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "resource_annotation_type")
+    @Column(name = "resource_annotation_type", length=255)
     private ResourceAnnotationType resourceAnnotationType;
 
     // FIXME: convert to enum for control? if we want to eventually add
     // format strings then we need to capture that format string, e.g., "###-###-####" for phone numbers
     // or "xxx-xx" for arbitrary strings... maybe we can avoid this entirely.
     @Enumerated(EnumType.STRING)
-    @Column(name = "annotation_data_type")
+    @Column(name = "annotation_data_type", length = 255)
     private ResourceAnnotationDataType annotationDataType;
 
-    @Column(length = 128, unique = true)
+    @Column(length = 128, unique = true,nullable=false)
     @Fields({ @Field(name = "annotationkey_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
+    @Length(max = 128)
     private String key;
 
     @Column(length = 128, name = "format_string")
+    @Length(max = 128)
     private String formatString;
 
     private transient Float score = -1f;
@@ -126,6 +129,7 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
 
     @Override
     public List<?> getEqualityFields() {
+        //ab probably okay as not nullable fields
         return Arrays.asList(key);
     }
 

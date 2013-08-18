@@ -13,12 +13,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
@@ -36,7 +35,9 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.SensoryData;
@@ -47,7 +48,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.search.query.SortOption;
+import org.tdar.utils.TestConfiguration;
 
 /**
  * @author Adam Brin
@@ -71,6 +72,10 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     }
 
     public final static Long TEST_ID = 3794L;
+
+    TestConfiguration config = TestConfiguration.getInstance();
+    int defaultMaxResults = config.getMaxAPIFindAll();
+
 
     @Test
     public void testAPIController() throws Exception {
@@ -101,7 +106,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Document old = resourceService.find(TEST_ID);
         genericService.markReadOnly(old);
         old.getRelatedComparativeCollections().add(new RelatedComparativeCollection("text"));
-        final String oldDocXml = xmlService.convertToXML(old);
+        //final String oldDocXml = xmlService.convertToXML(old);
         assertEquals(1, old.getInternalResourceCollection().getAuthorizedUsers().size());
         genericService.detachFromSession(old);
         final Person oldSubmitter = old.getSubmitter();
@@ -113,6 +118,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         old = null;
         fake = null;
         APIController controller = generateNewInitializedController(APIController.class);
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DOCUMENT)));
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_DOCUMENT_NAME));
@@ -147,35 +153,36 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     }
 
-    // return some public resource collections
-    private List<ResourceCollection> getSomeResourceCollections() throws InstantiationException, IllegalAccessException {
-        int count = 5;
-        List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
-        for (int i = 0; i < count; i++) {
-            String email = "someperson" + i + "@mailinator.com";
-            Person person = entityService.findByEmail(email);
-            if (person == null) {
-                person = createAndSaveNewPerson(email, "someperson");
-            }
-            Document document = createAndSaveNewInformationResource(Document.class, person);
-            ResourceCollection rc = new ResourceCollection(document, getAdminUser());
-            rc.setName("test collection " + i);
-            rc.setSortBy(SortOption.TITLE);
-            resourceCollectionService.saveOrUpdate(rc);
-            resourceCollections.add(rc);
-        }
-        return resourceCollections;
-    }
+//    // return some public resource collections
+//    private List<ResourceCollection> getSomeResourceCollections() throws InstantiationException, IllegalAccessException {
+//        int count = 5;
+//        List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
+//        for (int i = 0; i < count; i++) {
+//            String email = "someperson" + i + "@mailinator.com";
+//            Person person = entityService.findByEmail(email);
+//            if (person == null) {
+//                person = createAndSaveNewPerson(email, "someperson");
+//            }
+//            Document document = createAndSaveNewInformationResource(Document.class, person);
+//            ResourceCollection rc = new ResourceCollection(document, getAdminUser());
+//            rc.setName("test collection " + i);
+//            rc.setSortBy(SortOption.TITLE);
+//            resourceCollectionService.saveOrUpdate(rc);
+//            resourceCollections.add(rc);
+//        }
+//        return resourceCollections;
+//    }
 
     @Test
     @Rollback
     public void testNewRecord() throws Exception {
-        Document doc = genericService.findRandom(Document.class, 1).get(0);
+        Document doc = genericService.findAll(Document.class, 1).get(0);
         genericService.markReadOnly(doc);
         doc.setId(null);
         String docXml = xmlService.convertToXML(doc);
         logger.info(docXml);
         APIController controller = generateNewInitializedController(APIController.class);
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
@@ -185,13 +192,15 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
     public void testNewConfidentialRecord() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         String text = "<?xml version=\"1.0\" encoding=\"utf-8\"?><tdar:image xmlns:tdar=\"http://www.tdar.org/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://localhost:8180/schema/current schema.xsd\"><tdar:description>This Bowl is an example of Style III from the Swarts site.  Swarts ruin (sometimes known as Swartz Ruin) is a Mimbres village in Grants County, southwestern New Mexico, excavated during the 1920s by H.S. and C.B. Cosgrove.  The site dates from about A.D. 950 to 1175 and contained the relatively undisturbed remains of numerous pit houses and several Classic Mimbres roomblocks, as well as a large assemblage of ceramics, lithics, and faunal material.  Sometime after the excavations, the site was leveled. Artifacts, photographs and field notes from the Cosgrove excavations are curated in the Peabody Museum of Archaeology and Ethnology at Harvard University. Swarts is described as an example Mimbres site in Brody's books on Mimbres pottery (1977, 2002 http://library.lib.asu.edu/record=b4770839~S3). A comprehensive report on the site (Cosgrove and Cosgrove 1932) has recently been reprinted (http://library.lib.asu.edu/record=b4816690~S3).</tdar:description><tdar:latitudeLongitudeBoxes><tdar:latitudeLongitudeBox><tdar:maximumLatitude>32.69975751</tdar:maximumLatitude><tdar:maximumLongitude>-107.8423258</tdar:maximumLongitude><tdar:minimumLatitude>32.69475751</tdar:minimumLatitude><tdar:minimumLongitude>-107.8473258</tdar:minimumLongitude></tdar:latitudeLongitudeBox></tdar:latitudeLongitudeBoxes><tdar:resourceType>IMAGE</tdar:resourceType><tdar:siteNameKeywords><tdar:siteNameKeyword><tdar:label>Swarts</tdar:label></tdar:siteNameKeyword></tdar:siteNameKeywords><tdar:title>Swarts Bowl (Style III)</tdar:title><tdar:date>2012</tdar:date><tdar:dateNormalized>2012</tdar:dateNormalized><tdar:externalReference>false</tdar:externalReference><tdar:inheritingCollectionInformation>true</tdar:inheritingCollectionInformation><tdar:inheritingCulturalInformation>true</tdar:inheritingCulturalInformation><tdar:inheritingIdentifierInformation>true</tdar:inheritingIdentifierInformation><tdar:inheritingInvestigationInformation>true</tdar:inheritingInvestigationInformation><tdar:inheritingMaterialInformation>true</tdar:inheritingMaterialInformation><tdar:inheritingNoteInformation>true</tdar:inheritingNoteInformation><tdar:inheritingOtherInformation>true</tdar:inheritingOtherInformation><tdar:inheritingSiteInformation>false</tdar:inheritingSiteInformation><tdar:inheritingSpatialInformation>false</tdar:inheritingSpatialInformation><tdar:inheritingTemporalInformation>true</tdar:inheritingTemporalInformation><tdar:relatedDatasetData/><tdar:resourceLanguage>ENGLISH</tdar:resourceLanguage><tdar:resourceProviderInstitution/></tdar:image>";
-        Project project = genericService.findRandom(Project.class, 1).get(0);
+        Project project = genericService.findAll(Project.class, 1).get(0);
         Account account = setupAccountForPerson(getUser());
         controller.setRecord(text);
+        logger.info(text);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_IMAGE)));
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_IMAGE_NAME));
         controller.setAccountId(account.getId());
@@ -209,6 +218,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Test
     public void testMimbres() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         String text = "<?xml version=\"1.0\" encoding=\"utf-8\"?><tdar:image xmlns:tdar=\"http://www.tdar.org/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://localhost:8180/schema/current schema.xsd\"><tdar:description>This Bowl is an example of Style III from the Swarts site.  Swarts ruin (sometimes known as Swartz Ruin) is a Mimbres village in Grants County, southwestern New Mexico, excavated during the 1920s by H.S. and C.B. Cosgrove.  The site dates from about A.D. 950 to 1175 and contained the relatively undisturbed remains of numerous pit houses and several Classic Mimbres roomblocks, as well as a large assemblage of ceramics, lithics, and faunal material.  Sometime after the excavations, the site was leveled. Artifacts, photographs and field notes from the Cosgrove excavations are curated in the Peabody Museum of Archaeology and Ethnology at Harvard University. Swarts is described as an example Mimbres site in Brody's books on Mimbres pottery (1977, 2002 http://library.lib.asu.edu/record=b4770839~S3). A comprehensive report on the site (Cosgrove and Cosgrove 1932) has recently been reprinted (http://library.lib.asu.edu/record=b4816690~S3).</tdar:description><tdar:latitudeLongitudeBoxes><tdar:latitudeLongitudeBox><tdar:maximumLatitude>32.69975751</tdar:maximumLatitude><tdar:maximumLongitude>-107.8423258</tdar:maximumLongitude><tdar:minimumLatitude>32.69475751</tdar:minimumLatitude><tdar:minimumLongitude>-107.8473258</tdar:minimumLongitude></tdar:latitudeLongitudeBox></tdar:latitudeLongitudeBoxes><tdar:resourceType>IMAGE</tdar:resourceType><tdar:siteNameKeywords><tdar:siteNameKeyword><tdar:label>Swarts</tdar:label></tdar:siteNameKeyword></tdar:siteNameKeywords><tdar:title>Swarts Bowl (Style III)</tdar:title><tdar:date>2012</tdar:date><tdar:dateNormalized>2012</tdar:dateNormalized><tdar:externalReference>false</tdar:externalReference><tdar:inheritingCollectionInformation>true</tdar:inheritingCollectionInformation><tdar:inheritingCulturalInformation>true</tdar:inheritingCulturalInformation><tdar:inheritingIdentifierInformation>true</tdar:inheritingIdentifierInformation><tdar:inheritingInvestigationInformation>true</tdar:inheritingInvestigationInformation><tdar:inheritingMaterialInformation>true</tdar:inheritingMaterialInformation><tdar:inheritingNoteInformation>true</tdar:inheritingNoteInformation><tdar:inheritingOtherInformation>true</tdar:inheritingOtherInformation><tdar:inheritingSiteInformation>false</tdar:inheritingSiteInformation><tdar:inheritingSpatialInformation>false</tdar:inheritingSpatialInformation><tdar:inheritingTemporalInformation>true</tdar:inheritingTemporalInformation><tdar:relatedDatasetData/><tdar:resourceLanguage>ENGLISH</tdar:resourceLanguage><tdar:resourceProviderInstitution/></tdar:image>";
         controller.setRecord(text);
         String uploadStatus = controller.upload();
@@ -218,8 +228,40 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
+    public void testDataset() throws Exception {
+        APIController controller = generateNewInitializedController(APIController.class);
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
+        String text = "<?xml version=\"1.0\" encoding=\"utf-8\"?><tdar:dataset xmlns:tdar=\"http://www.tdar.org/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://localhost:8180/schema/current schema.xsd\"><tdar:description>This Bowl is an example of Style III from the Swarts site.  Swarts ruin (sometimes known as Swartz Ruin) is a Mimbres village in Grants County, southwestern New Mexico, excavated during the 1920s by H.S. and C.B. Cosgrove.  The site dates from about A.D. 950 to 1175 and contained the relatively undisturbed remains of numerous pit houses and several Classic Mimbres roomblocks, as well as a large assemblage of ceramics, lithics, and faunal material.  Sometime after the excavations, the site was leveled. Artifacts, photographs and field notes from the Cosgrove excavations are curated in the Peabody Museum of Archaeology and Ethnology at Harvard University. Swarts is described as an example Mimbres site in Brody's books on Mimbres pottery (1977, 2002 http://library.lib.asu.edu/record=b4770839~S3). A comprehensive report on the site (Cosgrove and Cosgrove 1932) has recently been reprinted (http://library.lib.asu.edu/record=b4816690~S3).</tdar:description><tdar:latitudeLongitudeBoxes><tdar:latitudeLongitudeBox><tdar:maximumLatitude>32.69975751</tdar:maximumLatitude><tdar:maximumLongitude>-107.8423258</tdar:maximumLongitude><tdar:minimumLatitude>32.69475751</tdar:minimumLatitude><tdar:minimumLongitude>-107.8473258</tdar:minimumLongitude></tdar:latitudeLongitudeBox></tdar:latitudeLongitudeBoxes><tdar:resourceType>DATASET</tdar:resourceType><tdar:siteNameKeywords><tdar:siteNameKeyword><tdar:label>Swarts</tdar:label></tdar:siteNameKeyword></tdar:siteNameKeywords><tdar:title>Swarts Bowl (Style III)</tdar:title><tdar:date>2012</tdar:date><tdar:dateNormalized>2012</tdar:dateNormalized><tdar:externalReference>false</tdar:externalReference><tdar:inheritingCollectionInformation>true</tdar:inheritingCollectionInformation><tdar:inheritingCulturalInformation>true</tdar:inheritingCulturalInformation><tdar:inheritingIdentifierInformation>true</tdar:inheritingIdentifierInformation><tdar:inheritingInvestigationInformation>true</tdar:inheritingInvestigationInformation><tdar:inheritingMaterialInformation>true</tdar:inheritingMaterialInformation><tdar:inheritingNoteInformation>true</tdar:inheritingNoteInformation><tdar:inheritingOtherInformation>true</tdar:inheritingOtherInformation><tdar:inheritingSiteInformation>false</tdar:inheritingSiteInformation><tdar:inheritingSpatialInformation>false</tdar:inheritingSpatialInformation><tdar:inheritingTemporalInformation>true</tdar:inheritingTemporalInformation><tdar:relatedDatasetData/><tdar:resourceLanguage>ENGLISH</tdar:resourceLanguage><tdar:resourceProviderInstitution/></tdar:dataset>";
+        controller.setRecord(text);
+        controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Workbook1.csv")));
+        controller.setUploadFileFileName(Arrays.asList("Workbook1.csv"));
+        String uploadStatus = controller.upload();
+        assertEquals(APIController.SUCCESS, uploadStatus);
+        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
+    }
+
+    @Test
+    @Rollback
+    @Ignore
+    public void testDatasetWithMappings() throws Exception {
+
+        // note I fail because of lack of knowledge of how to process the mappings and persist or map
+        APIController controller = generateNewInitializedController(APIController.class);
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
+        String text = "<?xml version=\"1.0\" encoding=\"utf-8\"?><tdar:dataset xmlns:tdar=\"http://www.tdar.org/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://localhost:8180/schema/current schema.xsd\"><tdar:description>This Bowl is an example of Style III from the Swarts site.  Swarts ruin (sometimes known as Swartz Ruin) is a Mimbres village in Grants County, southwestern New Mexico, excavated during the 1920s by H.S. and C.B. Cosgrove.  The site dates from about A.D. 950 to 1175 and contained the relatively undisturbed remains of numerous pit houses and several Classic Mimbres roomblocks, as well as a large assemblage of ceramics, lithics, and faunal material.  Sometime after the excavations, the site was leveled. Artifacts, photographs and field notes from the Cosgrove excavations are curated in the Peabody Museum of Archaeology and Ethnology at Harvard University. Swarts is described as an example Mimbres site in Brody's books on Mimbres pottery (1977, 2002 http://library.lib.asu.edu/record=b4770839~S3). A comprehensive report on the site (Cosgrove and Cosgrove 1932) has recently been reprinted (http://library.lib.asu.edu/record=b4816690~S3).</tdar:description><tdar:latitudeLongitudeBoxes><tdar:latitudeLongitudeBox><tdar:maximumLatitude>32.69975751</tdar:maximumLatitude><tdar:maximumLongitude>-107.8423258</tdar:maximumLongitude><tdar:minimumLatitude>32.69475751</tdar:minimumLatitude><tdar:minimumLongitude>-107.8473258</tdar:minimumLongitude></tdar:latitudeLongitudeBox></tdar:latitudeLongitudeBoxes><tdar:resourceType>DATASET</tdar:resourceType><tdar:siteNameKeywords><tdar:siteNameKeyword><tdar:label>Swarts</tdar:label></tdar:siteNameKeyword></tdar:siteNameKeywords><tdar:title>Swarts Bowl (Style III)</tdar:title><tdar:date>2012</tdar:date><tdar:dateNormalized>2012</tdar:dateNormalized><tdar:externalReference>false</tdar:externalReference><tdar:inheritingCollectionInformation>true</tdar:inheritingCollectionInformation><tdar:inheritingCulturalInformation>true</tdar:inheritingCulturalInformation><tdar:inheritingIdentifierInformation>true</tdar:inheritingIdentifierInformation><tdar:inheritingInvestigationInformation>true</tdar:inheritingInvestigationInformation><tdar:inheritingMaterialInformation>true</tdar:inheritingMaterialInformation><tdar:inheritingNoteInformation>true</tdar:inheritingNoteInformation><tdar:inheritingOtherInformation>true</tdar:inheritingOtherInformation><tdar:inheritingSiteInformation>false</tdar:inheritingSiteInformation><tdar:inheritingSpatialInformation>false</tdar:inheritingSpatialInformation><tdar:inheritingTemporalInformation>true</tdar:inheritingTemporalInformation><tdar:relatedDatasetData/><tdar:resourceLanguage>ENGLISH</tdar:resourceLanguage><tdar:resourceProviderInstitution/><tdar:dataTables><tdar:dataTable id=\"-1\"><tdar:dataTableColumns><tdar:dataTableColumn id=\"-1\"><tdar:columnDataType>VARCHAR</tdar:columnDataType><tdar:columnEncodingType>CODED_VALUE</tdar:columnEncodingType><tdar:dataTableRef>DataTable:-1</tdar:dataTableRef><tdar:displayName>Column #1</tdar:displayName><tdar:ignoreFileExtension>true</tdar:ignoreFileExtension><tdar:length>-1</tdar:length><tdar:mappingColumn>false</tdar:mappingColumn><tdar:name>column_1</tdar:name><tdar:visible>true</tdar:visible></tdar:dataTableColumn></tdar:dataTableColumns></tdar:dataTable></tdar:dataTables></tdar:dataset>";
+        controller.setRecord(text);
+        controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Workbook1.csv")));
+        controller.setUploadFileFileName(Arrays.asList("Workbook1.csv"));
+        String uploadStatus = controller.upload();
+        assertEquals(APIController.SUCCESS, uploadStatus);
+        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
+    }
+
+    @Test
+    @Rollback
     public void testTrivialRecord() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         SensoryData data = new SensoryData();
         data.setTitle("Test");
         data.setDescription(" a description");
@@ -239,13 +281,15 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void testReplaceRecord() throws Exception {
-        Document old = (Document) generateInformationResourceWithFileAndUser();
+        Document old = generateDocumentWithFileAndUser();
         Long oldIRId = old.getFirstInformationResourceFile().getId();
         Long oldId = old.getId();
         genericService.detachFromSession(old);
+        genericService.detachFromSession(getAdminUser());
         old = null;
         APIController controller = generateNewInitializedController(APIController.class);
-        Document document = genericService.findRandom(Document.class, 1).get(0);
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
+        Document document = genericService.findAll(Document.class, 1).get(0);
         genericService.markReadOnly(document);
         document.setId(oldId);
         String docXml = xmlService.convertToXML(document);
@@ -261,17 +305,13 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(oldIRId, old.getFirstInformationResourceFile().getId());
     }
 
+    @SuppressWarnings("null")
     @Test
     @Rollback(true)
     public void testInvalidFileType() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        Dataset doc = null;
-        for (Dataset dataset : genericService.findRandom(Dataset.class, 10)) {
-            if (dataset != null) {
-                doc = dataset;
-                continue;
-            }
-        }
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
+        Dataset doc = findAResource(Dataset.class);
 
         String datasetXml = xmlService.convertToXML(doc);
         controller.setRecord(datasetXml);
@@ -290,6 +330,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String docXml = xmlService.convertToXML(doc);
 
         APIController controller = generateNewController(APIController.class);
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         init(controller, getBasicUser());
         controller.setRecord(docXml);
 
@@ -303,13 +344,9 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback(true)
     public void testInvalidInvestigationType() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        Document doc = null;
-        for (Document document : genericService.findRandom(Document.class, 10)) {
-            if (document != null) {
-                doc = document;
-                continue;
-            }
-        }
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
+        Resource doc = findAResource(Document.class);
+        @SuppressWarnings("null")
         Long docid = doc.getId();
         genericService.markReadOnly(doc);
         InvestigationType bad = new InvestigationType();
@@ -324,14 +361,31 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
                 controller.getStatus());
     }
 
+    private <C> C findAResource(Class<C> cls) {
+        for (C c : genericService.findAll(cls, defaultMaxResults)) {
+            if (c != null) {
+                return c;
+            }
+        }
+        return null;
+    }
+
     @Test
     @Rollback(true)
-    public void testBadEnum() throws IOException, ClassNotFoundException {
+    public void testBadEnum() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        controller.setRecord(FileUtils.readFileToString(new File(TestConstants.TEST_XML_DIR + "/bad-enum-document.xml")));
+        Document doc = findAResource(Document.class);
+        Long docid = doc.getId();
+        genericService.markReadOnly(doc);
+        doc.setResourceLanguage(Language.ENGLISH);
+        String docXml = xmlService.convertToXML(doc);
+        doc = null;
+        docXml = StringUtils.replace(docXml, Language.ENGLISH.name(),"FNGLISH");
+        controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
+        controller.setRecord(docXml);
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(StatusCode.UNKNOWN_ERROR.getResultName(), controller.getStatus());
+        assertEquals(StatusCode.BAD_REQUEST.getResultName(), controller.getStatus());
     }
 
 }

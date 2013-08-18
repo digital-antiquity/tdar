@@ -51,7 +51,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.bulkUpload.BulkUploadTemplate;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -59,6 +58,8 @@ import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
+import org.tdar.utils.TestConfiguration;
+import org.tdar.utils.bulkUpload.BulkUploadTemplate;
 
 /**
  * $Id$
@@ -159,7 +160,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
                 assertEquals(1, resource.getResourceCreators().size());
                 ResourceCreator creator = resource.getResourceCreators().iterator().next();
                 assertEquals(ResourceCreatorRole.CREATOR, creator.getRole());
-                assertEquals(TestConstants.USER_ID, creator.getCreator().getId());
+                assertEquals(TestConfiguration.getInstance().getUserId(), creator.getCreator().getId());
                 manifest_gc = true;
             }
             if (resource.getTitle().equals("Handbooks of Archaeology and Antiqvities")) {
@@ -181,7 +182,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
                 assertEquals(ResourceCreatorRole.SPONSOR, map.get(0).getRole());
                 assertEquals(TestConstants.TEST_INSTITUTION_ID, map.get(0).getCreator().getId());
                 assertEquals(ResourceCreatorRole.LAB_DIRECTOR, map.get(1).getRole());
-                assertEquals(TestConstants.ADMIN_USER_ID, map.get(1).getCreator().getId());
+                assertEquals(TestConfiguration.getInstance().getAdminUserId(), map.get(1).getCreator().getId());
                 manifest_book = true;
             }
             assertSourceAndComparitiveCollections(resource);
@@ -467,7 +468,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.ahad.properties" })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testCloneImageWithLicencesEnabled() {
         Image expected = new Image();
         expected.setLicenseType(LicenseType.CREATIVE_COMMONS_ATTRIBUTION);
@@ -479,7 +480,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.ahad.properties" })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testCloneImageWithLicencesEnabledOtherLicenceType() {
         Image expected = new Image();
         expected.setLicenseType(LicenseType.OTHER);
@@ -491,7 +492,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.ahad.properties" })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testCloneImageWithCopyrightEnabled() {
         Image expected = new Image();
         Creator copyrightHolder = entityService.find(getAdminUserId());
@@ -531,6 +532,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
+        assertEquals("sanity check: we just added two files, right?", 2, uploadFiles.size());
 
         Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
         final Long ticketId = proxyPair.getFirst().getId();
@@ -569,9 +571,16 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.info("{}", details);
         Set<ResourceCollection> collections = new HashSet<ResourceCollection>();
 
+        logger.debug("inspecting collections created:");
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
-            collections.addAll(resource.getResourceCollections());
+            Set<ResourceCollection> resourceCollections = resource.getResourceCollections();
+            logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
+            for (ResourceCollection rc : resourceCollections) {
+                logger.debug("\t\t ");
+            }
+
+            collections.addAll(resourceCollections);
         }
         assertEquals("we should have a total of 3 collections (2 internal +1 shared)", 3, collections.size());
 

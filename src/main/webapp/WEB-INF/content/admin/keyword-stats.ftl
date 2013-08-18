@@ -6,9 +6,11 @@
 <h3>${title}</h3>
 <table id="${id}">
     <thead>
+    <tr>
         <th>Keyword</th>
         <#if hier><th>Index</th></#if>
         <th>Count</th>
+        </tr>
     </thead>
     <tbody class="compact">
         <#list stats as stat>

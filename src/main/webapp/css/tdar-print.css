@@ -1,5 +1,5 @@
 @media print {
-	.inline-menu,.subnav,.no-print {
+	.inline-menu,.subnav, {
 		display: none;
 		visibility: hidden;
 	}

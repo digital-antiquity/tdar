@@ -4,21 +4,117 @@
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+
+<head>
 <#-- @search.initResultPagination/ -->
  <@search.headerLinks includeRss=false />
+<style>
+//ul.resource-list {list-style:none;margin-left:0px !important}
+</style>
+
+<title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
+
+
+<#if creator?? && nodeModel?has_content>
+<link rel="meta" type="application/rdf+xml" title="FOAF" href="/browse/creators/${creator.id?c}/rdf"/>
+</#if>
+</head>
 
 
 <@nav.creatorToolbar "view" />
 
-<title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
+		
 
 <@view.pageStatusCallout />
 
 <#if creator??>
+<#if nodeModel?has_content>
+	<#assign collaborators=nodeModel["creatorInfoLog/collaborators/*"] />
+	<#assign keywords= nodeModel["creatorInfoLog/keywords/*"] />
+	<#if keywords?has_content || collaborators?has_content>
+        <div id="sidebar-right" parse="true">
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <#-- fixme -- some of these may show the h3 w/o contents if count == 1 -->
+		<#assign num = results?size />
+		<#if (num > recordsPerPage)>
+			<#assign num = recordsPerPage />
+		</#if>
+		<#assign sz = (num / 2)?ceiling >
+		<#if (sz < 10)>
+			<#assign sz = 10 >
+		</#if>
+		<#assign seen_creators = 0/>
+		<#assign seen_kwds = 0/>
+        <#if collaborators?has_content>
+			<div id="related-creators">
+			<!-- sz: ${sz} - num: ${num} - colab ${collaborators?size} --> 
+				<h3>Related Creators</h3>
+				<ul>
+				<#list collaborators as collab>
+				<#if (seen_creators > sz) >
+					<#break/>
+				</#if>
+					<#if (collab.@count?number >= nodeModel.creatorInfoLog.@creatorMedian?number && collab.@count?number  >1)>
+						<#assign seen_creators = seen_creators +1 />
+						<li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a></li>
+					</#if>
+				</#list> 
+				</ul>
+			</div>
+		</#if>
+
+        <#if keywords?has_content>
+		<!-- sz: ${sz} - num: ${num} - keywords ${keywords?size} --> 
+			<div id="related-keywords">
+				<h3>Related Keywords</h3>
+				<ul>
+				<#list keywords as keyword>
+					<#if (seen_kwds > sz) >
+						<#break/>
+					</#if>
+					<#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
+					
+					<#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !keyword.@name?contains("Fips "))>
+						<#assign seen_kwds = seen_kwds +1 />
+						<li>${keyword.@name}</li>
+					</#if>
+					</#if>
+				</#list>
+				</ul> 
+			</div>
+		</#if>
+		<div>
+		<small>Related Keywords and Creators are determined by looking at all of the Creators and Keywords associated with a Creator and highlighting the most commonly used.</small>
+		</div>
+		<script>
+		$(document).ready(function(){
+		<#if seen_kwds == 0 && seen_creators == 0>
+			$("#sidebar-right").hide();
+			$("#articleBody").toggleClass("span9","span12");
+		</#if>
+		<#if seen_kwds == 0>
+			$("#related-keywords").hide();
+		</#if>
+		<#if seen_creators == 0>
+			$("#related-creators").hide();
+		</#if>
+		});
+		</script>
+</div>
+</#if>
+</#if>
 
 <h1><#if creator.properName??>${creator.properName}</#if></h1>
 <#assign scope="http://schema.org/Person"/>
-<#if creator.creatorType == 'INSTITUTION'>
+<#if creator.creatorType.institution >
 	<#assign scope="http://schema.org/Organization"/>
 </#if>
 
@@ -29,14 +125,27 @@
 	
     <a itemprop="affiliation" href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
     </#if>
-    <p itemprop="description">${creator.description!''}</p>
+    
+    <@common.description creator.description />
+
 	<#if creator.synonyms?has_content>
 	<p>Alternate Names: <#list creator.synonyms as syn> <#if syn_index !=0>,</#if>${syn.properName}</#list>
 	</p>
 	</#if>
+	<#if creator.url?has_content>
+		<a href="${creator.url?html}" onclick="TDAR.common.outboundLink(this);" >${creator.url?html}</a>
+	</#if>
     <br/>
-        <#if creator.creatorType == 'PERSON'>
+        <#if creator.creatorType.person>
            <#if authenticated && (editor ||  id == authenticatedUser.id ) >
+           
+           <h3>Future Contact Information</h3>
+           <#if creator.proxyInstitution?has_content>
+		     <a href="<@s.url value="${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
+          <#else>
+        	None Specified   
+           </#if>
+           <p>${creator.proxyNote!""}</p>
                 <table class='tableFormat table'>
                 <tr>
                     <td>
@@ -89,16 +198,23 @@
 
 				
                 <@common.resourceUsageInfo />
-
 				<#if (editor || id == authenticatedUser.id) >
-				<p><strong>Group Membership</strong></p>
-				<ul>
-				<#list groups as group>
-					<li>${group}</li>
-				</#list>
-				</ul>
-				
-					<#if creator.addresses?has_content >
+
+<#if creator.registered >
+<div class="row">
+	<div class="span6">
+	       <@common.billingAccountList accounts />
+		</div>
+		<div class="span6">
+			<h2>Group Membership</h2>
+			<ul>
+			<#list groups as group>
+				<li>${group}</li>
+			</#list>
+			</ul>
+	</div>
+</div>				
+</#if>					<#if creator.addresses?has_content >
 					<h3>Addresses</h3>
 					<div class="row">
 						<#list creator.addresses  as address>
@@ -130,8 +246,13 @@
     </div>
 </div>
 
+<#if editor && creatorXml?has_content>
+${creatorXml?html}
+
+</#if>
+
 <div class="tdarresults">
-<@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" />
+<@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" orientation="LIST"/>
 </div>
 <@search.basicPagination "Results"/>
 <#else>

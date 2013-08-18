@@ -13,12 +13,18 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotNullPredicate;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
+import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +39,9 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
 
 /**
  * @author Adam Brin
@@ -43,9 +51,13 @@ import org.tdar.search.query.SortOption;
 @Service
 public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<ResourceCollection, ResourceCollectionDao> {
 
+    private static final String RESOURCE_COLLECTION_RIGHTS_ERROR = "You do not have the rights to add this resource to";
     @Autowired
     AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
+    @Autowired
+    SearchService searchService;
+    
     @Transactional
     public List<Resource> reconcileIncomingResourcesForCollection(ResourceCollection persistable, Person authenticatedUser, List<Resource> resources) {
         Map<Long, Resource> incomingIdMap = Persistable.Base.createIdMap(resources);
@@ -79,7 +91,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         // remove all of the undesirable resources that that the user just tried to add
         rehydratedIncomingResources.removeAll(ineligibleResources);
-        // getResourceCollectionService().findAllChildCollectionsRecursive(persistable, CollectionType.SHARED);
+        // getResourceCollectionService().findAllChildCollections(persistable, CollectionType.SHARED);
         persistable.getResources().addAll(rehydratedIncomingResources);
 
         // add all the deleted resources that were already in the colleciton
@@ -135,7 +147,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // }
     }
 
-    public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource) {
+    public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource, Person authenticatedUser) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<AuthorizedUser>();
 
         for (ResourceCollection collection : resource.getResourceCollections()) {
@@ -144,7 +156,21 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
         }
 
+        boolean canModify = authenticationAndAuthorizationService.canUploadFiles(authenticatedUser, resource);
+
+        applyTransientEnabledPermission(authenticatedUser, authorizedUsers, canModify);
+
         return authorizedUsers;
+    }
+
+    private void applyTransientEnabledPermission(Person authenticatedUser, List<AuthorizedUser> authorizedUsers, boolean canModify) {
+        for (AuthorizedUser au : authorizedUsers) {
+            if (au.equals(authenticatedUser) || !canModify) {
+                au.setEnabled(false);
+            } else {
+                au.setEnabled(true);
+            }
+        }
     }
 
     /**
@@ -172,7 +198,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     @Transactional(readOnly = true)
-    public List<ResourceCollection> findAllDirectChildCollections(Long id, Boolean visible, CollectionType... type) {
+    public List<ResourceCollection> findDirectChildCollections(Long id, Boolean visible, CollectionType... type) {
         return getDao().findCollectionsOfParent(id, visible, type);
     }
 
@@ -279,6 +305,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
         }
 
+        logger.info("collections to remove: {}", toRemove);
         for (ResourceCollection collection : toRemove) {
             current.remove(collection);
             resource.getResourceCollections().remove(current);
@@ -295,7 +322,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     collection.markUpdated(resource.getSubmitter());
                     collection.setType(CollectionType.SHARED);
                     if (collection.getSortBy() == null) {
-                        collection.setSortBy(SortOption.RESOURCE_TYPE);
+                        collection.setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
                     }
                     collection.setVisible(true);
                     collectionToAdd = collection;
@@ -305,13 +332,18 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
 
             if (collectionToAdd != null && collectionToAdd.isValid()) {
+                if (Persistable.Base.isNotNullOrTransient(collectionToAdd)
+                        && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
+                    throw new TdarRecoverableRuntimeException(RESOURCE_COLLECTION_RIGHTS_ERROR + collectionToAdd.getTitle());
+                }
                 if (collectionToAdd.isTransient() && shouldSave) {
                     save(collectionToAdd);
                 }
                 // I think something in the next two lines is duplicitive
-                current.add(collectionToAdd);
-                collectionToAdd.getResources().add(resource);
+                // current.add(collectionToAdd);
 
+                // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
+                collectionToAdd.getResources().add(resource);
                 resource.getResourceCollections().add(collectionToAdd);
             } else {
                 if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
@@ -331,17 +363,48 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findAllSharedResourceCollections();
     }
 
-    public List<ResourceCollection> findAllChildCollectionsRecursive(ResourceCollection collection, CollectionType shared) {
+    /**
+     * Recursively build the transient child collection fields of a specified resource collection, and return a list
+     * containing the parent collection and all descendants
+     * 
+     * @param collection
+     *            the parent collection
+     * @param collectionType
+     *            the type of collections to return (e.g. internal, shared, public)
+     * @return a list containing the provided 'parent' collection and any descendant collections (if any). Futhermore
+     *         this method iteratively populates the transient children resource collection fields of the specified
+     *         collection.
+     */
+    public List<ResourceCollection> findAllChildCollections(ResourceCollection collection, Person authenticatedUser, CollectionType collectionType) {
         List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
         List<ResourceCollection> toEvaluate = new ArrayList<ResourceCollection>();
         toEvaluate.add(collection);
         while (!toEvaluate.isEmpty()) {
             ResourceCollection child = toEvaluate.get(0);
+            authenticationAndAuthorizationService.applyTransientViewableFlag(child, authenticatedUser);
             collections.add(child);
             toEvaluate.remove(0);
-            toEvaluate.addAll(findAllDirectChildCollections(child.getId(), null, CollectionType.SHARED));
+            child.setTransientChildren(new LinkedHashSet<ResourceCollection>(findDirectChildCollections(child.getId(), null, collectionType)));
+            toEvaluate.addAll(child.getTransientChildren());
         }
         return collections;
+    }
+
+    private ResourceCollection getRootResourceCollection(ResourceCollection node) {
+        return node.getHierarchicalResourceCollections().get(0);
+    };
+
+    /**
+     * Return the root resource collection of the provided resource collection. This method also populates the
+     * transient children resource collection for every node in the tree.
+     * 
+     * @param anyNode
+     * @return
+     */
+    public ResourceCollection getFullyInitializedRootResourceCollection(ResourceCollection anyNode, Person authenticatedUser) {
+        ResourceCollection root = getRootResourceCollection(anyNode);
+        findAllChildCollections(getRootResourceCollection(anyNode), authenticatedUser, CollectionType.SHARED);
+        return root;
     }
 
     public List<Long> findAllPublicActiveCollectionIds() {
@@ -350,6 +413,50 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     public List<Resource> findAllResourcesWithStatus(ResourceCollection persistable, Status... statuses) {
         return getDao().findAllResourcesWithStatus(persistable, statuses);
+    }
+
+    public List<AuthorizedUser> getAuthorizedUsersForCollection(ResourceCollection persistable, Person authenticatedUser) {
+        List<AuthorizedUser> users = new ArrayList<>(persistable.getAuthorizedUsers());
+        applyTransientEnabledPermission(authenticatedUser, users, !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, persistable));
+        return users;
+    }
+
+    public void reconcileCollectionTree(Collection<ResourceCollection> collection, Person authenticatedUser, List<Long> collectionIds) {
+        Iterator<ResourceCollection> iter = collection.iterator();
+        while (iter.hasNext()) {
+            ResourceCollection rc = iter.next();
+            List<Long> list = rc.getParentIdList();
+            list.remove(rc.getId());
+            if (CollectionUtils.containsAny(collectionIds, list)) {
+                iter.remove();
+            }
+            findAllChildCollections(rc, authenticatedUser, ResourceCollection.CollectionType.SHARED);
+        }
+    }
+
+    /*
+     * FIXME; this does not seem to find some of the deep collection children 
+     */
+    public void reconcileCollectionTree2(List<ResourceCollection> resourceCollections, Person authenticatedUser, List<Long> collectionIds) throws ParseException {
+        Map<Long, ResourceCollection> idMap = Persistable.Base.createIdMap(resourceCollections);
+        ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
+        queryBuilder.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_TREE, Operator.OR,idMap.keySet()));
+        queryBuilder.setOperator(Operator.OR);
+        FullTextQuery search = searchService.search(queryBuilder,null);
+        ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
+        while (results.next()) {
+            ResourceCollection coll = (ResourceCollection) results.get()[0];
+            if (collectionIds.contains(coll.getParentId())) {
+                resourceCollections.remove(coll);
+            }
+            // hibernate should use the same identity for both of these ... and thus reconcile the thing inside and outside the map
+            ResourceCollection parent = coll.getParent();
+            authenticationAndAuthorizationService.applyTransientViewableFlag(coll, authenticatedUser);
+            if (parent != null) {
+                parent.getTransientChildren().add(coll);
+            }
+//            logger.info("parent: {} child: {} ", parent, coll);
+        }
     }
 
 }

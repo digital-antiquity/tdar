@@ -64,9 +64,6 @@ hr.dbl {
 
 a {
 	color: #7a1501;
-	transition: 0.1s ease-out;
-	-moz-transition: 0.1s ease-out;
-	-webkit-transition: 0.1s ease-out;
 }
 
 a:hover {
@@ -93,9 +90,6 @@ a.button, .tdar-button {
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	text-align: center;
-	transition: 0.1s ease-out;
-	-moz-transition: 0.1s ease-out;
-	-webkit-transition: 0.1s ease-out;
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=/images/hIEfix.png, sizingMethod=crop );
 	zoom: 1;
 	padding-left: 8px;
@@ -244,7 +238,7 @@ header .welcome {
 	top: 11px;
 	right: 0;
 	margin: 0;
-	margin-right:12px !important;	
+//	margin-right:12px !important;	
 	font-weight: 700;
 	font-size: 11px;
 	color: #999;
@@ -254,7 +248,7 @@ header .welcome {
 }
 
 header .welcome a {
-	padding-right: 13px;
+	// padding-right: 13px;
 	// background: url(/images/r4/bg-welcome.png) right 3px no-repeat;
 }
 
@@ -369,14 +363,17 @@ header .welcome-drop ul {
 	float: right;
 }
 
+.tdar-slider .carousel-control {
+	position: absolute;
+	top: 145px;
+}
+
 .carousel-control {
 	display: block;
 	width: 24px;
 	height: 38px;
-	position: absolute;
-	top: 145px;
-	text-indent: -999em;
 	background: url(/images/r4/btns-slider.png) 0 0 no-repeat;
+	text-indent: -999em;
 	opacity: 0.5;
 	transition: opacity 0.1s ease-out;
 	-moz-transition: opacity 0.1s ease-out;
@@ -1282,6 +1279,9 @@ vertical-align: middle;
 	border:1px solid #eee;
 }
 
+.thumbnail-border:hover, .thumbnail-border-selected {
+	border: 1px solid #aeaeae;
+}
 
 .table-row-separator-above {
 	border-top: 2px DASHED #AAA;
@@ -1297,7 +1297,94 @@ vertical-align: middle;
 	border-top-color: #7a1501 !important;
 }
 
+  #infovis {
+      height:300px;
+      overflow:hidden;
+  }
+
+
 .center {
 	text-align: center;
     vertical-align: middle;
+}
+
+
+.nogrid .jqplot-grid-canvas {
+	   display: none;
+}
+
+#ontology-nodes .hidden-nodes {
+	display:none;
+	visibility:hidden;
+}
+
+
+	
+	div.orgChart h2 {
+	 font-size:10px !important;
+	 font-family:helvetica !important;
+	 line-height:20px;
+	}
+	
+	.hiddenChildren:after {
+		content: "(show more)";
+	 font-size:10px !important;
+	 font-family:helvetica !important;
+	}
+	
+div#ontologyTarget {
+	background-color:#EFEFEF;	
+}
+
+/* Removes the default 20px margin and creates some padding space for the indicators and controls */
+.image-carousel.carousel {
+	margin-bottom: 0;
+	padding: 0 40px 30px 40px;
+}
+/* Reposition the controls slightly */
+.image-carousel .carousel-control {
+//	left: -12px; // not sure this works...
+}
+.image-carousel .carousel-control.right {
+	right: -12px;
+}
+/* Changes the position of the indicators */
+.image-carousel .carousel-indicators {
+	right: 50%;
+	top: auto;
+	bottom: 0px;
+	margin-right: -19px;
+}
+/* Changes the colour of the indicators */
+.image-carousel .carousel-indicators li {
+	background: #c0c0c0;
+}
+.image-carousel .carousel-indicators .active {
+background: #333333;
+}
+
+.jqplot-xaxis-tick {
+	text-align:center;
+}
+
+.smaller {
+	font-size:50% !important;
+}
+
+#confidentialLabel {
+	position: absolute;
+	bottom: 0px;
+	background-color: white;
+	right: 0px;
+	padding: 1px 10px 1px 10px;
+}
+
+#imageContainer {
+	position: relative;
+	border: 1px solid #AAA;
+	display: inline-block;
+}
+
+tr.DELETED {
+	text-decoration: line-through;
 }

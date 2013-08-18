@@ -15,6 +15,7 @@ import java.util.Set;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -134,7 +136,6 @@ public class ResourceService extends GenericService {
         logResourceModification(modifiedResource, person, message, null);
     }
 
-    
     @Transactional(readOnly = true)
     public List<Resource> findAllSparseActiveResources() {
         return datasetDao.findAllSparseActiveResources();
@@ -168,7 +169,7 @@ public class ResourceService extends GenericService {
         try {
             StorageMethod rotate = StorageMethod.DATE;
             // rotate.setRotations(5);
-            TdarConfiguration.getInstance().getFilestore().storeAndRotate(new StringInputStream(xmlService.convertToXML(resource)), version, rotate);
+            TdarConfiguration.getInstance().getFilestore().storeAndRotate(new StringInputStream(xmlService.convertToXML(resource),"UTF-8"), version, rotate);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML:" + resource, e);
             throw new TdarRecoverableRuntimeException("could not save xml record");
@@ -214,21 +215,18 @@ public class ResourceService extends GenericService {
 
     @Transactional
     public void processManagedKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes) {
-        List<String> ignoreProperties = new ArrayList<String>();
         // needed in cases like the APIController where the collection is not properly initialized
         if (resource.getManagedGeographicKeywords() == null) {
             resource.setManagedGeographicKeywords(new LinkedHashSet<GeographicKeyword>());
         }
 
         Set<GeographicKeyword> kwds = new HashSet<GeographicKeyword>();
-        ignoreProperties.add("approved");
-        ignoreProperties.add("selectable");
-        ignoreProperties.add("level");
         for (LatitudeLongitudeBox latLong : allLatLongBoxes) {
             Set<GeographicKeyword> managedKeywords = geoSearchService.extractAllGeographicInfo(latLong);
             logger.debug(resource.getId() + " :  " + managedKeywords + " " + managedKeywords.size());
             kwds.addAll(
-                    getGenericDao().findByExamples(GeographicKeyword.class, managedKeywords, ignoreProperties, FindOptions.FIND_FIRST_OR_CREATE));
+                    getGenericDao().findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
+                            FindOptions.FIND_FIRST_OR_CREATE));
         }
         Persistable.Base.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
     }
@@ -272,17 +270,17 @@ public class ResourceService extends GenericService {
         // tDAR entities/beans
         logger.debug("Current Collection of {}s ({}) : {} ", new Object[] { cls.getSimpleName(), current.size(), current });
 
-        // FIXME: This is far from IDEAL, but the set management is failing. From what I can tell, the issue may be
-        // deeper in Hibernate and not in the set management as the hashCode and equalityCode that's above seems to
-        // when uncommented show that the values are calculated properly, but even then, the system is failing in
-        // executing the remove properly. remove will even report that it's successful if you call "clear()" on
-        // the collection first.
+        /*
+         * Because we're using ID for the equality and hashCode, we have no way to avoid deleting everything and re-adding it.
+         * This is an issue as what'll end up happening otherwise is something like editing a Date results in no persisted change because the
+         * "retainAll" below keeps the older version
+         */
 
         // Collection<H> retainAll = CollectionUtils.retainAll(current, incoming);
         // current.clear();
         // current.addAll(retainAll);
         current.retainAll(incoming);
-
+        Map<Long, H> idMap = Persistable.Base.createIdMap(current);
         if (!CollectionUtils.isEmpty(incoming)) {
             logger.debug("Incoming Collection of {}s ({})  : {} ", new Object[] { cls.getSimpleName(), incoming.size(), incoming });
             Iterator<H> incomingIterator = incoming.iterator();
@@ -290,6 +288,22 @@ public class ResourceService extends GenericService {
                 H hasResource_ = incomingIterator.next();
 
                 if (hasResource_ != null) {
+
+                    // attach the incoming notes to a hibernate session
+                    logger.trace("adding {} to {} ", hasResource_, current);
+                    H existing = idMap.get(hasResource_.getId());
+                    /*
+                     * If we're not transient, compare the two beans on all of their local properties (non-recursive) -- if there are differences
+                     * copy. otherwise, move on. Question -- it may be more work to compare than to just "copy"... is it worth it?
+                     */
+                    if (Persistable.Base.isNotNullOrTransient(existing) && !EqualsBuilder.reflectionEquals(existing, hasResource_)) {
+                        try {
+                            logger.trace("copying bean properties for entry in existing set");
+                            BeanUtils.copyProperties(existing, hasResource_);
+                        } catch (Exception e) {
+                            logger.error("exception setting bean property", e);
+                        }
+                    }
 
                     if (validateMethod != ErrorHandling.NO_VALIDATION) {
                         boolean isValid = false;
@@ -308,9 +322,8 @@ public class ResourceService extends GenericService {
                         }
                     }
 
-                    // attach the incoming notes to a hibernate session
-                    logger.trace("adding {} to {} ", hasResource_, current);
                     current.add(hasResource_);
+
                     // if (shouldSave) {
                     // getGenericDao().saveOrUpdate(hasResource_);
                     // }
@@ -437,10 +450,11 @@ public class ResourceService extends GenericService {
     }
 
     @SuppressWarnings("unchecked")
+    @Transactional
     public <T extends HasResource<Resource>> Set<T> cloneSet(Resource resource, Set<T> targetCollection, Set<T> sourceCollection) {
         logger.debug("cloning: " + sourceCollection);
         for (T t : sourceCollection) {
-            getDao().detachFromSession(t);
+            getDao().detachFromSessionAndWarn(t);
             try {
                 T clone = (T) BeanUtils.cloneBean(t);
                 targetCollection.add(clone);
@@ -479,6 +493,7 @@ public class ResourceService extends GenericService {
         return datasetDao.getUsageStatsForResource(granularity, start, end, minCount, resourceIds);
     }
 
+    @SuppressWarnings("unchecked")
     @Transactional
     public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
         if (Persistable.Base.isNullOrTransient(resource))
@@ -489,6 +504,18 @@ public class ResourceService extends GenericService {
     @Transactional
     public List<Long> findAllResourceIdsWithFiles() {
         return datasetDao.findAllResourceIdsWithFiles();
+    }
+
+    public List<ResourceType> getAllResourceTypes() {
+        ArrayList<ResourceType> arrayList = new ArrayList<ResourceType>(Arrays.asList(ResourceType.values()));
+        if (!TdarConfiguration.getInstance().isVideoEnabled()) {
+            arrayList.remove(ResourceType.VIDEO);
+        }
+        
+        if (!TdarConfiguration.getInstance().isArchiveFileEnabled()) {
+            arrayList.remove(ResourceType.ARCHIVE);
+        }
+        return arrayList;
     }
 
 }

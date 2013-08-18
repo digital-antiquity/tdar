@@ -36,7 +36,9 @@ public class AggregateStatistic extends Persistable.Base {
         NUM_ONTOLOGY("# of Ontologies"),
         NUM_SENSORY_DATA("# of Sensory Data Objects"),
         NUM_VIDEO("# of Videos"),
-
+        NUM_GIS("# of GeoSpatial Objects"),
+        NUM_ARCHIVES("# of Archive Objects"),
+        
         NUM_VIDEO_WITH_FILES("# of Videos with Files"),
         NUM_IMAGE_WITH_FILES("# of Images with Files"),
         NUM_DATASET_WITH_FILES("# of Data Sets with Files"),
@@ -44,6 +46,7 @@ public class AggregateStatistic extends Persistable.Base {
         NUM_CODING_SHEET_WITH_FILES("# of Coding Sheets with Files"),
         NUM_ONTOLOGY_WITH_FILES("# of Ontologies with Files"),
         NUM_SENSORY_DATA_WITH_FILES("# of Sensory Data Objects with Files"),
+        NUM_GIS_WITH_FILES("# of GeoSpatial Objects with Files"),
 
         NUM_COLLECTIONS("# of Collections"), 
         NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size");

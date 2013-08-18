@@ -15,6 +15,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.struts.action.TdarActionException;
 
 /**
  * $Id$
@@ -64,14 +65,14 @@ public class DocumentController extends AbstractInformationResourceController<Do
     }
 
     @Override
-    protected String save(Document document) {
+    protected String save(Document document) throws TdarActionException {
         // save basic metadata
         super.saveBasicResourceMetadata();
         super.saveInformationResourceProperties();
-        getGenericService().saveOrUpdate(document);
+//        getGenericService().saveOrUpdate(document);
         handleUploadedFiles();
         // handleLinkedInformationResource();
-        getGenericService().saveOrUpdate(document);
+//        getGenericService().saveOrUpdate(document);
         return SUCCESS;
 
     }

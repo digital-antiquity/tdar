@@ -1,4 +1,3 @@
-<@s.set name="theme" value="'bootstrap'" scope="request" />
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
@@ -11,7 +10,8 @@
 <meta name="lastModifiedDate" content="$Date: 2009-02-13 09:05:44 -0700 (Fri, 13 Feb 2009)$"/>
 </head>
 <body>
-<#-- 
+<#escape _untrusted as _untrusted?html >
+<#--
 <div class="row">
     <div class="<#if !sessionData?? || !sessionData.authenticated>span8</#if>">
     <h3>About</h3>
@@ -45,7 +45,7 @@
 </div><div class="span1 center">
  <h3 class="ontology-mid-red red"></h3>
 </div><div class="span1 center">
- <h3 class="coding_sheet-mid-black red"></h3> 
+ <h3 class="geospatial-mid-black red"></h3> 
 </div><div class="span1 center"><h3 class="project-mid-red red"></h3>
 </div><div class="span1 center"> <h3 class="collection-mid-black red"></h3>
 </div></div></div>
@@ -87,17 +87,11 @@
 <br/>
 <div class="row">
     <div class="span6">
-        <h3>Getting Started with ${siteAcronym}</h3>
-        <ul>
-        <li><a href="${documentationUrl}">a tutorial that can help you get started</a>.</li>
-        <li> <a href="<@s.url value="/search/results?query=&resourceTypes=PROJECT"/>">browse</a> all projects</li>
-        <li> <a href="<@s.url value="/browse/collections"/>">browse</a> all collections</li>
-        <li> <a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
-        </ul>
+        <#include "/${themeDir}/homepage-bottom-left.dec" />
     </div>
     <div class="span6">
-        <@common.barGraph resourceCacheObjects=homepageResourceCountCache graphLabel="${siteAcronym} by the Numbers" graphHeight=354 />
-    </div>
+    	<@common.resourceBarGraph />
+	</div>
 </div>
-
+</#escape>
 </body>

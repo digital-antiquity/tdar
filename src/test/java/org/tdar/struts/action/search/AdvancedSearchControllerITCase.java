@@ -13,8 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -154,6 +152,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (Person person : people) {
             names.add(person.getProperName());
             Person p = new Person();
+            // this will likely fail because skeleton people are being put into a set further down the chain... 
             p.setId(person.getId());
             ResourceCreator rc = new ResourceCreator(p, null);
             firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(rc));
@@ -421,6 +420,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAsUnauthenticatedUser() {
+        genericService.synchronize();
+
         setIgnoreActionErrors(true);
         testResourceCounts(null);
     }
@@ -428,6 +429,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAsBasicUser() {
+        genericService.synchronize();
+
         // testing as a user who did not create their own stuff
         setIgnoreActionErrors(true);
         Person p = new Person("a", "test", "anoter@test.user.com");
@@ -440,6 +443,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback(true)
     public void testResultCountsAsBasicContributor() {
         // testing as a user who did create their own stuff
+        genericService.synchronize();
         setIgnoreActionErrors(true);
         testResourceCounts(getBasicUser());
     }
@@ -447,6 +451,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAdmin() {
+        genericService.synchronize();
         testResourceCounts(getAdminUser());
     }
 
@@ -477,7 +482,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testFilenameFound() throws InstantiationException, IllegalAccessException {
-        Document doc = generateInformationResourceWithFileAndUser();
+        Document doc = generateDocumentWithFileAndUser();
         searchIndexService.index(doc);
         firstGroup().getFilenames().add(TestConstants.TEST_DOCUMENT_NAME);
         doSearch();
@@ -795,6 +800,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Person person = new Person("Bob", "Loblaw", null);
         genericService.save(person);
         Resource resource = constructActiveResourceWithCreator(person, ResourceCreatorRole.AUTHOR);
+        logger.info("resource: {}", resource);
         reindex();
         logger.debug("user:{}   id:{}", person, person.getId());
         assertTrue("person id should be set - id:" + person.getId(), person.getId() != 1L);
@@ -802,7 +808,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(person, ResourceCreatorRole.AUTHOR));
 
         doSearch();
-
+        logger.info("{}", controller.getResults());
         assertTrue(String.format("expecting %s in results", resource), controller.getResults().contains(resource));
         assertEquals("should be one and only one result", 1, controller.getResults().size());
     }
@@ -859,6 +865,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback(true)
     public void testLegacyKeywordSearch() throws Exception {
         Document doc = createAndSaveNewInformationResource(Document.class);
+        Project proj = createAndSaveNewProject("parent");
+        doc.setProject(proj);
         Set<CultureKeyword> cultureKeywords = genericKeywordService.findOrCreateByLabels(CultureKeyword.class, Arrays.asList("iamaculturekeyword"));
         Set<SiteNameKeyword> siteNames = genericKeywordService.findOrCreateByLabels(SiteNameKeyword.class, Arrays.asList("thisisasitename"));
         Set<SiteTypeKeyword> siteTypes = genericKeywordService.findOrCreateByLabels(SiteTypeKeyword.class, Arrays.asList("asitetypekeyword"));
@@ -870,15 +878,15 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         reindex();
 
         controller.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
-        assertOnlyOneResult(doc);
+        assertOnlyResultAndProject(doc);
         resetController();
 
         controller.getUncontrolledSiteTypeKeywords().add(siteTypes.iterator().next().getLabel());
-        assertOnlyOneResult(doc);
+        assertOnlyResultAndProject(doc);
         resetController();
 
         controller.getSiteNameKeywords().add(siteNames.iterator().next().getLabel());
-        assertOnlyOneResult(doc);
+        assertOnlyResultAndProject(doc);
     }
 
     @Test
@@ -994,7 +1002,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     // if user gets to the results page via clicking on persons name from resource view page, querystring only contains person.id field. So before
     // rendering the 'refine your search' version of the search form the controller must inflate query components.
     public void testRefineSearchWithSparseProject() {
-        Project persisted = createAndSaveNewProject();
+        Project persisted = createAndSaveNewProject("PROJECT TEST TITLE");
         Project sparse = new Project();
         // ensure the project is in
         genericService.synchronize();
@@ -1005,7 +1013,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertEquals("sparse project should have been inflated", persisted.getTitle(), firstGroup().getProjects().get(0).getTitle());
     }
 
-    private void assertOnlyOneResult(InformationResource informationResource) {
+    private void assertOnlyResultAndProject(InformationResource informationResource) {
         doSearch();
         assertEquals("expecting two results: doc and project", 2, controller.getResults().size());
         assertTrue("expecting resource in results", controller.getResults().contains(informationResource));

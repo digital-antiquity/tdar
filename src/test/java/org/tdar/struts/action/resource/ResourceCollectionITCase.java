@@ -1,14 +1,17 @@
 package org.tdar.struts.action.resource;
 
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +46,7 @@ import org.tdar.struts.action.CollectionController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.BrowseController;
-
+//import static org.hamcrest.MatcherAssert.assertThat;
 public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 {
 
@@ -58,10 +61,16 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
     CollectionController controller;
 
+    static int indexCount = 0;
+
     @Before
     public void setup()
     {
         controller = generateNewInitializedController(CollectionController.class);
+        if(indexCount < 1) {
+            reindex();
+        }
+        indexCount++;
     }
 
     @Test
@@ -173,8 +182,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         String name = "test collection";
         String description = "test description";
 
-        InformationResource normal = generateInformationResourceWithFileAndUser();
-        InformationResource draft = generateInformationResourceWithFileAndUser();
+        InformationResource normal = generateDocumentWithFileAndUser();
+        InformationResource draft = generateDocumentWithFileAndUser();
         final Long normalId = normal.getId();
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
@@ -351,14 +360,14 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertNotNull(controller.getPersistable());
         assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(AbstractPersistableController.DELETE_CONSTANT);
+        controller.setDelete(AbstractPersistableController.DELETE);
         controller.delete();
 
         // now load our resource collection again. the resources should be gone.
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
         assertFalse("user should not be able to delete collection", resourceCollection == null);
 
-        for (ResourceCollection child : resourceCollectionService.findAllDirectChildCollections(rcid, null, CollectionType.SHARED))
+        for (ResourceCollection child : resourceCollectionService.findDirectChildCollections(rcid, null, CollectionType.SHARED))
         {
             child.setParent(null);
             genericService.saveOrUpdate(child);
@@ -374,7 +383,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
         // resourceCollection.setParent(parent)
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(AbstractPersistableController.DELETE_CONSTANT);
+        controller.setDelete(AbstractPersistableController.DELETE);
         controller.delete();
         genericService.synchronize();
         assertEquals(0, controller.getDeleteIssues().size());
@@ -385,7 +394,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         resourceCollectionChild = null;
         resourceCollectionParent = null;
         ResourceCollection child = genericService.find(ResourceCollection.class, childId);
-        List<ResourceCollection> children = resourceCollectionService.findAllDirectChildCollections(parentId, null, CollectionType.SHARED);
+        List<ResourceCollection> children = resourceCollectionService.findDirectChildCollections(parentId, null, CollectionType.SHARED);
         logger.info("child: {}", child.getParent());
         logger.info("children: {}", children);
         assertTrue(child.getParent() == null);
@@ -428,7 +437,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
         assertTrue("user list should not be empty", !controller.getPersistable().getAuthorizedUsers().isEmpty());
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(AbstractPersistableController.DELETE_CONSTANT);
+        controller.setDelete(AbstractPersistableController.DELETE);
         controller.delete();
 
         // now load our resource collection again. the resources should be gone.
@@ -443,7 +452,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertNotNull(controller.getPersistable());
         assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
         setHttpServletRequest(getServletPostRequest());
-        controller.setDelete(AbstractPersistableController.DELETE_CONSTANT);
+        controller.setDelete(AbstractPersistableController.DELETE);
         controller.delete();
         genericService.synchronize();
         assertEquals(0, controller.getDeleteIssues().size());
@@ -469,9 +478,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
         // Add three authusers. two of the authusers are redundant and should be normalized to the user with
         // the best permissions.
-        AuthorizedUser user1Viewer = detach(createAuthUser(GeneralPermissions.VIEW_ALL));
+        AuthorizedUser user1Viewer = createAuthUser(GeneralPermissions.VIEW_ALL);
         AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
-        AuthorizedUser user2 = detach(createAuthUser(GeneralPermissions.ADMINISTER_GROUP));
+        AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_GROUP);
+        user2.setTest("1234");
         controller.getAuthorizedUsers().addAll(Arrays.asList(user1Viewer, user1Modifier, user2));
 
         controller.setServletRequest(getServletPostRequest());
@@ -487,8 +497,31 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         ResourceCollection rc2 = controller.getResourceCollection();
         assertEquals(rc.getName(), rc2.getName());
         assertEquals("2 redundant authusers should have been normalized", 2, rc2.getAuthorizedUsers().size());
-        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
-        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
+
+        assertEquals("size should be 2", 2, rc2.getAuthorizedUsers().size());
+        
+        //if this list is truly normalized,  each queue should be length 1
+        HashMap<Long, GeneralPermissions> map = new HashMap<Long, GeneralPermissions>();
+        for( AuthorizedUser authuser : rc2.getAuthorizedUsers() ) {
+            map.put(authuser.getUser().getId(), authuser.getGeneralPermission());
+        }
+        assertEquals("user 1 should have best permission", GeneralPermissions.MODIFY_METADATA, map.get(user1Modifier.getUser().getId()));
+        assertNotNull("only the modifier & admin authusers should remain", map.get(user2.getUser().getId()));
+    }
+    
+    @Test
+    @Rollback
+    public void testNormalizeAuthorizedUsers() {
+        // Add three authusers. two of the authusers are redundant and should be normalized to the user with
+        // the best permissions.
+        AuthorizedUser user1Viewer = createAuthUser(GeneralPermissions.VIEW_ALL);
+        AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
+        AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_GROUP);
+        List<AuthorizedUser> authusers = new ArrayList<AuthorizedUser>(Arrays.asList(user1Viewer, user1Modifier, user2));
+        int origCount = authusers.size();
+        ResourceCollection.normalizeAuthorizedUsers(authusers);
+        int newCount = authusers.size();
+        assertThat(newCount, lessThan(origCount));
     }
 
     private AuthorizedUser createAuthUser(GeneralPermissions permissions) {
@@ -500,11 +533,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         genericService.saveOrUpdate(person);
         AuthorizedUser authuser = new AuthorizedUser(person, permissions);
         return authuser;
-    }
-
-    private <T> T detach(T obj) {
-        genericService.detachFromSession(obj);
-        return obj;
     }
 
     @Test
@@ -838,7 +866,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     @Test
     @Rollback
     public void testFullUser() throws Exception {
-        Dataset dataset = createAndSaveNewInformationResource(Dataset.class, false);
+        Dataset dataset = createAndSaveNewInformationResource(Dataset.class);
         Long datasetId = dataset.getId();
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.MODIFY_RECORD);
         genericService.save(dataset);
@@ -856,7 +884,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     @Test
     @Rollback
     public void testReadUser() throws Exception {
-        Dataset dataset = createAndSaveNewInformationResource(Dataset.class, false);
+        Dataset dataset = createAndSaveNewInformationResource(Dataset.class);
         Long datasetId = dataset.getId();
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.VIEW_ALL);
         genericService.save(dataset);
@@ -879,7 +907,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         }
         // FIXME: this fails but clearly, above it works
         // assertTrue(internalResourceCollection.getResources().contains(dataset));
-        seen.remove(TestConstants.USER_ID);
+        seen.remove(getUserId());
         seen.remove(getAdminUserId());
         assertTrue("should have seen all user ids already", seen.isEmpty());
     }
@@ -887,7 +915,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     @Test
     @Rollback
     public void testReadUserEmpty() throws Exception {
-        Dataset dataset = createAndSaveNewInformationResource(Dataset.class, false);
+        Dataset dataset = createAndSaveNewInformationResource(Dataset.class);
         Long datasetId = dataset.getId();
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.VIEW_ALL);
         genericService.save(dataset);
@@ -937,7 +965,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         projectController.setServletRequest(getServletPostRequest());
         projectController.setId(pid);
         projectController.prepare();
-        projectController.setDelete(AbstractPersistableController.DELETE_CONSTANT);
+        projectController.setDelete(AbstractPersistableController.DELETE);
         projectController.delete();
         searchIndexService.flushToIndexes();
 

@@ -190,8 +190,8 @@ public interface Dao<T> {
             return super.findAll(persistentClass, ids);
         }
 
-        public List<E> findAll(int start, int numberOfRecords) {
-            return super.findAll(persistentClass, start, numberOfRecords);
+        public List<E> findAll(int start, int maxResults) {
+            return super.findAll(persistentClass, maxResults);
         }
 
         public List<E> findAllSorted() {

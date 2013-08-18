@@ -12,35 +12,39 @@ import org.tdar.search.query.QueryFieldNames;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetable {
-    CODING_SHEET("Coding Sheet", 8, "Dataset", "unknown", CodingSheet.class),
-    DATASET("Dataset", 3, "Dataset", "unknown", Dataset.class),
-    DOCUMENT("Document", 1, "Text", "document", Document.class),
-    IMAGE("Image", 2, "Still Image", "unknown", Image.class),
-    SENSORY_DATA("3D & Sensory Data", 6, "Interactive Resource", "unknown", SensoryData.class),
-    ONTOLOGY("Ontology", 7, "Dataset", "unknown", Ontology.class),
-    PROJECT("Project", 5, Project.class),
-    VIDEO("Video", 4, "Moving Image", "unknown", Video.class);
+public enum ResourceType implements HasLabel, Facetable<ResourceType> {
+    CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset",  CodingSheet.class),
+    DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
+    DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
+    IMAGE("Image", 2, "Still Image", "unknown", "Photograph", Image.class),
+    SENSORY_DATA("3D & Sensory Data", 7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
+    GEOSPATIAL("GIS", 6, "Dataset", "unknown", "Dataset", Geospatial.class),
+    ONTOLOGY("Ontology", 9, "Dataset", "unknown", "Dataset", Ontology.class),
+    PROJECT("Project", 5, "ItemList", Project.class),
+    VIDEO("Video", 4, "Moving Image", "unknown", "Movie", Video.class),
+    ARCHIVE("Site Archive", 8, "Collection", "unknown", "SoftwareApplication", Archive.class);
+    
 
     private final String label;
     private final String dcmiTypeString;
     private final String openUrlGenre;
     private int order;
     private transient Integer count;
+    // Schema is one of from http://schema.org/docs/full.html
+    private String schema;
     private final Class<? extends Resource> resourceClass;
 
-    private ResourceType(String label, int order,
-            Class<? extends Resource> resourceClass) {
-        this(label, order, "", "unknown", resourceClass);
+    private ResourceType(String label, int order, String schema, Class<? extends Resource> resourceClass) {
+        this(label, order, "", "unknown", schema, resourceClass);
     }
 
-    private ResourceType(String label, int order, String dcmiTypeString,
-            String genre, Class<? extends Resource> resourceClass) {
+    private ResourceType(String label, int order, String dcmiTypeString, String genre, String schema, Class<? extends Resource> resourceClass) {
         this.label = label;
         this.openUrlGenre = genre;
         this.setOrder(order);
         this.dcmiTypeString = dcmiTypeString;
         this.resourceClass = resourceClass;
+        this.schema=schema;
     }
 
     public String getPlural() {
@@ -49,6 +53,8 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
                 return "Ontologies";
             case SENSORY_DATA:
                 return SENSORY_DATA.label;
+            case GEOSPATIAL:
+                return GEOSPATIAL.label;
             default:
                 return getLabel().concat("s");
         }
@@ -85,6 +91,10 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
         return this == SENSORY_DATA;
     }
 
+    public boolean isGeospatial() {
+        return this == GEOSPATIAL;
+    }
+
     public boolean isCodingSheet() {
         return this == CODING_SHEET;
     }
@@ -108,7 +118,12 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
     public boolean isProject() {
         return this == PROJECT;
     }
+    
+    public boolean isArchive() {
+        return this == ARCHIVE;
+    }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -176,10 +191,12 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
         return openUrlGenre;
     }
 
+    @Override
     public Integer getCount() {
         return count;
     }
 
+    @Override
     public void setCount(Integer count) {
         this.count = count;
     }
@@ -189,6 +206,7 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
         return urlToReturn.toLowerCase().replaceAll("_", "-");
     }
 
+    @Override
     public String getLuceneFieldName() {
         return QueryFieldNames.RESOURCE_TYPE;
     }
@@ -201,10 +219,41 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
     public boolean hasDemensions() {
         switch (this) {
             case IMAGE:
+            case GEOSPATIAL: // ?
             case SENSORY_DATA:
                 return true;
             default:
                 return false;
         }
+    }
+
+    public boolean isDataTableSupported() {
+        switch (this) {
+            case DATASET:
+            case GEOSPATIAL: // ?
+                // case SENSORY_DATA:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isCompositeFilesEnabled() {
+        switch (this) {
+            case DATASET:
+            case GEOSPATIAL: // ?
+                // case SENSORY_DATA:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public String getSchema() {
+        return schema;
+    }
+
+    public void setSchema(String schema) {
+        this.schema = schema;
     }
 }

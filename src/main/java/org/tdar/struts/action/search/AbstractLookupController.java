@@ -53,6 +53,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private List<I> results = Collections.emptyList();
     private int totalRecords;
     private SortOption sortField;
+    private SortOption defaultSort = SortOption.getDefaultSortOption();
     private SortOption secondarySortField = SortOption.TITLE;
     private boolean debug = false;
     private ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
@@ -218,6 +219,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /*
      * 
      */
+    @SuppressWarnings("unchecked")
     protected List<Creator> getCreatorResults() {
         return (List<Creator>) results;
     }
@@ -347,9 +349,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     public List<ResourceType> getAllResourceTypes() {
-        ArrayList<ResourceType> arrayList = new ArrayList<ResourceType>(Arrays.asList(ResourceType.values()));
-        arrayList.remove(ResourceType.VIDEO);
-        return arrayList;
+        return getResourceService().getAllResourceTypes();
     }
 
     public List<IntegratableOptions> getIntegratableOptions() {
@@ -389,7 +389,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             valid = true;
             Institution incomingInstitution = new Institution(institution);
             incomingPerson.setInstitution(incomingInstitution);
-            getGenericService().detachFromSession(incomingInstitution);
+            //FIXME: I believe this detach is unnecessary - object was never on the session
+            // AB: OpenSessionInView makes me nervous with this, don't want to take a chance
+            getGenericService().detachFromSessionAndWarn(incomingInstitution);
         }
 
         // ignore email field for unauthenticated users.
@@ -397,7 +399,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             incomingPerson.setEmail(email);
             valid = true;
         }
-        getGenericService().detachFromSession(incomingPerson);
+        //FIXME: I believe this detach is unnecessary - object was never on the session
+        // AB: OpenSessionInView makes me nervous with this, don't want to take a chance
+        getGenericService().detachFromSessionAndWarn(incomingPerson);
 
         PersonQueryPart pqp = new PersonQueryPart();
         pqp.add(incomingPerson);
@@ -466,6 +470,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      */
     public boolean isHideFacetsAndSort() {
         return true;
+    }
+
+    public SortOption getDefaultSort() {
+        return defaultSort;
+    }
+
+    public void setDefaultSort(SortOption defaultSort) {
+        this.defaultSort = defaultSort;
     }
 
 }

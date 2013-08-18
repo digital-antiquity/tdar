@@ -6,11 +6,12 @@
  */
 package org.tdar.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Map;
+
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
@@ -46,8 +47,13 @@ public class EZIDITCase extends AbstractSearchControllerITCase {
         try {
             assertTrue(ezidDao.connect());
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            logger.error("{}", e);
+            fail(e.getMessage());
+        } catch (SSLPeerUnverifiedException spe) {
+            logger.error("{}", spe);
+            fail(spe.getMessage());
         } catch (IOException e) {
+            logger.error("{}", e);
             e.printStackTrace();
         }
     }
@@ -127,7 +133,6 @@ public class EZIDITCase extends AbstractSearchControllerITCase {
             e.printStackTrace();
         }
     }
-
 
     @Test
     public void testCreateSensoryData() {

@@ -30,24 +30,27 @@ public class CsvConverter extends SimpleConverter {
     protected String[] headerLine;
     protected String tableName = "";
 
+    @Override
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
 
-    public CsvConverter() {};
+    public CsvConverter() {
+    };
 
-    public CsvConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
+    public CsvConverter(TargetDatabase targetDatabase,InformationResourceFileVersion ... versions) {
         setTargetDatabase(targetDatabase);
-        setInformationResourceFileVersion(version);
+        setInformationResourceFileVersion(versions[0]);
     }
 
+    @Override
     protected void openInputDatabase()
             throws IOException {
         if (informationResourceFileVersion == null) {
             logger.warn("Received null information resource file.");
             return;
         }
-        File csvFile = informationResourceFileVersion.getFile();
+        File csvFile = informationResourceFileVersion.getTransientFile();
         if (csvFile == null) {
             logger.error("InformationResourceFile's file was null, this should never happen.");
             return;
@@ -65,20 +68,19 @@ public class CsvConverter extends SimpleConverter {
      * 
      * @param targetDatabase
      */
+    @Override
     public void dumpData() throws Exception {
 
         DataTable dataTable = createDataTable(getTableName());
 
         for (int i = 0; i < getHeaderLine().length; i++) {
-            createDataTableColumn(getHeaderLine()[i], DataTableColumnType.TEXT,
-                    dataTable);
+            createDataTableColumn(getHeaderLine()[i], DataTableColumnType.TEXT, dataTable);
         }
 
         targetDatabase.createTable(dataTable);
 
         // initialize our most-desired-datatype statistics
-        ConversionStatisticsManager statisticsManager = new ConversionStatisticsManager(
-                dataTable.getDataTableColumns());
+        ConversionStatisticsManager statisticsManager = new ConversionStatisticsManager(dataTable.getDataTableColumns());
 
         // iterate through the rest of the CSVReader file.
         int numberOfLines = 0;
@@ -98,13 +100,10 @@ public class CsvConverter extends SimpleConverter {
 
             for (int i = 0; i < line.length; i++) {
                 if (count <= getHeaderLine().length) {
-                    columnToValueMap.put(
-                            dataTable.getDataTableColumns().get(i), line[i]);
-                    statisticsManager.updateStatistics(dataTable
-                            .getDataTableColumns().get(i), line[i]);
+                    columnToValueMap.put(dataTable.getDataTableColumns().get(i), line[i]);
+                    statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(i), line[i]);
                 } else {
-                    logger.warn("Discarding degenerate data value at index "
-                            + count + " : " + line[i]);
+                    logger.warn("Discarding degenerate data value at index " + count + " : " + line[i]);
                 }
             }
             targetDatabase.addTableRow(dataTable, columnToValueMap);
@@ -115,26 +114,32 @@ public class CsvConverter extends SimpleConverter {
 
     }
 
+    @Override
     public CSVReader getReader() {
         return reader;
     }
 
+    @Override
     public void setReader(CSVReader reader) {
         this.reader = reader;
     }
 
+    @Override
     public String[] getHeaderLine() {
         return headerLine;
     }
 
+    @Override
     public void setHeaderLine(String[] headerLine) {
         this.headerLine = headerLine;
     }
 
+    @Override
     public String getTableName() {
         return tableName;
     }
 
+    @Override
     public void setTableName(String tableName) {
         this.tableName = tableName;
     }

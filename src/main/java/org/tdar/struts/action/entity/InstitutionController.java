@@ -7,9 +7,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.TdarValidationException;
 import org.tdar.struts.action.AbstractPersistableController;
 
 @Component
@@ -28,7 +26,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
         if (hasActionErrors())
             return INPUT;
 
-        //name has a unique key; so we need to be careful with it
+        // name has a unique key; so we need to be careful with it
         persistable.setName(getName());
         if (Persistable.Base.isNullOrTransient(persistable)) {
             getGenericService().save(persistable);
@@ -38,24 +36,15 @@ public class InstitutionController extends AbstractPersistableController<Institu
         return SUCCESS;
     }
 
-     @Override
-     public void validate() {
-         if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
-             Institution findInstitutionByName = getEntityService().findInstitutionByName(name);
-             if (findInstitutionByName != null) {
-                 throw new TdarValidationException(String.format("Cannot rename institution to %s because it already exists", name));
-             }
-         }
-     }
-//
-//    @Override
-//    public void prepare() {
-//        super.prepare();
-//        // during a save request, struts will have potentially modified the fields of the persistable. This has the potential cause hibernate
-//        // to throw exceptions (e.g. uniqueconstraint) even if we don't ultimately save the modified record. So we detach the persistable here,
-//        // before struts modifies any fields, so that hibernate won't freak out at us.
-//        // getGenericService().detachFromSession(getPersistable());
-//    }
+    @Override
+    public void validate() {
+        if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
+            Institution findInstitutionByName = getEntityService().findInstitutionByName(name);
+            if (findInstitutionByName != null) {
+                addActionError(String.format("Cannot rename institution to %s because it already exists", name));
+            }
+        }
+    }
 
     @Override
     protected void delete(Institution persistable) {
@@ -78,7 +67,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
         }
         return SUCCESS;
     }
-    
+
     public Institution getInstitution() {
         return getPersistable();
     }

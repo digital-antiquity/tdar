@@ -23,11 +23,10 @@ pre, td {
 <ul>
 	<#list activePeople as user>
 	<li>
-	<#if user?has_content>
-	<a href="<@s.url value="/browse/creators/${user.id?c}"/>">${user.properName}</a></li>
-	<#else>
-	Unknown User
-	</#if>
+		<#if user?has_content>
+			<a href="<@s.url value="/browse/creators/${user.id?c}"/>">${user.properName}</a>
+			<#else>Unknown User
+		</#if>
 	</li>
 	</#list>
 </ul>
@@ -74,7 +73,7 @@ pre, td {
         <td><#if activity.user?has_content>${activity.user.properName}</#if></td>
         <td>${(activity.totalTime?c)!default("-")}</td>
         <#noescape>
-        <td width=550>${(activity.name!"")?html?replace("&", "<wbr>&")}</td>
+        <td width=550>${(activity.name!"")?html?replace("&", "<br>&")}</td>
         </#noescape>
       </tr>
     </#list>

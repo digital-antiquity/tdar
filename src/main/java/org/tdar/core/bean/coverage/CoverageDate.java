@@ -12,6 +12,7 @@ import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
@@ -49,7 +50,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     @Enumerated(EnumType.STRING)
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
-    @Column(name = "date_type")
+    @Column(name = "date_type", length = 255)
     private CoverageType dateType;
 
     @Column(name = "start_aprox", nullable = false)
@@ -58,6 +59,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     @Column(name = "end_aprox", nullable = false)
     private boolean endDateApproximate;
 
+    @Length(max = 255)
     private String description;
 
     public CoverageDate() {

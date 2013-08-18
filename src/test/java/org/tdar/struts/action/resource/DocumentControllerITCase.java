@@ -17,21 +17,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.UploadController;
+import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
@@ -57,6 +65,52 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertFalse(statuses.isEmpty());
     }
 
+    @Test
+    @Rollback
+    public void testSubmitterChangeRights() throws TdarActionException {
+        // setup document
+        Person newUser = createAndSaveNewPerson();
+        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.prepare();
+        Document doc = dc.getDocument();
+        doc.setTitle("test");
+        doc.setDate(1234);
+        doc.setDescription("my description");
+        dc.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+
+        // change the submitter to the admin
+        Long id = doc.getId();
+        doc = null;
+        dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.setId(id);
+        dc.prepare();
+        dc.edit();
+        dc.setSubmitter(newUser);
+        dc.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+
+        // try to edit as basic user -- should fail
+        dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.setId(id);
+        dc.prepare();
+        try {
+            assertNotEquals(TdarActionSupport.SUCCESS, dc.edit());
+        } catch (TdarActionException e) {
+            assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
+        }
+        assertNotEmpty(dc.getActionErrors());
+        setIgnoreActionErrors(true);
+
+        // try to edit as new user, should work
+        doc = null;
+        dc = generateNewInitializedController(DocumentController.class, newUser);
+        dc.setId(id);
+        dc.prepare();
+        assertEquals(TdarActionSupport.SUCCESS, dc.edit());
+
+    }
+
     @Ignore("Ignoring because this is an internal performance test, not really a unit-test")
     @Test
     @Rollback
@@ -76,13 +130,14 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         List<Institution> fiftyIList = genericService.findRandom(Institution.class, 50);
         for (Person person : fiftyPList) {
             ResourceCreator rc = new ResourceCreator(person, ResourceCreatorRole.CONTRIBUTOR);
-            genericService.saveOrUpdate(rc);
             project.getResourceCreators().add(rc);
+            genericService.saveOrUpdate(rc);
+            // project.getResourceCreators().add(rc);
         }
         for (Institution inst : fiftyIList) {
             ResourceCreator rc = new ResourceCreator(inst, ResourceCreatorRole.REPOSITORY);
-            genericService.saveOrUpdate(rc);
             project.getResourceCreators().add(rc);
+            genericService.saveOrUpdate(rc);
         }
         project.getCultureKeywords().addAll(genericService.findRandom(CultureKeyword.class, 10));
         project.getMaterialKeywords().addAll(genericService.findRandom(MaterialKeyword.class, 10));
@@ -97,8 +152,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
             doc.setInheritingMaterialInformation(true);
             for (Person person : genericService.findRandom(Person.class, 10)) {
                 ResourceCreator rc = new ResourceCreator(person, ResourceCreatorRole.AUTHOR);
-                genericService.saveOrUpdate(rc);
                 doc.getResourceCreators().add(rc);
+                genericService.saveOrUpdate(rc);
             }
             File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
             addFileToResource(doc, file);
@@ -423,6 +478,90 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         ResourceCollection collection2 = controller.getResource().getSharedResourceCollections().iterator().next();
         Long collectionId2 = collection2.getId();
         assertEquals(collectionId, collectionId2);
+
+    }
+
+    @Test
+    @Rollback
+    public void testUserPermIssuesUsers() throws TdarActionException {
+        // setup document
+        Person newUser = createAndSaveNewPerson();
+        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.prepare();
+        Document doc = dc.getDocument();
+        doc.setTitle("test");
+        doc.setDate(1234);
+        doc.setDescription("my description");
+        dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.MODIFY_METADATA));
+        dc.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+
+        // change the submitter to the admin
+        Long id = doc.getId();
+        doc = null;
+        dc = generateNewInitializedController(DocumentController.class, newUser);
+        dc.setId(id);
+        dc.prepare();
+        dc.edit();
+        dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.ADMINISTER_GROUP));
+        dc.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+
+        genericService.synchronize();
+
+    }
+
+    @Test
+    @Rollback
+    public void testUserPermIssUpload() throws TdarActionException {
+        // setup document
+        Person newUser = createAndSaveNewPerson();
+        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.prepare();
+        Document doc = dc.getDocument();
+        doc.setTitle("test");
+        doc.setDate(1234);
+        doc.setDescription("my description");
+        dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.MODIFY_METADATA));
+        dc.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+
+        // change the submitter to the admin
+        Long id = doc.getId();
+        doc = null;
+
+        genericService.synchronize();
+        UploadController uc = generateNewInitializedController(UploadController.class, newUser);
+        uc.grabTicket();
+        Long ticketId = uc.getPersonalFilestoreTicket().getId();
+        uc.setTicketId(ticketId);
+        uc.getUploadFile().add(new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
+        uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
+        uc.upload();
+        assertFalse(authenticationAndAuthorizationService.canDo(newUser, dc.getDocument(), InternalTdarRights.EDIT_ANY_RESOURCE,
+                GeneralPermissions.ADMINISTER_GROUP));
+        assertEquals(1, dc.getDocument().getInternalResourceCollection().getAuthorizedUsers().size());
+        // try to edit as basic user -- should fail
+        dc = generateNewInitializedController(DocumentController.class, newUser);
+        dc.setId(id);
+        dc.prepare();
+        boolean seenException  = false;
+        try {
+            dc.edit();
+            FileProxy fileProxy = new FileProxy();
+            fileProxy.setFilename(TestConstants.TEST_DOCUMENT_NAME);
+            fileProxy.setAction(FileAction.ADD);
+            fileProxy.setRestriction(FileAccessRestriction.CONFIDENTIAL);
+            dc.getFileProxies().add(fileProxy);
+            dc.setTicketId(ticketId);
+            dc.save();
+        } catch (TdarActionException e) {
+            assertEquals(StatusCode.BAD_REQUEST.getHttpStatusCode(), e.getStatusCode());
+            seenException = true;
+        }
+        assertTrue(seenException);
+//        assertNotEmpty(dc.getActionErrors());
+//        setIgnoreActionErrors(true);
 
     }
 

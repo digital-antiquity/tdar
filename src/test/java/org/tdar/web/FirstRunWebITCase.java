@@ -24,7 +24,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * 
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
 
     public static final String TEST_TITLE = "This is a test title";

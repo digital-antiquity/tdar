@@ -1,11 +1,8 @@
 package org.tdar.struts.action;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -16,33 +13,36 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.service.PdfService;
-import org.tdar.utils.DeleteOnCloseFileInputStream;
+import org.tdar.struts.data.DownloadHandler;
 
 @ParentPackage("secured")
-@Namespace("/filestore/{informationResourceFileId}")
+@Namespace("/filestore")
 @Results({
-            @Result(name = "success", type = "stream",
-                    params = {
-                            "contentType", "${contentType}",
-                            "inputName", "inputStream",
-                            "contentDisposition", "${dispositionPrefix}filename=\"${fileName}\"",
-                            "contentLength", "${contentLength}"
-                    }
-            ),
-        @Result(name = "error", type = "httpheader", params = { "error", "404" }),
-        @Result(name = "forbidden", type = "httpheader", params = { "error", "403" })
+        @Result(name = TdarActionSupport.SUCCESS, type = "stream",
+                params = {
+                        "contentType", "${contentType}",
+                        "inputName", "inputStream",
+                        "contentDisposition", "${dispositionPrefix}filename=\"${fileName}\"",
+                        "contentLength", "${contentLength}"
+                }
+        ),
+        @Result(name = TdarActionSupport.ERROR, type = "httpheader", params = { "error", "404" }),
+        @Result(name = TdarActionSupport.FORBIDDEN, type = "httpheader", params = { "error", "403" })
 
 })
 @Component
 @Scope("prototype")
-public class DownloadController extends AuthenticationAware.Base {
+public class DownloadController extends AuthenticationAware.Base implements DownloadHandler {
 
+    public static final String GET = "get";
     private static final long serialVersionUID = 7548544212676661097L;
+    private static final String DOWNLOAD_ALL_LANDING = "show-download-landing";
+    public static final String DOWNLOAD_ALL = "downloadAllAsZip";
     private transient InputStream inputStream;
     private String contentType;
     private String fileName;
@@ -51,7 +51,7 @@ public class DownloadController extends AuthenticationAware.Base {
     private Integer version;
     private VersionType type;
     private Long informationResourceId;
-    
+
     private String dispositionPrefix = "";
 
     public static final String FORBIDDEN = "forbidden";
@@ -59,18 +59,20 @@ public class DownloadController extends AuthenticationAware.Base {
     @Autowired
     private PdfService pdfService;
 
-    @Action(value = "confirm", results = { @Result(name = "confirm", location = "/WEB-INF/content/confirm-download.ftl") })
-    public String confirm() {
-        //FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
+    @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-download.ftl") })
+    public String confirm() throws TdarActionException {
+        // FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
         String status = execute();
         if (status != SUCCESS) {
             return status;
-        } ;
+        }
+        ;
         return "confirm";
     }
 
-    @Action(value = "get")
-    public String execute() {
+    @Override
+    @Action(value = GET)
+    public String execute() throws TdarActionException {
         InformationResourceFileVersion irFileVersion = null;
         if (informationResourceFileId == null)
             return ERROR;
@@ -84,12 +86,13 @@ public class DownloadController extends AuthenticationAware.Base {
             getLogger().warn(msg);
             return FORBIDDEN;
         }
-        informationResourceId = irFileVersion.getInformationResourceId();
-        return handleDownload(irFileVersion);
+        setInformationResourceId(irFileVersion.getInformationResourceId());
+        getDownloadService().handleDownload(getAuthenticatedUser(), this, irFileVersion);
+        return SUCCESS;
     }
 
-    @Action(value = "thumbnail", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
-    public String thumbnail() {
+    @Action(value = THUMBNAIL, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    public String thumbnail() throws TdarActionException {
         InformationResourceFileVersion irFileVersion = null;
         if (informationResourceFileId == null)
             return ERROR;
@@ -105,68 +108,43 @@ public class DownloadController extends AuthenticationAware.Base {
             return ERROR;
         }
 
-        // (irFileVersion.getInformationResourceFile().isConfidential() || !irFileVersion.getInformationResourceFile().getInformationResource()
-        // .isAvailableToPublic()) && !getEntityService().canViewConfidentialInformation(getSessionData().getPerson(),
-        // irFileVersion.getInformationResourceFile().getInformationResource())
-        // must not be confidential/embargoed
         if (!getAuthenticationAndAuthorizationService().canDownload(irFileVersion, getSessionData().getPerson())) {
             getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
             return FORBIDDEN;
         }
 
-        return handleDownload(irFileVersion);
-    }
-
-    private String handleDownload(InformationResourceFileVersion irFileVersion) {
-        try {
-
-            File resourceFile = irFileVersion.getFile();
-            fileName = irFileVersion.getFilename();
-            if (resourceFile == null || !resourceFile.exists()) {
-                addActionError("File not found");
-                return ERROR;
-            }
-
-            // If it's a PDF, add the cover page if we can, if we fail, just send the original file
-            if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
-                try {
-                    resourceFile = pdfService.mergeCoverPage(getAuthenticatedUser(), irFileVersion);
-                    inputStream = new DeleteOnCloseFileInputStream(resourceFile);
-                } catch (Exception e) {
-                    getLogger().error("Error occured while merging cover page onto " + irFileVersion, e);
-                }
-            }
-            try {
-                getLogger().debug("downloading file:" + resourceFile.getCanonicalPath());
-            } catch (IOException e) {
-                logger.debug("exception:", e);
-            }
-            contentLength = resourceFile.length();
-            contentType = irFileVersion.getMimeType();
-            if (inputStream == null) {
-                inputStream = new FileInputStream(resourceFile);
-            }
-            if (!irFileVersion.isDerivative()) {
-                InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
-                FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
-                getInformationResourceService().save(stat);
-                initDispositionPrefix(irFile.getInformationResourceFileType());
-            }
-        } catch (FileNotFoundException e) {
-            addActionErrorWithException("File not found", e);
-            return ERROR;
-        }
-
+        getDownloadService().handleDownload(getAuthenticatedUser(), this, irFileVersion);
         return SUCCESS;
     }
-    
-    //indicate in the header whether the file should be received as an attachment (e.g. give user download prompt)
-    private void initDispositionPrefix(InformationResourceFile.FileType fileType) {
-        if(InformationResourceFile.FileType.IMAGE != fileType) {
-            dispositionPrefix = "attachment;";
+
+    @Action(value = DOWNLOAD_ALL)
+    public String downloadZipArchive() throws TdarActionException {
+        if (getInformationResourceId() == null)
+            return ERROR;
+
+        InformationResource ir = (InformationResource) getResourceService().find(getInformationResourceId());
+        List<InformationResourceFileVersion> versions = new ArrayList<>();
+        for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
+            if (!getAuthenticationAndAuthorizationService().canDownload(irf, getSessionData().getPerson())) {
+                getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
+                return FORBIDDEN;
+            }
+            logger.trace("adding: {}", irf.getLatestUploadedVersion());
+            versions.add(irf.getLatestUploadedOrArchivalVersion());
         }
+        getDownloadService().handleDownload(getAuthenticatedUser(), this, versions.toArray(new InformationResourceFileVersion[0]));
+        setFileName(String.format("files-%s.zip",getInformationResourceId()));
+        return SUCCESS;
     }
-    
+
+    @Action(value = DOWNLOAD_ALL_LANDING, results = {
+            @Result(name = SUCCESS, type = "freemarker", location = "/WEB-INF/content/download-all.ftl")})
+    public String showDownloadAllLandingPage() {
+        return SUCCESS;
+    }
+
+
+    @Override
     public InputStream getInputStream() {
         return inputStream;
     }
@@ -175,6 +153,7 @@ public class DownloadController extends AuthenticationAware.Base {
         return contentType;
     }
 
+    @Override
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
@@ -217,6 +196,30 @@ public class DownloadController extends AuthenticationAware.Base {
 
     public String getDispositionPrefix() {
         return dispositionPrefix;
+    }
+
+    @Override
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    @Override
+    public void setContentType(String mimeType) {
+        this.contentType = mimeType;
+    }
+
+    @Override
+    public void setContentLength(long length) {
+        this.contentLength = length;
+    }
+
+    @Override
+    public void setDispositionPrefix(String string) {
+        this.dispositionPrefix = string;
+    }
+
+    public void setInformationResourceId(Long informationResourceId) {
+        this.informationResourceId = informationResourceId;
     }
 
 }

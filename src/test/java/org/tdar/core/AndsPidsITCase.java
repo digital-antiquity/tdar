@@ -13,13 +13,11 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.pid.AndsPidsDao;
-import org.tdar.core.dao.external.pid.EZIDDao;
 import org.tdar.core.service.UrlService;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 

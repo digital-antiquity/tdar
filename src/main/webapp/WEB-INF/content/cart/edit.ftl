@@ -38,17 +38,17 @@
 	</ul>
 	<div class="tab-content row" >
 		<div id="suggested" class="tab-pane <#if !administrator>active</#if> span12">
-		<div class="row">
-			<@rates />			
-			<div class="span8">
-				<h2>Suggested Levels</h2>
-				<div class="row">
-    			    <@pricingOption label="Small" files="1 File" storage="10 MB" cost=50 />
-    			    <@pricingOption label="Medium" files="10 Files" storage="100 MB" cost=400 />
-    			    <@pricingOption label="Large" files="100 Files" storage="1 GB" cost=2500 />
+			<div class="row">
+				<@rates />			
+				<div class="span8">
+					<h2>Suggested Levels</h2>
+					<div class="row">
+	    			    <@pricingOption label="Small" files="1 File" storage="10 MB" cost=50 />
+	    			    <@pricingOption label="Medium" files="10 Files" storage="100 MB" cost=400 />
+	    			    <@pricingOption label="Large" files="100 Files" storage="1 GB" cost=2500 />
+					</div>
 				</div>
 			</div>
-		</div>
 		</div>
 		<div id="custom" class="tab-pane <#if administrator>active</#if> span12">
 			<div class="row">
@@ -56,63 +56,58 @@
 				<div class="span8">
 				<h2>Cost Calculator</h2>
 				<div class="well">
-				<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer span2"/>
-				
-				<div class="control-group">
-				    <label class="control-label">Number of Mb</label>
-				    <div class="controls">
-					<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2"/>
-					<span id="convert"></span>
-				</div>
-				<br/>
-				<div >
-					<h4>Cost: $<span class="red" id="price">0.00</span></h4>
-					<table class="table tableFormat">
-						<tr><th>Item</th><th> # Files</th><th>Space in MB</th><th>Subtotal</th></tr>
-						<tbody id="estimated">
-						<tr><td colspan=5>enter number of files and mb above</td>	
-						</tbody>
-						</table>
-				</div>
+					<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer span2"/>
+					
+					<div class="control-group">
+					    <label class="control-label">Number of Mb</label>
+					    <div class="controls">
+							<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2"/>
+							<span id="convert"></span>
+						</div>
+					</div>
+					<br/>
+					<div >
+						<h4>Cost: $<span class="red" id="price">0.00</span></h4>
+						<table class="table tableFormat">
+							<tr><th>Item</th><th> # Files</th><th>Space in MB</th><th>Subtotal</th></tr>
+							<tbody id="estimated">
+							<tr><td colspan=5>enter number of files and mb above</td>	
+							</tbody>
+							</table>
+					</div>
 					<@s.textfield name="code" label="Redeem Code" />
-			    <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" span="span4" />
-				
-			</div>
+				    <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" span="span4" />
+				</div>
 		</div>
-</div>
-</div>
-
-<div class="row">
-	<div class="span6">
-    <@s.hidden name="id" value="${invoice.id?c!-1}" />
-    <#if !production || administrator || editor >
-    <hr>
-    <p><b>For Admin Use Only:</b></p>
-	<table class="table tableFormat">
-		<thead>
-		<tr>
-			<th>Quantity</th>
-			<th>Item</th>
-		</tr>
-		</thead>
-	    <#list activities as act>
-		    <#if !act.production >
-			<tr>
-				<td>
-				<@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2"/>
-				</td>
-				<td>
-					${act.name}
-					<@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/>
-				</td>				
-			</tr>
-	    	</#if>
-		</#list>
-		</table>
 	</div>
+</div>
 
-	</#if>
-	</div>	
+		<div class="row">
+			<div class="span6">
+			    <@s.hidden name="id" value="${invoice.id?c!-1}" />
+			    <#if !production || administrator || editor >
+			    <hr>
+			    <p><b>For Admin Use Only:</b></p>
+				<table class="table tableFormat">
+					<thead>
+					<tr>
+						<th>Quantity</th>
+						<th>Item</th>
+					</tr>
+					</thead>
+				    <#list activities as act>
+					    <#if !act.production >
+						<tr>
+							<td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2"/></td>
+							<td>${act.name} <@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/> </td>				
+						</tr>
+				    	</#if>
+					</#list>
+					</table>
+			
+				</#if>
+			</div>
+		</div>	
 	</div>
 	</div>
 </div>
@@ -124,10 +119,10 @@
     <div class="control-group">
         <label class="control-label">Invoice Owner</label>
         <div class="controls">
-        <@edit.userRow person=blankAuthorizedUser.user _indexNumber="" isDisabled=false includeRole=false prefix="owner" 
-                includeRights=false isUser=true includeRepeatRow=true/>
+        
+                <@edit.registeredUserRow person=blankAuthorizedUser.user _indexNumber="" includeRepeatRow=false/>
 
-            <@edit.clearDeleteButton id="clearAssignedOwner" />
+            <@nav.clearDeleteButton id="clearAssignedOwner" />
         </div>
     </div>
 </div>
@@ -138,9 +133,10 @@
 
 <script>
 $(document).ready(function(){
-    TDAR.common.initEditPage($('#MetadataForm')[0]);
+// FIXME: removed because of IE8 validation error
+//    TDAR.common.initEditPage($('#MetadataForm')[0]);
     TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/cart/api"/>");
-    applyPersonAutoComplete($(".userAutoComplete"), true, false);
+    TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete"), true, false);
 });
 </script>
 

@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.db.conversion.analyzers.CharAnalyzer;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
+import org.tdar.db.conversion.analyzers.DateAnalyzer;
 import org.tdar.db.conversion.analyzers.DoubleAnalyzer;
 import org.tdar.db.conversion.analyzers.LongAnalyzer;
 
@@ -25,6 +26,7 @@ public class ConversionStatisticsManager {
             List<ColumnAnalyzer> analyzers = new ArrayList<ColumnAnalyzer>();
             analyzers.add(new LongAnalyzer());
             analyzers.add(new DoubleAnalyzer());
+            analyzers.add(new DateAnalyzer());
             analyzers.add(new CharAnalyzer());
             statistics.put(column, analyzers);
             logger.trace("adding " + analyzers + "to statistics for column " + column);

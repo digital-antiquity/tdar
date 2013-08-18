@@ -118,11 +118,15 @@ public class Project extends Resource implements Sortable {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sort_order", columnDefinition = "varchar(50) default 'RESOURCE_TYPE'")
+    @Column(name = "sort_order", columnDefinition = "varchar(50) default 'RESOURCE_TYPE'", length = 50)
     private SortOption sortBy = SortOption.RESOURCE_TYPE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "orientation")
+    @Column(name = "secondary_sort_order", length = 25)
+    private SortOption secondarySortBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "orientation", length = 50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Override
@@ -168,6 +172,14 @@ public class Project extends Resource implements Sortable {
 
     public void setOrientation(DisplayOrientation orientation) {
         this.orientation = orientation;
+    }
+
+    public SortOption getSecondarySortBy() {
+        return secondarySortBy;
+    }
+
+    public void setSecondarySortBy(SortOption secondarySortBy) {
+        this.secondarySortBy = secondarySortBy;
     }
 
 }

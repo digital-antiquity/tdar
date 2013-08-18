@@ -10,7 +10,7 @@
 <@s.actionerror />
 
 <table class="table table-striped">
-<thead><th >Resource ID</th><th>Modified by</th><th>Log message</th><th>Date</th></thead>
+<thead><tr><th >Resource ID</th><th>Modified by</th><th>Log message</th><th>Date</th></tr></thead>
 <tbody>
 <@s.iterator value='resourceRevisionLogs' status='rowStatus' var='resourceRevisionLog'>
 <tr>

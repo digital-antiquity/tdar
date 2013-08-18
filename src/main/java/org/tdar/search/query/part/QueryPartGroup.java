@@ -22,10 +22,12 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
     private Operator operator = Operator.AND;
     private boolean descriptionVisible = true;
 
+    @Override
     public boolean isDescriptionVisible() {
         return descriptionVisible;
     }
 
+    @Override
     public void setDescriptionVisible(boolean descriptionVisible) {
         this.descriptionVisible = descriptionVisible;
     }
@@ -53,6 +55,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         append(Arrays.asList(parts_));
     }
 
+    @Override
     public List<QueryPart<?>> getParts() {
         return parts;
     }
@@ -63,6 +66,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         }
     }
 
+    @Override
     public void append(QueryPart<?> q) {
         if (q == null || q.isEmpty())
             return;
@@ -79,14 +83,17 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         }
     }
 
+    @Override
     public Operator getOperator() {
         return operator;
     }
 
+    @Override
     public void setOperator(Operator or) {
         this.operator = or;
     }
 
+    @Override
     public boolean isEmpty() {
         return this.getParts().isEmpty();
     }

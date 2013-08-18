@@ -59,7 +59,9 @@ public class UploadController extends AuthenticationAware.Base {
     // this is the groupId that comes back to us from the the various upload requests
     private Long ticketId;
 
-    // private static final long INVALID_TICKET_ID = -1L;
+    //indicates that client is not sending a ticket because the server should create a new ticket for this upload 
+    private boolean ticketRequested = false;
+    
 
     @Action(value = "index", results = { @Result(name = "success", location = "index.ftl") })
     public String index() {
@@ -72,46 +74,53 @@ public class UploadController extends AuthenticationAware.Base {
     @Action(value = "upload", results = {
             @Result(name = SUCCESS, type = "freemarker", location = "results.ftl", params = { "contentType", "text/plain" }),
             @Result(name = ERROR, type = "freemarker", location = "error.ftl", params = { "contentType", "text/plain" })
-            // FIXME: the line below does not work like i want it to. I'd like to render error.ftl *and* return a error status code.
-            // @Result(name = ERROR, type = "freemarker", location = "error.ftl", params = { "contentType", "text/plain", "status", "400" })
     })
     public String upload() {
-        PersonalFilestoreTicket ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
-        logger.debug("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
-        if (ticket == null) {
-            addActionError("asynchronous uploads require a valid ticket"); // FIXME: yeah, like a user will understand this.
+        PersonalFilestoreTicket ticket = null;
+        logger.info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
+        if(ticketRequested) {
+            grabTicket();
+            ticketId = personalFilestoreTicket.getId();
+            ticket = personalFilestoreTicket;
+            logger.debug("UPLOAD CONTROLLER: on-demand ticket requested: {}", ticket);
+        } else {
+            ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
+            logger.debug("UPLOAD CONTROLLER: upload request with ticket included: {}", ticket);
+            if (ticket == null) {
+                addActionError("asynchronous uploads require a valid ticket"); 
+            }
         }
         if (CollectionUtils.isEmpty(uploadFile)) {
             addActionError("No files in this request");
         }
-        Person submitter = getAuthenticatedUser();
-        for (int i = 0; i < uploadFile.size(); i++) {
-            File file = uploadFile.get(i);
-            String fileName = uploadFileFileName.get(i);
-            // put upload in holding area to be retrieved later (maybe) by the informationResourceController
-            if (file != null && file.exists()) {
-                String contentType = "";
-                try {
-                    contentType = uploadFileContentType.get(i);
-                } catch (Exception e) { /* OK, JUST USED FOR DEBUG */
-                }
-                Object[] out = { fileName, file.length(), contentType, ticketId };
-                logger.debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
-                PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
-                try {
-                    filestore.store(ticket, file, fileName);
-                } catch (Exception e) {
-                    addActionErrorWithException("Could not store file.", e);
+        if(CollectionUtils.isEmpty(getActionErrors())) {
+            Person submitter = getAuthenticatedUser();
+            for (int i = 0; i < uploadFile.size(); i++) {
+                File file = uploadFile.get(i);
+                String fileName = uploadFileFileName.get(i);
+                // put upload in holding area to be retrieved later (maybe) by the informationResourceController
+                if (file != null && file.exists()) {
+                    String contentType = "";
+                    try {
+                        contentType = uploadFileContentType.get(i);
+                    } catch (Exception e) { /* OK, JUST USED FOR DEBUG */
+                    }
+                    Object[] out = { fileName, file.length(), contentType, ticketId };
+                    logger.debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
+                    PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
+                    try {
+                        filestore.store(ticket, file, fileName);
+                    } catch (Exception e) {
+                        addActionErrorWithException("Could not store file.", e);
+                    }
                 }
             }
         }
         if (CollectionUtils.isEmpty(getActionErrors())) {
             return SUCCESS;
         } else {
-            // FIXME: I was hoping for an annotation-based way to return an error code *and* render a freemarker template. @Result annotations seem to only
-            // allow one or the other (or I'm doing it wrong).
             logger.error("{}", getActionErrors());
-            getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 seems appropriate
+            getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ERROR;
         }
     }
@@ -260,6 +269,14 @@ public class UploadController extends AuthenticationAware.Base {
 
     public int getJsonContentLength() {
         return jsonContentLength;
+    }
+
+    public boolean isTicketRequested() {
+        return ticketRequested;
+    }
+
+    public void setTicketRequested(boolean ticketRequested) {
+        this.ticketRequested = ticketRequested;
     }
 
 }

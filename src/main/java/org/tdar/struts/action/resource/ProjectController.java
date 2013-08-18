@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
@@ -54,6 +56,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private SortOption sortField;
     private String mode = "ProjectBrowse";
     private PaginationHelper paginationHelper;
+    private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
+    private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
     /**
      * Projects contain no additional metadata beyond basic Resource metadata so saveBasicResourceMetadata() should work.
@@ -79,7 +83,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     // FIXME: this belongs in the abstractResourcController, and there should be an abstract method that returns gives hints to json() on which fields to
     // serialize
-    @Action(value = "json",
+    @Action(value = JSON,
             results = { @Result(
                     name = SUCCESS,
                     location = "json.ftl",
@@ -102,6 +106,11 @@ public class ProjectController extends AbstractResourceController<Project> imple
             ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser());
             setSortField(getProject().getSortBy());
             setSecondarySortField(SortOption.TITLE);
+            if (getProject().getSecondarySortBy() != null) {
+                setSecondarySortField(getProject().getSecondarySortBy());
+            }
+            getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
+
             try {
                 getSearchService().handleSearch(qb, this);
             } catch (SearchPaginationException e) {
@@ -277,15 +286,35 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return options;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
-        return null;
+        List<FacetGroup<? extends Facetable>> group = new ArrayList<>();
+        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
+        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
+        return group;
     }
 
     public PaginationHelper getPaginationHelper() {
         if (paginationHelper == null)
             paginationHelper = PaginationHelper.withSearchResults(this);
         return paginationHelper;
+    }
+
+    public ArrayList<ResourceType> getResourceTypeFacets() {
+        return resourceTypeFacets;
+    }
+
+    public void setResourceTypeFacets(ArrayList<ResourceType> resourceTypeFacets) {
+        this.resourceTypeFacets = resourceTypeFacets;
+    }
+
+    public ArrayList<ResourceType> getSelectedResourceTypes() {
+        return selectedResourceTypes;
+    }
+
+    public void setSelectedResourceTypes(ArrayList<ResourceType> selectedResourceTypes) {
+        this.selectedResourceTypes = selectedResourceTypes;
     }
 
 }

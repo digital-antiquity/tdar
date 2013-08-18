@@ -1,5 +1,7 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+
+
 <#macro fieldval _label _val _show=true>
 <#if _show>
 <tr>
@@ -20,18 +22,11 @@
 </#if>
 </#macro>
 
-<@view.htmlHeader resourceType="document">
-<meta name="lastModifiedDate" content="$Date$"/>
-<@view.googleScholar />
-</@view.htmlHeader>
-<@view.toolbar "${resource.urlNamespace}" "view" />
-
-<@view.projectAssociation resourceType="sensory" />
+<#macro afterBasicInfo>
 <#assign _surveyDateBegin = "" />
 <#assign _surveyDateEnd = "" />
 <#if resource.surveyDateBegin??><#assign _surveyDateBegin><@view.shortDate resource.surveyDateBegin /></#assign></#if>
 <#if resource.surveyDateEnd??><#assign _surveyDateEnd><@view.shortDate resource.surveyDateEnd /></#assign></#if>
-<@view.infoResourceBasicInformation>
 <table>
     <@fieldval _label="Object #" _val=resource.monumentNumber!0 _show=resource.monumentNumber??  />
     <@fieldval _val=resource.surveyLocation!""          _show=resource.surveyLocation??  _label="Survey Location" />
@@ -49,7 +44,6 @@
     <@fieldval _val=resource.finalDatasetDescription!"" _show=resource.finalDatasetDescription??  _label="Description of Final Datasets for Archive" />
 </table>
 <hr/>
-</@view.infoResourceBasicInformation>
 
 <#if !resource.sensoryDataScans.isEmpty()>
 <h3>Scan Information</h3>
@@ -157,6 +151,5 @@
 <@fieldvalbool      _val=resource.rgbPreservedFromOriginal            _show=resource.rgbPreservedFromOriginal??            _label="RGB Color" />
 </table>
 <hr/>
-
-<@view.sharedViewComponents resource />
+</#macro>
 </#escape>

@@ -66,8 +66,8 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         final Long id = inst.getId();
         String oldName = inst.getName();
         final String newName = oldName.concat(" updated");
-        Person plebe = getBasicUser();
-        controller = generateNewInitializedController(InstitutionController.class, plebe);
+        controller = generateNewInitializedController(InstitutionController.class, getBasicUser());
+        logger.info("{} -- {} ", controller.getAuthenticatedUser() , inst);
         controller.setId(id);
         controller.prepare();
         controller.getInstitution().setName(newName);

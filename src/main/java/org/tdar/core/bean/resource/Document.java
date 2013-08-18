@@ -12,11 +12,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
@@ -46,13 +46,13 @@ public class Document extends InformationResource {
     private static final long serialVersionUID = 7895887664126751989L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "document_type")
+    @Column(name = "document_type", length = 255)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Document Type")
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "degree")
+    @Column(name = "degree", length = 50)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Degree")
     private DegreeType degree;
@@ -60,52 +60,64 @@ public class Document extends InformationResource {
     @BulkImportField(label = "Series Name")
     @Column(name = "series_name")
     @Field
+    @Length(max = 255)
     private String seriesName;
 
     @BulkImportField(label = "Series Number")
     @Column(name = "series_number")
+    @Length(max = 255)
     private String seriesNumber;
 
     @Column(name = "number_of_pages")
     private Integer numberOfPages;
 
     @BulkImportField(label = "Edition")
+    @Length(max = 255)
     private String edition;
 
     @BulkImportField(label = "ISBN")
     @Field
+    @Length(max = 255)
     @Analyzer(impl = KeywordAnalyzer.class)
     private String isbn;
 
     @BulkImportField(label = "Book Title")
+    @Length(max = 255)
     @Column(name = "book_title")
-    @Field(boost = @Boost(1.5f))
+    @Field
+    // @Boost(1.5f)
     private String bookTitle;
 
     @BulkImportField(label = "ISSN")
     @Field
+    @Length(max = 255)
     @Analyzer(impl = KeywordAnalyzer.class)
     private String issn;
 
     @BulkImportField(label = "DOI")
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
+    @Length(max = 255)
     private String doi;
 
     @BulkImportField(label = "Start Page", order = 10)
     @Column(name = "start_page")
+    @Length(max = 10)
     private String startPage;
 
     @BulkImportField(label = "End Page", order = 11)
     @Column(name = "end_page")
+    @Length(max = 10)
     private String endPage;
 
     @BulkImportField(label = "Journal Name")
     @Column(name = "journal_name")
     @Field
+    @Length(max = 255)
     private String journalName;
 
     @BulkImportField(label = "Volume")
+    @Length(max = 255)
     private String volume;
 
     @BulkImportField(label = "# of Volumes")
@@ -114,6 +126,7 @@ public class Document extends InformationResource {
 
     @BulkImportField(label = "Journal Number")
     @Column(name = "journal_number")
+    @Length(max = 255)
     private String journalNumber;
 
     public Document() {

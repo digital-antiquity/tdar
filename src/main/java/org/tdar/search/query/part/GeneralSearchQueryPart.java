@@ -9,6 +9,7 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.struts.action.search.SearchFieldType;
 
 public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     protected static final float TITLE_BOOST = 6f;
@@ -39,9 +40,13 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
         logger.trace(cleanedQueryString);
 
+        
         FieldQueryPart<String> titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE, cleanedQueryString);
         FieldQueryPart<String> descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, cleanedQueryString);
         FieldQueryPart<String> allFields = new FieldQueryPart<String>(QueryFieldNames.ALL, cleanedQueryString).setBoost(ANY_FIELD_BOOST);
+        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, Arrays.asList(StringUtils.split(cleanedQueryString))).setBoost(ANY_FIELD_BOOST);
+        allFieldsAsPart.setOperator(Operator.AND);
+        allFieldsAsPart.setPhraseFormatters(PhraseFormatter.ESCAPED);
 
         if (cleanedQueryString.contains(" ")) {
             // APPLIES WEIGHTING BASED ON THE "PHRASE" NOT THE TERM
@@ -56,10 +61,12 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         primary.append(titlePart.setBoost(TITLE_BOOST));
         primary.append(descriptionPart.setBoost(DESCRIPTION_BOOST));
         primary.append(allFields);
+        primary.append(allFieldsAsPart);
+
         primary.setOperator(Operator.OR);
         return primary;
     }
-
+    
     public String getCleanedQueryString(String value) {
         String cleanedQueryString = value.trim();
         // if we have a leading and trailng quote, strip them
@@ -80,7 +87,11 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
     @Override
     public String getDescription() {
-        return "All fields:" + StringUtils.join(getFieldValues(), ", ");
+        String fields = StringUtils.join(getFieldValues(), ", ");
+        if (StringUtils.isBlank(fields)) {
+            return "";
+        }
+        return SearchFieldType.ALL_FIELDS.getLabel() + ": "+ fields;
     }
 
     @Override

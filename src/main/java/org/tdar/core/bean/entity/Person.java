@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -20,13 +21,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
@@ -52,7 +57,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Transient
     private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated", "registered",
-            "contributor", "totalLogins", "lastLogin", "penultimateLogin", "emailPublic", "phonePublic", "status", "synonyms" };
+            "contributor", "totalLogins", "lastLogin", "penultimateLogin", "emailPublic", "phonePublic", "status", "synonyms", "occurrence",
+            "proxyInstitution", "proxyNote" };
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")
@@ -61,8 +67,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private static final long serialVersionUID = -3863573773250268081L;
 
     @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "registered" };
+    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "registered","tempDisplayName" };
 
+    @Transient
+    private transient String tempDisplayName;
+    
     public Person() {
     }
 
@@ -78,32 +87,42 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @BulkImportField(label = "Last Name", comment = BulkImportField.CREATOR_LNAME_DESCRIPTION, order = 2)
     @Fields({ @Field(name = QueryFieldNames.LAST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = QueryFieldNames.LAST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
+    @Length(max = 255)
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
     @BulkImportField(label = "First Name", comment = BulkImportField.CREATOR_FNAME_DESCRIPTION, order = 1)
     @Fields({ @Field(name = QueryFieldNames.FIRST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
+    @Length(max = 255)
     private String firstName;
 
     @Column(unique = true, nullable = true)
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
+    @Length(max = 255)
     private String email;
 
     @Column(unique = true, nullable = true)
+    @Length(max = 255)
     private String username;
 
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
     private Boolean emailPublic = Boolean.FALSE;
 
     @IndexedEmbedded(depth = 1)
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, optional = true)
-    // FIXME: this causes PersonController to throw non-unique key violations again when changing from one persistent Institution
-    // to another persistent Institution. WHY
-    // @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH}, optional = true)
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
     private Institution institution;
+
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH}, optional = true)
+    /* who to contact when owner is no longer 'reachable' */
+    private Institution proxyInstitution;
+
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
+    @Column(name = "proxy_note")
+    private String proxyNote;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_login")
@@ -121,6 +140,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private Boolean contributor = Boolean.FALSE;
 
     @Column(name = "contributor_reason", length = 512)
+    @Length(max = 512)
     private String contributorReason;
 
     // did this user register with the system or were they entered by someone
@@ -132,8 +152,10 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     // rpanet.org number (if applicable - using String since I'm not sure if
     // it's in numeric format)
     @Column(name = "rpa_number")
+    @Length(max = 255)
     private String rpaNumber;
 
+    @Length(max = 255)
     private String phone;
 
     @Column(nullable = false, name = "phone_public", columnDefinition = "boolean default FALSE")
@@ -147,23 +169,30 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
      * 
      * @return formatted String name
      */
+    @Override
     @Transient
     public String getName() {
         return lastName + ", " + firstName;
     }
 
+    @Override
     @Transient
     public String getProperName() {
         return firstName + " " + lastName;
     }
 
+
+    /**
+     * set the user firstname, lastname from string in "last first" format.  anything other than simple
+     * two word string is ignored.
+     * @param properName
+     */
     public void setName(String name) {
         String[] names = Person.split(name);
-        if (names.length == 0) {
-            return;
+        if (names.length == 2) {
+            setLastName(names[0]);
+            setFirstName(names[1]);
         }
-        setLastName(names[0]);
-        setFirstName(names[1]);
     }
 
     /**
@@ -246,9 +275,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public String toString() {
         if (institution != null && !StringUtils.isBlank(institution.toString())) {
-            return String.format("%s [%s | %s]", getName(), email, institution);
+            return String.format("%s [%s | %s | %s]", getName(), getId(), email, institution);
         }
-        return String.format("%s [%s]", getName(), "No institution specified.");
+        return String.format("%s [%s | %s]", getName(), getId(), "No institution specified.");
     }
 
     /**
@@ -315,11 +344,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public void setPhonePublic(Boolean toggle) {
         this.phonePublic = toggle;
-    }
-
-    @XmlTransient
-    public List<?> getEqualityFields() {
-        return Arrays.asList(email);
     }
 
     @XmlTransient
@@ -455,4 +479,37 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.wildcardName = wildcardName;
     }
 
+    @Field(norms = Norms.NO, store = Store.YES)
+    @DateBridge(resolution = Resolution.MILLISECOND)
+    public Date getDateUpdated() {
+        return super.getDateUpdated();
+    }
+
+    public Institution getProxyInstitution() {
+        return proxyInstitution;
+    }
+
+    public void setProxyInstitution(Institution proxyInstitution) {
+        this.proxyInstitution = proxyInstitution;
+    }
+
+    public String getProxyNote() {
+        return proxyNote;
+    }
+
+    public void setProxyNote(String proxyNote) {
+        this.proxyNote = proxyNote;
+    }
+
+    /* convenience for struts in case of error on INPUT, better than "NULL NULL" */
+    public String getTempDisplayName() {
+        if (StringUtils.isBlank(tempDisplayName) && StringUtils.isNotBlank(getProperName())) {
+            setTempDisplayName(getProperName());
+        }
+        return tempDisplayName;
+    }
+
+    public void setTempDisplayName(String tempName) {
+        this.tempDisplayName = tempName;
+    }
 }

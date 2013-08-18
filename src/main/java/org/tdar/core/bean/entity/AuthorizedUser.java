@@ -6,9 +6,6 @@
  */
 package org.tdar.core.bean.entity;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -44,22 +41,20 @@ public class AuthorizedUser extends Base implements Persistable {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "general_permission")
+    @Column(name = "general_permission", length = 50)
     private GeneralPermissions generalPermission;
 
     @Column(name = "general_permission_int")
     private Integer effectiveGeneralPermission;
     @Enumerated(EnumType.STRING)
-    @Column(name = "admin_permission")
+    @Column(name = "admin_permission", length = 255)
     private AdminPermissions adminPermission;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "user_id")
     private Person user;
 
-    // @ManyToOne(optional = false)
-    // @JoinColumn(nullable = false, name = "resource_collection_id")
-    // private ResourceCollection resourceCollection;
+    private transient boolean enabled = false;
 
     /**
      * @param person
@@ -91,15 +86,6 @@ public class AuthorizedUser extends Base implements Persistable {
         this.user = user;
     }
 
-    // @XmlTransient
-    // public ResourceCollection getResourceCollection() {
-    // return resourceCollection;
-    // }
-    //
-    // public void setResourceCollection(ResourceCollection resourceCollection) {
-    // this.resourceCollection = resourceCollection;
-    // }
-
     /**
      * @param generalPermission
      *            the generalPermission to set
@@ -116,19 +102,6 @@ public class AuthorizedUser extends Base implements Persistable {
         return generalPermission;
     }
 
-    // @Override
-    // public boolean equals(Object candidate) {
-    // if (this == candidate) {
-    // return true;
-    // }
-    // if (candidate instanceof AuthorizedUser && getClass().isInstance(candidate)) {
-    // AuthorizedUser that = (AuthorizedUser)candidate;
-    // return this.getUser().equals(that.getUser())
-    // && this.getGeneralPermission().equals(that.getGeneralPermission());
-    // }
-    // return false;
-    // }
-
     @Transient
     // is the authorizedUser valid not taking into account whether a collection is present
     public boolean isValid() {
@@ -137,23 +110,10 @@ public class AuthorizedUser extends Base implements Persistable {
         return user != null && generalPermission != null && user.isRegistered();
     }
 
-    public List<?> getEqualityFields() {
-        logger.trace("{}", getUser().getId());
-        return Arrays.asList(getUser().getId());
-    }
-
     @Override
     public String toString() {
         return String.format("%s[%s] ( %s)", getUser().getProperName(), getUser().getId(), generalPermission);
     }
-
-    // @Override
-    // public int hashCode() {
-    // return new HashCodeBuilder(3, 7)
-    // .append(getUser())
-    // .append(getGeneralPermission())
-    // .toHashCode();
-    // }
 
     /**
      * @param effectiveGeneralPermission
@@ -170,5 +130,26 @@ public class AuthorizedUser extends Base implements Persistable {
     public Integer getEffectiveGeneralPermission() {
         return effectiveGeneralPermission;
     }
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
+    public boolean isEnabled() {
+        if (Persistable.Base.isNullOrTransient(this) && Persistable.Base.isNullOrTransient(user)) {
+            return true;
+        }
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    private transient String test = "";
 
 }

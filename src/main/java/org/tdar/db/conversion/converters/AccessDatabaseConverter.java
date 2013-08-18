@@ -1,7 +1,6 @@
 package org.tdar.db.conversion.converters;
 
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,14 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.poifs.filesystem.DirectoryEntry;
-import org.apache.poi.poifs.filesystem.DocumentEntry;
-import org.apache.poi.poifs.filesystem.Entry;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.tools.ant.filters.StringInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -31,6 +26,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationshipType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
@@ -41,6 +37,8 @@ import com.healthmarketscience.jackcess.IndexData.ColumnDescriptor;
 import com.healthmarketscience.jackcess.PropertyMap;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.WKBReader;
 
 /**
  * The class reads an access db file, and converts it into other types of db
@@ -62,14 +60,14 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
     public AccessDatabaseConverter() {
     }
 
-    public AccessDatabaseConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
+    public AccessDatabaseConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
         setTargetDatabase(targetDatabase);
-        setInformationResourceFileVersion(version);
+        setInformationResourceFileVersion(versions[0]);
     }
 
     protected void openInputDatabase()
             throws IOException {
-        File databaseFile = getInformationResourceFileVersion().getFile();
+        File databaseFile = getInformationResourceFileVersion().getTransientFile();
         // if we use ReadOnly Mode here we have the ability to open older files... http://jira.pentaho.com/browse/PDI-5111
         setDatabase(Database.open(databaseFile, true));
         this.setIrFileId(getInformationResourceFileVersion().getId());
@@ -85,7 +83,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
     public void dumpData() throws Exception {
         // start dumping ...
         Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
-        setIndexedContentsFile(new File(FileUtils.getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
+        setIndexedContentsFile(new File(TdarConfiguration.getInstance().getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
         FileOutputStream fileOutputStream = new FileOutputStream(getIndexedContentsFile());
         BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(fileOutputStream);
         for (String tableName : getDatabase().getTableNames()) {
@@ -160,7 +158,6 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     int j = 0;
                     if (currentRow == null)
                         continue;
-                    StringBuilder sb = new StringBuilder();
                     for (Object currentObject : currentRow.values()) {
                         DataTableColumn currentColumn = dataTable.getDataTableColumns().get(j);
                         if (currentObject == null) {
@@ -169,49 +166,40 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         }
                         String currentObjectAsString = currentObject.toString();
                         if (currentColumn.getColumnDataType() == DataTableColumnType.BLOB) {
-                            
-                            logger.info(currentObject.getClass().getCanonicalName());
-//                            byte[] data = (byte[])currentObject;
-//                            logger.info("data: {} ", data);
-                            /*
-                            POIFSFileSystem fs;
-                            try
-                            {
-                                fs = new POIFSFileSystem(new ByteArrayInputStream((byte[])));
-                                DirectoryEntry root = fs.getRoot();
-                                // dir is an instance of DirectoryEntry ...
-                                Iterator<Entry> entries = root.getEntries();
-                                while (entries.hasNext()) {
-                                Entry entry  = entries.next();
-                                    System.out.println("found entry: " + entry.getName());
-                                    if (entry instanceof DirectoryEntry)
-                                    {
-                                        // .. recurse into this directory
-                                    }
-                                    else if (entry instanceof DocumentEntry)
-                                    {
-                                        // entry is a document, which you can read
-                                    }
-                                    else
-                                    {
-                                        // currently, either an Entry is a DirectoryEntry or a DocumentEntry,
-                                        // but in the future, there may be other entry subinterfaces. The
-                                        // internal data structure certainly allows for a lot more entry types.
-                                    }
-                                }
-                            } catch (IOException e)
-                            {
-                                logger.error("poi error", e);
-                            }*/
-                        }
-                        sb.append(currentObjectAsString).append(" ");
 
+                            logger.info(currentObject.getClass().getCanonicalName());
+                            byte[] data = (byte[]) currentObject;
+                            // InflaterInputStream iis = new InflaterInputStream(new ByteArrayInputStream(data));
+                            // byte[] uncompressed = IOUtils.toByteArray(iis);
+                            logger.info("{}", Hex.encodeHexString(data));
+                            // logger.info("{}", uncompressed);
+                            // DATA here is paired with the data in the GDBGeomColumns table to describe the feature type, etc
+                            GeometryFactory factory = new GeometryFactory();
+                            // factory.
+                            // WKBReader reader = new WKBReader(factory);
+
+                            // http://sourceforge.net/mailarchive/message.php?msg_id=30646557
+                            // http://sourceforge.net/mailarchive/message.php?msg_id=29982387
+                            // https://github.com/geotools/geotools/blob/master/modules/unsupported/ogr/ogr-jni/pom.xml
+                            // http://www.giser.net/wp-content/uploads/2011/01/extended-shapefile-format.pdf
+                            // this does not work, see ogrpgeogeometry.cpp in ( extended_shapefile_format.pdf)
+                            // and http://stackoverflow.com/questions/11483189/transact-sql-function-for-convert-from-esri-personal-geodatabase-shape-column-to
+                            @SuppressWarnings("unused")
+                            com.vividsolutions.jts.geom.Geometry g = null;
+                            try {
+                                g = new WKBReader(factory).read(Hex.encodeHexString(data).getBytes());
+                            } catch (Exception e) {
+                                logger.error("{}", e);
+                            }
+                            // logger.info("data: {} ", data);
+                        }
+                        IOUtils.write(currentObjectAsString, indexedFileOutputStream);
+                        IOUtils.write(" ", indexedFileOutputStream);
                         valueColumnMap.put(currentColumn, currentObjectAsString);
                         j++;
                     }
-                    sb.append("\r\n");
+                    IOUtils.write("\r\n", indexedFileOutputStream);
                     targetDatabase.addTableRow(dataTable, valueColumnMap);
-                    IOUtils.write(sb.toString(), indexedFileOutputStream);
                 }
             } catch (BufferUnderflowException bex) {
                 throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);

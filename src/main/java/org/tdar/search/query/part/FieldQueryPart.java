@@ -55,12 +55,12 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         setDisplayName(displayName);
     }
 
-    public FieldQueryPart(String fieldName, String displayName,  Operator oper, Collection<C> fieldValues_) {
+    public FieldQueryPart(String fieldName, String displayName, Operator oper, Collection<C> fieldValues_) {
         this(fieldName, displayName, fieldValues_);
         this.operator = oper;
     }
 
-    public FieldQueryPart(String fieldName, String displayName,  Operator oper, C... fieldValues_) {
+    public FieldQueryPart(String fieldName, String displayName, Operator oper, C... fieldValues_) {
         this(fieldName, displayName, Arrays.asList(fieldValues_));
         this.operator = oper;
     }
@@ -73,7 +73,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this(fieldName, "", fieldValues_);
     }
 
-    public FieldQueryPart(String fieldName,  Operator oper, Collection<C> fieldValues_) {
+    public FieldQueryPart(String fieldName, Operator oper, Collection<C> fieldValues_) {
         this(fieldName, "", oper, fieldValues_);
     }
 
@@ -81,7 +81,6 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this(fieldName, "", oper, fieldValues_);
     }
 
-    
     public FieldQueryPart<C> setPhraseFormatters(PhraseFormatter... phraseFormatters) {
         this.phraseFormatters = Arrays.asList(phraseFormatters);
         return this;
@@ -89,7 +88,15 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     @Override
     public boolean isEmpty() {
-        return CollectionUtils.isEmpty(fieldValues);
+        if (CollectionUtils.isEmpty(fieldValues)) {
+            return true;
+        }
+        for (C value : fieldValues) {
+            if (value != null || StringUtils.isNotBlank(value.toString())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

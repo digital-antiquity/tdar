@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false submitLabel="Search">
 
  <@s.textfield placeholder="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge"/>
@@ -19,7 +20,7 @@
         <#if editor!false>
         <#--FIXME: there seems to be a bug in numColumns when the value is 'too high' (not sure what that number is yet) -->
         <#--FIXME: also,  we need a good,efficient way to emit bootstrap's version of an inline checkboxlist -->
-        <@s.checkboxlist id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
+        <@s.checkboxlist theme="bootstrap" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
         </#if>
         
         <h4>Limit by geographic region:</h4>
@@ -66,9 +67,9 @@
 </#macro>
 
 <#macro sortFields javascriptOn=false label="Sort By">
-
-<@s.select value="sortField" name='sortField'  
-        emptyOption='false' listValue='label' label=label list='%{sortOptions}'/>
+<label>${label}
+<@s.select value="sortField" name='sortField' cssClass="input-large" theme="simple"
+        emptyOption='false' listValue='label' list='%{sortOptions}'/>
     <#--FIXME: move this block to tdar.common.js, bind if select has 'autoreload' class -->
     <#if javascriptOn>
       <script type='text/javascript'>
@@ -84,6 +85,7 @@
         });
       </script>
     </#if>
+</label>
 </#macro>
 
 <#macro rssUrlTag url>
@@ -108,7 +110,7 @@
       <link rel="next" href="<@searchUrl path><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@searchUrl>"/>
   </#if>
   <#if  paginationHelper.hasPrevious() >
-      <link rel="previous" href="<@searchUrl path ><@s.param name="startRecord" value="${prevPageStartRecord?c}" /></@searchUrl>"/>
+      <link rel="previous" href="<@searchUrl path ><#if prevPageStartRecord !=0><@s.param name="startRecord" value="${prevPageStartRecord?c}" /><#else><@s.param name="startRecord" value="" /></#if></@searchUrl>"/>
   </#if>
 </#macro>
 
@@ -128,7 +130,11 @@
 <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">
     <@searchLink path linkText>
-        <@s.param name="startRecord" value="${startRecord?c}" />
+    	<#if startRecord != 0>
+    	    <@s.param name="startRecord" value="${startRecord?c}" />
+        <#else>
+	        <@s.param name="startRecord" value="" />
+        </#if>
         <@s.param name="recordsPerPage" value="${recordsPerPage?c}" />
     </@searchLink>
     </span>
@@ -207,3 +213,74 @@
 </#macro>
 
 
+<#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" liCssClass="media" action=actionName>
+<#if (facetlist?? && !facetlist.empty)>
+<h4>${label}:</h4>
+<ul class="media-list tools">
+    <#list facetlist as facet>
+        <#assign facetLabel = facet />
+        <#if facet.plural?has_content>
+            <#assign facetLabel = facet.plural />
+        <#elseif facet.label?has_content>
+            <#assign facetLabel = facet.label />
+        </#if>
+        <li class="${liCssClass}">
+            <#if (facetlist?size > 1)>
+				
+                <span class="media-body">
+                
+                <a rel="noindex" href="<@s.url action=action includeParams="all">
+                    <@s.param name="${facetParam}">${facet}</@s.param>
+                    <@s.param name="startRecord" value="0"/>
+                    <#if facetParam != "documentType">
+                        <@s.param name="documentType" value=""/>
+                    </#if>
+                    <#if facetParam != "integratableOptions">
+                        <@s.param name="integratableOptions" value=""/>
+                    </#if>
+                    <#nested>
+                </@s.url>">
+                <i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
+                ${facetLabel}</a> <span>(${facet.count})</span></span>
+            <#elseif currentValues?size == 1>
+                <@removeFacet facetlist=currentValues facetParam=facetParam />
+            <#else>
+                <span class="media-body">${facetLabel} <span>(${facet.count})</span></span>
+            </#if>
+        </li>
+    </#list>
+</ul>
+</#if>
+
+</#macro>
+
+<#macro removeFacet facetlist="" label="Facet Label" facetParam="">
+    <#if facetlist?has_content>
+    <#if (facetlist?is_collection)>
+        <#if facetlist?size == 1>
+            <#assign facet= facetlist.get(0) />
+        </#if>
+    <#elseif (facetlist?is_string) >
+        <#assign facet= facetlist />
+    </#if>
+    <#if facet?has_content>
+        <#assign facetText=facet/>
+        <#if facet.plural?has_content><#assign facetText=facet.plural/>
+        <#elseif facet.label?has_content><#assign facetText=facet.label/>
+        </#if>
+        <a rel="noindex" href="<@s.url includeParams="all">
+            <@s.param name="${facetParam}"value="" />
+            <@s.param name="startRecord" value="0"/>
+            <#if facetParam != "documentType">
+                <@s.param name="documentType" value=""/>
+            </#if>
+            <#if facetParam != "integratableOptions">
+                <@s.param name="integratableOptions" value=""/>
+            </#if>
+            <#nested>
+        </@s.url>"><i class="pull-left search-list-checkedbox-grey"></i> 
+                       <div class="media-body">${facetText}</div></a>
+    </#if>
+    </#if>
+</#macro>
+</#escape>

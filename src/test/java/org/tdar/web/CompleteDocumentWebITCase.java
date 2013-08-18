@@ -32,7 +32,7 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
@@ -66,16 +66,15 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         // docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
-        docValMap.put("authorizedUsers[0].user.id", "121");
-        docValMap.put("authorizedUsers[1].user.id", "5349");
-        docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
+                //     authorizedUsers[0].user.id
+        docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
+        docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
+        docUnorderdValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+        docUnorderdValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
+        docUnorderdValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
+        docUnorderdValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("authorizedUsers[0].user.firstName", "Michelle");
-        docValMap.put("authorizedUsers[0].user.lastName", "Elliott");
-        docValMap.put("authorizedUsers[1].user.firstName", "Joshua");
-        docValMap.put("authorizedUsers[1].user.lastName", "Watts");
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         alternateTextLookup.add(Language.SPANISH.getLabel());
@@ -226,13 +225,20 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         for (String key : docMultiValMap.keySet()) {
             setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
         }
+
         submitForm();
 
         String path = internalPage.getUrl().getPath().toLowerCase();
-        logger.info(getPageText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
-        logger.trace(getPageText());
+//        try {
+//            FileUtils.writeStringToFile(new File("post-save.html"), getPageCode());
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+
+        logger.info(getPageText());
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just
             // the top of the lat/long
@@ -270,6 +276,12 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         clickLinkWithText("edit");
         logger.debug("----now on edit page----");
         logger.trace(getPageText());
+//        try {
+//            FileUtils.writeStringToFile(new File("pre-save.html"), getPageCode());
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
 
         for (String key : docValMap.keySet()) {
             String val = docValMap.get(key);

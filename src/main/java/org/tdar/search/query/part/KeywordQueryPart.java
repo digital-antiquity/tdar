@@ -9,7 +9,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.hibernate.cfg.beanvalidation.GroupsPerOperation.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.keyword.Keyword;

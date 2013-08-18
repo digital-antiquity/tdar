@@ -1,5 +1,9 @@
 package org.tdar.struts.action.search;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,7 +11,6 @@ import java.util.List;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -15,21 +18,21 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -37,13 +40,14 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
-import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+
+import freemarker.ext.dom.NodeModel;
 
 /**
  * $Id$
@@ -63,6 +67,9 @@ import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 @HttpOnlyIfUnauthenticated
 public class BrowseController extends AbstractLookupController {
 
+    public static final String CREATORS = "creators";
+    public static final String COLLECTIONS = "collections";
+    public static final String EXPLORE = "explore";
     private static final String ALL_TDAR_COLLECTIONS = "All Collections";
     private static final long serialVersionUID = -128651515783098910L;
     private Creator creator;
@@ -80,10 +87,16 @@ public class BrowseController extends AbstractLookupController {
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
+    private String creatorXml;
+    private List<Account> accounts = new ArrayList<Account>();
+
+    private transient InputStream inputStream;
+    private Long contentLength;
+    private NodeModel nodeModel;
 
     // private Keyword keyword;
 
-    @Action("explore")
+    @Action(EXPLORE)
     public String explore() {
         setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
         setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
@@ -99,8 +112,8 @@ public class BrowseController extends AbstractLookupController {
     public Creator getAuthorityForDup() {
         return getEntityService().findAuthorityFromDuplicate(creator);
     }
-    
-    @Action("collections")
+
+    @Action(COLLECTIONS)
     public String browseCollections() throws ParseException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
         qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
@@ -113,40 +126,63 @@ public class BrowseController extends AbstractLookupController {
 
         if (isEditor()) {
             setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
-                    Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
+                    Persistable.Base.extractIds(getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
                     Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 
         return SUCCESS;
     }
 
-    @Action(value = "creators", results = { @Result(location = "results.ftl") })
+    @Action(value = "creatorRdf", results = {
+            @Result(name = TdarActionSupport.SUCCESS, type = "stream",
+                    params = {
+                            "contentType", "application/rdf+xml",
+                            "inputName", "inputStream",
+                            "contentLength", "${contentLength}"
+                    }
+            )
+    })
+    public String creatorRdf() throws FileNotFoundException {
+        if (Persistable.Base.isNotNullOrTransient(getId())) {
+            creator = getGenericService().find(Creator.class, getId());
+            File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".foaf.xml");
+            setInputStream(new FileInputStream(file));
+            setContentLength(file.length());
+            return SUCCESS;
+        }
+        return ERROR;
+    }
+
+    @Action(value = CREATORS, results = { @Result(location = "results.ftl") })
     public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            QueryBuilder queryBuilder = new ResourceQueryBuilder();
-            queryBuilder.setOperator(Operator.AND);
+            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser());
 
-            SearchParameters params = new SearchParameters(Operator.OR);
-            // could use "creator type" to filter; but this doesn't cover the creator type "OTHER"
-            for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
-                if (role == ResourceCreatorRole.UPDATER) {
-                    continue;
-                }
-                params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
-            }
-            queryBuilder.append(params);
-            ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-            getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, getAuthenticatedUser());
-            queryBuilder.append(reservedSearchParameters);
-
-            if (isEditor() && creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
+            if (Persistable.Base.isNotNullOrTransient(creator)) {
                 try {
-                    getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) creator));
-                } catch (Throwable e) {
-                    logger.error("problem communicating with crowd getting user info for {} ", creator, e);
+                    setNodeModel(NodeModel.parse(new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml")));
+                } catch (Exception e) {
+                    logger.debug("{}", e);
                 }
-                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
+            }
+            if (isEditor()) {
+                if (creator instanceof Person && StringUtils.isNotBlank(((Person)creator).getUsername())) {
+                    Person person = (Person)creator;
+                    try {
+                        getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(person));
+                    } catch (Throwable e) {
+                        logger.error("problem communicating with crowd getting user info for {} ", creator, e);
+                    }
+                    getAccounts().addAll(
+                            getAccountService().listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+                }
+                try {
+                    setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
+                } catch (Exception e) {
+                    logger.error("error: {}", e);
+                }
+
             }
 
             setPersistable(creator);
@@ -307,6 +343,46 @@ public class BrowseController extends AbstractLookupController {
 
     public void setGroups(List<String> groups) {
         this.groups = groups;
+    }
+
+    public String getCreatorXml() {
+        return creatorXml;
+    }
+
+    public void setCreatorXml(String creatorXml) {
+        this.creatorXml = creatorXml;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+    public Long getContentLength() {
+        return contentLength;
+    }
+
+    public void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    public NodeModel getNodeModel() {
+        return nodeModel;
+    }
+
+    public void setNodeModel(NodeModel nodeModel) {
+        this.nodeModel = nodeModel;
     }
 
 }

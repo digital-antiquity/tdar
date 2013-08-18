@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.client.ContentExchange;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -28,7 +27,6 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 @Configurable(autowire = Autowire.BY_NAME)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "Placeholder-context.xml" })
-@Ignore
 public class ODataServiceRequestIntegrationITCase extends AbstractLightFitTest {
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -39,16 +37,14 @@ public class ODataServiceRequestIntegrationITCase extends AbstractLightFitTest {
     @Test
     @DirtiesContext
     public void testServiceUrl() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.SERVICE_URL);
-        exchange.waitForDone();
+        ContentExchange exchange = setupExchange(Constant.SERVICE_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     @DirtiesContext
     public void testMetaDataResponseContent() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.SERVICE_URL);
-        exchange.waitForDone();
+        ContentExchange exchange = setupExchange(Constant.SERVICE_URL);
         String inXMLString = exchange.getResponseContent();
 
         // See: odata_service_response.xml

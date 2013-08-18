@@ -15,10 +15,11 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.service.workflow.GenericDocumentWorkflow;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.MessageService;
-import org.tdar.core.service.workflow.PDFWorkflow;
-import org.tdar.core.service.workflow.Workflow;
+import org.tdar.core.service.workflow.workflows.GenericDocumentWorkflow;
+import org.tdar.core.service.workflow.workflows.PDFWorkflow;
+import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
 
@@ -47,7 +48,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileType.DOCUMENT, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(PDFWorkflow.class, workflow.getClass());
-        boolean result = messageService.sendFileProcessingRequest(originalVersion, workflow);
+        boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
         assertFalse(result);
@@ -66,13 +67,15 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileType.DOCUMENT, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(GenericDocumentWorkflow.class, workflow.getClass());
-        boolean result = messageService.sendFileProcessingRequest(originalVersion, workflow);
+        logger.info("{}", originalVersion);
+        boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
         assertTrue(result);
-        assertEquals(null, informationResourceFile.getStatus());
+        assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
         InformationResourceFileVersion indexableVersion = informationResourceFile.getIndexableVersion();
-        String text = FileUtils.readFileToString(indexableVersion.getFile());
+        logger.info("version: {}" , indexableVersion);
+        String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(indexableVersion));
         logger.info(text);
         assertTrue(text.toLowerCase().contains("have fun digging"));
     }

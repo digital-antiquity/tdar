@@ -18,6 +18,7 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -40,6 +41,9 @@ import org.tdar.search.query.QueryFieldNames;
  */
 @SuppressWarnings("rawtypes")
 public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
+
+    @Transient
+    public static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "approved", "selectable", "level", "occurrence" }; //fixme: should ID be here too?
 
     public String getLabel();
 
@@ -65,6 +69,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
                 @Field(name = "label_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
                 @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
                 @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) })
+        @Length(max = 255)
         private String label;
 
         @Lob
@@ -72,7 +77,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         private String definition;
 
         @Enumerated(EnumType.STRING)
-        @Column(name = "status")
+        @Column(name = "status", length = 25)
         @Field(norms = Norms.NO, store = Store.YES)
         @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
         private Status status = Status.ACTIVE;
@@ -84,9 +89,15 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
             return getClass().getSimpleName();
         }
 
+        private Long occurrence = 0L;
+
         private transient Float score = -1f;
         private transient Explanation explanation;
         private transient boolean readyToIndex = true;
+
+        // @Column(name = "date_created")
+        // @NotNull
+        // private Date dateCreated;
 
         @Transient
         @XmlTransient
@@ -185,6 +196,14 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         @Override
         public boolean isDuplicate() {
             return status == Status.DUPLICATE;
+        }
+
+        public Long getOccurrence() {
+            return occurrence;
+        }
+
+        public void setOccurrence(Long occurrence) {
+            this.occurrence = occurrence;
         }
 
     }

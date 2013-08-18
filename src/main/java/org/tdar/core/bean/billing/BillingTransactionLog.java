@@ -1,19 +1,15 @@
 package org.tdar.core.bean.billing;
 
 import java.util.Date;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
-
 import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 
@@ -33,10 +29,12 @@ public class BillingTransactionLog extends Base {
     private Date dateCreated;
     // the confirmation id for this invoice
 
+    @Length(max = 255)
     private String transactionId;
 
-    public BillingTransactionLog() {}
-    
+    public BillingTransactionLog() {
+    }
+
     public BillingTransactionLog(TransactionResponse response) {
         JsonConfig config = new JsonConfig();
         JSONObject jsonObject = JSONObject.fromObject(response.getValues(), config);
@@ -70,12 +68,12 @@ public class BillingTransactionLog extends Base {
         this.transactionId = transactionId;
     }
 
-//    public Invoice getInvoice() {
-//        return invoice;
-//    }
-//
-//    public void setInvoice(Invoice invoice) {
-//        this.invoice = invoice;
-//    }
+    // public Invoice getInvoice() {
+    // return invoice;
+    // }
+    //
+    // public void setInvoice(Invoice invoice) {
+    // this.invoice = invoice;
+    // }
 
 }

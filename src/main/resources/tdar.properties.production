@@ -94,3 +94,9 @@ recaptcha.publicKey=
 #   Experimental/Advanced
 #
 featureEnabled.leftJoinDataIntegration=false
+
+# show view rows in tDAR
+view.row.suppported=true
+
+#Show jira report a bug link
+jira.link.show=true

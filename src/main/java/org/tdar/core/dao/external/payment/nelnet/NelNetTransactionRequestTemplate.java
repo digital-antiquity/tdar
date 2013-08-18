@@ -271,7 +271,7 @@ public class NelNetTransactionRequestTemplate implements Serializable {
             String key = item.key;
             String value = values.get(key);
             if (values.containsKey(key) && StringUtils.isNotBlank(value) && StringUtils.isNotBlank(key)) {
-                suffix.append(key).append("=").append(URIUtil.encodeQuery(value)).append("&");
+                suffix.append(key).append("=").append(URIUtil.encodeQuery(value)).append("&amp;");
             }
         }
         return suffix.toString();

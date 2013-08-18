@@ -54,33 +54,37 @@ public class ExcelConverter extends DatasetConverter.Base {
     public ExcelConverter() {
     }
 
-    public ExcelConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
+    public ExcelConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... version) {
         setTargetDatabase(targetDatabase);
-        this.setInformationResourceFileVersion(version);
-        this.setFilename(version.getFilename());
+        this.setInformationResourceFileVersion(version[0]);
+        this.setFilename(version[0].getFilename());
     }
 
-    protected void openInputDatabase()
-            throws IOException {
+    protected void openInputDatabase() throws IOException {
         if (informationResourceFileVersion == null) {
             logger.warn("Received null information resource file.");
             return;
         }
-        File excelFile = informationResourceFileVersion.getFile();
+        File excelFile = informationResourceFileVersion.getTransientFile();
         if (excelFile == null) {
             logger.error("InformationResourceFile's file was null, this should never happen.");
             return;
         }
+
         try {
+            // XSSFReaderHelper helper = new XSSFReaderHelper();
+            // helper.openFile(excelFile);
+            // helper.processSheet(null, 25);
             workbook = WorkbookFactory.create(new FileInputStream(excelFile));
+        } catch (NullPointerException npe) {
+            logger.error("{}", npe);
         } catch (InvalidFormatException exception) {
             logger.debug("cannot read excel file (invalid format)", exception);
-            String errorMessage = "Couldn't create workbook from "
-                    + excelFile.getAbsolutePath();
+            String errorMessage = "Couldn't create workbook from " + excelFile.getAbsolutePath();
             logger.error(errorMessage, exception);
             throw new TdarRecoverableRuntimeException(errorMessage, exception);
         } catch (IllegalArgumentException exception) {
-            logger.error("Couldn't create workbook, likely due to invalid Excel file or Excel 2003 file.",exception);
+            logger.error("Couldn't create workbook, likely due to invalid Excel file or Excel 2003 file.", exception);
             throw new TdarRecoverableRuntimeException(
                     ERROR_WRONG_EXCEL_FORMAT,
                     exception);
@@ -106,21 +110,18 @@ public class ExcelConverter extends DatasetConverter.Base {
 
         List<Exception> exceptions = new ArrayList<Exception>();
         int numberOfActualSheets = 0;
-        for (int sheetIndex = numberOfSheets -1; sheetIndex >= 0; sheetIndex--) {
+        for (int sheetIndex = numberOfSheets - 1; sheetIndex >= 0; sheetIndex--) {
             // skip empty sheets
             Sheet currentSheet = workbook.getSheetAt(sheetIndex);
             String sheetName = workbook.getSheetName(sheetIndex);
             if (currentSheet.getPhysicalNumberOfRows() < 2) {
-                logger.warn(String.format(
-                        "Sheet # %d (%s) only had %d rows, skipping.",
-                        sheetIndex, sheetName,
-                        currentSheet.getPhysicalNumberOfRows()));
+                logger.warn(String.format("Sheet # %d (%s) only had %d rows, skipping.", sheetIndex, sheetName, currentSheet.getPhysicalNumberOfRows()));
                 continue;
             }
             numberOfActualSheets++;
             try {
                 if (numberOfActualSheets == 1 && sheetName.equals(DEFAULT_SHEET_NAME)) {
-                    sheetName = FilenameUtils.getBaseName(informationResourceFileVersion.getFile().getName());
+                    sheetName = FilenameUtils.getBaseName(informationResourceFileVersion.getTransientFile().getName());
                 }
                 processSheet(currentSheet, sheetName);
             } catch (Exception e) {
@@ -206,7 +207,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             Row currentRow = currentSheet.getRow(rowIndex);
             if (currentRow == null)
                 continue;
-            
+
             if (currentRow.getFirstCellNum() < 0)
                 continue;
 
@@ -225,9 +226,7 @@ public class ExcelConverter extends DatasetConverter.Base {
                     if (StringUtils.isEmpty(cellValue)) {
                         cellValue = null;
                     }
-                    valueColumnMap.put(
-                            dataTable.getDataTableColumns().get(columnIndex),
-                            cellValue);
+                    valueColumnMap.put(dataTable.getDataTableColumns().get(columnIndex), cellValue);
                     statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(columnIndex), cellValue);
                 }
             }
@@ -239,5 +238,4 @@ public class ExcelConverter extends DatasetConverter.Base {
         completePreparedStatements();
         alterTableColumnTypes(dataTable, statisticsManager.getStatistics());
     }
-
 }

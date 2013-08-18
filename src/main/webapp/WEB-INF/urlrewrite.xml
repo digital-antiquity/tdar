@@ -16,14 +16,14 @@
 		<to type="temporary-redirect">http://dev.tdar.org/confluence/display/TDAR/tDAR+XML+namespace
 		</to>
 	</rule>
-	
+
 	<rule>
-	<name>deal with annoying fishing excursions...</name>
-	<from>/(wp|wordpress|old|blog|wp-admin|signup)/?.*</from>
-	<to>/page-not-found</to>
-	<!--  this does not work in Tomcat for some reason <set status="404" /> -->
+		<name>deal with annoying fishing excursions...</name>
+		<from>/(wp|wordpress|old|blog|wp-admin|signup)/?.*</from>
+		<to>/page-not-found</to>
+		<!-- this does not work in Tomcat for some reason <set status="404" /> -->
 	</rule>
-	
+
 	<rule>
 		<from>^/services$</from>
 		<to>/services/</to>
@@ -81,6 +81,11 @@
 		<to type="redirect">/search/results?resourceTypes=IMAGE&amp;startRecord=0</to>
 	</rule>
 
+    <rule>
+        <from>^/(archive)s?/?$</from>
+        <to type="redirect">/search/results?resourceTypes=ARCHIVE&amp;startRecord=0</to>
+    </rule>
+
 	<rule>
 		<from>^/(project)s?/?$</from>
 		<to type="redirect">/search/results?resourceTypes=PROJECT&amp;startRecord=0
@@ -115,13 +120,32 @@
 
 
 	<rule>
-		<from>^/browse/(.+)/(\d+)</from>
+		<from>^/browse/(.+)/(\d+)/?$</from>
 		<to>/browse/$1?id=$2</to>
 	</rule>
 	<outbound-rule>
 		<from>^/browse/(.+)\?id=(\d+)$</from>
 		<to>/browse/$1/$2</to>
 	</outbound-rule>
+
+	<rule>
+		<from>^/browse/(.+)/(\d+)/rdf</from>
+		<to>/browse/creatorRdf?id=$2</to>
+	</rule>
+	<outbound-rule>
+		<from>^/browse/creatorRdf\?id=(\d+)$</from>
+		<to>/browse/creators/$2/rdf</to>
+	</outbound-rule>
+
+    <rule>
+		<from>^/filestore/(\d+)/([\w\-]+)</from>
+		<to>/filestore/$2?informationResourceFileId=$1</to>
+	</rule>
+
+	<rule>
+		<from>^/filestore/(\d+)/?</from>
+		<to>/filestore/get?informationResourceFileId=$1</to>
+	</rule>
 
 	<rule>
 		<from>^/services//(.*)</from>
@@ -137,6 +161,14 @@
 	<rule>
 		<from>^/search/search(.*)</from>
 		<to>/search/results$1</to>
+	</rule>
+
+	<!-- when run at the root context; the struts2 freemarker setup does not 
+		seem to properly route requests through the servlet; hence requests from 
+		http://localhost/ are routed to /about -->
+	<rule>
+		<from>^/$</from>
+		<to>/about</to>
 	</rule>
 
 	<rule>
@@ -155,20 +187,27 @@
 	</rule>
 
 	<rule>
-		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)\??(.*)$
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)\??(.*)$
 		</from>
-		<to>/$1/$3?id=$2&amp;$3</to>
+		<to>/$1/$3?id=$2</to>
+		<!-- was &amp;$3 aat end -->
 	</rule>
 	<outbound-rule>
-		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)$
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)$
 		</from>
 		<to>/$1/$3/$2</to>
 	</outbound-rule>
 	<outbound-rule>
-		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)&amp;(.*)$
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)(.+)$
 		</from>
 		<to>/$1/$3/$2?$4</to>
 	</outbound-rule>
+
+	<rule>
+		<from>^/ontology/([0-9]+)/([^\?]+)\??(.*)$</from>
+		<to>/ontology/node?id=$1&amp;iri=$2&amp;$3</to>
+	</rule>
+	
 
 	<rule>
 		<from>^/(cart|billing)/([0-9]+)/(address|credit|simple|choose|polling|polling-check)$
@@ -190,12 +229,12 @@
 	<!-- all requests for a resource supplying just an id should go to it's 
 		view action -->
 	<rule>
-		<from>^/(project|dataset|ontology|billing|image|video|document|cart|sensory-data|coding-sheet|collection)/([0-9]+)$
+		<from>^/(project|dataset|ontology|billing|image|video|document|cart|sensory-data|coding-sheet|collection|archive|geospatial)/([0-9]+)$
 		</from>
 		<to>/$1/view?id=$2</to>
 	</rule>
 	<outbound-rule>
-		<from>^/(project|dataset|ontology|billing|image|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/view$
+		<from>^/(project|dataset|ontology|billing|image|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/view$
 		</from>
 		<to>/$1/$2</to>
 	</outbound-rule>
@@ -295,6 +334,13 @@
 		<from>^(.*?)(?:\;jsessionid=[^\?#]*)?(\?[^#]*)?(#.*)?$</from>
 		<to>$1$2$3</to>
 	</outbound-rule>
+
+	<!--  be careful with this where possible (it could have issues with things like the TAG Gateway) -->
+	<outbound-rule>
+		<from>^/(search|project|collection)/(.+)\.action\?(.*)$</from>
+		<to>/$1/$2?$3</to>
+	</outbound-rule> 
+
 
 
 </urlrewrite>

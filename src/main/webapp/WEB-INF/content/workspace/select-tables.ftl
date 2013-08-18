@@ -27,8 +27,8 @@
             <td>
                 <@s.checkbox id="datatable_checkbox_${table.id?c}" name="tableIds" fieldValue="${table.id?c}"/>
             </td>
-            <td><label class="datatableListItem" for="datatable_checkbox_${table.id?c}">${dataset.title}</label></td>
-            <td>${table.displayName}
+            <td><label class="datatableListItem" for="datatable_checkbox_${table.id?c}">${dataset.title} - ${table.displayName}</label></td>
+            <td>
              &nbsp;(<a href="#" class="column_toggle" > show/hide columns</a>)            
                   <div class="datatable_columns" id="datatable_columns_${table.id?c}" style="display:none;">
                     <@listDataTableColumns table.getDataTableColumns() />
@@ -84,7 +84,7 @@ $(function() {
 <h1>Data Integration</h1>
 
 <div class="row">
-<#if !bookmarkedDataTables.empty >
+<#if (bookmarkedDataTables)?? && !bookmarkedDataTables.empty >
 <div class="span12">
     <h3>Step 1: Select Datasets to Integrate or Display</h3>
     <@s.form name='selectDTForm' method='post' action='select-columns'>

@@ -67,8 +67,8 @@ Drag columns from your selected data tables onto the integration table .
 <div class="glide">
 <h3>Create your Integration Table:</h3>
 
-<#macro setupIntegrationColumn column idx=0>
-<td colNum="${idx}" class="<#if column.displayColumn>displayColumn<#else>integrationColumn</#if>">
+<#macro setupIntegrationColumn column idx=0 init=false>
+<td colNum="${idx}" class="<#if column.displayColumn><#if !init>displayColumn<#else>defaultColumn</#if><#else>integrationColumn</#if>">
   <div class="label">Column ${idx + 1} <span class="colType"></span>
   <input type="hidden" name="integrationColumns[${idx}].columnType" value="<#if column.displayColumn>DISPLAY<#else>INTEGRATION</#if>" class="colTypeField"/>
   <input type="hidden" name="integrationColumns[${idx}].sequenceNumber" value="${idx}" class="sequenceNumber" />
@@ -106,7 +106,7 @@ Drag columns from your selected data tables onto the integration table .
    <@setupIntegrationColumn integrationColumn integrationColumn_index />
  </#list>
 <#else>
-  <@setupIntegrationColumn blankIntegrationColumn 0 />
+  <@setupIntegrationColumn blankIntegrationColumn 0 true/>
 </#if>
 
 </tr>
@@ -162,7 +162,9 @@ Drag columns from your selected data tables onto the integration table .
 			                 <#if column.measurementUnit??>hasMeasurement="${column.measurementUnit}"</#if> 
 			                 title="${description?html}"
 			                 <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>hasCount="true"</#if> 
-			                 table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}. </span>${column.displayName} <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
+			                 table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}. </span>
+							<span class="name">${column.displayName}</span>
+		    			     <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
 			               <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id"  value="${column.id?c}"/></span>
 			                   <#assign count = count+1 />
 			                </div> </td>

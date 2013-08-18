@@ -45,8 +45,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
-import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
+import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
@@ -59,21 +60,20 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.bulkUpload.BulkManifestProxy;
-import org.tdar.core.bean.util.bulkUpload.BulkUploadTemplate;
-import org.tdar.core.bean.util.bulkUpload.CellMetadata;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
-
-import com.google.protobuf.UnknownFieldSet.Field;
+import org.tdar.utils.bulkUpload.BulkManifestProxy;
+import org.tdar.utils.bulkUpload.BulkUploadTemplate;
+import org.tdar.utils.bulkUpload.CellMetadata;
 
 /**
  * @author Adam Brin
@@ -117,9 +117,6 @@ public class BulkUploadService {
     private FileAnalyzer analyzer;
 
     @Autowired
-    private SearchIndexService searchIndexService;
-
-    @Autowired
     private ExcelService excelService;
 
     @Autowired
@@ -132,16 +129,17 @@ public class BulkUploadService {
 
     @Async
     public void saveAsync(final InformationResource image,
-            final Person submitter, final Long ticketId,
+            final Long submitterId, final Long ticketId,
             final File excelManifest, final Collection<FileProxy> fileProxies, Long accountId) {
-        save(image, submitter, ticketId, excelManifest, fileProxies, accountId);
+        save(image, submitterId, ticketId, excelManifest, fileProxies, accountId);
     }
 
-    public void save(final InformationResource image, final Person submitter,
+    @Transactional
+    public void save(final InformationResource image, final Long submitterId,
             final Long ticketId, final File excelManifest,
             final Collection<FileProxy> fileProxies, Long accountId) {
         Map<String, Resource> resourcesCreated = new HashMap<String, Resource>();
-
+        Person submitter=  genericDao.find(Person.class, submitterId);
         logger.debug("BEGIN ASYNC: " + image + fileProxies);
 
         // in an async method the image's persistent associations will have
@@ -209,8 +207,13 @@ public class BulkUploadService {
         }
 
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            Account account = genericDao.find(Account.class, accountId);
-            accountService.updateQuota(account, resourcesCreated.values().toArray(new Resource[0]));
+            final Account account = genericDao.find(Account.class, accountId);
+            try {
+                accountService.updateQuota(account, resourcesCreated.values().toArray(new Resource[0]));
+            } catch (Throwable t) {
+                logger.error(t.getMessage(), t);
+                throw t;
+            }
         }
 
         logger.info("bulk: setting final statuses and logging");
@@ -221,6 +224,7 @@ public class BulkUploadService {
 
             try {
                 resourceService.saveRecordToFilestore(resource);
+                genericDao.refresh(submitter);
                 resourceService.logResourceModification(resource, submitter, logMessage);
                 // FIXME: saveRecordToFilestore doesn't distinguish 'recoverable' from 'disastrous' exceptions. Until it does we just have to assume the worst.
                 resource.setReadyToIndex(true);
@@ -385,6 +389,7 @@ public class BulkUploadService {
                 ResourceType suggestTypeForFile = analyzer.suggestTypeForFileExtension(extension, getResourceTypesSupportingBulkUpload());
                 Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
 
+                ActionMessageErrorListener listener = new ActionMessageErrorListener();
                 if (InformationResource.class.isAssignableFrom(resourceClass)) {
                     logger.info("saving " + fileName + "..." + suggestTypeForFile);
                     InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass);
@@ -393,9 +398,14 @@ public class BulkUploadService {
                     informationResource.markUpdated(submitter);
                     informationResource.setDescription(" ");
                     genericDao.saveOrUpdate(informationResource);
-                    informationResourceService.processFileProxy(informationResource, fileProxy);
+                    informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, submitter, null, listener,
+                            Arrays.asList(fileProxy));
+
                     receiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
                     resourcesCreated.put(fileName, informationResource);
+                    if (listener.hasActionErrors()) {
+                        receiver.addError(new Exception(String.format("Errors: %s", listener)));
+                    }
                 }
             } catch (Exception e) {
                 logger.error("something happend", e);
@@ -431,14 +441,16 @@ public class BulkUploadService {
         Iterator<CellMetadata> fields = nameSet.iterator();
         while (fields.hasNext()) {
             CellMetadata field = fields.next();
-            logger.info(field.getName() + " "  + field.getDisplayName());
+            logger.trace(field.getName() + " " + field.getDisplayName());
             if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
-                if (StringUtils.isNotBlank(field.getDisplayName()) && (field.getDisplayName().equals(BulkImportField.LICENSE_TEXT) || field.getDisplayName().equals(BulkImportField.LICENSE_TYPE))) {
+                if (StringUtils.isNotBlank(field.getDisplayName())
+                        && (field.getDisplayName().equals(BulkImportField.LICENSE_TEXT) || field.getDisplayName().equals(BulkImportField.LICENSE_TYPE))) {
                     fields.remove();
                 }
             }
             if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
-                if (field.getName().contains("copyrightHolder") || StringUtils.isNotBlank(field.getDisplayName()) && (field.getDisplayName().contains(BulkImportField.COPYRIGHT_HOLDER))) {
+                if (field.getName().contains("copyrightHolder") || StringUtils.isNotBlank(field.getDisplayName())
+                        && (field.getDisplayName().contains(BulkImportField.COPYRIGHT_HOLDER))) {
                     fields.remove();
                 }
             }

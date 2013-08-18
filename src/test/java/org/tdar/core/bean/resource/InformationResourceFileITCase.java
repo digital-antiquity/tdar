@@ -20,9 +20,11 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.workflow.ActionMessageErrorListener;
 
 public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
@@ -46,7 +48,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void findByFilename() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
         InformationResourceFile foundFile = informationResourceService.findFileByFilename(ir, TestConstants.TEST_DOCUMENT_NAME);
         assertNotNull(foundFile);
         boolean found = false;
@@ -61,7 +63,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testCreateInformationResourceFile() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
 
         assertEquals(ir.getInformationResourceFiles().size(), 1);
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
@@ -91,24 +93,26 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testIndexableTextExtractionInPDF() throws InstantiationException, IllegalAccessException, IOException {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
         List<Long> irfvids = new ArrayList<Long>();
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
         Map<VersionType, InformationResourceFileVersion> map = new HashMap<VersionType, InformationResourceFileVersion>();
+        logger.info("versions: {} ", irFile.getInformationResourceFileVersions());
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             map.put(irfv.getFileVersionType(), irfv);
+            irfv.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(irfv));
             irfvids.add(irfv.getId());
         }
         assertTrue(map.containsKey(VersionType.INDEXABLE_TEXT));
         InformationResourceFileVersion fileVersion = map.get(VersionType.INDEXABLE_TEXT);
-        String text = FileUtils.readFileToString(fileVersion.getFile());
+        String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(fileVersion));
         assertTrue(text.contains("Tree-Ring Research, University of Arizona, Tucson"));
     }
     
     @Test
     @Rollback(true)
-    public void testReprocessInformationResourceFile() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+    public void testReprocessInformationResourceFile() throws Exception {
+        InformationResource ir = generateDocumentWithFileAndUser();
 
         assertEquals(ir.getInformationResourceFiles().size(), 1);
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
@@ -120,8 +124,8 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertEquals(1, irFile.getLatestVersion().intValue());
 
         assertEquals(irFile.getInformationResourceFileType(), FileType.DOCUMENT);
-        List<Long> irfvids = new ArrayList<Long>();
-        Map<VersionType, InformationResourceFileVersion> map = new HashMap<VersionType, InformationResourceFileVersion>();
+        List<Long> irfvids = new ArrayList<>();
+        Map<VersionType, InformationResourceFileVersion> map = new HashMap<>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             map.put(irfv.getFileVersionType(), irfv);
             irfvids.add(irfv.getId());
@@ -136,9 +140,10 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertEquals(map.get(VersionType.UPLOADED).getFilename(), TestConstants.TEST_DOCUMENT_NAME);
 
         genericService.synchronize();
-        informationResourceService.reprocessInformationResourceFiles(ir.getInformationResourceFiles());
+        ActionMessageErrorListener listener = new ActionMessageErrorListener();
+        informationResourceService.reprocessInformationResourceFiles(ir, listener);
 
-        map = new HashMap<VersionType, InformationResourceFileVersion>();
+        map = new HashMap<>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             logger.debug("version: {}", irfv);
             map.put(irfv.getFileVersionType(), irfv);
@@ -161,11 +166,12 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDeleteInformationResourceFile() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
         int count = ir.getInformationResourceFiles().size();
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             Long id = irFile.getId();
-            informationResourceService.deleteInformationResourceFile(ir, irFile);
+            informationResourceFileService.delete(irFile);
+//            genericService.synchronize();
             InformationResourceFile irFile2 = informationResourceFileService.find(id);
             assertNull("testing whether the IrFile was actually deleted", irFile2);
             assertEquals(count - 1, ir.getInformationResourceFiles().size());
@@ -178,7 +184,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testFileStatus() throws Exception {
-        InformationResource ir = generateInformationResourceWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUser();
         for (InformationResourceFile file : ir.getInformationResourceFiles()) {
             file.setStatus(FileStatus.QUEUED);
             assertFalse(file.isProcessed());

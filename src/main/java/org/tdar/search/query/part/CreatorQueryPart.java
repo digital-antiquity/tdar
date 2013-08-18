@@ -32,7 +32,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                 if (proxy.isValid()) {
                     List<Creator> creators = new ArrayList<Creator>();
                     if (rc.getCreator() instanceof Dedupable<?>) {
-                        creators.addAll(((Dedupable) rc.getCreator()).getSynonyms());
+                        creators.addAll(((Dedupable<Creator>) rc.getCreator()).getSynonyms());
                     }
                     creators.add(rc.getCreator());
                     for (Creator creator_ : creators) {

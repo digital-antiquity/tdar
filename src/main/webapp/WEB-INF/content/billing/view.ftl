@@ -11,12 +11,12 @@
 
 </head>
 <body>
-<@view.toolbar "${account.urlNamespace}" "view">
-  <@view.makeLink "cart" "add" "add invoice" "add" "" false false />
+<@nav.toolbar "${account.urlNamespace}" "view">
+  <@nav.makeLink "cart" "add" "add invoice" "add" "" false false />
 	<#if administrator>
-  <@view.makeLink "billing" "updateQuotas?id=${account.id?c}" "Reset Totals" "add" "" false false />
+  <@nav.makeLink "billing" "updateQuotas?id=${account.id?c}" "Reset Totals" "add" "" false false />
 	</#if>
-</@view.toolbar>
+</@nav.toolbar>
 <h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
 
 <#if account.description?has_content>
@@ -78,7 +78,7 @@
 		<#assign extraClass="strikethrough" />
 	</#if>
     <tr class="${extraClass}">
-        <td><a href="<@s.url value="/cart/${invoice.id?c}" />"/>${invoice.dateCreated}</a></td>
+        <td><a href="<@s.url value="/cart/${invoice.id?c}" />" >${invoice.dateCreated}</a></td>
         <td>
             ${invoice.owner.properName}
             <#if invoice.proxy>
@@ -123,16 +123,16 @@
 <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
 <div class="row">
 	<div class="span4">
-		<@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" />
+		<@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" cssClass="input-small"/>
 	    <@s.hidden name="id" value="${account.id?c!-1}" />    
-		<@s.textfield name="exipres" cssClass="date  datepicker" label="Date Expires"/>
+		<@s.textfield name="exipres" cssClass="date  input-small datepicker" label="Date Expires" />
 	</div>
 	<div class="span4">    
 		<@s.textfield name="numberOfFiles" cssClass="integer" label="Number of Files"/>
 		<@s.textfield name="numberOfMb" cssClass="integer" label="Number of MB"/>
 	</div>
 	</div>
-	<@s.submit name="_tdar.submit" value="Create Coupon" cssClass="button submit-btn btn" />
+	<@s.submit name="_tdar.submit" value="Create Voucher" cssClass="button submit-btn btn" />
 </@s.form>
 </div>
 
@@ -142,7 +142,7 @@
         <th>name</th><th>email</th>
     </tr>
     <tr>
-    	<td>${account.owner.properName}</td><td>${account.owner.email}</td>
+    	<td>${account.owner.properName} (owner)</td><td>${account.owner.email}</td>
 	</tr>
 <#list account.authorizedMembers as member>
 <tr>

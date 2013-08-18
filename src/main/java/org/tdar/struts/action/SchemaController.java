@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.XmlService;
 
-import de.schlichtherle.io.FileInputStream;
+import de.schlichtherle.truezip.file.TFileInputStream;
 
 /**
  * $Id$
@@ -45,7 +45,7 @@ public class SchemaController extends TdarActionSupport {
     public String execute() {
         try {
             File file = xmlService.generateSchema();
-            setInputStream(new FileInputStream(file));
+            setInputStream(new TFileInputStream(file));
         } catch (Exception e) {
             logger.error("could not create schema", e);
             return ERROR;

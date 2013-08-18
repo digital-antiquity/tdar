@@ -11,7 +11,8 @@ TDAR.maps = function() {
     var _isApiLoaded = false;
     var _pendingOps = [];
     var _defaults = {
-            center: {
+    		isGeoLocationToBeUsed: false,
+    		center: {
                 lat: 0,
                 lng: 0
             },
@@ -50,13 +51,15 @@ TDAR.maps = function() {
         _deferredApi = $.Deferred();
         var script = document.createElement("script");
         script.type = "text/javascript";
-        script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&key=" +
-                TDAR.maps.googleApiKey +
-                "&sensor=false&callback=TDAR.maps._apiLoaded";
+        if(TDAR.maps.googleApiKey) {
+            script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&key=" + TDAR.maps.googleApiKey + "&sensor=false&callback=TDAR.maps._apiLoaded";
+        } else {
+            script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&sensor=false&callback=TDAR.maps._apiLoaded";
+        }
         document.body.appendChild(script);
         console.log("loading gmap api");
         return _deferredApi.promise();
-    }
+    };
     
     var _setupMapInner = function(mapDiv, inputContainer) {
         console.log("running  setupmap");
@@ -86,6 +89,14 @@ TDAR.maps = function() {
         }
 
         var map = new google.maps.Map(mapDiv, mapOptions);
+
+        if (_defaults.isGeoLocationToBeUsed && navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(position) {
+				var initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+				map.setCenter(initialLocation);
+			});
+		}
+
         $mapDiv.data("gmap", map);
 
         if(inputContainer) {
@@ -111,7 +122,7 @@ TDAR.maps = function() {
 
     //private: look for resource latlongboxes and draw rectangles if found.
     var _setupLatLongBoxes = function(mapDiv, inputContainer){
-    	'use strict'
+    	'use strict';
         var style = _defaults.rectStyleOptions.RESOURCE;
         var gmap = $(mapDiv).data("gmap");
         
@@ -159,14 +170,14 @@ TDAR.maps = function() {
         //move/pan the map to contain the rectangle w/ context
         return rect;
             
-    }
+    };
     
     var _updateBound = function(rect, lat1, lng1, lat2, lng2) {
         var p1 = new google.maps.LatLng(lat1, lng1);
         var p2 = new google.maps.LatLng(lat2, lng2);
         var bounds = new google.maps.LatLngBounds(p1, p2);
         rect.setBounds(bounds);
-    }
+    };
 
     //public: setup a map in an editing context (after map has been initialized for viewing)
     var _setupEditMap = function(mapDiv, inputContainer) {
@@ -223,7 +234,7 @@ TDAR.maps = function() {
             //bind resource rectangle to the manual latlong input controls
             _registerInputs(mapDiv, inputContainer);
 
-    })};
+    });};
 
     //gmap events are not 'seen' by the DOM.  bubble them up by firing custom event on the container div
     var _fireBoundsModified = function(mapDiv, rect) {
@@ -329,10 +340,10 @@ TDAR.maps = function() {
             $('.sw-lat-display, .sw-lng-display, .ne-lat-display, .ne-lng-display', inputContainer).each(function(){
                 this.value = $.trim(this.value);
                 if(("" + this.value) === "") {
-                    parseErrors++
+                    parseErrors++;
                 } 
                 else if(isNaN(Geo.parseDMS(this.value))) {
-                    parseErrors++
+                    parseErrors++;
                 }
             });
             
@@ -358,7 +369,7 @@ TDAR.maps = function() {
                     gmap.fitBounds(rect.getBounds());
                 }
             };
-        }
+        };
         
         //locate button clicked or manual-entry coords have changed.  Update the rectangle
         $btnLocate.click(updateRectFromInputs);
@@ -380,7 +391,7 @@ TDAR.maps = function() {
         google.maps.event.addDomListener(rect, 'bounds_changed', function() {
             _fireBoundsModified(mapDiv, rect);
         });
-    }
+    };
     
     var _updateResourceRect = function(mapDiv, swlat, swlng, nelat, nelng) {
         var gmap = $(mapDiv).data("gmap");
@@ -391,9 +402,18 @@ TDAR.maps = function() {
             $(mapDiv).data("resourceRect", rect);
         } else {
             var bounds = _bounds(swlat, swlng, nelat, nelng);
+            rect.setMap(gmap);
             rect.setBounds(bounds);
         }
         gmap.fitBounds(rect.getBounds());
+    };
+
+    var _clearResourceRect = function(mapDiv) {
+        var rect = $(mapDiv).data("resourceRect");
+        if(rect) {
+            rect.setMap();
+        }
+        return !!rect;
     };
     
     var _setupMapResult = function() {
@@ -447,8 +467,10 @@ TDAR.maps = function() {
         googleApiKey: false,
         defaults: _defaults,
         updateResourceRect: _updateResourceRect,
+        clearResourceRect: _clearResourceRect,
         setupEditMap: _setupEditMap,
         setupMapResult: _setupMapResult,
+        addBound: _addBound,
         mapPromise: _deferredMap.promise()
     };
 }();

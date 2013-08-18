@@ -207,8 +207,8 @@ public interface DatasetConverter {
                 DataTableColumn column = entry.getKey();
                 // the first item in the list is our "most desired" conversion choice
                 ColumnAnalyzer best = entry.getValue().get(0);
-                targetDatabase.alterTableColumnType(dataTable.getName(),
-                        column, best.getType(), best.getLength());
+                logger.trace("altering {} to {} {}", column, best.getType(), best.getLength());
+                targetDatabase.alterTableColumnType(dataTable.getName(), column, best.getType(), best.getLength());
                 column.setColumnDataType(best.getType());
                 // column.setColumnEncodingType(best.getType().getDefaultEncodingType());
             }

@@ -1,8 +1,16 @@
 /**
  * Autocomplete Support
  */
-//FIXME: put this in TDAR.autocomplete namespace, "hide" functions that don't need to be public.
-function buildRequestData(element) {
+
+
+TDAR.namespace("autocomplete");
+TDAR.autocomplete = (function() {
+    "use strict";
+
+    var self = {};
+
+
+function _buildRequestData(element) {
     var data = {};
     //    console.log("autocompleteParentElement: " + element.attr("autocompleteParentElement"));
     if (element.attr("autocompleteParentElement")) {
@@ -16,7 +24,7 @@ function buildRequestData(element) {
     return data;
 }
 
-function applyDataElements(element, item) {
+function _applyDataElements(element, item) {
     var $element = $(element);
     if ($element.attr("autocompleteParentElement") != undefined) {
         $("[autocompleteName]", $element.attr("autocompleteParentElement")).each(function(index, val) {
@@ -58,7 +66,7 @@ function applyDataElements(element, item) {
 
 }
 
-function applyPersonAutoComplete($elements, usersOnly, showCreate) {
+function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
     var options = {};
     options.url = "lookup/person";
     options.dataPath = "data.people";
@@ -67,37 +75,35 @@ function applyPersonAutoComplete($elements, usersOnly, showCreate) {
     options.showCreate = showCreate;
     options.minLength = 3;
 
+    //unlike insitu we keep the 'term' property because we need it for the new user autocomplete control
     options.enhanceRequestData = function(requestData) {
         if (usersOnly) {
             requestData.registered = true;
         }
-        delete(requestData.term);
-        
-        // var lemail = (usersOnly) ? '' : getEmail(
-        // this.element).val();
     };
 
     options.customRender = function(ul, item) {
-        //        console.log(item);
-        var institution = "";
-        if (item.institution != undefined && item.institution.name != undefined) {
-            institution = item.institution.name;
-        }
+        var htmlDoubleEncode = TDAR.common.htmlDoubleEncode,
+            encProperName = htmlDoubleEncode(item.properName),
+            encEmail = htmlDoubleEncode(item.email),
+            institution = item.institution ? item.institution.name || "" : "";
+
         //double-encode on custom render
+        //FIXME: use tmpl maybe?
         var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
-                "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + htmlEncode(htmlEncode(item.properName)) + "(" +
-                htmlEncode(htmlEncode(item.email)) + ")</span><br/><span class='institution'>" + htmlEncode(htmlEncode(institution)) + "</span></p>";
+                "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + encProperName + "</span><span class='email'>(" +
+                encEmail + ")</span><br/><span class='institution'>" + htmlDoubleEncode(institution) + "</span></p>";
         if (item.id == -1 && options.showCreate) {
             htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
                     "<span class='name'><em>Create a new person record</em></span> </p>";
         }
         return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);
     };
-    applyGenericAutocomplete($elements, options);
+    _applyGenericAutocomplete($elements, options);
 }
 
-function evaluateAutocompleteRowAsEmpty(element, minCount) {
-    var req = buildRequestData($(element));
+function _evaluateAutocompleteRowAsEmpty(element, minCount) {
+    var req = _buildRequestData($(element));
     var total = 0;
     //FIXME:  I think 'ignored' is irrelevant as defined here.  Can we remove this?
     var ignored = new Array();
@@ -131,14 +137,14 @@ function evaluateAutocompleteRowAsEmpty(element, minCount) {
     return false;
 }
 
-function applyGenericAutocomplete($elements, options) {
+function _applyGenericAutocomplete($elements, options) {
     // if there's a change in the autocomplete, reset the ID to ""
     $elements.change(function() {
         var $element = $(this);
         // if the existing autocomplete value stored in the "autoVal" attribute does is not undefined and is not the same as the current
         // evaluate it for being significant (important when trying to figure out if a minimum set of fields have been filled in
         if (($element.attr("autoVal") != undefined && $element.attr("autoVal") != $element.val()) ||
-                evaluateAutocompleteRowAsEmpty(this, options.ignoreRequestOptionsWhenEvaluatingEmptyRow == undefined ? []
+                _evaluateAutocompleteRowAsEmpty(this, options.ignoreRequestOptionsWhenEvaluatingEmptyRow == undefined ? []
                         : options.ignoreRequestOptionsWhenEvaluatingEmptyRow)) {
             if ($element.attr("autocompleteIdElement")) {
                 var $idElement = $($element.attr("autocompleteIdElement"));
@@ -196,7 +202,7 @@ function applyGenericAutocomplete($elements, options) {
             }
             // more generic map for any form based
             // autocomplete elements
-            $.extend(requestData, buildRequestData(this.element));
+            $.extend(requestData, _buildRequestData(this.element));
 
             // final callback for using custom method
             if (options.enhanceRequestData != undefined) {
@@ -242,7 +248,7 @@ function applyGenericAutocomplete($elements, options) {
                     console.log(options.dataPath + " autocomplete returned " + values.length);
 
                     if (options.showCreate != undefined && options.showCreate == true) {
-                        var createRow = buildRequestData($elem);
+                        var createRow = _buildRequestData($elem);
                         createRow.value = request.term;
                         // allow for custom phrasing
                         if (options.showCreatePhrase != undefined) {
@@ -263,8 +269,10 @@ function applyGenericAutocomplete($elements, options) {
         minLength : options.minLength || 0,
         select : function(event, ui) {
             // 'this' is the input box element.
-            $elem = $(this);
-            applyDataElements(this, ui.item);
+            console.log(event.target);
+            console.log(ui);
+            var $elem = $(event.target);
+            _applyDataElements(this, ui.item);
 
             //cancel any pending searches once the user selects an item
             var responseHolder = $elem.data('responseHolder');
@@ -297,7 +305,7 @@ function applyGenericAutocomplete($elements, options) {
     }
 };
 
-function applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
+function _applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
     var options = {};
     options.url = "lookup/" + lookupType;
     options.enhanceRequestData = function(requestData) {
@@ -309,10 +317,10 @@ function applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
     options.showCreate = newOption;
     options.showCreatePhrase = "Create a new keyword";
     options.minLength = 2;
-    applyGenericAutocomplete($(selector), options);
+    _applyGenericAutocomplete($(selector), options);
 }
 
-function applyCollectionAutocomplete($elements, options, extraData) {
+function _applyCollectionAutocomplete($elements, options, extraData) {
     //FIXME: HACK: this is a bandaid.  need better way to not bind multiple autocompletes
     if($elements.data("autocompleteApplied")) return true;
     $elements.data("autocompleteApplied", true);
@@ -333,10 +341,10 @@ function applyCollectionAutocomplete($elements, options, extraData) {
         defaults.showCreatePhrase = "Create a new collection";
     }
     defaults.minLength = 2;
-    applyGenericAutocomplete($elements, $.extend({}, defaults, _options));
+    _applyGenericAutocomplete($elements, $.extend({}, defaults, _options));
 }
 
-function displayResourceAutocomplete(item) {
+function _displayResourceAutocomplete(item) {
     var label = "";
     if (item.name) {
         label = item.name;
@@ -348,7 +356,7 @@ function displayResourceAutocomplete(item) {
     return item;
 }
 
-function applyResourceAutocomplete($elements, type) {
+function _applyResourceAutocomplete($elements, type) {
     var options = {};
     options.url = "lookup/resource";
     options.dataPath = "data.resources";
@@ -361,7 +369,7 @@ function applyResourceAutocomplete($elements, type) {
     };
     options.ignoreRequestOptionsWhenEvaluatingEmptyRow = [ "subCategoryId", "sortCategoryId" ];
     options.minLength = 0;
-    options.customDisplayMap = displayResourceAutocomplete;
+    options.customDisplayMap = _displayResourceAutocomplete;
     options.customRender = function(ul, item) {
         var description = "";
         //            console.log(item);
@@ -375,14 +383,14 @@ function applyResourceAutocomplete($elements, type) {
         }
         //double-encode on custom render
         return $("<li></li>").data("item.autocomplete", item).append(
-                "<a  title=\"" + htmlDecode(description) + "\">" + htmlEncode(htmlEncode(item.value)) + link + "</a>").appendTo(ul);
+                "<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>").appendTo(ul);
     };
 
-    applyGenericAutocomplete($elements, options);
+    _applyGenericAutocomplete($elements, options);
     $elements.autocomplete("option", "delay", 600);
 }
 
-function applyInstitutionAutocomplete($elements, newOption) {
+function _applyInstitutionAutocomplete($elements, newOption) {
 
     var options = {};
     options.url = "lookup/institution";
@@ -394,19 +402,19 @@ function applyInstitutionAutocomplete($elements, newOption) {
     options.showCreate = newOption;
     options.minLength = 2;
     options.showCreatePhrase = "Create new institution";
-    applyGenericAutocomplete($elements, options);
+    _applyGenericAutocomplete($elements, options);
 };
 
-function autocompleteShowAll() {
+function _autocompleteShowAll() {
     $(this).siblings('input[type=text]').focus().autocomplete("search", "");
 }
 
-function applyComboboxAutocomplete($elements, type) {
+function _applyComboboxAutocomplete($elements, type) {
     "use strict";
     
     //register autocomplete text box
     //TODO: defer autocomplete registration if better perf needed,  but "show all" button must be registered at onload
-    applyResourceAutocomplete($elements, type);
+    _applyResourceAutocomplete($elements, type);
     
     //register "show-all" click
     $elements.each(function() {
@@ -418,3 +426,13 @@ function applyComboboxAutocomplete($elements, type) {
             });
     });
 }
+return {
+    applyPersonAutoComplete: _applyPersonAutoComplete,
+    evaluateAutocompleteRowAsEmpty: _evaluateAutocompleteRowAsEmpty,
+    applyKeywordAutocomplete: _applyKeywordAutocomplete,
+    applyCollectionAutocomplete: _applyCollectionAutocomplete,
+    applyResourceAutocomplete: _applyResourceAutocomplete,
+    applyInstitutionAutocomplete: _applyInstitutionAutocomplete,
+    applyComboboxAutocomplete: _applyComboboxAutocomplete
+    };
+})();

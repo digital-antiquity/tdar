@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.filestore.tasks.ListArchiveTask;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
 
@@ -67,10 +68,20 @@ public class FilestoreTest {
     }
 
     @Test
+    @SuppressWarnings("static-method")
     public void sanitizeFilenameTest() {
-        assertEquals(PairtreeFilestore.sanitizeFilename("abc.txt"), "abc.txt");
-        assertEquals(PairtreeFilestore.sanitizeFilename("abc'.txt"), "abc_.txt");
-        assertEquals(PairtreeFilestore.sanitizeFilename("abc\"a!@#$%^&*()_{}[]+<>?/\\\\.txt"), "abc_a_______________+______.txt");
+        assertEquals("abc.txt", PairtreeFilestore.sanitizeFilename("abc.txt"));
+        assertEquals("abc.txt", PairtreeFilestore.sanitizeFilename("abc'.txt"));
+        assertEquals( "abc.tar.gz", PairtreeFilestore.sanitizeFilename("abc.tar.gz"));
+        assertEquals( "abc.tar.bz2", PairtreeFilestore.sanitizeFilename("abc.tar.bz2"));
+        assertEquals( "abc-tar.bz2", PairtreeFilestore.sanitizeFilename("abc-tar.bz2"));
+        assertEquals( "abc.tar.bz2", PairtreeFilestore.sanitizeFilename("abc-.tar.bz2"));
+        assertEquals("abc-a----------_----+-----.txt", PairtreeFilestore.sanitizeFilename("abc\"a!@#$%^&*()_{}[]+<>?/\\\\.txt"));
+        for (String archiveExtension: ListArchiveTask.getUnderstoodExtensions()) {
+            String fileName = "test." + archiveExtension;
+            String sanitizedFileName = PairtreeFilestore.sanitizeFilename(fileName);
+            assertEquals("Oh-oh: filename should not have altered from: " + fileName + " to: " + sanitizedFileName, fileName, sanitizedFileName);
+        }
     }
 
     @Test
@@ -127,9 +138,10 @@ public class FilestoreTest {
         StorageMethod rotate = StorageMethod.ROTATE;
         rotate.setRotations(5);
         store.storeAndRotate(f, version, rotate);
+        version.setTransientFile(f);
         store.storeAndRotate(f, version, rotate);
 
-        File tmpFile = version.getFile();
+        File tmpFile = store.retrieveFile(version);
         assertTrue(tmpFile.exists());
         File rotated = new File(tmpFile.getParentFile(), String.format("%s.1.%s", FilenameUtils.getBaseName(tmpFile.getName()),
                 FilenameUtils.getExtension(tmpFile.getName())));

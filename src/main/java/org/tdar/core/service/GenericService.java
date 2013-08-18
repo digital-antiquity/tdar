@@ -30,6 +30,7 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -163,10 +164,15 @@ public class GenericService {
     }
 
     @Transactional(readOnly = true)
-    public <T> List<T> findAll(Class<T> persistentClass, int start, int numberOfRecords) {
-        return genericDao.findAll(persistentClass, start, numberOfRecords);
+    public <T> List<T> findAll(Class<T> persistentClass, int maxResults) {
+        return genericDao.findAll(persistentClass, maxResults);
     }
 
+    @Transactional(readOnly=true)
+    public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status ... statuses) {
+        return getDao().findAllWithStatus(persistentClass, statuses);
+    }
+    
     @Transactional(readOnly = true)
     public <T> List<T> findAllSorted(Class<T> persistentClass) {
         return genericDao.findAllSorted(persistentClass);
@@ -242,6 +248,12 @@ public class GenericService {
     public void detachFromSession(Object obj) {
         genericDao.detachFromSession(obj);
     }
+
+    @Transactional
+    public void detachFromSessionAndWarn(Object obj){
+        genericDao.detachFromSessionAndWarn(obj);
+    }
+
 
     @Transactional
     public void saveOrUpdate(Object obj) {

@@ -30,9 +30,12 @@ import org.tdar.struts.interceptor.HttpsOnly;
 @Namespace("/entity/person")
 public class PersonController extends AbstractCreatorController<Person> {
 
+    public static final String MYPROFILE = "myprofile";
+
     private static final long serialVersionUID = 1L;
 
     private String institutionName;
+    private String proxyInstitutionName;
     private boolean passwordResetRequested;
     private String newUsername;
     private String password;
@@ -43,7 +46,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Autowired
     ObfuscationService obfuscationService;
 
-    @Action(value = "myprofile", results = {
+    @Action(value = MYPROFILE, results = {
             @Result(name = SUCCESS, location = "edit.ftl")
     })
     @HttpsOnly
@@ -72,6 +75,18 @@ public class PersonController extends AbstractCreatorController<Person> {
             logger.debug("setting institution to persistent: " + persistentInstitution);
             person.setInstitution(persistentInstitution);
         }
+
+        
+        if (StringUtils.isBlank(proxyInstitutionName)) {
+            person.setProxyInstitution(null);
+        }
+        else {
+            // if the user changed the person's institution, find or create it
+            Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
+            logger.debug("setting institution to persistent: " + persistentInstitution);
+            person.setProxyInstitution(persistentInstitution);
+        }
+
         getGenericService().saveOrUpdate(person);
 
         // If the user is editing their own profile, refresh the session object if needed
@@ -150,8 +165,10 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Override
     public String loadViewMetadata() {
         // nothing to do here, the person record was already loaded by prepare()
-        if (isEditor()) {
-            getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(getPerson()));
+        try {
+            getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) getPersistable()));
+        } catch (Throwable e) {
+            logger.error("problem communicating with crowd getting user info for {} ", getPersistable(), e);
         }
         return SUCCESS;
     }
@@ -224,7 +241,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     public List<Account> getAccounts() {
         if (accounts == null) {
             accounts = new ArrayList<Account>();
-            accounts.addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+            accounts.addAll(getAccountService().listAvailableAccountsForUser(getPersistable(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         }
         return accounts;
     }
@@ -235,6 +252,14 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     public void setGroups(List<String> groups) {
         this.groups = groups;
+    }
+
+    public String getProxyInstitutionName() {
+        return proxyInstitutionName;
+    }
+
+    public void setProxyInstitutionName(String proxyInstitutionName) {
+        this.proxyInstitutionName = proxyInstitutionName;
     }
 
 }

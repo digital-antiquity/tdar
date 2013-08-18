@@ -109,10 +109,16 @@ TDAR.uri = function(path) {
 </#noescape>
 </#macro>
 
+<#macro loginButton class="">
+    <#local _current = (currentUrl!'/') >
+    <#if _current == '/' || currentUrl?starts_with('/login')>
+        <a class="${class}" href="/login">Log In</a>
+    <#else>
+        <a class="${class}" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>">Log In</a>
+    </#if>
+</#macro>
 
 <#macro bootstrapNavbar>
-
-
             <div class="navbar">
               <div class="navbar-inner">
                 <div class="container">
@@ -184,7 +190,7 @@ TDAR.uri = function(path) {
                         </#if>
                         <li><a href="<@s.url value='/logout'/>">Logout</a></li>
                         <#else>
-                        <li><a href="<@s.url value='/login'/>">Login</a></li>
+                        <li><@loginButton /></li>
                         </#if>
                         <li class="dropdown">  
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help
@@ -209,16 +215,28 @@ TDAR.uri = function(path) {
 </#macro>
 
 
-<#macro resourceCollectionsRights effectiveResourceCollections_>
-    <#if effectiveResourceCollections_?has_content>
+<#macro resourceCollectionsRights collections=effectiveResourceCollections_ owner="">
+    <#if collections?has_content>
     <h3>Access Permissions</h3>
     <#nested />
     <table class="tableFormat table">
-    <thead><th>Collection</th><th>User</th>
-    <#list availablePermissions as permission>
-    <th>${permission.label}</th>
-    </#list>
-    <#list effectiveResourceCollections_ as collection_ >
+    <thead>
+    <tr>
+	    <th>Collection</th><th>User</th>
+	    <#list availablePermissions as permission>
+		    <th>${permission.label}</th>
+	    </#list>
+    </tr>
+    <#if owner?has_content>
+	    <tr>
+		     <td>Local Resource</td>
+		     <td>${owner.properName} (Submitter)</td>
+		     <td><i class="icon-ok"></i></td>
+		     <td><i class="icon-ok"></i></td>
+		     <td><i class="icon-ok"></i></td>
+	    </tr>
+    </#if>
+    <#list collections as collection_ >
       <#if collection_.authorizedUsers?has_content >
         <#list collection_.authorizedUsers as user>
         <tr>
@@ -226,7 +244,7 @@ TDAR.uri = function(path) {
             <#if !collection_.internal>
                <a href="<@s.url value="/collection/${collection_.id?c}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
             <#else>
-                Local resource
+                Local Resource
             </#if>
           </td>
           <td>
@@ -249,89 +267,99 @@ TDAR.uri = function(path) {
     </#if>
 </#macro>
 
-
-<#macro pieChart map name type width=300 height=150>
-    <#assign ilist = map />
+<#macro generatePieJson ilist name>
+<script>
     <#assign ikeys=ilist?keys />
-    <div id="${name}"  style="width:${width}px;height:${height}px;"></div>
+	<#noescape>
+	    var ${name} = [
+	    <#assign first = true/>
+	    <#assign legend = true>
+	    <#list ikeys as ikey>
+	      <#assign val = ilist.get(ikey) />
+	      <#assign label = ikey />
+	      <#if ikey.label??><#assign label=ikey.label ></#if>
+	      <#if (val?? && val > 0)>
+	        <#if !first>,</#if>["${label?replace(":",":<br/>")}", ${(val!0)?c},"${ikey}", ${(val!0)?c}]
+	        
+	        <#assign first=false/>
+	      </#if>
+	      <#if (ikey_index > settings.barColors?size)>
+	        <#assign legend = true>
+	      </#if>
+	    </#list>
+	    ];
+	</#noescape>
+</script>
+</#macro>
+
+<#macro pieChart data="data" searchKey="" graphWidth=300 graphHeight=150 context=false config="" graphLabel="">
+	<#local id= "${data}Id">
+    <div id="graph${id}"  style="width:${graphWidth}px;height:${graphHeight}px;"></div>
     
     <script>
-<#noescape>
-    var data${name} = [
-    <#assign first = true/>
-    <#assign legend = true>
-    <#list ikeys as ikey>
-      <#assign val = ilist.get(ikey) />
-      <#assign label = ikey />
-      <#if ikey.label??><#assign label=ikey.label ></#if>
-      <#if (val?? && val > 0)>
-        <#if !first>,</#if>{ label: "${label}", key:"${ikey}",  data: ${val?c},color: 
-            <#if name !="resourceForUser">
-                "${settings.barColors[ikey_index % settings.barColors?size]}"
-            <#else>
-                "${settings.barColors[ikey.order - 1]}"    
-            </#if> }
-        <#assign first=false/>
-      </#if>
-      <#if (ikey_index > settings.barColors?size)>
-        <#assign legend = true>
-      </#if>
-    </#list>
-    ];
-</#noescape>
-    $(function() {
+$(document).ready(function(){
 
-        $.plot($("#${name}"), data${name}, {
-            series: {
-                pie: { 
-                    show: true,
-                    radius:1,
-//                    tilt:.3,
-                    label : {
-                        formatter: function(label, series){
-                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:black;">'+label+' ('+series.datapoints.points[1]+ ')</div>';
-                        },
-                        radius: 6/7
-                    }
-                }
-            },
-            legend: {
-                show: ${legend?string},
-                position:"sw"
-            },
-            grid: {
-                hoverable: true,
-                clickable: true
-            }
-        });
-        $("#${name}").bind("plotclick",function(event, pos, obj) { 
-        for (var entry  in data${name}) {
-            if (data${name}[entry].label == obj.series.label) {
-                var key = data${name}[entry].key;
-                var url = "<@s.url value="/search/results?"/>?<#noescape>${type}</#noescape>=" + key;
-                document.location = url;
-            }
-        }
-    });
+  var defaults_ = {
+      fontSize:10,
+  	  seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+      title:"${graphLabel?js_string}",
+      seriesDefaults: {
+        renderer: jQuery.jqplot.PieRenderer, 
+        rendererOptions: {
+          fill: true,
+          animate: !$.jqplot.use_excanvas,
+          showDataLabels: true, 
+          // Add a margin to seperate the slices.
+          sliceMargin: 4, 
+          // stroke the slices with a little thicker line.
+          lineWidth: 5,
+			padding:5,
+ 	      dataLabels: 'value'
+         }
+		},
+        grid: {
+			background: 'rgba(0,0,0,0)',
+            drawBorder: false,
+	        shadow: false,
+	        gridLineColor: 'none',
+	        borderWidth:0,
+    	    gridLineWidth: 0,
+    	    drawGridlines:false
+        },
+      legend: { 
+				renderer:$.jqplot.EnhancedLegendRenderer,
+      			show:true, 
+      			location: 'e', 
+		        fontSize:10,
+      			showSwatch:true
+      },
+      cursor: {
+          style:"pointer",
+       	  showTooltip: false,
+          useAxesFormatters: false
+      },
+      highlighter: {
+		  show: true,
+		  formatString:'%s (%s)', 
+		  tooltipLocation:'ne', 
+          useAxesFormatters: false
+      }
+    };
 
-    $("#${name}").bind("plothover", function (event, pos, item) {
-            if (item) {
-                if (previousPoint != item.seriesIndex) {
-                    previousPoint = item.seriesIndex;
-                    
-                    $("#flottooltip").remove();
-                    showTooltip(pos.pageX, pos.pageY  - 30, item.series.label );
-               }
-            }
-            else {
-                $("#flottooltip").remove();
-                previousPoint = null;            
-            }
-    });
 
-    });
-    
-            
+ 	<#if config?has_content>
+ 	$.extend(true, defaults_,${config});
+ 	</#if>
+
+    if (${data}.length > 1) {
+        var plot${data} = jQuery.jqplot ('graph${id}', [${data}],defaults_);
+        <@clickPlot id searchKey context />
+    } else {
+         $("#graph${data}").hide();
+         console.log("hiding ${data} graph");
+    }
+});
+
     </script>
 
 </#macro>
@@ -357,184 +385,210 @@ TDAR.uri = function(path) {
 </#compress>
 </#macro>
 
-<#macro barGraph  resourceCacheObjects graphWidth=360 graphHeight=800 graphLabel="" rotateColors=true labelRotation=0 minWidth=50 searchKey="resourceTypes">
-<#local totalItems = resourceCacheObjects?size />
-   <#list resourceCacheObjects?sort_by("key") as key>
-      <#if (key.count == 0) >
-          <#local totalItems = totalItems - 1/>
-      </#if>
-    </#list>
-
-    <#if (totalItems < 1)>
-        <#local totalItems = 1 />
-    </#if>
-    
-<#local barWidth = (graphWidth  / (totalItems) -6)/>
-<div class="barGraph" style="width:${graphWidth?c}px;height:${graphHeight?c}px;" >
-    <h3>${graphLabel}</h3>
-   <table style="width:${graphWidth -5}px;height:${graphHeight - 15}px;">
-  <tr>
-  <#local resourceTypeCount = 0>
-   <#list resourceCacheObjects?sort_by("key") as key>
-      <#if (key.count > 0) >
-        <#local calulatedValue= key.key >
-        <#if calulatedValue?is_number>
-            <#local calulatedValue=calulatedValue?c?string/>
-        </#if>
-        <#local resourceTypeCount = key.logCount + resourceTypeCount >
-        <td>
-              <a target="_top" href="<@s.url value="/search/results?${searchKey}=${calulatedValue}"/>">
-              <div class="barlabel">${key.count}</div><div class="bar" id="${key.cssId}"></div></a>
-        </td>
-      </#if>
-    </#list>
-  </tr>
-  <tr>
-   <#list resourceCacheObjects?sort_by("key") as key>
-      <#if (key.count > 0) >
-      <td><div class="barlabel">${key.label}</div></td>
-      </#if>
-   </#list>
-   </tr>
-</table>
-
-<style>
-table td  {vertical-align:bottom;}
-
-    <#if resourceTypeCount == 0><#-- if database is empty, to prevent division by zero -->
-        <#local resourceTypeCount = 1>
-    </#if>
-
-   <#list resourceCacheObjects?sort_by("key") as key>
-    <#if (key.count > 0)>
-       <#local color_= settings.barColors[0] />
-        <#if rotateColors>
-           <#local color_=settings.barColors[key.resourceType.order - 1] />
-        </#if>
-          #${key.cssId} {background-color: ${color_}; height: ${(2 * graphHeight * (key.logCount / resourceTypeCount))?floor}px }
-    </#if>
-   </#list>
-
-   
-
-.bar {width:${barWidth?c}px;;min-width:${minWidth?c}px }
-
- td > div.barlabel {
-    <#if (labelRotation == 90) >
-        -webkit-transform: rotate(90deg); 
-        -moz-transform: rotate(90deg);    
-        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
-    </#if>
-    <#if (labelRotation == 180) >
-        -webkit-transform: rotate(180deg); 
-        -moz-transform: rotate(180deg);    
-        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
-    </#if>
-    <#if (labelRotation == 270 || labelRotation == -90) >
-        -webkit-transform: rotate(-90deg); 
-        -moz-transform: rotate(-90deg);    
-        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-    </#if>
-    
-}
-</style>
-<script>
-$(function() {
-$(".bar").each(function() {
-    var el = $(this);
-    var color1 = el.css('background-color');
-    var color2 = $.xcolor.darken(color1);
-    el.hover(function(){
-        el.stop().animate({backgroundColor: color2}, 'fast');
-    }, function(){
-        el.stop().animate({backgroundColor: color1}, 'fast');
-    });
-});
-});
-</script>
-
-</div>
+<#macro resourceBarGraph>
+	<script>
+	    var resourceGraphData = []; 
+	    <#local seen=false />
+	    <#list homepageResourceCountCache as cache>
+	    	<#if (cache.count > 0)>
+	    	<#local seen=true />
+	    	<#noescape>
+		        resourceGraphData.push(["${cache.resourceType.plural?replace("(?<=[\\w\\:]) (?=[\\w])","<br>","r")?js_string}",${(cache.count!0)?c},"${cache.resourceType?js_string}",${(cache.count!0)?c}]);
+	    	</#noescape>
+	        </#if>
+	    </#list>
+   </script> 
+	<#if seen>
+    <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354  config="resourceConfig">
+  		var resourceConfig = {
+	        axes: {
+		        yaxis: {
+		        	renderer: $.jqplot.LogAxisRenderer
+		        }
+	        }
+  		};  	
+    </@barGraph>
+	</#if>
 </#macro>
 
-<#macro flotBarGraph  resourceCacheObjects graphWidth=368 graphHeight=800 graphLabel="" rotateColors=true labelRotation=0 minWidth=50 searchKey="g[0].creationDecade" explore=false max=100000 min=-1 minDataVal=10 >
-<#local totalItems = resourceCacheObjects?size />
-<#if (totalItems < 1)>
-    <#local totalItems = 1 />
+
+<#macro lineChart data="data" graphWidth=360 graphHeight=800 graphLabel="" searchKey="resourceTypes" id="" config="" context=false>
+<#noescape>
+<#if id == "">
+	<#local id=data+"id" />
 </#if>
-
-
-
-
-<#local barWidth = (graphWidth  / (totalItems) - 10 )/>
-<div class="barGraph" style="width:${graphWidth?c}px;height:${graphHeight?c}px;display:block;position:relative;clear:none;left:0px"> 
 <script>
-  <#local resourceTypeCount = 0>
-   var data = [];
-   var ticks = [];
-   <#list resourceCacheObjects?sort_by("key") as key>
-    <#local calulatedValue= key.key >
-    <#if calulatedValue?is_number>
-        <#local calulatedValue=calulatedValue?c?string/>
-    </#if>
-    <#if ((min?is_number && key.label?number > min ) 
-        && (max?is_number && key.label?number < max ) && key.count > minDataVal )>
-      <#local resourceTypeCount = key.logCount + resourceTypeCount >
-      data[${key_index}] = ["${key.label}",${key.count?c}];
-      ticks[${key_index}] = ["${key.label}",${key.label}];
-    </#if>
-    </#list>
-$(function() {
-    $.plot(
-       $("#bargraph"),
-       [
-        {
-          label: "${graphLabel?js_string}",
-          data: data,
-          bars: {
+	$(document).ready(function(){
+        $.jqplot.config.enablePlugins = true;
+		var labels_ = [];
+			try {
+        	labels_ = eval('labels');
+			} catch(e) {
+			labels_ = [];
+			}
+		var _defaults =  {
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
+ 			title: "${graphLabel?js_string}",
+            animate: !$.jqplot.use_excanvas,
+            seriesDefaults:{
+                pointLabels: { 
+                	show: true, 
+                	location: 'n', 
+                	edgeTolerance: -25
+                },
+	            rendererOptions: {
+	                // Set varyBarColor to tru to use the custom colors on the bars.
+	                varyBarColor: true
+	            }
+            },
+			seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            grid: {
+				background: 'rgba(0,0,0,0)',
+	            drawBorder: false,
+    	        shadow: false,
+    	        gridLineColor: 'none',
+    	        borderWidth:0,
+        	    gridLineWidth: 0,
+        	    drawGridlines:false
+          },
+            axes: {
+                xaxis: {
+  	               renderer:$.jqplot.DateAxisRenderer,
+			       tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                   tickOptions: {
+                        fontFamily: 'Georgia',
+                        fontSize: '8pt',
+                        showGridline: false
+                    }
+                },
+                yaxis: {
+			        showTicks: false,
+			        show:false,
+                    showGridline: false
+                }
+            },
+        highlighter: {
             show: true,
-            barWidth: 9,
-            align: "center"
-          }
+    	    sizeAdjust: 7.5
+        },
+        legend: {
+            show: true,
+            placement: 'outsideGrid',
+            labels: labels_,
+            location: 'ne',
+            rowSpacing: '0px'
         }
-      ],
-    {
-         grid: { hoverable: true, clickable: true },
-         legend : { show:false }
-    }
-    );
-        $("#bargraph").bind("plotclick",function(event, pos, obj) { 
-        console.log(obj);
-             if (obj) {
-               //fixme: s.url links be
-            var url = "<@s.url escapeAmp=false value="/search/results?${explore?string('explore=true&', '')}${searchKey}"/>" + obj.datapoint[0];
-            console.log(url);
-            document.location = url;
-            }
-        });
+        };
+
+     	<#if config?has_content>
+     	$.extend(true, _defaults,${config});
+     	</#if>
+         
+        var plot${id} = $.jqplot('graph${id}', ${data}, _defaults);
+
 });
 </script>
-<div id="bargraph" style="width:${(graphWidth -5)?c}px;height:${(graphHeight -5)?c}px"></div>
+<div id="graph${id}" style="height:120px"></div>
+</#noescape>
+
+</#macro>
+<#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="" context=false rotate=0 xaxis="" yaxis="">
+<#if id == "">
+	<#local id=data+"id" />
+</#if>
+<div class="barGraph nogrid" id="graph${id}" style="height:${graphHeight?c}px;" > </div>
 
 <script>
-$(function() {
-$(".bar").each(function() {
-    var el = $(this);
-    var color1 = el.css('background-color');
-    var color2 = $.xcolor.darken(color1);
-    el.hover(function(){
-        el.stop().animate({backgroundColor: color2}, 'fast');
-    }, function(){
-        el.stop().animate({backgroundColor: color1}, 'fast');
-    });
-});
-});
-</script>
+	$(document).ready(function(){
+        $.jqplot.config.enablePlugins = true;
 
-</div>
+		var _defaults =  {
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
+ 			title: "${graphLabel?js_string}",
+            animate: !$.jqplot.use_excanvas,
+            seriesDefaults:{
+                renderer:$.jqplot.BarRenderer,
+                pointLabels: { 
+                	show: true, 
+                	location: 'n', 
+                	edgeTolerance: -35
+                },
+	            rendererOptions: {
+	                // Set varyBarColor to tru to use the custom colors on the bars.
+	                varyBarColor: true
+	            }
+            },
+			seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            grid: {
+				background: 'rgba(0,0,0,0)',
+	            drawBorder: false,
+    	        shadow: false,
+    	        gridLineColor: 'none',
+    	        borderWidth:0,
+        	    gridLineWidth: 0,
+        	    drawGridlines:false
+          },
+            axes: {
+                xaxis: {
+		           labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+		 			renderer: $.jqplot.CategoryAxisRenderer,
+                	<#if xaxis == "log">renderer:$.jqplot.LogAxisRenderer,</#if>
+                	<#if xaxis == "date">renderer:$.jqplot.DateAxisRenderer,</#if>
+
+			       <#if rotate !=0>tickRenderer: $.jqplot.CanvasAxisTickRenderer,</#if>
+                   tickOptions: {
+                        fontFamily: 'Georgia',
+                        fontSize: '8pt',
+                        <#if rotate != 0>angle:${rotate},</#if>
+                        showGridline: false
+                    }
+                },
+                yaxis: {
+                	<#if yaxis== "log">renderer:$.jqplot.LogAxisRenderer,</#if>
+                	<#if yaxis== "date">renderer:$.jqplot.DateAxisRenderer,</#if>
+                	
+			        showTicks: false,
+			        show:false,
+                    showGridline: false
+                }
+            },
+            highlighter: { show: false },
+		      cursor: {
+		          style:"pointer",
+		       	  showTooltip: false,
+		          useAxesFormatters: false
+		      }
+
+        };
+		<#nested/>
+
+     	<#if config?has_content>
+     	$.extend(true, _defaults,${config});
+     	</#if>
+         
+     
+     if (${data}.length > 1) {
+         var plot${id} = $.jqplot('graph${id}', [${data}],_defaults);
+         <@clickPlot id searchKey context />
+     } else {
+          $("#graph${id}").hide();
+          console.log("hiding ${id} bar graph");
+     }
+    });
+	</script>
+</#macro>
+
+     <#macro clickPlot id searchKey context>
+        $('#graph${id}').bind('jqplotDataClick', 
+            function (ev, seriesIndex, pointIndex, data) {
+                $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
+            window.location.href="<@s.url value="/search/results?${searchKey}="/>" +data[2] <#if context>+  "&amp;useSubmitterContext=true"</#if>;
+            }
+        );
 </#macro>
 
 <#macro worldMap forceAddSchemeHostAndPort=false>
-<div class="mapcontainer" style="margin-left:-40px;position:relative;right:0px">
+<div class="mapcontainer" style="">
 <script type="text/javascript">
 $(function() {
 
@@ -605,7 +659,7 @@ this bit of freemarker is voodoo:
 
 </script> 
 <!-- div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px" -->
-<img class="worldmap" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png" />" width=480 height=304 usemap="#world" > 
+<img class="worldmap" alt="world map" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png" />" width=480 height=304 usemap="#world" > 
  <div id="map_legend">
   <div><span class='legendText'>none</span> 
     <#list settings.mapColors as color>
@@ -812,7 +866,7 @@ this bit of freemarker is voodoo:
  </#if>
         <#if !(authenticatedUser??) > 
                 <li><a href="<@s.url value="/account/new" />" class="button">Sign Up</a></li>
-                <li><a href="<@s.url value="/login" />" class="button">Log In</a></li>
+                <li><@loginButton class="button" /></li>
         <#else>
                 <li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>
         </#if>                        
@@ -839,10 +893,10 @@ this bit of freemarker is voodoo:
 </#if>
 </#macro>
 
-<#macro listAddresses person=person  choiceField="" addressId=-1>
+<#macro listAddresses entity=person entityType="person" choiceField="" addressId=-1>
 
 <div class="row">
-	<#list person.addresses  as address>
+	<#list entity.addresses  as address>
 	    <div class="span3">
 	    <#local label = ""/>
 	    <#if address.type?has_content>
@@ -855,7 +909,7 @@ this bit of freemarker is voodoo:
 	
 	</#if>
 	    
-	    <@printAddress  address=address creatorId=person.id modifiable=true showLabel=false >
+	    <@printAddress  address=address creatorId=entity.id modifiable=true showLabel=false >
 	        <b><#if address.type?has_content>${address.type.label!""}</#if></b>
 	        </label><br/>
 	    </@printAddress>
@@ -863,7 +917,7 @@ this bit of freemarker is voodoo:
 	</#list>
     <div class="span3">
     <#local retUrl><@s.url includeParams="all"/></#local>
-	    <a class="button btn btn-primary submitButton" href="/entity/person/${person.id?c}/address?returnUrl=${retUrl?url}">Add Address</a>
+	    <a class="button btn btn-primary submitButton" href="/entity/${entityType}/${entity.id?c}/address?returnUrl=${retUrl?url}">Add Address</a>
     </div>
 </div>
 </#macro>
@@ -947,7 +1001,7 @@ this bit of freemarker is voodoo:
                         value="${value}" cssClass="${cssClass}" />
                         <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>         
                         <#if addNewLink?has_content>           
-                        <a href="${addNewLink}"  onClick="setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn show-all" target="adhoc_1">add new</a>
+                        <a href="${addNewLink}"  onClick="TDAR.common.setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn show-all" target="adhoc_1">add new</a>
                         </#if>                    
                     </div>
             <#if bootstrapControl>
@@ -982,7 +1036,7 @@ this bit of freemarker is voodoo:
 <#--Collapse action messages them when in dev mode; they are typically annoying struts exceptions -->
 <#macro actionmessage>
     <#if production!false>
-    <@s.actionmessage theme="bootstrap" />
+    <@s.actionmessage  />
     <#else>
         <#if (actionMessages?size>0) >
         <!-- FIXME: make this smarter to show messages that don't match "struts.devMode to false" -->
@@ -991,7 +1045,7 @@ this bit of freemarker is voodoo:
             <a href="#" data-toggle="collapse" data-target="#actionmessageContainer">System Notifications</a>
         </div>
         <div id="actionmessageContainer" class="collapse">
-        <@s.actionmessage theme="bootstrap" />
+        <@s.actionmessage />
         </div>   
         </#if>
     </#if>
@@ -1021,6 +1075,45 @@ this bit of freemarker is voodoo:
 	</div>
  </#if>
 </#macro>
+
+
+
+<#macro description description_="No description specified." >
+  <#assign description = description_!"No description specified."/>
+<p itemprop="description">
+  <#noescape>
+    ${(description)?html?replace("[\r\n]++","</p><p>","r")}
+  </#noescape>
+</p>
+</#macro>
+
+
+
+<#macro collectionListItem collection=collection showOnlyVisible=false>
+	<#if collection.visible || collection.viewable || showOnlyVisible==false >
+	<#compress><li>
+    <a href="<@s.url value="/collection/${collection.id?c}"/>">
+    <#if collection.name?? && collection.name != ''>${collection.name!"no title"}<#t/><#else>No Title</#if> <#--(${collection.resources?size}) --></a>
+          <#if collection.transientChildren?has_content>
+			<ul>
+		        <#list collection.transientChildren as child>
+		        	<@collectionListItem child />
+				</#list>
+			</ul>          	
+          </#if>
+	</li></#compress>
+    	</#if>
+</#macro>
+
+<#macro listCollections collections=resourceCollections_ showOnlyVisible=false >
+  <ul>
+    <#list collections as collection>
+	    	<@collectionListItem collection=collection showOnlyVisible=showOnlyVisible/>
+    </#list>
+  <#nested>
+  </ul>
+</#macro>
+
 
 </#escape>
 

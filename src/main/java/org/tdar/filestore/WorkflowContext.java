@@ -20,9 +20,10 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.XmlService;
-import org.tdar.core.service.workflow.Workflow;
+import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.tasks.Task;
+import org.tdar.utils.ExceptionWrapper;
 
 /**
  * @author Adam Brin
@@ -33,11 +34,11 @@ public class WorkflowContext implements Serializable {
 
     private static final long serialVersionUID = -1020989469518487007L;
 
-    private Long informationResourceFileId;
+//    private Long informationResourceFileId;
     private Long informationResourceId;
-    private List<InformationResourceFileVersion> versions;
-    private InformationResourceFileVersion originalFile;
-    private File workingDirectory;
+    private List<InformationResourceFileVersion> versions = new ArrayList<>();
+    private List<InformationResourceFileVersion> originalFiles = new ArrayList<>();
+    private File workingDirectory = TdarConfiguration.getInstance().getTempDirectory();
     private int numPages = -1;
     private transient Filestore filestore;
     private boolean processedSuccessfully = false;
@@ -50,8 +51,9 @@ public class WorkflowContext implements Serializable {
     private transient XmlService xmlService;
     private transient TargetDatabase targetDatabase;
 
-    private List<String> exceptions = new ArrayList<String>();
-    private List<String> stackTraces = new ArrayList<String>();
+    private List<ExceptionWrapper> exceptions = new ArrayList<ExceptionWrapper>();
+
+    private boolean isErrorFatal;
 
     public void logTask(Task t, StringBuilder message) {
 
@@ -60,6 +62,8 @@ public class WorkflowContext implements Serializable {
     /*
      * All of the derivative versions of the file
      */
+    @XmlElementWrapper(name = "versions")
+    @XmlElement(name = "informationResourceFileVersion")
     public List<InformationResourceFileVersion> getVersions() {
         if (versions == null)
             versions = new ArrayList<InformationResourceFileVersion>();
@@ -72,15 +76,17 @@ public class WorkflowContext implements Serializable {
         this.versions.add(version);
     }
 
-    public InformationResourceFileVersion getOriginalFile() {
-        return originalFile;
+    @XmlElementWrapper(name = "originalFiles")
+    @XmlElement(name = "informationResourceFileVersion")
+    public List<InformationResourceFileVersion> getOriginalFiles() {
+        return originalFiles;
     }
 
     /*
      * Get the Original File
      */
-    public void setOriginalFile(InformationResourceFileVersion originalFile) {
-        this.originalFile = originalFile;
+    public void setOriginalFiles(List<InformationResourceFileVersion> originalFile) {
+        this.originalFiles = originalFile;
     }
 
     /*
@@ -104,14 +110,6 @@ public class WorkflowContext implements Serializable {
 
     public int getNumPages() {
         return numPages;
-    }
-
-    public Long getInformationResourceFileId() {
-        return informationResourceFileId;
-    }
-
-    public void setInformationResourceFileId(Long informationResourceFileId) {
-        this.informationResourceFileId = informationResourceFileId;
     }
 
     public Long getInformationResourceId() {
@@ -193,28 +191,17 @@ public class WorkflowContext implements Serializable {
             maxDepth--;
         }
 
-        this.getExceptions().add(sb.toString());
-        this.getStackTraces().add(ExceptionUtils.getFullStackTrace(e));
+        this.getExceptions().add(new ExceptionWrapper(sb.toString(), ExceptionUtils.getFullStackTrace(e)));
     }
 
     @XmlElementWrapper(name = "exceptions")
     @XmlElement(name = "exception")
-    public List<String> getExceptions() {
+    public List<ExceptionWrapper> getExceptions() {
         return exceptions;
     }
 
-    public void setExceptions(List<String> exceptions) {
+    public void setExceptions(List<ExceptionWrapper> exceptions) {
         this.exceptions = exceptions;
-    }
-
-    @XmlElementWrapper(name = "stackTraces")
-    @XmlElement(name = "stackTrace")
-    public List<String> getStackTraces() {
-        return stackTraces;
-    }
-
-    public void setStackTraces(List<String> stackTraces) {
-        this.stackTraces = stackTraces;
     }
 
     @XmlTransient
@@ -242,4 +229,13 @@ public class WorkflowContext implements Serializable {
         }
         return exceptions;
     }
+
+    public boolean isErrorFatal() {
+        return isErrorFatal;
+    }
+
+    public void setErrorFatal(boolean isErrorFatal) {
+        this.isErrorFatal = isErrorFatal;
+    }
+
 }

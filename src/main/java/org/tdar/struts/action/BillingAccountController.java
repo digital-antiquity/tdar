@@ -37,17 +37,21 @@ import org.tdar.struts.interceptor.PostOnly;
 @Namespace("/billing")
 public class BillingAccountController extends AbstractPersistableController<Account> {
 
+    public static final String UPDATE_QUOTAS = "updateQuotas";
+    public static final String CHOOSE = "choose";
     public static final String VIEW_ID = "view?id=${id}";
     public static final String RIGHTS_TO_ASSIGN_THIS_INVOICE = "you do not have the rights to assign this invoice";
     public static final String INVOICE_IS_REQURIED = "an invoice is requried";
     private static final long serialVersionUID = 2912533895769561917L;
     public static final String NEW_ACCOUNT = "new_account";
+    private static final String LIST_INVOICES = "listInvoices";
     private Long invoiceId;
-    private Set<Account> accounts = new HashSet<Account>();
-    private List<Resource> resources = new ArrayList<Resource>();
+    private Set<Account> accounts = new HashSet<>();
+    private List<Invoice> invoices = new ArrayList<>();
+    private List<Resource> resources = new ArrayList<>();
 
     private AccountGroup accountGroup;
-    private List<Person> authorizedMembers = new ArrayList<Person>();
+    private List<Person> authorizedMembers = new ArrayList<>();
     private Long accountGroupId;
     private String name;
     private Integer quantity = 1;
@@ -58,9 +62,9 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private Date exipres = new DateTime().plusYears(1).toDate();
 
     @SkipValidation
-    @Action(value = "choose", results = {
+    @Action(value = CHOOSE, results = {
             @Result(name = SUCCESS, location = "select-account.ftl"),
-            @Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = "redirect")
+            @Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = REDIRECT)
     })
     public String selectAccount() throws TdarActionException {
         Invoice invoice = getInvoice();
@@ -101,6 +105,15 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
             getAccounts().addAll(getAccountService().findAll());
         }
+    }
+
+    @SkipValidation
+    @Action(value = LIST_INVOICES, results = { @Result(name = SUCCESS, location = "list-invoices.ftl") })
+    public String listInvoices() {
+        if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
+            getInvoices().addAll(getGenericService().findAll(Invoice.class));
+        }
+        return SUCCESS;
     }
 
     public Invoice getInvoice() {
@@ -147,8 +160,8 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     @SkipValidation
     @WriteableSession
-    @Action(value = "updateQuotas", results = {
-            @Result(name = SUCCESS, location = VIEW_ID, type = "redirect")
+    @Action(value = UPDATE_QUOTAS, results = {
+            @Result(name = SUCCESS, location = "view?id=${id}", type = REDIRECT)
     })
     public String updateQuotas() {
         getAccountService().updateQuota(getAccount(), getAccount().getResources());
@@ -309,6 +322,14 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public List<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(List<Invoice> invoices) {
+        this.invoices = invoices;
     }
 
 }

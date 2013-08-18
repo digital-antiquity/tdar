@@ -7,11 +7,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -34,7 +36,6 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.search.query.SortOption;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
@@ -70,18 +71,31 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
+    @Ignore
     public void testProjectResourceCreator() throws Exception {
+        Institution inst = new Institution("da");
+        
+        //FIXME: this test is broken becasuse it doesn't account for the logic used in entityService.findOrSavePerson,  which will only create 3
+        // person records out of the 6 shown here.
         Person test1 = new Person("test", "person", "");
-        Person test5 = new Person("test", "person", null);
         Person test2 = new Person("test", "person", "test@test.com");
         Person test3 = new Person("test", "person", "");
-        Person test6 = new Person("Test", "Person", "");
-        Institution inst = new Institution("da");
         test3.setInstitution(inst);
+
         Person test4 = new Person("test", "person", "test@test.com");
         test4.setInstitution(inst);
+
+        Person test5 = new Person("test", "person", null);
+        Person test6 = new Person("Test", "Person", "");
+        
+        Set<Person> personSet = new HashSet<Person>(Arrays.asList(test1, test2, test3, test4, test5, test6));
+        int expectedSize = personSet.size();
+        
         ProjectController controller = generateNewInitializedController(ProjectController.class);
+        controller.setAsync(false);
         controller.prepare();
+        controller.setServletRequest(getServletPostRequest());
+        
         List<ResourceCreatorProxy> creditProxies = new ArrayList<ResourceCreatorProxy>();
         creditProxies.add(new ResourceCreatorProxy(test1, ResourceCreatorRole.CONTACT)); // simple person, no institution
         creditProxies.add(new ResourceCreatorProxy(test3, ResourceCreatorRole.CONTACT)); // person1 with institution
@@ -89,22 +103,25 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         creditProxies.add(new ResourceCreatorProxy(test5, ResourceCreatorRole.CONTACT)); // person1 but with a null email instead of blank
         creditProxies.add(new ResourceCreatorProxy(test2, ResourceCreatorRole.CONTACT)); // person1 with email, no institution
         creditProxies.add(new ResourceCreatorProxy(test6, ResourceCreatorRole.CONTACT)); // person1 with case differences
+        
         controller.setCreditProxies(creditProxies);
         controller.getProject().setTitle("test");
         controller.getProject().setDescription("test");
-        controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
         controller.save();
+        
         Project project = controller.getProject();
         project = genericService.merge(project);
         List<Creator> people = new ArrayList<Creator>();
         for (ResourceCreator creator : project.getResourceCreators()) {
-            logger.info(creator + " " + creator.getCreator().getId());
+            logger.info("{}", creator);
             people.add(creator.getCreator());
         }
+        assertEquals("if resource and role are constant, resourceCreator set and person set should be same size", personSet.size(), people.size());
         assertEquals("First and Second person should be the same (difference institution)", people.get(0), people.get(1));
         assertEquals("First and Sixth person should be the same (difference case)", people.get(0), people.get(5));
         assertEquals("First and Fourth person should be the same (email null)", people.get(0), people.get(1));
-        assertFalse("First and Third should not be the same as there's an email", people.get(0).equals(people.get(2)));
+        assertNotEquals("First and Third should not be the same as there's an email", people.get(0),people.get(2));
         assertEquals("Third and Fifth should be the same as there's the same email but one has institution", people.get(2), people.get(4));
     }
 
@@ -172,12 +189,6 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertFalse(authenticationAndAuthorizationService.canEditResource(testAdmin, testResource));
     }
 
-    @Test
-    @Rollback
-    public void testCollectionRightsToProjectAndTheirChildren() {
-
-    }
-
     @Override
     protected TdarActionSupport getController() {
         // TODO Auto-generated method stub
@@ -217,40 +228,27 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     // create a new project and add it to a collection
     @Rollback
     public void testAddingToExistingCollection() throws Exception {
-        ProjectController controller = generateNewInitializedController(ProjectController.class);
-        init(controller, getUser());
-        controller.prepare();
-        // controller.edit();
-        Project project = controller.getProject();
-        project.setTitle("testing adding collection");
-        project.setDescription("test");
-
         ResourceCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
         genericService.synchronize();
         assertNotNull(rc);
 
-        // controller expects incoming list of resource collections to be detached, so lets create one
-        ResourceCollection detachedCollection = new ResourceCollection(rc.getType());
-        // the controller only cares about the ID and the NAME.
-        // logger.info("{}",rc.getOwner());
-        detachedCollection.setName(rc.getName());
-        detachedCollection.setId(rc.getId());
-        detachedCollection.setType(CollectionType.SHARED);
-        detachedCollection.setVisible(true);
-        detachedCollection.setSortBy(SortOption.RELEVANCE);
-        detachedCollection.markUpdated(rc.getOwner());
-        // logger.info("{}",detachedCollection.getOwner());
-        controller.getResourceCollections().add(detachedCollection);
-        assertNotNull(detachedCollection.getOwner());
-        assertTrue(detachedCollection.isValid());
-        controller.validate();
-        controller.setServletRequest(getServletPostRequest());
+        // try and fail due to rights
+        ProjectController controller = tryAndSaveCollectionToController(rc);
+        assertNotEquals(TdarActionSupport.SUCCESS, controller.save());
+        
+        rc.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.ADMINISTER_GROUP));
+        genericService.saveOrUpdate(rc);
+        genericService.synchronize();
+        // try ... and should succeed now that we add the user + permissions
+        controller = tryAndSaveCollectionToController(rc);
         assertEquals(TdarActionSupport.SUCCESS, controller.save());
-        Long id = project.getId();
+        
+        
+        assertNotNull(controller.getProject());
+        Long id = controller.getProject().getId();
         assertTrue("project should have been saved", id != null && id != -1L);
         logger.info("HI!!! {}", id);
 
-        assertNotNull(project);
         Project loadedProject = genericService.find(Project.class, id);
         logger.info("{}", loadedProject);
         // confirm that the controller added the list of resource collections to the project
@@ -258,6 +256,33 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         logger.debug("resource collection id:{}\t  {}", rc.getId(), rc);
         genericService.synchronize();
+        setIgnoreActionErrors(true);
+    }
+
+    private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) {
+        ProjectController controller = generateNewInitializedController(ProjectController.class);
+        init(controller, getUser());
+        controller.setAsync(false);
+        controller.prepare();
+        controller.setServletRequest(getServletPostRequest());
+        // controller.edit();
+        Project project = controller.getProject();
+        project.setTitle("testing adding collection");
+        project.setDescription("test");
+        // controller expects incoming list of resource collections to be detached, so lets create one
+        ResourceCollection detachedCollection = new ResourceCollection(rc.getType());
+        detachedCollection.setName(rc.getName());
+        detachedCollection.setId(rc.getId());
+        detachedCollection.setType(CollectionType.SHARED);
+        detachedCollection.setVisible(true);
+        detachedCollection.setSortBy(SortOption.RELEVANCE);
+        detachedCollection.markUpdated(rc.getOwner());
+        controller.getResourceCollections().add(detachedCollection);
+        assertNotEquals(getUser(), rc.getOwner());
+        assertNotNull(detachedCollection.getOwner());
+        assertTrue(detachedCollection.isValid());
+        controller.validate();
+        return controller;
     }
 
     @Test
@@ -266,6 +291,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     public void testAddProjectToAdHocCollection() throws Exception {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
+        controller.setAsync(false);
         controller.prepare();
 
         Project project = controller.getProject();
@@ -283,22 +309,30 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         collection.setName(name2);
         controller.getResourceCollections().add(collection);
 
+        assertUniqueCollections(controller.getResourceCollections(), name1, name2);
         controller.setServletRequest(getServletPostRequest());
-        controller.save();
+        String result = controller.save();
+        assertEquals(TdarActionSupport.SUCCESS, result);
         Long id = project.getId();
         assertFalse(project.isTransient());
         Project loadedProject = genericService.find(Project.class, id);
         assertNotNull(loadedProject);
+        assertUniqueCollections(loadedProject.getResourceCollections(), name1, name2);
 
+    }
+    
+    private void assertUniqueCollections(Collection<ResourceCollection> resourceCollections, String name1, String name2) {
         // the collections should appear in the list, though we aren't sure of the order.
         ArrayList<String> names = new ArrayList<String>();
-        for (ResourceCollection rc : loadedProject.getResourceCollections()) {
+        for (ResourceCollection rc : resourceCollections) {
             names.add(rc.getName());
         }
 
         assertTrue(names.contains(name1));
         assertTrue(names.contains(name2));
+
     }
+    
 
     private ResourceCollection createNewEmptyCollection(String name) {
         ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);

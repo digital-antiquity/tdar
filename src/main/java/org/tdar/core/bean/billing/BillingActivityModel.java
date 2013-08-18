@@ -3,12 +3,13 @@ package org.tdar.core.bean.billing;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.validator.constraints.Length;
 
 @Entity
 @Table(name = "pos_billing_model")
@@ -41,12 +42,13 @@ public class BillingActivityModel extends org.tdar.core.bean.Persistable.Base {
 
     private Boolean active = false;
 
+    @Length(max = 255)
     private String description;
 
     @Column(name = "date_created")
     private Date dateCreated;
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, mappedBy="model")
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, mappedBy = "model")
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
 
     public Integer getVersion() {
@@ -112,7 +114,7 @@ public class BillingActivityModel extends org.tdar.core.bean.Persistable.Base {
     public void setActivities(List<BillingActivity> activities) {
         this.activities = activities;
     }
-    
+
     @Override
     public String toString() {
         return String.format("%s r:%s f:%s s:%s", getVersion(), countingFiles, countingResources, countingSpace);

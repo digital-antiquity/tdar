@@ -59,12 +59,12 @@
     <div class="control-group">
         <label class="control-label">Mappings</label>
         <#list codingRules as rule>
-        <div class="controls controls-row">
+        <div class="controls controls-row mappingPair">
                 <@s.hidden name='codingRules[${rule_index}].id' />
-                <@s.textfield theme="simple" name='codingRules[${rule_index}].term' size='50' readonly=true cssClass="span4"/>
+                <@s.textfield theme="simple" name='codingRules[${rule_index}].term' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
         
             <div class="span1">
-                <img src="<@s.url value='/images/arrow_right.png'/>"/>
+                <img src="<@s.url value='/images/arrow_right.png' />" alt="right arrow"/>
             </div>
         
             <div>
@@ -85,7 +85,7 @@
                 <@s.hidden name="codingRules[${rule_index}].ontologyNode.id" id="ontologyNodeId_${rule_index}" />
                 <div class="input-append">
                     <@s.textfield theme="simple" name="codingRules[${rule_index}].ontologyNode.displayName" id="autocomp_${rule_index}"
-                         cssClass="manualAutocomplete span4" autocompleteIdElement="#ontologyNodeId_${rule_index}"/>
+                         cssClass="manualAutocomplete ontologyValue span4" autocompleteIdElement="#ontologyNodeId_${rule_index}"/>
                         <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
                 </div>
             </div>

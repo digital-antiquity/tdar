@@ -10,7 +10,7 @@ fi
 
 cd /home/tdar/tdar.src/
 hg pull
-#hg update -C
+hg update -C
 mvn clean compile war:war -Palpha
 if [ $? -ne 0 ] 
   then

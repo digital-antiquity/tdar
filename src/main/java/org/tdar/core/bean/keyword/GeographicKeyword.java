@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -32,6 +33,8 @@ import org.hibernate.search.annotations.Indexed;
 public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeyword> {
 
     private static final long serialVersionUID = 9120049059501138213L;
+
+    public static final String INHERITANCE_TOGGLE = "inheriting_spatial_information";
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
@@ -63,6 +66,7 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
     }
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private Level level;
 
     /**

@@ -74,8 +74,7 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 <#macro geo>
     <div style="display:none" id="geoHelpDiv">
     Identify the approximate region of this resource by clicking on &quot;Select Region&quot; and drawing a bounding box on the map.
-                    <br/>Note: to protect site security, ${siteAcronym} obfuscates all bounding boxes, bounding boxes smaller than 1 mile, especially.  This 'edit' view 
-                    will always show the exact coordinates.
+    <br/>Note: to protect site security, ${siteAcronym} obfuscates all bounding boxes, bounding boxes smaller than 1 mile, especially.  This 'edit' view will always show the exact coordinates.
     </div>
 </#macro>
 
@@ -92,7 +91,6 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
             </ul>
             <aside><p><strong>Note:</strong> to protect site security, ${siteAcronym} obfuscates all bounding boxes, bounding boxes smaller than 1 mile.  This 'edit' view will 
             always show the exact coordinates.</p></aside>
-                           
          </div>
     </div>
 </#macro>
@@ -121,8 +119,8 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 
 <#macro cultureTerms>
     <div id="culturehelp" class="hidden">
-        <h2>Cultural Terms</h2>
-        Keyword list: Select the archaeological &quot;cultures&quot; discussed in the document. Use the Other field if needed. 
+        <h2>${culturalTermsLabel!"Cultural Terms"}</h2>
+        Keyword list: Select the archaeological &quot;${culturalTermsLabel!"cultures"}&quot; discussed in the document. Use the Other field if needed. 
         <a href="${culturalTermsHelpUrl}">view all controlled terms</a>
     </div>
 
@@ -206,7 +204,7 @@ Use these fields to properly credit individuals and institutions for their contr
 
 </#escape>
 
-<#macro copyrightHolder>
+<#macro copyrightHoldersTip>
 <div id="divCopyrightHolderTip" class="hidden">
 Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.
 </div>

@@ -29,6 +29,7 @@ import org.tdar.core.service.AccountService;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
+import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericKeywordService;
@@ -50,7 +51,9 @@ import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.resource.ProjectService;
+import org.tdar.core.service.resource.ResourceRelationshipService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
 
@@ -68,21 +71,35 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 @Scope("prototype")
 @Controller
-public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware {
+public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware, ActionMessageErrorSupport {
 
     private static final long serialVersionUID = 7084489869489013998L;
 
     // result name constants
+    public static final String REDIRECT = "redirect";
     public static final String WAIT = "wait";
+    public static final String THUMBNAIL = "thumbnail";
+    public static final String FORBIDDEN = "forbidden";
     public static final String SUCCESS_ASYNC = "SUCCESS_ASYNC";
     public static final String NOT_FOUND = "not_found";
     public static final String UNAUTHORIZED = "unauthorized";
     public static final String AUTHENTICATED = "authenticated";
     public static final String GONE = "gone";
     public static final String BAD_REQUEST = "badrequest";
+    public static final String SAVE = "save";
+    public static final String ADD = "add";
+    public static final String VIEW = "view";
+    public static final String EDIT = "edit";
+    public static final String JSON = "json";
+    public static final String BILLING = "BILLING";
+    public static final String CONFIRM = "confirm";
+    public static final String DELETE = "delete";
+    public static final String NEW = "new";
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    private transient DownloadService downloadService;
     @Autowired
     private transient ProjectService projectService;
     @Autowired
@@ -134,6 +151,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
+    private transient ResourceRelationshipService resourceRelationshipService;
+
+    @Autowired
     private transient StatisticService statisticService;
 
     private transient List<String> stackTraces = new ArrayList<String>();
@@ -168,6 +188,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return bookmarkedResourceService;
     }
 
+    public ResourceRelationshipService getResourceRelationshipService() {
+        return resourceRelationshipService;
+    }
+
     public EntityService getEntityService() {
         return entityService;
     }
@@ -183,6 +207,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getNamespace() {
         return ServletActionContext.getActionMapping().getNamespace();
     }
+
     public String getActionName() {
         if (ActionContext.getContext() == null)
             return null;
@@ -221,6 +246,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getSiteTypesHelpURL();
     }
 
+    public String getMobileImportURL() {
+        return getTdarConfiguration().getMobileImportURL();
+    }
+
     public String getGoogleMapsApiKey() {
         return getTdarConfiguration().getGoogleMapsApiKey();
     }
@@ -235,6 +264,14 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public boolean isCopyrightMandatory() {
         return getTdarConfiguration().getCopyrightMandatory();
+    }
+
+    public boolean isArchiveFileEnabled() {
+        return getTdarConfiguration().isArchiveFileEnabled();
+    }
+
+    public boolean isVideoEnabled() {
+        return getTdarConfiguration().isVideoEnabled();
     }
 
     public boolean isLicensesEnabled() {
@@ -321,6 +358,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return latlong.format(getTdarConfiguration().getMapDefaultLng());
     }
 
+    public boolean isGeoLocationToBeUsed() {
+        return getTdarConfiguration().isGeoLocationToBeUsed();
+    }
+
     protected void clearAuthenticationToken() {
         AuthenticationToken token = getSessionData().getAuthenticationToken();
         token.setSessionEnd(new Date());
@@ -387,7 +428,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public FreemarkerService getFreemarkerService() {
         return freemarkerService;
     }
-    
+
     /**
      * Returns a list of Strings resulting from applying toString to each
      * element of the incoming Collection.
@@ -445,7 +486,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         super.addActionError(message);
     }
 
-
+    @Override
     public List<String> getStackTraces() {
         return stackTraces;
     }
@@ -458,6 +499,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return accountService;
     }
 
+    public DownloadService getDownloadService() {
+        return downloadService;
+    }
+
     public StatisticService getStatisticService() {
         return statisticService;
     }
@@ -466,6 +511,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return servletRequest;
     }
 
+    @Override
     public void setServletRequest(HttpServletRequest servletRequest) {
         this.servletRequest = servletRequest;
     }
@@ -474,6 +520,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return servletResponse;
     }
 
+    @Override
     public void setServletResponse(HttpServletResponse servletResponse) {
         this.servletResponse = servletResponse;
     }
@@ -508,16 +555,15 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isPayPerIngestEnabled() {
         return getTdarConfiguration().isPayPerIngestEnabled();
     }
-    
 
     public Integer getMaxUploadFilesPerRecord() {
         return getTdarConfiguration().getMaxUploadFilesPerRecord();
     }
-    
+
     public boolean isSecure() {
         return servletRequest.isSecure();
     }
-    
+
     public String getProtocol() {
         if (isSecure()) {
             return "https:";
@@ -525,11 +571,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             return "http:";
         }
     }
-    
+
     public boolean getShowJiraLink() {
         return getTdarConfiguration().getShowJiraLink();
     }
-    
+
     public String getJiraScriptLink() {
         return getTdarConfiguration().getJiraScriptLink();
     }
@@ -542,8 +588,19 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return false;
     }
 
-    public Long getGuestUserId(){
+    public String getCurrentUrl() {
+        return urlService.getOriginalUrlPath(servletRequest);
+    }
+
+    public boolean isViewRowSupported() {
+        return getTdarConfiguration().isViewRowSupported();
+    }
+
+    public Long getGuestUserId() {
         return getTdarConfiguration().getGuestUserId();
     }
 
+    public String getCulturalTermsLabel() {
+        return getTdarConfiguration().getCulturalTermsLabel();
+    }
 }

@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.Person;
@@ -43,7 +42,6 @@ public class Coupon extends Base {
     @JoinColumn(nullable = true, name = "user_id")
     private Person user;
 
-    
     public Long getNumberOfMb() {
         return numberOfMb;
     }

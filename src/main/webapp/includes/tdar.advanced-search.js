@@ -1,4 +1,11 @@
-function initAdvancedSearch() {
+
+TDAR.namespace("advancedSearch");
+TDAR.advancedSearch = (function() {
+    "use strict";
+
+    var self = {};
+
+function _initAdvancedSearch() {
     TDAR.common.initFormValidation($('#searchGroups')[0]);
     TDAR.repeatrow.registerRepeatable(".repeatLastRow");
     
@@ -61,6 +68,7 @@ function initAdvancedSearch() {
         var $repeatable = $(this);
         var $select = $row.find('.searchType');
         $select.val($select.find("option:first").val()).trigger("change");
+        $select.removeAttr("readonly");
         updateAttributesForRow($row, $repeatable.data('groupnum'), idx);
     });
 
@@ -99,12 +107,12 @@ function initAdvancedSearch() {
 // NOTE: if all you want to do is register an event handler, your best bet is to
 // do so via jQuery.on().
 function sectionLoaded(context) {
-    applyWatermarks(context);
+    TDAR.common.applyWatermarks(context);
 
     // HACK: registering datetype fields if any were created. We should just
     // make a smarter validator rule
     if ($('.coverageDateType', context).length) {
-        prepareDateFields($('.coverageDateType', context));
+        TDAR.common.prepareDateFields($('.coverageDateType', context));
     }
 
     // register any treeviews
@@ -116,13 +124,13 @@ function sectionLoaded(context) {
     // the 'create person' option)
     var $personAutoFields = $('.nameAutoComplete', context);
     if ($personAutoFields.length) {
-        applyPersonAutoComplete($personAutoFields, false, false);
+        TDAR.autocomplete.applyPersonAutoComplete($personAutoFields, false, false);
     }
 
     // similar setup for institution autocompletes
     var $institutionAutoFields = $('.institutionAutoComplete', context);
     if ($institutionAutoFields.length) {
-        applyInstitutionAutocomplete($institutionAutoFields, false);
+        TDAR.autocomplete.applyInstitutionAutocomplete($institutionAutoFields, false);
     }
 
     $('.datepicker', context).datepicker({
@@ -130,8 +138,8 @@ function sectionLoaded(context) {
     });
 
     // collection, project combo boxes
-    applyResourceAutocomplete($('.projectcombo', context), "PROJECT");
-    applyCollectionAutocomplete($('.collectioncombo', context), {
+    TDAR.autocomplete.applyResourceAutocomplete($('.projectcombo', context), "PROJECT");
+    TDAR.autocomplete.applyCollectionAutocomplete($('.collectioncombo', context), {
         minLength : 0
     }, {});
 
@@ -140,7 +148,7 @@ function sectionLoaded(context) {
     });
 }
 
-function setDefaultTerm(obj) {
+function _setDefaultTerm(obj) {
     // console.log("adding new term");
 }
 
@@ -190,7 +198,7 @@ function showGroupingSelectorIfNecessary($groupDiv) {
 }
 
 
-function serializeFormState() {
+function _serializeFormState() {
     $("#searchGroups").submit(function() {
         var frm = this;
         var $frm = $(this);
@@ -239,3 +247,10 @@ function setAttributesToPropValue($formElements, booleanPropertyName) {
         }
     });
 }
+
+return {
+    serializeFormState: _serializeFormState,
+    initAdvancedSearch: _initAdvancedSearch,
+    setDefaultTerm: _setDefaultTerm
+};
+})();

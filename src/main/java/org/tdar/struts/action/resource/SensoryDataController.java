@@ -45,19 +45,20 @@ public class SensoryDataController extends AbstractInformationResourceController
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         super.loadCustomMetadata();
-         sensoryDataScans = new ArrayList<SensoryDataScan>(getPersistable().getSensoryDataScans());
-         sensoryDataImages = new ArrayList<SensoryDataImage>(getPersistable().getSensoryDataImages());
-         Collections.sort(sensoryDataImages);
-         Collections.sort(sensoryDataScans);
+        sensoryDataScans = new ArrayList<SensoryDataScan>(getPersistable().getSensoryDataScans());
+        sensoryDataImages = new ArrayList<SensoryDataImage>(getPersistable().getSensoryDataImages());
+        Collections.sort(sensoryDataImages);
+        Collections.sort(sensoryDataScans);
     }
 
     /**
      * Save basic metadata of the registering concept.
      * 
      * @param concept
+     * @throws TdarActionException
      */
     @Override
-    protected String save(SensoryData sensoryData) {
+    protected String save(SensoryData sensoryData) throws TdarActionException {
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
 
@@ -90,7 +91,6 @@ public class SensoryDataController extends AbstractInformationResourceController
 
     @Override
     public Collection<String> getValidFileExtensions() {
-//        return analyzer.getExtensionsForType(ResourceType.SENSORY_DATA);
         List<String> validExtensions = new ArrayList<String>();
         validExtensions.addAll(analyzer.getExtensionsForTypes(ResourceType.SENSORY_DATA, ResourceType.CODING_SHEET));
         return validExtensions;

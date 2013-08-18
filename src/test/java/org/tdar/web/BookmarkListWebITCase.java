@@ -8,6 +8,8 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.w3c.dom.Element;
 
+import com.gargoylesoftware.htmlunit.html.DomNode;
+
 public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
     // ensure that a 'deleted item no longer shows up in bookmarks
@@ -90,7 +92,8 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
             submitForm();
             gotoPage(URLConstants.DASHBOARD);
             boolean seen = false;
-            for (Element el : querySelectorAll("#bookmarks")) {
+            for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("#bookmarks")) {
+                Element el = (Element) element_;
                 if (el.toString().contains(docTitle)) {
                     seen = true;
                 }

@@ -38,23 +38,23 @@
 	 </h3>
         </div>
     </div>
-     <#if administrator>
     <div class="row">
-        <div class="span4">
-            <h3 class="video-mid-red"><@link "video" "Video" /></h3>
-            A video
-        </div>
         <div class="span4">
             <h3 class="geospatial-mid-red"><@link "geospatial" "Geospatial" /></h3>
-            Geospatial
+            GIS files, shape files, personal geodatabases, and geo-rectified images.
         </div>
-    </div>
-    </#if>
-    <div class="row">
         <div class="span4">
                 <h3 class="sensory_data-mid-red"><@link "sensory-data" "Sensory Data / 3D Scan" /></h3>
                 Certain images and/or datasets fall under the heading of Sensory Data. 3-D scans, for example. 
         </div>
+    </div>
+    <div class="row">
+     <#if videoEnabled>
+        <div class="span4">
+            <h3 class="video-mid-red"><@link "video" "Video" /></h3>
+            A video
+        </div>
+    </#if>
 
     </div>
     <div class="row">
@@ -67,7 +67,18 @@
                 A list of codes and their meanings, usually associated with a single column in a dataset. An example from archaeology might be a list of ceramic type codes from a particular analysis project, linked to a specific dataset within ${siteAcronym}. A collection of coding sheets make up a coding packet, and are part of the proper documentation of a dataset.  
         </div>
     </div>
-</div>                            
+    <#if archiveFileEnabled>
+    <div class="row">
+        <div class="span4">
+        </div>
+        <div class="span4">
+            <h3 class="mobile-import-mid-red"><@link "archive" "Site Archive"/></h3>
+            The upload of archived data from a ${siteAcronym} compatible field server that has been used in conjunction with mobile devices on a site. <br />
+        </div>
+    </div>
+    </#if>
+</div>
+
 <div class="span4">
         <h2>Organize</h2>
         <div class="row">

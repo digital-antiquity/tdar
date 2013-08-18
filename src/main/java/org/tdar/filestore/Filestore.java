@@ -32,6 +32,8 @@ import org.tdar.core.exception.TdarRuntimeException;
 
 public interface Filestore {
 
+    public static final String FILENAME_SANITIZE_REGEX = "([\\W&&[^\\s\\-\\+\\.]])";
+
     public enum StorageMethod {
         NO_ROTATION,
         ROTATE,
@@ -132,6 +134,38 @@ public interface Filestore {
         // protected static final MimeTypes mimes = TikaConfig.getDefaultConfig().getMimeRepository();
         protected static final Logger logger = LoggerFactory.getLogger(BaseFilestore.class);
 
+        /**
+         * This comes from the bad old days and was intended to make dataset filenames safe for postgres importing.
+         * Dataset files are converted into tables in postgres and this method
+         * was used to generate table names that were postgres-safe, e.g., starts with an alphabetic character and < 128 characters.
+         * Now, DatabaseConverter should be responsible for that translation / sanitization internally,
+         * and we should preserve the filename as it was originally sent in as best we can.
+         * 
+         * FIXME: Filestore should be responsible for sanitization of filenames instead
+         * 
+         * @param filename
+         * @return
+         */
+        public static String sanitizeFilename(String filename) {
+            String ext = FilenameUtils.getExtension(filename).toLowerCase();
+            String basename = filename.toLowerCase();
+
+            // // make sure that the total length does not exceed 255 characters
+            if (filename.length() > 250) {
+                basename = basename.substring(0, 250) + "." + ext;
+            }
+
+            /*
+             * replace all whitespace with dashes
+             * replace all characters that are not alphanumeric, underscore "_", or
+             * dash "-" with a single dash "-".
+             */
+            basename = filename.replaceAll("[^\\w\\-\\.\\+\\_]", "-");
+            basename = StringUtils.replace(basename, "-.", ".");
+
+            return basename; // builder.toString();
+        }
+
         /*
          * This method extracts out the MimeType from the file using Tika, the previous version tried to parse the file
          * but this doesn't need to be so complex.
@@ -191,6 +225,7 @@ public interface Filestore {
             return Hex.encodeHexString(digest.digest());
         }
 
+        @Override
         public void storeLog(LogType type, String filename, String message) {
             File logdir = new File(FilenameUtils.concat(getFilestoreLocation(),
                     String.format("%s/%s/%s", LOG_DIR, type.getDir(), Calendar.getInstance().get(Calendar.YEAR))));
@@ -205,6 +240,7 @@ public interface Filestore {
             }
         }
 
+        @Override
         public List<File> listLogFiles(LogType type, Integer year) {
             String subdir = String.format("%s/%s", LOG_DIR, type.getDir());
             if (year != null) {
@@ -214,12 +250,14 @@ public interface Filestore {
             return Arrays.asList(logDir.listFiles());
         }
 
+        @Override
         public File getLogFile(LogType type, Integer year, String filename) {
             String subdir = String.format("%s/%s/%s/%s", LOG_DIR, type.getDir(), year, filename);
             File logDir = new File(FilenameUtils.concat(getFilestoreLocation(), subdir));
             return logDir;
         }
 
+        @Override
         public boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException {
             File toVerify = retrieveFile(version);
             MessageDigest newDigest = createDigest(toVerify);
@@ -243,6 +281,7 @@ public interface Filestore {
             return digestInputStream;
         }
 
+        @Override
         public MessageDigest createDigest(File f) {
             DigestInputStream digestInputStream = null;
             FileInputStream stream = null;
@@ -271,10 +310,12 @@ public interface Filestore {
             return new File(getFilestoreLocation()).toURI().relativize(f.toURI()).getPath();
         }
 
+        @Override
         public long getSizeInBytes() {
             return FileUtils.sizeOfDirectory(new File(getFilestoreLocation()));
         }
 
+        @Override
         public String getSizeAsReadableString() {
             return FileUtils.byteCountToDisplaySize(FileUtils.sizeOfDirectory(new File(getFilestoreLocation())));
         }
@@ -311,5 +352,4 @@ public interface Filestore {
         }
 
     }
-
 }

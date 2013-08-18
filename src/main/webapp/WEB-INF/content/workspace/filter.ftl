@@ -80,7 +80,7 @@ checks, absent values are indicated with red x's.
     </#list>
     <tr class="<#if disabled>disabled</#if>">
     <td style="white-space: nowrap;">
-    <label class="inline-label" for='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'>
+    <label class="inline-label nodeLabel" for='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'>
     <#list 1..numberOfParents as indentationLevel>
         &nbsp;&nbsp;&nbsp;&nbsp;
     </#list>
@@ -89,7 +89,7 @@ checks, absent values are indicated with red x's.
     <#if checkForUser>canautocheck="true"</#if>     <#if disabled>disabled="disabled"</#if> />
     <#assign totalCheckboxCount=totalCheckboxCount+1>
         <#if !disabled><b></#if>
-            ${ontologyNode.displayName} <!--(${ontologyNode.index})-->
+            <span class="nodeName">${ontologyNode.displayName}</span> <!--(${ontologyNode.index})-->
         <#if !disabled></b></#if>
     </label>
     <#if ontologyNode.parent ><span class="right">
@@ -101,9 +101,9 @@ checks, absent values are indicated with red x's.
     <#list ontologyNode.columnHasValueArray as hasValue>
     <td>
         <#if hasValue>
-        <@edit.img "/images/checked.gif" />
+    	    <img src="<@s.url value="/images/checked.gif" />"/>
         <#else>
-        <@edit.img "/images/unchecked.gif" />
+    	    <img src="<@s.url value="/images/unchecked.gif" />"/>
         </#if>
     </td>
     </#list>

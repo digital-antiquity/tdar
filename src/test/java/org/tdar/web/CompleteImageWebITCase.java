@@ -29,7 +29,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxies.person.firstName";
@@ -56,10 +56,8 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("authorizedUsers[1].user.id", "5349");
         docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("authorizedUsers[0].user.firstName", "Michelle");
-        docValMap.put("authorizedUsers[0].user.lastName", "Elliott");
-        docValMap.put("authorizedUsers[1].user.firstName", "Joshua");
-        docValMap.put("authorizedUsers[1].user.lastName", "Watts");
+        docValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
+        docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
 
         docValMap.put("authorshipProxies[0].person.firstName", "Adam");
         docValMap.put("authorshipProxies[0].person.lastName", "Brin");

@@ -8,6 +8,7 @@ package org.tdar.web;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,11 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.ResourceCreatorRoleType;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.w3c.dom.Element;
 
+import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
 
 
@@ -108,10 +111,19 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitForm();
+        String url = getCurrentUrlPath();
+        String ticketId = getPersonalFilestoreTicketId();
+        assertTrue("Expected integer number for ticket - but got: " + ticketId, ticketId.matches("([0-9]*)"));
 
+        uploadFileToPersonalFilestore(ticketId, MALFORMED_DATASET_FILE);
+
+
+        gotoPage(url);
         // now go to the edit page and try to upload a malformed file
         clickLinkWithText("edit");
-        setInput("uploadedFiles", MALFORMED_DATASET_FILE);
+
+        setInput("ticketId", ticketId);
+        addFileProxyFields(0, FileAccessRestriction.PUBLIC, MALFORMED_DATASET_FILE);
         submitFormWithoutErrorCheck("Save");
         // we should still be on the edit page
         assertTextPresentInPage("Editing Dataset");
@@ -146,9 +158,9 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     
     private void assertNoFakeRoles(String editPage) {
-    	gotoPage(editPage);
-    	List<Element> selectElements = querySelectorAll(".creator-role-select option");
-    	for(Element element : selectElements) {
+        gotoPage(editPage);
+        for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll(".creator-role-select option")) {
+            Element element = (Element)element_;
     		HtmlOption option = (HtmlOption) element;
     		logger.trace("looking for fake roles in {}", option);
 			ResourceCreatorRole role = ResourceCreatorRole.valueOf(option.getValueAttribute());

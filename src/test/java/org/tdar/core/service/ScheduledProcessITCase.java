@@ -1,5 +1,13 @@
 package org.tdar.core.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -16,24 +24,29 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
+import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
-
-import static org.junit.Assert.*;
 
 /**
  * $Id$
@@ -46,6 +59,15 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Autowired
     private ScheduledProcessService scheduledProcessService;
     private static final int MOCK_NUMBER_OF_IDS = 2000;
+
+    @Autowired
+    private SitemapGeneratorProcess sitemap;
+
+    @Autowired
+    WeeklyStatisticsLoggingProcess processingTask;
+
+    @Autowired
+    CreatorAnalysisProcess pap;
 
     private class MockScheduledProcess extends ScheduledBatchProcess<Dataset> {
 
@@ -121,9 +143,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertFalse("ScheduledBatchProcess should be reset now", mock.isCompleted());
     }
 
-    @Autowired
-    private SitemapGeneratorProcess sitemap;
-
     @Test
     public void testSitemapGen() {
         sitemap.execute();
@@ -150,8 +169,23 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     }
 
+    @Test
+    @Rollback(true)
+    public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {
+        searchIndexService.purgeAll();
+        searchIndexService.indexAll(getAdminUser(), Resource.class, Person.class, Institution.class, ResourceCollection.class);
+
+        pap.execute();
+    }
+
     @Autowired
-    WeeklyStatisticsLoggingProcess processingTask;
+    OccurranceStatisticsUpdateProcess ocur;
+
+    @Test
+    @Rollback(true)
+    public void testOccurranceStats() throws InstantiationException, IllegalAccessException {
+        ocur.execute();
+    }
 
     @SuppressWarnings("deprecation")
     @Test
@@ -163,14 +197,16 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         Number sheets = resourceService.countActiveResources(ResourceType.CODING_SHEET);
         Number ontologies = resourceService.countActiveResources(ResourceType.ONTOLOGY);
         Number sensory = resourceService.countActiveResources(ResourceType.SENSORY_DATA);
+        Number gis = resourceService.countActiveResources(ResourceType.GEOSPATIAL);
         Number people = entityService.findAllRegisteredUsers(null).size();
-        createAndSaveNewInformationResource(Document.class, false);
-        createAndSaveNewInformationResource(Dataset.class, false);
-        createAndSaveNewInformationResource(Image.class, false);
-        createAndSaveNewInformationResource(CodingSheet.class, false);
-        createAndSaveNewInformationResource(Ontology.class, false);
-        createAndSaveNewInformationResource(SensoryData.class, true);
-        InformationResource generateInformationResourceWithFile = generateInformationResourceWithFileAndUser();
+        createAndSaveNewInformationResource(Document.class);
+        createAndSaveNewInformationResource(Dataset.class);
+        createAndSaveNewInformationResource(Image.class);
+        createAndSaveNewInformationResource(CodingSheet.class);
+        createAndSaveNewInformationResource(Ontology.class);
+        createAndSaveNewInformationResource(Geospatial.class);
+        createAndSaveNewInformationResource(SensoryData.class, createAndSaveNewPerson());
+        InformationResource generateInformationResourceWithFile = generateDocumentWithFileAndUser();
         processingTask.execute();
         flush();
         List<AggregateStatistic> allStats = genericService.findAll(AggregateStatistic.class);
@@ -187,6 +223,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertEquals(cal, statDate);
         // assertEquals(11L, map.get(StatisticType.NUM_PROJECT).getValue().longValue());
         assertEquals(datasets.longValue() + 1, map.get(StatisticType.NUM_DATASET).getValue().longValue());
+        assertEquals(gis.longValue() + 1, map.get(StatisticType.NUM_GIS).getValue().longValue());
         assertEquals(docs.longValue() + 2, map.get(StatisticType.NUM_DOCUMENT).getValue().longValue());
         assertEquals(images.longValue() + 1, map.get(StatisticType.NUM_IMAGE).getValue().longValue());
         assertEquals(sheets.longValue() + 1, map.get(StatisticType.NUM_CODING_SHEET).getValue().longValue());

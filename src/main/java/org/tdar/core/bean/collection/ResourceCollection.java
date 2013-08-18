@@ -42,18 +42,18 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
+import org.hibernate.annotations.FetchProfile.FetchOverride;
 import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.FetchProfile.FetchOverride;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.HasName;
@@ -91,22 +91,21 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Indexed(index = "Collection")
 @Table(name = "collection")
 @FetchProfiles(value = {
-        @FetchProfile(name="simple", fetchOverrides = {
+        @FetchProfile(name = "simple", fetchOverrides = {
                 @FetchOverride(association = "resources", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association="authorizedUsers", mode = FetchMode.JOIN, entity= ResourceCollection.class),
-                @FetchOverride(association="user", mode = FetchMode.JOIN, entity= AuthorizedUser.class),
-                @FetchOverride(association="owner", mode = FetchMode.JOIN, entity= ResourceCollection.class),
-                @FetchOverride(association="updater", mode = FetchMode.JOIN, entity= ResourceCollection.class),
-                @FetchOverride(association="parent", mode = FetchMode.JOIN, entity= ResourceCollection.class)
+                @FetchOverride(association = "authorizedUsers", mode = FetchMode.JOIN, entity = ResourceCollection.class),
+                @FetchOverride(association = "user", mode = FetchMode.JOIN, entity = AuthorizedUser.class),
+                @FetchOverride(association = "owner", mode = FetchMode.JOIN, entity = ResourceCollection.class),
+                @FetchOverride(association = "updater", mode = FetchMode.JOIN, entity = ResourceCollection.class),
+                @FetchOverride(association = "parent", mode = FetchMode.JOIN, entity = ResourceCollection.class)
         })
 })
-
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable {
 
     private transient boolean viewable;
 
-//    private transient boolean readyToIndex = true;
+    // private transient boolean readyToIndex = true;
 
     public enum CollectionType {
         INTERNAL("Internal"),
@@ -125,13 +124,16 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     private static final long serialVersionUID = -5308517783896369040L;
+    public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
     private transient Float score;
     private transient Explanation explanation;
 
     @Column
     @Fields({
             @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
-            , @Field(name = QueryFieldNames.COLLECTION_NAME, boost = @Boost(1.5f)) })
+            , @Field(name = QueryFieldNames.COLLECTION_NAME) })
+    // @Boost(1.5f)
+    @Length(max = 255)
     private String name;
 
     @Lob
@@ -146,17 +148,21 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sort_order")
-    private SortOption sortBy = SortOption.TITLE;
+    @Column(name = "sort_order", length = 25)
+    private SortOption sortBy = DEFAULT_SORT_OPTION;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "orientation")
+    @Column(name = "secondary_sort_order", length = 25)
+    private SortOption secondarySortBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "orientation", length = 50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Field(name = QueryFieldNames.COLLECTION_TYPE)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Enumerated(EnumType.STRING)
-    @Column(name = "collection_type")
+    @Column(name = "collection_type", length = 255)
     private CollectionType type;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -182,7 +188,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @JoinColumn(name = "parent_id")
     private ResourceCollection parent;
 
+    private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
+
     @Column(nullable = false)
+    
     private boolean visible = true;
 
     public ResourceCollection() {
@@ -222,7 +231,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.name = name;
     }
 
-    @Field(boost = @Boost(1.2f))
+    // @Boost(1.2f)
+    @Field
     public String getDescription() {
         return description;
     }
@@ -402,9 +412,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Transient
     public Long getParentId() {
-        if (parent == null)
+        if (getParent() == null)
             return null;
-        return parent.getId();
+        return getParent().getId();
     }
 
     @Override
@@ -523,6 +533,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father, you.
      */
     @Transient
+    @Field(name = QueryFieldNames.COLLECTION_TREE)
+    @JSONTransient
+    @ElementCollection
+    @IndexedEmbedded
     public List<Long> getParentIdList() {
         ArrayList<Long> parentIdTree = new ArrayList<Long>();
         for (ResourceCollection collection : getHierarchicalResourceCollections()) {
@@ -554,7 +568,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
     }
 
-    @Field(boost = @Boost(1.5f))
+    @Field
+    // @Boost(1.5f)
     public String getTitle() {
         return getName();
     }
@@ -649,5 +664,21 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         authorizedUsers.addAll(bestMap.values());
         staticLogger.trace("outgoing" + authorizedUsers);
 
+    }
+
+    public Set<ResourceCollection> getTransientChildren() {
+        return transientChildren;
+    }
+
+    public void setTransientChildren(Set<ResourceCollection> transientChildren) {
+        this.transientChildren = transientChildren;
+    }
+
+    public SortOption getSecondarySortBy() {
+        return secondarySortBy;
+    }
+
+    public void setSecondarySortBy(SortOption secondarySortBy) {
+        this.secondarySortBy = secondarySortBy;
     }
 }

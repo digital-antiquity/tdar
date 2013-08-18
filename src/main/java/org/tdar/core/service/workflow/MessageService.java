@@ -1,14 +1,19 @@
 package org.tdar.core.service.workflow;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.service.GenericService;
+import org.tdar.core.dao.GenericDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.WorkflowContext;
 
 /**
@@ -23,10 +28,10 @@ public class MessageService {
     // private Queue toProcess;
     // private Queue toPersist;
 
-    @Autowired
     private WorkflowContextService workflowContextService;
+    
     @Autowired
-    private GenericService genericService;
+    private GenericDao genericDao;
 
     @Autowired
     private XmlService xmlService;
@@ -97,16 +102,23 @@ public class MessageService {
      * This is the beginning of the message process, it takes files that have just been uploaded and creates a workflow context for them, and sends them
      * on the MessageQueue
      * 
-     * @param version
-     * @param w
-     * @return
+     * @param informationResourceFileVersions
+     * @param workflow2
+     * @return Martin: given that at some future date this might be pushing stuff onto a queue, it shouldn't return anything?
      */
-    public <W extends Workflow> boolean sendFileProcessingRequest(InformationResourceFileVersion version, W w) {
-        WorkflowContext ctx = workflowContextService.initializeWorkflowContext(version, w);
-        version.getInformationResourceFile().setStatus(FileStatus.QUEUED);
-        genericService.saveOrUpdate(version);
-        ctx.setWorkflowClass(w.getClass());
-        genericService.detachFromSession(version);
+    public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResourceFileVersion... informationResourceFileVersions) {
+        WorkflowContext ctx = workflowContextService.initializeWorkflowContext(workflow, informationResourceFileVersions);
+        List<Long> irfIds = new ArrayList<>();
+        for (InformationResourceFileVersion version : informationResourceFileVersions) {
+            InformationResourceFile irf = version.getInformationResourceFile();
+            if (!irfIds.contains(irf.getId())) {
+                irf.setStatus(FileStatus.QUEUED);
+                genericDao.saveOrUpdate(irf);
+                // FIXME: when we reimplement the message queue, this will need to be adjusted to do a flush here, otherwise, we cannot guarantee that the save
+                // will happen before the evict
+                // genericDao.detachFromSession(irf);
+            }
+        }
         // w.setWorkflowContext(ctx);
         // if (TdarConfiguration.getInstance().useExternalMessageQueue()) {
         // RabbitTemplate template = getRabbitTemplate(getFilesToProcessQueue());
@@ -115,16 +127,29 @@ public class MessageService {
         // } else {
         boolean success = false;
         try {
-            Workflow workflow = ctx.getWorkflowClass().newInstance();
+            Workflow workflow_ = ctx.getWorkflowClass().newInstance();
             ctx.setXmlService(xmlService);
-            success = workflow.run(ctx);
+            success = workflow_.run(ctx);
+            // Martin: the following mandates that we wait for run to complete.
+            // Surely the plan is to immediately show the user a result page with "your request is being processed" and then
+            // to use AJAX to poll the server for the result via a status bar? Or an email. And the following is to be moved to 
+            // be part of that call back process?
             workflowContextService.processContext(ctx);
         } catch (Exception e) {
             // trying to get a more useful debug message...
-            logger.warn("Unhandled exception while processing file: " + version, e);
+            logger.warn("Unhandled exception while processing file: " + informationResourceFileVersions, e);
+            throw new TdarRecoverableRuntimeException("There was an unexpected error when processing the file.");
         }
         // }
         return success;
+    }
+
+    /**
+     * @param workflowContextService the workflowContextService to set
+     */
+    @Autowired
+    public void setWorkflowContextService(WorkflowContextService workflowContextService) {
+        this.workflowContextService = workflowContextService;
     }
 
     //

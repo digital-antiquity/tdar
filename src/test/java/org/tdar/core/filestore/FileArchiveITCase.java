@@ -4,6 +4,7 @@
 package org.tdar.core.filestore;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -22,9 +23,10 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.core.service.workflow.FileArchiveWorkflow;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.MessageService;
-import org.tdar.core.service.workflow.Workflow;
+import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
+import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
 
@@ -49,6 +51,8 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(ResourceType.IMAGE, fileAnalyzer.suggestTypeForFileExtension("gif", ResourceType.IMAGE, ResourceType.SENSORY_DATA));
         assertNull(fileAnalyzer.suggestTypeForFileExtension("xls", ResourceType.ONTOLOGY));
         assertEquals(ResourceType.CODING_SHEET, fileAnalyzer.suggestTypeForFileExtension("xls", ResourceType.ONTOLOGY, ResourceType.CODING_SHEET));
+
+        assertFalse(fileAnalyzer.getExtensionsForType(ResourceType.ARCHIVE).contains("xml"));
     }
 
     @Test
@@ -58,6 +62,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         testArchiveFormat(store, "ark_hm_headpot_scans.tar");
         testArchiveFormat(store, "ark_hm_headpot_scans.zip");
         testArchiveFormat(store, "ark_hm_headpot_scans.tgz");
+        testArchiveFormat(store, "ark_hm_headpot_scans.tar.bz2");
     }
 
     public void testArchiveFormat(PairtreeFilestore store, String filename) throws InstantiationException, IllegalAccessException, IOException, Exception {
@@ -67,19 +72,23 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(FileType.FILE_ARCHIVE, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(FileArchiveWorkflow.class, workflow.getClass());
-        messageService.sendFileProcessingRequest(originalVersion, workflow);
+        messageService.sendFileProcessingRequest(workflow, originalVersion);
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
 
+        boolean seen = false;
         for (InformationResourceFileVersion version : informationResourceFile.getLatestVersions()) {
             logger.info(version);
+
             if (version.isTranslated()) {
-                String contents = FileUtils.readFileToString(version.getFile());
+                String contents = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
                 assertTrue(contents.contains("Ark_HM_Headpot_01.txt"));
                 assertTrue(contents.contains("Ark_HM_Headpot_mtrx_01.txt"));
+                seen = true;
             }
         }
 
+        assertTrue("Should have gotten through some translated files", seen);
         // FIXME: confirm that there is a resulting file, and that the file has the right contents
         // confirm x number of versions, confirm types
         // confirm contents

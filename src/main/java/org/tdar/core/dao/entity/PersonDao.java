@@ -1,7 +1,6 @@
 package org.tdar.core.dao.entity;
 
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
@@ -19,7 +19,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 /**
  * $Id$
@@ -85,17 +84,20 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return new HashSet<Person>(criteria.list());
     }
 
-    
     public Person findAuthorityFromDuplicate(Person dup) {
         Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getClass().getSimpleName(), dup.getId()));
-        List<BigInteger> result = (List<BigInteger>)query.list();
-        if (CollectionUtils.isEmpty(result)) {
-            return null;
-        } else {
+        @SuppressWarnings("unchecked")
+        List<BigInteger> result = (List<BigInteger>) query.list();
+        if (CollectionUtils.isNotEmpty(result)) {
+            try {
             return find(result.get(0).longValue());
+            } catch (Exception e) {
+                logger.error("could not find master for {} {}",dup, result);
+            }
         }
+        return null;
     }
-    
+
     /**
      * Returns all people with the given full name.
      */
@@ -144,19 +146,37 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return (Long) ((criteria.list()).get(0));
     }
 
+    @SuppressWarnings("unchecked")
     public Set<Long> findAllContributorIds() {
         Set<Long> ids = new HashSet<Long>();
-        for (Number obj_ : (List<Number>)getCurrentSession().createSQLQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).list()) {
+        for (Number obj_ : (List<Number>) getCurrentSession().createSQLQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).list()) {
             ids.add(obj_.longValue());
         }
         return ids;
     }
 
-    
     public void registerLogin(Person authenticatedUser) {
         authenticatedUser.setLastLogin(new Date());
         authenticatedUser.incrementLoginCount();
         logger.trace("login {} {}", authenticatedUser.getLastLogin(), authenticatedUser.getTotalLogins());
         saveOrUpdate(authenticatedUser);
     }
+
+    public void updateOccuranceValues() {
+        Session session = getCurrentSession();
+        logger.info("clearing creator occurrence values");
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT)).executeUpdate();
+        logger.info("beginning updates - resource");
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE)).executeUpdate();
+        logger.info("beginning updates - copyright");
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT)).executeUpdate();
+        logger.info("beginning updates - provider");
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER)).executeUpdate();
+        logger.info("beginning updates - publisher");
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER)).executeUpdate();
+        logger.info("beginning updates - submitter");
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER)).executeUpdate();
+        logger.info("completed updates");
+    }
+
 }

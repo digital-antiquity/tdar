@@ -42,6 +42,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
@@ -56,6 +57,7 @@ import org.tdar.utils.Pair;
 @Service
 public class ImportService {
 
+    public static final String INVALID_FILE_TYPE = "invalid file type %s for resource type -- acceptable: %s";
     @Autowired
     private FileAnalyzer fileAnalyzer;
     @Autowired
@@ -73,13 +75,13 @@ public class ImportService {
 
     public transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    public <R extends Resource> R bringObjectOntoSession(R incoming, Person authorizedUser) throws APIException, IOException {
+    public <R extends Resource> R bringObjectOntoSession(R incoming, Person authorizedUser) throws APIException, Exception {
         return bringObjectOntoSession(incoming, authorizedUser, null, null);
     }
 
+    @Transactional
     public <R extends Resource> R bringObjectOntoSession(R incoming_, Person authorizedUser, Collection<FileProxy> proxies, Long projectId)
-            throws APIException,
-            IOException {
+            throws APIException, IOException {
         R incomingResource = incoming_;
         boolean created = true;
         if (Persistable.Base.isNotTransient(incomingResource)) {
@@ -100,6 +102,7 @@ public class ImportService {
             }
 
             incomingResource.copyImmutableFieldsFrom(existing);
+            //FIXME: could be trouble:  the next line implicitly detaches the submitter we just copied to incomingResource
             genericService.detachFromSession(existing);
             created = false;
         }
@@ -135,8 +138,11 @@ public class ImportService {
                 reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource));
             }
         }
-
-        incomingResource.markUpdated(authorizedUser);
+        logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(authorizedUser));
+        Person blessedAuthorizedUser = genericService.merge(authorizedUser);
+        logger.debug("comparing before/after merge:: before:{}        after:{}", System.identityHashCode(authorizedUser), System.identityHashCode(blessedAuthorizedUser));
+        incomingResource.markUpdated(blessedAuthorizedUser);
+//        genericService.detachFromSession(authorizedUser);
         incomingResource = genericService.merge(incomingResource);
 
         Set<String> extensionsForType = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
@@ -144,9 +150,15 @@ public class ImportService {
             for (FileProxy proxy : proxies) {
                 String ext = FilenameUtils.getExtension(proxy.getFilename()).toLowerCase();
                 if (!extensionsForType.contains(ext))
-                    throw new APIException("invalid file type " + ext + " for resource type -- acceptable:"
-                            + StringUtils.join(extensionsForType, ", "), StatusCode.FORBIDDEN);
-                informationResourceService.processFileProxy((InformationResource) incomingResource, proxy);
+                    throw new APIException(String.format(INVALID_FILE_TYPE, ext, StringUtils.join(extensionsForType, ", ")), StatusCode.FORBIDDEN);
+            }
+            
+            ActionMessageErrorListener listener = new ActionMessageErrorListener();
+            informationResourceService.importFileProxiesAndProcessThroughWorkflow((InformationResource) incomingResource, authorizedUser, null, listener,
+                    new ArrayList<FileProxy>(proxies));
+            
+            if (listener.hasActionErrors()) {
+                throw new APIException(listener.toString(), StatusCode.UNKNOWN_ERROR);
             }
         }
 
@@ -209,10 +221,10 @@ public class ImportService {
                 if (!((Validatable) property).isValidForController()) {
                     if (property instanceof Project) {
                         toReturn = (P) Project.NULL;
-                    } else if (property instanceof Creator && ((Creator)property).hasNoPersistableValues()) {
+                    } else if (property instanceof Creator && ((Creator) property).hasNoPersistableValues()) {
                         toReturn = null;
                     } else {
-                        throw new APIException(String.format("Object (%s: %s) is invalid", property.getClass(),property ), StatusCode.FORBIDDEN);
+                        throw new APIException(String.format("Object (%s: %s) is invalid", property.getClass(), property), StatusCode.FORBIDDEN);
                     }
                 }
             }

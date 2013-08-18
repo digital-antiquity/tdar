@@ -1,6 +1,7 @@
 package org.tdar.core.bean.entity;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -46,13 +47,14 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @Enumerated(EnumType.STRING)
     @Field
     @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
+    @Column(length = 255)
     private ResourceCreatorRole role;
 
     public ResourceCreator(Creator creator, ResourceCreatorRole role) {
         setCreator(creator);
         setRole(role);
     }
-
+    
     public ResourceCreator() {
     }
 

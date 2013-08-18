@@ -25,6 +25,8 @@ public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements Co
 
     private static final long serialVersionUID = -8439705822874264175L;
 
+    public static final String INHERITANCE_TOGGLE = "inheriting_material_information";
+
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
     private Set<MaterialKeyword> synonyms = new HashSet<MaterialKeyword>();

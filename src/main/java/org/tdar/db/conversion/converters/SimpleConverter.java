@@ -29,11 +29,12 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
     public SimpleConverter() {
     }
 
-    public SimpleConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
+    public SimpleConverter(TargetDatabase targetDatabase, InformationResourceFileVersion ... versions) {
         setTargetDatabase(targetDatabase);
-        setInformationResourceFileVersion(version);
+        setInformationResourceFileVersion(versions[0]);
     }
 
+    @Override
     protected abstract void openInputDatabase() throws IOException;
 
     /**
@@ -42,6 +43,7 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
      * 
      * @param targetDatabase
      */
+    @Override
     public void dumpData() throws Exception {
 
         DataTable dataTable = createDataTable(getTableName());

@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.hibernate.SessionFactory;
@@ -99,10 +101,12 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.Filestore;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.TestConfiguration;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
 
@@ -274,7 +278,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return version;
     }
 
-    public Document generateInformationResourceWithFileAndUser() throws InstantiationException, IllegalAccessException {
+    public Document generateDocumentWithFileAndUser() throws InstantiationException, IllegalAccessException {
         Document ir = createAndSaveNewInformationResource(Document.class, false);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
         File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
@@ -297,13 +301,20 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         try {
             FileProxy proxy = new FileProxy(file.getName(), file, VersionType.UPLOADED, FileAction.ADD);
             proxy.setRestriction(restriction);
-            informationResourceService.processFileProxy(ir, proxy);
+            // PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess, Long ticketId
+            ActionMessageErrorListener listener = new ActionMessageErrorListener();
+            informationResourceService.importFileProxiesAndProcessThroughWorkflow(ir, null, null, listener, Arrays.asList(proxy));
+            if (listener.hasActionErrors()) {
+                throw new TdarRecoverableRuntimeException(String.format("errors ocurred while processing file: %s", listener));
+            }
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
             // VersionType.UPLOADED);
-        } catch (IOException e) {
+            genericService.synchronize();
+        } catch (Exception e) {
             e.printStackTrace();
+            fail(e.getMessage());
         }
-        ir = genericService.find(ir.getClass(), ir.getId());
+        genericService.refresh(ir);// = genericService.find(ir.getClass(), ir.getId());
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             assertTrue(irf.getId() != null);
             for (InformationResourceFileVersion irfv : irf.getInformationResourceFileVersions()) {
@@ -313,12 +324,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls) throws InstantiationException, IllegalAccessException {
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls) {
         return createAndSaveNewInformationResource(cls, false);
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) throws InstantiationException,
-            IllegalAccessException {
+    protected <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) {
         Person submitter = getUser();
         if (createUser) {
             submitter = createAndSaveNewPerson("test@user.com", "");
@@ -326,28 +336,22 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewInformationResource(cls, submitter);
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson)
-            throws InstantiationException, IllegalAccessException {
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson) {
         return createAndSaveNewInformationResource(cls, persistentPerson, "TEST TITLE");
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson, String resourceTitle)
-            throws InstantiationException, IllegalAccessException {
-        Project project = new Project();
-        project.markUpdated(persistentPerson);
-        project.setTitle("PROJECT " + resourceTitle);
-        project.setDescription("test description");
-        projectService.save(project);
-        return createAndSaveNewInformationResource(cls, project, persistentPerson, resourceTitle);
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson, String resourceTitle) {
+        // Project project = new Project();
+        // project.markUpdated(persistentPerson);
+        // project.setTitle("PROJECT " + resourceTitle);
+        // project.setDescription("test description");
+        // projectService.save(project);
+        return createAndSaveNewInformationResource(cls, null, persistentPerson, resourceTitle);
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Project project, Person persistentPerson, String resourceTitle)
-            throws InstantiationException, IllegalAccessException {
-
-        R iResource = cls.newInstance();
-        iResource.setTitle(resourceTitle);
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Project project, Person persistentPerson, String resourceTitle) {
+        R iResource = createAndSaveNewResource(cls, persistentPerson, resourceTitle);
         iResource.setDescription("test description");
-        iResource.markUpdated(persistentPerson);
         iResource.setProject(project);
         iResource.setDate(2012);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
@@ -358,30 +362,16 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected Dataset createAndSaveNewDataset() {
-        Dataset dataset = new Dataset();
-        Person testPerson = getUser();
-        dataset.setTitle("Test dataset");
+        String title = "Test dataset";
+        Dataset dataset = createAndSaveNewInformationResource(Dataset.class, null, getUser(), title);
         dataset.setDescription("Test dataset description");
-        dataset.markUpdated(testPerson);
-        // dataset.setConfidential(false);
         dataset.setDate(1999);
-        datasetService.save(dataset);
+        datasetService.saveOrUpdate(dataset);
         return dataset;
     }
 
-    protected Project createAndSaveNewProject() {
-        return createAndSaveNewProject("PROJECT TEST TITLE");
-    }
-
     protected Project createAndSaveNewProject(String title) {
-        Project project = new Project();
-        Person submitter = getUser();
-        project.markUpdated(submitter);
-        project.setTitle(title);
-        project.setDescription(title);
-        project.setStatus(Status.ACTIVE);
-        projectService.save(project);
-        return project;
+        return createAndSaveNewResource(Project.class, getUser(), title);
     }
 
     public <R extends Resource> R createAndSaveNewResource(Class<R> cls, Person persistentPerson, String resourceTitle) {
@@ -396,7 +386,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             }
             genericService.save(resource);
         } catch (Exception e) {
-            Assert.fail("failed to create/save test" + cls.getSimpleName() + " record");
+            logger.error("failed: ", e);
+            Assert.fail("failed to create/save test" + cls.getSimpleName() + " record: " + e.getMessage() + " \n " + ExceptionUtils.getFullStackTrace(e));
         }
 
         return resource;
@@ -510,12 +501,17 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return getUser(getUserId());
     }
 
+    
     protected Long getUserId() {
-        return TestConstants.USER_ID;
+        return TestConfiguration.getInstance().getUserId();
+    }
+
+    protected final Long getBasicUserId() {
+        return TestConfiguration.getInstance().getUserId();
     }
 
     protected Person getBasicUser() {
-        return getUser(TestConstants.USER_ID);
+        return getUser(getBasicUserId());
     }
 
     protected Person getAdminUser() {
@@ -535,7 +531,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected Long getAdminUserId() {
-        return TestConstants.ADMIN_USER_ID;
+        return TestConfiguration.getInstance().getAdminUserId();
     }
 
     public void setHttpServletRequest(HttpServletRequest httpServletRequest) {

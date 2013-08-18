@@ -1,3 +1,4 @@
+
 /* FIXME: still unsupported
 @org.hibernate.annotations.NamedNativeQueries({
 	@org.hibernate.annotations.NamedNativeQuery(
@@ -42,6 +43,9 @@
             name = TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP,
             query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.id in (:ids) "),
     @org.hibernate.annotations.NamedQuery(
+            name = TdarNamedQueries.QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY,
+            query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
+    @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP,
             query = "SELECT new ResourceCollection(col.id, col.name, col.description, col.sortBy, col.type, col.visible) FROM ResourceCollection as col where col.id in (:ids) "),
     @org.hibernate.annotations.NamedQuery(
@@ -65,6 +69,9 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_RESOURCES_SUBMITTER,
             query = "select id from Resource where submitter.id = :submitterId "),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_RELATED_RESOURCES,
+                query = "from ResourceRelationship where (sourceResource.id = :resourceId and sourceResource.status in (:statuses)) or (targetResource.id = :resourceId and targetResource.status in (:statuses))"),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_SPARSE_RESOURCES,
             query = "select new Resource(resource.id,resource.title,resource.resourceType) from Resource resource where status like :status and resourceType=:resourceType"),
@@ -112,8 +119,11 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD,
-            query = "from OntologyNode o " +
-                    "where o.ontology.id=:ontologyId and index like :indexWildcardString"
+            query = "from OntologyNode o where o.ontology.id=:ontologyId and index like :indexWildcardString"
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name = TdarNamedQueries.QUERY_ONTOLOGYNODE_PARENT,
+            query = "from OntologyNode o where o.ontology.id=:ontologyId and index like :index"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_ONTOLOGYNODE_ALL_CHILDREN,

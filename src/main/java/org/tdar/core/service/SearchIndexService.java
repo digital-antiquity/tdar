@@ -175,7 +175,7 @@ public class SearchIndexService {
 
     public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
         log.info("indexing collection async");
-        List<ResourceCollection> collections = resourceCollectionService.findAllChildCollectionsRecursive(collectionToReindex, CollectionType.SHARED);
+        List<ResourceCollection> collections = resourceCollectionService.findAllChildCollections(collectionToReindex, null, CollectionType.SHARED);
         collections.add(collectionToReindex);
         Set<Resource> resources = new HashSet<Resource>();
         for (ResourceCollection collection : collections) {
@@ -232,6 +232,7 @@ public class SearchIndexService {
         return divisor;
     }
 
+    @SuppressWarnings("unchecked")
     public <C extends Indexable> void index(C... indexable) {
         indexCollection(Arrays.asList(indexable));
     }
@@ -270,6 +271,7 @@ public class SearchIndexService {
         indexAll(getDefaultUpdateReceiver(), getDefaultClassesToIndex(), person);
     }
 
+    @SuppressWarnings("unchecked")
     public void indexAll(Person person, Class<? extends Indexable>... classes) {
         indexAll(getDefaultUpdateReceiver(), Arrays.asList(classes), person);
     }

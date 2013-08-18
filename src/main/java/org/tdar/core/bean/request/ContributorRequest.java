@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 
@@ -42,6 +43,7 @@ public class ContributorRequest extends Persistable.Base implements Comparable<C
     private Date timestamp;
     
     @Column(length=512, name="contributor_reason")
+    @Length(max = 512)
     private String contributorReason;
     
     private String comments;

@@ -22,9 +22,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
 /**
@@ -40,35 +38,35 @@ public class ImageThumbnailTask extends AbstractTask {
     public static final int SMALL = 96;
     transient ImagePlus ijSource;
 
-    public static void main(String[] args) {
-        ImageThumbnailTask task = new ImageThumbnailTask();
-        String baseDir = "C:\\Users\\Adam Brin\\Downloads\\";
-        String orig = "4759782488_ab3452a4eb_b.jpg";
-        WorkflowContext ctx = new WorkflowContext();
-        File origFile = new File(baseDir, orig);
-
-        task.setWorkflowContext(ctx);
-
-        InformationResourceFileVersion vers = task.generateInformationResourceFileVersion(new File(baseDir, orig), VersionType.UPLOADED);
-        ctx.setOriginalFile(vers);
-        try {
-            task.run(origFile);
-        } catch (Exception e) {
-            throw new TdarRecoverableRuntimeException("an image processing error ocurred", e);
-        }
-    }
+    /*
+     * public static void main(String[] args) {
+     * ImageThumbnailTask task = new ImageThumbnailTask();
+     * String baseDir = "C:\\Users\\Adam Brin\\Downloads\\";
+     * String orig = "4759782488_ab3452a4eb_b.jpg";
+     * WorkflowContext ctx = new WorkflowContext();
+     * File origFile = new File(baseDir, orig);
+     * 
+     * task.setWorkflowContext(ctx);
+     * 
+     * InformationResourceFileVersion vers = task.generateInformationResourceFileVersion(new File(baseDir, orig), VersionType.UPLOADED);
+     * ctx.getOriginalFiles().add(vers);
+     * try {
+     * task.run(vers);
+     * } catch (Exception e) {
+     * throw new TdarRecoverableRuntimeException("an image processing error ocurred", e);
+     * }
+     * }
+     */
 
     @Override
     public void run() throws Exception {
-        run(getWorkflowContext().getOriginalFile().getFile(), getWorkflowContext().getOriginalFile().getFilename());
+        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+            run(version);
+        }
     }
 
-    public void run(File file) throws Exception {
-        processImage(file);
-    }
-
-    public void run(File file, String originalFileName) throws Exception {
-        processImage(file, originalFileName);
+    public void run(InformationResourceFileVersion version) throws Exception {
+        processImage(version, version.getTransientFile());
     }
 
     public void prepare() {
@@ -77,54 +75,46 @@ public class ImageThumbnailTask extends AbstractTask {
         // deleteFile(generateFilename(getWorkflowContext().getOutputDirectory(), getWorkflowContext().getOriginalFile().getFilename() , LARGE));
     }
 
-    public void processImage(File sourceFile) {
-        processImage(sourceFile, sourceFile.getName());
-    }
-
-    public void processImage(File sourceFile, String origFileName) {
+    public void processImage(InformationResourceFileVersion version, File sourceFile) {
+        String filename = sourceFile.getName();
         getLogger().debug("sourceFile: " + sourceFile);
 
         Opener opener = new Opener();
         opener.setSilentMode(true);
         IJ.redirectErrorMessages(true);
+        if (sourceFile == null || !sourceFile.exists()) {
+            getWorkflowContext().setErrorFatal(true);
+            throw new TdarRecoverableRuntimeException("File does not exist");
+        }
         ijSource = opener.openImage(sourceFile.getAbsolutePath());
 
-        //log the whole error message but strip filestore path before it trickles up to end-user 
         String msg = IJ.getErrorMessage();
         if (StringUtils.isNotBlank(msg)) {
             getLogger().error(msg);
-            msg = stripPath(msg);
         }
         if (ijSource == null) {
-            getLogger().info("Unable to load source image: " + sourceFile);
-            String errorMessage = String.format(FMT_ERROR_PROCESSING_COULD_NOT_OPEN, sourceFile.getName(), msg);
+            getLogger().debug("Unable to load source image: " + sourceFile);
+            if (!msg.contains("Note: IJ cannot open CMYK JPEGs")) {
+                getWorkflowContext().setErrorFatal(true);
+            }
+
+            String errorMessage = String.format(FMT_ERROR_PROCESSING_COULD_NOT_OPEN, filename, msg);
             throw new TdarRecoverableRuntimeException(errorMessage);
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
-                InformationResourceFileVersion origVersion = getWorkflowContext().getOriginalFile();
-                origVersion.setHeight(ijSource.getHeight());
-                origVersion.setWidth(ijSource.getWidth());
-                origVersion.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(origVersion));
+                version.setHeight(ijSource.getHeight());
+                version.setWidth(ijSource.getWidth());
+                version.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(version));
             }
             try {
-                createJpegDerivative(ijSource, origFileName, MEDIUM, false);
-                createJpegDerivative(ijSource, origFileName, LARGE, false);
-                createJpegDerivative(ijSource, origFileName, SMALL, false);
+                createJpegDerivative(version, ijSource, filename, MEDIUM, false);
+                createJpegDerivative(version, ijSource, filename, LARGE, false);
+                createJpegDerivative(version, ijSource, filename, SMALL, false);
             } catch (Throwable e) {
                 getLogger().error("Failed to create jpeg derivative", e);
                 throw new TdarRecoverableRuntimeException("processing error", e);
             }
         }
-    }
-   
-    private String stripPath(String errorMessage) {
-        String fsl = TdarConfiguration.getInstance().getFileStoreLocation();
-        String result = errorMessage;
-        int end = errorMessage.indexOf(fsl);
-        if(end > -1) {
-            result = errorMessage.substring(0, end);
-        }
-        return result;
     }
 
     File generateFilename(String originalFilename, int resolution) {
@@ -148,7 +138,7 @@ public class ImageThumbnailTask extends AbstractTask {
         try {
             outputFilename = URLEncoder.encode(outputFilename, "UTF-8");
         } catch (Exception e) {
-            getLogger().debug(e);
+            getLogger().debug("exception writing derivative image:", e);
         }
         File outputPath = new File(getWorkflowContext().getWorkingDirectory(), outputFilename);
 
@@ -165,7 +155,8 @@ public class ImageThumbnailTask extends AbstractTask {
         return ratio;
     }
 
-    protected void createJpegDerivative(ImagePlus ijSource, String origFileName, int resolution, boolean canSwitchSource)
+    protected void createJpegDerivative(InformationResourceFileVersion originalVersion, ImagePlus ijSource, String origFileName, int resolution,
+            boolean canSwitchSource)
             throws Throwable {
         File outputFile = generateFilename(origFileName, resolution);
 
@@ -193,7 +184,7 @@ public class ImageThumbnailTask extends AbstractTask {
         try {
             outputStream = new FileOutputStream(outputFile);
         } catch (FileNotFoundException e) {
-            getLogger().debug(e);
+            getLogger().debug("exception writing derivative image:", e);
         }
 
         try {
@@ -230,7 +221,7 @@ public class ImageThumbnailTask extends AbstractTask {
             ImageIO.write(bImage, "jpg", outputFile);
             bImage.flush();
             bImage = null;
-            InformationResourceFileVersion version = generateInformationResourceFileVersion(outputFile, type);
+            InformationResourceFileVersion version = generateInformationResourceFileVersionFromOriginal(originalVersion, outputFile, type);
             version.setHeight(destHeight);
             version.setWidth(destWidth);
             version.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(version));

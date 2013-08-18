@@ -54,15 +54,19 @@ public class HttpsInterceptor implements Interceptor {
         if (protocol == "https") {
             newPort = config.getHttpsPort();
         }
-
-        String baseUrl = String.format("%s://%s%s%s%s", protocol, config.getHostName(), config.getPort() == 80 ? "" : ":" + newPort,
-                request.getServletPath(), request.getQueryString() == null ? "" : "?" + request.getQueryString());
+logger.info(request.getRequestURL().toString());
+        String port = config.getPort() == 80 ? "" : ":" + newPort;
+        String baseUrl = String.format("%s://%s%s%s", protocol, config.getHostName(), port, UrlService.getOriginalUrlPath(request));
+        logger.info(baseUrl);
+        if (request.getServletPath().equals("/about")) {
+            baseUrl = baseUrl.replace("/about", "/");
+        }
         try {
             baseUrl = UrlService.reformatViewUrl(baseUrl);
         } catch (Exception e) {
-            logger.error("error in reformatting view URL",e);
+            logger.error("error in reformatting view URL", e);
         }
-        
+
         return baseUrl;
     }
 

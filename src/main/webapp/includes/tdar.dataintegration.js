@@ -158,9 +158,9 @@ function dropVariable(event, ui) {
 
     newChild.find('*').each(function() {
         var elem = this;
-        replaceAttribute(elem, "name", '{COLNUM}', colNum);
+        TDAR.common.replaceAttribute(elem, "name", '{COLNUM}', colNum);
         // always have one DIV to start with, so subtract 2
-        replaceAttribute(elem, "name", '{CELLNUM}', children.length - 2);
+        TDAR.common.replaceAttribute(elem, "name", '{CELLNUM}', children.length - 2);
     });
 
     $(newChild).attr("style", "");

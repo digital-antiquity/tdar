@@ -44,16 +44,17 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         project.markUpdated(getSessionUser());
         genericService.save(project);
 
+        Dataset dataset = setupAndLoadResource("tab_mapping_dataset.tab",Dataset.class);
+        Long datasetId = dataset.getId();
+        dataset = null;
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.prepare();
-        Dataset dataset = controller.getDataset();
+        controller.setId(datasetId);
+        controller.prepare();
+        dataset = controller.getDataset();
         dataset.setTitle("test title");
         dataset.setDescription("test title");
         controller.setProjectId(project.getId());
-        dataset.markUpdated(getSessionUser());
-        File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "/tab_mapping_dataset.tab");
-        controller.setUploadedFiles(Arrays.asList(file));
-        controller.setUploadedFilesFileName(Arrays.asList(file.getName()));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long image1_id = uploadImage("5127663428_42ef7f4463_b.jpg", project).getId();
@@ -108,15 +109,8 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         testDatasetMapping();
         Dataset dataset = sharedDataset;
 
-        DatasetController controller = generateNewInitializedController(DatasetController.class);
-        controller.setId(dataset.getId());
-        controller.prepare();
-        File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "/tab_mapping_dataset2.tab");
-        controller.setUploadedFiles(Arrays.asList(file));
-        controller.setUploadedFilesFileName(Arrays.asList(file.getName()));
+        setupAndLoadResource("tab_mapping_dataset2.tab", Dataset.class, dataset.getId());
 
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override
             public Image doInTransaction(TransactionStatus status) {

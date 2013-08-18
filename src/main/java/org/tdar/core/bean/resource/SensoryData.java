@@ -11,6 +11,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -18,7 +19,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
@@ -27,7 +30,8 @@ import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 @Indexed
 @Table(name = "sensory_data")
 @XmlRootElement(name = "sensoryData")
-public class SensoryData extends InformationResource {
+public class SensoryData extends Dataset {
+    
 
     /**
      * 
@@ -36,9 +40,11 @@ public class SensoryData extends InformationResource {
 
     /** toplevel metadata fields **/
     @Column(name = "monument_number")
+    @Length(max = 255)
     private String monumentNumber;
 
     @Column(name = "survey_location")
+    @Length(max = 255)
     private String surveyLocation; // FIXME: remove this field
 
     @Column(name = "survey_date_begin")
@@ -48,18 +54,23 @@ public class SensoryData extends InformationResource {
     private Date surveyDateEnd;
 
     @Column(name = "survey_conditions")
+    @Length(max = 255)
     private String surveyConditions;
 
     @Column(name = "scanner_details")
+    @Length(max = 255)
     private String scannerDetails;
 
     @Column(name = "company_name")
+    @Length(max = 255)
     private String companyName;
 
     @Column(name = "turntable_used", nullable = false)
     private boolean turntableUsed;
 
     @Column(name = "rgb_data_capture_info")
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     private String rgbDataCaptureInfo;
 
     @Column(name = "estimated_data_resolution")
@@ -69,17 +80,23 @@ public class SensoryData extends InformationResource {
     private Long totalScansInProject;
 
     @Column(name = "final_dataset_description")
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     private String finalDatasetDescription;
 
     @Column(name = "additional_project_notes")
+    @Length(max = 255)
     private String additionalProjectNotes;
 
     @Column(name = "planimetric_map_filename")
+    @Length(max = 255)
     private String planimetricMapFilename;
 
+    @Length(max = 255)
     @Column(name = "control_data_filename")
     private String controlDataFilename;
-
+    
+    
     public enum RgbCapture {
         NA("Not Specified"),
         INTERNAL("Internal"),
@@ -92,7 +109,6 @@ public class SensoryData extends InformationResource {
             return label;
         }
     }
-
     @Column(name = "rgb_capture", length = 255)
     @Enumerated(EnumType.STRING)
     private RgbCapture rgbCapture;
@@ -101,6 +117,7 @@ public class SensoryData extends InformationResource {
     // TODO: determine if this is actually one-to-many relationship. the xls from angie suggests this, but only one registration record is present in any of the
     // sampple projects
     @Column(name = "registered_dataset_name")
+    @Length(max = 255)
     private String registeredDatasetName;
 
     @Column(name = "scans_used")
@@ -115,12 +132,14 @@ public class SensoryData extends InformationResource {
     @Column(name = "final_registration_points")
     private Long finalRegistrationPoints;
 
+    @Length(max = 255)
     @Column(name = "registration_method")
     private String registrationMethod;
 
     /** mesh metadata **/
     // premeshing metadata
     @Column(name = "premesh_dataset_name")
+    @Length(max = 255)
     private String preMeshDatasetName;
 
     @Column(name = "premesh_points")
@@ -139,9 +158,12 @@ public class SensoryData extends InformationResource {
     private boolean premeshColorEditions;
 
     @Column(name = "point_deletion_summary")
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     private String pointDeletionSummary;
 
     // polygonal mesh metadata
+    @Length(max = 255)
     @Column(name = "mesh_dataset_name")
     private String meshDatasetName;
 
@@ -167,13 +189,17 @@ public class SensoryData extends InformationResource {
     private boolean meshdataReduction;
 
     @Column(name = "mesh_adjustment_matrix")
+    @Length(max = 255)
     private String meshAdjustmentMatrix;
 
     @Column(name = "mesh_processing_notes")
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     private String meshProcessingNotes;
 
     // decimated mesh metadata
     @Column(name = "decimated_mesh_dataset")
+    @Length(max = 255)
     private String decimatedMeshDataset;
 
     @Column(name = "decimated_mesh_original_triangle_count")
@@ -588,5 +614,11 @@ public class SensoryData extends InformationResource {
 
     public void setCameraDetails(String cameraDetails) {
         this.cameraDetails = cameraDetails;
+    }
+    
+    @Override
+    @Transient
+    public boolean isHasBrowsableImages() {
+        return true;
     }
 }

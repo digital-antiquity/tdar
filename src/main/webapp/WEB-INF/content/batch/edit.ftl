@@ -1,5 +1,9 @@
-<#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#escape _untrusted as _untrusted?html>
+<#global itemPrefix="image"/>
+<#global itemLabel="image"/>
+<#global inheritanceEnabled=true />
+<#global multipleUpload=true />
+<#global useBulkUpload=true />
 <#import "batch-common.ftl" as batchCommon>
 
 <head>
@@ -7,45 +11,40 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 
 </head>
-<body>
-<@edit.sidebar />
-<@edit.subNavMenu />
-<h1>Batch Resource Upload</h1>
-<@s.form name='BulkMetadataForm' id='BulkMetadataForm'  cssClass="span9 form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
-<@edit.basicInformation "image" "batch" true>
-<@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
-</@edit.basicInformation>
+<#macro customH1>
+	<h1>Batch Resource Upload</h1>
+</#macro>
 
-<@edit.citationInfo "image" false />
+<#macro basicInformation>
+	<@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
+</#macro>
 
-<@batchCommon.printTemplate />
 
-<@edit.asyncFileUpload "Files For Batch Upload" true "Upload" "divFileUpload">
+<#macro beforeUpload>
+	<@batchCommon.printTemplate />
+	
+	<div>
+	<br>
+	<p><b>select all of the files you'd like to add to ${siteAcronym}.  Each one will be associated with a new record along with any metadata specified either in the excel spreadsheet specified above, or with any values selected on this form.</b></p>
+	</div>
+</#macro>
 
-select all of the files you'd like to add to ${siteAcronym}.  Each one will be associated with a new record along with any metadata specified either in the excel spreadsheet specified above, or with any values selected on this form.
+<#macro localSection>
+	<div class="glide">
+	<h3>Note</h3>
+	For all of the fields below, you can select values that will apply to all of the files you've chosen to upload above.
+	</div>
+</#macro>
 
-</@edit.asyncFileUpload>
 
-<div class="glide">
-<h3>Note</h3>
-For all of the fields below, you can select values that will apply to all of the files you've chosen to upload above.
-</div>
-<@edit.allCreators 'Creators' authorshipProxies 'authorship' />
-
-<@edit.sharedFormComponents  fileReminder=false/>
-
-</@s.form>
+<#macro footer>
     <table style="display:none;visibility:hidden" id="queuedFileTemplate">
         <@edit.fileProxyRow />
     </table>
-<@edit.resourceJavascript formSelector='#BulkMetadataForm' includeAsync=true includeInheritance=true>
+</#macro>
 
-$(function(){
+<#macro localJavascript>
     $('#fileAsyncUpload').rules('add', 'asyncFilesRequired');
-});
-</@edit.resourceJavascript>
-
-<@edit.asyncUploadTemplates />
-
-</body>
+</#macro>
+</#escape>

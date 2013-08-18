@@ -30,7 +30,6 @@ public interface TargetDatabase extends Database {
      * Returns a table name consistent with this target database's allowable
      * table names.
      */
-
     public static final String TDAR_ID_COLUMN = "id_row_tdar";
 
     public String normalizeTableOrColumnNames(String input);
@@ -76,5 +75,11 @@ public interface TargetDatabase extends Database {
     public List<String> selectDistinctValues(DataTableColumn column);
 
     public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
+
+    public List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,  String query);
+    
+    public <T> T selectRowFromTable(DataTable dataTable,  ResultSetExtractor<T> resultSetExtractor, Long rowId);
+
+    public String selectTableAsXml(DataTable dataTable);
 
 }

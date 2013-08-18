@@ -4,11 +4,13 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 public class LongAnalyzer implements ColumnAnalyzer {
 
-	public DataTableColumnType getType() {
+	@Override
+    public DataTableColumnType getType() {
 		return DataTableColumnType.BIGINT;
 	}
 
-	public boolean analyze(String value) {
+	@Override
+    public boolean analyze(String value) {
 		if (value == null)
 			return true;
 		if ("".equals(value))
@@ -21,7 +23,8 @@ public class LongAnalyzer implements ColumnAnalyzer {
 		return true;
 	}
 
-	public int getLength() {
+	@Override
+    public int getLength() {
 		return 0;
 	}
 }

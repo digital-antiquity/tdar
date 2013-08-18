@@ -1,9 +1,8 @@
 package org.tdar.struts.action.search;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,8 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.web.SessionData;
 
@@ -48,7 +49,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 
     @Test
     @Rollback(true)
-    public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException, InvalidFormatException {
+    public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException, InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = getBasicUser();
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -73,7 +74,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 
     @Test
     @Rollback(true)
-    public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException {
+    public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = null;
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -82,7 +83,14 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 
         controller.setServletRequest(getServletRequest());
         doSearch("");
-        assertEquals(TdarActionSupport.UNAUTHORIZED, controller.viewExcelReport());
+        TdarActionException except = null;
+        try {
+            controller.viewExcelReport();
+        } catch (TdarActionException e) {
+            except = e;
+        }
+        assertNotNull(except);
+        assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), except.getStatusCode());
         setIgnoreActionErrors(true);
     }
 

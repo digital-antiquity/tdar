@@ -2,9 +2,9 @@
 
 <#macro printTemplate>
 	<div class="glide">
-	<#if !ticketId?has_content>
+	<#if !ticketId?has_content || ticketId == -1 >
 	    <h3>Upload record specific metadata</h3>
-	        <div tiplabel="Upload your document(s)"  tooltipcontent="The metadata entered on this form is tied to that 
+	        <div data-tiplabel="Upload your document(s)"  data-tooltipcontent="The metadata entered on this form is tied to that 
 	            one file. Documents must be in the following types: xls,xlsx">
 	             <h4>Instructions:</h4>
 	            <ol>
@@ -16,7 +16,7 @@
 	            </ol>
 	            </div>
 	            <br/>
-	                <@s.file label="Upload a Mapping File" cssClass="validateFileType" labelposition='top' name='uploadedFiles' size='40'/>
+	                <@s.file label="Upload a Mapping File" cssClass="bulkValidateFileType" labelposition='top' name='uploadedFiles' size='40'/>
 	<#else>
 	<@s.hidden name="templateFilename" />
 	<strong>Template File</strong>:${templateFilename}
@@ -26,12 +26,12 @@
 
 <script>
 $(function() {
-    var validate = $('.validateFileType');
+    var validate = $('.bulkValidateFileType');
     if ($(validate).length > 0) {
         $(validate).rules("add", {
-            accept : "xls|xlsx",
+            extension : "xls|xlsx",
             messages : {
-                accept : "Please enter a valid file (xls,xlsx)"
+                extension : "Please enter a valid file (xls,xlsx)"
             }
         }); // end rules
     }

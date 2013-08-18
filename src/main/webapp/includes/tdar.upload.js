@@ -5,24 +5,44 @@ TDAR.namespace("fileupload");
 TDAR.fileupload = function() {
     'use strict';
     
-    var _informationResource;
-    var _informationResourceId = -1;
+
     var _nextRowId = 0;
-    
+    var _nextRowVisibility = true;
+    var _defaults = {
+        //selector to the page's form
+        formSelector: "#metadataForm",
+
+        //selector to the actual file input element.
+        inputSelector: "#fileAsyncUpload",
+
+        //selector to the element that we will bind the fileupload widget to.  It can be any element so long as it contains the file input element and the files table.
+        fileuploadSelector: "#divFileUpload"
+    }
+
     //main file upload registration function
     var _registerUpload  = function(options) {
-        
+
+        //FIXME: workaround for ie10 doubleclick bug.  remove this once fixed (https://github.com/blueimp/jQuery-File-Upload/issues/1180)
+        var ie_version =  _getIEVersion();
+        if(ie_version.major == 10) {
+            $('html').addClass("ie10")
+        }
+
         //combine options w/ defaults
-        var _options = $.extend({formSelector: "#resourceMetadataForm"}, options);
-        $(_options.formSelector).data("uploadNames", {});
-        
+        var _options = $.extend(_defaults, options);
+
         //pass off our options to fileupload options (to allow easy passthrough of page-specific (options e.g. acceptFileTypes)
-        var $fileupload = $(_options.formSelector).fileupload($.extend({
-//            add: function(e, data) {
-//                data.submit(); //upload after file selected
-//            },
+        var $fileupload = $(_options.fileuploadSelector).fileupload($.extend({
             formData: function(){
-                return [{name:"ticketId", value:$('#ticketId').val()}]
+                var ticketId, data;
+                ticketId = $('#ticketId').val();
+                if(!ticketId) {
+                    data = [{name:"ticketRequested", value: "true"}]
+                } else {
+                    data = [{name:"ticketId", value:$('#ticketId').val()}]
+                }
+                return data;
+                
             },
             //send files in a single http request (singleFileUploads==false). See TDAR-2763 for more info      
             singleFileUploads: false,
@@ -30,29 +50,15 @@ TDAR.fileupload = function() {
             url: TDAR.uri('upload/upload'),
             autoUpload: true,
             maxNumberOfFiles: TDAR.maxUploadFiles,
-            destroy: _destroy,
-            //FIXME: don't allow dupe filenames in same upload session until TDAR-2801 fixed.
-            submit: function(e, data) {
-                var i;
-                var errorCount = 0;
-                var uploadNames = $(_options.formSelector).data("uploadNames");
-                for(i = 0; i < data.files.length; i++) {
-                    var file = data.files[i];
-                    if(uploadNames[file.name]) {
-                        errorCount++;
-                        file.error = "Duplicate file name";
-                        $(data.context[i]).find('.name').append("<br><span class='label label-important'>" + file.error  + "</span>");                            
-                    } else {
-                        uploadNames[file.name]=true;
-                    }
-                }
-                return errorCount === 0;
-            }
+            getNumberOfFiles: function() {
+                return this.filesContainer.children().not(".deleted-file, .hidden, .replace-target").length;
+            },
+            destroy: _destroy
+
         }, _options));
+
+        var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
         
-        var $filesContainer = $fileupload.fileupload('option', 'fileContainer');
-        
-        $fileupload.bind("fileuploadcompleted", _updateReplaceButtons);
         $fileupload.bind("fileuploadcompleted", _updateReminder);
         //make sure the sequenceNumber field is correct after files are added (or the operation fails)
         var _updateSequenceNumbers =  function(e, data){
@@ -65,59 +71,103 @@ TDAR.fileupload = function() {
         
         //note: unlike in jquery.bind(), you cant use space-separated event names here.
         $fileupload.bind("fileuploadcompleted fileuploadfailed", _updateSequenceNumbers);
-        
-        //hack: disable until we have a valid ticket
-        //$fileupload.fileupload("disable");
-        if (!parseInt($('#ticketId').val())) {
-	        $.post(TDAR.uri("upload/grab-ticket"), function(data) {
-	            $('#ticketId').val(data.id);
-	            //$fileupload.fileupload('enable');
-	        }, 'json');
-        }
-        
-        //populate list of peviously uploaded files,  if available.
-        if(_options.informationResourceId) {
-            _informationResourceId = _options.informationResourceId;
-            $.ajax(
-                    {
-                        url: TDAR.uri("upload/list-resource-files"), 
-                        data: {informationResourceId: _options.informationResourceId},
-                        success: function(data){
-                            //FIXME: if there's an exception in this method, it gets eaten
-                            var files = _translateIrFiles(data);
-                            console.log("files.length: %s", files.length);
-                            // remove all of the pre-loaded proxies ahead of replacing them with their respective proxy versions
-                            if (files.length) {
-                                $("#fileProxyUploadBody").empty();
-                            }
-                            //fake out the fileupload widget to render our previously uploaded files by invoking it's 'uploadComplete' callback
-                            $fileupload.fileupload('option', 'done').call($fileupload[0], null, {result: files});
-                            
-                            //FIXME: the file.restriction select boxes won't have the correct state,  so as a hack we put the correct value in a data attr and reset it here
-                            $filesContainer.find("select.fileProxyConfidential").each(function(){
-                                var restriction = $(this).attr("datarestriction");
-                                if(restriction) $(this).val(restriction);
-                            });
-                            
-                        },
-                        error: function(jqxhr, textStatus, errorThrown) {
-                            console.error("textStatus:%s    error:%s", textStatus, errorThrown);
-                        },
-                        dataType: 'json'
+
+        var helper = $.extend({}, _options, {
+                //reference back to fileupload widget's container element
+                context: $fileupload[0],
+                updateFileAction: _updateFileAction,
+
+                //list of existing and new files that are not deleted or serving as a file replacement
+                //FIXME: needs to not include files that were uploaded but failed part way.
+                validFiles: function() {
+                    var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file, .hidden');
+                    
+                    var files = $rows.map(function(){
+                        var file = {};
+                        $(this).find('[type=hidden]').each(function(){
+                            file[$(this).attr("class")] = $(this).val();
+                        });
+                        file.context = $(this);
+                        return file;
+                    }).get();
+                    
+                    //translate property names and add extension
+                    files = $.map(files, function(file){
+                        var ext = file.fileReplaceName.substring(file.fileReplaceName.indexOf(".") + 1).toLowerCase();
+                        return {
+                            id: parseInt(file.fileId),
+                            action: file.fileAction,
+                            filename: file.fileReplaceName,
+                            sequence: parseInt(file.fileSequenceNumber),
+                            ext:  ext,
+                            base: file.fileReplaceName.substr(0, file.fileReplaceName.length - ext.length - 1),
+                            context: file.context
+                        }
                     });
+                    return files;
+                }
+        });
+
+        //add reference to helper object  to form and fileupload widget container
+        $(_options.formSelector).add(_options.fileuploadSelector).data('fileuploadHelper', helper);
+
+        _registerReplaceButton(_options.fileuploadSelector);
+
+        //update the proxy action if user updates fileproxy metadata
+        $filesContainer.on("change", "select,textarea,input[type=text],input[type=date]", function(e) {
+            _updateFileAction(this);
+        });
+        
+        $(_options.fileuploadSelector).bind("fileuploadcompleted", function(e, data) {
+            var $datefields = $(data.context).find(".date");
+            _applyDateInputs($datefields);
+            $(this).trigger("heightchange");
+        });
+        
+        $(_options.fileuploadSelector).bind("fileuploaddone", function(e, data) {
+            if(!data.result) return;
+            if(!data.result.ticket) return;
+            if(!data.result.ticket.id)  {
+                console.log("no ticket in results"); 
+            } else {
+                var ticket = data.result.ticket;
+                console.log("ticket received: %s", JSON.stringify(ticket));
+                $("#ticketId").val(ticket.id);
+            }
+        });
+
+        //pre-populate the files table with any previously-uploaded files
+        if(TDAR.filesJson) {
+            var files = _translateIrFiles(TDAR.filesJson);
+            console.log("files.length: %s", files.length);
+            // remove all of the pre-loaded proxies ahead of replacing them with their respective proxy versions
+            if (files.length) {
+                $("#fileProxyUploadBody").empty();
+            }
+            //fake out the fileupload widget to render our previously uploaded files by invoking it's 'uploadComplete' callback
+            $fileupload.fileupload('option', 'done').call($fileupload[0], null, {result: {"files":files}});
+
+            //any dropdown boxes in the new row have no selected value, so we update it here manually.
+            $filesContainer.find("select.fileProxyConfidential").each(function(){
+                var restriction = $(this).attr("datarestriction");
+                if(restriction) $(this).val(restriction);
+            });
         }
-        
-        //dynamically generate the replace-with dropdown list items with the the candidate replacement files
-        $fileupload.on("click", "button.replace-button", _buildReplaceDropdown);
-        
-        //console.log("register() done")
+
+        //disable submit button during file transfer;
+        var $submitButtons = $(".submitButton");
+        $fileupload.bind("fileuploadsent", function() {
+            $submitButtons.prop("disabled", true)
+
+        //re-enable when complete regardless of outcome
+        }).bind("fileuploadfinished", function() {
+               $submitButtons.prop("disabled", false);
+        });
+
+        return helper;
     };
     
-    
-    
-    
-    
-    //update file proxy actionto indicate that the values have changed 
+    //update file proxy actionto indicate that the values have changed
     var _updateFileAction = function(elemInRow) {
         console.log("updateFileAction(%s)", elemInRow);
         var $hdnAction = $(elemInRow).closest("tr").find(".fileAction");
@@ -125,18 +175,23 @@ TDAR.fileupload = function() {
             $hdnAction.val("MODIFY_METADATA");
         }
     }
-    
-    
+
     //convert json returned from tDAR into something understood by upload-plugin, as well as fileproxy fields to send back to server
     var _translateIrFiles = function(fileProxies) {
         return $.map(fileProxies, function(proxy, i) {
-            return $.extend({
+            var file = $.extend({
                 name: proxy.filename,
                 url: TDAR.uri("filestore/" + proxy.originalFileVersionId),
                 thumbnail_url: null, 
                 delete_url: null,
-                delete_type: "DELETE" 
+                delete_type: "DELETE",
+                description: proxy.description,
+                fileCreatedDate: ""
             }, proxy);
+            if(proxy.fileCreatedDate) {
+                file.fileCreatedDate = $.datepicker.formatDate("mm/dd/yy", new Date(proxy.fileCreatedDate))                
+            }
+            return file;
         });
     };
 
@@ -168,31 +223,15 @@ TDAR.fileupload = function() {
         }
         //show the correct button label
         $("span", $btnDelete).html({
-            "DELETE": locale.fileupload.destroy,
+            "DELETE": "Delete",
             "UNDELETE": "Undelete"
         }[$btnDelete.data("type")] );
                
         
-        _updateReplaceButtons(e, data);
         console.log("destroy called. context:%s", data.context[0]);
     };
-    
-    
-    //if there are any newfile rows,  enable all the replace buttons
-    var _updateReplaceButtons = function(e, data) {
-        console.log("_updateReplaceButtons")
-        var $filesTable = $(data.context).closest("tbody.files");
-        var $newfileRows = $('.new-file:not(.replace-target,.deleted-file)', $filesTable);
-        
-        //if there are new files in the uploaded queue that arent already replace targets we can  enable all the replace buttons
-        if($newfileRows.length) {
-            //TODO: create simple jquery plugin .enable() and .disable()  that takes care of class + property in one shot.
-            $('button.replace-button', $filesTable).removeClass("disabled").prop("disabled", false);
-        } else {
-            $('button.replace-button', $filesTable).addClass("disabled").prop("disabled", true);
-        }
-    };
 
+    //TODO: replace this with a custom event
     var _updateReminder = function(e, data) {
         console.log("_updateReminder")
         var $filesTable = $(data.context).closest("tbody.files");
@@ -204,97 +243,6 @@ TDAR.fileupload = function() {
         }
     };
 
-    //dynamically generate the replace-with dropdown list items with the the candidate replacement files
-    var _buildReplaceDropdown = function(e) {
-        var button = this;
-        var $ul = $(button).next(); //in a button dropdown, the ul follows the button
-        var $tr = $(button).parents("tr.existing-file");
-        var $tbody = $(button).closest("tbody.files");
-        var $newfiles = $('.new-file:not(.replace-target,.deleted-file)');
-        var data = {
-                jqnewfiles: $newfiles,
-                //TODO: figure  out if this existing file has already chosen a replacement, if so,  render a "cancel" option.
-                bReplacePending: $tr.hasClass('replacement-selected')};
-        
-        var $listItems = $(tmpl("template-replace-menu", data));
-        $listItems.find('a').bind("click", _replacementFileItemClicked);
-        $ul.empty();
-        $ul.append($listItems);
-    };
-
-    //"replacement file chosen" event handler.  update the hidden replacement filename field of the replacement file row, and mark target as selected
-    var _replacementFileItemClicked = function(e) {
-        //FIXME: I don't think preventDefault should be necessary, but browser follows href ("#", e.g. scrolls to top of page) unless I do.
-        e.preventDefault();  
-        
-        var $anchor = $(this);
-        var $tr = $anchor.parents(".existing-file");
-        var $hidden = $tr.find('.fileReplaceName');
-        var $target =  $($anchor.data("target"));
-        if(!$anchor.hasClass("cancel")) {
-            if($target.data('jqOriginalRow')) {
-                //if this replace operation overwrites a pending replace, cancel the pending replace first.
-                _cancelFileReplace($target.data('jqOriginalRow'), $target);
-            }
-            _replaceFile($tr, $target);
-        } else {
-            //the 'cancel' link doesn't have a data-target attr; but we did add a reference to the target in the original
-            _cancelFileReplace($tr, $tr.data("jqTargetRow"));
-        }
-    };
-    
-    var _replaceFile = function($originalRow, $targetRow) {
-        var targetFilename = $targetRow.find("input.fileReplaceName").val();
-        var originalFilename = $originalRow.find("input.fileReplaceName").val();
-        
-        
-        $originalRow.find('.replacement-text').text("will be replaced by " + targetFilename + ")");
-        $originalRow.find('.fileReplaceName').val(targetFilename);
-        $originalRow.find('.fileReplaceName').data("original-filename", originalFilename)
-        
-        //effectively 'remove' the target file proxy fields from the form by removing the name attribute.
-        $targetRow.find("input,select").each(function(){
-            var $hidden = $(this);
-            $hidden.data("original-name", $hidden.attr("name"));
-            $hidden.removeAttr("name");
-        });
-        //have original row point to target,  in the event we need to cancel later and set everything back to normal
-        $originalRow.data("jqTargetRow", $targetRow).addClass("replacement-selected");
-
-        //implicitly cancel a pending replace if user initiates a another replace operate on the same targetRow
-        $targetRow.data("jqOriginalRow", $originalRow);
-        
-        //Change action to "REPLACE", and store original in event of cancel 
-        var $fileAction = $originalRow.find('.fileAction');
-        $fileAction.data('original-fileAction', $fileAction.val());
-        $fileAction.val("REPLACE");
-        
-        $targetRow.find('.replacement-text').text("(replacing " + originalFilename + ")");
-        $targetRow.find('input, select, button.delete-button').prop("disabled", true);;
-        $targetRow.addClass('replace-target');
-    }
-    
-    //TODO: pull out redundant sections before adam has a chance to put this in a ticket for me.
-    var _cancelFileReplace = function($originalRow, $targetRow) {
-        $targetRow.find('.replacement-text').text("");
-        $targetRow.find('input, select').prop("disabled", false).each(function() {
-            $(this).attr("name", $(this).data("original-name"));
-        });
-        $targetRow.find('button.delete-button').prop("disabled", false);
-        
-        $originalRow.find('.replacement-text').text('');
-        $originalRow.removeClass("replacement-selected");
-        
-        var $fileAction = $originalRow.find('.fileAction');
-        $fileAction.val($fileAction.data('original-fileAction'));
-        
-        var $filename = $originalRow.find('.fileReplaceName');
-        $filename.val($filename.data('original-filename'));
-        $.removeData($originalRow[0], "jqTargetRow");
-        $targetRow.removeClass('replace-target');
-    }
-    
-    
     var _enableRow = function(row) {
         $('button:not(.delete-button), select', row).prop('disabled', false);
         $('.delete-button', row).removeClass('btn-warning').addClass('btn-danger');
@@ -305,18 +253,125 @@ TDAR.fileupload = function() {
         $('.delete-button', row).addClass('btn-warning').removeClass('btn-danger');
     };
     
-    //public: kludge for dealing w/ fileupload's template system, which doesn't have a good way to pass the row number of the table the template will be rendered to
+    // kludge for dealing w/ fileupload's template system, which doesn't have a good way to pass the row number of the table the template will be rendered to
     var _getRowId = function() {
         return _nextRowId++;
     }
+
+    /**
+     * another kludge:  indicate to fileupload-ui template that we don't want uploaded file to appear in files section
+     * (e.g. when the user is using the "replace file" feature).
+     */
+    var _getRowVisibility = function() {
+        return _nextRowVisibility;
+    }
+
+    var _replaceFile = function($originalRow, $targetRow) {
+        var targetFilename = $targetRow.find("input.fileReplaceName").val();
+        var originalFilename = $originalRow.find("input.fileReplaceName").val();
+        $originalRow.find('.replacement-text').text("will be replaced by " + targetFilename + ")");
+        $originalRow.find('.fileReplaceName').val(targetFilename);
+        $originalRow.find('.fileReplaceName').data("original-filename", originalFilename);
+
+        //Change action to "REPLACE", and store original in event of cancel
+        var $fileAction = $originalRow.find('.fileAction');
+        $fileAction.data('original-fileAction', $fileAction.val());
+        $fileAction.val("REPLACE");
+
+        //store the replacement row in case we need to cancel this operation later
+        $targetRow.detach();
+        $originalRow.data("$targetRow", $targetRow);
+        $originalRow.find(".replace-file-button, .undo-replace-button").toggle();
+    }
+
+    //to 'cancel' a file replacement, we need to restore state of the fileproxy,  and then create a new file proxy
+    //telling the server to ignore the replacement file.
+    var _cancelReplaceFile = function($row) {
+        var $fileReplaceName = $row.find(".fileReplaceName");
+        var $fileAction = $row.find(".fileAction");
+        var $replacementText = $row.find(".replacement-text");
+
+        //restore the old name and action
+        $fileReplaceName.val($fileReplaceName.data("original-filename"));
+        $fileAction.val($fileAction.data("original-fileAction"));
+        $replacementText.text("");
+
+        //create proxy for the former replacefile
+        var $targetRow = $row.data("$targetRow");
+        $targetRow.find(".fileAction").val("NONE");
+        $("#cancelledProxies").append($targetRow);
+
+        $row.find(".replace-file-button, .undo-replace-button").toggle();
+    }
+
+    var _registerReplaceButton = function(fileuploadSelector) {
+
+        console.log("registering replace button")
+
+        //invoke the fileupload widget's "send" method
+        //FIXME: this would be more efficient if we passed the specific div that holds the upload section (instead of entire form)
+        $(fileuploadSelector).on("change", ".replace-file" , function (e) {
+            console.log("triggering file upload");
+
+            //tell filupload-ui to hide this upload from files table
+            _nextRowVisibility = false;
+
+            var $replaceTarget =  $(this).closest(".existing-file");
+
+            //temporarily omit the target when calculating file count (so we can replace a file even when we are at max upload cap)
+            $replaceTarget.addClass("replace-target");
+
+            $(fileuploadSelector).fileupload('send', {
+                files: e.target.files || [{name: this.value}],
+                fileInput: $(this),
+                $replaceTarget: $replaceTarget
+            });
+
+            $replaceTarget.removeClass("replace-target");
+
+        });
+
+        //when browser uploads replacement file uploaded succesfully, update file proxy fields to indicate incoming file is replacement
+        $(fileuploadSelector).bind("fileuploadcompleted", function(e, data) {
+            if(!data.$replaceTarget) return;
+            var file = data.files[0];
+            var $originalRow = data.$replaceTarget;
+            var $targetRow = $(data.context);
+            _replaceFile($originalRow, $targetRow);
+        });
+
+        //regardless of success/failure,  perform this cleanup after replacement upload terminates
+        $(fileuploadSelector).bind("fileuploadfinished", function() {
+            //tell filupload-ui to stop hiding uploads
+            _nextRowVisibility = true;
+        });
+
+        //
+        $(fileuploadSelector).on("click", ".undo-replace-button", function(e) {
+            console.log("undo replace click");
+            _cancelReplaceFile($(this).closest(".existing-file"));
+        });
+    }
     
-    
+    var _applyDateInputs = function($elements) {
+        $elements.datepicker({dateFormat: "mm/dd/yy"});
+    }
+
+    function _getIEVersion(){
+        var agent = navigator.userAgent;
+        var reg = /MSIE\s?(\d+)(?:\.(\d+))?/i;
+        var matches = agent.match(reg);
+        if (matches != null) {
+            return { major: matches[1], minor: matches[2] };
+        }
+        return { major: "-1", minor: "-1" };
+    }
+
     //expose public elements
     return {
         "registerUpload": _registerUpload,
-        //FIXME: we can remove the need for this if we include it as closure to instanced version of _destroy.
         "updateFileAction": _updateFileAction,
-        "getRowId": _getRowId
-        
+        "getRowId": _getRowId,
+        "getRowVisibility": _getRowVisibility
     };
 }();

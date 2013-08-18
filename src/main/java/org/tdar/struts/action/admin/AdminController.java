@@ -120,6 +120,24 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
+    @Action(value="updateDois",results={
+            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+    })
+    public String updateDois() throws IOException {
+        scheduledProcessService.updateDois();
+        getActionMessages().add("Running ... this may take a while");
+        return SUCCESS;
+    }
+
+    @Action(value="runWeekly",results={
+            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+    })
+    public String runWeekly() throws IOException {
+        scheduledProcessService.generateWeeklyStats();
+        getActionMessages().add("Running ... this may take a while");
+        return SUCCESS;
+    }
+
     @Action(value="rebuildCaches",results={
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })

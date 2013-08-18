@@ -45,7 +45,6 @@ public class PairtreeFilestore extends BaseFilestore {
      */
     private final static int CHARACTERS_PER_LEVEL = 2;
     public static final String DELETED_SUFFIX = ".deleted";
-    private static final String FILENAME_SANITIZE_REGEX = "([\\W&&[^\\s\\-\\+\\.]])";
 
     /**
      * @param pathToFilestore
@@ -111,6 +110,7 @@ public class PairtreeFilestore extends BaseFilestore {
                 version.setChecksumType(digest.getAlgorithm());
                 version.setChecksum(formatDigest(digest));
             }
+            version.setTransientFile(outFile);
             return outFile.getCanonicalPath();
         } catch (IOException iox) {
             // this exception may be swallowed if our finally block itself throws an exception, so we log it here first
@@ -165,7 +165,7 @@ public class PairtreeFilestore extends BaseFilestore {
      */
     public File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException {
         File file = new File(getAbsoluteFilePath(version));
-        logger.debug("file requested: {}", file);
+        logger.trace("file requested: {}", file);
         if (!file.isFile())
             throw new FileNotFoundException("Could not find file: " + file.getAbsolutePath());
         return file;
@@ -228,27 +228,6 @@ public class PairtreeFilestore extends BaseFilestore {
         }
         logger.trace("{}", base);
         return FilenameUtils.concat(FilenameUtils.normalize(base.toString()), version.getFilename());
-    }
-
-    /**
-     * Determines the correct subdirectories under baseStoreDirectory where the
-     * file with filename (fileId) should live given the charactersPerLevel and
-     * directoryLevels.
-     * 
-     * Given a fileId of:
-     * 
-     * 363b29f92662a6c94273a46351c5f50
-     * 
-     * and charactersPerLevel = 2 and directoryLevels = 3 this would return:
-     * 
-     * 36/3b/29
-     * 
-     * @param fileId
-     * @return String
-     */
-
-    public static String sanitizeFilename(String filename) {
-        return filename.replaceAll(FILENAME_SANITIZE_REGEX, "_");
     }
 
     /**

@@ -1,11 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,12 +15,11 @@ import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
-import org.tdar.core.configuration.TdarConfiguration;
 
 @Entity
 // making the assumption formally that there can only be one version of any type
@@ -33,41 +28,54 @@ import org.tdar.core.configuration.TdarConfiguration;
 @Table(name = "information_resource_file_version", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "information_resource_file_id", "file_version", "internal_type" })
 })
-public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable {
+public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension {
 
     private static final long serialVersionUID = 3768354809654162949L;
 
+    private transient File transientFile;
     @ManyToOne()
     // optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "information_resource_file_id")
     private InformationResourceFile informationResourceFile;
 
+    @Length(max = 255)
     private String filename;
 
     @Column(name = "file_version")
     private Integer version;
 
     @Column(name = "mime_type")
+    @Length(max = 255)
     private String mimeType;
 
+    @Length(max = 255)
     private String format;
 
+    @Column(name = "primary_file")
+    private Boolean primaryFile = Boolean.FALSE;
+
+    @Length(max = 255)
     private String extension;
 
+    @Length(max = 255)
     private String premisId;
 
     @Column(name = "filestore_id")
+    @Length(max = 255)
     private String filestoreId;
 
+    @Length(max = 255)
     private String checksum;
 
     @Column(name = "checksum_type")
+    @Length(max = 255)
     private String checksumType;
 
     @Column(nullable = false, name = "date_created")
     private Date dateCreated;
 
     @Column(name = "file_type")
+    @Length(max = 255)
     private String fileType;
 
     @Enumerated(EnumType.STRING)
@@ -87,15 +95,13 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @Column(name = "effective_size")
     private Long uncompressedSizeOnDisk;
 
+    @Length(max = 255)
     private String path;
 
     @Transient
     private Long informationResourceId;
     @Transient
     private Long informationResourceFileId;
-
-    @Transient
-    private File file;
 
     private transient boolean viewable = false;
 
@@ -169,6 +175,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.format = format;
     }
 
+    @Override
     public String getExtension() {
         return extension;
     }
@@ -277,27 +284,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     }
 
     @Transient
-    // Ultimately, this may need to be converted into a URI, or something that can be converted directly
-    // into a reader due to the indexing requirment.
-    // FIXME: consider injecting this as a transient variable when loaded
-    // instead of doing a lookup using the TdarConfiguration singleton's Filestore. Otherwise
-    // we will have difficulty converting TdarConfiguration + Filestore into spring managed beans
-    public File getFile() {
-        if (file != null) {
-            return file;
-        }
-
-        if (filestoreId == null && path == null)
-            return null;
-        try {
-            file = TdarConfiguration.getInstance().getFilestore().retrieveFile(this);
-        } catch (FileNotFoundException e) {
-            logger.warn("No file found in store with ID: " + getFilename() + " and path:" + path + " (" + getId() + ")");
-        }
-        return file;
-    }
-
-    @Transient
     public boolean isTranslated() {
         return (getFileVersionType() == VersionType.TRANSLATED);
     }
@@ -347,25 +333,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     }
 
     /**
-     * @return
-     */
-    @XmlTransient
-    public String getIndexableContent() {
-        String toReturn = "";
-        if (!isIndexable()) {
-            return "";
-        }
-        try {
-            toReturn = FileUtils.readFileToString(getFile());
-        } catch (FileNotFoundException e) {
-            logger.error("Information resource File: " + getFilename() + " (" + getId() + ") does not exist");
-        } catch (IOException io) {
-            logger.error("an io exception occurred when trying to read file:" + getFilename(), io);
-        }
-        return toReturn;
-    }
-
-    /**
      * @param informationResourceFileId
      *            the informationResourceFileId to set
      */
@@ -410,6 +377,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         return informationResourceId;
     }
 
+    @Override
     public String toString() {
         return String.format("%s (%s, #%d | %d)", filename, fileVersionType, version, getInformationResourceFileId());
     }
@@ -433,25 +401,13 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         return comparison;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.bean.Persistable.Base#getEqualityFields()
-     */
-    @SuppressWarnings("unchecked")
     @Override
-    public List<?> getEqualityFields() {
-        return Arrays.asList(getInformationResourceFileId(), version, fileVersionType, getId());
-    }
-
-    public boolean hasValidFile() {
-        return getFile() != null && getFile().exists();
-    }
-
+    @XmlTransient
     public boolean isViewable() {
         return viewable;
     }
 
+    @Override
     public void setViewable(boolean viewable) {
         this.viewable = viewable;
     }
@@ -470,6 +426,25 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     public void setUncompressedSizeOnDisk(Long actualSizeOnDisk) {
         this.uncompressedSizeOnDisk = actualSizeOnDisk;
+    }
+
+    public boolean isPrimaryFile() {
+        if (primaryFile == null) {
+            return false;
+        }
+        return primaryFile;
+    }
+
+    public void setPrimaryFile(boolean primaryFile) {
+        this.primaryFile = primaryFile;
+    }
+
+    public File getTransientFile() {
+        return transientFile;
+    }
+
+    public void setTransientFile(File transientFile) {
+        this.transientFile = transientFile;
     }
 
 }

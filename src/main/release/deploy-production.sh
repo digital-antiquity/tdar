@@ -45,7 +45,7 @@ if [ $? -ne 0 ]
    echoerr "==============================================="
    exit 1
   else
-    sudo service tomcat6 stop
+    sudo service tomcat7 stop
     sudo rm -Rrf ~tdar/app/ROOT
-    sudo service tomcat6 restart
+    sudo service tomcat7 restart
 fi

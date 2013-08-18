@@ -5,10 +5,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,10 +27,13 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,7 +54,11 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.w3c.dom.Element;
+import org.tdar.utils.TestConfiguration;
+import org.w3c.css.sac.CSSException;
+import org.w3c.css.sac.CSSParseException;
+import org.w3c.css.sac.ErrorHandler;
+import org.w3c.tidy.Tidy;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
@@ -78,14 +87,14 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
-import com.google.common.collect.Lists;
-import com.threelevers.css.Selector;
 
 /**
  * @author Adam Brin
  * 
  */
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
+
+    private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
     public static final String RESTRICTED_ACCESS_TEXT = "This resource is restricted from general view";
 
@@ -103,6 +112,23 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static String PROJECT_ID_FIELDNAME = "projectId";
     protected static final String MY_TEST_ACCOUNT = "my test account";
     protected static final String THIS_IS_A_TEST_DESCIPTION = "this is a test desciption";
+    // "link isn't allowed in <div> elements",
+    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<footer>", "</header>", "</nav>",
+            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
+            "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
+            "Warning: '<' + '/' + letter not allowed here", /* javascript */
+            "missing </a> before <div>",
+            "discarding unexpected </div",
+            "discarding unexpected </a>",
+            "missing </div> before link",
+            "discarding unexpected </span>", "missing </span> before ",
+            "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */
+            "input repeated attribute" /* radiobutton duplicate css */,
+            "inserting implicit <br>",
+            "replacing element</p>",
+            "discarding unexpected hr"
+    };
+    // "unescaped & or unknown entity" /*add back later */,
 
     protected Set<String> encodingErrorExclusions = new HashSet<String>();
 
@@ -125,7 +151,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      * instance of tDAR instead of running "integration" tests.
      */
     public static String getBaseUrl() {
-        return System.getProperty("tdar.baseurl", DEFAULT_BASE_URL);
+        return CONFIG.getBaseUrl();
     }
 
     public Page getPage(String localPath) {
@@ -182,6 +208,54 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertNoEscapeIssues();
         assertNoErrorTextPresent();
         return statusCode;
+    }
+
+    protected void assertPageValidHtml() {
+        if (internalPage.getWebResponse().getContentType().contains("json")) {
+            try {
+                JSONObject.fromObject(getPageCode());
+            } catch (Exception e) {
+                Assert.fail(String.format("%s : %s: %s", e.getMessage(), ExceptionUtils.getFullStackTrace(e), getPageCode()));
+            }
+        }
+        if (internalPage.getWebResponse().getContentType().toLowerCase().contains("html")) {
+            Tidy tidy = new Tidy(); // obtain a new Tidy instance
+            tidy.setXHTML(true); // set desired config options using tidy setters
+            tidy.setQuiet(true);
+            // tidy.setOnlyErrors(true);
+            // tidy.setShowWarnings(false);
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                StringWriter errs = new StringWriter();
+                tidy.setErrout(new PrintWriter(errs, true));
+                tidy.parse(internalPage.getWebResponse().getContentAsStream(), baos);
+                StringBuilder errors = new StringBuilder();
+                for (String line : StringUtils.split(errs.toString(), "\n")) {
+                    boolean skip = false;
+                    for (String ignore : ignores) {
+                        if (StringUtils.containsIgnoreCase(line, ignore)) {
+                            skip = true;
+                            logger.trace("skipping: {} ", line);
+                        }
+                    }
+                    if (skip) {
+                        continue;
+                    }
+
+                    if (line.contains("Error:") || line.contains("Warning:")) {
+                        errors.append(line).append("\n");
+                        logger.error("adding: {}", line);
+                    }
+                }
+                String string = errors.toString();
+                if (StringUtils.isNotBlank(string.trim())) {
+                    fail(string + "\r\n\r\n" + getPageCode());
+                }
+            } catch (IOException e) {
+                logger.error("{}", e);
+            } // run tidy, providing an input and output stream
+
+        }
     }
 
     /**
@@ -251,6 +325,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         if (internalPage instanceof HtmlPage) {
             HtmlPage page = (HtmlPage) internalPage;
             assertEquals(expectedTitle.toLowerCase(), page.getTitleText().toLowerCase());
+        }
+        else {
+            Assert.fail(String.format("was looking for <title>%s</title> but server response was not a valid html page", expectedTitle));
+        }
+    }
+
+    public void assertPageTitleContains(String expectedTitle) {
+        if (internalPage instanceof HtmlPage) {
+            HtmlPage page = (HtmlPage) internalPage;
+            assertTrue(page.getTitleText().toLowerCase().contains(expectedTitle.toLowerCase()));
         }
         else {
             Assert.fail(String.format("was looking for <title>%s</title> but server response was not a valid html page", expectedTitle));
@@ -353,7 +437,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     private String checkRadioButton(String value, List<DomElement> radioButtons) {
         List<HtmlInput> buttonsFound = new ArrayList<HtmlInput>();
         for (DomElement radioButton : radioButtons) {
-            if (radioButton.getId().toLowerCase().endsWith(value.toLowerCase())) {
+            if (radioButton.getAttribute("value").equals(value)) {
                 buttonsFound.add((HtmlInput) radioButton);
             }
         }
@@ -479,6 +563,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertFalse(statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         assertNoErrorTextPresent();
         assertNoEscapeIssues();
+        assertPageValidHtml();
         return statusCode;
     }
 
@@ -532,7 +617,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         if (contents.contains(text)) {
             logger.trace("text " + text + " found in " + contents);
         }
-        assertFalse("text should not be present [" + text + "] in page:" + internalPage.getUrl(), contents.contains(text));
+        assertFalse("text should not be present [" + text + "] in page:" + internalPage.getUrl() + "\r\n" + getPageText(), contents.contains(text));
     }
 
     /**
@@ -600,6 +685,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             htmlPage = (HtmlPage) internalPage;
             documentElement = htmlPage.getDocumentElement();
             assertNoEscapeIssues();
+            assertPageValidHtml();
         }
     }
 
@@ -674,7 +760,28 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         webClient.getOptions().setTimeout(0);
         // webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
-
+        webClient.setCssErrorHandler(new ErrorHandler() {
+            @Override
+            public void warning(CSSParseException exception) throws CSSException {
+                if (exception.getURI().contains(getBaseUrl())) {
+                    logger.trace("CSS Warning:",exception);
+                }
+            }
+            
+            @Override
+            public void fatalError(CSSParseException exception) throws CSSException {
+                if (exception.getURI().contains(getBaseUrl())) {
+                    logger.warn("CSS Fatal Error:",exception);
+                }
+            }
+            
+            @Override
+            public void error(CSSParseException exception) throws CSSException {
+                if (exception.getURI().contains(getBaseUrl())) {
+                    logger.debug("CSS Error:",exception);
+                }
+            }
+        });
         // reset encoding error exclusions for each test
         encodingErrorExclusions = new HashSet<String>();
         // <generated> gets emitted by cglib methods in stacktrace, let's not consider it to be a double encoding error.
@@ -686,6 +793,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertTextPresentInPage("Fauna Pathologies - Default Ontology Draft");
         assertTextPresentInPage("Indeterminate");
         assertTextPresentInPage("Fauna");
+        clickLinkWithText("Present (Present)");
+        assertTextPresent("Synonyms");
+        assertTextPresent("Parent");
+        assertTextPresent("Datasets that use Present");
+        clickLinkWithText("Fauna Pathologies - Default Ontology Draft (ontology root)");
     }
 
     public void testCodingSheetView() {
@@ -813,18 +925,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         logger.warn("No form found containing id '{}'", id);
     }
 
-    protected List<Element> querySelectorAll(String cssSelector) {
-        Iterable<Element> elements = Selector.from(documentElement).select(cssSelector);
-        List<Element> elementList = Lists.newArrayList(elements);
-        return elementList;
-    }
-
-    protected Element querySelector(String cssSelector) {
-        return Selector.from(documentElement).select(cssSelector).iterator().next();
-    }
-
     public String getPersonalFilestoreTicketId() {
         gotoPageWithoutErrorCheck("/upload/grab-ticket");
+        assertTrue("internalPage is not TextPage. It is: " + internalPage.getClass().getName(), internalPage instanceof TextPage);
         TextPage textPage = (TextPage) internalPage;
         String json = textPage.getContent();
         logger.debug("ticket json::" + json.trim());
@@ -848,7 +951,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         createInput("hidden", "fileProxies[" + rowNum + "].restriction", restriction.name());
         createInput("hidden", "fileProxies[" + rowNum + "].action", FileAction.ADD.name());
         createInput("hidden", "fileProxies[" + rowNum + "].fileId", "-1");
-        createInput("hidden", "fileProxies[" + rowNum + "].filename", filename);
+        createInput("hidden", "fileProxies[" + rowNum + "].filename", FilenameUtils.getName(filename));
         createInput("hidden", "fileProxies[" + rowNum + "].sequenceNumber", Integer.toString(rowNum));
     }
 
@@ -890,8 +993,30 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         return code;
     }
 
+    public void assertValidJson(String json) {
+        try {
+            JSONSerializer.toJSON(json);
+        } catch (JSONException jex) {
+            fail("Invalid json string: >>" + json + "<<");
+        }
+    }
+
+    /**
+     * assert provided string is valid json and return a JSONObject, otherwise call fail()
+     * 
+     * @param json
+     * @return
+     */
+    protected JSONObject toJson(String json) {
+        assertValidJson(json);
+        JSONObject jso = (JSONObject) JSONSerializer.toJSON(json);
+        return jso;
+    }
+
     protected void assertFileSizes(Page page, List<File> files) {
-        JSONArray jsonArray = (JSONArray) JSONSerializer.toJSON(page.getWebResponse().getContentAsString());
+        JSONObject json = toJson(page.getWebResponse().getContentAsString());
+        JSONArray jsonArray = json.getJSONArray("files");
+        logger.info(jsonArray.toString());
         for (int i = 0; i < files.size(); i++) {
             Assert.assertEquals("file size reported from server should be same as original", files.get(i).length(), jsonArray.getJSONObject(i).getLong("size"));
         }
@@ -947,8 +1072,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
         assertCurrentUrlContains("/simple");
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
 
         String invoiceid = getInput("id").getAttribute("value");
+        logger.info("TOTAL::: " + total);
         submitForm();
         if (!total.equals("0")) {
             assertCurrentUrlContains("process-payment-request");
@@ -964,7 +1091,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             response = getAccountPollingRequest(polingUrl);
             assertTrue(response.contains(expectedResponse.name()));
         }
-        logger.info(getCurrentUrlPath());
         return invoiceid;
     }
 
@@ -1019,14 +1145,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         gotoPage("/");
         clickLinkOnPage("Log In");
         setMainForm("loginForm");
-        user = System.getProperty("tdar.user", user);
-        pass = System.getProperty("tdar.pass", pass);
+        user = CONFIG.getUsername(user);
+        pass = CONFIG.getPassword(pass);
         // logger.info(user + ":" + pass);
         setInput("loginUsername", user);
         setInput("loginPassword", pass);
         if (expectingErrors) {
             webClient.setThrowExceptionOnFailingStatusCode(false);
-            submitFormWithoutErrorCheck("Login");
+            submitFormWithoutErrorCheck("_tdar.Login");
             webClient.setThrowExceptionOnFailingStatusCode(true);
         } else {
             clickElementWithId("btnLogin");
@@ -1085,12 +1211,12 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void reindexUnauthenticated() {
         String url = getCurrentUrlPath();
         logout();
-        login(TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_PASSWORD);
+        login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
         reindex();
         logout();
         gotoPage(url);
     }
-    
+
     protected void reindex() {
         gotoPage("/admin/searchindex/build");
         gotoPage("/admin/searchindex/checkstatus");
@@ -1102,7 +1228,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             } catch (InterruptedException e) {
                 fail("InterruptedException during reindex.  sorry.");
             }
-            gotoPage("/admin/searchindex/checkstatus?userId="+getAdminUserId());
+            gotoPage("/admin/searchindex/checkstatus?userId=" + getAdminUserId());
             logger.info(getPageCode());
             if (count == 1000) {
                 fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");

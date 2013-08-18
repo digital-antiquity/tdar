@@ -14,6 +14,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 @Service
 public class RecaptchaService {
 
+    //https://developers.google.com/recaptcha/docs/java
+    
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public ReCaptcha generateRecaptcha() {

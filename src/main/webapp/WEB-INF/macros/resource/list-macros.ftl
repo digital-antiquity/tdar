@@ -1,9 +1,8 @@
 <#escape _untrusted as _untrusted?html>
-<#include "navigation-macros.ftl">
 <#import "view-macros.ftl" as view>
 <#import "common.ftl" as common>
 <#assign DEFAULT_SORT = 'RELEVANCE' />
-<#assign DEFAULT_ORIENTATION = 'LIST' />
+<#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
     <#macro printTag tagName className closing>
         <#if tagName?has_content>
             <<#if closing>/</#if>${tagName} class="${className}" <#nested><#rt/>>
@@ -13,7 +12,7 @@
 <#--fixme:  with at least three presentation style (list/grid/map/custom), this macro has become *extremely* hard to modify, 
     let alone comprehend. Consider replacing w/ @listResources, @listResourcesMap, and @listResourcesGrid -->
 <#macro listResources resourcelist sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated itemsPerRow=4
-    expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
+    listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
   <#local showProject = false />
   <#local prev =""/>
   <#local first = true/>
@@ -80,14 +79,13 @@
         </#if>  
 	        <#-- printing item tag -->
             <@printTag itemTag_ "listItem ${itemClass!''}" false>
-
-            <#if orientation == 'MAP' && (resource.firstActiveLatitudeLongitudeBox.centerLatitudeIfNotObfuscated)?has_content  &&
-            (resource.firstActiveLatitudeLongitudeBox.centerLongitudeIfNotObfuscated)?has_content &&!resource.hasConfidentialFiles()
-             > data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
+			<#local showLat = orientation == 'MAP' && (resource.firstActiveLatitudeLongitudeBox.centerLatitudeIfNotObfuscated)?has_content  &&
+            (resource.firstActiveLatitudeLongitudeBox.centerLongitudeIfNotObfuscated)?has_content &&!resource.hasConfidentialFiles() >
+            <#if showLat> data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
             data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
             </@printTag>
 
-<!-- ${itemTag_} -- ${rowCount} -- ${itemsPerRow} -- ${rowCount % itemsPerRow } -->
+<!-- ${itemTag_} - ${rowCount} - ${itemsPerRow} - ${rowCount % itemsPerRow } -->
             <#if itemTag_?lower_case != 'li'>
                 <#if !first>
 	                <#if (!isGridLayout)>
@@ -102,15 +100,17 @@
                         <@view.firstThumbnail resource /><#t>
                     <#t></a><br/>
             </#if>
-            <@searchResultTitleSection resource titleTag />
+            <@searchResultTitleSection resource titleTag showLat/>
             <@printLuceneExplanation  resource />
-            <@printDescription resource=resource expanded=expanded orientation=orientation length=500 showProject=showProject/>
+            <@printDescription resource=resource orientation=orientation length=500 showProject=showProject/>
 
             </${itemTag_}>
         <#local first=false/>
      </#if>
     </#list>
-  </${listTag_}>
+    <#if rowCount != -1>
+	  </${listTag_}>
+    </#if>
   </#if>
   <#if orientation == "MAP">
   </div>
@@ -129,7 +129,7 @@
 </#macro>
 
 
-<#macro printDescription resource=resource expanded=false orientation=DEFAULT_ORIENTATION length=80 showProject=false>
+<#macro printDescription resource=resource orientation=DEFAULT_ORIENTATION length=80 showProject=false>
 	<#if resource?has_content>
 		<#local _desc = "Description not available"/>
 		<#if (resource.description)?has_content >
@@ -143,7 +143,7 @@
 			<#local _rid = "C${resource.id?c}" >
 		</#if>
 	
-        <#if expanded && orientation != 'GRID'>
+        <#if orientation == 'LIST_FULL'>
             <div class="listItemPart">
 	            <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
 		            <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
@@ -172,19 +172,20 @@
     </#macro>
 
 
-<#macro searchResultTitleSection result titleTag>
+<#macro searchResultTitleSection result titleTag showLat=false>
     <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
     <#if titleTag?has_content>
         <${titleTag} class="${titleCssClass}">
     </#if>
     <a class="resourceLink" href="<@s.url value="/${result.urlNamespace}/${result.id?c}"/>"><#rt>
     <#if result.title?has_content>
-        ${result.title!"No Title"} <#if result.status?has_content && editor && !result.active ><small>[${result.status?upper_case}]</small></#if><#t>
+        ${result.title!"No Title"} <#if result.status?has_content && (editor || result.viewable) && !result.active ><small>[${result.status?upper_case}]</small></#if><#t>
     <#elseif result.properName?has_content>
         ${result.properName!"No Name"}<#t>
      <#else>
          No Title
     </#if>
+    <#if showLat><i class="icon-map-marker"></i></#if>
         <#if (result.date?has_content && (result.date > 0 || result.date < -1) )>(${result.date?c})</#if>
     </a><#lt>
     <@bookmark result false/>
@@ -248,14 +249,14 @@
                 bookmark</span><#t>
             </#if>
         <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
-            <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmarked" href="#">
+            <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmarked" >
                 	<i title="bookmark or unbookmark" class="tdar-icon-bookmarked bookmark-icon"></i>
                 <#if showLabel>
                     <span class="bookmark-label">un-bookmark</span><#t>
                 </#if>
             </a><#t>
         <#else>
-            <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>"  class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmark" href="#">
+            <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>"  class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmark">
                 	<i title="bookmark or unbookmark"  class="bookmark-icon tdar-icon-bookmark"></i>
                 <#if showLabel>
                     <span class="bookmark-label"> bookmark</span><#t>

@@ -6,13 +6,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String PARENT_PROJECT_ID_FIELD = "projectId";

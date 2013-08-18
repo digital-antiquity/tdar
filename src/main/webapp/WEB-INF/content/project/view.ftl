@@ -1,29 +1,40 @@
+<#escape _untrusted as _untrusted?html>
+
+<#global includeRssAndSearchLinks=true>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-<@view.htmlHeader resourceType="project">
-<meta name="lastModifiedDate" content="$Date$"/>
-<@view.googleScholar />
-<#assign rssUrl>/search/rss?groups[0].fieldTypes[0]=PROJECT&groups[0].projects[0].id=${project.id?c}&groups[0].projects[0].name=${(project.name!"untitled")?url}</#assign>
-<@search.rssUrlTag url=rssUrl />
 
-</@view.htmlHeader>
- <@search.headerLinks includeRss=false />
-
-<@view.toolbar "${resource.urlNamespace}" "view" />
-
-<@view.basicInformation />
-<@view.sharedViewComponents project />
+<#macro head>
+<style>
+i.search-list-checkbox-grey {background-image:none!important;}
+li.media { display:inline-block}
+</style>
+</#macro>
 
 
+<#macro footer>
+        <#if selectedResourceTypes.empty>
+        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Browse by Resource Type(s)" facetParam="selectedResourceTypes" />
+		</#if>
 <#if (totalRecords > 0)>
 
 <br/>
-<h3>There are ${paginationHelper.totalNumberOfItems?c} Resources within this Project</h3>
+<h3>There are ${paginationHelper.totalNumberOfItems?c}
+
+
+ <#if selectedResourceTypes?has_content>
+${resourceTypeFacets[0].plural}
+ <#else>Resources</#if> within this Project <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: " href="<@s.url includeParams="all">
+            <@s.param name="selectedResourceTypes"value="" />
+            <@s.param name="startRecord" value=""/>
+</@s.url>">[remove this filter]</a></sup>
+ </#if>
+ </h3>
 
     <#if ( results?has_content )>
-              <@rlist.listResources resourcelist=results expanded=true listTag="ol" headerTag="h4" titleTag="h5" 
-              sortfield=project.sortBy  orientation=project.orientation mapPosition="left" />
+              <@rlist.listResources resourcelist=results listTag="ol" headerTag="h4" titleTag="h5" 
+              sortfield=sortField  orientation=project.orientation mapPosition="left" />
     </#if>
 
     <#if ( paginationHelper.pageCount > 1)>
@@ -35,4 +46,5 @@
 <#else>
     No resources have been associated with this project.
 </#if>
-
+</#macro>
+</#escape>

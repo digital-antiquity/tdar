@@ -49,9 +49,10 @@ import com.opensymphony.xwork2.Preparable;
  */
 public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P> {
 
-    public static final String BILLING = "BILLING";
-    public static final String CONFIRM = "confirm";
-    public static final String DELETE_CONSTANT = "delete";
+    public static final String SAVE_SUCCESS_PATH = "${saveSuccessPath}?id=${persistable.id}";
+    public static final String LIST = "list";
+    public static final String DRAFT = "draft";
+
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String delete;
@@ -91,8 +92,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * 
      * @param resource
      * @return the String result code to use.
+     * @throws TdarActionException 
      */
-    protected abstract String save(P persistable);
+    protected abstract String save(P persistable) throws TdarActionException;
 
     /**
      * Used to instantiate and return a new specific subtype of Resource to be
@@ -132,12 +134,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @SkipValidation
     @HttpOnlyIfUnauthenticated
-    @Action(value = "view",
+    @Action(value = VIEW,
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, location = "view.ftl"),
                     @Result(name = INPUT, type = "httpheader", params = { "error", "404" }),
-                    @Result(name = "draft", location = "/WEB-INF/content/errors/resource-in-draft.ftl")
+                    @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
             })
     public String view() throws TdarActionException {
         String resultName = SUCCESS;
@@ -156,11 +158,11 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = DELETE_CONSTANT, results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
+    @Action(value = DELETE, results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
             @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl") })
     @WriteableSession
     public String delete() throws TdarActionException {
-        if (isPostRequest() && DELETE_CONSTANT.equals(getDelete())) {
+        if (isPostRequest() && DELETE.equals(getDelete())) {
             try {
                 checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
                 if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
@@ -186,14 +188,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = "list")
+    @Action(value = LIST)
     public String list() {
         loadListData();
         return SUCCESS;
     }
 
-    @Action(value = "save", results = {
-            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${saveSuccessPath}?id=${persistable.id}"),
+    @Action(value = SAVE, results = {
+            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
             @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
             @Result(name = INPUT, location = "edit.ftl")
     })
@@ -244,7 +246,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 indexPersistable();
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
-                    logger.debug("Action errors found; Replacing return status of {} with {}", actionReturnStatus, INPUT);
+                    logger.debug("Action errors found {}; Replacing return status of {} with {}", getActionErrors(), actionReturnStatus, INPUT);
                     // FIXME: if INPUT -- should I just "return"?
                     actionReturnStatus = INPUT;
                 }
@@ -322,15 +324,21 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = "add", results = {
+    @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = BILLING, type=TYPE_REDIRECT, location = "/cart/add")
+            @Result(name = BILLING, type=TYPE_REDIRECT, location = URLConstants.CART_ADD)
     })
     @HttpsOnly
     public String add() throws TdarActionException {
         if (!isAbleToCreateBillableItem()) {
             return BILLING;
         }
+        
+        //FIXME:make this a preference...
+        if (getPersistable() instanceof HasStatus && isEditor() && !isAdministrator()) {
+            ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
+        }
+        
         checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         logAction("CREATING");
         return loadAddMetadata();
@@ -345,7 +353,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = "edit", results = {
+    @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = "edit.ftl")
     })
     @HttpsOnly
@@ -501,10 +509,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @return boolean whether the user can VIEW this resource
      * @throws TdarActionException
      */
+    @Override
     public boolean isViewable() throws TdarActionException {
         return true;
     }
 
+    @Override
     public boolean isCreatable() throws TdarActionException {
         return true;
     }
@@ -515,6 +525,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @return boolean whether the user can EDIT this resource
      * @throws TdarActionException
      */
+    @Override
     public boolean isEditable() throws TdarActionException {
         return false;
     }
@@ -525,6 +536,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @return boolean whether the user can DELETE this resource (default calls isEditable)
      * @throws TdarActionException
      */
+    @Override
     public boolean isDeleteable() throws TdarActionException {
         return isEditable();
     }
@@ -535,6 +547,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @return boolean whether the user can SAVE this resource (default is TRUE for NEW resources, calls isEditable for existing)
      * @throws TdarActionException
      */
+    @Override
     public boolean isSaveable() throws TdarActionException {
         if (isNullOrNew()) {
             return true;
@@ -563,6 +576,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return delete;
     }
 
+    @Override
     public P getPersistable() {
         return persistable;
     }
@@ -579,11 +593,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.id = id;
     }
 
-    /*
+    /**
      * This method is invoked when the paramsPrepareParamsInterceptor stack is
      * applied. It allows us to fetch an entity from the database based on the
      * incoming resourceId param, and then re-apply params on that resource.
+     * @see <a href="http://blog.mattsch.com/2011/04/14/things-discovered-in-struts-2/">Things discovered in Struts 2</a> 
      */
+    @Override
     public void prepare() {
 
         if (isPersistableIdSet()) {
@@ -606,6 +622,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return Persistable.Base.isNotNullOrTransient(getPersistable());
     }
 
+    @Override
     public abstract Class<P> getPersistableClass();
 
     public void setPersistableClass(Class<P> persistableClass) {

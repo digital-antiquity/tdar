@@ -1,7 +1,9 @@
 package org.tdar.core.bean.entity;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -40,6 +42,7 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
@@ -103,7 +106,18 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         public String getCode() {
             return this.code;
         }
+        
+        public boolean isPerson() {
+            return this ==PERSON;
+        }
+
+        public boolean isInstitution() {
+            return this == INSTITUTION;
+        }
+        
     }
+
+    private Long occurrence = 0L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -121,9 +135,9 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
      * private Person updatedBy;
      */
     @Field(norms = Norms.NO, store = Store.YES)
+    @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_updated", nullable = true)
-    @DateBridge(resolution = Resolution.MILLISECOND)
     private Date dateUpdated;
 
     @Temporal(TemporalType.DATE)
@@ -131,7 +145,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     private Date dateCreated;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", length = 25)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private Status status = Status.ACTIVE;
@@ -145,15 +159,14 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         setDateUpdated(new Date());
     }
 
-    @Column(length = 64)
+    @Column(length = 255)
+    @Length(max = 255)
     private String url;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = true, name = "creator_id")
     @NotNull
     private Set<Address> addresses = new LinkedHashSet<Address>();
-
-    private String location;
 
     private transient Float score = -1f;
     private transient Explanation explanation;
@@ -162,6 +175,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     // @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval = true)
     // private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
+    @Override
     @Fields({ @Field(name = "name", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = "name_kwd", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.CREATOR_NAME_SORT, norms = Norms.NO, store = Store.YES) })
@@ -205,24 +219,10 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         this.url = url;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public abstract CreatorType getCreatorType();
 
     @Override
     public boolean equals(Object candidate) {
-        if (this == candidate) {
-            return true;
-        }
-        if (this == null || candidate == null) {
-            return false;
-        }
         try {
             return Persistable.Base.isEqual(this, Creator.class.cast(candidate));
         } catch (ClassCastException e) {
@@ -231,12 +231,31 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         }
     }
 
+    // private transient int hashCode = -1;
+
+    /*
+     * copied from Persistable.Base.hashCode() (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
-        if (Persistable.Base.isTransient(this)) {
-            return super.hashCode();
+        Logger logger = LoggerFactory.getLogger(getClass());
+        int hashCode = -1;
+        if (Persistable.Base.isNullOrTransient(this)) {
+            hashCode = super.hashCode();
+        } else {
+            hashCode = Persistable.Base.toHashCode(this);
         }
-        return Persistable.Base.toHashCode(this);
+
+        Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
+        logger.trace("setting hashCode to {} ({}) {}", obj);
+        return hashCode;
+    }
+
+    @XmlTransient
+    public List<?> getEqualityFields() {
+        return Collections.emptyList();
     }
 
     /**
@@ -386,6 +405,14 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Override
     public boolean isDuplicate() {
         return status == Status.DUPLICATE;
+    }
+
+    public Long getOccurrence() {
+        return occurrence;
+    }
+
+    public void setOccurrence(Long occurrence) {
+        this.occurrence = occurrence;
     }
 
 }

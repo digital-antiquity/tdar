@@ -130,7 +130,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testReEvaluationAppropriateWithUncountedThings() throws TdarActionException, InstantiationException, IllegalAccessException {
         Person person = createAndSaveNewPerson();
         Account invoice = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), person);
-        Project project = createAndSaveNewProject();
+        Project project = createAndSaveNewProject("title");
         Document doc = createAndSaveNewInformationResource(Document.class, person);
         addFileToResource(doc, new File(TestConstants.TEST_DOCUMENT));
         doc.setStatus(Status.DELETED);

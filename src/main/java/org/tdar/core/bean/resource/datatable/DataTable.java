@@ -12,7 +12,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -29,8 +28,8 @@ import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -55,11 +54,13 @@ public class DataTable extends Persistable.Base {
     private Dataset dataset;
 
     @Column(nullable = false)
+    @Length(max = 255)
     private String name;
 
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "display_name")
+    @Length(max = 255)
     private String displayName;
 
     @Lob
@@ -110,6 +111,7 @@ public class DataTable extends Persistable.Base {
      */
     public List<DataTableColumn> getSortedDataTableColumns() {
         return getSortedDataTableColumns(new Comparator<DataTableColumn>() {
+            @Override
             public int compare(DataTableColumn a, DataTableColumn b) {
                 int comparison = a.compareTo(b);
                 if (comparison == 0) {
@@ -210,6 +212,7 @@ public class DataTable extends Persistable.Base {
         return description;
     }
 
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder(name).append(" - ").append(getId() == null ? -1 : getId());
         return builder.toString();

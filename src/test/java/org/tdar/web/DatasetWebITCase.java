@@ -22,6 +22,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -31,11 +32,10 @@ import org.tdar.junit.RunWithTdarConfiguration;
  * 
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    //FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.   
-    
+    // FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.
+
     private static final String WEST_COAST_CITIES = "West Coast Cities";
     private static final String EAST_COAST_CITIES = "East Coast Cities";
     private static final String WASHINGTON_3 = "washington";
@@ -67,7 +67,6 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("resourceCollections[0].name", "TESTCOLLECTIONNAME");
         docValMap.put("dataset.date", "1923");
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_NAME);
-
     }
 
     @Test
@@ -76,14 +75,27 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // upload a file ahead of submitting the form
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME);
         uploadDataset();
+
+        Long datasetId = extractTdarIdFromCurrentURL();
+        Dataset dataset = datasetService.find(datasetId);
+        DataTable datatable = dataset.getDataTables().iterator().next();
+        String browseDataUrl = String.format("/dataset/view-row?id=%s&dataTableId=%s&rowId=1",datasetId, datatable.getId());
+        gotoPage(browseDataUrl);
+        assertTextNotPresent("Expression dataset is undefined");
+        if (TdarConfiguration.getInstance().isViewRowSupported()) {
+            assertTextPresentIgnoreCase("Row number 1");
+        } else {
+            assertTextNotPresentIgnoreCase("Row number 1");
+        }
     }
 
     @Test
     @Rollback(true)
     public void testCreateDatasetRecord() {
+
         // upload a file ahead of submitting the form
-        
-        docValMap.put("fileProxies[0].restriction",  FileAccessRestriction.CONFIDENTIAL.name());
+
+        docValMap.put("fileProxies[0].restriction", FileAccessRestriction.CONFIDENTIAL.name());
         uploadDataset();
 
         assertTextPresentInPage(TEST_DATASET_NAME);
@@ -93,21 +105,21 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage("/dataset/" + datasetId);
         assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
-        
+
         clickLinkWithText(TABLE_METADATA);
 
         assertTextPresentInCode(datasetId.toString());
 
-        assertTrue("Column1 should not be blank", checkInput("dataTableColumns[1].columnEncodingType", "UNCODED_VALUE"));
-        setInput("dataTableColumns[0].columnEncodingType", "0UNCODED_VALUE", false);
+        assertTrue("Column1 should not be blank", checkInput("dataTableColumns[1].columnEncodingType", DataTableColumnEncodingType.UNCODED_VALUE.name()));
+        setInput("dataTableColumns[0].columnEncodingType", DataTableColumnEncodingType.UNCODED_VALUE.name(), false);
 
-        setInput("dataTableColumns[1].columnEncodingType", "1CODED_VALUE", false);
+        setInput("dataTableColumns[1].columnEncodingType", DataTableColumnEncodingType.CODED_VALUE.name(), false);
         setInput("dataTableColumns[1].categoryVariable.id", "1", false); // ARCHITECTURE
         setInput("dataTableColumns[1].tempSubCategoryVariable.id", "27", false); // MATERIAL
         setInput("dataTableColumns[1].description", "column description for city", false);
         setInput("dataTableColumns[1].defaultCodingSheet.id", Long.toString(codingSheetId), false);
         setInput("dataTableColumns[1].defaultOntology.id", Long.toString(ontologyId), false);
-//        setInput("postSaveAction", "SAVE_MAP_NEXT");
+        // setInput("postSaveAction", "SAVE_MAP_NEXT");
         logger.debug("coding sheet id: {} ", codingSheetId);
         logger.debug("ontology id: {} ", ontologyId);
         submitForm("Save");
@@ -115,36 +127,62 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTrue(internalPage.getUrl().toString().endsWith("/dataset/" + datasetId));
         assertTextPresentIgnoreCase("translated");
-        //ensure that changing column metadata didn't implicitly change file access rights
+
+        // ensure that changing column metadata didn't implicitly change file access rights
         assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
     }
-    
+
     @Test
     @Rollback
     public void testConfidentialDatatableView() {
         testCreateDatasetRecord();
         String viewPageUrl = internalPage.getUrl().toString();
         Long datasetId = extractTdarIdFromCurrentURL();
-        //make sure we can get the get the datatable browse content.
+        // make sure we can get the get the datatable browse content.
         Dataset dataset = datasetService.find(datasetId);
         DataTable datatable = dataset.getDataTables().iterator().next();
         String browseDataUrl = "/datatable/browse?id=" + datatable.getId();
         gotoPage(browseDataUrl);
-        //does this look like json?
+        // does this look like json?
         assertTextPresentInCode("columnEncodingType");
         assertFalse("response should be json, not html", getPageCode().contains("<html"));
-        
-        //currently logged in as user,  log out and then log in as basic user  (without view rights) 
+
+        // currently logged in as user, log out and then log in as basic user (without view rights)
         logout();
-        login(); 
+        login();
 
         gotoPage(browseDataUrl);
         assertTextPresentInCode("{}");
     }
+    
+    @Test
+    @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
+    public void testXmlDatatableView() {
+        testCreateDatasetRecord();
+        Long datasetId = extractTdarIdFromCurrentURL();
+        Dataset dataset = datasetService.find(datasetId);
+        DataTable datatable = dataset.getDataTables().iterator().next();
+        String browseDataUrl = "/dataset/xml?dataTableId=" + datatable.getId();
+        gotoPage(browseDataUrl);
+        // does this look like xml?
+        final String pageCode = getPageCode();
+        assertTrue("response should be xml, not html", pageCode.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""));
+    }
 
     private void uploadDataset() {
-        gotoPage("/dataset/add");
+
+        String ticketId = getPersonalFilestoreTicketId();
+        assertTrue("Expected integer number for ticket - but got: " + ticketId, ticketId.matches("([0-9]*)"));
+        String filename = docValMap.get("uploadedFiles");
+        docValMap.remove("uploadedFiles");
+        uploadFileToPersonalFilestore(ticketId, filename);
+
+            gotoPage("/dataset/add");
         addCopyrightHolder(docValMap);
+        setInput("ticketId", ticketId);
+        addFileProxyFields(0, FileAccessRestriction.PUBLIC, filename);
+
         for (String key : docValMap.keySet()) {
             setInput(key, docValMap.get(key));
         }
@@ -154,7 +192,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace(getPageText());
         submitForm();
         assertCurrentUrlContains("columns");
-        gotoPage("/dataset/" + extractTdarIdFromCurrentURL() );
+        gotoPage("/dataset/" + extractTdarIdFromCurrentURL());
         logger.trace(getPageText());
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
@@ -176,7 +214,6 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         webClient.getCache().clear();
         clickLinkWithText("edit");
         logger.trace(getPageText());
-
         // FIXME: the order here is arbitrary, mainly from the fact that
         // we're not setting ids and using them, or maintaining an order
         List<String> unorderedCheck = new ArrayList<String>();
@@ -224,7 +261,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.info(getInput("subcategoryId").asXml());
         logger.trace(getPageText());
         submitForm();
-//         logger.info(getPageText());
+        // logger.info(getPageText());
         for (String key : codingMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
             // top of the lat/long
@@ -249,8 +286,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         clickLinkOnPage("map ontology");
 
-//        assertTextPresent(EAST_COAST_CITIES);
-//        assertTextPresent(WEST_COAST_CITIES);
+        // assertTextPresent(EAST_COAST_CITIES);
+        // assertTextPresent(WEST_COAST_CITIES);
 
         int indexOfOntology = getPageCode().indexOf("var ontology");
         String ontologyNodeInfo = getPageCode().substring(indexOfOntology, getPageCode().indexOf("];", indexOfOntology));
@@ -275,8 +312,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("codingRules[2].ontologyNode.id", ontologyMap.get(WASHINGTON_3).toString(), false);
         submitForm("Save");
 
-//        assertTextPresent(EAST_COAST_CITIES);
-//        assertTextPresent(WEST_COAST_CITIES);
+        // assertTextPresent(EAST_COAST_CITIES);
+        // assertTextPresent(WEST_COAST_CITIES);
         assertTextPresent(NEW_YORK_1);
         assertTextPresent(WASHINGTON_3);
         assertTextPresent(SAN_FRANCISCO_2);
@@ -300,7 +337,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                 "\t\t" + WEST_COAST_CITIES + "\r\n" +
                 "\t\t\t" + SAN_FRANCISCO_2;
         addCopyrightHolder(codingMap);
-        
+
         setInput("fileTextInput", ontology);
         for (String key : codingMap.keySet()) {
             setInput(key, codingMap.get(key));

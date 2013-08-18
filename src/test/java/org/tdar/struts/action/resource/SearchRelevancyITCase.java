@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -33,6 +34,7 @@ import org.tdar.struts.action.search.SearchParameters;
 
 public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
 
+    private static final String TEST_RELEVANCY_DIR = TestConstants.TEST_ROOT_DIR + "relevancy_tests/";
     @Autowired
     private AdvancedSearchController controller;
     @Autowired
@@ -97,7 +99,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         logger.debug("resourceWithKeywordMatch:" + resourceWithKeywordMatch.getId());
 
         // finally create a document that only matches the semiunique name in an attachment;
-        resourceWithAttachmentMatch = setupAndLoadResource("reltest2.pdf", Document.class);
+        resourceWithAttachmentMatch = setupAndLoadResource(TEST_RELEVANCY_DIR + "reltest2.pdf", Document.class);
         logger.debug("resourceWithAttachmentMatch:" + resourceWithAttachmentMatch.getId());
         logger.debug("done with prep");
 

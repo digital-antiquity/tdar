@@ -25,6 +25,8 @@ public class SiteNameKeyword extends UncontrolledKeyword.Base<SiteNameKeyword> {
 
     private static final long serialVersionUID = 60750909588980398L;
 
+    public static final String INHERITANCE_TOGGLE = "inheriting_site_information";
+
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
     private Set<SiteNameKeyword> synonyms = new HashSet<SiteNameKeyword>();

@@ -202,7 +202,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     @Transactional
     public void updateAccountInfo(Account account) {
-        getDao().updateAccountInfo(account,getResourceEvaluator());
+        getDao().updateAccountInfo(account, getResourceEvaluator());
     }
 
     @Transactional
@@ -418,6 +418,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             logger.debug("Skipping {} in eval b/c it's not counted", resource.getId());
             return true;
         }
+        logger.info("mode: {}", mode);
         Object[] log = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() , space, files, resource.getId(), resource.getStatus()};
         logger.info("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})", log);
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes
@@ -426,7 +427,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             return false;
         }
         if (helper.getModel().getCountingFiles() && helper.getAvailableNumberOfFiles() - files < 0) {
-            logger.info("OVERAGE ==> files used:{} files available:{} resourceId:{}", files, helper.getAvailableNumberOfFiles(), resource.getId());
+            logger.info("files used:{} files available:{} resourceId:{}", files, helper.getAvailableNumberOfFiles(), resource.getId());
             return false;
         }
         return true;

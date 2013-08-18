@@ -3,6 +3,8 @@ package org.tdar.core.service.resource;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,22 +13,26 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.CodingSheetDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CodingSheetParserException;
-import org.tdar.core.service.workflow.GenericColumnarDataWorkflow;
+import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
+import org.tdar.filestore.WorkflowContext;
+import org.tdar.utils.ExceptionWrapper;
 
 /**
  * Provides coding sheet upload, parsing/import, and persistence functionality.
@@ -41,6 +47,7 @@ import org.tdar.core.service.workflow.GenericColumnarDataWorkflow;
 @Transactional
 public class CodingSheetService extends AbstractInformationResourceService<CodingSheet, CodingSheetDao> {
 
+    public static final String COULD_NOT_PARSE_FILE = "Couldn't parse %s.  We can only process CSV or Excel files (make sure the file extension is .csv or .xls)";
     private static final String ERROR_PARSE_UNKNOWN = "The system was unable to parse your coding sheet. Please review your submission try again.";
     public static final String ERROR_PARSE_DUPLICATE_CODES = "Codes in your coding sheet must be unique.  We detected the following duplicate codes: ";
 
@@ -48,7 +55,46 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         return getDao().findSparseResourceBySubmitterType(null, ResourceType.CODING_SHEET);
     }
 
-    public void parseUpload(CodingSheet codingSheet, InformationResourceFileVersion version)
+    public void ingestCodingSheet(CodingSheet codingSheet, WorkflowContext ctx) {
+        // 1. save metadata for coding sheet file
+        // 1.1 Create CodingSheet object, and save the metadata
+        Collection<InformationResourceFileVersion> files = codingSheet.getLatestVersions(VersionType.UPLOADED);
+        getLogger().debug("processing uploaded coding sheet files: {}", files);
+
+        if (files.size() != 1) {
+            getLogger().warn("Unexpected number of files associated with this coding sheet, expected 1 got " + files.size());
+            return;
+        }
+
+        /*
+         * two cases, either:
+         * 1) 1 file uploaded (csv | tab | xls)
+         * 2) tab entry into form (2 files uploaded 1 archival, 2 not)
+         */
+
+        InformationResourceFileVersion toProcess = files.iterator().next();
+        if (files.size() > 1) {
+            for (InformationResourceFileVersion file : files) {
+                if (file.isArchival())
+                    toProcess = file;
+            }
+        }
+        // should always be 1 based on the check above
+        getLogger().debug("adding coding rules");
+        try {
+            parseUpload(codingSheet, toProcess);
+            saveOrUpdate(codingSheet);
+        } catch (Throwable e) {
+            ctx.getExceptions().add(new ExceptionWrapper(e.getMessage(), ExceptionUtils.getFullStackTrace(e)));
+            ctx.setErrorFatal(true);
+            ctx.setProcessedSuccessfully(false);
+            saveOrUpdate(toProcess.getInformationResourceFile());
+        }
+
+    }
+
+    @Transactional
+    protected void parseUpload(CodingSheet codingSheet, InformationResourceFileVersion version)
             throws IOException, CodingSheetParserException {
         // FIXME: ensure that this is all in one transaction boundary so if an exception occurs
         // this delete will get rolled back. Also, parse cannot swallow exceptions if the
@@ -59,7 +105,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         Set<String> duplicates = new HashSet<String>();
         List<CodingRule> incomingCodingRules = new ArrayList<CodingRule>();
         try {
-            stream = new FileInputStream(version.getFile());
+            stream = new FileInputStream(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
             incomingCodingRules.addAll(getCodingSheetParser(version.getFilename()).parse(codingSheet, stream));
             Set<String> uniqueSet = new HashSet<String>();
             for (CodingRule rule : incomingCodingRules) {
@@ -69,17 +115,13 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
                 }
             }
         } catch (Exception e) {
-            version.getInformationResourceFile().setStatus(FileStatus.PROCESSING_ERROR);
-            getDao().saveOrUpdate(version.getInformationResourceFile());
-            throw new TdarRecoverableRuntimeException(ERROR_PARSE_UNKNOWN);
+            throw new CodingSheetParserException(ERROR_PARSE_UNKNOWN);
         } finally {
             if (stream != null)
                 IOUtils.closeQuietly(stream);
         }
 
         if (CollectionUtils.isNotEmpty(duplicates)) {
-            version.getInformationResourceFile().setStatus(FileStatus.PROCESSING_ERROR);
-            getDao().saveOrUpdate(version.getInformationResourceFile());
             throw new CodingSheetParserException(ERROR_PARSE_DUPLICATE_CODES, duplicates);
         }
 
@@ -98,8 +140,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
     private CodingSheetParser getCodingSheetParser(String filename) throws CodingSheetParserException {
         CodingSheetParser parser = CodingSheetParserFactory.getInstance().getParser(filename);
         if (parser == null) {
-            throw new CodingSheetParserException("Couldn't parse " + filename
-                    + ".  We can only process CSV or Excel files (make sure the file extension is .csv or .xls)");
+            throw new CodingSheetParserException(String.format(COULD_NOT_PARSE_FILE, filename));
         }
         return parser;
     }
@@ -165,6 +206,11 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
                 getDao().updateDataTableColumnOntologies(codingSheet, ontology);
             }
         }
+    }
+
+    @Transactional(readOnly=true)
+    public List<CodingSheet> findAllUsingOntology(Ontology ontology) {
+        return getDao().findAllUsingOntology(ontology, Arrays.asList(Status.ACTIVE));
     }
 
 }

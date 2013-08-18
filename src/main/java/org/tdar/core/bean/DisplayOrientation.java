@@ -2,6 +2,7 @@ package org.tdar.core.bean;
 
 public enum DisplayOrientation implements HasLabel {
     LIST("List"),
+    LIST_FULL("List (Full)"),
     GRID("Grid"),
     MAP("Map");
 

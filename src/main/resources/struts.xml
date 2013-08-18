@@ -46,7 +46,10 @@
         <interceptor-ref name="checkbox"/>
         <interceptor-ref name="multiselect"/>
         <interceptor-ref name="params">
-          <param name="excludeParams">dojo\..*,^struts\..*,^_tdar\..*</param>
+          <!-- Mirror changes to the second entry below as well... -->
+          <!-- The '-' is because when jQuery Ajax call is made with 'cache: false' we get a _=timestamp with each request -->
+          <!-- As we don't have a property named '_' in our actions we get an error logged in development mode. Excluding '-' removes the error -->
+          <param name="excludeParams">_,dojo\..*,^struts\..*,_tdar\..*</param>
         </interceptor-ref>
         <interceptor-ref name="servletConfig"/>
         <interceptor-ref name="prepare"/>
@@ -54,7 +57,8 @@
         <interceptor-ref name="staticParams"/>
         <interceptor-ref name="actionMappingParams"/>
         <interceptor-ref name="params">
-          <param name="excludeParams">dojo\..*,^struts\..*,^_tdar\..*</param>
+          <!-- See AbstractPersistableController.prepare() for more detail on why this entry occurs twice -->
+          <param name="excludeParams">_,dojo\..*,^struts\..*,_tdar\..*</param>
         </interceptor-ref>
         <interceptor-ref name="conversionError"/>
         <interceptor-ref name="validation">
@@ -74,7 +78,14 @@
       <result name="login" type="redirect">/login</result>
       <result name="error" type="freemarker">/WEB-INF/content/errors/error.ftl</result>
       <result name="badrequest" type="freemarker">/WEB-INF/content/errors/error.ftl</result>
+      <!-- 
       <result name="exception" type="freemarker">/WEB-INF/content/errors/exception.ftl</result>
+       -->
+       <!-- good: we send propper http error code(so google doesn't keep this page).  Bad: user gets ugly page with no helpful message.  -->
+      <result name="exception" type="httpheader">
+          <param name="error">500</param>
+          <param name="errorMessage">The system experienced an unhandled exception</param>       
+      </result>
       <result name="unauthorized" type="freemarker">/WEB-INF/content/errors/unauthorized.ftl</result>
       <result name="gone" type="freemarker">/WEB-INF/content/errors/resource-deleted.ftl</result>
       <result name="not_found" type="freemarker">/WEB-INF/content/errors/page-not-found.ftl</result>

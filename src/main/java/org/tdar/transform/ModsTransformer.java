@@ -21,10 +21,12 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
@@ -392,8 +394,15 @@ public abstract class ModsTransformer<R extends Resource> implements
 
     public static class ProjectTransformer extends ModsTransformer<Project> {
     }
+    
+    public static class ArchiveTransformer extends ModsTransformer<Archive> {
+        // marker class
+    }
 
     public static class VideoTransformer extends ModsTransformer<Video> {
+    }
+
+    public static class GeospatialTransformer extends ModsTransformer<Geospatial> {
     }
 
     public static class DcmiModsTypeMapper {
@@ -440,6 +449,10 @@ public abstract class ModsTransformer<R extends Resource> implements
                 return new SensoryDataTransformer().transform((SensoryData) resource);
             case VIDEO:
                 return new VideoTransformer().transform((Video) resource);
+            case GEOSPATIAL:
+                return new GeospatialTransformer().transform((Geospatial) resource);
+            case ARCHIVE:
+                return new ArchiveTransformer().transform((Archive) resource);
             default:
                 break;
         }

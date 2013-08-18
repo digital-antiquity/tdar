@@ -18,12 +18,14 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "TagGatewayService", targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema", wsdlLocation = "/wsdl/tag/tag_gateway_service.wsdl")
+@WebServiceClient(name = "TagGatewayService", targetNamespace = TagGatewayService.TAG_SCHEMA_LOCATION, wsdlLocation = TagGatewayService.WSDL)
 public class TagGatewayService
     extends Service
 {
 
-    private final static URL TAGGATEWAYSERVICE_WSDL_LOCATION;
+    public static final String TAG_SCHEMA_LOCATION = "http://archaeologydataservice.ac.uk/tag/schema";
+    public static final String WSDL = "/wsdl/tag/tag_gateway_service.wsdl";
+    public final static URL TAGGATEWAYSERVICE_WSDL_LOCATION;
     private final static Logger logger = Logger.getLogger(org.tdar.tag.TagGatewayService.class.getName());
 
     static {
@@ -31,7 +33,7 @@ public class TagGatewayService
         try {
             URL baseUrl;
             baseUrl = org.tdar.tag.TagGatewayService.class.getResource(".");
-            url = new URL(baseUrl, "/wsdl/tag/tag_gateway_service.wsdl");
+            url = new URL(baseUrl, WSDL);
         } catch (MalformedURLException e) {
             logger.warning("Failed to create URL for the wsdl Location: '/wsdl/tag/tag_gateway_service.wsdl', retrying as a local file");
             logger.warning(e.getMessage());
@@ -44,7 +46,7 @@ public class TagGatewayService
     }
 
     public TagGatewayService() {
-        super(TAGGATEWAYSERVICE_WSDL_LOCATION, new QName("http://archaeologydataservice.ac.uk/tag/schema", "TagGatewayService"));
+        super(TAGGATEWAYSERVICE_WSDL_LOCATION, new QName(TAG_SCHEMA_LOCATION, "TagGatewayService"));
     }
 
     /**
@@ -54,7 +56,7 @@ public class TagGatewayService
      */
     @WebEndpoint(name = "TagGateway")
     public TagGatewayPort getTagGateway() {
-        return super.getPort(new QName("http://archaeologydataservice.ac.uk/tag/schema", "TagGateway"), TagGatewayPort.class);
+        return super.getPort(new QName(TAG_SCHEMA_LOCATION, "TagGateway"), TagGatewayPort.class);
     }
 
     /**
@@ -66,7 +68,7 @@ public class TagGatewayService
      */
     @WebEndpoint(name = "TagGateway")
     public TagGatewayPort getTagGateway(WebServiceFeature... features) {
-        return super.getPort(new QName("http://archaeologydataservice.ac.uk/tag/schema", "TagGateway"), TagGatewayPort.class, features);
+        return super.getPort(new QName(TAG_SCHEMA_LOCATION, "TagGateway"), TagGatewayPort.class, features);
     }
 
 }

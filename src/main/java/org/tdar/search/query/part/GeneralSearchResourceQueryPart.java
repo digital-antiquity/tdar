@@ -2,8 +2,6 @@ package org.tdar.search.query.part;
 
 import java.util.Collection;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
 public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {

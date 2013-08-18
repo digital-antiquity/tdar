@@ -60,15 +60,16 @@ public class GenericDao {
         // FIXME: push guard checks into Service layer.
         if (id == null)
             return null;
-        logger.trace("{}", getCurrentSession().get(cls, id));
-        E obj = cls.cast(getCurrentSession().get(cls, id));
+        Object objectInSession = getCurrentSession().get(cls, id);
+        logger.trace("{}", objectInSession);
+        E obj = cls.cast(objectInSession);
         logger.trace("object: {}", obj);
         return obj;
     }
-    
+
     public <E> List<E> findAllWithProfile(Class<E> class1, List<Long> ids, String profileName) {
         getCurrentSession().enableFetchProfile(profileName);
-        List<E> ret = findAll(class1,ids);
+        List<E> ret = findAll(class1, ids);
         getCurrentSession().disableFetchProfile(profileName);
         return ret;
     }
@@ -82,20 +83,18 @@ public class GenericDao {
         return query.setParameterList("ids", ids).list();
     }
 
-    
     @SuppressWarnings("unchecked")
-    public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status ... statuses) {
+    public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status... statuses) {
         Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_STATUS, persistentClass.getName()));
         return query.setParameterList("statuses", statuses).list();
     }
 
-    
-    
     @SuppressWarnings("unchecked")
     public <E> List<Long> findAllIds(Class<E> persistentClass) {
         return getCurrentSession().createQuery("select id from " + persistentClass.getName()).list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Long> findActiveIds(Class<? extends HasStatus> persistentClass) {
         return getCurrentSession().createQuery(String.format("select id from %s where status in ('ACTIVE')", persistentClass.getName())).list();
     }
@@ -177,15 +176,14 @@ public class GenericDao {
     }
 
     public <E> List<E> findAll(Class<E> cls) {
-        return findAll(cls, -1, -1);
+        return findAll(cls, -1);
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<E> findAll(Class<E> cls, int start, int numberOfRecords) {
+    public <E> List<E> findAll(Class<E> cls, int maxResults) {
         Query query = getCurrentSession().createQuery("from " + cls.getName());
-        if (numberOfRecords > 0) {
-            query.setFirstResult(start);
-            query.setMaxResults(numberOfRecords);
+        if (maxResults > 0) {
+            query.setMaxResults(maxResults);
         }
         return (List<E>) query.list();
     }
@@ -398,6 +396,14 @@ public class GenericDao {
         session.evict(entity);
     }
 
+    public void detachFromSessionAndWarn(Object entity) {
+        Session session = getCurrentSession();
+        if (session.contains(entity)) {
+            logger.error("This entity should not be on the session: {}",entity);
+        }
+        session.evict(entity);
+    }
+
     /**
      * Deletes all persistent entities and removes them from the hibernate managed collection.
      * 
@@ -460,6 +466,12 @@ public class GenericDao {
 
     public void refresh(Object object) {
         getCurrentSession().refresh(object);
+    }
+
+    public void refreshAll(Collection<?> objects) {
+        for (Object object : objects) {
+            getCurrentSession().refresh(object);
+        }
     }
 
     public void markReadOnly(Object obj) {

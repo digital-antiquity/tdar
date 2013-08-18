@@ -1,12 +1,8 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,10 +11,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.convention.annotation.Action;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
@@ -32,10 +30,15 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.resource.DataTableService;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+
+import static org.junit.Assert.*;
 
 /**
  * $Id$
@@ -45,6 +48,7 @@ import org.tdar.struts.action.TdarActionSupport;
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     private static final String ALEXANDRIA_EXCEL_FILENAME = "qrybonecatalogueeditedkk.xls";
@@ -56,12 +60,14 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Autowired
     private DataTableService dataTableService;
+    @Autowired
+    private DownloadService downloadService;
 
     @Before
     public void setUp() {
         controller = generateNewInitializedController(DatasetController.class);
     }
-
+    
     @Test
     @Rollback
     public void test() {
@@ -161,14 +167,34 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testDatasetReplaceSame() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
-        controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
-        controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_EXCEL_FILENAME)));
-        controller.setUploadedFilesFileName(Arrays.asList(ALEXANDRIA_EXCEL_FILENAME));
-        controller.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+
+        dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class, dataset.getId());
+
     }
 
+    @Test
+    @Rollback
+    public void tableAsXmlReturnsErrorIfXmlExportNotEnabled() {
+        controller = generateNewInitializedController(DatasetController.class);
+        assertSame(TdarActionSupport.ERROR, controller.getTableAsXml());
+    }
+    
+    @Test
+    @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
+    public void tableAsXml() throws IOException {
+        Dataset dataset = setupAndLoadResource(TRUNCATED_HARP_EXCEL_FILENAME, Dataset.class);
+        DataTable dataTable = dataset.getDataTables().iterator().next();
+        controller = generateNewInitializedController(DatasetController.class);
+        controller.setId(dataset.getId());
+        controller.setDataTableId(dataTable.getId());
+        controller.prepare();
+        assertEquals(TdarActionSupport.SUCCESS, controller.getTableAsXml());
+        InputStream xmlStream = controller.getXmlStream();
+        String xml = IOUtils.toString(xmlStream, "UTF-8");
+        assertTrue(xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""));
+    }
+    
     @Test
     @Rollback
     public void testDatasetReplaceWithMappings() throws TdarActionException {
@@ -220,15 +246,13 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testDatasetReplaceDifferentColTypes() throws TdarActionException {
         Dataset dataset = setupAndLoadResource("dataset_with_floats.xls", Dataset.class);
-        controller = generateNewInitializedController(DatasetController.class);
-        assertEquals(DataTableColumnType.DOUBLE, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
         String filename = "dataset_with_floats_to_varchar.xls";
-        controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
-        controller.setUploadedFilesFileName(Arrays.asList(filename));
-        controller.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(DataTableColumnType.DOUBLE, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
+        Long datasetId = dataset.getId();
+        dataset = null;
+        dataset = setupAndLoadResource(filename, Dataset.class, datasetId);
         assertEquals(DataTableColumnType.VARCHAR, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
+
     }
 
     @Test

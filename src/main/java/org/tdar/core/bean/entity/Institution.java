@@ -1,6 +1,6 @@
 package org.tdar.core.bean.entity;
 
-import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,11 +22,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
@@ -58,19 +61,16 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @Transient
     private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "dateCreated", "description", "dateUpdated", "url",
-            "location", "parentInstitution", "parentinstitution_id", "synonyms", "status"  };
+            "parentInstitution", "parentinstitution_id", "synonyms", "status", "occurrence" };
 
-    @OneToMany(orphanRemoval = true,cascade=CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")
     private Set<Institution> synonyms = new HashSet<Institution>();
 
     @Column(nullable = false, unique = true)
     @BulkImportField(label = "Institution Name", comment = BulkImportField.CREATOR_INSTITUTION_DESCRIPTION, order = 10)
+    @Length(max = 255)
     private String name;
-
-    private String url;
-
-    private String location;
 
     public int compareTo(Institution candidate) {
         return name.compareTo(candidate.name);
@@ -86,6 +86,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         this.name = name;
     }
 
+    @Override
     @XmlElement
     // FIXME: this seemingly conflicts w/ @Field annotations on Creator.getName(). Figure out which declaration is working
     @Fields({
@@ -98,16 +99,13 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return name;
     }
 
+    @Override
     public String getProperName() {
         return getName();
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     @Transient
@@ -119,18 +117,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
             return m.group(1);
         }
         return null;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public String toString() {
@@ -148,11 +134,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @Override
     public CreatorType getCreatorType() {
         return CreatorType.INSTITUTION;
-    }
-
-    @Override
-    public List<?> getEqualityFields() {
-        return Arrays.asList(name);
     }
 
     @Override
@@ -185,11 +166,18 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     public void setSynonyms(Set<Institution> synonyms) {
         this.synonyms = synonyms;
     }
-    
+
     public boolean hasNoPersistableValues() {
         if (StringUtils.isBlank(getName())) {
             return true;
         }
         return false;
+    }
+
+
+    @Field(norms = Norms.NO, store = Store.YES)
+    @DateBridge(resolution = Resolution.MILLISECOND)
+    public Date getDateUpdated() {
+        return super.getDateUpdated();
     }
 }

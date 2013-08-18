@@ -1,32 +1,43 @@
 package org.tdar.core.service.resource;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
-import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.dao.resource.ResourceDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.workflow.ActionMessageErrorSupport;
+import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.Filestore.BaseFilestore;
+import org.tdar.filestore.WorkflowContext;
+import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
 
 /**
@@ -44,47 +55,41 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     private static final Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
     @Autowired
-    private InformationResourceFileService informationResourceFileService;
+    private InformationResourceFileDao informationResourceFileDao;
     @Autowired
-    private FileAnalyzer analyzer;
+    private DatasetDao datasetDao;
+
     @Autowired
-    @Qualifier("genericDao")
-    private GenericDao genericDao;
+    private PersonalFilestoreService personalFilestoreService;
 
-    @Transactional(readOnly = true)
-    public List<T> findBySubmitter(Person person) {
-        if (person == null) {
-            getLogger().warn("Trying to find resources for null submitter");
-            return Collections.emptyList();
-        }
-        return getDao().findBySubmitter(person);
-    }
+    protected FileAnalyzer analyzer;
 
-    @Transactional(readOnly = true)
-    public List<T> findSparseBySubmitter(Person person) {
-        if (person == null) {
-            getLogger().warn("Trying to find resources for null submitter");
-            return Collections.emptyList();
-        }
-        return getDao().findSparseResourceBySubmitterType(person, ResourceType.fromClass(getDao().getPersistentClass()));
-    }
+    // private MessageService messageService;
 
-    @Transactional
-    public void deleteInformationResourceFile(InformationResource resource, InformationResourceFile irFile) {
-        resource.getInformationResourceFiles().remove(irFile);
-        informationResourceFileService.delete(irFile);
-    }
-
-    private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile) {
-        genericDao.saveOrUpdate(resource);
+    // Martin: according to the Spring documentation all these private methods marked as @Transactional totally ignored.
+    // They must be public to have the annotation recognised?
+    // See: http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/transaction.html#transaction-declarative-annotations
+    @Transactional(readOnly = false)
+    private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
+        // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
+        incrementVersionNumber(irFile);
+        // genericDao.saveOrUpdate(resource);
+        getDao().saveOrUpdate(resource);
         irFile.setInformationResource(resource);
-        genericDao.saveOrUpdate(irFile);
+        proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(irFile, proxy));
+        setInformationResourceFileMetadata(irFile, proxy);
+        for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
+            logger.debug("Creating new version {}", additionalVersion);
+            createVersionMetadataAndStore(irFile, additionalVersion);
+        }
+        getDao().saveOrUpdate(irFile);
         resource.add(irFile);
-        genericDao.saveOrUpdate(resource);
+        logger.debug("all versions for {}", irFile);
     }
 
+    @Transactional(readOnly = true)
     private InformationResourceFile findInformationResourceFile(FileProxy proxy) {
-        InformationResourceFile irFile = genericDao.find(InformationResourceFile.class, proxy.getFileId());
+        InformationResourceFile irFile = getDao().find(InformationResourceFile.class, proxy.getFileId());
         if (irFile == null) {
             logger.error("{} had no findable InformationResourceFile.id set on it", proxy);
             // FIXME: throw an exception?
@@ -93,64 +98,142 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    public InformationResourceFile processFileProxy(InformationResource informationResource, FileProxy proxy) throws IOException {
+    public void importFileProxiesAndProcessThroughWorkflow(T resource, Person user, Long ticketId, ActionMessageErrorSupport listener,
+            List<FileProxy> fileProxiesToProcess) throws IOException {
+        if (CollectionUtils.isEmpty(fileProxiesToProcess)) {
+            logger.debug("Nothing to process, returning.");
+            return;
+        }
+
+        processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
+        List<InformationResourceFileVersion> filesToProcess = new ArrayList<>();
+
+        for (FileProxy proxy : fileProxiesToProcess) {
+            if (proxy.getAction().requiresWorkflowProcessing()) {
+                InformationResourceFile irFile = proxy.getInformationResourceFile();
+                InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
+                logger.trace("version: {} proxy: {} ", version, proxy);
+                getDao().saveOrUpdate(irFile);
+                switch (version.getFileVersionType()) {
+                    case UPLOADED:
+                    case UPLOADED_ARCHIVAL:
+                        irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
+                        filesToProcess.add(version);
+                        break;
+                    default:
+                        logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
+                }
+            }
+        }
+        processFiles(resource, filesToProcess);
+
+        /*
+         * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method 
+         */
+        new WorkflowResult(fileProxiesToProcess).addActionErrorsAndMessages(listener);
+
+        // getDao().refreshAll(resource.getInformationResourceFiles());
+        if (ticketId != null) {
+            PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
+            personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
+        }
+    }
+
+    private void processFiles(T resource, List<InformationResourceFileVersion> filesToProcess) throws IOException {
+        if (!CollectionUtils.isEmpty(filesToProcess)) {
+            if (resource.getResourceType().isCompositeFilesEnabled()) {
+                analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
+            } else {
+                for (InformationResourceFileVersion version : filesToProcess) {
+                  if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
+                      // If we are re-processing, the transient file might not exist.
+                      version.setTransientFile(filestore.retrieveFile(version));
+                  }
+                    analyzer.processFile(version);
+                }
+            }
+        }
+    }
+
+    @Transactional
+    private void processFileProxyMetadata(InformationResource informationResource, FileProxy proxy) throws IOException {
         logger.debug("applying {} to {}", proxy, informationResource);
         // will be reassigned in a REPLACE or ADD_DERIVATIVE
         InformationResourceFile irFile = new InformationResourceFile();
+        if (proxy.getAction().requiresExistingIrFile()) {
+            irFile = findInformationResourceFile(proxy);
+            if (irFile == null) {
+                logger.error("FileProxy {} {} had no InformationResourceFile.id ({}) set on it", proxy.getFilename(), proxy.getAction(), proxy.getFileId());
+                return;
+            }
+        }
+
         switch (proxy.getAction()) {
             case MODIFY_METADATA:
-                irFile = findInformationResourceFile(proxy);
-                if (irFile == null) {
-                    return null;
-                }
                 // set sequence number and confidentiality
                 setInformationResourceFileMetadata(irFile, proxy);
-                genericDao.update(irFile);
+                getDao().update(irFile);
                 break;
             case REPLACE:
-                irFile = findInformationResourceFile(proxy);
-                if (irFile == null) {
-                    return null;
-                }
-                // explicit fall through to ADD after loading the existing irFile to
-                // be replaced.
+                // explicit fall through to ADD after loading the existing irFile to be replaced.
             case ADD:
-                // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
-                incrementVersionNumber(irFile);
-                addInformationResourceFile(informationResource, irFile);
-                createVersion(irFile, proxy);
-                setInformationResourceFileMetadata(irFile, proxy);
-                for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
-                    logger.debug("Creating new version {}", additionalVersion);
-                    createVersion(irFile, additionalVersion);
-                }
-                genericDao.saveOrUpdate(irFile);
-                logger.debug("all versions for {}", irFile);
+                addInformationResourceFile(informationResource, irFile, proxy);
                 break;
             case ADD_DERIVATIVE:
-                irFile = findInformationResourceFile(proxy);
-                if (irFile == null) {
-                    return null;
-                }
-                createVersion(irFile, proxy);
+                createVersionMetadataAndStore(irFile, proxy);
                 break;
             case DELETE:
-                // handle deletion
-                irFile = findInformationResourceFile(proxy);
-                if (irFile == null) {
-                    logger.error("FileProxy {} DELETE had no InformationResourceFile.id ({}) set on it", proxy.getFilename(), proxy.getFileId());
-                    return null;
+                irFile.markAsDeleted();
+                getDao().update(irFile);
+                if (informationResource instanceof Dataset) {
+                    unmapDataTablesForFile((Dataset) informationResource, irFile);
                 }
-                irFile.delete();
-                genericDao.update(irFile);
                 break;
             case NONE:
                 logger.debug("Taking no action on {} with proxy {}", informationResource, proxy);
-                return null;
+                break;
             default:
-                return null;
+                break;
         }
-        return irFile;
+        proxy.setInformationResourceFile(irFile);
+    }
+
+    @Transactional(readOnly = true)
+    private void unmapDataTablesForFile(Dataset dataset, InformationResourceFile irFile) {
+        String fileName = irFile.getFileName();
+        switch (FilenameUtils.getExtension(fileName).toLowerCase()) {
+            case "tab":
+            case "csv":
+            case "txt":
+                String name = FilenameUtils.getBaseName(fileName);
+                name = datasetDao.normalizeTableName(name);
+                DataTable dt = dataset.getDataTableByGenericName(name);
+                logger.info("removing {}", dt);
+                cleanupUnusedTablesAndColumns(dataset, Arrays.asList(dt));
+                // dataset.getDataTableByGenericName(name)
+                break;
+            default:
+                cleanupUnusedTablesAndColumns(dataset, dataset.getDataTables());
+        }
+    }
+
+    @Transactional
+    public void processMetadataForFileProxies(InformationResource informationResource, FileProxy... proxies) throws IOException {
+        for (FileProxy proxy : proxies) {
+            processFileProxyMetadata(informationResource, proxy);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove) {
+        logger.info("deleting unmerged tables: {}", tablesToRemove);
+        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
+        for (DataTable table : tablesToRemove) {
+            columnsToUnmap.addAll(table.getDataTableColumns());
+        }
+        // first unmap all columns from the removed tables
+        datasetDao.unmapAllColumnsInProject(dataset.getProject(), columnsToUnmap);
+        dataset.getDataTables().removeAll(tablesToRemove);
     }
 
     private void setInformationResourceFileMetadata(InformationResourceFile irFile, FileProxy fileProxy) {
@@ -166,6 +249,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         } else {
             irFile.setDateMadePublic(null);
         }
+
+        if (fileProxy.getAction() == FileAction.MODIFY_METADATA || fileProxy.getAction() == FileAction.ADD) {
+            irFile.setDescription(fileProxy.getDescription());
+            irFile.setFileCreatedDate(fileProxy.getFileCreatedDate());
+        }
+
         if (sequenceNumber == null) {
             logger.warn("No sequence number set on file proxy {}, existing sequence number was {}", fileProxy, irFile.getSequenceNumber());
         }
@@ -181,104 +270,63 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional(readOnly = false)
-    public void reprocessInformationResourceFiles(Collection<InformationResourceFile> informationResourceFiles) {
-        Iterator<InformationResourceFile> fileIterator = informationResourceFiles.iterator();
-        while (fileIterator.hasNext()) {
-            InformationResourceFile irFile = fileIterator.next();
+    public void reprocessInformationResourceFiles(T ir, ActionMessageErrorSupport listener) throws Exception {
+        List<InformationResourceFileVersion> latestVersions = new ArrayList<>();
+        for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
+            latestVersions.add(original);
             Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
-            // List<InformationResourceFileVersion> toDelete = new ArrayList<InformationResourceFileVersion>();
             while (iterator.hasNext()) {
                 InformationResourceFileVersion version = iterator.next();
                 if (!version.equals(original) && !version.isUploaded() && !version.isArchival()) {
                     iterator.remove();
-                    informationResourceFileService.delete(version);
+                    informationResourceFileDao.delete(version);
                 }
             }
-            // this is a known case where we need to purge the session
-            genericDao.synchronize();
-            try {
-                analyzer.processFile(original);
-            } catch (Exception e) {
-                logger.warn("caught exception {} while analyzing file {}", e, original.getFilename());
+        }
+        processFiles(ir, latestVersions);
+        // this is a known case where we need to purge the session
+        getDao().synchronize();
+
+        for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
+            final WorkflowContext workflowContext = irFile.getWorkflowContext();
+            if (!workflowContext.isProcessedSuccessfully()) {
+                new WorkflowResult(workflowContext).addActionErrorsAndMessages(listener);
             }
         }
 
     }
 
-    private void createVersion(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
-        String filename = sanitizeFilename(fileProxy.getFilename());
+    @Transactional(readOnly = false)
+    private InformationResourceFileVersion createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
+        String filename = BaseFilestore.sanitizeFilename(fileProxy.getFilename());
         if (fileProxy.getFile() == null || !fileProxy.getFile().exists()) {
             throw new TdarRecoverableRuntimeException("something went wrong, file " + fileProxy.getFilename() + " does not exist");
         }
         InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, irFile);
-        // setInformationResourceFileMetadata(irFile, fileProxy);
+        if (irFile.isTransient()) {
+            getDao().saveOrUpdate(irFile);
+        }
+
         irFile.addFileVersion(version);
         filestore.store(fileProxy.getFile(), version);
-        genericDao.save(version);
-        switch (fileProxy.getVersionType()) {
-            case UPLOADED:
-            case UPLOADED_ARCHIVAL:
-                irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
-                try {
-                    analyzer.processFile(version);
-                } catch (Exception e) {
-                    logger.warn("caught exception {} while analyzing file {}", e, filename);
-                }
-                break;
-            default:
-                logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, fileProxy.getVersionType());
-        }
-        genericDao.saveOrUpdate(irFile);
-    }
-
-    /**
-     * This comes from the bad old days and was intended to make dataset filenames safe for postgres importing.
-     * Dataset files are converted into tables in postgres and this method
-     * was used to generate table names that were postgres-safe, e.g., starts with an alphabetic character and < 128 characters.
-     * Now, DatabaseConverter should be responsible for that translation / sanitization internally,
-     * and we should preserve the filename as it was originally sent in as best we can.
-     * 
-     * FIXME: Filestore should be responsible for sanitization of filenames instead
-     * 
-     * @param filename
-     * @return
-     */
-    private String sanitizeFilename(String filename) {
-        filename = filename.toLowerCase();
-        String ext = FilenameUtils.getExtension(filename);
-        String basename = FilenameUtils.getBaseName(filename);
-
-        // // make sure that the total length does not exceed 128 characters
-        // if (basename.length() > 122)
-        // basename = basename.substring(0, 121);
-
-        // replace all whitespace with dashes
-        // basename = basename.replaceAll("\\s", "-");
-
-        // replace all characters that are not alphanumeric, underscore "_", or
-        // dash "-" with a single dash "-".
-        basename = basename.replaceAll("[^\\w\\-]+", "-");
-
-        basename = StringUtils.removeEnd(basename, "-");
-
-        StringBuilder builder = new StringBuilder(basename);
-
-        // ensure that the first letter of the basename is alphabetic
-        // if (!StringUtils.isAlpha(String.valueOf(basename.charAt(0)))) {
-        // builder.insert(0, 'a');
-        // }
-        builder.append('.').append(ext);
-
-        return builder.toString();
-    }
-
-    public InformationResourceFileService getInformationResourceFileService() {
-        return informationResourceFileService;
+        version.setTransientFile(fileProxy.getFile());
+        getDao().save(version);
+        getDao().saveOrUpdate(irFile);
+        return version;
     }
 
     public List<Language> findAllLanguages() {
         return Arrays.asList(Language.values());
+    }
+
+    /**
+     * @param analyzer
+     *            the analyzer to set
+     */
+    @Autowired
+    public void setAnalyzer(FileAnalyzer analyzer) {
+        this.analyzer = analyzer;
     }
 
 }

@@ -17,7 +17,8 @@
     <h1>${authenticatedUser.properName}'s Dashboard</h1>
 
     <#if payPerIngestEnabled>
-    <div class="news alert">
+    <div class="news alert" id="alert-charging">
+		<button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-charging">&times;</button>
         <B>${siteAcronym} Update:</B>
         Please note we are now charging to upload materials to ${siteAcronym}, please see <a href="http://www.tdar.org/about/pricing"> our website</a> for more information. 
         <br/>
@@ -27,8 +28,14 @@
         <br/>
     </div>
     </#if>
-</div>
 
+    <div class="news alert" id="alert-jar">
+		<button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-jar">&times;</button>
+        <B>${siteAcronym} Update:</B>
+        Welcome to Jar! Learn all about what's new (GIS), and what's changed (User Profile Pages &amp; file replacement) <a href="http://www.tdar.org/news/2013/08/tdar-software-update-jar/">here</a>.
+        <br/>
+    </div>
+</div>
 
 
 <#if overdrawnAccounts?has_content>
@@ -54,6 +61,12 @@
 
 <div id="sidebar-right" parse="true">
 <div>
+<#if contributor>
+	<#if (activeResourceCount != 0)>
+		<@resourcePieChart />
+		<hr/>
+	</#if>
+</#if>
  <@collectionsSection />
 </div>
 </div>
@@ -65,6 +78,9 @@
      The resources you can access are listed below.  To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or 
      <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on  the "upload" button above.
     </#if>
+    <p><strong>Jump To:</strong><a href="#project-list">Browse Resources</a> | <a href="#collection-section">Collections</a> | <a href="#divAccountInfo">Your Profile</a> | <a href="#billing">Billing Accounts</a> | <a href="#boomkarks">Bookmarks</a>
+    </p>
+    <hr/>
     </div>
 </div>
 
@@ -74,9 +90,6 @@
 		<@gettingStarted />
 	<hr /> 
 	<#else>
-		<@resourcePieChart />
-		<hr/>
-	
 		<@recentlyUpdatedSection />
 	</#if>
 
@@ -87,7 +100,8 @@
 <@accountSection />
 <hr/>
 
-<@bookmarksSection />
+ <@bookmarksSection />
+
 
 
 
@@ -107,11 +121,20 @@
 
 <#macro resourcePieChart>
 	<div class="row">
-	    <div class="span9">
+	    <div class="span3">
 	        <h2>At a glance</h2>
-	        <div class="row">
-	            <div class="span4 piechart"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
-	            <div class="span5 piechart"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
+	            <div class="piechart row">
+	            <@common.generatePieJson statusCountForUser "statusForUser" />
+	            <@common.barGraph  data="statusForUser" searchKey="includedStatuses" graphHeight=150 context=true graphLabel="Your Resources By Status"/>
+		     </div>
+	         <div class="piechart row">
+ 	            <@common.generatePieJson resourceCountForUser "resourceCountForUser" />
+ 	            <script>
+ 	            var pcconfig = {
+ 	               legend: { show:true, location: 's', rendererOptions: {numberColumns: 3} }
+ 	               };
+ 	            </script>
+	            <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=300 context=true config="pcconfig" graphLabel="Your Resources By Type"/>
 	        </div>
 	    </div>
 	</div>
@@ -179,9 +202,9 @@
 <#macro browseResourceSection>
 	<div class="" id="project-list">
 	    <h2>Browse Resources</h2>
-	    <form action=''>
-	    <@edit.resourceDataTable />
-	    </form>
+	    <div>
+	        <@edit.resourceDataTable />
+	    </div>
 	</div>
 </#macro>
 
@@ -193,17 +216,17 @@
 
 <#macro collectionsSection>
 	
-   <div class="">
+   <div class="" id="collection-section">
    <h2>Collections You Created </h2>
-      <@listCollections resourceCollections>
+      <@common.listCollections collections=resourceCollections>
           <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
-      </@listCollections>
+      </@common.listCollections>
    </div>
    <br/>
    <#if sharedResourceCollections?? && !sharedResourceCollections.empty >
      <div class="">
      <h2>Collections Shared With You</h2>
-       <@listCollections sharedResourceCollections />
+       <@common.listCollections collections=sharedResourceCollections />
     </div>
   </#if>
 
@@ -221,7 +244,7 @@
 	</div>
 
 	<#if payPerIngestEnabled>
-	    <div class="span5">
+	    <div class="span5" id="billing">
 	       <@common.billingAccountList accounts />
 	    </div>
 	</#if>
@@ -233,36 +256,28 @@
 <div class="row">
 	<div class="span9">
 	<h2 id="bookmarks">Your Bookmarks</h2>
-	<@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  expanded=true listTag='ol' headerTag="h3" />
+	<#if bookmarkedResources??>
+	<#--	   <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  orientation='LIST_LONG' listTag='ol' headerTag="h3" /> -->
+	
+	   <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  listTag='ol' headerTag="h3" />
+	</#if>
 	</div>
 </div>
 </#macro>
 
-<#macro listCollections resourceCollections_ >
-      <ul>
-      <#assign currentIndent =1 />
-        <#list resourceCollections_ as collection>
-          <#assign itemIndent = collection.parentNameList?size />
-          <#if itemIndent != currentIndent>
-            <#if (itemIndent > currentIndent) >
-              <@repeat (itemIndent - currentIndent) "<ul>"/>
-            </#if>
-            <#if (itemIndent < currentIndent) >
-              <@repeat (currentIndent - itemIndent)  "</ul>"/>
-            </#if>
-            <#assign currentIndent = itemIndent />
-          </#if>
-            <li><a href="<@s.url value="/collection/${collection.id?c}"/>">
-                  <#if collection.name?? && collection.name != ''>
-                      ${collection.name!"no title"}
-                  <#else>No Title</#if>
-            </a></li>
-      </#list>
-      <#if (currentIndent > 1)>
-              <@repeat (currentIndent - 1)  "</ul>"/>      
-      </#if>
-      <#nested>
-      </ul>
-
-</#macro>
+<script>
+$(document).ready(function() {
+	$("[data-dismiss-cookie]").each(function(){
+		var $this = $(this);
+		var id = $this.data('dismiss-cookie');
+		if ($.cookie(id)) {
+			$("#"+id).hide();
+		} else {
+			$this.click(function() {
+				$.cookie(id, id);
+			});
+		}
+	});
+});
+</script>
 </#escape>

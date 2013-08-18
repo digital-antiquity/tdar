@@ -1,7 +1,7 @@
 package org.tdar.core.service;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,10 +13,12 @@ import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.hibernate.search.FullTextQuery;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -25,6 +27,7 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 
+@SuppressWarnings("unchecked")
 public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     private ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
@@ -41,6 +44,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     }
 
+    @SuppressWarnings("rawtypes")
     public static abstract class DesignatedComparable<T> implements Comparator<T> {
         public final int compare(T obj1, T obj2) {
             Comparable item1 = null;
@@ -58,14 +62,12 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     private static List<SortTestStruct> sortTests = new ArrayList<SortTestStruct>();
 
-    @SuppressWarnings("unchecked")
     public static Comparator<Resource> titleComparator = ComparatorUtils.nullLowComparator(new Comparator<Resource>() {
         public int compare(Resource item1, Resource item2) {
             return item1.getTitleSort().compareTo(item2.getTitleSort());
         }
     });
 
-    @SuppressWarnings("unchecked")
     public static Comparator<Resource> idComparator = ComparatorUtils.nullLowComparator(new Comparator<Resource>() {
         public int compare(Resource item1, Resource item2) {
             return item1.getId().compareTo(item2.getId());
@@ -131,6 +133,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         assertSortOrder(SortOption.DATE_REVERSE, yearComparator);
     }
 
+    @SuppressWarnings({ "unused", "rawtypes"})
     @Test
     public void testDateSorting() throws ParseException {
         DesignatedComparable<Resource> dateCreatedComparator = new DesignatedComparable<Resource>() {
@@ -151,6 +154,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     @Test
     public void testResourceTypeSorting() throws ParseException {
         DesignatedComparable<Resource> resourceTypeComparator = new DesignatedComparable<Resource>() {
+            @SuppressWarnings("rawtypes")
             public Comparable getComparableFor(Resource t) {
                 return t.getResourceTypeSort();
             }
@@ -163,6 +167,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     @Test
     // the sortInfo data structure has all the info on all the fields we sort by, which querybuilders to use, and what comparators to use
     // to assert that the searchService successfully sorted the results.
+    @SuppressWarnings({ "rawtypes"})
     public void testAllSortFields() throws ParseException {
 
         for (SortTestStruct sortTestInfo : sortTests) {

@@ -108,14 +108,6 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
         wsg.addUrl(new WebSitemapUrl.Options(url).changeFreq(ChangeFreq.WEEKLY).build());
     }
 
-    private void writeEvery(WebSitemapGenerator wsg, int i) {
-        if (batchCount == BATCH_SIZE) {
-            // wsg.write();
-            batchCount = 0;
-        }
-        batchCount++;
-    }
-
     @Override
     public boolean isEnabled() {
         // TODO Auto-generated method stub

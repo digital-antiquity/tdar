@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <head>
 <title>Edit Table Metadata for ${dataset.title}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -46,7 +47,7 @@
             </ul>
             <div id="fakeSubmitDiv" class="pull-right">
                 <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner"  style="display:none"/>
+                <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner"  style="display:none"/>
             </div>
         </div>
     </div>
@@ -79,8 +80,60 @@
 
 </div>
 </#if>
+<#if (paginationHelper.pageCount > 1)>
+<div class="pagination">
+<b>Showing ${recordsPerPage} columns, jump to another page?</b>
+<#assign path="/">
+<#if (paginationHelper.totalNumberOfItems >0)>
+    <table class="pagin">
+        <tr>
+        <#if paginationHelper.hasPrevious()>
+        <td class="prev">
+            <@paginationLink startRecord=paginationHelper.previousPageStartRecord path=path linkText="Previous" />
+        </td>
+        </#if>
+        <td class="page">
+            <ul>
+              <#if (0 < paginationHelper.minimumPageNumber) >
+                <li>
+                  <@paginationLink startRecord=0 path=path linkText="First" />
+                 </li>
+                <li>...</li>
+              </#if>
+                <#list paginationHelper.minimumPageNumber..paginationHelper.maximumPageNumber as i>
+                <li>
+                    <#if i == paginationHelper.currentPage>
+                        <span class="currentResultPage">${i + 1}</span>
+                    <#else>
+                        <@paginationLink startRecord=(i * paginationHelper.itemsPerPage) path=path linkText=(i + 1) />
+                    </#if>
+                </li>
+                </#list>
+            <#if (paginationHelper.maximumPageNumber < (paginationHelper.pageCount - 1))>
+                <li>...</li>
+                <li>
+                      <@paginationLink startRecord=paginationHelper.lastPage path=path linkText="Last" />
+                </li>
+            </#if>
+            </ul>
+        </td>
+            <#if (paginationHelper.hasNext()) >
+        <td class="next">
+                <@paginationLink startRecord=paginationHelper.nextPageStartRecord path=path linkText="Next" />
+        </td>
+            </#if>
+        </tr>
+    </table>
+</#if>
+</div>
 
+</#if>
 
+<#macro paginationLink startRecord path linkText>
+    <span class="paginationLink">
+    	<a href="<@s.url value="?startRecord=${startRecord?c}&amp;recordsPerPage=${recordsPerPage}"/><#if dataTableId?has_content>&amp;dataTableId=${dataTableId}</#if>">${linkText}</a>
+    </span>
+</#macro>
 
 <#if dataTable.dataTableColumns??>
 <div id="datatablecolumns">
@@ -89,25 +142,27 @@
 
 <div class="datatablecolumn" id="columnDiv_${column_index}" >
   <h3> 
-  <span id="columnDiv_${column_index}lgnd" tooltipcontent="#generalToolTip" tiplabel="Column Mapping Instructions" class="columnSquare">&nbsp;</span>
+  <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions" class="columnSquare"><span>&nbsp;</span></span>
   <!-- Column: -->
   <span class="displayName">${column.displayName}</span> 
   <!-- <small style="float:right">jump to: <a href="#top">top</a> | <a href="#submitButton">save</a></small> --></h3>
 
-    <span tooltipcontent="#columnTypeToolTip" tiplabel="Column Type">
-    <@s.radio id='columnEncoding_${column_index}' name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
+    <span data-tooltipcontent="#columnTypeToolTip" data-tiplabel="Column Type">
+    <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
     cssClass="columnEncoding" target="#columnDiv_${column_index}"
          listValue='label' emptyOption='false' list='%{allColumnEncodingTypes}'/>
     </span>
     <@s.hidden name="dataTableColumns[${column_index}].id" value="${column.id?c}" />
     <@s.hidden name="dataTableColumns[${column_index}].columnDataType" value="${column.columnDataType}" cssClass="dataType" />
     <@s.hidden name="dataTableColumns[${column_index}].name" value="${column.name}" />
-    <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" tooltipcontent="#displayNameToolTip" tiplabel="Display Name" cssClass="input-xxlarge" />
+    <span data-tooltipcontent="#displayNameToolTip" data-tiplabel="Display Name" >
+    <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" cssClass="input-xxlarge" />
+    </span>
     <div class="measurementInfo" style='display:none;'>
     <@s.select name='dataTableColumns[${column_index}].measurementUnit' cssClass="measurementUnit"
          label="Meas. Unit:" listValue='fullName' emptyOption='true' list='%{allMeasurementUnits}'/>
     </div>
-    <div tooltipcontent="#categoryVariableToolTip" tiplabel="Category Variable" class="control-group">
+    <div data-tooltipcontent="#categoryVariableToolTip" data-tiplabel="Category Variable" class="control-group">
         <label class="control-label">Category:</label>
         <#assign subCategoryId="" />
         <#assign categoryId="" />
@@ -122,7 +177,7 @@
         <div class="controls">
             <@s.select id='categoryVariableId_${column_index}' 
                     name='dataTableColumns[${column_index}].categoryVariable.id' 
-                    onchange='changeSubcategory("#categoryVariableId_${column_index}","#subcategoryId_${column_index}")'
+                    onchange='TDAR.common.changeSubcategory("#categoryVariableId_${column_index}","#subcategoryId_${column_index}")'
                     headerKey="-1"
                     headerValue=""
                     cssClass="categorySelect span3"
@@ -159,14 +214,14 @@
                     </select>
                 </#if>
             </span>
-               <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
+               <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
         </div>
     </div>
-    <span tooltipcontent="#descriptionToolTip" tiplabel="Column Description">
+    <span data-tooltipcontent="#descriptionToolTip" data-tiplabel="Column Description">
     <@s.textarea label="Column Description" name='dataTableColumns[${column_index}].description' rows='2' cols='12' cssClass="resizable input-xxlarge" />
 
     </span>
-    <div id='divCodingSheet-${column_index}' class="codingInfo" tooltipcontent="#codingSheetToolTip" tiplabel="Coding Sheet">
+    <div id='divCodingSheet-${column_index}' class="codingInfo" data-tooltipcontent="#codingSheetToolTip" data-tiplabel="Coding Sheet">
             <#assign codingId="" />
             <#assign codingTxt="" />
             <#if column.defaultCodingSheet?? && column.defaultCodingSheet.id??>
@@ -174,7 +229,7 @@
                 <#assign codingTxt="${column.defaultCodingSheet.title} (${column.defaultCodingSheet.id?c})"/>
             </#if>
             <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
-            <@edit.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
+            <@common.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
              label="Translate your data using a Coding Sheet:"
              autocompleteParentElement="#divCodingSheet-${column_index}"
              autocompleteIdElement="#${column_index}_cid"
@@ -182,15 +237,15 @@
              addNewLink="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"
             value="${codingTxt}" cssClass="input-xxlarge-combo codingsheetfield" />
     </div>
-     <div id='divOntology-${column_index}' class="ontologyInfo " tooltipcontent="#ontologyToolTip" tiplabel="Ontology">
+     <div id='divOntology-${column_index}' class="ontologyInfo " data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology">
             <#assign ontologyId="" />
             <#assign ontologyTxt="" />
-            <#if column.defaultOntology??  && column.defaultOntology.id??>
+            <#if column.defaultOntology??  && column.defaultOntology.id?? && column.columnEncodingType != "CODED_VALUE" >
                 <#assign ontologyId=column.defaultOntology.id?c />
                 <#assign ontologyTxt="${column.defaultOntology.title} (${column.defaultOntology.id?c})"/>
             </#if>
             <@s.hidden name="dataTableColumns[${column_index}].defaultOntology.id" value="${ontologyId}" id="${column_index}_oid" />
-            <@edit.combobox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
+            <@common.combobox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
              value="${ontologyTxt}"  
              label="Map it to an Ontology:"
              placeholder="Enter the name of an Ontology"
@@ -201,13 +256,13 @@
              cssClass="input-xxlarge-combo ontologyfield" />
     </div>
     <br/>
-    <div class="mappingInfo" tooltipcontent="#mappingToolTip" tiplabel="Mapping ${siteAcronym} Resources">
+    <div class="mappingInfo" data-tooltipcontent="#mappingToolTip" data-tiplabel="Mapping ${siteAcronym} Resources">
     <#if column.dataTable?? && column.dataTable.dataset.project?? && column.dataTable.dataset.project.id != -1 >
         <#assign mapping = "false" />
         <#if column.mappingColumn??>
             <#assign mapping =column.mappingColumn /></#if>
 
-    <@edit.boolfield name="dataTableColumns[${column_index}].mappingColumn"
+    <@common.boolfield name="dataTableColumns[${column_index}].mappingColumn"
         label="Use column values to map table rows to resources?"
         id="mapping_${column_index}" value=mapping cssClass="mappingValue" />
     <div class="mappingDetail well">
@@ -220,7 +275,7 @@
         <#assign ignoreExt = "false" />
         <#if column.ignoreFileExtension??>
             <#assign ignoreExt = column.ignoreFileExtension /></#if>
-        <@edit.boolfield 
+        <@common.boolfield 
           name="dataTableColumns[${column_index}].ignoreFileExtension"
           label="ignore file extension"
           id="dataTableColumns[${column_index}].ignoreFileExtension"
@@ -232,7 +287,7 @@
         <#assign visible = "true" />
         <#if column.visible??>
             <#assign visible = column.visible /></#if>
-        <@edit.boolfield 
+        <@common.boolfield 
           name="dataTableColumns[${column_index}].visible"
           label="visible?"
           id="dataTableColumns[${column_index}].visible"
@@ -315,7 +370,7 @@ $(document).ready(function() {
         cache: false 
     });
      
-    applyWatermarks(document);
+    TDAR.common.applyWatermarks(document);
  
       
     $('#table_select').change(function() {
@@ -328,9 +383,9 @@ $(document).ready(function() {
     
     console.debug('binding autocompletes');
     
-    //bugfix: deferred registration didn't properly register expando button. If this is too slow,  but delegate inside of applyComboboxAutocomplete
-    applyComboboxAutocomplete($('input.codingsheetfield', $form), "CODING_SHEET");
-    applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
+    //bugfix: deferred registration didn't properly register expando button. If this is too slow,  but delegate inside of _applyComboboxAutocomplete
+    TDAR.autocomplete.applyComboboxAutocomplete($('input.codingsheetfield', $form), "CODING_SHEET");
+    TDAR.autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
     
     console.debug('intitializing columns');
     //determine when to show coding-sheet, ontology selection based on column encoding value
@@ -474,6 +529,10 @@ function updateSummaryTable() {
 
 
 </script>
+
 </body>
+
+
+
 </#escape>
 

@@ -29,7 +29,7 @@ public class DataTableRelationship extends Persistable.Base {
     private static final long serialVersionUID = 7389360675412671860L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "relationship_type")
+    @Column(name = "relationship_type", length = 255)
     private DataTableColumnRelationshipType type;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "relationship")

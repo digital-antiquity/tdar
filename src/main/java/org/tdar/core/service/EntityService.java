@@ -116,7 +116,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @Transactional(readOnly = false)
     public <C extends Creator> C findOrSaveCreator(C transientCreator) {
         C creatorToReturn = null;
-        
+
         if (transientCreator instanceof Person) {
             creatorToReturn = (C) findOrSavePerson((Person) transientCreator);
         }
@@ -137,8 +137,9 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         if (transientPerson == null || transientPerson.hasNoPersistableValues()) {
             return null;
         }
-        
+
         if (Persistable.Base.isNotNullOrTransient(transientPerson.getId())) {
+            getDao().detachFromSession(transientPerson);
             return find(transientPerson.getId());
         }
 
@@ -157,7 +158,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             Set<Person> people = getDao().findByPerson(transientPerson);
             /*
              * Perhaps this should match only if FirstName and LastName are not empty, but I can see cases
-             * where LastName may not be empty but firstName is... 
+             * where LastName may not be empty but firstName is...
              */
             if (!people.isEmpty()) {
                 blessedPerson = people.iterator().next();
@@ -217,20 +218,25 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return getDao().findNumberOfActualContributors();
     }
 
-    @Transactional(readOnly= true)
+    @Transactional(readOnly = true)
     public Creator findAuthorityFromDuplicate(Creator dup) {
         if (Persistable.Base.isNullOrTransient(dup)) {
             return null;
         }
         if (dup instanceof Person) {
-            return getDao().findAuthorityFromDuplicate((Person)dup);
+            return getDao().findAuthorityFromDuplicate((Person) dup);
         } else {
-            return institutionDao.findAuthorityFromDuplicate((Institution)dup);
+            return institutionDao.findAuthorityFromDuplicate((Institution) dup);
         }
     }
-    
+
     @Transactional(readOnly = true)
     public Set<Long> findAllContributorIds() {
         return getDao().findAllContributorIds();
+    }
+
+    @Transactional
+    public void updateOcurrances() {
+        getDao().updateOccuranceValues();
     }
 }

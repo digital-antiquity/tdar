@@ -9,7 +9,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.Tika;
@@ -18,8 +21,10 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.filestore.tasks.Task.AbstractTask;
+import org.tdar.utils.ExceptionWrapper;
 
 /**
  * @author Adam Brin
@@ -29,13 +34,17 @@ import org.tdar.filestore.tasks.Task.AbstractTask;
 public class IndexableTextExtractionTask extends AbstractTask {
 
     private static final long serialVersionUID = -5207578211297342261L;
+    public static final String GPS_MESSAGE = "The image you uploaded appears to have GPS Coordinate in it, please make sure you mark it as confidential if the exact location data is important to protect (%s)";
 
     @Override
     public void run() throws Exception {
-        run(getWorkflowContext().getOriginalFile().getFile());
+        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+            run(version);
+        }
     }
 
-    public void run(File file) throws Exception {
+    public void run(InformationResourceFileVersion version) throws Exception {
+        File file = version.getTransientFile();
         FileOutputStream metadataOutputStream = null;
         FileInputStream stream = null;
         File metadataFile = new File(getWorkflowContext().getWorkingDirectory(), file.getName() + ".metadata");
@@ -59,13 +68,18 @@ public class IndexableTextExtractionTask extends AbstractTask {
             parser.parse(stream, handler, metadata, parseContext);
             IOUtils.closeQuietly(indexedFileOutputStream);
             if (indexFile.length() > 0) {
-                addDerivativeFile(indexFile, VersionType.INDEXABLE_TEXT);
+                addDerivativeFile(version, indexFile, VersionType.INDEXABLE_TEXT);
             }
+
+            List<String> gpsValues = new ArrayList<>();
 
             for (String name : metadata.names()) {
                 StringWriter sw = new StringWriter();
                 if (StringUtils.isNotBlank(metadata.get(name))) {
                     sw.append(name).append(":");
+                    if (name.matches("(?i).*(latitude|longitude|gps).*")) {
+                        gpsValues.add(name);
+                    }
                     if (metadata.isMultiValued(name)) {
                         sw.append(StringUtils.join(metadata.getValues(name), "|"));
                     } else {
@@ -74,6 +88,9 @@ public class IndexableTextExtractionTask extends AbstractTask {
                     sw.append("\r\n");
                     IOUtils.write(sw.toString(), metadataOutputStream);
                 }
+            }
+            if (CollectionUtils.isNotEmpty(gpsValues)) {
+                getWorkflowContext().getExceptions().add(new ExceptionWrapper(String.format(GPS_MESSAGE, gpsValues), null));
             }
         } catch (Throwable t) {
             // Marking this as a "warn" as it's a derivative
@@ -84,7 +101,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
         }
 
         if (metadataFile != null && metadataFile.exists() && metadataFile.length() > 0) {
-            addDerivativeFile(metadataFile, VersionType.METADATA);
+            addDerivativeFile(version, metadataFile, VersionType.METADATA);
 
         }
     }

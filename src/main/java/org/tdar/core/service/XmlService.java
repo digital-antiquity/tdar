@@ -1,12 +1,15 @@
 package org.tdar.core.service;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,15 +30,21 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
+import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -45,6 +54,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /*
  * class to help with marshalling and unmarshalling of resources
@@ -57,6 +72,7 @@ public class XmlService implements Serializable {
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Class<?>[] jaxbClasses;
+    
 
     @Autowired
     JaxbPersistableConverter persistableConverter;
@@ -69,8 +85,8 @@ public class XmlService implements Serializable {
     }
 
     // FIXME: I should cache this file and use it!!!
-    public File generateSchema() throws IOException, JAXBException, NoSuchBeanDefinitionException, ClassNotFoundException {
-        final File tempFile = File.createTempFile("tdar-schema", ".xsd");
+    public File generateSchema() throws IOException, JAXBException, NoSuchBeanDefinitionException {
+        final File tempFile = File.createTempFile("tdar-schema", ".xsd", TdarConfiguration.getInstance().getTempDirectory());
         JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
 
         // WRITE OUT SCHEMA
@@ -88,7 +104,6 @@ public class XmlService implements Serializable {
     @Autowired
     private UrlService urlService;
 
-    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public Writer convertToXML(Object object, Writer writer) throws Exception {
         if (jaxbClasses == null) {
@@ -99,7 +114,7 @@ public class XmlService implements Serializable {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, urlService.getPairedSchemaUrl());
         // marshaller.setProperty(Marshaller.JAXB_, urlService.getSchemaUrl());
-        logger.info("converting: {}", object);
+        logger.trace("converting: {}", object);
         marshaller.marshal(object, writer);
         return writer;
     }
@@ -121,6 +136,10 @@ public class XmlService implements Serializable {
 
     @Transactional(readOnly = true)
     public Document convertToXML(Object object, Document document) throws JAXBException {
+        // http://marlonpatrick.info/blog/2012/07/12/jaxb-plus-hibernate-plus-javassist/
+        if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
+            object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
+        }
         JAXBContext jc = JAXBContext.newInstance(object.getClass());
         Marshaller marshaller = jc.createMarshaller();
         marshaller.marshal(object, document);
@@ -139,7 +158,7 @@ public class XmlService implements Serializable {
         unmarshaller.setSchema(schema);
         unmarshaller.setAdapter(persistableConverter);
 
-        final List<JaxbValidationEvent> errors = new ArrayList<JaxbValidationEvent>();
+        final List<JaxbValidationEvent> errors = new ArrayList<>();
         unmarshaller.setEventHandler(new ValidationEventHandler() {
 
             @Override
@@ -160,5 +179,71 @@ public class XmlService implements Serializable {
         }
 
         return toReturn;
+    }
+
+    public void generateFOAF(Creator creator, CreatorInfoLog log) throws IOException {
+        Model model = ModelFactory.createDefaultModel();
+        String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
+        com.hp.hpl.jena.rdf.model.Resource rdf = null;
+        switch (creator.getCreatorType()) {
+            case INSTITUTION:
+                rdf = addInstitution(model, baseUrl, (Institution) creator);
+                break;
+            case PERSON:
+                rdf = addPerson(model, baseUrl, (Person) creator);
+                break;
+        }
+        for (LogPart part : log.getCollaboratorLogPart()) {
+            com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
+            if (part.getSimpleClassName().equals("Institution")) {
+                res.addProperty(RDF.type, FOAF.Organization);
+            } else {
+                res.addProperty(RDF.type, FOAF.Person);
+            }
+            res.addLiteral(FOAF.name, part.getName());
+            res.addProperty(RDFS.seeAlso, String.format("%s/browse/creators/%s/rdf", baseUrl, part.getId()));
+            res.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/count"), part.getCount().toString());
+            rdf.addProperty(FOAF.knows, res);
+        }
+        rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/creatorMedian"), log.getCreatorMedian().toString());
+        rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/creatorMean"), log.getCreatorMean().toString());
+        for (LogPart part : log.getKeywordLogPart()) {
+            com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
+            res.addProperty(RDF.type, part.getSimpleClassName());
+            res.addLiteral(FOAF.name, part.getName());
+            // res.addProperty(RDFS.seeAlso,String.format("%s/browse/creators/%s/rdf", baseUrl, part.getId()));
+            res.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/count"), part.getCount().toString());
+            rdf.addProperty(FOAF.topic_interest, res);
+        }
+        rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/keywordMean"), log.getKeywordMean().toString());
+        rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/keywordMedian"), log.getKeywordMedian().toString());
+        File dir = new File(TdarConfiguration.getInstance().getCreatorFOAFDir());
+        dir.mkdir();
+        File file = new File(dir, creator.getId() + ".foaf.xml");
+        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
+        model.write(writer, "RDF/XML-ABBREV");
+        IOUtils.closeQuietly(writer);
+
+    }
+
+    private com.hp.hpl.jena.rdf.model.Resource addInstitution(Model model, String baseUrl, Institution institution) {
+        com.hp.hpl.jena.rdf.model.Resource institution_ = model.createResource();
+        institution_.addProperty(RDF.type, FOAF.Organization);
+        institution_.addLiteral(FOAF.name, institution.getName());
+        institution_.addProperty(RDFS.seeAlso, String.format("%s/browse/creators/%s/rdf", baseUrl, institution.getId()));
+        return institution_;
+    }
+
+    private com.hp.hpl.jena.rdf.model.Resource addPerson(Model model, String baseUrl, Person person) {
+        com.hp.hpl.jena.rdf.model.Resource person_ = model.createResource(FOAF.NS);
+        person_.addProperty(RDF.type, FOAF.Person);
+        person_.addProperty(FOAF.firstName, person.getFirstName());
+        person_.addProperty(FOAF.family_name, person.getLastName());
+        person_.addProperty(RDFS.seeAlso, String.format("%s/browse/creators/%s/rdf", baseUrl, person.getId()));
+        Institution institution = person.getInstitution();
+        if (Persistable.Base.isNotNullOrTransient(institution)) {
+            person_.addProperty(FOAF.member, addInstitution(model, baseUrl, institution));
+        }
+        return person_;
     }
 }

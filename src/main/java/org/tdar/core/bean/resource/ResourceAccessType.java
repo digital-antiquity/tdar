@@ -13,6 +13,7 @@ import org.tdar.search.query.QueryFieldNames;
  * @author Adam Brin
  * 
  */
+@SuppressWarnings("rawtypes")
 public enum ResourceAccessType implements HasLabel, Facetable {
     CITATION("Citation Only"),
     PUBLICALLY_ACCESSIBLE("Publicly Accessible Files"),

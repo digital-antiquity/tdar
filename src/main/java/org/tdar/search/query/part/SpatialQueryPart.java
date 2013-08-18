@@ -33,6 +33,7 @@ import org.tdar.search.query.QueryFieldNames;
  */
 public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
 
+    public static final int SCALE_RANGE = 2;
     private static final String MIN_LUCENE = TdarIndexNumberFormatter.format(-540);
     private static final String MAX_LUCENE = TdarIndexNumberFormatter.format(540);
 
@@ -136,7 +137,7 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
                                 )
                         );
             }
-            q.append(String.format(" AND %s:[%s TO %s] ",QueryFieldNames.SCALE, TdarIndexNumberFormatter.MIN_ALLOWED, TdarIndexNumberFormatter.format(spatialLimit.getScale() + 2)));
+            q.append(String.format(" AND %s:[%s TO %s] ",QueryFieldNames.SCALE, TdarIndexNumberFormatter.MIN_ALLOWED, TdarIndexNumberFormatter.format(spatialLimit.getScale() + SCALE_RANGE)));
 
         }
         return q.toString();

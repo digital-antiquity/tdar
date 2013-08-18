@@ -15,7 +15,7 @@ public enum ScannerTechnologyType implements HasLabel {
     private final String label;
     private final boolean active;
     
-    private static List<ScannerTechnologyType> activeValues = new ArrayList<ScannerTechnologyType>();
+    private static List<ScannerTechnologyType> activeValues = new ArrayList<>();
     static {
         for(ScannerTechnologyType val : ScannerTechnologyType.values()) {
             if(val.active) {

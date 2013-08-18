@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -37,14 +38,14 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.util.bulkUpload.BulkManifestProxy;
-import org.tdar.core.bean.util.bulkUpload.BulkUploadTemplate;
-import org.tdar.core.bean.util.bulkUpload.CellMetadata;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.ExcelUnit;
+import org.tdar.utils.bulkUpload.BulkManifestProxy;
+import org.tdar.utils.bulkUpload.BulkUploadTemplate;
+import org.tdar.utils.bulkUpload.CellMetadata;
 
 /**
  * @author Adam Brin
@@ -72,7 +73,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
     public void testTemplate() throws FileNotFoundException, IOException {
         HSSFWorkbook workbook = bulkUploadService.createExcelTemplate();
         File file = File.createTempFile("templateTest", ".xls", TdarConfiguration.getInstance().getTempDirectory());
@@ -126,6 +127,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
     public <R extends Resource> void parseBasicFile() throws InvalidFormatException, IOException {
         BulkManifestProxy manifestProxy = generateManifest("manifest.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
@@ -179,6 +181,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
     public <R extends Resource> void parseExcelFileWithBadEnum() throws InvalidFormatException, IOException {
         BulkManifestProxy manifestProxy = generateManifest("bad_enum_value.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
@@ -190,6 +193,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
     /* Note: this test tests that a bad field does not break the import... it's ignored */
     public <R extends Resource> void parseExcelFileWithBadField() {
         try {
@@ -199,13 +203,15 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
             AsyncUpdateReceiver receiver = new DefaultReceiver();
             bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
         } catch (Exception e) {
-            logger.info(e.getMessage());
-            assertTrue(e.getMessage().contains("the following columns are required: Date Created (Year)"));
+            String msg = e.getMessage();
+            logger.info(msg);
+            assertTrue("exception:" + ExceptionUtils.getFullStackTrace(e),msg.contains("Date Created (Year)") && msg.contains("the following columns are required:"));
         }
     }
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
     public <R extends Resource> void parseExcelFileWithBadNumericField() throws InvalidFormatException, IOException {
         BulkManifestProxy manifestProxy = generateManifest("bad_int_value.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
@@ -218,6 +224,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
     public <R extends Resource> void parseExcelFileWithBadFilename() throws InvalidFormatException, IOException {
         BulkManifestProxy manifestProxy = generateManifest("bad_filename.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
@@ -229,6 +236,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
     public <R extends Resource> void parseExcelFileWithBadFirstColumn() {
         try {
             BulkManifestProxy manifestProxy = generateManifest("bad_first_column.xlsx");
@@ -244,6 +252,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
     public <R extends Resource> void parseExcelFileWithIncorrectField() throws InvalidFormatException, IOException {
         BulkManifestProxy manifestProxy = generateManifest("invalid_fieldname_for_class.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
@@ -255,6 +264,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
     public <R extends Resource> void parseExcelFileWithEmptyIncorrectField() throws InvalidFormatException, IOException {
         BulkManifestProxy manifestProxy = generateManifest("image_manifest_empty_column.xlsx");
         Map<String, Resource> filenameResourceMap = new HashMap<String, Resource>();

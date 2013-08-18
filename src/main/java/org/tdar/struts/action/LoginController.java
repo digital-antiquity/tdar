@@ -32,13 +32,11 @@ import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = "authenticated", type = "redirect", location = URLConstants.DASHBOARD),
-        @Result(name = "input", location = "/WEB-INF/content/login.ftl") })
+        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.REDIRECT, location = URLConstants.DASHBOARD),
+        @Result(name = TdarActionSupport.INPUT, location = "/WEB-INF/content/login.ftl") })
 public class LoginController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = -1219398494032484272L;
-
-    private static final String NEW = "new";
 
     private String loginUsername;
     private String loginPassword;
@@ -52,6 +50,7 @@ public class LoginController extends AuthenticationAware.Base {
     @Actions({
             @Action("/login/")
     })
+    @HttpsOnly
     public String execute() {
         logger.debug("Executing /login/ .");
         if (isAuthenticated()) {
@@ -64,8 +63,8 @@ public class LoginController extends AuthenticationAware.Base {
 
     @Action(value = "process",
             results = {
-                    @Result(name = NEW, type = "redirect", location = "/account/new"),
-                    @Result(name = REDIRECT, type = "redirect", location = "${returnUrl}")
+                    @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
+                    @Result(name = REDIRECT, type = REDIRECT, location = "${returnUrl}")
             })
     @HttpsOnly
     @WriteableSession
@@ -95,9 +94,12 @@ public class LoginController extends AuthenticationAware.Base {
         }
 
         if (getSessionData().getReturnUrl() != null || !StringUtils.isEmpty(url)) {
-            setReturnUrl(UrlUtils.urlDecode(url));
+            if (StringUtils.isNotBlank(getSessionData().getReturnUrl())) {
+                setReturnUrl(getSessionData().getReturnUrl());
+            } else {
+                setReturnUrl(UrlUtils.urlDecode(url));
+            }
             logger.info("url {} ", getReturnUrl());
-            setReturnUrl(getSessionData().getReturnUrl());
             if (getReturnUrl().contains("filestore/")) {
                 if (getReturnUrl().endsWith("/get")) {
                     setReturnUrl(getReturnUrl().replace("/get", "/confirm"));

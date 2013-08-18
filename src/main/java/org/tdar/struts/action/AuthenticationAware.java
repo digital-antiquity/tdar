@@ -51,6 +51,7 @@ public interface AuthenticationAware extends SessionDataAware {
         @Autowired
         private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
+        @Override
         public Person getAuthenticatedUser() {
             if (getSessionData() == null)
                 return null;
@@ -101,6 +102,7 @@ public interface AuthenticationAware extends SessionDataAware {
             return isAuthenticated() && getAuthenticatedUser().getContributor();
         }
 
+        @Override
         public boolean isAuthenticated() {
             return getSessionData().isAuthenticated();
         }
@@ -121,6 +123,7 @@ public interface AuthenticationAware extends SessionDataAware {
             return list;
         }
 
+        @Override
         public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
             return authenticationAndAuthorizationService;
         }
@@ -156,6 +159,7 @@ public interface AuthenticationAware extends SessionDataAware {
          * return true if authenticated user has permission to assign other users as the owner of an invoice
          * @return
          */
+        @Override
         public boolean isBillingManager() {
             return getAuthenticationAndAuthorizationService().isBillingManager(getAuthenticatedUser());
         }

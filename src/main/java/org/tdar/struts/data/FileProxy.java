@@ -4,17 +4,23 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Sequenceable;
+import org.tdar.core.bean.resource.HasExtension;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * $Id$
@@ -24,7 +30,7 @@ import org.tdar.core.bean.resource.VersionType;
  * @author $Author$
  * @version $Revision$
  */
-public class FileProxy implements Serializable, Sequenceable<FileProxy> {
+public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExtension {
 
     private static final long serialVersionUID = 1390565134253286109L;
 
@@ -37,8 +43,13 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     private VersionType versionType = VersionType.UPLOADED;
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
     private Integer sequenceNumber = 0;
+    private String description;
+    private Date fileCreatedDate;
+    private InformationResourceFile informationResourceFile;
+    private InformationResourceFileVersion informationResourceFileVersion;
 
     private List<FileProxy> additionalVersions = new ArrayList<FileProxy>();
+    private List<FileProxy> supportingProxies = new ArrayList<FileProxy>();
 
     private transient final static Logger LOGGER = LoggerFactory.getLogger(FileProxy.class);
 
@@ -49,6 +60,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
         this.fileId = file.getId();
         this.restriction = file.getRestriction();
         this.sequenceNumber = file.getSequenceNumber();
+        this.description = file.getDescription();
+        this.fileCreatedDate = file.getFileCreatedDate();
         InformationResourceFileVersion latestVersion = file.getLatestUploadedVersion();
         if (latestVersion != null) {
             this.originalFileVersionId = latestVersion.getId();
@@ -84,10 +97,10 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
      * 
      * @param version
      */
-    public FileProxy(InformationResourceFileVersion version) throws IOException {
-        this(version.getFilename(), version.getFile(), VersionType.UPLOADED, FileAction.ADD);
-        setFileId(version.getInformationResourceFileId());
-    }
+//    public FileProxy(InformationResourceFileVersion version) throws IOException {
+//        this(version.getFilename(), version.getTransientFile(), VersionType.UPLOADED, FileAction.ADD);
+//        setFileId(version.getInformationResourceFileId());
+//    }
 
     public FileAction getAction() {
         return action;
@@ -198,9 +211,70 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     }
 
     public static File createTempFileFromString(String fileTextInput) throws IOException {
-        File tempFile = File.createTempFile("textInput", ".txt");
+        File tempFile = File.createTempFile("textInput", ".txt", TdarConfiguration.getInstance().getTempDirectory());
         FileUtils.writeStringToFile(tempFile, fileTextInput);
         return tempFile;
+    }
+
+    public InformationResourceFile getInformationResourceFile() {
+        return informationResourceFile;
+    }
+
+    public void setInformationResourceFile(InformationResourceFile informationResourceFile) {
+        this.informationResourceFile = informationResourceFile;
+    }
+
+    public InformationResourceFileVersion getInformationResourceFileVersion() {
+        return informationResourceFileVersion;
+    }
+
+    public void setInformationResourceFileVersion(InformationResourceFileVersion informationResourceFileVersion) {
+        this.informationResourceFileVersion = informationResourceFileVersion;
+    }
+
+    @Override
+    public String getExtension() {
+        if (StringUtils.isNotBlank(filename) && filename.contains(".")) {
+            return FilenameUtils.getExtension(filename);
+        }
+        return null;
+    }
+
+    public List<FileProxy> getSupportingProxies() {
+        return supportingProxies;
+    }
+
+    public void setSupportingProxies(List<FileProxy> supportingProxies) {
+        this.supportingProxies = supportingProxies;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getFileCreatedDate() {
+        return fileCreatedDate;
+    }
+
+    public void setFileCreatedDate(Date fileCreatedDate) {
+        this.fileCreatedDate = fileCreatedDate;
+    }
+
+    public boolean isDifferentFromFile(InformationResourceFile irfile) {
+        if (ObjectUtils.notEqual(irfile.getRestriction(), restriction)) {
+            return true;
+        }
+        if (ObjectUtils.notEqual(irfile.getDescription(), description)) {
+            return true;
+        }
+        if (ObjectUtils.notEqual(irfile.getFileCreatedDate(), fileCreatedDate)) {
+            return true;
+        }
+        return false;
     }
 
 }

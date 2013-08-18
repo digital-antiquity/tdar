@@ -11,13 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
+import org.tdar.core.dao.resource.InformationResourceFileVersionDao;
 import org.tdar.core.service.ServiceInterface;
 
 @Service
 public class InformationResourceFileService extends ServiceInterface.TypedDaoBase<InformationResourceFile, InformationResourceFileDao> {
 
     @Autowired
-    private InformationResourceFileVersionService informationResourceFileVersionService;
+    private InformationResourceFileVersionDao informationResourceFileVersionDao;
 
     /**
      * Deletes this information resource file from the filestore, database. Also
@@ -27,13 +28,16 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
      */
     public void delete(InformationResourceFile file) {
         purgeFromFilestore(file);
+        if (file.getInformationResource() != null) {
+            file.getInformationResource().getInformationResourceFiles().remove(file);
+        }
         super.delete(file);
     }
 
     @Transactional(readOnly = false)
     public void delete(InformationResourceFileVersion file) {
         InformationResourceFile irFile = file.getInformationResourceFile();
-        informationResourceFileVersionService.delete(file);
+        informationResourceFileVersionDao.delete(file);
         saveOrUpdate(irFile);
     }
 
@@ -51,7 +55,7 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
     public void purgeFromFilestore(InformationResourceFile file) {
         List<InformationResourceFileVersion> versions = new ArrayList<InformationResourceFileVersion>(file.getInformationResourceFileVersions());
         for (InformationResourceFileVersion version : versions) {
-            informationResourceFileVersionService.delete(version);
+            informationResourceFileVersionDao.delete(version);
         }
     }
 
@@ -64,15 +68,7 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
      */
     @Transactional(readOnly = false)
     public void deleteTranslatedFiles(InformationResourceFile irFile) {
-        // FIXME: CALLING THIS REPEATEDLY WILL CAUSE SQL ERRORS DUE TO KEY
-        // ISSUES (DELETE NOT
-        // HAPPENING BEFORE INSERT)
-        for (InformationResourceFileVersion version : irFile.getLatestVersions()) {
-            if (version.isTranslated()) {
-                delete(version);
-            }
-        }
-        // saveOrUpdate(irFile);
+        getDao().deleteTranslatedFiles(irFile);
     }
 
     public Map<String, Float> getAdminFileExtensionStats() {

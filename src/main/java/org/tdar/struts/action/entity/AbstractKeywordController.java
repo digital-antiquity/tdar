@@ -24,7 +24,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     private static final long serialVersionUID = 3138828456624831070L;
 
     @SkipValidation
-    @Action(value = "view", interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+    @Action(value = VIEW, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
             @Result(name = SUCCESS, location = "/WEB-INF/content/entity/keyword/view.ftl")
     })
     public String view() throws TdarActionException {
@@ -32,7 +32,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     }
 
     @SkipValidation
-    @Action(value = "edit", results = {
+    @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = "/WEB-INF/content/entity/keyword/edit.ftl")
     })
     public String edit() throws TdarActionException {

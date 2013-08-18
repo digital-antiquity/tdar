@@ -36,7 +36,7 @@ public enum GeneralPermissions implements HasLabel {
         this.setEffectivePermissions(effectivePermissions);
         this.setContext(context);
     }
-
+    
     /**
      * @param label
      *            the label to set

@@ -56,12 +56,6 @@ public class GenericKeywordService extends GenericService {
         return (List<W>) cache.get(cls);
     }
 
-    // @Cacheable(value = "tdarCache", key = "#cls.canonicalName")
-    // @CachePut(value = "tdarCache" , key="#cls.canonicalName")
-    // public <W extends SuggestedKeyword> List<W> findAllApprovedWithCache(Class<W> cls) {
-    // return getDao().findAllByProperty(cls, "approved", true);
-    // }
-
     public <H extends HierarchicalKeyword<H>> List<H> findAllDescendants(Class<H> cls, H keyword) {
         return genericKeywordDao.findAllDescendants(cls, keyword);
     }
@@ -151,6 +145,17 @@ public class GenericKeywordService extends GenericService {
 
     public List<Pair<TemporalKeyword, Integer>> getTemporalKeywordStats() {
         return genericKeywordDao.getTemporalKeywordStats();
+    }
+
+    @Transactional
+    public void updateOccurranceValues() {
+        genericKeywordDao.updateOccuranceValues();
+        cache.clear();
+    }
+
+    @Transactional
+    public Keyword findAuthority(Keyword kwd) {
+        return genericKeywordDao.findAuthority(kwd);
     }
 
 }

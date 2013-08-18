@@ -1,5 +1,6 @@
 package org.tdar.odata.server;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.tdar.core.bean.resource.Dataset;
@@ -9,7 +10,7 @@ public interface RepositoryService {
 
     List<Dataset> findAllOwnedDatasets();
 
-    List<DataTable> findAllOwnedDataTables();
+    Collection<DataTable> findAllOwnedDataTables();
 
     DataTable findOwnedDataTableByName(String entitySetName);
 

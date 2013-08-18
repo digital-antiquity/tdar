@@ -42,7 +42,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
         if (dataset.isPublicallyAccessible() || getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
             ResultMetadataWrapper selectAllFromDataTable = ResultMetadataWrapper.NULL;
             try {
-                selectAllFromDataTable = getDatasetService().selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true);
+                selectAllFromDataTable = getDatasetService().selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true, isViewRowSupported());
             } catch (BadSqlGrammarException ex) {
                 getLogger().error("Failed to pull datatable results for '{}' (perhaps the table is missing from tdardata schema?)", dataTable.getName());
             }

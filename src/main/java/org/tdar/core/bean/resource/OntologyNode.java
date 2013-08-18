@@ -10,7 +10,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -19,7 +18,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -57,10 +56,10 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     private Integer intervalEnd;
 
     @Column(name = "display_name")
+    @Length(max = 255)
     private String displayName;
 
-    @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Length(max = 2048)
     private String description;
 
     @ElementCollection(fetch = FetchType.LAZY)
@@ -140,6 +139,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     @Override
     public List<?> getEqualityFields() {
+        //ab probably okay as not nullable fields
         return Arrays.asList(iri);
     }
 

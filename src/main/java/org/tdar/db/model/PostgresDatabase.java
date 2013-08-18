@@ -54,6 +54,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.RowOperations;
+import org.tdar.db.conversion.analyzers.DateAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.odata.server.AbstractDataRecord;
 import org.tdar.struts.data.IntegrationColumn;
@@ -75,6 +76,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     public static final String DATATABLE_TOO_LONG = "This data table contains more columns that is allowed, please simplify the dataset before archiving";
     public static final int MAX_VARCHAR_LENGTH = 500;
     private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
+    private static final String SELECT_ROW_FROM_TABLE = "SELECT * FROM %s WHERE " + TDAR_ID_COLUMN + " = %s";
     private static final String SELECT_ALL_FROM_TABLE_WITH_ORDER = "SELECT %s FROM %s order by " + TargetDatabase.TDAR_ID_COLUMN;
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
     private static final String SELECT_ALL_FROM_COLUMN = "SELECT \"%s\" FROM %s";
@@ -124,22 +126,27 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     private JdbcTemplate jdbcTemplate;
 
+    @Override
     public int getMaxTableLength() {
         return MAX_NAME_SIZE;
     }
 
+    @Override
     public DatabaseType getDatabaseType() {
         return DatabaseType.POSTGRES;
     }
 
+    @Override
     public String getFullyQualifiedTableName(String tableName) {
         return SCHEMA_NAME + '.' + tableName;
     }
 
+    @Override
     public void dropTable(final DataTable dataTable) {
         dropTable(dataTable.getName());
     }
 
+    @Override
     public void dropTable(final String tableName) {
         try {
             jdbcTemplate.execute(String.format(DROP_TABLE, getFullyQualifiedTableName(tableName)));
@@ -213,6 +220,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return jdbcTemplate.query(sql, resultSetExtractor);
     }
 
+    @Override
     @Deprecated
     public <T> T selectAllFromTable(DataTable table,
             ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
@@ -224,6 +232,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE, selectColumns, table.getName()), resultSetExtractor);
     }
 
+    @Override
     public <T> T selectAllFromTableInImportOrder(DataTable table,
             ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         String selectColumns = "*";
@@ -236,6 +245,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return jdbcTemplate.query(sql, resultSetExtractor);
     }
 
+    @Override
     public List<String> selectDistinctValues(DataTableColumn dataTableColumn) {
         if (dataTableColumn == null) {
             return Collections.emptyList();
@@ -244,6 +254,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return jdbcTemplate.queryForList(distinctSql, String.class);
     }
 
+    @Override
     public Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn) {
         if (dataTableColumn == null) {
             return Collections.emptyMap();
@@ -263,6 +274,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return toReturn;
     }
 
+    @Override
     public List<String> selectNonNullDistinctValues(
             DataTableColumn dataTableColumn) {
         if (dataTableColumn == null) {
@@ -278,6 +290,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return jdbcTemplate.queryForList(distinctSql, String.class);
     }
 
+    @Override
     public String normalizeTableOrColumnNames(String name) {
         String result = name.trim().replaceAll("[^\\w]", "_").toLowerCase();
         if (result.length() > MAX_NAME_SIZE) {
@@ -298,6 +311,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     }
 
     // FIXME: allows for totally free form queries, refine this later?
+    @Override
     public <T> T query(PreparedStatementCreator psc,
             PreparedStatementSetter pss, ResultSetExtractor<T> rse) {
         return jdbcTemplate.query(psc, pss, rse);
@@ -351,11 +365,13 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return false;
     }
 
+    @Override
     public void alterTableColumnType(String tableName, DataTableColumn column,
             DataTableColumnType type) {
         alterTableColumnType(tableName, column, type, -1);
     }
 
+    @Override
     public void alterTableColumnType(String tableName, DataTableColumn column,
             DataTableColumnType columnType, int length) {
         String type = toImplementedTypeDeclaration(columnType, length);
@@ -519,17 +535,24 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                     break;
                 case DATE:
                 case DATETIME:
+
                     Date date = null;
+                    // 3 cases -- it's a date already
                     try {
                         java.sql.Date.valueOf(colValue);
                         date = dateFormat.parse(colValue);
                     } catch (Exception e) {
                         logger.trace("couldn't parse " + colValue, e);
                     }
+                    // it's an Access date
                     try {
                         date = accessDateFormat.parse(colValue);
                     } catch (Exception e) {
                         logger.trace("couldn't parse " + colValue, e);
+                    }
+                    // still don't know, so it came from the date analyzer
+                    if (date == null) {
+                        date = DateAnalyzer.convertValue(colValue);
                     }
                     if (date != null) {
                         java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
@@ -548,6 +571,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         }
     }
 
+    @Override
     public String getResultSetValueAsString(ResultSet result, int i, DataTableColumn column) throws SQLException {
         try {
             switch (column.getColumnDataType()) {
@@ -572,6 +596,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return null;
     }
 
+    @Override
     public void closePreparedStatements(Collection<DataTable> dataTables) throws Exception {
         for (DataTable table : dataTables) {
             addOrExecuteBatch(table, true);
@@ -587,6 +612,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
      * @param column
      * @param codingSheet
      */
+    @Override
     public void translateInPlace(final DataTableColumn column,
             final CodingSheet codingSheet) {
         DataTable dataTable = column.getDataTable();
@@ -621,6 +647,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         final String updateColumnSql = String.format(UPDATE_COLUMN_SET_VALUE, tableName, columnName, originalColumnName);
         logger.debug("translating column from " + tableName + " (" + columnName + ")");
         PreparedStatementCreator translateColumnPreparedStatementCreator = new PreparedStatementCreator() {
+            @Override
             public PreparedStatement createPreparedStatement(
                     Connection connection) throws SQLException {
                 return connection.prepareStatement(updateColumnSql);
@@ -684,6 +711,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         jdbcTemplate.execute(updateUntranslatedRows);
     }
 
+    @Override
     @Transactional(readOnly = false)
     public void untranslate(DataTableColumn column) {
         DataTable dataTable = column.getDataTable();
@@ -759,6 +787,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         String chr = "\'";
         if (doubleQuote) {
             chr = "\"";
+        } else {
+            term = StringUtils.replace(term, "'", "''");
         }
         return " " + chr + term + chr + " ";
     }
@@ -813,6 +843,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return selectPart.toString();
     }
 
+    @Override
     public String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
             final Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
         StringBuilder selectPart = new StringBuilder("SELECT ");
@@ -869,6 +900,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return selectPart.toString();
     }
 
+    @Override
     public <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor) {
         String selectColumns = "*";
         return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE, selectColumns, column.getDataTable().getName(), column.getName()),
@@ -907,6 +939,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return jdbcTemplate.queryForList(sql, String.class);
     }
 
+    @Override
     public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper) {
         return jdbcTemplate.query(selectSql, parameterizedRowMapper);
     }
@@ -954,4 +987,37 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         throw new NotImplementedException("Not allowed. Deletion of records is out of scope");
     }
 
+    @Override
+    public List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
+            String query) {
+        List<String> coalesce = new ArrayList<String>();
+        for (DataTableColumn column : dataTable.getDataTableColumns()) {
+            coalesce.add(String.format("coalesce(\"%s\",'') ", column.getName()));
+        }
+
+        String selectColumns = "*";
+        if (!includeGenerated) {
+            selectColumns = "\"" + StringUtils.join(dataTable.getColumnNames(), "\", \"") + "\"";
+        }
+
+        String vector = StringUtils.join(coalesce, " || ' ' || ");
+        String sql = String.format("SELECT %s from %s where to_tsvector('english', %s) @@ to_tsquery(%s)", selectColumns, dataTable.getName(), vector,
+                quote(query, false));
+        logger.debug(sql);
+        return jdbcTemplate.query(sql, resultSetExtractor);
+    }
+
+    @Override
+    public <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId) {
+        String sql = String.format(SELECT_ROW_FROM_TABLE, dataTable.getName(), rowId);
+        logger.debug(sql);
+        return jdbcTemplate.query(sql, resultSetExtractor);
+    }
+
+    @Override
+    public String selectTableAsXml(DataTable dataTable) {
+        String sql = String.format("select table_to_xml('%s',true,false,'');", dataTable.getName());
+        logger.debug(sql);
+        return jdbcTemplate.queryForObject(sql, String.class);
+    }
 }

@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -58,7 +57,6 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.DynamicBoost;
@@ -69,6 +67,7 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.Length;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.slf4j.Logger;
@@ -93,6 +92,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -134,8 +134,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
-@XmlSeeAlso({ Document.class, InformationResource.class, Project.class,
-        CodingSheet.class, Dataset.class, Ontology.class, Image.class, SensoryData.class, Video.class })
+@XmlSeeAlso({ Document.class, InformationResource.class, Project.class, CodingSheet.class, Dataset.class, Ontology.class,
+        Image.class, SensoryData.class, Video.class, Geospatial.class, Archive.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource")
 @FetchProfiles(value = {
@@ -152,10 +152,13 @@ public class Resource extends JsonModel.Base implements Persistable,
     private static final long serialVersionUID = -230400285817185637L;
 
     @Transient
+
     private transient boolean obfuscated;
     @Transient
+
     private transient boolean viewable;
     @Transient
+
     private transient Long transientAccessCount;
     // TODO: anything that gets returned in a tdar search should be included in
     // json results
@@ -209,6 +212,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
     @NotNull
     @Column(length = 512)
+    @Length(max = 512)
     private String title;
 
     @BulkImportField(label = BulkImportField.DESCRIPTION_LABEL, required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
@@ -217,45 +221,47 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
-    @Field(boost = @Boost(.5f), norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    // @Boost(.5f)
+    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
     @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
     private Date dateCreated;
 
+    @Length(max = 255)
     private String url;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "resource_type")
+    @Column(name = "resource_type", length = 255)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private ResourceType resourceType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", length = 50)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private Status status = Status.ACTIVE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "previous_status")
+    @Column(name = "previous_status", length = 50)
     private Status previousStatus = Status.ACTIVE;
 
-    @Boost(.5f)
+    // @Boost(.5f)
     @IndexedEmbedded
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH})
     @JoinColumn(nullable = false, name = "submitter_id")
     @NotNull
     private Person submitter;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE,CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "uploader_id")
     @NotNull
     private Person uploader;
 
-    @Boost(.5f)
+    // @Boost(.5f)
     @IndexedEmbedded
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH})
     @JoinColumn(name = "updater_id")
     @NotNull
     private Person updatedBy;
@@ -362,6 +368,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @XmlTransient
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();
 
+    // FIXME: do we really want cascade all here? even delete?
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
@@ -378,6 +385,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     private transient boolean updated = false;
 
     @Column(name = "external_id")
+    @Length(max = 255)
     private String externalId;
 
     private transient Float score = -1f;
@@ -635,8 +643,9 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.id = id;
     }
 
+    // @Boost(1.5f)
     @Fields({
-            @Field(boost = @Boost(1.5f)),
+            @Field,
             @Field(name = QueryFieldNames.TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
     public String getTitle() {
         return title;
@@ -676,7 +685,8 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.submitter = submitter;
     }
 
-    @Field(boost = @Boost(1.2f))
+    @Field
+    // @Boost(1.2f)
     public String getDescription() {
         return description;
     }
@@ -841,7 +851,8 @@ public class Resource extends JsonModel.Base implements Persistable,
         return resourceType.getLabel();
     }
 
-    public void setResourceType(ResourceType resourceType) {
+    // marked as final because this is called from constructors.
+    public final void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
     }
 
@@ -1107,32 +1118,16 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Override
     public List<?> getEqualityFields() {
-        return Arrays.asList(getId());
+        return Collections.emptyList();
     }
 
     @Override
     public boolean equals(Object candidate) {
-        if (this == candidate) {
-            return true;
-        }
-        if (candidate == null) {
-            return false;
-        }
-        try {
-            return Persistable.Base.isEqual(this,
-                    Resource.class.cast(candidate));
-        } catch (ClassCastException e) {
-            logger.debug("{} <==> {} ", candidate.getClass(), getClass());
-            logger.debug("{}", e);
-            return false;
-        }
+        return Persistable.Base.isEqual(this, (Persistable) candidate);
     }
 
     @Override
     public int hashCode() {
-        if (isTransient()) {
-            return super.hashCode();
-        }
         return Persistable.Base.toHashCode(this);
     }
 
@@ -1178,6 +1173,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return "";
     }
 
+    @SuppressWarnings("unchecked")
     @JSONTransient
     @Fields({
             @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
@@ -1189,14 +1185,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         StringBuilder sb = new StringBuilder();
         sb.append(getTitle()).append(" ").append(getDescription()).append(" ").append(getAdditonalKeywords()).append(" ");
 
-        Collection<Keyword> kwds = new HashSet<Keyword>();
-        kwds.addAll(getActiveCultureKeywords());
-        kwds.addAll(getIndexedGeographicKeywords());
-        kwds.addAll(getActiveSiteNameKeywords());
-        kwds.addAll(getActiveSiteTypeKeywords());
-        kwds.addAll(getActiveMaterialKeywords());
-        kwds.addAll(getActiveOtherKeywords());
-        kwds.addAll(getActiveTemporalKeywords());
+        Collection<Keyword> kwds = getAllActiveKeywords();
 
         for (Keyword kwd : kwds) {
             if (kwd instanceof HierarchicalKeyword) {
@@ -1235,6 +1224,19 @@ public class Resource extends JsonModel.Base implements Persistable,
             sb.append(src.getText()).append(" ");
         }
         return sb.toString();
+    }
+
+    @XmlTransient
+    public Collection<Keyword> getAllActiveKeywords() {
+        Collection<Keyword> kwds = new HashSet<Keyword>();
+        kwds.addAll(getActiveCultureKeywords());
+        kwds.addAll(getIndexedGeographicKeywords());
+        kwds.addAll(getActiveSiteNameKeywords());
+        kwds.addAll(getActiveSiteTypeKeywords());
+        kwds.addAll(getActiveMaterialKeywords());
+        kwds.addAll(getActiveOtherKeywords());
+        kwds.addAll(getActiveTemporalKeywords());
+        return kwds;
     }
 
     /**
@@ -1362,12 +1364,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
-            throw new TdarValidationException(
-                    "A title is required for this " + getResourceType());
+            throw new TdarValidationException("A title is required for this " + getResourceType());
         }
         if (StringUtils.isEmpty(getDescription())) {
-            throw new TdarValidationException(
-                    "A description is required for this " + getResourceType());
+            throw new TdarValidationException("A description is required for this " + getResourceType());
         }
         return true;
     }
@@ -1543,6 +1543,16 @@ public class Resource extends JsonModel.Base implements Persistable,
         return list;
     }
 
+    @XmlTransient
+    public List<Creator> getRelatedCreators() {
+        List<Creator> creators = new ArrayList<Creator>();
+        for (ResourceCreator creator : resourceCreators) {
+            creators.add(creator.getCreator());
+        }
+        creators.add(getSubmitter());
+        return creators;
+    }
+
     protected StringBuilder appendIfNotBlank(StringBuilder sb, String str,
             String prefixIfNotAtStart, String textPrefixIfNotBlank) {
         if (StringUtils.isNotBlank(str)) {
@@ -1557,6 +1567,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return sb;
     }
 
+    @XmlTransient
     public Long getTransientAccessCount() {
         return transientAccessCount;
     }
@@ -1605,7 +1616,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         if (CollectionUtils.isNotEmpty(getActiveSiteNameKeywords()) || CollectionUtils.isNotEmpty(getActiveCultureKeywords()) ||
                 CollectionUtils.isNotEmpty(getActiveSiteTypeKeywords()) || CollectionUtils.isNotEmpty(getActiveMaterialKeywords()) ||
                 CollectionUtils.isNotEmpty(getActiveInvestigationTypes()) || CollectionUtils.isNotEmpty(getActiveOtherKeywords()) ||
-                CollectionUtils.isNotEmpty(getActiveTemporalKeywords()) || CollectionUtils.isNotEmpty(getActiveGeographicKeywords()) ) {
+                CollectionUtils.isNotEmpty(getActiveTemporalKeywords()) || CollectionUtils.isNotEmpty(getActiveGeographicKeywords())) {
             return true;
         }
         return false;
@@ -1749,4 +1760,8 @@ public class Resource extends JsonModel.Base implements Persistable,
         return false;
     }
 
+    @Transient
+    public boolean isHasBrowsableImages() {
+        return false;
+    }
 }

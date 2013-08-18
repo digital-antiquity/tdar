@@ -1,6 +1,5 @@
 package org.tdar.core.bean.resource;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -76,10 +75,41 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
                     return false;
             }
         }
+
+        public boolean requiresWorkflowProcessing() {
+            switch (this) {
+                case ADD:
+                case REPLACE:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public boolean requiresExistingIrFile() {
+            switch (this) {
+                case ADD:
+                    return false;
+                case NONE:
+                    return false;
+                default:
+                    return true;
+            }
+        }
     }
 
     public enum FileType {
-        IMAGE, DOCUMENT, COLUMNAR_DATA, FILE_ARCHIVE, OTHER
+        IMAGE, DOCUMENT, COLUMNAR_DATA, FILE_ARCHIVE, GEOSPATIAL, OTHER;
+
+        public boolean isComposite() {
+            switch (this) {
+                case COLUMNAR_DATA:
+                case GEOSPATIAL:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 
     public enum FileAccessRestriction implements HasLabel {
@@ -87,10 +117,11 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         EMBARGOED,
         CONFIDENTIAL;
 
+        @Override
         public String getLabel() {
             return WordUtils.capitalize(this.name().toLowerCase());
         }
-        
+
         public boolean isRestricted() {
             switch (this) {
                 case PUBLIC:
@@ -107,7 +138,8 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         // whether or not this InformationResourceFile has been converted into postgres
         PROCESSED,
         DELETED,
-        PROCESSING_ERROR;
+        PROCESSING_ERROR,
+        PROCESSING_WARNING;
     }
 
     @ManyToOne(optional = false)
@@ -117,8 +149,18 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     private transient Long transientDownloadCount;
 
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
+    private String description;
+    
+    @Column(name="file_created_date")
+    private Date fileCreatedDate;
+    
+    @Column(name = "part_of_composite")
+    private Boolean partOfComposite = Boolean.FALSE;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "general_type")
+    @Column(name = "general_type", length = 255)
     private FileType informationResourceFileType;
 
     @Column(name = "latest_version")
@@ -128,11 +170,12 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private Integer numberOfParts = 0;
 
     // FIXME: cascade "delete" ?
-    @OneToMany(mappedBy = "informationResourceFile", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+    @OneToMany(mappedBy = "informationResourceFile", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
     @Sort(type = SortType.NATURAL)
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
 
     @Lob
@@ -147,6 +190,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private Date dateMadePublic;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 32)
     private FileStatus status;
 
     @XmlElement(name = "informationResourceRef")
@@ -211,14 +255,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return getVersion(getLatestVersion(), VersionType.INDEXABLE_TEXT);
     }
 
-    @Transient
-    public File getFile(VersionType type, int version) {
-        for (InformationResourceFileVersion irfv : getVersions(version)) {
-            if (irfv.getFileVersionType() == type)
-                return irfv.getFile();
-        }
-        return null;
-    }
+    // @Transient
+    // public File getFile(VersionType type, int version) {
+    // for (InformationResourceFileVersion irfv : getVersions(version)) {
+    // if (irfv.getFileVersionType() == type)
+    // return irfv.getFile();
+    // }
+    // return null;
+    // }
 
     public void addFileVersion(InformationResourceFileVersion version) {
         getInformationResourceFileVersions().add(version);
@@ -433,12 +477,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         setStatus(null);
     }
 
-    public void delete() {
+    public void markAsDeleted() {
         setStatus(FileStatus.DELETED);
     }
 
+    @Override
     public String toString() {
-        return String.format("(%d, %s) %s: %s", getId(), status, getLatestVersion(), getInformationResourceFileVersions());
+        return String.format("(%d, %s) v#:%s: %s (%s versions)", getId(), status, getLatestVersion(), restriction,
+                CollectionUtils.size(informationResourceFileVersions));
     }
 
     public void clearQueuedStatus() {
@@ -451,10 +497,12 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return getInformationResourceFileType() == FileType.COLUMNAR_DATA;
     }
 
+    @Override
     public boolean isViewable() {
         return viewable;
     }
 
+    @Override
     public void setViewable(boolean accessible) {
         this.viewable = accessible;
     }
@@ -514,4 +562,41 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         this.errorMessage = errorMessage;
     }
 
+    public boolean isPartOfComposite() {
+        if (partOfComposite == null) {
+            return false;
+        }
+        return partOfComposite;
+    }
+
+    public void setPartOfComposite(boolean partOfComposite) {
+        this.partOfComposite = partOfComposite;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getFileCreatedDate() {
+        return fileCreatedDate;
+    }
+
+    public void setFileCreatedDate(Date fileCreatedDate) {
+        this.fileCreatedDate = fileCreatedDate;
+    }
+
+    public boolean isHasTranslatedVersion() {
+        try {
+        if (getLatestTranslatedVersion() != null && getInformationResource().getResourceType().isDataTableSupported()) {
+            return true;
+        }
+        } catch (Exception e) {
+            logger.error("cannot tell if file has translated version {}", e);
+        }
+        return false;
+    }
 }

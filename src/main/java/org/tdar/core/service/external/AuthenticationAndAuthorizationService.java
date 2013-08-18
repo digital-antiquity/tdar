@@ -47,6 +47,7 @@ import org.tdar.web.SessionData;
 @Service
 public class AuthenticationAndAuthorizationService extends AbstractConfigurableService<AuthenticationProvider> implements Accessible {
 
+    public static final String USERNAME_INVALID = "Username Invalid, cannot authenticated user";
     public static final String YOU_ARE_NOT_ALLOWED_TO_SEARCH_FOR_RESOURCES_WITH_THE_SELECTED_STATUS = "You are not allowed to search for resources with the selected status";
     private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<Person, TdarGroup>();
     private final Logger logger = Logger.getLogger(getClass());
@@ -117,7 +118,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public synchronized List<Person> getCurrentlyActiveUsers() {
         return new ArrayList<Person>(groupMembershipCache.keySet());
     }
-    
+
     // return all of the resource statuses that a user is allowed to view in a search.
     public Set<Status> getAllowedSearchStatuses(Person person) {
         // assumption: ACTIVE always allowed.
@@ -322,7 +323,11 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      * @return
      */
     public boolean canViewConfidentialInformation(Person person, Resource resource) {
-        return canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, GeneralPermissions.VIEW_ALL);
+        if (resource instanceof InformationResource) {
+            return ((InformationResource) resource).isPublicallyAccessible()
+                    || canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, GeneralPermissions.VIEW_ALL);
+        }
+        return true;
     }
 
     public boolean canUploadFiles(Person person, Resource resource) {
@@ -397,6 +402,9 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public boolean canDownload(InformationResourceFile irFile, Person person) {
         if (irFile == null)
             return false;
+        if (irFile.isDeleted() && Persistable.Base.isNullOrTransient(person)) {
+            return false;
+        }
         if (!irFile.isPublic() && !canViewConfidentialInformation(person, irFile.getInformationResource())) {
             return false;
         } else {
@@ -415,6 +423,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
          * If the Persistable supports the "Viewable" interface, then inject the
          * permissions into the transient property
          */
+        
+        //FIXME: it'd be nice if this took an array and could handle multiple lookups at once
         logger.trace("applying transient viewable flag to : " + p);
         if (p instanceof Viewable) {
             logger.trace("item is a 'viewable': " + p.toString());
@@ -426,7 +436,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
                 if (!status.isActive()) { // if not active, check other permissions
                     logger.trace("item 'is not active': " + p.toString());
                     if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
-                        logger.debug("\tuser is special': " + p.toString());
+                        logger.trace("\tuser is special': " + p.toString());
                         viewable = true;
                     }
                 } else {
@@ -461,7 +471,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         return normalizedUsername;
     }
 
-    public void setTransientViewableStatus(InformationResource ir, Person p) {
+    private void setTransientViewableStatus(InformationResource ir, Person p) {
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             boolean viewable = canDownload(irf, p);
 
@@ -478,9 +488,41 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         NEW;
     }
 
+    public static final String USERNAME_REGEX = "^[a-zA-Z0-9+@\\.\\-_]";
+    public static final String USERNAME_VALID_REGEX = USERNAME_REGEX + "{5,40}$";
+    public static final String EMAIL_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{4,40}$";
+
+    public boolean isValidUsername(String username) {
+        if (StringUtils.isBlank(username))
+            return false;
+
+        return username.matches(USERNAME_VALID_REGEX);
+    }
+
+    /*
+     * This is separate to ensure that legacy usernames are supported...
+     */
+    public boolean isPossibleValidUsername(String username) {
+        if (StringUtils.isBlank(username))
+            return false;
+
+        return username.matches(USERNAME_REGEX+"{2,40}$");
+    }
+
+    public boolean isValidEmail(String email) {
+        if (StringUtils.isBlank(email))
+            return false;
+
+        return email.matches(EMAIL_VALID_REGEX);
+    }
+
     @Transactional
     public AuthenticationStatus authenticatePerson(String loginUsername, String loginPassword, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
+        if (!isPossibleValidUsername(loginUsername)) {
+            throw new TdarRecoverableRuntimeException(USERNAME_INVALID);
+        }
+
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
         if (result.isValid()) {
             Person person = personDao.findByUsername(loginUsername);
@@ -493,7 +535,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
                 // username was in Crowd but not in tDAR? Redirect them to the account creation page
                 return AuthenticationStatus.NEW;
             }
-            
+
             if (!person.isActive()) {
                 throw new TdarRecoverableRuntimeException("Cannot authenticate deleted user");
             }
@@ -532,6 +574,5 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public Collection<String> getGroupMembership(Person person) {
         return Arrays.asList(getAuthenticationProvider().findGroupMemberships(person));
     }
-
 
 }

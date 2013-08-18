@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +50,10 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
@@ -58,7 +62,6 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.Pair;
@@ -85,13 +88,16 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     private DataIntegrationService dataIntegrationService;
 
     @Autowired
+    private InformationResourceFileDao informationResourceFileDao;
+
+    @Autowired
     private ExcelService excelService;
 
     @Autowired
     private XmlService xmlService;
 
     @Autowired
-    private FileAnalyzer fileAnalyzer;
+    private DataTableDao dataTableDao;
 
     @Transactional
     public void translate(DataTableColumn column) {
@@ -140,33 +146,35 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     public InformationResourceFile createTranslatedFile(Dataset dataset) {
         // assumes that Datasets only have a single file
         InformationResourceFile file = dataset.getFirstInformationResourceFile();
+
         if (file == null) {
             getLogger().warn("Trying to translate {} with a null file payload.", dataset);
             return null;
         }
-        getInformationResourceFileService().deleteTranslatedFiles(file);
+        informationResourceFileDao.deleteTranslatedFiles(dataset);
 
         // FIXME: remove synchronize once Hibernate learns more about unique constraints
         // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
         getDao().synchronize();
 
-        InformationResourceFile processedFileProxy = null;
+        InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
         try {
-            File tempFile = File.createTempFile("translated", ".xls");
+            File tempFile = File.createTempFile("translated", ".xls", TdarConfiguration.getInstance().getTempDirectory());
             translatedFileOutputStream = new FileOutputStream(tempFile);
             SheetProxy sheetProxy = toExcel(dataset, translatedFileOutputStream);
             String filename = FilenameUtils.getBaseName(file.getLatestUploadedVersion().getFilename()) + "_translated." + sheetProxy.getExtension();
             FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
             fileProxy.setRestriction(file.getRestriction());
             fileProxy.setFileId(file.getId());
-            processedFileProxy = processFileProxy(dataset, fileProxy);
+            processMetadataForFileProxies(dataset, fileProxy);
+            irFile = fileProxy.getInformationResourceFile();
         } catch (IOException exception) {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
         } finally {
             IOUtils.closeQuietly(translatedFileOutputStream);
         }
-        return processedFileProxy;
+        return irFile;
     }
 
     /**
@@ -181,7 +189,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         if (CollectionUtils.isEmpty(dataset.getInformationResourceFiles()))
             return;
         try {
-            fileAnalyzer.processFile(dataset.getFirstInformationResourceFile());
+            analyzer.processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
         } catch (Exception e) {
             throw new TdarRecoverableRuntimeException(e);
         }
@@ -269,17 +277,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
         getDao().merge(dataset);
         getDao().synchronize();
-    }
-
-    private void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove) {
-        logger.info("deleting unmerged tables: {}", tablesToRemove);
-        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
-        for (DataTable table : tablesToRemove) {
-            columnsToUnmap.addAll(table.getDataTableColumns());
-        }
-        // first unmap all columns from the removed tables
-        getDao().unmapAllColumnsInProject(dataset.getProject(), columnsToUnmap);
-        dataset.getDataTables().removeAll(tablesToRemove);
     }
 
     private Collection<DataTable> reconcileTables(Dataset dataset, Dataset transientDatasetToPersist) {
@@ -478,7 +475,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     @Transactional
-    public ResultMetadataWrapper selectAllFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated) {
+    public ResultMetadataWrapper selectAllFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated,
+            final boolean returnRowId) {
         final ResultMetadataWrapper wrapper = new ResultMetadataWrapper();
         wrapper.setRecordsPerPage(page);
         wrapper.setStartRecord(start);
@@ -489,7 +487,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 List<List<String>> results = new ArrayList<List<String>>();
                 int rowNum = 1;
                 while (rs.next()) {
-                    Map<DataTableColumn, String> result = getDao().convertResultSetRowToDataTableColumnMap(dataTable, rs);
+                    Map<DataTableColumn, String> result = convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
                     if (rs.isFirst()) {
                         wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
                     }
@@ -497,7 +495,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                     if (rowNum > start && rowNum <= start + page) {
                         ArrayList<String> values = new ArrayList<String>();
                         for (DataTableColumn col : wrapper.getFields()) {
-                            if (col.isVisible()) {
+                            // the following check is deliberate repetition:
+                            // we really, really want to make sure only visible columns or the ID column are returned
+                            if (col.isVisible() || (returnRowId && TargetDatabase.TDAR_ID_COLUMN.equals(col.getName()))) {
                                 values.add(result.get(col));
                             }
                         }
@@ -519,6 +519,81 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated));
         }
         return wrapper;
+    }
+
+    @Transactional
+    public Map<DataTableColumn, String> selectRowFromDataTable(final DataTable dataTable, final Long rowId, final boolean returnRowId) {
+        ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor<Map<DataTableColumn, String>>() {
+
+            @Override
+            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                Map<DataTableColumn, String> result = new HashMap<>();
+                while (rs.next()) {
+                    result = convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
+                }
+                return result;
+            }
+
+        };
+        return tdarDataImportDatabase.selectRowFromTable(dataTable, resultSetExtractor, rowId);
+
+    }
+
+    @Transactional
+    public ResultMetadataWrapper selectFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated, String query) {
+        final ResultMetadataWrapper wrapper = new ResultMetadataWrapper();
+        wrapper.setRecordsPerPage(page);
+        wrapper.setStartRecord(start);
+
+        ResultSetExtractor<List<List<String>>> resultSetExtractor = new TdarDataResultSetExtractor(wrapper, start, page, dataTable);
+        try {
+            wrapper.setResults(tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated, query));
+        } catch (BadSqlGrammarException e) {
+            logger.trace("order column did not exist", e);
+        }
+        return wrapper;
+    }
+
+    private final class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<String>>> {
+        private final ResultMetadataWrapper wrapper;
+        private final int start;
+        private final int page;
+        private final DataTable dataTable;
+
+        private TdarDataResultSetExtractor(ResultMetadataWrapper wrapper, int start, int page, DataTable dataTable) {
+            this.wrapper = wrapper;
+            this.start = start;
+            this.page = page;
+            this.dataTable = dataTable;
+        }
+
+        @Override
+        public List<List<String>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            List<List<String>> results = new ArrayList<List<String>>();
+            int rowNum = 1;
+            while (rs.next()) {
+                Map<DataTableColumn, String> result = DatasetService.convertResultSetRowToDataTableColumnMap(dataTable, rs);
+                if (rs.isFirst()) {
+                    wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
+                }
+
+                if (rowNum > start && rowNum <= start + page) {
+                    ArrayList<String> values = new ArrayList<String>();
+                    for (DataTableColumn col : wrapper.getFields()) {
+                        if (col.isVisible()) {
+                            values.add(result.get(col));
+                        }
+                    }
+                    results.add(values);
+                }
+                rowNum++;
+
+                if (rs.isLast()) {
+                    wrapper.setTotalRecords(rs.getRow());
+                }
+            }
+            return results;
+        }
     }
 
     @Transactional
@@ -548,7 +623,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             @Override
             public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 while (rs.next()) {
-                    Map<DataTableColumn, String> results = getDao().convertResultSetRowToDataTableColumnMap(table, rs);
+                    Map<DataTableColumn, String> results = convertResultSetRowToDataTableColumnMap(table, rs);
                     return results;
                 }
                 return null;
@@ -743,4 +818,53 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             return true;
         }
     }
+
+    static Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs, boolean returnRowId) throws SQLException {
+        Map<DataTableColumn, String> results = new LinkedHashMap<>();
+        if (returnRowId) {
+            // we want this to be the very first entry in the linked hash map
+            results.put(table.getColumnByName(TargetDatabase.TDAR_ID_COLUMN), null);
+        }
+        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+            DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
+            // ignore if null (non translated version of translated)
+            if (col != null && col.isVisible()) {
+                results.put(col, null);
+            }
+        }
+        for (DataTableColumn key : results.keySet()) {
+            String val = "NULL";
+            Object obj = rs.getObject(key.getName());
+            if (obj != null) {
+                val = obj.toString();
+            }
+            results.put(key, val);
+        }
+        return results;
+    }
+
+    /**
+     * Return a HashMap that maps data table columns to values
+     * FIXME: where should this really live
+     */
+    public static Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs) throws SQLException {
+        return convertResultSetRowToDataTableColumnMap(table, rs, false);
+    }
+
+    @Transactional
+    public void refreshAssociatedDataTables(CodingSheet codingSheet) {
+        // retranslate associated datatables, and recreate translated files
+        if (CollectionUtils.isNotEmpty(codingSheet.getAssociatedDataTableColumns())) {
+            translate(codingSheet.getAssociatedDataTableColumns(), codingSheet);
+            for (DataTable dataTable : dataTableDao.findDataTablesUsingResource(codingSheet)) {
+                createTranslatedFile(dataTable.getDataset());
+            }
+        }
+    }
+
+    @Transactional
+    public String selectTableAsXml(DataTable dataTable) {
+        return tdarDataImportDatabase.selectTableAsXml(dataTable);
+    }
+
 }

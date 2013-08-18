@@ -3,11 +3,7 @@
 <link rel='shortcut icon' href='<@s.url value="/images/tdar-favicon.ico"/>'/>
 
 <#if (persistable.description)?has_content>
-	<#if persistable.description?contains('NADB') && (persistable.title)?has_content>
-		<meta name="description" content="${persistable.title?html}"/>
-	<#else>
-		<meta name="description" content="${persistable.description?html}"/>
-	</#if>
+	<meta name="description" content="${persistable.description?html}"/>
 <#else>
 	<meta name="description" content="The Digital Archaeological Record (tDAR) is the digital repository of Digital Antiquity, an organization devoted to enhancing preservation and access to digital records of archaeological investigations. tDAR is a national/international digital repository for archaeological information, including databases, reports, images, and other kinds of archaeological information. tDAR is a database of archaeological Information"/>
 </#if>

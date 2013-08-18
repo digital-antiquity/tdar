@@ -2,6 +2,8 @@ package org.tdar.core.service.resource;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +24,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
@@ -43,11 +45,15 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.OntologyDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.parser.OwlApiHierarchyParser;
 import org.tdar.utils.Pair;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * Transactional service providing persistence access to OntologyS as well as
@@ -141,7 +147,13 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
          */
         if (latestUploadedFile.getExtension().contains("owl")) {
             getLogger().debug("examining file: {}", latestUploadedFile);
-            OwlApiHierarchyParser parser = new OwlApiHierarchyParser(ontology, toOwlOntology(latestUploadedFile));
+            OwlApiHierarchyParser parser;
+            try {
+                parser = new OwlApiHierarchyParser(ontology, toOwlOntology(latestUploadedFile));
+            } catch (FileNotFoundException e) {
+                logger.warn("file not found: {}", e);
+                throw new TdarRecoverableRuntimeException(String.format("file not found %s", latestUploadedFile.getFilename()), e);
+            }
             List<OntologyNode> incomingOntologyNodes = parser.generate();
             getLogger().debug("created {} ontology nodes from {}", incomingOntologyNodes.size(), latestUploadedFile.getFilename());
             // start reconciliation process
@@ -170,6 +182,17 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     private void reconcile(List<OntologyNode> existingOntologyNodes, List<OntologyNode> incomingOntologyNodes) {
         getLogger().debug("existing ontology nodes: {}", existingOntologyNodes);
         getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
+
+        HashMap<String, OntologyNode> existingSet = new HashMap<>();
+        HashMap<String, OntologyNode> synonymsSet = new HashMap<>();
+        for (OntologyNode node : existingOntologyNodes) {
+            existingSet.put(node.getIri(), node);
+            for (String synonym : node.getSynonyms()) {
+                synonymsSet.put(synonym, node);
+            }
+            synonymsSet.put(node.getDisplayName(), node);
+        }
+
         for (int index = 0; index < incomingOntologyNodes.size(); index++) {
             // check to see if incoming has an equivalent in the existing nodes
             // if so, steal the ID
@@ -180,25 +203,51 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
              * A potential problem here is if synonyms have matches to multiple nodes. Look at "Other Tool/Unknown Tool" in
              * ontology test cases
              */
-            for (int existingIndex = 0; existingIndex < existingOntologyNodes.size(); existingIndex++) {
-                OntologyNode existing = existingOntologyNodes.get(existingIndex);
-                if (existing == null)
-                    continue;
-                getLogger().trace("checking {} | {} ", existing.getDisplayName(), incoming.getDisplayName());
-                if (incoming.isEquivalentTo(existing)) {
-                    Long original = existing.getId();
-                    Long in = incoming.getId();
-                    incoming = getDao().merge(incoming, existing);
-                    // incoming.setId(existing.getId());
-                    // getDao().detachFromSession(existing);
-                    // incoming = getDao().merge(incoming);
-                    getLogger().trace(in + " " + incoming.getDisplayName() + " -> " + incoming.getId() +
-                            " <--> e:" + existing.getId() + " " + existing.getDisplayName() +
-                            " ->" + original);
-                    incomingOntologyNodes.set(index, incoming);
-                    existingOntologyNodes.set(existingIndex, null);
-                }
+            OntologyNode existing = existingSet.get(incoming.getIri());
+            if (existing == null) {
+                existing = synonymsSet.get(incoming.getDisplayName());
             }
+
+            if (existing == null) {
+                continue;
+            }
+            Long original = existing.getId();
+            Long in = incoming.getId();
+            incoming = getDao().merge(incoming, existing);
+            // incoming.setId(existing.getId());
+            // getDao().detachFromSession(existing);
+            // incoming = getDao().merge(incoming);
+            getLogger().trace(in + " " + incoming.getDisplayName() + " -> " + incoming.getId() +
+                    " <--> e:" + existing.getId() + " " + existing.getDisplayName() +
+                    " ->" + original);
+            incomingOntologyNodes.set(index, incoming);
+            existingOntologyNodes.remove(existing);
+            existingSet.remove(existing.getIri());
+            synonymsSet.remove(existing.getDisplayName());
+            for (String synonym : existing.getSynonyms()) {
+                synonymsSet.remove(synonym);
+            }
+            // existingOntologyNodes.set(existingIndex, null);
+            // }
+            // for (int existingIndex = 0; existingIndex < existingOntologyNodes.size(); existingIndex++) {
+            // OntologyNode existing = existingOntologyNodes.get(existingIndex);
+            // if (existing == null)
+            // continue;
+            // getLogger().trace("checking {} | {} ", existing.getDisplayName(), incoming.getDisplayName());
+            // if (incoming.isEquivalentTo(existing)) {
+            // Long original = existing.getId();
+            // Long in = incoming.getId();
+            // incoming = getDao().merge(incoming, existing);
+            // // incoming.setId(existing.getId());
+            // // getDao().detachFromSession(existing);
+            // // incoming = getDao().merge(incoming);
+            // getLogger().trace(in + " " + incoming.getDisplayName() + " -> " + incoming.getId() +
+            // " <--> e:" + existing.getId() + " " + existing.getDisplayName() +
+            // " ->" + original);
+            // incomingOntologyNodes.set(index, incoming);
+            // existingOntologyNodes.set(existingIndex, null);
+            // }
+            // }
         }
         existingOntologyNodes.removeAll(Collections.singleton(null));
         getLogger().debug("existing ontology nodes: {}", existingOntologyNodes);
@@ -228,6 +277,30 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         }
     }
 
+    public OntModel toOntModel(Ontology ontology) throws FileNotFoundException {
+        Collection<InformationResourceFileVersion> files = ontology.getLatestVersions();
+        if (files.size() != 1) {
+            throw new TdarRecoverableRuntimeException("expected only one IRFileVersion, but found: " + files.size());
+        }
+        for (InformationResourceFileVersion irFile : files) {
+            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFile);
+            if (file.exists()) {
+                OntModel ontologyModel = ModelFactory.createOntologyModel();
+                String url = ontology.getUrl();
+                if (url == null)
+                    url = "";
+                try {
+                    ontologyModel.read(new FileReader(file), url);
+                    return ontologyModel;
+                } catch (FileNotFoundException exception) {
+                    // this should never happen since we're explicitly checking file.exists()...
+                    throw new RuntimeException(exception);
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * @param file
      * @return
@@ -236,7 +309,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         File tempFile = null;
         Document ontologyXML = null;
         try {
-            ontologyXML = DocumentHelper.parseText(FileUtils.readFileToString(file.getFile()));
+            ontologyXML = DocumentHelper.parseText(FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(file)));
         } catch (Exception e) {
             logger.debug("cannot store import order:", e);
 
@@ -266,7 +339,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
                 }
             }
             try {
-                tempFile = File.createTempFile("temp", ".xml");
+                tempFile = File.createTempFile("temp", ".xml", TdarConfiguration.getInstance().getTempDirectory());
                 FileUtils.writeStringToFile(tempFile, stringWriter.toString());
                 getLogger().trace("{}", stringWriter);
             } catch (IOException e) {
@@ -276,14 +349,15 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return tempFile;
     }
 
-    public OWLOntology toOwlOntology(InformationResourceFileVersion file) {
-        if (file != null && file.getFile().exists()) {
+    public OWLOntology toOwlOntology(InformationResourceFileVersion file) throws FileNotFoundException {
+        File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(file);
+        if (file != null && transientFile.exists()) {
             File tempFile = storeImportOrder(file);
             if (tempFile != null) {
                 IRI iri = IRI.create(tempFile);
                 return loadFromIRI(iri);
             } else {
-                IRI iri = IRI.create(file.getFile());
+                IRI iri = IRI.create(transientFile);
                 return loadFromIRI(iri);
             }
             // IRI iri = IRI.create(file.getFile());
@@ -338,7 +412,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     public String toOwlXml(Long ontologyId, String inputString) {
         if (StringUtils.isBlank(inputString))
             return "";
-        
+
         String startStr = String.format(ONTOLOGY_START_STRING_FORMAT, ontologyId, ontologyId);
 
         // XXX: rough guesstimate that XML verbosity will increase input string

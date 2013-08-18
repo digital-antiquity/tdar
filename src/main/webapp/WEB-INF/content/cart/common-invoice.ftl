@@ -46,7 +46,6 @@
 </#macro>
 
 <#macro paymentMethod includePhone=true>
-
     <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method" 
     listValue="label"    cssClass="transactionType fadeIfZeroed" emptyOption='false' />
 
@@ -68,14 +67,16 @@
 $(document).ready(function() {
     'use strict';
     TDAR.common.initEditPage($('#MetadataForm')[0]);
-    $(".transactionType[type=radio]").click(function() {switchType(this,'#MetadataForm');});
+    $(".transactionType[type=radio]").click(function() {TDAR.common.switchType(this,'#MetadataForm');});
    if (!$(".transactionType[type=radio]:checked").length) {
-    $($(".transactionType[type=radio]")[0]).click();
+    $(".transactionType[type=radio]").first().click();
    }
-   switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
+   TDAR.common.switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
    
    $("#MetadataForm").submit(function() {
-   	$("#MetadataForm_invoice_billingPhone").val($("#MetadataForm_invoice_billingPhone").val().replace(/([^\d]+)/ig,"") );
+   if ($("#MetadataForm_invoice_billingPhone").val()) {
+	   	$("#MetadataForm_invoice_billingPhone").val($("#MetadataForm_invoice_billingPhone").val().replace(/([^\d]+)/ig,"") );
+   	}
    });
 
    if (${((invoice.calculatedCost!0) <= 0)?string}) {

@@ -13,12 +13,12 @@ import org.tdar.search.query.QueryFieldNames;
  */
 public enum DocumentType implements HasLabel, Facetable<DocumentType> {
 
-    BOOK("Book / Report", "Books / Reports", "book"),
-    BOOK_SECTION("Book Chapter / Section", "Book Chapters / Sections", "bookitem"),
-    JOURNAL_ARTICLE("Journal Article", "Journal Articles", "article"),
-    THESIS("Thesis / Dissertation", "Theses / Dissertations", "thesis", "Institution", "Department"),
-    CONFERENCE_PRESENTATION("Conference Presentation", "Conference Presentations", "conference", "Conference", "Conference Location"),
-    OTHER("Other", "Other", "unknown");
+    BOOK("Book / Report", "Books / Reports", "book","Book"),
+    BOOK_SECTION("Book Chapter / Section", "Book Chapters / Sections", "bookitem","Book"),
+    JOURNAL_ARTICLE("Journal Article", "Journal Articles", "article","Article"),
+    THESIS("Thesis / Dissertation", "Theses / Dissertations", "thesis", "Institution", "Department","Book"),
+    CONFERENCE_PRESENTATION("Conference Presentation", "Conference Presentations", "conference", "Conference", "Conference Location","Book"),
+    OTHER("Other", "Other", "unknown","Book");
 
     public static final String PUBLISHER = "Publisher";
     public static final String PUBLISHER_LOCATION = "Publisher Location";
@@ -28,6 +28,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
     private String publisherName;
     private String publisherLocationName;
     private transient Integer count;
+    private String schema;
 
     public boolean isPartOfLargerDocument() {
         switch (this) {
@@ -40,18 +41,20 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         }
     }
 
-    private DocumentType(String label, String plural, String genre) {
+    private DocumentType(String label, String plural, String genre,String schema) {
         this.label = label;
         this.plural = plural;
         this.openUrlGenre = genre;
+        this.schema = schema;
     }
 
-    private DocumentType(String label, String plural, String genre, String pubName, String pubLoc) {
+    private DocumentType(String label, String plural, String genre, String pubName, String pubLoc,String schema) {
         this.label = label;
         this.plural = plural;
         this.openUrlGenre = genre;
         this.publisherName = pubName;
         this.publisherLocationName = pubLoc;
+        this.schema = schema;
     }
 
     public String getLabel() {
@@ -131,5 +134,13 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
 
     public void setPublisherName(String publisherName) {
         this.publisherName = publisherName;
+    }
+
+    public String getSchema() {
+        return schema;
+    }
+
+    public void setSchema(String schema) {
+        this.schema = schema;
     }
 }

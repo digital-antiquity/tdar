@@ -1,5 +1,6 @@
 package org.tdar.core.service.resource;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.service.ServiceInterface;
@@ -46,5 +48,13 @@ public class OntologyNodeService extends ServiceInterface.TypedDaoBase<OntologyN
     // FIXME: may want to aggregate / batch for efficiency
     public Set<OntologyNode> getAllChildren(List<OntologyNode> selectedOntologyNodes) {
         return getDao().getAllChildren(selectedOntologyNodes);
+    }
+
+    public List<Dataset> listDatasetsWithMappingsToNode(OntologyNode node) {
+        return getDao().findDatasetsUsingNode(node);
+    }
+
+    public OntologyNode getParent(OntologyNode node) {
+        return getDao().getParentNode(node);
     }
 }

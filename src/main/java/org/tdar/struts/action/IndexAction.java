@@ -58,8 +58,9 @@ public class IndexAction extends AuthenticationAware.Base {
     private List<SyndEntry> rssEntries;
 
     private String sitemapFile = "sitemap_index.xml";
-    @Override
+
     @HttpOnlyIfUnauthenticated
+    @Override
     @Actions({
             @Action("terms"),
             @Action("contact"),
@@ -103,7 +104,7 @@ public class IndexAction extends AuthenticationAware.Base {
             for (HomepageFeaturedItemCache cache : getGenericService().findAll(HomepageFeaturedItemCache.class)) {
                 Resource key = cache.getKey();
                 if (key instanceof InformationResource) {
-                    getAuthenticationAndAuthorizationService().setTransientViewableStatus((InformationResource) key, null);
+                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag((InformationResource) key, null);
                 }
                 getFeaturedResources().add(key);
             }

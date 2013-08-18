@@ -23,10 +23,12 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
+    // this seems really weird to have @Autowired fields in beans...
     private EmailService emailService;
 
     @Autowired
     @Qualifier("genericDao")
+    // this seems really weird to have @Autowired fields in beans...
     protected GenericDao genericDao;
 
     private List<Long> allIds;

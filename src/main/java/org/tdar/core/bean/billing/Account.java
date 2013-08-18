@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
@@ -57,11 +58,14 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         this.name = name;
     }
 
+    @Length(max = 255)
     private String name;
+
+    @Length(max = 255)
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", length = 25)
     private Status status = Status.ACTIVE;
 
     @NotNull

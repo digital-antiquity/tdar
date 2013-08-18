@@ -20,7 +20,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
     private static final String DESCRIPTION = "descriptionthisisauniquetest";
     private static final String TITLE = "title of a test document";
@@ -38,7 +38,6 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         docValMap.put("document.date", "1923");
         docValMap.put("status", "DRAFT");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            // docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             docValMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         for (String key : docValMap.keySet()) {
@@ -141,12 +140,11 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
             }
         }
     }
-    
+
     @Test
     public void testTicketIdAfterValidationFail() {
         String ticketId = getPersonalFilestoreTicketId();
         gotoPage("/image/add");
-        logger.debug("\n\nbody page \n\n{}\n\n\n");
         fillOutRequiredfields(ResourceType.IMAGE);
         setInput("ticketId", ticketId);
         //set the ticket id, but not necessary to add a file.
@@ -157,4 +155,13 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         assertEquals("ticketId should be same as original edit form", ticketId, newTicketId);
     }
 
+    @Test
+    public void testIsGeoLocationToBeUsed() {
+        gotoPage("/document/add");
+        if (TdarConfiguration.getInstance().isGeoLocationToBeUsed()) {
+            assertTextPresentInCode("TDAR.maps.defaults.isGeoLocationToBeUsed = true;");
+        } else {
+            assertTextPresentInCode("TDAR.maps.defaults.isGeoLocationToBeUsed = false;");
+        }
+    }
 }

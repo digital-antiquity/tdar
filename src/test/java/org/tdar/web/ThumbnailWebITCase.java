@@ -21,12 +21,14 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.utils.TestConfiguration;
 
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
+    private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     public static HashMap<String, String> docValMap = new HashMap<String, String>();
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
@@ -95,7 +97,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextNotPresent("/thumbnail");
 
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
-        login(TestConstants.USERNAME, TestConstants.PASSWORD);
+        login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(viewPage);
         assertTextNotPresent("/thumbnail");
 
@@ -115,7 +117,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertLoginPrompt(irFileVersionIds);
 
         // LOG IN, AS A USER THAT SHOULD HAVE RIGHTS TO THE RESOURCE THUMBNAIL.
-        login(TestConstants.USERNAME, TestConstants.PASSWORD);
+        login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(viewPage);
         assertTextPresent("/thumbnail");
 
@@ -137,7 +139,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage(editPage);
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
-        int statusCode = login(TestConstants.USERNAME, TestConstants.PASSWORD,true);
+        int statusCode = login(CONFIG.getUsername(), CONFIG.getPassword(),true);
         assertTrue(getCurrentUrlPath().contains("edit"));  // we can be on the "edit" page with an error message
         logger.info(getPageText());
         assertFalse(statusCode == 200); // make sure we have a "bad" status code though

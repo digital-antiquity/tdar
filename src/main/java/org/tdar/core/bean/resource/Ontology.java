@@ -1,10 +1,6 @@
 package org.tdar.core.bean.resource;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,10 +26,6 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.SupportsResource;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * $Id$
@@ -80,29 +72,6 @@ public class Ontology extends InformationResource implements SupportsResource {
         setResourceType(ResourceType.ONTOLOGY);
     }
 
-    public OntModel toOntModel() {
-        Collection<InformationResourceFileVersion> files = getLatestVersions();
-        if (files.size() != 1) {
-            throw new TdarRecoverableRuntimeException("expected only one IRFileVersion, but found: " + files.size());
-        }
-        for (InformationResourceFileVersion irFile : files) {
-            File file = irFile.getFile();
-            if (file.exists()) {
-                OntModel ontologyModel = ModelFactory.createOntologyModel();
-                String url = getUrl();
-                if (url == null)
-                    url = "";
-                try {
-                    ontologyModel.read(new FileReader(file), url);
-                    return ontologyModel;
-                } catch (FileNotFoundException exception) {
-                    // this should never happen since we're explicitly checking file.exists()...
-                    throw new RuntimeException(exception);
-                }
-            }
-        }
-        return null;
-    }
 
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;

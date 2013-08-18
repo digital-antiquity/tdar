@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
@@ -29,7 +30,8 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     public enum BillingActivityType {
         PRODUCTION, TEST;
     }
-    
+
+    @Length(max = 255)
     private String name;
     @Column(updatable = false)
     private Integer numberOfHours = 0;
@@ -41,13 +43,12 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     private Long numberOfFiles = 0L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "activity_type")
+    @Column(name = "activity_type", length = 25)
     private BillingActivityType activityType = BillingActivityType.PRODUCTION;
-    
-    
+
     @Column(name = "sort_order")
     private Integer order;
-    
+
     @ManyToOne(optional = false)
     @NotNull
     private BillingActivityModel model;
@@ -81,11 +82,14 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
 
     @Column(updatable = false)
     private Float price;
+
+    @Length(max = 255)
     private String currency;
+
     private Boolean enabled = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "groupName")
+    @Column(name = "groupName", length = 255)
     private TdarGroup group;
 
     public Integer getNumberOfHours() {

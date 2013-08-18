@@ -1,16 +1,14 @@
 package org.tdar.struts.action.resource;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Video;
+import org.tdar.struts.action.TdarActionException;
 
 /**
  * $Id$
@@ -32,18 +30,13 @@ public class VideoController extends AbstractInformationResourceController<Video
     private static final long serialVersionUID = 377533801938016848L;
 
     @Override
-    protected String save(Video video) {
+    protected String save(Video video) throws TdarActionException {
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
         getGenericService().saveOrUpdate(video);
         handleUploadedFiles();
         getGenericService().saveOrUpdate(video);
         return SUCCESS;
-    }
-
-    @Override
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
-        return;
     }
 
     @Override
@@ -66,11 +59,6 @@ public class VideoController extends AbstractInformationResourceController<Video
 
     public Class<Video> getPersistableClass() {
         return Video.class;
-    }
-
-    @Override
-    public boolean supportsMultipleFileUpload() {
-        return false;
     }
 
     @Override

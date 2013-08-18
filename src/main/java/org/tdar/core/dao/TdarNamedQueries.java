@@ -18,6 +18,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY = "dataTableColumn.withDefaultOntology";
     public static final String QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME = "informationResource.findByFileName";
     public static final String QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD = "ontologyNode.allChildrenWithIndexWildcard";
+    public static final String QUERY_ONTOLOGYNODE_PARENT = "ontologyNode.parent";
     public static final String QUERY_ONTOLOGYNODE_ALL_CHILDREN = "ontologyNode.allChildren";
     public static final String QUERY_PROJECT_CODINGSHEETS = "project.codingSheets";
     public static final String QUERY_PROJECT_DATASETS = "project.datasets";
@@ -99,6 +100,8 @@ public interface TdarNamedQueries {
     public static final String INVOICES_FOR_PERSON = "invoices.forPerson";
     public static final String UNASSIGNED_INVOICES_FOR_PERSON = "invoices.unassignedForPerson";
     public static final String FIND_INVOICE_FOR_COUPON = "invoices.coupons";
+    public static final String QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY = "sparseCodingSheets.ontology";
+    public static final String QUERY_RELATED_RESOURCES = "resource.related";
     // raw SQL/HQL queries
 
     public static final String QUERY_SQL_DASHBOARD =
@@ -111,7 +114,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_SQL_COUNT = "SELECT COUNT(*) FROM %1$s";
     public static final String QUERY_FIND_ALL_WITH_IDS = "FROM %s WHERE id in (:ids)";
     public static final String QUERY_FIND_ALL_WITH_STATUS = "FROM %s WHERE status in (:statuses)";
-    public static final String QUERY_SQL_COUNT_ACTIVE_RESOURCE = "SELECT COUNT(*) FROM %1$s where status='ACTIVE'";
+    public static final String QUERY_SQL_COUNT_ACTIVE_RESOURCE = "SELECT COUNT(*) FROM %1$s where status='ACTIVE' and resourceType='%2$s' ";
     public static final String QUERY_SQL_COUNT_ACTIVE_RESOURCE_WITH_FILES = "select count(distinct  resource.id) from  resource, information_resource_file where  resource.status='ACTIVE' and resource.resource_type='%1$s' and resource.id=information_resource_id";
     public static final String QUERY_SQL_RESOURCE_INCREMENT_USAGE = "update Resource r set r.accessCounter=accessCounter+1 where r.id=:resourceId";
     public static final String QUERY_SQL_RAW_RESOURCE_STAT_LOOKUP = "select (select count(*) from resource where resource_type = rt.resource_type and status = 'ACTIVE') as all,"
@@ -120,6 +123,8 @@ public interface TdarNamedQueries {
             + "rt.* from (select distinct resource_type from resource) as rt";
     // generated HQL formats
     public static final String QUERY_CREATOR_MERGE_ID = "select merge_creator_id from %1$s where id=%2$s";
+
+    public static final String QUERY_KEYWORD_MERGE_ID = "select merge_keyword_id from %1$s where id=%2$s";
 
     // e.g."from Resource r1 where exists (from Resource r2 inner join r2.cultureKeywords ck where r2.id = r1.id and ck.id in (:idlist))"
     public static final String QUERY_HQL_MANY_TO_MANY_REFERENCES =
@@ -151,4 +156,15 @@ public interface TdarNamedQueries {
     public static final String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from resource res where res.id in (%s) ";
     public static final String QUERY_SQL_RESOURCES_BY_YEAR = "select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc";
     public static final String DISTINCT_SUBMITTERS = "SELECT DISTINCT submitter_id from resource";
+
+    public static final String UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT= "update %1$s set occurrence=0";
+    public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE = "update %1$s set occurrence = occurrence + coalesce((select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id and resource_id in (select project_id from information_resource where %2$s is true) group by %1$s_id),0)";
+    public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT= "update %1$s set occurrence =  occurrence + coalesce((select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id group by %1$s_id),0)";
+    public static final String UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT = "update creator set occurrence=0";
+    public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER = "update creator set occurrence=occurrence + coalesce((select count(information_resource.id) from information_resource where publisher_id=creator.id group by publisher_id),0)";
+    public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER = "update creator set occurrence=occurrence + coalesce((select count(information_resource.id) from information_resource where provider_institution_id=creator.id group by provider_institution_id),0)";
+    public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT = "update creator set occurrence=occurrence + coalesce((select count(information_resource.id) from information_resource where copyright_holder_id=creator.id group by copyright_holder_id),0) ";
+    public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER = "update creator set occurrence=occurrence + coalesce((select count(resource.id) from resource where submitter_id=creator.id group by submitter_id),0)";
+    public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE = "update creator set occurrence = occurrence+ coalesce((select count(resource_id) from resource_creator where creator_id=creator.id group by creator_id),0) ";
+    public static final String DATASETS_USING_NODES = "select id from resource where id in (select dataset_id from data_table where data_table.id in (select data_table_id from data_table_column, coding_rule, coding_sheet where data_table_column.default_coding_sheet_id=coding_sheet_id and coding_rule.coding_sheet_id=coding_sheet.id and  ontology_node_id=%s)) and status = 'ACTIVE'";
 }

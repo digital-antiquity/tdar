@@ -6,34 +6,61 @@
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 
 <head>
-<@search.headerLinks includeRss=false />
-<title>${resourceCollection.name!"untitled collection"}</title>
-<meta name="lastModifiedDate" content="$Date$"/>
-<@view.canonical resourceCollection />
-<#assign rssUrl>/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!"untitled")?url}</#assign>
-<@search.rssUrlTag url=rssUrl />
+	<@search.headerLinks includeRss=false />
+	<title>${resourceCollection.name!"untitled collection"}</title>
+	<meta name="lastModifiedDate" content="$Date$"/>
+	<@view.canonical resourceCollection />
+	<#assign rssUrl>/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!"untitled")?url}</#assign>
+	<@search.rssUrlTag url=rssUrl />
+	
+	<style>
+		i.search-list-checkbox-grey {background-image:none!important;}
+		li.media { display:inline-block}
+	</style>
 
+	
 </head>
 <body>
-<@view.toolbar "collection" "view" />
+<#if editable>
+    <@nav.toolbar "collection" "view">
+        <@nav.makeLink
+            namespace="collection"
+            action="add?parentId=${id?c}"
+            label="create child collection"
+            name="columns"
+            current=current
+            includeResourceId=false
+            disabled=disabled
+            extraClass="hidden-tablet hidden-phone"/>
+    </@nav.toolbar>
+<#else>
+    <@nav.toolbar "collection" "view" />
+</#if>
 
 <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>
-<#if resourceCollection.visible || viewable>
+<#if (resourceCollection.visible || viewable)>
+<#if collections?has_content>
 <!-- Don't show header if header doesn't exist -->
+    <div id="sidebar-right" parse="true">
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/> <#-- Nooooooo!!!!! -->
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+			<h3>Child Collections</h3>
+			<@common.listCollections collections=collections showOnlyVisible=true />
+	</div>
+</#if>
+
 <#if resourceCollection.parent?? || resourceCollection.description?? || collections??>
     <div class="glide">
-        <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}"/>${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
-        <p>${resourceCollection.description!"(n/a)"}</p>
-    
-    <#if (collections?has_content) >
-    <B>Collections Contained in this Collection</B>
-    <ul>
-      <#list collections as collection_>
-       <li><a href="<@s.url value="/collection/${collection_.id?c}"/>">${collection_.name}</a></li>
-      </#list>
-    </ul>
-    </#if>
+        <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
+        <@common.description resourceCollection.description />
   </div>
 </#if>
 
@@ -56,9 +83,23 @@
 		<#if (totalRecords > 18)>
 			<#assign mapSize="1000" />
 		</#if>
-         
+        <#if selectedResourceTypes.empty>
+        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Browse by Resource Type(s)" facetParam="selectedResourceTypes" />
+        <#else>
+            <h4>
+There are ${paginationHelper.totalNumberOfItems?c}
+ <#if selectedResourceTypes?has_content>
+${resourceTypeFacets[0].plural}
+
+ <#else>Resources</#if> within this Project <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: " href="<@s.url includeParams="all">
+            <@s.param name="selectedResourceTypes"value="" />
+            <@s.param name="startRecord" value=""/>
+</@s.url>">[remove this filter]</a></sup>
+ </#if>
+            </h4>
+        </#if>
 		<div class="tdarresults">
-		    <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
+		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
 		        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />
 		</div>
 
@@ -70,15 +111,17 @@
 		  <h3>Administrative Information</h3>
 		  
 		    <@common.resourceUsageInfo />
-		  
-		    <p><strong>Collection Type:</strong> ${resourceCollection.type.label}</p>
+		  <dl>
+		    <dt><p><strong>Collection Type:</strong></p><dt>
+		    <dd><p> ${resourceCollection.type.label}</p></dd>
             <dt><p><strong>Created by</strong></p></dt>
             <dd><p><a href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner.properName}</a> on ${resourceCollection.dateCreated}</p></dd>
             <dt><p><strong>Updated By</strong></p></dt>
             <dd><p><a href="<@s.url value="/browse/creators/${resourceCollection.updater.id?c}"/>">${resourceCollection.updater.properName}</a> on ${resourceCollection.dateUpdated}</p></dd>
-		    <p><strong>Visible:</strong> ${resourceCollection.visible?string}</p>
-		    <#if resourceCollection.sortBy??><p><strong>Sort by:</strong> ${resourceCollection.sortBy.label}</p></#if>
-		
+		    <dt><p><strong>Visible:</strong></p></dt>
+		    <dd><p> ${resourceCollection.visible?string}</p></dd>
+		    <#if resourceCollection.sortBy??><dt><p><strong>Sort by:</strong></dt><dd><p> ${resourceCollection.sortBy.label}</p></dd></#if>
+		</dl>
 		    <@view.authorizedUsers resourceCollection />
 		</#if>
 <#else>
@@ -87,7 +130,7 @@ This collection is not accessible
 
 <script type='text/javascript'>
 $(document).ready(function(){
-    $(initializeView);
+    TDAR.common.initializeView();
 });
 </script>
 
