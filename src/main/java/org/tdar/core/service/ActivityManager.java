@@ -63,11 +63,21 @@ public class ActivityManager {
     }
 
     public synchronized Activity getIndexingTask() {
+        Activity active = null;
+        Activity latest = null;
+        /*
+         * we could have multiple indexing activities, try reporting the one that's active before reporting that it's done
+         */
         for (Activity activity : ActivityManager.getInstance().getActivityQueue()) {
             if (activity.isIndexingActivity() ) {
-                return activity;
+                latest = activity;
+                if (!activity.hasEnded())
+                    active = activity;
             }
         }
-        return null;
+        if (active != null) {
+            return active;
+        }
+        return latest;
     }
 }

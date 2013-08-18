@@ -89,7 +89,7 @@ public class DashboardController extends AuthenticationAware.Base {
             if (isEditor() && indexingTask != null) {
                 String properName = "unknown user";
                 try {
-                    indexingTask.getUser().getProperName();
+                    properName = indexingTask.getUser().getProperName();
                 } catch (Exception e) {
                     logger.warn("reindexing user could not be determined");
                 }
