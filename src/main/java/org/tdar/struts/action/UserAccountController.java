@@ -29,6 +29,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.struts.WriteableSession;
 import org.tdar.struts.interceptor.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -43,12 +44,14 @@ import com.opensymphony.xwork2.Preparable;
  * @version $Revision$
  */
 
-@ParentPackage("default")
+@ParentPackage("secured")
 @Namespace("/account")
-@InterceptorRef("paramsPrepareParamsStack")
 @Component
 @Scope("prototype")
-@Result(name = "new", type = "redirect", location = "new")
+/* not sure this is needed */
+//@InterceptorRef("paramsPrepareParamsStack")
+//@Result(name = "new", type = "redirect", location = "new")
+@HttpsOnly
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
 
     public static final String USERNAME_INVALID = "Username invalid, usernames must be at least 5 characters and can only have letters and numbers";
@@ -97,12 +100,18 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private RecaptchaService reCaptchaService;
     private String reCaptchaText;
 
-    @Action(value = "new", interceptorRefs = @InterceptorRef("basicStack"),
+    // interceptorRefs = @InterceptorRef("basicStack"),
+    @Action(value = "new",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
                     @Result(name = "success", location = "edit.ftl"),
                     @Result(name = "authenticated", type = "redirect", location = URLConstants.DASHBOARD) })
     @SkipValidation
     @Override
+    @HttpsOnly
+    /* disabling because it interacts with @HttpsOnly */
+    //    @Result(name = "new", type = "redirect", location = "new")
+
     public String execute() {
         setTimeCheck(System.currentTimeMillis());
         if (isAuthenticated()) {
@@ -116,9 +125,11 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return SUCCESS;
     }
 
-    @Action(value = "recover", interceptorRefs = @InterceptorRef("basicStack"),
+    @Action(value = "recover",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = SUCCESS, type = "redirect", location = "${passwordResetURL}") })
     @SkipValidation
+    @HttpsOnly
     public String recover() {
         setPasswordResetURL(getAuthenticationAndAuthorizationService().getAuthenticationProvider().getPasswordResetURL());
         return SUCCESS;
@@ -134,7 +145,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return "new";
     }
 
-    @Action("view")
+    @Action(value = VIEW)
     @SkipValidation
     @HttpsOnly
     public String view() {
@@ -162,8 +173,11 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     }
 
     // FIXME: not implemented yet.
-    @Action(value = "reminder", results = { @Result(name = "success", location = "recover.ftl"), @Result(name = "input", location = "recover.ftl") })
+    @Action(value = "reminder",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }
+    , results = { @Result(name = "success", location = "recover.ftl"), @Result(name = "input", location = "recover.ftl") })
     @SkipValidation
+    @HttpsOnly
     public String sendNewPassword() {
         Person person = getEntityService().findByEmail(reminderEmail);
         if (person == null) {
@@ -178,9 +192,12 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return SUCCESS;
     }
 
-    @Action(value = "register", results = { @Result(name = "success", type = "redirect", location = "welcome"),
+    @Action(value = "register",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            results = { @Result(name = "success", type = "redirect", location = "welcome"),
             @Result(name = "input", location = "edit.ftl") })
     @HttpsOnly
+    @WriteableSession
     public String create() {
         if (person == null || !isPostRequest()) {
             return INPUT;

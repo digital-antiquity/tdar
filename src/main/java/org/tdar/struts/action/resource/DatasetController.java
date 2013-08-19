@@ -1,6 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;

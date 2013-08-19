@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * Marks an Action method to only execute if the associated requests http method is Secure
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(value={ElementType.METHOD,ElementType.TYPE})
 public @interface HttpsOnly {
 }
 

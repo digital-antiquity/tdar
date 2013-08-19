@@ -36,6 +36,8 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     @Test
     public void testInvalidView() {
         gotoPage("/account/view?personId=1");
-        assertCurrentUrlContains("/account/new");
+        assertCurrentUrlContains("/login");
+        gotoPage("/account/welcome?personId=1");
+        assertCurrentUrlContains("/login");
     }
 }
