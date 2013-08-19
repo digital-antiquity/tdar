@@ -37,7 +37,11 @@ TDAR.fileupload.addGisValidation(TDAR.fileupload.validator);
 		<br/>
 	</#macro>
 
-
+<#macro beforeUpload>
+<#if payPerIngestEnabled>
+<small>Shapefiles, and geo-rectified images often require more than one actual file to work properly. Pricing for these files works as follows: each image, or Shapefile is treated as a single file within tDAR. Thus, if a user uploaded "untitled.shp", "untitled.dbf", "untitled.prj", and "untitled.shp.xml" the combination of these four files would be treated as a single file for pricing. </small>
+</#if>
+</#macro>
 
 <#macro footer>
 
