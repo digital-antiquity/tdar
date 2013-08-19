@@ -649,12 +649,16 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 <div class="slider">
  <#local numIndicatorsPerSection = 4 />
 <#local numIndicators = ((resource.visibleFilesWithThumbnails?size!0) / numIndicatorsPerSection)?ceiling  />
+<#--  from http://bootsnipp.com/snipps/thumbnail-carousel 
+
 <div class="hidden">
 <p><strong># Indicators per section: </strong>${numIndicatorsPerSection}</p>
 <p><strong># Visible Thumbnails: </strong>${resource.visibleFilesWithThumbnails?size!0}</p>
 <p><strong># Indicators: </strong>${numIndicators}</p>
 </div>
 
+
+-->
 <div id="myCarousel" class="image-carousel carousel slide pagination-centered">
  
 	<ol class="carousel-indicators ">
