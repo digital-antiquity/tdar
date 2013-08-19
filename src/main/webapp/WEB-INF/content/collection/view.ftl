@@ -40,7 +40,7 @@
 <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>
 <#if (resourceCollection.visible || viewable)>
-<#if (!collections.empty)>
+<#if collections?has_content>
 <!-- Don't show header if header doesn't exist -->
     <div id="sidebar-right" parse="true">
         <br/>
@@ -98,18 +98,9 @@ ${resourceTypeFacets[0].plural}
  </#if>
             </h4>
         </#if>
-
-
-
 		<div class="tdarresults">
-            <#--if we aren't showing the child collection sidebar, show more items per row -->
-            <#if (collections.empty)>
-		    <@list.listResourcesAsGrid resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=6
-		        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize itemClass="span2" />
-            <#else>
-            <@list.listResourcesAsGrid resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=4
-            orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize itemClass="span2" />
-            </#if>
+		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
+		        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />
 		</div>
 
 		<@search.basicPagination "Records" />
