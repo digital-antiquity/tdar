@@ -104,11 +104,11 @@ ${resourceTypeFacets[0].plural}
 		<div class="tdarresults">
             <#--if we aren't showing the child collection sidebar, show more items per row -->
             <#if (collections.empty)>
-		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=6
+		    <@list.listResourcesAsGrid resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=6
 		        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize itemClass="span2" />
             <#else>
-                <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=4
-                orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize itemClass="span2" />
+            <@list.listResourcesAsGrid resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=4
+            orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize itemClass="span2" />
             </#if>
 		</div>
 
