@@ -232,7 +232,7 @@ View freemarker macros
 </#function>
 
 <#macro extendedFileInfo>
-    <#if (resource.totalNumberOfFiles?has_content)>
+    <#if (resource.informationResourceFiles?has_content)>
     <#local showDownloads = authenticatedUser?? />
     <div id="extendedFileInfoContainer">
         <h3 id="allfiles">File Information</h3>
