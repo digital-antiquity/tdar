@@ -40,7 +40,7 @@
 <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>
 <#if (resourceCollection.visible || viewable)>
-<#if collections?has_content>
+<#if !collections.empty>
 <!-- Don't show header if header doesn't exist -->
     <div id="sidebar-right" parse="true">
         <br/>
@@ -84,7 +84,7 @@
 			<#assign mapSize="1000" />
 		</#if>
         <#if selectedResourceTypes.empty>
-        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="Browse by Resource Type(s)" facetParam="selectedResourceTypes" />
+        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
         <#else>
             <h4>
 There are ${paginationHelper.totalNumberOfItems?c}
@@ -99,8 +99,14 @@ ${resourceTypeFacets[0].plural}
             </h4>
         </#if>
 		<div class="tdarresults">
-		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
-		        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />
+		<#assign itemsPerRow = 4/>
+		<#assign mapPosition="top"/>
+		<#if collections.empty>
+			<#assign itemsPerRow = 5 />
+			<#assign mapPosition="left"/>
+		</#if>
+		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
+		        orientation=resourceCollection.orientation    mapPosition=mapPosition mapHeight=mapSize />
 		</div>
 
 		<@search.basicPagination "Records" />

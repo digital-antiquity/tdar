@@ -44,7 +44,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private List<Long> selectedResourceIds = new ArrayList<Long>();
     private Long parentId;
     private List<Resource> fullUserProjects;
-    private List<ResourceCollection> collections;
+    private List<ResourceCollection> collections = new ArrayList<>();
     private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
 
     private int startRecord = DEFAULT_START;
