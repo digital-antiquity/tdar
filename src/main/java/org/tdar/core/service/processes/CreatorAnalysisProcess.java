@@ -82,6 +82,10 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     @Override
     public List<Long> findAllIds() {
+        /*
+         * Theoretically, we could use the DatasetDao.findRecentlyUpdatedItemsInLastXDays to find all resources modified in the
+         * last wwek, and then use those resources to grab all associated creators, and then process those
+         */
         List<Creator> results = genericDao.findAll(getPersistentClass());
         if (CollectionUtils.isNotEmpty(results)) {
             return Persistable.Base.extractIds(results);
