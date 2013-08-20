@@ -33,7 +33,6 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Project;

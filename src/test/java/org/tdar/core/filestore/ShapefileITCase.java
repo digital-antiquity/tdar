@@ -10,11 +10,15 @@ import javax.persistence.Id;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ShapefileReaderTask;
@@ -27,6 +31,9 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
 
     protected Logger logger = Logger.getLogger(getClass());
 
+    @Autowired
+    FileAnalyzer fileAnalyzer;
+    
     @Test
     @Rollback
     public void testGeoTiffArc10WithWorldFile() throws Exception {
@@ -36,8 +43,11 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, "untitled.tif", new File(TestConstants.TEST_GEOTIFF), store);
         InformationResourceFileVersion supportingFile = generateAndStoreVersion(Geospatial.class, "untitled.tfw", new File(TestConstants.TEST_GEOTIFF_TFW),
                 store);
+        Workflow workflow = fileAnalyzer.getWorkflow(originalFile, supportingFile);
         wc.getOriginalFiles().add(originalFile);
         wc.getOriginalFiles().add(supportingFile);
+        
+        workflow.run(wc);
         task.setWorkflowContext(wc);
         task.run();
     }

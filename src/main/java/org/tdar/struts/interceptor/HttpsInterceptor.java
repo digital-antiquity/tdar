@@ -77,7 +77,7 @@ public class HttpsInterceptor implements Interceptor {
             return invocation.invoke();
         }
 
-        if (request.getMethod().equalsIgnoreCase("get")) {
+        if (request.getMethod().equalsIgnoreCase("get") || request.getMethod().equalsIgnoreCase("head")) {
             response.sendRedirect(changeUrlProtocol("https", request));
         } else if (invocation.getAction() instanceof TdarActionSupport) {
             logger.warn("ERROR_HTTPS_ONLY");

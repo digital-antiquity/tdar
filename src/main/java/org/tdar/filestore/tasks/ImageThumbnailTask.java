@@ -16,9 +16,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
@@ -79,6 +82,14 @@ public class ImageThumbnailTask extends AbstractTask {
         String filename = sourceFile.getName();
         getLogger().debug("sourceFile: " + sourceFile);
 
+        String ext = FilenameUtils.getExtension(sourceFile.getName());
+        List<String> exts = Arrays.asList("jpg","gif","tif","tiff","png","jpeg","bmp");
+        //FIXME: bad, but necessary for Geospatial images
+        if (!exts.contains(ext)) {
+            getLogger().error("skipping file with unmatched extension: {} ", ext);
+            return;
+        }
+        
         Opener opener = new Opener();
         opener.setSilentMode(true);
         IJ.redirectErrorMessages(true);

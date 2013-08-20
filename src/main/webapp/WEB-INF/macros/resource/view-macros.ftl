@@ -278,7 +278,7 @@ View freemarker macros
         </table>
         <#if (hasRestrictedFiles() && contactInformationAvailable())>
         <div class="well restricted-files-contacts">
-            <h4>Regarding Restricted Files</h4>
+            <h4>Accessing Restricted Files</h4>
             <p>At least one of the files for this resource is restricted from public view. For more information regarding
                 access to these files, please reference the contact information below</p>
             <@showCreatorProxy proxyList=contactProxies />
