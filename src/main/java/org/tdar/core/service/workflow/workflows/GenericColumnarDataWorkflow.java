@@ -27,6 +27,7 @@ import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
 import org.tdar.db.conversion.converters.TabConverter;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
+import org.tdar.filestore.tasks.ImageThumbnailTask;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
 import org.tdar.struts.data.FileProxy;
 
@@ -56,8 +57,11 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
         registerFileExtension("mdb", AccessDatabaseConverter.class, null, ResourceType.DATASET);
         registerFileExtension("accdb", AccessDatabaseConverter.class, null, ResourceType.DATASET);
         registerFileExtension("mdbx", AccessDatabaseConverter.class, null, ResourceType.DATASET);
-        registerFileExtension("gdb", AccessDatabaseConverter.class, null, ResourceType.DATASET);
+        registerFileExtension("gdb", AccessDatabaseConverter.class, null, ResourceType.GEOSPATIAL);
         registerFileExtension("shp", ShapeFileDatabaseConverter.class, null, ResourceType.DATASET);
+//        registerFileExtension("aux", ShapeFileDatabaseConverter.class, null, ResourceType.DATASET);
+//        registerFileExtension("tfw", ShapeFileDatabaseConverter.class, null, ResourceType.DATASET);
+//        registerFileExtension("jpw", ShapeFileDatabaseConverter.class, null, ResourceType.DATASET);
         
         getRequiredExtensions().put("shp", Arrays.asList("dbf", "sbn", "sbx", "shp.xml", "shx", "xml"));
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);

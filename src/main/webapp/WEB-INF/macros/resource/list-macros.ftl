@@ -59,11 +59,13 @@
 	-->
 	
   <#local showProject = false />
-  <#assign prev =""/>
-  <#assign first = true/>
+  <#global prev =""/>
+  <#global first = true/>
   <#local listTag_=listTag/>  
   <#local itemTag_=itemTag/> 
   <#local itemClass = ""/>
+  <#global isGridLayout = (orientation=="GRID") />
+  <#global isMapLayout = (orientation=="MAP") />
   
   <@common.reindexingNote />
   
@@ -82,8 +84,7 @@
     
       <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
   </#if>
-  <#global isGridLayout = (orientation=="GRID") />
-  <#global isMapLayout = (orientation=="MAP") />
+
   <#local rowCount = -1 />
 
   <#if resourcelist??>  
@@ -157,7 +158,7 @@
 			<#-- if we're a grid, then reset rows -->
 			<@printGridHeader orientation listTag_ />
         </#if>
-        <#local prev=key />
+        <#assign prev=key />
     <#elseif first>
         <#-- default case for group tag -->
 		<@printGridHeader orientation listTag_ />
@@ -226,12 +227,16 @@
 </#macro>
 
     <#macro printLuceneExplanation resource>
+            <#if resource.explanation?has_content>
             <blockquote class="luceneExplanation">
-                <#if resource.explanation?has_content><b>explanation:</b>${resource.explanation}<br/></#if>
+                <b>explanation:</b>${resource.explanation}<br/>
             </blockquote>
+            </#if>
+			<#if resource.score?has_content>
             <blockquote class="luceneScore">
-                <#if resource.score?has_content><b>score:</b>${resource.score}<br/></#if>
+                <b>score:</b>${resource.score}<br/>
             </blockquote>
+			</#if>
     </#macro>
 
 

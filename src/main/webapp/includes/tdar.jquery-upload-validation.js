@@ -329,7 +329,7 @@ var FileuploadValidator;
             shapefile: ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
             jpeg:["jpg", "jpeg", "jpw"],
             tiff:["tif", "tiff", "tfw"],
-            image: ["jpg", "jpeg", "jpw", "tfw", "aux", "aux.xml"]
+            image: ["jpg", "jpeg", "jpw", "tfw", "aux", "ovr", "rrd", "aux.xml"]
         };
 
         var requiredFiles = {
