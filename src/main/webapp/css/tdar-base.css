@@ -1341,29 +1341,32 @@ div#ontologyTarget {
 
 /* Removes the default 20px margin and creates some padding space for the indicators and controls */
 .image-carousel.carousel {
-	margin-bottom: 0;
-	padding: 0 40px 30px 40px;
+	margin-bottom: 10px;
+	padding: 0 40px 40px 40px;
 }
-/* Reposition the controls slightly */
-.image-carousel .carousel-control {
-//	left: -12px; // not sure this works...
-}
-.image-carousel .carousel-control.right {
-	right: -12px;
-}
+
 /* Changes the position of the indicators */
 .image-carousel .carousel-indicators {
-	right: 50%;
+    width: 100%;
 	top: auto;
 	bottom: 0px;
 	margin-right: -19px;
 }
-/* Changes the colour of the indicators */
-.image-carousel .carousel-indicators li {
-	background: #c0c0c0;
-}
+
 .image-carousel .carousel-indicators .active {
 background: #333333;
+}
+
+.image-carousel .carousel-indicators span{
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding:4px;
+    margin: 1pt;
+    width: 3px;
+    height: 3px;
+    display: inline-block;
+    background: #c0c0c0;
 }
 
 .jqplot-xaxis-tick {
