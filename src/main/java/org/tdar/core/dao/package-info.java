@@ -202,7 +202,7 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_RECENT,
-            query = "select res from Resource res where res.dateUpdated > :updatedDate "
+            query = "from Resource res where (res.dateUpdated > :updatedDate or res.dateCreated > :updatedDate )"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED,

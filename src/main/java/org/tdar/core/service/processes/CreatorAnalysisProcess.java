@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -34,9 +36,12 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchService;
@@ -65,7 +70,15 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     private EntityService entityService;
 
     @Autowired
+    private DatasetDao datasetDao;
+
+    @Autowired
+    private ProjectDao projectDao;
+
+    @Autowired
     private XmlService xmlService;
+
+    private int daysToRun = 10;
 
     public String getDisplayName() {
         return "Creator Analytics Process";
@@ -86,11 +99,31 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
          * Theoretically, we could use the DatasetDao.findRecentlyUpdatedItemsInLastXDays to find all resources modified in the
          * last wwek, and then use those resources to grab all associated creators, and then process those
          */
-        List<Creator> results = genericDao.findAll(getPersistentClass());
-        if (CollectionUtils.isNotEmpty(results)) {
-            return Persistable.Base.extractIds(results);
+        List<Resource> results = datasetDao.findRecentlyUpdatedItemsInLastXDays(getDaysToRun());
+        Set<Long> ids = new HashSet<>();
+        logger.debug("dealing with {} resource(s) updated in the last {} days",results.size(), getDaysToRun());
+        while (!results.isEmpty()) {
+            Resource resource = results.remove(0);
+            // add all children of project if project was modified (inheritance check)
+            if (resource instanceof Project) {
+                results.addAll(projectDao.findAllResourcesInProject((Project)resource));
+            }
+            logger.trace(" - adding {} creators", resource.getRelatedCreators().size());
+            for (Creator creator : resource.getRelatedCreators()) {
+
+                if (creator == null) 
+                    continue;
+                
+                if (creator.isDuplicate()) {
+                    creator = entityService.findAuthorityFromDuplicate(creator);
+                }
+                if (creator == null || !creator.isActive()) 
+                    continue;
+                ids.add(creator.getId());
+                
+            }
         }
-        return null;
+        return new ArrayList<>(ids);
     }
 
     @Override
@@ -378,6 +411,14 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     @Override
     public boolean isSingleRunProcess() {
         return false;
+    }
+
+    public void setDaysToRun(int i) {
+        this.daysToRun = i;
+    }
+
+    private int getDaysToRun() {
+        return daysToRun;
     }
 
 }
