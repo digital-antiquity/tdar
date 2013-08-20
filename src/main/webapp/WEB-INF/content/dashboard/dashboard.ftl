@@ -257,9 +257,9 @@
 	<div class="span9">
 	<h2 id="bookmarks">Your Bookmarks</h2>
 	<#if bookmarkedResources??>
-	<#--	   <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  orientation='LIST_LONG' listTag='ol' headerTag="h3" /> -->
+	<#--	   <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE'  bookmarkable=true  orientation='LIST_LONG' listTag='ol' headerTag="h3" /> -->
 	
-	   <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  listTag='ol' headerTag="h3" />
+	   <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' listTag='ol' headerTag="h3" />
 	</#if>
 	</div>
 </div>

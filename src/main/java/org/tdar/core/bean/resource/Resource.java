@@ -756,6 +756,23 @@ public class Resource extends JsonModel.Base implements Persistable,
         return getActiveLatitudeLongitudeBoxes().iterator().next();
     }
 
+    @Transient
+    @XmlTransient
+    @JSONTransient
+    public boolean isLatLongVisible() {
+        LatitudeLongitudeBox latLongBox = getFirstActiveLatitudeLongitudeBox();
+        if (hasConfidentialFiles() || latLongBox == null) {
+            return Boolean.FALSE;
+        }
+        
+        if (latLongBox.isInitializedAndValid()) {
+            if (latLongBox.getCenterLatitudeIfNotObfuscated() != null && latLongBox.getCenterLongitudeIfNotObfuscated() != null) {
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
+    }
+    
     public LatitudeLongitudeBox getFirstLatitudeLongitudeBox() {
         if (CollectionUtils.isEmpty(latitudeLongitudeBoxes)) {
             return null;

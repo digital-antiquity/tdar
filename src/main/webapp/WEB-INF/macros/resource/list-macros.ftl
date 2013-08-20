@@ -3,24 +3,54 @@
 <#import "common.ftl" as common>
 <#assign DEFAULT_SORT = 'RELEVANCE' />
 <#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
+
+	<#-- this macro prints a html tag with or without a closing -->
     <#macro printTag tagName className closing>
         <#if tagName?has_content>
             <<#if closing>/</#if>${tagName} class="${className}" <#nested><#rt/>>
         </#if>
     </#macro>
 
+	<#-- special header for the grid layout -->
+    <#macro printGridHeader orientation listTag_>
+        <#if isGridLayout>
+            <div class='resource-list row ${orientation}'>
+        <#else>
+            <@printTag listTag_ "resource-list ${orientation}" false />
+        </#if>
+    </#macro>
+
+	<#-- divider between the sections of results -->
+	<#macro printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation>
+        <#if itemTag_?lower_case != 'li'>
+        	<#-- if not first result -->
+            <#if !first>
+                <#if (!isGridLayout)>
+                    <hr/>
+                <#elseif rowCount % itemsPerRow == 0>
+                    </div>    </div><hr /><div class=" ${orientation} resource-list row"><div class="span2">
+                </#if>
+            </#if>
+        </#if>
+	</#macro>
+
+	<#-- add the lat-long data attributes for the map -->
+	<#macro addLatLongDataAttributes orientation resource>
+				<#if orientation == 'MAP' && resource.latLongVisible >
+	            data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
+	            data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
+	</#macro>
+
 <#--fixme:  with at least three presentation style (list/grid/map/custom), this macro has become *extremely* hard to modify, 
     let alone comprehend. Consider replacing w/ @listResources, @listResourcesMap, and @listResourcesGrid -->
-<#macro listResources resourcelist sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated itemsPerRow=4
+<#macro listResources resourcelist sortfield=DEFAULT_SORT itemsPerRow=4
     listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
 	
 	<#-- parameters:
 		sortField: how to sort the results
-		editable: not sure if it's even used
-		bookmarkable: appears to be irrelevant
 		itemsPerRow: how many items to show per row in "GRID" orientation
-		listTag: by default wrap all resources in a <ul/> tag, alternately, you can change this to something else
-		itemTag: by default wrap each item in a <li/> tag, alternately, specify something
+		listTag: by default wrap all resources in a (<ul/> for lists; <div/> for grid; <ol/> for map), alternately, you can change this to something else
+		itemTag: by default wrap each item in a (<li/> for lists and map; <div/> for grid), alternately, specify something
 		headerTag: if the search results is sorted in some manner wrap the header in a <h3/>, the tag to use for the header
 		titleTag: the tag to wrap the resource title in, default <h3/>
 		orientation: the default orientation for the results (Title List,  List, Grid, Map)
@@ -29,21 +59,22 @@
 	-->
 	
   <#local showProject = false />
-  <#local prev =""/>
-  <#local first = true/>
+  <#assign prev =""/>
+  <#assign first = true/>
   <#local listTag_=listTag/>  
-  <#assign itemTag_=itemTag/> 
-  <#assign itemClass = ""/>
+  <#local itemTag_=itemTag/> 
+  <#local itemClass = ""/>
+  
   <@common.reindexingNote />
   
-  <#-- setup default -->
+  <#-- set default ; add map wrapper -->
   <#if orientation == "GRID">
     <#local listTag_="div"/>  
-    <#assign itemClass = "span2"/>
-    <#assign itemTag_="div"/> 
+    <#local itemClass = "span2"/>
+    <#local itemTag_="div"/> 
   <#elseif orientation == "MAP" >
     <#local listTag_="ol"/>  
-    <#assign itemTag_="li"/> 
+    <#local itemTag_="li"/> 
     <div class="resource-list row">
       <#if mapPosition=="top" || mapPosition == "right">
         <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> > </div>
@@ -51,98 +82,113 @@
     
       <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
   </#if>
-  <#local isGridLayout = (orientation=="GRID") />
+  <#global isGridLayout = (orientation=="GRID") />
+  <#global isMapLayout = (orientation=="MAP") />
   <#local rowCount = -1 />
 
   <#if resourcelist??>  
   <#list resourcelist as resource>
-    <#local key = "" />
-    <#local defaultKeyLabel="No Project"/>
-    <#-- if we're a resource && are viewable -->
+    <#assign key = "" />
+    <#assign defaultKeyLabel="No Project"/>
+
+    <#-- if we're viewable -->
     <#if ((resource.viewable)!false) >
        <#local rowCount= rowCount+1 />
-	   
-        <#-- handle grouping/sorting with indentation -->
-        <#if (sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')) && resource.resourceType?has_content>
-            <#if sortfield?contains('RESOURCE_TYPE')>
-                <#local key = resource.resourceType.plural />
-                <#local defaultKeyLabel="No Resource Type"/>  
-            </#if>
-            <#if sortfield?contains('PROJECT')>
-                <#if resource.project??>
-                    <#local key = resource.project.title />
-                <#elseif resource.resourceType.project >
-                    <#local key = resource.title />
-                </#if>
-            </#if>
-            <#-- print header and group/list tag -->
-            <#if first || (prev != key) && key?has_content>
-                <#if prev != '' || sortField?has_content && !first && (sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT"))></${listTag_}></#if>
-                <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
-                <#if isGridLayout>
-                <div class='resource-list row ${orientation}'>
-                <#else>
-                <${listTag_} class='resource-list ${orientation}'>
-                </#if>
-            </#if>
-            <#local prev=key />
-        <#elseif first>
-            <#-- default case for group tag -->
-                <#if isGridLayout>
-                <div class='resource-list row ${orientation}'>
-                <#else>
-                <@printTag listTag_ "resource-list ${orientation}" false />
-                </#if>
-        </#if>  
-	        <#-- printing item tag -->
-            <@printTag itemTag_ "listItem ${itemClass!''}" false>
-			<#local showLat = orientation == 'MAP' && (resource.firstActiveLatitudeLongitudeBox.centerLatitudeIfNotObfuscated)?has_content  &&
-            (resource.firstActiveLatitudeLongitudeBox.centerLongitudeIfNotObfuscated)?has_content &&!resource.hasConfidentialFiles() >
-            <#if showLat> data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
-            data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
-            </@printTag>
 
-<!-- ${itemTag_} - ${rowCount} - ${itemsPerRow} - ${rowCount % itemsPerRow } -->
-            <#if itemTag_?lower_case != 'li'>
-                <#if !first>
-	                <#if (!isGridLayout)>
-	                    <hr/>
-	                <#elseif rowCount % itemsPerRow == 0>
-	                    </div>    </div><hr /><div class=" ${orientation} resource-list row"><div class="span2">
-	                </#if>
-                </#if>
-            </#if>
-            <#if isGridLayout>
-                <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><#t>
-                        <@view.firstThumbnail resource /><#t>
-                    <#t></a><br/>
-            </#if>
-            <@searchResultTitleSection resource titleTag showLat/>
-            <@printLuceneExplanation  resource />
-            <@printDescription resource=resource orientation=orientation length=500 showProject=showProject/>
+		<#-- list headers are displayed when sorting by specific fields ResourceType and Project -->
+		<@printListHeaders sortfield first resource headerTag orientation listTag_ />	   
 
-            </${itemTag_}>
+        <#-- printing item tag start / -->
+        <@printTag itemTag_ "listItem ${itemClass!''}" false>
+			<@addLatLongDataAttributes orientation resource />
+        </@printTag>
+
+		<#-- if we're at a new row; close the above tag and re-open it (bug) -->
+		<@printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation />
+
+		<#-- add grid thumbnail -->
+		<@addGridThumbnail resource />
+		
+		<#-- add the title -->
+        <@searchResultTitleSection resource titleTag />
+
+        <#-- if in debug add lucene description to explain relevancy -->
+        <@printLuceneExplanation  resource />
+
+        <#-- print resource's description -->
+        <@printDescription resource=resource orientation=orientation length=500 showProject=showProject/>
+
+		<#-- close item tag -->
+        </${itemTag_}>
         <#local first=false/>
      </#if>
     </#list>
+    
+    <#-- if we didn't have any results, don't close the list tag, as there was none -->
     <#if rowCount != -1>
 	  </${listTag_}>
     </#if>
   </#if>
-  <#if orientation == "MAP">
-  </div>
-      <#if mapPosition=="left" || mapPosition == "bottom">
-    <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
-    
-    </div>
-    </#if>    
-    </div>    
-    <script>
-        $(document).ready(function() {
-	        TDAR.maps.setupMapResult();
-        });
-    </script>      
-  </#if>
+  
+  <@addMapFooter orientation mapPosition mapHeight />
+</#macro>
+
+
+<#macro printListHeaders sortfield first resource=null headerTag="" orientation='LIST' listTag_='li'>	   
+    <#-- handle grouping/sorting with indentation -->
+    <#-- special sorting for RESOURCE_TYPE and PROJECT to group lists by these; sort key stored in "key" -->
+    <#if (sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')) && resource.resourceType?has_content>
+        <#if sortfield?contains('RESOURCE_TYPE')>
+            <#assign key = resource.resourceType.plural />
+            <#assign defaultKeyLabel="No Resource Type"/>  
+        </#if>
+        <#if sortfield?contains('PROJECT')>
+            <#if resource.project??>
+                <#assign key = resource.project.title />
+            <#elseif resource.resourceType.project >
+                <#assign key = resource.title />
+            </#if>
+        </#if>
+        <#-- print special header and group/list tag -->
+        <#if first || (prev != key) && key?has_content>
+            <#if prev != '' || sortField?has_content && !first && (sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT"))></${listTag_}></#if>
+            <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
+
+			<#-- if we're a grid, then reset rows -->
+			<@printGridHeader orientation listTag_ />
+        </#if>
+        <#local prev=key />
+    <#elseif first>
+        <#-- default case for group tag -->
+		<@printGridHeader orientation listTag_ />
+    </#if>  
+</#macro>
+
+<#macro addMapFooter orientation mapPosition mapHeight  >
+	  <#if orientation == "MAP">
+	  </div>
+	      <#if mapPosition=="left" || mapPosition == "bottom">
+	    <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
+	    
+	    </div>
+	    </#if>    
+	    </div>    
+	    <script>
+	        $(document).ready(function() {
+		        TDAR.maps.setupMapResult();
+	        });
+	    </script>      
+	  </#if>
+</#macro>
+
+
+
+<#macro addGridThumbnail resource>
+	<#if isGridLayout>
+	    <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><#t>
+	            <@view.firstThumbnail resource /><#t>
+	        <#t></a><br/>
+	</#if>
 </#macro>
 
 
@@ -189,7 +235,7 @@
     </#macro>
 
 
-<#macro searchResultTitleSection result titleTag showLat=false>
+<#macro searchResultTitleSection result titleTag >
     <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
     <#if titleTag?has_content>
         <${titleTag} class="${titleCssClass}">
@@ -202,7 +248,7 @@
      <#else>
          No Title
     </#if>
-    <#if showLat><i class="icon-map-marker"></i></#if>
+    <#if isMapLayout && result.latLongVisible><i class="icon-map-marker"></i></#if>
         <#if (result.date?has_content && (result.date > 0 || result.date < -1) )>(${result.date?c})</#if>
     </a><#lt>
     <@bookmark result false/>
