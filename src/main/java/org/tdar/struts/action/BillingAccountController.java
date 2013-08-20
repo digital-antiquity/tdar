@@ -1,12 +1,15 @@
 package org.tdar.struts.action;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -112,6 +115,12 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public String listInvoices() {
         if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
             getInvoices().addAll(getGenericService().findAll(Invoice.class));
+            Collections.sort(getInvoices(), new Comparator<Invoice>() {
+                @Override
+                public int compare(Invoice o1, Invoice o2) {
+                    return ObjectUtils.compare(o2.getDateCreated(), o1.getDateCreated());
+                }
+            });
         }
         return SUCCESS;
     }

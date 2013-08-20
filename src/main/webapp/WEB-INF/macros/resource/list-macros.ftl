@@ -13,6 +13,21 @@
     let alone comprehend. Consider replacing w/ @listResources, @listResourcesMap, and @listResourcesGrid -->
 <#macro listResources resourcelist sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated itemsPerRow=4
     listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
+	
+	<#-- parameters:
+		sortField: how to sort the results
+		editable: not sure if it's even used
+		bookmarkable: appears to be irrelevant
+		itemsPerRow: how many items to show per row in "GRID" orientation
+		listTag: by default wrap all resources in a <ul/> tag, alternately, you can change this to something else
+		itemTag: by default wrap each item in a <li/> tag, alternately, specify something
+		headerTag: if the search results is sorted in some manner wrap the header in a <h3/>, the tag to use for the header
+		titleTag: the tag to wrap the resource title in, default <h3/>
+		orientation: the default orientation for the results (Title List,  List, Grid, Map)
+		mapPositon: where to show the map in relation to the result list
+		mapHeight: how high the map should be
+	-->
+	
   <#local showProject = false />
   <#local prev =""/>
   <#local first = true/>
@@ -38,13 +53,15 @@
   </#if>
   <#local isGridLayout = (orientation=="GRID") />
   <#local rowCount = -1 />
-  <#if resourcelist??>
+
+  <#if resourcelist??>  
   <#list resourcelist as resource>
     <#local key = "" />
     <#local defaultKeyLabel="No Project"/>
     <#-- if we're a resource && are viewable -->
     <#if ((resource.viewable)!false) >
        <#local rowCount= rowCount+1 />
+	   
         <#-- handle grouping/sorting with indentation -->
         <#if (sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')) && resource.resourceType?has_content>
             <#if sortfield?contains('RESOURCE_TYPE')>

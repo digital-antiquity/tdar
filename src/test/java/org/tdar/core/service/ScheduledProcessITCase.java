@@ -174,7 +174,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {
         searchIndexService.purgeAll();
         searchIndexService.indexAll(getAdminUser(), Resource.class, Person.class, Institution.class, ResourceCollection.class);
-
+        pap.setDaysToRun(3000);
         pap.execute();
     }
 

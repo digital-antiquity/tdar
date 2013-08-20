@@ -64,6 +64,9 @@ $(function(){
 	  <@s.hidden name="startTime" value="${currentTime?c}" />
 	
 	        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
+	        <#if editor && !administrator>
+		        <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to DRAFT</p>
+	        </#if>
 	            <label class="control-label">Status</label>
 	            <div class="controls">
 		            <#if guestUserId != -1 && guestUserId == authenticatedUser.id>

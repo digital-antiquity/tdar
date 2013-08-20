@@ -215,7 +215,10 @@
 
 <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" liCssClass="media" action=actionName>
 <#if (facetlist?? && !facetlist.empty)>
-<h4>${label}:</h4>
+<#if label != ''>
+	<h4>${label}:</h4>
+</#if>
+
 <ul class="media-list tools">
     <#list facetlist as facet>
         <#assign facetLabel = facet />

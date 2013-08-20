@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.RssService;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.HttpsOnly;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 
@@ -121,6 +122,7 @@ public class IndexAction extends AuthenticationAware.Base {
     }
 
     @Action("login")
+    @HttpsOnly
     public String login() {
         if (isAuthenticated()) {
             return TdarActionSupport.AUTHENTICATED;
