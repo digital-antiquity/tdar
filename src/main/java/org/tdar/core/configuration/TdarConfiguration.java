@@ -657,4 +657,8 @@ public class TdarConfiguration {
         return assistant.getStringProperty("cultural.terms.label", "Cultural Terms");
     }
 
+    public int getDaysForCreatorProcess() {
+        return assistant.getIntProperty("creator.analytics.days.to.process", 10);
+    }
+
 }
