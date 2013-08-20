@@ -75,7 +75,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     }
 
     @Test
-    public void testCreateDocumentEditSavehasResource() {
+    public void testUploadShapefile() {
         gotoPage("/geospatial/add");
         WebElement form = find("#metadataForm").first();
         prepIndexedFields();
@@ -109,4 +109,39 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         assertFalse("no errors present", getText().toLowerCase().contains("error"));
         assertFalse("no errors present", getText().toLowerCase().contains("exception"));
     }
+
+
+
+    @Test
+    public void testUploadGeotiff() {
+        gotoPage("/geospatial/add");
+        WebElement form = find("#metadataForm").first();
+        prepIndexedFields();
+        // fill in various text fields
+        for (Map.Entry<String, String> entry : docValMap.entrySet()) {
+            find(By.name(entry.getKey())).val(entry.getValue());
+        }
+
+        // check various keyword checkboxes
+        for (String key : docMultiValMap.keySet()) {
+            for (String val : docMultiValMap.get(key)) {
+                find(By.name(key)).val(val);
+            }
+        }
+
+        FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
+        uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF));
+        uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF_TFW));
+        submitForm();
+
+        String path = getDriver().getCurrentUrl();
+
+        path = getDriver().getCurrentUrl();
+        logger.info(find("body").getText());
+        assertFalse("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
+        assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
+        assertFalse("no errors present", getText().toLowerCase().contains("error"));
+        assertFalse("no errors present", getText().toLowerCase().contains("exception"));
+    }
+
 }
