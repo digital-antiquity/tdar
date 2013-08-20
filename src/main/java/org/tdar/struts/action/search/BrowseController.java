@@ -81,6 +81,7 @@ public class BrowseController extends AbstractLookupController {
     private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     private List<BrowseYearCountCache> scholarData;
+    private File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml");
     private List<BrowseDecadeCountCache> timelineData;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private List<String> groups = new ArrayList<String>();
@@ -146,9 +147,11 @@ public class BrowseController extends AbstractLookupController {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
             File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".foaf.xml");
-            setInputStream(new FileInputStream(file));
-            setContentLength(file.length());
-            return SUCCESS;
+            if (file.exists()) {
+                setInputStream(new FileInputStream(file));
+                setContentLength(file.length());
+                return SUCCESS;
+            }
         }
         return ERROR;
     }
@@ -161,14 +164,19 @@ public class BrowseController extends AbstractLookupController {
 
             if (Persistable.Base.isNotNullOrTransient(creator)) {
                 try {
-                    setNodeModel(NodeModel.parse(new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml")));
+                    File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml");
+                    if (foafFile.exists()) {
+                        setNodeModel(NodeModel.parse(foafFile));
+                    } else {
+                        logger.debug("foaf file did not exist {} ", foafFile);
+                    }
                 } catch (Exception e) {
                     logger.debug("{}", e);
                 }
             }
             if (isEditor()) {
-                if (creator instanceof Person && StringUtils.isNotBlank(((Person)creator).getUsername())) {
-                    Person person = (Person)creator;
+                if (creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
+                    Person person = (Person) creator;
                     try {
                         getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(person));
                     } catch (Throwable e) {
