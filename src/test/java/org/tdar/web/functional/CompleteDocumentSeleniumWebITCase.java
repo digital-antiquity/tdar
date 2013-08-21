@@ -27,6 +27,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.WebElement;
 import org.tdar.core.bean.coverage.CoverageType;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -168,7 +169,23 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         submitForm();
     }
     
+
     @Test
+    public void testDupCreator() {
+        gotoPage("/document/add");
+        setFieldByName("document.title", "My Sample Document");
+        setFieldByName("document.documentType", "OTHER");
+        setFieldByName("document.description", "A resource description");
+        setFieldByName("document.date", "1923");
+        setFieldByName("projectId", "-1");
+        // add a person to satisfy the confidential file requirement
+        addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@blank.com"), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
+        addInstitutionWithRole(new Institution("university of test"), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
+
+        submitForm();
+    }
+    
+@Test
     public void testCreateDocumentEditSavehasResource() {
         gotoPage("/document/add");
         WebElement form = find("#metadataForm").first();
