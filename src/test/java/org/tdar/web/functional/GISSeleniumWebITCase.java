@@ -6,7 +6,11 @@
 
 package org.tdar.web.functional;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -148,8 +152,13 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         logout();
         gotoPage(url);
         find(".media-body a").first().click();
-        find("#loginUsername").sendKeys(TestConfiguration.getInstance().getAdminUsername());
-        find("#loginPassword").sendKeys(TestConfiguration.getInstance().getAdminPassword());
+        waitFor("#loginUsername");
+        String username = TestConfiguration.getInstance().getAdminUsername();
+        String password = TestConfiguration.getInstance().getAdminPassword();
+        assertThat(username, not(isEmptyOrNullString()));
+        assertThat(password, not(isEmptyOrNullString()));
+        find("#loginUsername").val(username);
+        find("#loginPassword").val(password);
         find("#btnLogin").click();
         assertTrue(getCurrentUrl().contains("confirm"));
 
