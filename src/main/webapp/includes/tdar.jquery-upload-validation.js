@@ -175,7 +175,7 @@ var FileuploadValidator;
                         if(!valid) {
                             var error = {
                                 "file": null,
-                                "message": message()
+                                "message": message(0)
                             };
                             console.dir(error);
                             self.errors.push(error);
