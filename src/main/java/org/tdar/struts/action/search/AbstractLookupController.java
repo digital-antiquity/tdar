@@ -110,9 +110,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     public SortOption getSortField() {
-        // if (sortField == null) {
-        // sortField = SortOption.RELEVANCE;
-        // }
+        if (sortField == null) {
+            sortField = getDefaultSort();
+        }
         return sortField;
     }
 
@@ -389,7 +389,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             valid = true;
             Institution incomingInstitution = new Institution(institution);
             incomingPerson.setInstitution(incomingInstitution);
-            //FIXME: I believe this detach is unnecessary - object was never on the session
+            // FIXME: I believe this detach is unnecessary - object was never on the session
             // AB: OpenSessionInView makes me nervous with this, don't want to take a chance
             getGenericService().detachFromSessionAndWarn(incomingInstitution);
         }
@@ -399,7 +399,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             incomingPerson.setEmail(email);
             valid = true;
         }
-        //FIXME: I believe this detach is unnecessary - object was never on the session
+        // FIXME: I believe this detach is unnecessary - object was never on the session
         // AB: OpenSessionInView makes me nervous with this, don't want to take a chance
         getGenericService().detachFromSessionAndWarn(incomingPerson);
 

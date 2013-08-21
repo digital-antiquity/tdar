@@ -281,7 +281,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         try {
             logger.info("sort field {} ", getSortField());
             if (getSortField() == null) {
-                setSortField(SortOption.ID_REVERSE);
+                setDefaultSort(SortOption.ID_REVERSE);
                 setSecondarySortField(SortOption.TITLE);
             }
             setMode("rss");
@@ -996,5 +996,5 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public void setGeoMode(GeoRssMode geoMode) {
         this.geoMode = geoMode;
     }
-
+    
 }

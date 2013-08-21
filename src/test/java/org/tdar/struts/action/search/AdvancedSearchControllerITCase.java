@@ -117,6 +117,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         }
     }
 
+
     @Test
     @Rollback
     public void testComplexGeographicKeywords() {
