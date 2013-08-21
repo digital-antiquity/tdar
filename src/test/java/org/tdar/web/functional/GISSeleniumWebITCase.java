@@ -24,6 +24,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
+import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractWebTestCase;
 
 public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
@@ -142,6 +143,16 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
         assertFalse("no errors present", getText().toLowerCase().contains("error"));
         assertFalse("no errors present", getText().toLowerCase().contains("exception"));
+
+        String url  =getCurrentUrl();
+        logout();
+        gotoPage(url);
+        find(".media-body a").first().click();
+        find("#loginUsername").sendKeys(TestConfiguration.getInstance().getAdminUsername());
+        find("#loginPassword").sendKeys(TestConfiguration.getInstance().getAdminPassword());
+        find("#btnLogin").click();
+        assertTrue(getCurrentUrl().contains("confirm"));
+
     }
 
 }
