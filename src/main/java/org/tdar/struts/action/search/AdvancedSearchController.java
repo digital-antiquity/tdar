@@ -279,9 +279,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             "contentLength", "${contentLength}", "contentEncoding", "UTF-8" }) })
     public String viewRss() throws TdarActionException {
         try {
+            setDefaultSort(SortOption.ID_REVERSE);
             logger.info("sort field {} ", getSortField());
             if (getSortField() == null) {
-                setDefaultSort(SortOption.ID_REVERSE);
                 setSecondarySortField(SortOption.TITLE);
             }
             setMode("rss");
