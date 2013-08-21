@@ -27,6 +27,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.WebElement;
 import org.tdar.core.bean.coverage.CoverageType;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -36,6 +37,13 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
 
 public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
+    private static final String IJ_BLANK_COM = "ij@blank.com";
+    private static final String INDIANA = "indiana";
+    private static final String JONES = "jones";
+    private static final String LOBLAW = "loblaw";
+    private static final String ROBERT = "robert";
+    private static final String BOBLOBLAW_BLANK_COM = "bobloblaw@blank.com";
+    private static final String UNIVERSITY_OF_TEST = "university of test";
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();
@@ -168,7 +176,45 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         submitForm();
     }
     
+
     @Test
+    public void testDupCreator() {
+        gotoPage("/document/add");
+        setFieldByName("document.title", "My Sample Document");
+        setFieldByName("document.documentType", "OTHER");
+        setFieldByName("document.description", "A resource description");
+        setFieldByName("document.date", "1923");
+        setFieldByName("projectId", "-1");
+        // add a person to satisfy the confidential file requirement
+        addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
+        find("#authorshipRow_0_ .institutionButton").click();
+        addInstitutionWithRole(new Institution(UNIVERSITY_OF_TEST), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
+
+        find("#authorshipSection .addAnother").click();
+        addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
+        find("#authorshipRow_1_ .institutionButton").click();
+        addInstitutionWithRole(new Institution(UNIVERSITY_OF_TEST), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
+        find("#authorshipRow_1_ .personButton").click();
+
+        
+        addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[0]", ResourceCreatorRole.CONTACT);
+        find("#creditRow_0_ .institutionButton").click();
+        addInstitutionWithRole(new Institution("UC"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
+        find("#creditSection .addAnother").click();
+        addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[1]", ResourceCreatorRole.CONTACT);
+        find("#creditRow_1_ .institutionButton").click();
+        addInstitutionWithRole(new Institution("UC"), "creditProxies[1]", ResourceCreatorRole.CONTACT);
+        find("#creditRow_1_ .personButton").click();
+
+        submitForm();
+        assertTrue(getText().contains(JONES));
+        assertTrue(getText().contains(INDIANA));
+        assertTrue(getText().contains("UC"));
+        assertTrue(getText().contains(LOBLAW));
+        assertTrue(getText().contains(UNIVERSITY_OF_TEST));
+    }
+    
+@Test
     public void testCreateDocumentEditSavehasResource() {
         gotoPage("/document/add");
         WebElement form = find("#metadataForm").first();
@@ -259,7 +305,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         docUnorderdValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
 
         // add a person to satisfy the confidential file requirement
-        addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
+        addPersonWithRole(new Person(LOBLAW, ROBERT, "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
 
         logger.info(getDriver().getPageSource());
         submitForm();

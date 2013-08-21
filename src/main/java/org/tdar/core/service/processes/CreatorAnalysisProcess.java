@@ -77,7 +77,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     @Autowired
     private XmlService xmlService;
 
-    private int daysToRun = 10;
+    private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
 
     public String getDisplayName() {
         return "Creator Analytics Process";

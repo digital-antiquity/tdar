@@ -39,6 +39,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
@@ -905,6 +906,15 @@ public abstract class AbstractSeleniumWebITCase {
         setFieldByName(prefix + ".person.lastName", p.getLastName());
         setFieldByName(prefix + ".person.email", p.getEmail());
         setFieldByName(prefix + ".person.institution.name", p.getInstitutionName());
+        setFieldByName(prefix + ".role", role.name());
+
+        // FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
+        // waitFor(".ui-menu-item a").click();
+    }
+
+    
+    protected void addInstitutionWithRole(Institution p, String prefix, ResourceCreatorRole role) {
+        setFieldByName(prefix + ".institution.name", p.getName());
         setFieldByName(prefix + ".role", role.name());
 
         // FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)

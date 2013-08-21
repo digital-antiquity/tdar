@@ -34,7 +34,7 @@
 	  <li class="<#if !administrator>active</#if>">
 	    <a href="#suggested" data-toggle="tab">Suggested</a>
 	  </li>
-	  <li class="<#if administrator>active</#if>"><a href="#custom" data-toggle="tab">Custom &amp; Calculator</a></li>
+	  <li class="<#if administrator>active</#if>"><a href="#custom" data-toggle="tab">Rate Calculator (Customize) &amp; All Rates</a></li>
 	</ul>
 	<div class="tab-content row" >
 		<div id="suggested" class="tab-pane <#if !administrator>active</#if> span12">
