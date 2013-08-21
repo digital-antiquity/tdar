@@ -181,6 +181,16 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         // add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@blank.com"), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
         addInstitutionWithRole(new Institution("university of test"), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
+        find("#authorshipSection .addAnother").click();
+        addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@blank.com"), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
+        addInstitutionWithRole(new Institution("university of test"), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
+
+        
+        addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@blank.com"), "creditProxies[0]", ResourceCreatorRole.AUTHOR);
+        addInstitutionWithRole(new Institution("university of test"), "creditProxies[0]", ResourceCreatorRole.AUTHOR);
+        find("#creditSection .addAnother").click();
+        addPersonWithRole(new Person("loblaw", "robert", "bobloblaw@blank.com"), "creditProxies[1]", ResourceCreatorRole.AUTHOR);
+        addInstitutionWithRole(new Institution("university of test"), "creditProxies[1]", ResourceCreatorRole.AUTHOR);
 
         submitForm();
     }
