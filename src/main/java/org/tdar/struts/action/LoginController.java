@@ -101,6 +101,7 @@ public class LoginController extends AuthenticationAware.Base {
             }
             logger.info("url {} ", getReturnUrl());
             if (getReturnUrl().contains("filestore/")) {
+                logger.info("download redirect");
                 if (getReturnUrl().contains("/get?") || getReturnUrl().endsWith("/get")) {
                     setReturnUrl(getReturnUrl().replace("/get", "/confirm"));
                     logger.debug(getReturnUrl());
