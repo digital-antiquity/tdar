@@ -21,6 +21,6 @@ public class DefaultSortITCase extends AbstractSearchControllerITCase {
         controller = generateNewInitializedController(AdvancedSearchController.class);
         controller.viewRss();
         logger.info("sorting by: {} ", controller.getSortField());
-        assertNotEquals(SortOption.ID_REVERSE, controller.getSortField());
+        assertEquals(SortOption.ID_REVERSE, controller.getSortField());
     }
 }
