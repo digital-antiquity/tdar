@@ -1028,17 +1028,32 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
 <!-- <ul id="proj-toolbar" class="projectMenu"><li></li></ul> -->
 </div>
-<table cellpadding="0" cellspacing="0" border="0" class="display tableFormat table-striped table-bordered span8" id="resource_datatable" >
-<thead>
-     <tr>
-         <#if selectable><th><input type="checkbox" onclick="checkAllToggle()" id="cbCheckAllToggle">id</th></#if>
-         <th>Title</th>
-         <th>Type</th>
-     </tr>
-</thead>
-<tbody>
-</tbody>
-</table>
+<div class="row">
+    <div class="span9">
+
+            <table class="display table table-striped table-bordered tableFormat" id="resource_datatable">
+                <colgroup>
+                    <#if selectable><col style="width:10%"></#if>
+                    <col style="width: 70%">
+                    <col style="">
+                </colgroup>
+            <thead>
+                 <tr>
+                     <#if selectable><th><input type="checkbox" onclick="checkAllToggle()" id="cbCheckAllToggle">id</th></#if>
+                     <th>Title</th>
+                     <th>Type</th>
+                 </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <#if selectable><td>&nbsp;</td></#if>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </tbody>
+            </table>
+    </div>
+</div>
 <br/>
 <script>
 function checkAllToggle() {

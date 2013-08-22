@@ -19,6 +19,7 @@ function _registerLookupDataTable(parms) {
             "sAjaxDataProp": 'resources',
             "bJQueryUI": false,
             "sScrollY": "350px",
+            "sScrollX": "100%",
             fnDrawCallback: function(){
                 // if all checkboxes are checked, the 'select all' box should also be checked, and unchecked in all other situations
                 if($(":checkbox:not(:checked)", $dataTable).length == 0) {
@@ -36,7 +37,6 @@ function _registerLookupDataTable(parms) {
     $dataTable.data('selectedRows', {});
 
     var dataTableOptions = {
-    		"sScrollX": "100%",
      		"bScrollCollapse": true,
             "bProcessing": true,
             "bServerSide": true,
@@ -187,7 +187,7 @@ function fnRenderTitleAndDescription(oObj) {
 }
 
 function _setupDashboardDataTable(options) {
-    var _options = $.extend(options);
+    var _options = $.extend({}, options);
 
     // set the project selector to the last project viewed from this page
     // if not found, then select the first item
@@ -221,8 +221,8 @@ function _setupDashboardDataTable(options) {
 
       var _fnRenderTitle = _options.showDescription ? fnRenderTitleAndDescription : fnRenderTitle;
         
-      var aoColumns_ = [{ "mDataProp": "title",  sWidth: '65%', fnRender: _fnRenderTitle, bUseRendered:false ,"bSortable":false},
-          { "mDataProp": "resourceTypeLabel",  sWidth: '15%',"bSortable":false }];
+      var aoColumns_ = [{ "mDataProp": "title",  fnRender: _fnRenderTitle, bUseRendered:false ,"bSortable":false},
+          { "mDataProp": "resourceTypeLabel", "bSortable":false }];
           // make id the first column when datatable is selectable
           if (_options.isSelectable) {
               aoColumns_.unshift({ "mDataProp": "id", tdarSortOption: "ID", sWidth:'5em' ,"bSortable":false});
