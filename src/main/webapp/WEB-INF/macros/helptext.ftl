@@ -209,3 +209,16 @@ Use these fields to properly credit individuals and institutions for their contr
 Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.
 </div>
 </#macro>
+
+
+<#macro srid>
+<div id="sridTip" class="hidden">
+Please enter a Spatial Reference System ID, datum and projection. eg: 
+	<ul>
+		<li>EPSG:3857 </li>
+		<li>WGS:84</li>
+		<li> NAD83 StatePlane Iowa N</li>
+		<li> NAD83(HARN)/UTM Zone 16 N</li>
+	</ul>
+</div>
+</#macro>

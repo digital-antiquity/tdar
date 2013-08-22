@@ -41,8 +41,8 @@ public class Geospatial extends Dataset {
     @Column(name = "spatial_reference_system", length = 50)
     private String spatialReferenceSystem;
 
-    @Column(name = "projection", length = 50)
-    private String projection;
+    @Column(name = "map_source", length = 500)
+    private String mapSource;
 
     @Column(name = "scale", length = 100)
     private String scale;
@@ -65,14 +65,6 @@ public class Geospatial extends Dataset {
 
     public void setScale(String scale) {
         this.scale = scale;
-    }
-
-    public String getProjection() {
-        return projection;
-    }
-
-    public void setProjection(String projection) {
-        this.projection = projection;
     }
 
     public String getSpatialReferenceSystem() {
@@ -100,6 +92,14 @@ public class Geospatial extends Dataset {
         // throw new TdarValidationException("A projection is required for this " + getResourceType());
         // }
         return super.isValidForController();
+    }
+
+    public String getMapSource() {
+        return mapSource;
+    }
+
+    public void setMapSource(String mapSource) {
+        this.mapSource = mapSource;
     }
 
 }

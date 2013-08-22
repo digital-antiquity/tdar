@@ -63,7 +63,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         docValMap.put("geospatial.description", "A resource description");
         docValMap.put("geospatial.date", "1923");
         docValMap.put("geospatial.spatialReferenceSystem", "WGS:84");
-        docValMap.put("geospatial.projection", "mercator");
+        docValMap.put("geospatial.mapSource", "mercator");
         docValMap.put("geospatial.scale", "1:100000");
         docValMap.put("geospatial.currentnessUpdateNotes", "very current; updated daily");
         docValMap.put("geospatial.doi", "doi:10.1016/j.iheduc.2003.11.004");

@@ -3,6 +3,7 @@
 <#global inheritanceEnabled=true />
 <#global multipleUpload=true />
 <#global hideRelatedCollections=true/>
+<#import "/${themeDir}/local-helptext.ftl" as  helptext>
 
 <#macro localJavascript>
 console.log("adding gis validation rules");
@@ -16,14 +17,16 @@ TDAR.fileupload.addGisValidation(TDAR.fileupload.validator);
             <@s.textarea rows="4" label="Currentness & Update Information" name='geospatial.currentnessUpdateNotes' cssClass='resizable resize-vertical input-xxlarge' required=true title="A description is required" />
     </span>
 
-    <span data-tiplabel="Spatial Reference System Id" data-tooltipcontent="Please enter a SRS ID eg: EPSG:3857  or WGS84" class="">
-            <@s.textfield label="Spatial Reference System Id" title="A SRS is required"  maxlength=50 required=true
+	        <@helptext.srid />
+
+    <span data-tiplabel="Spatial Reference System &amp; Projection" data-tooltipcontent="#sridTip" class="">
+            <@s.textfield label="Spatial Reference System & Projection" title="A SRS/Projection is required"  maxlength=50 required=true
 			name='geospatial.spatialReferenceSystem' cssClass="tdartext longfield input-xxlarge" />
     </span>
 
-    <span data-tiplabel="Projection" data-tooltipcontent="Please enter a map projection, in most cases, this will be based on the Spatial Reference System ID, an example might be Mercator Projection" class="">
-            <@s.textfield label="Projection" title="A projection is required"  maxlength=50
-			name='geospatial.projection' cssClass="tdartext longfield input-xxlarge" />
+    <span data-tiplabel="Map Source" data-tooltipcontent="Please describe the source of the map, if possible, include a citation">
+            <@s.textfield label="Map Source"  maxlength=500
+			name='geospatial.mapSource' cssClass="tdartext longfield input-xxlarge" />
     </span>
 
 

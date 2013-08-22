@@ -4,7 +4,7 @@
 
 <#macro afterBasicInfo>
   <#if resource.projection??>
-      <@view.kvp key="Projection" val=resource.projection />
+      <@view.kvp key="Map Source" val=resource.mapSource />
   </#if>
 
   <#if resource.scale??>
@@ -12,7 +12,7 @@
   </#if>
 	
   <#if resource.spatialReferenceSystem??>
-      <@view.kvp key="Spatial Reference System" val=resource.spatialReferenceSystem />
+      <@view.kvp key="Spatial Reference System &amp; Projection" val=resource.spatialReferenceSystem />
   </#if>
 
   <#if resource.currentnessUpdateNotes??>
