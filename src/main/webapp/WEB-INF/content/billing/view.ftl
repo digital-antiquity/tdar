@@ -19,6 +19,9 @@
 </@nav.toolbar>
 <h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
 
+<@view.pageStatusCallout />
+
+
 <#if account.description?has_content>
 <p>${account.description!""}</p>
 </#if>
@@ -80,7 +83,7 @@
     <tr class="${extraClass}">
         <td><a href="<@s.url value="/cart/${invoice.id?c}" />" >${invoice.dateCreated}</a></td>
         <td>
-            ${invoice.owner.properName}
+            <a href="<@s.url value="/browse/creator/${invoice.owner.id}"/>">${invoice.owner.properName}</a>
             <#if invoice.proxy>
                 c/o ${invoice.transactedBy.properName}
             </#if>
@@ -142,7 +145,8 @@
         <th>name</th><th>email</th>
     </tr>
     <tr>
-    	<td>${account.owner.properName} (owner)</td><td>${account.owner.email}</td>
+    	<td>
+    	<a href="<@s.url value="/browse/creator/${account.owner.properName}"/>">${account.owner.properName}</a> (owner)</td><td>${account.owner.email}</td>
 	</tr>
 <#list account.authorizedMembers as member>
 <tr>

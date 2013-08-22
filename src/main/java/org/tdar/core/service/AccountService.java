@@ -233,7 +233,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         logAccountAndHelperState(account, helper);
 
         boolean overdrawn = account.isOverdrawn(getResourceEvaluator());
-        logger.info("overdrawn: {}", overdrawn);
+        logger.info("overdrawn: {} hasUpdates: {}", overdrawn, hasUpdates);
 
         /*
          * 
@@ -262,17 +262,21 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
             status = updateResourceStatusesAndReconcileAccountStatus(helper, status);
             overdrawn = account.isOverdrawn(getResourceEvaluator());
+            logger.info("flagged: {} overdrawn:{}", helper.getFlagged(), overdrawn);
             if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
                 account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
                 logger.info("marking account as FLAGGED {} {}", overdrawn, helper.getFlagged());
-            } 
-            if (!overdrawn) {
-                account.setStatus(Status.ACTIVE);
+            }  else {
+                if (account.getStatus().equals(Status.FLAGGED_ACCOUNT_BALANCE)) {
+                    account.setStatus(Status.ACTIVE);
+                }
             }
 
             saveOrUpdateAll(resourcesToEvaluate);
             helper.updateAccount();
             updateAccountInfo(account);
+        } else {
+            account.setStatus(Status.ACTIVE);
         }
 
         saveOrUpdate(account);
