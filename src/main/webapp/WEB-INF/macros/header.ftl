@@ -13,8 +13,8 @@
                      "/includes/jquery.textarearesizer.js",
                      "/includes${fakeDirectory}/jquery.FormNavigate.js",
                      "/includes/jquery.watermark-3.1.3.min.js",
-                     "/includes/jquery.datatables-1.8.2/media/js/jquery.dataTables.js",
-                     "/includes/jquery.datatables-1.8.2/extras/bootstrap-paging.js",
+                     "/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js",
+                     "/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js",
                      "/includes/jquery-treeview/jquery.treeview.js",
                      "/includes/blueimp-javascript-templates/tmpl.min.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/vendor/jquery.ui.widget.js", 
@@ -86,7 +86,8 @@
                     "/includes/jquery-treeview/jquery.treeview.css",
 					 "/includes/jqplot-1.08/jquery.jqplot.min.css",
                      "/includes/jquery.orgChart/jquery.orgchart.css",
-                    "/includes/datatables.css"
+                    "/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css",
+                    "/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css"
                     
                     ] />
 <#if combine>
