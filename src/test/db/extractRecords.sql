@@ -242,7 +242,7 @@ drop table test;
 --DONT-PROCESS-- INSERT INTO dataset (id) values(4289);
 --DONT-PROCESS-- INSERT INTO sensory_data (id, turntable_used , mesh_holes_filled , mesh_rgb_included , mesh_smoothing , mesh_data_reduction , premesh_color_editions , premesh_overlap_reduction , premesh_smoothing , premesh_subsampling , rgb_preserved_from_original, mesh_color_editions , mesh_healing_despiking ) VALUES (4289,false,false,false,false,false,false,false,false,false,false,false, false);
 --DONT-PROCESS-- INSERT INTO video (id) VALUES (4290);
---DONT-PROCESS-- INSERT INTO geospatial (currentnessUpdateNotes,projection,id) VALUES ('hipster-level currentness', 'bogus projection information',4291);
+--DONT-PROCESS-- INSERT INTO geospatial (currentnessUpdateNotes,map_source,id) VALUES ('recent', 'bogus information',4291);
 --DONT-PROCESS-- INSERT INTO image VALUES (4292);
 
 -- end added by jim 6/1/2013

@@ -2648,7 +2648,7 @@ INSERT INTO dataset (id) values(4291);
 INSERT INTO dataset (id) values(4289);
 INSERT INTO sensory_data (id, turntable_used , mesh_holes_filled , mesh_rgb_included , mesh_smoothing , mesh_data_reduction , premesh_color_editions , premesh_overlap_reduction , premesh_smoothing , premesh_subsampling , rgb_preserved_from_original, mesh_color_editions , mesh_healing_despiking ) VALUES (4289,false,false,false,false,false,false,false,false,false,false,false, false);
 INSERT INTO video (id) VALUES (4290);
-INSERT INTO geospatial (currentnessUpdateNotes,projection,id) VALUES ('hipster-level currentness', 'bogus projection information',4291);
+INSERT INTO geospatial (currentnessUpdateNotes,map_source,id) VALUES ('recent', 'bogus information',4291);
 INSERT INTO image VALUES (4292);
 -- end added by jim 6/1/2013
 -- ab add 6/2/2103
