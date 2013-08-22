@@ -65,6 +65,7 @@ import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.data.AggregateDownloadStatistic;
 import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
@@ -92,12 +93,15 @@ import edu.asu.lib.mods.ModsDocument;
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
+    private static final String REPROCESS = "reprocess";
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
     public static final String ADMIN = "admin";
     public static final String DC = "dc";
     public static final String MODS = "mods";
 
     public static final String THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS = "this record is in draft and is only available to authorized users";
+    public static final String WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT = "We were unable to process the uploaded content.";
+
 
     private static final long serialVersionUID = 8620875853247755760L;
 
@@ -1047,6 +1051,31 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         viewableResourceCollections = new ArrayList<ResourceCollection>(collections);
         return viewableResourceCollections;
     }
+    
+    
+    @SkipValidation
+    @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
+    @WriteableSession
+    public String reprocess() throws TdarActionException {
+        logger.info("reprocessing");
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        // FIXME: trying to avoid concurrent modification exceptions
+        // NOTE: this processes deleted ones again too
+        // NOTE2: this is ignored in the quota on purpose -- it's on us
+        if(getResource() instanceof InformationResource) {
+            InformationResource ir = (InformationResource) getResource();
+        try {
+            getInformationResourceService().reprocessInformationResourceFiles(ir, this);
+        } catch (Exception e) {
+            addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
+        }
+        if (hasActionErrors()) {
+            return ERROR;
+        }
+        }
+        return SUCCESS;
+    }
+
 
     @SkipValidation
     @Action(value = ADMIN, results = {

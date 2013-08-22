@@ -382,7 +382,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     // }
     // }
 
-    protected enum RequestType {
+    public enum RequestType {
         EDIT(true),
         CREATE(true),
         DELETE(true),

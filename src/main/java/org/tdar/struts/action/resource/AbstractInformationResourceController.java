@@ -10,8 +10,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
@@ -51,9 +49,8 @@ import org.tdar.struts.data.ResourceCreatorProxy;
  * @version $Rev$
  * @param <R>
  */
-public abstract class AbstractInformationResourceController<R extends InformationResource> extends AbstractResourceController<R> {
 
-    public static final String WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT = "We were unable to process the uploaded content.";
+public abstract class AbstractInformationResourceController<R extends InformationResource> extends AbstractResourceController<R> {
 
     public static final String FILE_INPUT_METHOD = "text";
 
@@ -617,23 +614,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                 addActionError("The required copyright holder is missing!");
             }
         }
-    }
-
-    @Action(value = "reprocess", results = { @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}") })
-    public String retranslate() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        // FIXME: trying to avoid concurrent modification exceptions
-        // NOTE: this processes deleted ones again too
-        // NOTE2: this is ignored in the quota on purpose -- it's on us
-        try {
-            getInformationResourceService().reprocessInformationResourceFiles(getResource(), this);
-        } catch (Exception e) {
-            addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
-        }
-        if (hasActionErrors()) {
-            return ERROR;
-        }
-        return SUCCESS;
     }
 
     public boolean isHasDeletedFiles() {

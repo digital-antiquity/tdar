@@ -3,14 +3,19 @@ package org.tdar.struts.action.resource;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
@@ -69,13 +74,13 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
     public void setGeospatial(Geospatial dataset) {
         setPersistable(dataset);
     }
-
+    
     @Override
     public Set<String> getValidFileExtensions() {
         Set<String> extensionsForTypes = analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET, ResourceType.IMAGE);
         //FIXME: these should come from the analyzer
         //Note: aux.xml and shp.xml omitted because we know view layer logic will accept any .xml (so will server, for that matter)
-        String[] geoexts  =  {"shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg", "jpw", "tfw", "aux", "aux"};
+        String[] geoexts  =  {"shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg", "jpw", "tfw", "aux", "aux","ovr","rrd"};
         Collections.addAll(extensionsForTypes, geoexts);
 
 //        extensionsForTypes.add("shx");

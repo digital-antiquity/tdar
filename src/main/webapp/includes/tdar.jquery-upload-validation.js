@@ -353,19 +353,19 @@ var FileuploadValidator;
         //aux and aux.xml files can apply to either jpg or tiff
         validator.addRule("required", {
                 extension: ["tif", "tiff", "jpg", "jpeg"],
-                when: _hasFileWithExtension("aux", "aux.xml")
+                when: _hasFileWithExtension("aux", "aux.xml","ovr","rrd")
             },
             "an image metadata file must be paired with a JPEG or TIFF file");
 
         //add suggestions for the image metadata files.
         validator.addSuggestion("required", {
-                extension: ["jpw", "aux", "aux.xml"],
+                extension: ["jpw", "aux", "aux.xml","ovr","rrd"],
                 when: _hasFileWithExtension("jpg", "jpeg")
             },
             "consider including an image metadata file such as .jpw, .aux, or .aux.xml"
         );
         validator.addSuggestion("required", {
-            extension: ["tfw", "aux", "aux.xml"],
+            extension: ["tfw", "aux", "aux.xml","ovr","rrd"],
             when: _hasFileWithExtension("tiff", "tif")
         }, "consider including an image metadata file such as .tfw, .aux, or .aux.xml");
 
