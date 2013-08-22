@@ -168,6 +168,8 @@ public class PairtreeFilestore extends BaseFilestore {
         logger.trace("file requested: {}", file);
         if (!file.isFile())
             throw new FileNotFoundException("Could not find file: " + file.getAbsolutePath());
+
+//        version.setTransientFile(file);
         return file;
     }
 

@@ -274,6 +274,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         List<InformationResourceFileVersion> latestVersions = new ArrayList<>();
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
+            original.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(original));
             latestVersions.add(original);
             Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
             while (iterator.hasNext()) {

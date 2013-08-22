@@ -6,7 +6,6 @@
 
 package org.tdar.web.functional;
 
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
