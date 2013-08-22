@@ -823,6 +823,19 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         mistakenly clicked on the delete button, do not worry. You can restore the file by clicking the button a
         second time (the button will now be labeled "Undelete").
 
+
+        <h3>File Information</h3>
+        <dl>
+            <dt>Restriction</dt>
+            <dd><em>Public Files</em> are accessible to all ${siteAcronym} users.  <em>Confidential</em> and <em>Embargoed</em> files can only be downloaded by ${siteAcronym} users that you specify in the Access Rights section</dd>
+            <dt>Date Created</dt>
+            <dd>The date this file was created,  for images,  this is the date the the image was captured</dd>
+            <dt>Description</dt>
+            <dd>
+                Any addional information specific to this file.
+            </dd>
+        </dl>
+
     </span>
     </div>
 </div>
