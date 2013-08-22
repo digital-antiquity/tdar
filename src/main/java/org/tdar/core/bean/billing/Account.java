@@ -474,4 +474,11 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     public void setCoupons(Set<Coupon> coupons) {
         this.coupons = coupons;
     }
+
+    public void reset() {
+        setStatus(Status.ACTIVE);
+        setSpaceUsedInBytes(0L);
+        setFilesUsed(0L);
+        initTotals();
+    }
 }

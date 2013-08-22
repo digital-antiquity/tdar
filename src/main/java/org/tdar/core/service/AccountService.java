@@ -247,10 +247,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
             // start at 0 and re-add everything
             // sort by date updated
-            account.setStatus(Status.ACTIVE);
-            account.setSpaceUsedInBytes(0L);
-            account.setFilesUsed(0L);
-            account.initTotals();
+            account.reset();
 
             for (Coupon coupon : account.getCoupons()) {
                 account.setFilesUsed(coupon.getNumberOfFiles() + account.getFilesUsed());
@@ -268,7 +265,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
                 account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
                 logger.info("marking account as FLAGGED {} {}", overdrawn, helper.getFlagged());
-            } else {
+            } 
+            if (!overdrawn) {
                 account.setStatus(Status.ACTIVE);
             }
 
