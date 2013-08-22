@@ -1154,7 +1154,7 @@ var _sortFilesAlphabetically= function() {
         "coordinatesCheckboxClicked": _coordinatesCheckboxClicked,
         "refreshInputDisplay": _refreshInputDisplay,
 
-        //I don't like how  Javascript Templates puts "tmpl" in global scope, so I'm aliasing it here.
+        //I don't like how  Javascript Templates from "(tmpl.min.js)" puts "tmpl" in global scope, so I'm aliasing it here.
         "tmpl": tmpl
     });
     
