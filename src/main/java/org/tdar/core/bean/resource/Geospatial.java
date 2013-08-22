@@ -48,6 +48,15 @@ public class Geospatial extends Dataset {
     private String scale;
 
     @Override
+    public String getAdditonalKeywords() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.getAdditonalKeywords()).append(" ").append(getCurrentnessUpdateNotes()).append(" ").append(getSpatialReferenceSystem()).
+                append(" ").append(getScale());
+        return sb.toString();
+    }
+
+    
+    @Override
     @Transient
     public boolean isSupportsThumbnails() {
         return true;
