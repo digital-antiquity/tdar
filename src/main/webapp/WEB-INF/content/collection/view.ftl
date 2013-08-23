@@ -59,7 +59,7 @@
 
 <#if resourceCollection.parent?? || resourceCollection.description?? || collections??>
     <div class="glide">
-        <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
+        <#if resourceCollection.parent??><p><b>Part of:</b> <a href="/collection/${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
         <@common.description resourceCollection.description />
   </div>
 </#if>
