@@ -659,17 +659,16 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 
 
 -->
- <#if (resource.visibleFilesWithThumbnails?size > 1)>
+ <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
 	<div id="myCarousel" class="image-carousel carousel slide pagination-centered">
-		<div class="carousel-indicators ">
-		    <span data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</span>
-	
-		    <#if (numIndicators > 1)>
+	    <#if (numIndicators > 1)>
+			<div class="carousel-indicators ">
+			    <span data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</span>
 			    <#list 1..(numIndicators -1) as x>
 	                <span data-target="#myCarousel" data-slide-to="${x}">&nbsp;</span>
 			    </#list>
-		    </#if>
-		</div>
+			</div>
+	    </#if>
 	 
 		<!-- Carousel items -->
 		<div class="carousel-inner">
