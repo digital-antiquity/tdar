@@ -48,9 +48,13 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP,
             query = "SELECT new ResourceCollection(col.id, col.name, col.description, col.sortBy, col.type, col.visible) FROM ResourceCollection as col where col.id in (:ids) "),
-    @org.hibernate.annotations.NamedQuery(
-            name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_RESOURCES,
-            query = "SELECT distinct new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_RESOURCES,
+                query = "SELECT distinct new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES,
+                query = "SELECT distinct new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SORTED_SUFFIX),
+
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_SPARSE_ACTIVE_RESOURCES,
             query = "SELECT distinct new Resource(res.id, res.title, res.resourceType) from Resource as res where res.status in ('ACTIVE') "),

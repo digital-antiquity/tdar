@@ -94,8 +94,9 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public Set<Resource> findEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_EDITABLE_RESOURCES);// QUERY_PROJECT_EDITABLE
+    public List<Resource> findEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin, boolean sorted) {
+        String namedQuery = sorted ? QUERY_SPARSE_EDITABLE_SORTED_RESOURCES : QUERY_SPARSE_EDITABLE_RESOURCES;
+        Query query = getCurrentSession().getNamedQuery(namedQuery);// QUERY_PROJECT_EDITABLE
         query.setLong("userId", person.getId());
         query.setParameter("admin", isAdmin);
         query.setParameterList("resourceTypes", resourceTypes);
@@ -107,10 +108,16 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         }
         query.setParameter("allStatuses", false);
         query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        return new HashSet<Resource>((List<Resource>) query.list());
+        return  query.list();
     }
 
-    public Set<Resource> findEditableResources(Person person, boolean isAdmin) {
+    public Set<Resource> findEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin) {
+        return new HashSet<>(findEditableResources(person, resourceTypes, isAdmin, false));
+    }
+
+
+
+        public Set<Resource> findEditableResources(Person person, boolean isAdmin) {
         return findEditableResources(person, Arrays.asList(ResourceType.values()), isAdmin);
     }
 
