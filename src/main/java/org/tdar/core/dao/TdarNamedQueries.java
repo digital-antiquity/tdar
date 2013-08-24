@@ -148,7 +148,7 @@ public interface TdarNamedQueries {
 
     public static final String HQL_EDITABLE_RESOURCE_SUFFIX = "FROM Resource as res  where " +
             " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
-            "(res.submitter.id=:userId or res in (" +
+            "(res.submitter.id=:userId or exists (" +
             " select elements(rescol.resources) from ResourceCollection rescol join rescol.authorizedUsers  as authUser " +
             " where (TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
     public static final String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
