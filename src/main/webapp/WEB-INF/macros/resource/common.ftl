@@ -1088,16 +1088,16 @@ this bit of freemarker is voodoo:
 </#macro>
 
 
-
-<#macro collectionListItem collection=collection showOnlyVisible=false>
+<#macro collectionListItem depth=0 collection=collection showOnlyVisible=false >
 	<#if collection.visible || collection.viewable || showOnlyVisible==false >
 	<#compress><li>
     <a href="<@s.url value="/collection/${collection.id?c}"/>">
     <#if collection.name?? && collection.name != ''>${collection.name!"no title"}<#t/><#else>No Title</#if> <#--(${collection.resources?size}) --></a>
+    <#if (depth < 1)><span class="expand">[expand]</span></#if>
           <#if collection.transientChildren?has_content>
-			<ul>
+			<ul class="<#if (depth < 1)>hidden</#if>">
 		        <#list collection.transientChildren as child>
-		        	<@collectionListItem child />
+		        	<@collectionListItem depth= (depth - 1) collection=child showOnlyVisible=showOnlyVisible  />
 				</#list>
 			</ul>          	
           </#if>
@@ -1105,10 +1105,10 @@ this bit of freemarker is voodoo:
     	</#if>
 </#macro>
 
-<#macro listCollections collections=resourceCollections_ showOnlyVisible=false >
+<#macro listCollections collections=resourceCollections_ showOnlyVisible=false>
   <ul>
     <#list collections as collection>
-	    	<@collectionListItem collection=collection showOnlyVisible=showOnlyVisible/>
+	    	<@collectionListItem collection=collection showOnlyVisible=showOnlyVisible depth=20000/>
     </#list>
   <#nested>
   </ul>
@@ -1116,6 +1116,3 @@ this bit of freemarker is voodoo:
 
 
 </#escape>
-
-
-
