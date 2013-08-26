@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -45,7 +44,6 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             "Ulna" };
 
     @Test
-    @Ignore
     public void testDataIntegration() {
         boolean skip = false;
         if (!skip) {
