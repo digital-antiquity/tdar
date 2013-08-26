@@ -47,6 +47,7 @@ public class AggregateStatistic extends Persistable.Base {
         NUM_ONTOLOGY_WITH_FILES("# of Ontologies with Files"),
         NUM_SENSORY_DATA_WITH_FILES("# of Sensory Data Objects with Files"),
         NUM_GIS_WITH_FILES("# of GeoSpatial Objects with Files"),
+        NUM_ARCHIVES_WITH_FILES("# of Archive Objects with Files"),
 
         NUM_COLLECTIONS("# of Collections"), 
         NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size");
