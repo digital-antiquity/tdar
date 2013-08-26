@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Table;
 
 public class BufferUnderflowTestCase {
@@ -23,13 +24,13 @@ public class BufferUnderflowTestCase {
     
     @Before 
     public void prepare() throws IOException {
-        database = Database.open(new File(TEST_FOLDER, TEST_FILE), true, false);
+        database = DatabaseBuilder.open(new File(TEST_FOLDER, TEST_FILE));
     }
 
     @Test
     public void testTableDisplayThrowsException() throws IOException {
 	// FIXME: MAKE  ASSERTION
-        database.getTable(TABLE_NAME).display();
+        database.getTable(TABLE_NAME).toString();
     }
     
     @Test

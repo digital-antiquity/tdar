@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -31,9 +30,8 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
 import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Index;
-import com.healthmarketscience.jackcess.IndexData.ColumnDescriptor;
 import com.healthmarketscience.jackcess.PropertyMap;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
@@ -69,7 +67,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             throws IOException {
         File databaseFile = getInformationResourceFileVersion().getTransientFile();
         // if we use ReadOnly Mode here we have the ability to open older files... http://jira.pentaho.com/browse/PDI-5111
-        setDatabase(Database.open(databaseFile, true));
+        setDatabase(DatabaseBuilder.open(databaseFile));
         this.setIrFileId(getInformationResourceFileVersion().getId());
         this.setFilename(databaseFile.getName());
     }
@@ -94,7 +92,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             targetDatabase.dropTable(dataTable);
 
             Table currentTable = getDatabase().getTable(tableName);
-            List<Column> columnList = currentTable.getColumns();
+            List<? extends Column> columnList = currentTable.getColumns();
             for (Column currentColumn : columnList) {
                 DataTableColumnType dataType = DataTableColumnType.VARCHAR;
                 logger.info("Incoming column \t name:{}  type:{}", currentColumn.getName(), currentColumn.getType());
@@ -254,7 +252,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     logger.trace(relationship.isOneToOne() + " one to one");
                     logger.trace(relationship.cascadeDeletes() + " cascade deletes");
                     logger.trace(relationship.cascadeUpdates() + " cascade updates");
-                    logger.trace(relationship.getFlags() + " :flags");
+//                    logger.trace(relationship.getFlags() + " :flags");
                     logger.trace("++++++++++++++++++++++++++++++++++++++++++++++++++++");
                     logger.info("{}", relationshipToPersist);
                     relationships.add(relationshipToPersist);
@@ -282,7 +280,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             if (index.isUnique()) {
                 // assemble a list of the columns
                 List<Column> uniqueKeyColumns = new ArrayList<Column>();
-                for (ColumnDescriptor descriptor : index.getColumns()) {
+                for (com.healthmarketscience.jackcess.Index.Column descriptor : index.getColumns()) {
                     uniqueKeyColumns.add(descriptor.getColumn());
                 }
                 // check if the relationship's columns include all the unique key's columns

@@ -32,7 +32,7 @@
 		<batik.version>1.7</batik.version>
 		<odata4j.version>0.7.0</odata4j.version>
 		<jersey.version>1.17.1</jersey.version>
-		<jackson.version>2.2.2</jackson.version>
+		<jackson.version>2.2.3</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<truezip.version>7.7.3</truezip.version>
 		<http-components.version>4.2.2</http-components.version>
@@ -252,7 +252,7 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.48a</version>
+			<version>1.48b</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.media.jai</groupId>
@@ -724,7 +724,7 @@
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>1.2.14</version>
+			<version>2.0.0</version>
 		</dependency>
 		<!-- OpenCSV -->
 		<dependency>
@@ -864,7 +864,7 @@
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<version>2.2</version>
+			<version>2.3</version>
 		</dependency>
 		<!-- Jackson v2 (1.7.3 cannot be used because it doesnt handle @XmlJavaTypeConverter 
 			w/ collections correctly) -->
