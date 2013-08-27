@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -93,12 +94,16 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     // get some files from the test dir and put them into an archive stream
     @Test
     public void testDownloadArchiveService() throws IOException {
-        Collection<File> files = FileUtils.listFiles(ROOT_SRC, null, false);
+        Map<File,String> map = new HashMap<>();
+        for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
+            map.put(file, null);
+        }
         File dest = new File(ROOT_DEST, "everything.zip");
-        downloadService.generateZipArchive(files, dest);
+        
+        downloadService.generateZipArchive(map, dest);
         assertTrue("file should have been created", dest.exists());
         assertTrue("file should be non-empty", dest.length() > 0);
-        assertArchiveContents(files, dest);
+        assertArchiveContents(map.keySet(), dest);
     }
 
     @Test
