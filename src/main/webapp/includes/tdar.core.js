@@ -94,6 +94,7 @@ TDAR.namespace = function() {
  * returns $.promise if jquery library is available
  */
 TDAR.loadScript = function(url) {
+    var _url = url;
     var head = document.getElementsByTagName("head")[0];
     var script = document.createElement("script");
     var deferred, promise;
@@ -111,7 +112,7 @@ TDAR.loadScript = function(url) {
         };
     }
 
-    script.src = url;
+    script.src = _url;
     head.appendChild(script);
     return promise;
 }

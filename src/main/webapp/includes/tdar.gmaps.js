@@ -6,35 +6,31 @@
 TDAR.namespace("maps");
 TDAR.maps = function() {
     "use strict";
-    var self = {};
-    
-    var _isApiLoaded = false;
-    var _pendingOps = [];
     var _defaults = {
-    		isGeoLocationToBeUsed: false,
-    		center: {
-                lat: 0,
-                lng: 0
+        isGeoLocationToBeUsed: false,
+        center: {
+            lat: 0,
+            lng: 0
+        },
+        zoomLevel: 4,
+        rectStyleOptions: {
+            PARENT: {
+                strokeColor: "#FF8000",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: "#FF8800",
+                fillOpacity: 0.35
             },
-            zoomLevel: 4,
-            rectStyleOptions: {
-                PARENT: {
-                    strokeColor: "#FF8000",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: "#FF8800",
-                    fillOpacity: 0.35
-                },
-                RESOURCE: {
-                    strokeColor: "#FF0000",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: "#FF0000",
-                    fillOpacity: 0.15
-                }
+            RESOURCE: {
+                strokeColor: "#FF0000",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: "#FF0000",
+                fillOpacity: 0.15
             }
-
+        }
     };
+
     //deferred representing api init process.  resolved when google api calls our _apiLoaded callback
     var _deferredApi = null;
     
@@ -49,15 +45,14 @@ TDAR.maps = function() {
     var _initGmapApi = function() {
         if(_deferredApi) return _deferredApi.promise();
         _deferredApi = $.Deferred();
-        var script = document.createElement("script");
-        script.type = "text/javascript";
+
+        var gmapUrl = "//maps.googleapis.com/maps/api/js?libraries=drawing&sensor=false&callback=TDAR.maps._apiLoaded";
         if(TDAR.maps.googleApiKey) {
-            script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&key=" + TDAR.maps.googleApiKey + "&sensor=false&callback=TDAR.maps._apiLoaded";
-        } else {
-            script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&sensor=false&callback=TDAR.maps._apiLoaded";
+            gmapUrl +="&key=" + TDAR.maps.googleApiKey;
         }
-        document.body.appendChild(script);
-        console.log("loading gmap api");
+
+        //google adds even more scripts - so we need to rely on them calling our _apiLoaded callback to know when api is ready
+        var prm = TDAR.loadScript(gmapUrl);
         return _deferredApi.promise();
     };
     
@@ -78,7 +73,6 @@ TDAR.maps = function() {
                 streetViewControl: false,
                 //scrollwheel zooming frustrates efforts to scroll vertically in the form. 
                 scrollwheel: false
-
         });
         
         

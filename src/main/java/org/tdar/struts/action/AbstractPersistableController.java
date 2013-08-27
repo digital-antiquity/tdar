@@ -90,7 +90,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * Override to perform custom save logic for the specific subtype of
      * Resource.
      * 
-     * @param resource
+     * @param persistable
      * @return the String result code to use.
      * @throws TdarActionException 
      */
@@ -117,7 +117,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * Override to provide custom deletion logic for the specific kind of
      * Resource this ResourceController is managing.
      * 
-     * @param resource
+     * @param persistable
      */
     protected abstract void delete(P persistable);
 
@@ -405,9 +405,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     /**
      * This method centralizes a lot of the logic around rights checking ensuring a valid session and rights if needed
      * 
-     * @param RequestType
+     * @param userAction
      *            -- the type of request the user is making
-     * @param CrudAction
+     * @param action
      *            <P extends Persistable>
      *            -- the action that we're going to call the check on
      * @param adminRightsCheck
