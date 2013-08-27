@@ -827,12 +827,12 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <h3>File Information</h3>
         <dl>
             <dt>Restriction</dt>
-            <dd><em>Public Files</em> are accessible to all ${siteAcronym} users.  <em>Confidential</em> and <em>Embargoed</em> files can only be downloaded by ${siteAcronym} users that you specify in the Access Rights section</dd>
+            <dd><em>Public Files</em> are accessible to all registered ${siteAcronym} users.  <em>Confidential</em> and <em>Embargoed</em> files can only be downloaded by registered ${siteAcronym} users that you specify in the Access Rights section</dd>
             <dt>Date Created</dt>
-            <dd>The date this file was created,  for images,  this is the date the the image was captured</dd>
+            <dd>The date this file was created. For image files, it is the calendar date when the image was taken, rendered, etc.</dd>
             <dt>Description</dt>
             <dd>
-                Any addional information specific to this file.
+                Additional information specific to this file.
             </dd>
         </dl>
 
