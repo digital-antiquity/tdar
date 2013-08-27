@@ -4,15 +4,19 @@
 <h2>Instructions</h2>
 <div class="row">
 <div class="span8">
-<p>tDAR uses an external payment gateway through Arizona State University called <em>NelNet</em>.  
-Please use the NelNet forms to complete your tDAR payment.  
-Once your payment has been <em>successfully completed</em> you will be able to start creating resources in tDAR. 
+<p>
+tDAR uses an external payment gateway through Arizona State University called NelNet. Please use the NelNet forms to complete your tDAR payment. Print and/or store a copy of your receipt for your records. Once your payment has been processed, you will receive a confirmation email from ASU.
+</p><p>
+<b>Do not close this window</b>. Once you have completed your payment, this window will take you to the "Select Account" page. You will then be to create and manage your Billing Accounts.
+</p><p>
+Once your payment has been <i>successfully completed</i> you will be able to start creating resources in tDAR.
 </p>
 <br/>
 <p>
  <a class="button" href="<#noescape>${redirectUrl}</#noescape>" target="_blank">click here</a>
 <em>If the payment window does not open automatically</em>.
 </p>
+
 </div>
 <div class="span4">
 <img alt="nelnet exmaple" src="<@s.url value="/includes/nellnet_screenshot.png"/>" title="Nellnet Screenshot" cssClass="img-polaroid responsive-image" />
