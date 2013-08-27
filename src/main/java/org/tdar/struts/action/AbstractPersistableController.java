@@ -70,7 +70,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private boolean asyncSave = true;
     private List<AuthorizedUser> authorizedUsers;
 
-    private String possibleJsError;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
@@ -779,17 +778,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-    public String getPossibleJsError() {
-        return possibleJsError;
-    }
-
-    public void setPossibleJsError(String possibleJsError) {
-        if (StringUtils.isNotBlank(possibleJsError)) {
-            logger.warn("there may have been a JavaScript error");
-        }
-        this.possibleJsError = possibleJsError;
-    }
-
     public Status getStatus() {
         if (status != null) {
             return status;
@@ -800,24 +788,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return null;
     }
 
-    // public void setStatus(String status) {
-    // this.status = Status.valueOf(status);
-    // }
-
     public void setStatus(Status status) {
         this.status = status;
     }
 
     public List<Status> getStatuses() {
-        // List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
         return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
-        // removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
-        // getAuthenticatedUser());
-        // getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
-        // getAuthenticatedUser());
-        // if
-        //
-        // return toReturn;
     }
 
 }

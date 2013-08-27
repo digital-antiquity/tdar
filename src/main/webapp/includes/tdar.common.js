@@ -481,14 +481,12 @@ var _sortFilesAlphabetically= function() {
        $buttons.prop("disabled", false);
        
        //fade in the wait icon
-       $("#possibleJsError").val("");
        $submitDivs.find(".waitingSpinner").hide();
    } 
     
     
     //public: initialize the edit page form
     var _initEditPage = function(form) {
-        $("#possibleJsError").val("INIT");
 
        //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it. 
         _submitButtonStopWait();
@@ -604,7 +602,6 @@ var _sortFilesAlphabetically= function() {
         _registerAjaxEvents();
 
         // I must be "last"
-        $("#possibleJsError").val("SAVE");
         $(form).not('.disableFormNavigate').FormNavigate({
             message:"Leaving the page will cause any unsaved data to be lost!",
             customEvents: "repeatrowdeleted fileuploadstarted",

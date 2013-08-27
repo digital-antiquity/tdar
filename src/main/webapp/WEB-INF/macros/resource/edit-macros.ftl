@@ -477,7 +477,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
         <div class="form-actions" id="editFormActions">
             <#nested>
-            <input type="hidden" name="possibleJsError" id="jserror" value="PRE-INIT" />
             <@submitButton label=label id=buttonid />
             <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none" />
         </div> 
