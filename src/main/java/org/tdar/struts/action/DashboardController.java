@@ -70,7 +70,6 @@ public class DashboardController extends AuthenticationAware.Base {
         setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
             setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
-        logger.debug("\t collections");
         getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
@@ -83,7 +82,6 @@ public class DashboardController extends AuthenticationAware.Base {
 //        } catch (ParseException e1) {
 //            logger.error("parse exception: {} ", e1);
 //        }
-        logger.debug("\t - activity");
         try {
             Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
             if (isEditor() && indexingTask != null) {
@@ -111,7 +109,6 @@ public class DashboardController extends AuthenticationAware.Base {
         activeResourceCount += getStatusCountForUser().get(Status.ACTIVE);
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
 
-        logger.info("\t - done");
 
         return SUCCESS;
     }

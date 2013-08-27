@@ -696,10 +696,15 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
           <!-- fixme: careful with this styling -->
         <div class="control-label">
              <div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
+               <#if type_override == 'PERSON' || (creatorType=='PERSON' && type_override=='NONE') >
+               	<#local selectedType="PERSON"/>
+               	<#else>
+               		<#local selectedType="INSTITUTION"/>
+				</#if>
                <button type="button" class="btn btn-small personButton <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >btn-active active</#if>" data-toggle="button">Person</button>
                <button type="button" class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>" data-toggle="button">Institution</button>
                <@s.hidden name="${prefix}Proxies[${proxy_index}].type" 
-	               	value="<#if type_override == 'PERSON' || (creatorType=='PERSON' && type_override=='NONE') >PERSON<#else>INSTITUTION</#if>" />
+	               	value="${selectedType}" cssClass="toggleValue" />
             </div>
         </div>
         <div class="controls controls-row">
