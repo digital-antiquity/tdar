@@ -152,7 +152,10 @@ public class DownloadService {
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
             try {
                 resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
-                dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
+                //FIXME: for merge coverpages,  isn't this in a temp file/folder anyway?   Is it necessary to explicitly delete?
+                DeleteOnCloseFileInputStream docis = new DeleteOnCloseFileInputStream(resourceFile);
+                //FIXME:  not sure if this statement was necessary (it's a side-effect anyway), and it is a contributing factor to TDAR-3311 so I commented it out.  Does this break something else?
+                //dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
             } catch (PdfCoverPageGenerationException cpge) {
                 logger.trace("Error occured while merging cover page onto " + irFileVersion, cpge);
             } catch (Exception e) {
