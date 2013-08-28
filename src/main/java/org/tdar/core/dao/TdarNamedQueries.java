@@ -50,6 +50,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO = "rescol.accessible";
     public static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.accessibleName";
     public static final String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
+    public static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse" ;
     public static final String QUERY_COLLECTION_BY_PARENT = "collection.parent";
     public static final String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
     public static final String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
@@ -154,6 +155,7 @@ public interface TdarNamedQueries {
             " where " +
             " colres.id = res.id and " +
             "(TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
+    public static final String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
     public static final String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
     public static final String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
     public static final String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from resource res where res.id in (%s) ";
