@@ -165,6 +165,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (isPostRequest() && DELETE.equals(getDelete())) {
             try {
                 checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
+                checkForNonContributorCrud();
                 if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
                     addActionError("cannot delete item because references still exist");
                     return CONFIRM;
@@ -348,8 +349,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     /**
      * The 'contributor' property only affects which menu items we show (for now).  Let non-contributors perform
      * CRUD actions, but send them a reminder about the 'contributor' option in the prefs page
+     * 
+     * FIXME: this needs to be centralized, as it's not going to be caught in all of the location it exists in ... eg: editColumnMetadata ...
      */
-    protected final void checkForNonContributorCrud() {
+    protected void checkForNonContributorCrud() {
         if(!getAuthenticatedUser().getContributor()) {
             //FIXME: The html here could benefit from link to the prefs page.  Devise a way to hint to the view-layer that certain messages can be decorated and/or replaced.
             addActionMessage("The system has hidden the menu options for creating and editing records based on your " +
