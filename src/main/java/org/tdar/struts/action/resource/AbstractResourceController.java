@@ -65,7 +65,6 @@ import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.data.AggregateDownloadStatistic;
 import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
@@ -367,6 +366,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public boolean isCreatable() throws TdarActionException {
+        if (!getAuthenticatedUser().getContributor()) {
+            return false;
+        }
         return true;
     }
 

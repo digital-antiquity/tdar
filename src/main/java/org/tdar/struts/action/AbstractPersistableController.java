@@ -416,7 +416,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @throws TdarActionException
      *             -- this will contain the return status, if any SUCCESS vs. INVALID, INPUT, ETC
      */
-    //FIXME: this method has more returns than a Wal-Mart on December 26.  (http://goo.gl/kEFffg)
+    //FIXME: revies and consolidate status codes where possible
     protected void checkValidRequest(RequestType userAction, CrudAction<P> action, InternalTdarRights adminRightsCheck)
             throws TdarActionException {
         // first check the session
@@ -440,8 +440,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             // deal with the case that we have a new or not found resource
             logger.debug("Dealing with transient persistable {}", persistable);
             switch (userAction) {
-                case SAVE:
                 case CREATE:
+                case SAVE:
                     if (action.isCreatable()) {
                         return;
                     }
@@ -466,7 +466,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
         switch (userAction) {
             case CREATE:
-                //FIXME: The persistable is neither null or transient at this point.  Should 'create' be considered valid?
                 if (action.isCreatable()) {
                     return;
                 }
