@@ -367,9 +367,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public boolean isCreatable() throws TdarActionException {
-        if (!getAuthenticatedUser().getContributor()) {
-            return false;
-        }
         return true;
     }
 

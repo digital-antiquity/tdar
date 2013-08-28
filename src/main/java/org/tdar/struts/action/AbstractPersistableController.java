@@ -333,15 +333,29 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (!isAbleToCreateBillableItem()) {
             return BILLING;
         }
-        
+
         //FIXME:make this a preference...
         if (getPersistable() instanceof HasStatus && isEditor() && !isAdministrator()) {
             ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
         }
         
         checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
+        checkForNonContributorCrud();
         logAction("CREATING");
         return loadAddMetadata();
+    }
+
+    /**
+     * The 'contributor' property only affects which menu items we show (for now).  Let non-contributors perform
+     * CRUD actions, but send them a reminder about the 'contributor' option in the prefs page
+     */
+    protected final void checkForNonContributorCrud() {
+        if(!getAuthenticatedUser().getContributor()) {
+            //FIXME: The html here could benefit from link to the prefs page.  Devise a way to hint to the view-layer that certain messages can be decorated and/or replaced.
+            addActionMessage("The system has hidden the menu options for creating and editing records based on your " +
+                    "current preferences.  You can change this setting by going to your account page and enabling the " +
+                    "\"contributor\" option.");
+        }
     }
 
     protected boolean isAbleToCreateBillableItem() {
@@ -360,7 +374,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public String edit() throws TdarActionException {
         // ensureValidEditRequest();
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-
+        checkForNonContributorCrud();
         logAction("EDITING");
         return loadEditMetadata();
     }
@@ -368,19 +382,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public String loadEditMetadata() throws TdarActionException {
         return loadViewMetadata();
     }
-
-    // @SuppressWarnings("unused")
-    // private void ensureValidEditRequest() throws TdarActionException {
-    // // first make sure the user is even authenticated
-    // if (!getSessionData().isAuthenticated()) {
-    // abort(StatusCode.OK.withResultName(LOGIN), "Unauthenticated edit request.");
-    // }
-    // if (!isEditable()) {
-    // // we performed an authz check that failed (not a structural issue with the persistable)
-    // abort(StatusCode.UNAUTHORIZED,
-    // String.format("You do not have permissions to edit %s (id: %s)", getPersistableClass().getSimpleName(), getPersistable().getId()));
-    // }
-    // }
 
     public enum RequestType {
         EDIT(true),
@@ -415,6 +416,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @throws TdarActionException
      *             -- this will contain the return status, if any SUCCESS vs. INVALID, INPUT, ETC
      */
+    //FIXME: this method has more returns than a Wal-Mart on December 26.  (http://goo.gl/kEFffg)
     protected void checkValidRequest(RequestType userAction, CrudAction<P> action, InternalTdarRights adminRightsCheck)
             throws TdarActionException {
         // first check the session
@@ -438,11 +440,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             // deal with the case that we have a new or not found resource
             logger.debug("Dealing with transient persistable {}", persistable);
             switch (userAction) {
-                case CREATE:
                 case SAVE:
+                case CREATE:
                     if (action.isCreatable()) {
                         return;
                     }
+                //(intentional fall-through)
                 case EDIT:
                 default:
                     if (persistable == null) {
@@ -453,7 +456,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                         abort(StatusCode.BAD_REQUEST, String.format(
                                 "Sorry, the system does not recognize this type of request on a %s ", persistable.getClass().getSimpleName()));
                     }
-
             }
         }
 
@@ -464,6 +466,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
         switch (userAction) {
             case CREATE:
+                //FIXME: The persistable is neither null or transient at this point.  Should 'create' be considered valid?
                 if (action.isCreatable()) {
                     return;
                 }

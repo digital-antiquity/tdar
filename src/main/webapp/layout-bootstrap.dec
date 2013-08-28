@@ -119,7 +119,7 @@
                     <ul class="hidden-phone-portrait">
                         <#include "${themeDir}/nav-items.dec" />
                         <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
-                        <li class="button hidden-phone"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li>
+                        <#if common.showContributorMenuItems()><li class="button hidden-phone"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li></#if>
                         <li>
                         <#if bodyid != 'home'>
                             <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform hidden-phone hidden-tablet  screen">

@@ -1114,5 +1114,9 @@ this bit of freemarker is voodoo:
   </ul>
 </#macro>
 
+<#function showContributorMenuItems>
+    <#-- show the 'upload' (even when logged out)  unless user.contributor flag is off -->
+    <#return (authenticatedUser.contributor)!true >
+</#function>
 
 </#escape>
