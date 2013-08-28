@@ -31,7 +31,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     private static final String ERR_FMT2_DETERMINE_CREATOR_TOO_MUCH_INFO = "" +
             "There was a problem with one of your author/creator/contributor entries. " +
             "a single creator record may contain either person name, but the system encountered both. Please revise this record with " +
-            "either \"%s\" or \"%s\".";
+            "either \"%s\" or \"%s\" (internal type was %s).";
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private boolean initialized = false;
@@ -49,8 +49,9 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
 
     public ResourceCreatorProxy() {
         // TODO: set any defaults here?
-
     }
+
+    private CreatorType type = CreatorType.PERSON;
 
     public ResourceCreatorProxy(Creator creator, ResourceCreatorRole role) {
         if (creator instanceof Person) {
@@ -135,8 +136,9 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             return null;
         }
         if (!institution.hasNoPersistableValues() && !person.hasNoPersistableValues()) {
-            String err = String.format(ERR_FMT2_DETERMINE_CREATOR_TOO_MUCH_INFO, getPerson(), getInstitution());
-            throw new TdarRecoverableRuntimeException(err);
+            String err = String.format(ERR_FMT2_DETERMINE_CREATOR_TOO_MUCH_INFO, getPerson(), getInstitution(), getType());
+            logger.warn(err);
+            return type;
         }
 
         if (!person.hasNoPersistableValues()) {
@@ -188,6 +190,14 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
 
     public void setRole(ResourceCreatorRole role) {
         this.role = role;
+    }
+
+    public CreatorType getType() {
+        return type;
+    }
+
+    public void setType(CreatorType type) {
+        this.type = type;
     }
 
 }

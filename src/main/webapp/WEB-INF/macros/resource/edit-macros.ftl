@@ -695,8 +695,15 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
           <!-- fixme: careful with this styling -->
         <div class="control-label">
              <div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
+               <#if type_override == 'PERSON' || (creatorType=='PERSON' && type_override=='NONE') >
+               	<#local selectedType="PERSON"/>
+               	<#else>
+               		<#local selectedType="INSTITUTION"/>
+				</#if>
                <button type="button" class="btn btn-small personButton <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >btn-active active</#if>" data-toggle="button">Person</button>
                <button type="button" class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>" data-toggle="button">Institution</button>
+               <@s.hidden name="${prefix}Proxies[${proxy_index}].type" 
+	               	value="${selectedType}" cssClass="toggleValue" />
             </div>
         </div>
         <div class="controls controls-row">
@@ -821,6 +828,19 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         You can remove files by clicking on the button labeled "Delete". If you change your mind or if you
         mistakenly clicked on the delete button, do not worry. You can restore the file by clicking the button a
         second time (the button will now be labeled "Undelete").
+
+
+        <h3>File Information</h3>
+        <dl>
+            <dt>Restriction</dt>
+            <dd><em>Public Files</em> are accessible to all registered ${siteAcronym} users.  <em>Confidential</em> and <em>Embargoed</em> files can only be downloaded by registered ${siteAcronym} users that you specify in the Access Rights section</dd>
+            <dt>Date Created</dt>
+            <dd>The date this file was created. For image files, it is the calendar date when the image was taken, rendered, etc.</dd>
+            <dt>Description</dt>
+            <dd>
+                Additional information specific to this file.
+            </dd>
+        </dl>
 
     </span>
     </div>

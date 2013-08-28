@@ -2,11 +2,7 @@ package org.tdar.struts.action.resource;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -456,14 +452,14 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         logger.info("get potential parents");
         if (potentialParents == null) {
             Person submitter = getAuthenticatedUser();
-            potentialParents = new ArrayList<>();
+            potentialParents = new LinkedList<>();
             boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
             potentialParents.addAll(getProjectService().findSparseTitleIdProjectListByPerson(submitter, canEditAnything));
             if (!getProject().equals(Project.NULL) && !potentialParents.contains(getProject())) {
                 potentialParents.add(getProject());
             }
             // tack the null project at the top of the sorted list
-            Collections.sort(potentialParents);
+            //Collections.sort(potentialParents);
             potentialParents.add(0, Project.NULL);
         }
         logger.trace("Returning all editable projects: {}", potentialParents);

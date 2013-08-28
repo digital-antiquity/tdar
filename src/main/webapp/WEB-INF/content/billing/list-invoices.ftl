@@ -12,14 +12,16 @@
 </tr>
 <tr>
   <#list invoices as invoice>
-   <td><a href="<@s.url value="/cart/${invoice.id?c}"/>">${invoice.dateCreated}</a></td>
-   <td>${invoice.owner.properName} </td>
-   <td>${invoice.paymentMethod!""}</td>
-   <td>${invoice.transactionStatus}</td>
-   <td>${invoice.totalNumberOfFiles} </td>
-   <td>${invoice.totalResources}</td>
-   <td>${invoice.totalSpaceInMb}</td>
-   <td>$${invoice.total!0}</td>
+  <#if invoice.transactionStatus.complete>
+	   <td><a href="<@s.url value="/cart/${invoice.id?c}"/>">${invoice.dateCreated}</a></td>
+	   <td>${invoice.owner.properName} </td>
+	   <td>${invoice.paymentMethod!""}</td>
+	   <td>${invoice.transactionStatus}</td>
+	   <td>${invoice.totalNumberOfFiles} </td>
+	   <td>${invoice.totalResources}</td>
+	   <td>${invoice.totalSpaceInMb}</td>
+	   <td>$${invoice.total!0}</td>
+   </#if>
 </tr>
   </#list>
 </table>

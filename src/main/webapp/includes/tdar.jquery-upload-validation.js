@@ -43,13 +43,14 @@ var FileuploadValidator;
         methods: {
             "nodupes": function(file, files) {
                 var dupes = $.grep(files, function(_file){
-                    return file.filename === _file.filename;
+                    return file.filename.toLowerCase() === _file.filename.toLowerCase();
                 });
                 return dupes.length < 2;
             },
 
             "nodupes-ext": function(file, files) {
                 var dupes = $.grep(files, function(_file) {
+                    //already lowecase
                     return file.ext === _file.ext;
                 });
                 return dupes.length < 2;
@@ -388,8 +389,8 @@ var FileuploadValidator;
         validator.addGroupMethod("same-basename", function(files) {
             var basenames = [];
             $.each(files, function(idx, file){
-                if($.inArray(file.base, basenames) === -1) {
-                    basenames.push(file.base);
+                if($.inArray(file.base.toLowerCase(), basenames) === -1) {
+                    basenames.push(file.base.toLowerCase());
                 }
             });
             return basenames.length <= 1;

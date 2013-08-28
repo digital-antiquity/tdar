@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
@@ -43,7 +44,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     private static final String LOBLAW = "loblaw";
     private static final String ROBERT = "robert";
     private static final String BOBLOBLAW_BLANK_COM = "bobloblaw@blank.com";
-    private static final String UNIVERSITY_OF_TEST = "university of test";
+    private static final String UNIVERSITY_OF_TEST = "university of TEST";
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();
@@ -190,28 +191,27 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find("#authorshipRow_0_ .institutionButton").click();
         addInstitutionWithRole(new Institution(UNIVERSITY_OF_TEST), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
 
-        find("#authorshipSection .addAnother").click();
-        addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
-        find("#authorshipRow_1_ .institutionButton").click();
+        find("#authorshipSection .addanother").click();
         addInstitutionWithRole(new Institution(UNIVERSITY_OF_TEST), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
         find("#authorshipRow_1_ .personButton").click();
+        addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
 
         
         addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[0]", ResourceCreatorRole.CONTACT);
         find("#creditRow_0_ .institutionButton").click();
         addInstitutionWithRole(new Institution("UC"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
-        find("#creditSection .addAnother").click();
-        addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[1]", ResourceCreatorRole.CONTACT);
-        find("#creditRow_1_ .institutionButton").click();
+        find("#creditSection .addanother").click();
         addInstitutionWithRole(new Institution("UC"), "creditProxies[1]", ResourceCreatorRole.CONTACT);
         find("#creditRow_1_ .personButton").click();
+        addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[1]", ResourceCreatorRole.CONTACT);
 
         submitForm();
+        logger.info(getText());
         assertTrue(getText().contains(JONES));
         assertTrue(getText().contains(INDIANA));
         assertTrue(getText().contains("UC"));
         assertTrue(getText().contains(LOBLAW));
-        assertTrue(getText().contains(UNIVERSITY_OF_TEST));
+        assertTrue(StringUtils.containsIgnoreCase(getText(), UNIVERSITY_OF_TEST));
     }
     
 @Test

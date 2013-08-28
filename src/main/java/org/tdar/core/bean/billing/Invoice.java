@@ -30,8 +30,6 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 
-import com.google.common.base.Optional;
-
 /**
  * $Id$
  * 

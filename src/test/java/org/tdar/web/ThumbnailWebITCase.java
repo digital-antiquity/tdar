@@ -119,7 +119,9 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // LOG IN, AS A USER THAT SHOULD HAVE RIGHTS TO THE RESOURCE THUMBNAIL.
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(viewPage);
-        assertTextPresent("/thumbnail");
+        // not present because not showing only one thumbnail
+        assertTextNotPresent("/thumbnail");
+        assertTextPresentInCode("/filestore/");
 
         assertAllowedToViewIRVersionIds(irFileVersionIds);
 

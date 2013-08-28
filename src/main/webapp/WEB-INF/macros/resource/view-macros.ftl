@@ -659,44 +659,44 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 
 
 -->
-<div id="myCarousel" class="image-carousel carousel slide pagination-centered">
- 
-	<div class="carousel-indicators ">
-	    <span data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</span>
-
+ <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
+	<div id="myCarousel" class="image-carousel carousel slide pagination-centered">
 	    <#if (numIndicators > 1)>
-		    <#list 1..(numIndicators -1) as x>
-                <span data-target="#myCarousel" data-slide-to="${x}">&nbsp;</span>
-		    </#list>
+			<div class="carousel-indicators ">
+			    <span data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</span>
+			    <#list 1..(numIndicators -1) as x>
+	                <span data-target="#myCarousel" data-slide-to="${x}">&nbsp;</span>
+			    </#list>
+			</div>
 	    </#if>
-	</div>
- 
-	<!-- Carousel items -->
-	<div class="carousel-inner">
-	
-	<#list resource.visibleFilesWithThumbnails as irfile>
-		<#if (irfile_index % numIndicatorsPerSection) == 0>
-		<div class="item pagination-centered <#if irfile_index == 0>active</#if>">
-			<div class="row-fluid">
+	 
+		<!-- Carousel items -->
+		<div class="carousel-inner">
+		
+		<#list resource.visibleFilesWithThumbnails as irfile>
+			<#if (irfile_index % numIndicatorsPerSection) == 0>
+			<div class="item pagination-centered <#if irfile_index == 0>active</#if>">
+				<div class="row-fluid">
+			</#if>
+				  <div class="span3">
+				  <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>">
+				  	<span class="thumbnail-center-spacing "></span>
+				  <img class="thumbnailLink img-polaroid" alt="<@altText irfile />" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" style="max-width:100%;" 
+				  	onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"  <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>/>
+				  	                </span>
+				  	</div>
+			<#if ((irfile_index + 1) % numIndicatorsPerSection) == 0 || !irfile_has_next>
+				</div><!--/row-fluid-->
+			</div><!--/item-->
+			</#if>
+		</#list> 
+		</div><!--/carousel-inner-->
+		    <#if (numIndicators > 1)>
+		<a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
+		<a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
 		</#if>
-			  <div class="span3">
-			  <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>">
-			  	<span class="thumbnail-center-spacing "></span>
-			  <img class="thumbnailLink img-polaroid" alt="<@altText irfile />" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" style="max-width:100%;" 
-			  	onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"  <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>/>
-			  	                </span>
-			  	</div>
-		<#if ((irfile_index + 1) % numIndicatorsPerSection) == 0 || !irfile_has_next>
-			</div><!--/row-fluid-->
-		</div><!--/item-->
-		</#if>
-	</#list> 
-	</div><!--/carousel-inner-->
-	    <#if (numIndicators > 1)>
-	<a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
-	<a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
-	</#if>
-</div><!--/myCarousel-->
+	</div><!--/myCarousel-->
+</#if>
  <br/>
  
 </div><!--/well-->

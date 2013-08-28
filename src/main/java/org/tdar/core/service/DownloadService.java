@@ -9,8 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -58,14 +61,18 @@ public class DownloadService {
         return "ir-archive";
     }
 
-    public void generateZipArchive(Collection<File> files, File destinationFile) throws IOException {
+    public void generateZipArchive(Map<File,String> files, File destinationFile) throws IOException {
         FileOutputStream fout = new FileOutputStream(destinationFile);
         ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(fout)); // what is apache ZipOutputStream? It's probably better.
-        for (File file : files) {
-            ZipEntry entry = new ZipEntry(file.getName());
-            zout.putNextEntry(entry);
-            FileInputStream fin = new FileInputStream(file);
-            logger.debug("adding to archive: {}", file);
+        for (Entry<File,String> entry : files.entrySet()) {
+            String filename = entry.getValue();
+            if (filename == null) {
+                filename = entry.getKey().getName();
+            }
+            ZipEntry zentry = new ZipEntry(filename);
+            zout.putNextEntry(zentry);
+            FileInputStream fin = new FileInputStream(entry.getKey());
+            logger.debug("adding to archive: {}", entry.getKey());
             IOUtils.copy(fin, zout);
             IOUtils.closeQuietly(fin);
         }
@@ -92,10 +99,9 @@ public class DownloadService {
 
         File resourceFile = null;
         String mimeType = null;
-        List<File> files = new ArrayList<>();
+        Map<File,String> files = new HashMap<>();
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
-            resourceFile = getFileToDownload(authenticatedUser, dh, irFileVersion);
-            files.add(resourceFile);
+            resourceFile = addFileToDownload(files, authenticatedUser, dh, irFileVersion);
             mimeType = irFileVersion.getMimeType();
 
             if (!irFileVersion.isDerivative()) {
@@ -115,6 +121,7 @@ public class DownloadService {
             resourceFile = File.createTempFile("archiveDownload", ".zip", TdarConfiguration.getInstance().getTempDirectory());
             generateZipArchive(files, resourceFile);
             mimeType = "application/zip";
+            dh.setInputStream(new FileInputStream(resourceFile));
         }
         } catch (Exception e) {
             throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
@@ -136,7 +143,7 @@ public class DownloadService {
         }
     }
 
-    private File getFileToDownload(Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion irFileVersion) throws TdarActionException {
+    private File addFileToDownload(Map<File,String> downloadMap, Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion irFileVersion) throws TdarActionException {
         File resourceFile = null;
         try {
             resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFileVersion);
@@ -148,10 +155,15 @@ public class DownloadService {
             throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
         }
 
+        String filename = null;
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
             try {
                 resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
+                //FIXME: for merge coverpages,  isn't this in a temp file/folder anyway?   Is it necessary to explicitly delete?
+//                DeleteOnCloseFileInputStream docis = new DeleteOnCloseFileInputStream(resourceFile);
+                filename = irFileVersion.getFilename();
+                //FIXME:  not sure if this statement was necessary (it's a side-effect anyway), and it is a contributing factor to TDAR-3311 so I commented it out.  Does this break something else?
                 dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
             } catch (PdfCoverPageGenerationException cpge) {
                 logger.trace("Error occured while merging cover page onto " + irFileVersion, cpge);
@@ -159,6 +171,7 @@ public class DownloadService {
                 logger.error("Error occured while merging cover page onto " + irFileVersion, e);
             }
         }
+        downloadMap.put(resourceFile, filename);
         return resourceFile;
     }
 

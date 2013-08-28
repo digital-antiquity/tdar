@@ -512,12 +512,15 @@ var _sortFilesAlphabetically= function() {
             if ($top == undefined) {
             	$top = $this.closest(".control-group");
             }
+            var $toggle = $(".creator-toggle-button input:hidden",$this);
             if ($(event.target).hasClass("personButton")) {
                 $(".creatorPerson", $top).removeClass("hidden");
                 $(".creatorInstitution",$top).removeClass("hidden").addClass("hidden");
+                $toggle.val("PERSON");
             } else {
                 $(".creatorPerson", $top).removeClass("hidden").addClass("hidden");
                 $(".creatorInstitution",$top).removeClass("hidden");
+                $toggle.val("INSTITUTION");
             }
         });    
         
