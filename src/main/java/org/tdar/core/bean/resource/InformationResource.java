@@ -221,25 +221,25 @@ public abstract class InformationResource extends Resource {
 
     // downward inheritance sections
     @Column(name = InvestigationType.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    private boolean inheritingInvestigationInformation;
+    private boolean inheritingInvestigationInformation = false;
     @Column(name = SiteNameKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    private boolean inheritingSiteInformation;
+    private boolean inheritingSiteInformation = false;
     @Column(name = MaterialKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    private boolean inheritingMaterialInformation;
+    private boolean inheritingMaterialInformation = false;
     @Column(name = OtherKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    private boolean inheritingOtherInformation;
+    private boolean inheritingOtherInformation = false;
     @Column(name = CultureKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    private boolean inheritingCulturalInformation;
+    private boolean inheritingCulturalInformation = false;
     @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    private boolean inheritingSpatialInformation;
+    private boolean inheritingSpatialInformation = false;
     @Column(name = TemporalKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    private boolean inheritingTemporalInformation;
+    private boolean inheritingTemporalInformation = false;
     @Column(name = "inheriting_note_information", nullable = false, columnDefinition = "boolean default FALSE")
-    private boolean inheritingNoteInformation;
+    private boolean inheritingNoteInformation = false;
     @Column(name = "inheriting_identifier_information", nullable = false, columnDefinition = "boolean default FALSE")
-    private boolean inheritingIdentifierInformation;
+    private boolean inheritingIdentifierInformation = false;
     @Column(name = "inheriting_collection_information", nullable = false, columnDefinition = "boolean default FALSE")
-    private boolean inheritingCollectionInformation;
+    private boolean inheritingCollectionInformation = false;
 
     @ManyToOne(optional = true)
     private DataTableColumn mappedDataKeyColumn;
