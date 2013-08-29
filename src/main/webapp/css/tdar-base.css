@@ -16,12 +16,12 @@
 }
 
 .responsive-desktop .span45 {
-	width:340px !Important;
+	width:340px !important;
 }
 
 
 .responsive-tablet .span45 {
-	width:250px; !Important;
+	width:250px; !important;
 }
 
 body {
@@ -1287,7 +1287,7 @@ vertical-align: middle;
 }
 
 .table-row-separator-above {
-	border-top: 2px DASHED #AAA;
+	border-top: 2px dashed #AAA;
 }
 
 .strikethrough {
@@ -1401,4 +1401,21 @@ background: #333333;
 
 tr.DELETED {
 	text-decoration: line-through;
+}
+
+/* for use in debug/console windows and such */
+.devconsole {
+    font-size: 10pt;
+    font-family: consolas, monospace;
+    line-height: 1em;
+    position: fixed;
+    bottom: 0;
+    left:0;
+    height: 300px;
+    overflow-y: scroll;
+}
+.devconsole.oldschool {
+    background-color: #010;
+    color: #0F0;
+
 }
