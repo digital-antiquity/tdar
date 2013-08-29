@@ -544,7 +544,7 @@ var _sortFilesAlphabetically= function() {
                 "focus",
                 ".collectionAutoComplete",
                 function() {
-                    TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate:true}, {permission:"ADMINISTER_GROUP"});
+                    TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate:true, showCreatePhrase: "Create a new collection"}, {permission:"ADMINISTER_GROUP"});
                 });
 
         // prevent "enter" from submitting
