@@ -83,7 +83,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      *
      */
     private static final String JS_ERRORLOG_NOSCRIPT = "NOSCRIPT";
-    private static final String JS_ERRORLOG_DELIMITER = "******************************";
+    private static final String JS_ERRORLOG_DELIMITER = "ɹǝʇıɯıןǝp";
 
     public static String formatTime(long millis) {
         Date dt = new Date(millis);
@@ -726,9 +726,30 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.startTime = startTime;
     }
 
+    /**
+     * Check the js error log for any client-side errors that preceeded to the current request.  If we detect any
+     * errors, log them at ERROR.
+     */
+    public void reportAnyJavascriptErrors() {
+        if(StringUtils.isBlank(javascriptErrorLog)) {
+            logger.trace("No javascript errors reported by the client");
+            return;
+        }
+
+        if(JS_ERRORLOG_NOSCRIPT.equals(javascriptErrorLog)) {
+            logger.error("JS error log contains {}, an indication that javascript was disabled on the client prior to the request", JS_ERRORLOG_NOSCRIPT);
+        } else {
+            String[] errors = javascriptErrorLog.split("\\Q" + JS_ERRORLOG_DELIMITER + "\\E");
+            logger.error("the client reported {} javascript errors", errors.length);
+            for(String error : errors) {
+                logger.error(error);
+            }
+        }
+    }
+
     @Override
     public void validate() {
-
+        reportAnyJavascriptErrors();
         logger.debug("validating resource {} - {}", getPersistable(), getPersistableClass().getSimpleName());
         if (getPersistable() == null) {
             logger.warn("Null being validated.");

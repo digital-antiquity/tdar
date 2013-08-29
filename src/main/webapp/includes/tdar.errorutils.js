@@ -7,10 +7,8 @@
     "use strict";
     //assume that no libraries or globals are available to us yet
     var _head =  document.getElementsByTagName('head')[0];
-    var _delim = "\n****************************";
+    var _delim = "ɹǝʇıɯıןǝp";
     var _errors = window.__errorMessages = [];
-    var MAX_ERRLOG_LENGTH = 160 * 24 * 2;  //cols, rows, pages
-
 
     function _id(id) {
         var elem = document.getElementById(id);
@@ -26,7 +24,7 @@
     }
 
     function _errorTextarea() {
-        var elem = _id('errorTextarea');
+        var elem = _id('javascriptErrorLog');
         if(!elem) {
             //TODO: create the element if it's not found (make sure it's hidden)
         }
@@ -34,13 +32,16 @@
     }
 
     function _addErr(obj) {
+        var txt = "";
+        if(_errors.length > 0) {
+            txt += _delim;
+        }
         _errors.push(obj.message);
         //console.log(_json(obj));
         var ta = _errorTextarea();
         //a page might not have a textarea (e.g. a view page) or an error event happened before it was parsed
         if(ta) {
-            var txt = ta.value;
-            txt += _delim;
+            txt = ta.value;
             for(var k in obj) {
                 txt += "\n" + k + ":"  + obj[k];
             }
@@ -67,7 +68,7 @@
         }
     }, true);
 
-    //TODO: onerror callback is not as helpful, since it isn't called for missing/unloaded files, but it might be necessary for ie8
+//TODO: onerror callback is not as helpful, since it isn't called for missing/unloaded files, but it might be necessary for ie8
 //    window.onerror = function(msg, url, line) {
 //        //ignore dom error events, they're handled by the error listener
 //        if(typeof msg !== "string") return;

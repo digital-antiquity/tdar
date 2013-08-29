@@ -28,7 +28,7 @@
         <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
         <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}"> 
 
-        <#--<script type="text/javascript" src="/includes/tdar.errorutils.js?build${common.tdarBuildId}"></script>-->
+        <script type="text/javascript" src="/includes/tdar.errorutils.js?build${common.tdarBuildId}"></script>
 		<#-- dev only
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
         -->
