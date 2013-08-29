@@ -72,6 +72,18 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
+    private String javascriptErrorLog;
+
+    /**
+     * The view layer ftl primes the js error log with "NOSCRIPT", and the js init tries to clear the log.  This way
+     * the validate() method can roughly determine if
+     * a) (if errorlog ==  'NOSCRIPT' ) javascript was disabled on the client
+     * b) (errorlog is blank) no js errors were captured (still plenty of ways js errors could have happened though)
+     * c) (errorlog has junk in it)  You've Got JS Errors!!
+     *
+     */
+    private static final String JS_ERRORLOG_NOSCRIPT = "NOSCRIPT";
+    private static final String JS_ERRORLOG_DELIMITER = "******************************";
 
     public static String formatTime(long millis) {
         Date dt = new Date(millis);
@@ -716,6 +728,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @Override
     public void validate() {
+
         logger.debug("validating resource {} - {}", getPersistable(), getPersistableClass().getSimpleName());
         if (getPersistable() == null) {
             logger.warn("Null being validated.");
@@ -801,4 +814,19 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
+    public void setJavascriptErrorLog(String errorLog) {
+        javascriptErrorLog = errorLog;
+    }
+
+    public String getJavascriptErrorLog() {
+        return javascriptErrorLog;
+    }
+
+    public String getJavascriptErrorLogDefault() {
+        return JS_ERRORLOG_NOSCRIPT;
+    }
+
+    public String getJavascriptErrorLogDelimiter() {
+        return JS_ERRORLOG_DELIMITER;
+    }
 }
