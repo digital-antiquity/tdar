@@ -28,9 +28,6 @@ import org.tdar.core.dao.Dao;
 @Component
 public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection> {
 
-    /**
-     * @param persistentClass
-     */
     public ResourceCollectionDao() {
         super(ResourceCollection.class);
     }
@@ -77,12 +74,17 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return findByCriteria(getDetachedCriteria().add(Restrictions.eq("type", CollectionType.SHARED)));
     }
 
-    public ResourceCollection findCollectionsWithName(Person user, ResourceCollection collection) {
+    public ResourceCollection findCollectionWithName(Person user, ResourceCollection collection, GeneralPermissions permission) {
         Query query = getCurrentSession().getNamedQuery(QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);// QUERY_PROJECT_EDITABLE
         query.setLong("userId", user.getId());
         query.setString("name", collection.getName());
+        //FIXME: move all this 'permission-1' hoo-ha from the caller to the query
+        query.setLong("effectivePermission", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() -1);
         @SuppressWarnings("unchecked")
         List<ResourceCollection> list = (List<ResourceCollection>) query.list();
+        if(list.size() > 1 ) {
+            logger.error("query found more than one resource collection: user:{}, coll:{}", user, collection);
+        }
         if (CollectionUtils.isNotEmpty(list)) {
             return list.get(0);
         }

@@ -11,10 +11,12 @@
         <property name="hibernate.connection.username">tdar</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <mapping package="org.tdar.core.bean.resource"/>
-        <!--
-        <mapping class="org.tdar.core.bean.resource.dataintegration.DataValueOntologyNodeMapping"/>
-        <mapping class="org.tdar.core.bean.resource.datatable.DataTableColumn"/>
-        <mapping class="org.tdar.core.bean.resource.OntologyNode"/>
-        -->
+        <mapping package="org.tdar.core.bean.entity" />
+        <mapping package="org.tdar.core.bean.resource.datatable" />
+        <mapping package="org.tdar.core.bean.resource.sensory" />
+        <mapping package="org.tdar.core.bean.keyword" />
+        <mapping package="org.tdar.core.bean.citation" />
+        <mapping package="org.tdar.core.bean.collection" />
+        <mapping package="org.tdar.core.bean.coverage" />
     </session-factory>
 </hibernate-configuration>
