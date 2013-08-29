@@ -50,7 +50,9 @@ $(function(){
 <#assign prefix="${resource.resourceType.label?lower_case}" />
 <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
 
-	<#if local_.topSection?? && local_.topSection?is_macro>
+    <textarea style="display:none" name="javascriptErrorLog"  class="devconsole oldschool input-block-level" rows="10" cols="20" id="errorTextarea" maxlength="${(160 * 80 * 2)?c}"></textarea>
+
+    <#if local_.topSection?? && local_.topSection?is_macro>
 		<@local_.topSection />
 	</#if>
 
@@ -249,7 +251,6 @@ $(function(){
     <#else>
       <@edit.submit fileReminder=false />
     </#if>
-
 </@s.form>
 
 <@edit.asyncUploadTemplates />
@@ -341,7 +342,6 @@ TDAR.inheritance.applyInheritance(formSelector);
 });
 </#noescape>
 </script>
-  
 
 </body>
 </#escape>
