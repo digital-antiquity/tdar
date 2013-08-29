@@ -49,7 +49,7 @@ $(function(){
 <#assign fileReminder=true />
 <#assign prefix="${resource.resourceType.label?lower_case}" />
 <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
-    <textarea style="display:none" name="javascriptErrorLog"  id="javascriptErrorLog" class="devconsole oldschool input-block-level" rows="10" cols="20" id="errorTextarea" maxlength="${(160 * 80 * 2)?c}">${javascriptErrorLogDefault!'NOSCRIPT'}</textarea>
+    <textarea style="display:none" name="javascriptErrorLog"  id="javascriptErrorLog" class="devconsole oldschool input-block-level" rows="10" cols="20" maxlength="${(160 * 80 * 2)?c}">${javascriptErrorLogDefault!'NOSCRIPT'}</textarea>
     <script>document.getElementById('javascriptErrorLog').value="";</script>
     <#if local_.topSection?? && local_.topSection?is_macro>
 		<@local_.topSection />
