@@ -7,6 +7,7 @@
     "use strict";
     //assume that no libraries or globals are available to us yet
     var _head =  document.getElementsByTagName('head')[0];
+    if(typeof(TDAR_jsErrorDelim)==='undefined') TDAR_jsErrorDelim = "\r\n";
     var _delim = TDAR_jsErrorDelim;
     var _errors = window.__errorMessages = [];
 
