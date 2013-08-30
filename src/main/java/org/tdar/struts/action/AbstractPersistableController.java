@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -72,18 +71,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
-    private String javascriptErrorLog;
-
-    /**
-     * The view layer ftl primes the js error log with "NOSCRIPT", and the js init tries to clear the log.  This way
-     * the validate() method can roughly determine if
-     * a) (if errorlog ==  'NOSCRIPT' ) javascript was disabled on the client
-     * b) (errorlog is blank) no js errors were captured (still plenty of ways js errors could have happened though)
-     * c) (errorlog has junk in it)  You've Got JS Errors!!
-     *
-     */
-    private static final String JS_ERRORLOG_NOSCRIPT = "NOSCRIPT";
-    private static final String JS_ERRORLOG_DELIMITER = "ɹǝʇıɯıןǝp";
 
     public static String formatTime(long millis) {
         Date dt = new Date(millis);
@@ -726,27 +713,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.startTime = startTime;
     }
 
-    /**
-     * Check the js error log for any client-side errors that preceeded to the current request.  If we detect any
-     * errors, log them at ERROR.
-     */
-    public void reportAnyJavascriptErrors() {
-        if(StringUtils.isBlank(javascriptErrorLog)) {
-            logger.trace("No javascript errors reported by the client");
-            return;
-        }
-
-        if(JS_ERRORLOG_NOSCRIPT.equals(javascriptErrorLog)) {
-            logger.error("JS error log contains {}, an indication that javascript was disabled on the client prior to the request", JS_ERRORLOG_NOSCRIPT);
-        } else {
-            String[] errors = javascriptErrorLog.split("\\Q" + JS_ERRORLOG_DELIMITER + "\\E");
-            logger.error("the client reported {} javascript errors", errors.length);
-            for(String error : errors) {
-                logger.error(error);
-            }
-        }
-    }
-
     @Override
     public void validate() {
         reportAnyJavascriptErrors();
@@ -835,19 +801,4 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
-    public void setJavascriptErrorLog(String errorLog) {
-        javascriptErrorLog = errorLog;
-    }
-
-    public String getJavascriptErrorLog() {
-        return javascriptErrorLog;
-    }
-
-    public String getJavascriptErrorLogDefault() {
-        return JS_ERRORLOG_NOSCRIPT;
-    }
-
-    public String getJavascriptErrorLogDelimiter() {
-        return JS_ERRORLOG_DELIMITER;
-    }
 }

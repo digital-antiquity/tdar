@@ -7,7 +7,7 @@
     "use strict";
     //assume that no libraries or globals are available to us yet
     var _head =  document.getElementsByTagName('head')[0];
-    var _delim = "ɹǝʇıɯıןǝp";
+    var _delim = TDAR_jsErrorDelim;
     var _errors = window.__errorMessages = [];
 
     function _id(id) {
