@@ -11,6 +11,13 @@
     var _delim = TDAR_jsErrorDelim;
     var _errors = window.__errorMessages = [];
 
+    var _start = Date.now();
+
+    //no now() in ie8
+    function _now() {
+        return (new Date()).getTime();
+    }
+
     function _id(id) {
         var elem = document.getElementById(id);
         return elem;
@@ -37,6 +44,8 @@
         if(_errors.length > 0) {
             txt += _delim;
         }
+        obj.time = ((_now() - _start) / 1000).toFixed(3) + 's';
+
         _errors.push(obj.message);
         //console.log(_json(obj));
         var ta = _errorTextarea();
