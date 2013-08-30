@@ -20,6 +20,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.workflow.WorkflowContextService;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.tasks.Task;
@@ -140,6 +141,10 @@ public class WorkflowContext implements Serializable {
         return processedSuccessfully;
     }
 
+    /**
+     * Do not call this! it is used by the Workflow instance when processing tasks, and any setting made by the tasks will be overwritten.
+     * @see Workflow#run(WorkflowContext)
+     */
     public void setProcessedSuccessfully(boolean processed) {
         this.processedSuccessfully = processed;
     }
@@ -177,6 +182,13 @@ public class WorkflowContext implements Serializable {
         return this.targetDatabase;
     }
 
+    /**
+     * Do not use this!
+     * Keeps a history of the exceptions that are thrown in the body of the task run method.
+     * @see Workflow#run(WorkflowContext)
+     * @see Task#run()
+     * @param e The exception that has brought the Task#run to an untimely demise..
+     */
     public void addException(Throwable e) {
         int maxDepth = 4;
         Throwable thrw = e;
@@ -234,6 +246,12 @@ public class WorkflowContext implements Serializable {
         return isErrorFatal;
     }
 
+    /**
+     * A subtle one. Your task might have thrown an exception, but was it fatal? ie: was it an error or a warning? If it was an error best set this to true,
+     * otherwise don't bother.
+     * @see WorkflowContextService#processContext(WorkflowContext)
+     * @param isErrorFatal If true, then there was an error that should be reported as an error, not a warning...
+     */
     public void setErrorFatal(boolean isErrorFatal) {
         this.isErrorFatal = isErrorFatal;
     }

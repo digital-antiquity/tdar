@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.WorkflowContext;
 
 /**
@@ -28,8 +29,10 @@ public interface Task extends Serializable {
 
     public WorkflowContext getWorkflowContext();
 
-    /*
-     * Run method called by the task workflow process
+    /**
+     * Run method called by the task workflow process. The implicit contract is that if the task exits abnormally, it will throw an exception during
+     * the execution of this method.
+     * @see Workflow#run(WorkflowContext)
      */
     public void run() throws Exception;
 
