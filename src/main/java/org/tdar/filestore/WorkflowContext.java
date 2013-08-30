@@ -183,8 +183,9 @@ public class WorkflowContext implements Serializable {
     }
 
     /**
-     * Do not use this!
-     * Keeps a history of the exceptions that are thrown in the body of the task run method.
+     * Keeps a history of the exceptions that are thrown by the task run method if it exits abnormally.
+     * If you have an exception you want recorded during that run, that isn't thrown out of the run, then add it using this method! 
+     * That sure beats calling getExceptions().add(...), and makes for a consistent interface.
      * @see Workflow#run(WorkflowContext)
      * @see Task#run()
      * @param e The exception that has brought the Task#run to an untimely demise..
@@ -206,6 +207,11 @@ public class WorkflowContext implements Serializable {
         this.getExceptions().add(new ExceptionWrapper(sb.toString(), ExceptionUtils.getFullStackTrace(e)));
     }
 
+    /**
+     * If you find yourself calling this to add an exception, <b>first ask: why aren't I using addException()?</b>
+     * @see #addException(Throwable)
+     * @return the exceptions recorded during the executions of the tasks.
+     */
     @XmlElementWrapper(name = "exceptions")
     @XmlElement(name = "exception")
     public List<ExceptionWrapper> getExceptions() {
