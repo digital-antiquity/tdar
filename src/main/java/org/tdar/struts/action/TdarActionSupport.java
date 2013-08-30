@@ -246,10 +246,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getSiteTypesHelpURL();
     }
 
-    public String getMobileImportURL() {
-        return getTdarConfiguration().getMobileImportURL();
-    }
-
     public String getGoogleMapsApiKey() {
         return getTdarConfiguration().getGoogleMapsApiKey();
     }
