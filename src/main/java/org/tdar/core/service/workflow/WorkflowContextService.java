@@ -164,6 +164,7 @@ public class WorkflowContextService {
         // ctx.setInformationResourceFileId(version.getInformationResourceFileId());
         ctx.setWorkingDirectory(TdarConfiguration.getInstance().getTempDirectory());
         ctx.setXmlService(xmlService);
+        ctx.setGenericDaoService(genericDao);
         w.initializeWorkflowContext(ctx, versions); // handle any special bits here
         try {
             if (logger.isTraceEnabled()) {

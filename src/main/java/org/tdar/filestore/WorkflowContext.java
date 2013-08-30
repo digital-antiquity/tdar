@@ -19,6 +19,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.workflow.WorkflowContextService;
 import org.tdar.core.service.workflow.workflows.Workflow;
@@ -45,16 +46,18 @@ public class WorkflowContext implements Serializable {
     private boolean processedSuccessfully = false;
     private ResourceType resourceType;
     private Class<? extends Workflow> workflowClass;
-    private List<String> dataTablesToCleanup = new ArrayList<String>();
+    private List<String> dataTablesToCleanup = new ArrayList<>();
     private transient Resource transientResource;
 
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
     private transient XmlService xmlService;
     private transient TargetDatabase targetDatabase;
+    private transient GenericDao genericDaoService;
 
-    private List<ExceptionWrapper> exceptions = new ArrayList<ExceptionWrapper>();
+    private List<ExceptionWrapper> exceptions = new ArrayList<>();
 
     private boolean isErrorFatal;
+
 
     public void logTask(Task t, StringBuilder message) {
 
@@ -260,6 +263,15 @@ public class WorkflowContext implements Serializable {
      */
     public void setErrorFatal(boolean isErrorFatal) {
         this.isErrorFatal = isErrorFatal;
+    }
+
+    @XmlTransient
+    public GenericDao getGenericDaoService() {
+        return genericDaoService;
+    }
+    
+    public void setGenericDaoService(GenericDao genericDaoService) {
+        this.genericDaoService = genericDaoService;
     }
 
 }
