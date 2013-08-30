@@ -1119,9 +1119,9 @@ this bit of freemarker is voodoo:
     <#return (authenticatedUser.contributor)!true >
 </#function>
 
-<macro jsErrorLog>
+<#macro jsErrorLog>
     <textarea style="display:none" name="javascriptErrorLog"  id="javascriptErrorLog" class="devconsole oldschool input-block-level" rows="10" cols="20" maxlength="${(160 * 80 * 2)?c}">${javascriptErrorLogDefault!'NOSCRIPT'}</textarea>
     <script>document.getElementById('javascriptErrorLog').value="";</script>
-</macro>
+</#macro>
 
 </#escape>
