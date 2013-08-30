@@ -661,4 +661,11 @@ public class TdarConfiguration {
         return assistant.getIntProperty("creator.analytics.days.to.process", 10);
     }
 
+    /**
+     * @return the directory that the kettle ETL tool will scan for input. If not defined will return the empty string.
+     */
+    public String getKettleInputPath() {
+        return assistant.getStringProperty("kettle.input.path", "");
+    }
+
 }
