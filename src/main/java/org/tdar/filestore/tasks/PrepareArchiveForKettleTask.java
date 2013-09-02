@@ -97,8 +97,6 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      * <li>That original archive resource should tell us if this task is to be run, or already has been run.
      * <li>We need to be able to access the temp directory to make copies of files.
      * </ul>
-     * <p>Note that the unit test for the preconditions assumes they run in the sequence below. Change the sequence and you'll have to modify the unit test.
-     * Not ideal.
      * <p>Postconditions:
      * <ul>
      * <li>There will be a control file written to disk for Kettle to pick up

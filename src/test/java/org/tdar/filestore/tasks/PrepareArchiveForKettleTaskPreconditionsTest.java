@@ -1,28 +1,28 @@
 package org.tdar.filestore.tasks;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.nio.file.Files;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
 /**
- * A test to check that the preconditions work: although other classes are used, it's not an integration test, as no database input/output is performed
- * and no file input or output is performed either. It simply checks the preconditions.
+ * A test to check that the preconditions work: although other classes are used, it's not an integration test, as no database or 
+ * file input/output is performed. It simply checks the preconditions... 
  * @author Martin Paulo
  */
 public class PrepareArchiveForKettleTaskPreconditionsTest {
 
     PrepareArchiveForKettleTask task;
-
+    Archive archive;
+    
     private static GenericDao getDaoThatWillReturn(final Archive archive) {
         GenericDao dao = new GenericDao () {
             @SuppressWarnings("unchecked")
@@ -40,13 +40,21 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
         ctx.setGenericDao(getDaoThatWillReturn(archive));
         return ctx;
     }
+    
+    @Before
+    public void prepareTask() {
+        // this will get the task through all the preconditions bar the "has files to work with"
+        task = new PrepareArchiveForKettleTask();
+        archive = new Archive();
+        archive.setDoImportContent(true);
+        task.setKettleInputPath(System.getProperty("java.io.tmpdir"));
+        WorkflowContext contextForArchive = getContextForArchive(archive);
+        contextForArchive.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
+        task.setWorkflowContext(contextForArchive);    }
 
     @Test
     public void mustBeArchiveResourceType() {
-        WorkflowContext ctx = new WorkflowContext();
-        ctx.setResourceType(ResourceType.DOCUMENT);
-        task = new PrepareArchiveForKettleTask();
-        task.setWorkflowContext(ctx);
+        task.getWorkflowContext().setResourceType(ResourceType.DOCUMENT);
         try {
             task.run();
         } catch (Exception e) {
@@ -57,12 +65,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     
     @Test
     public void mustHaveNonNullDao() {
-        Archive archive = null;
-        task = new PrepareArchiveForKettleTask();
-        WorkflowContext ctx = new WorkflowContext();
-        ctx.setResourceType(ResourceType.ARCHIVE);
-        ctx.setGenericDao(null);
-        task.setWorkflowContext(ctx);
+        task.getWorkflowContext().setGenericDao(null);
         try {
             task.run();
         } catch (Exception e) {
@@ -73,9 +76,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     
     @Test
     public void mustBeSetToImportContent() {
-        final Archive archive = new Archive();
-        task = new PrepareArchiveForKettleTask();
-        task.setWorkflowContext(getContextForArchive(archive));
+        archive.setDoImportContent(false);
         try {
             task.run();
         } catch (Exception e) {
@@ -87,26 +88,20 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
 
     @Test
     public void mustNotHavePerformedImport() {
-        final Archive archive = new Archive();
         archive.setImportPeformed(true);
-        archive.setDoImportContent(true);
-        task = new PrepareArchiveForKettleTask();
-        task.setWorkflowContext(getContextForArchive(archive));
         try {
             task.run();
         } catch (Exception e) {
             assertTrue("Should not be here: " + e.getMessage(), false);
         }
+        // these should not have been changed by test
         assertTrue(archive.isImportPeformed());
-        assertTrue(archive.isDoImportContent()); // should not have been changed by test
+        assertTrue(archive.isDoImportContent());
     }
    
     @Test
     public void mustHaveValidControlFileDir() {
-        final Archive archive = new Archive();
-        archive.setDoImportContent(true);
-        task = new PrepareArchiveForKettleTask();
-        task.setWorkflowContext(getContextForArchive(archive));
+        task.setKettleInputPath("");
         try {
             task.run();
         } catch (Exception e) {
@@ -117,13 +112,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
 
     @Test
     public void mustHaveValidCopyFileDir() {
-        final Archive archive = new Archive();
-        archive.setDoImportContent(true);
-        task = new PrepareArchiveForKettleTask();
-        task.setKettleInputPath(System.getProperty("java.io.tmpdir"));
-        final WorkflowContext contextForArchive = getContextForArchive(archive);
-        contextForArchive.setWorkingDirectory(new File(""));
-        task.setWorkflowContext(contextForArchive);
+        task.getWorkflowContext().setWorkingDirectory(new File(""));
         try {
             task.run();
         } catch (Exception e) {
@@ -134,13 +123,6 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     
     @Test
     public void mustHaveAFileToWorkWith() {
-        final Archive archive = new Archive();
-        archive.setDoImportContent(true);
-        task = new PrepareArchiveForKettleTask();
-        task.setKettleInputPath(System.getProperty("java.io.tmpdir"));
-        final WorkflowContext contextForArchive = getContextForArchive(archive);
-        contextForArchive.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
-        task.setWorkflowContext(contextForArchive);
         try {
             task.run();
         } catch (Exception e) {
