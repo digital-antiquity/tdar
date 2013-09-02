@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.workflow.workflows.Workflow.BaseWorkflow;
+import org.tdar.filestore.tasks.PrepareArchiveForKettleTask;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
 import org.tdar.filestore.tasks.ListArchiveTask;
 
@@ -26,6 +27,7 @@ public class FileArchiveWorkflow extends BaseWorkflow {
         }
 
         addTask(ListArchiveTask.class, WorkflowPhase.PRE_PROCESS);
+        addTask(PrepareArchiveForKettleTask.class, WorkflowPhase.POST_PROCESS);
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
     }
 

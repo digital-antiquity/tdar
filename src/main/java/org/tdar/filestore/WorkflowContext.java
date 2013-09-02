@@ -52,7 +52,7 @@ public class WorkflowContext implements Serializable {
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
     private transient XmlService xmlService;
     private transient TargetDatabase targetDatabase;
-    private transient GenericDao genericDaoService;
+    private transient GenericDao genericDao;
 
     private List<ExceptionWrapper> exceptions = new ArrayList<>();
 
@@ -266,12 +266,12 @@ public class WorkflowContext implements Serializable {
     }
 
     @XmlTransient
-    public GenericDao getGenericDaoService() {
-        return genericDaoService;
+    public GenericDao getGenericDao() {
+        return genericDao;
     }
     
-    public void setGenericDaoService(GenericDao genericDaoService) {
-        this.genericDaoService = genericDaoService;
+    public void setGenericDao(GenericDao genericDaoService) {
+        this.genericDao = genericDaoService;
     }
 
 }
