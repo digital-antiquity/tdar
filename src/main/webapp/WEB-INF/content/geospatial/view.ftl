@@ -12,12 +12,11 @@
   </#if>
 	
   <#if resource.spatialReferenceSystem??>
-      <@view.kvp key="Spatial Reference System &amp; Projection" val=resource.spatialReferenceSystem />
+      <@view.kvp key="Spatial Reference System & Projection" val=resource.spatialReferenceSystem />
   </#if>
 
   <#if resource.currentnessUpdateNotes??>
-	  <p><strong>Currentness &amp; Update Notes</strong></p>
-  <p>${resource.currentnessUpdateNotes}</p>
+      <@view.kvp key="Currentness & Update Notes" val=resource.currentnessUpdateNotes />
   </#if>
 	
 </#macro>
