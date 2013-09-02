@@ -45,8 +45,8 @@ $(document).ready(function() {
         <button type="submit" class="button btn btn-primary input-small submitButton" name="_tdar.Login" id="btnLogin">Login</button>
         <div class="pull-right">
             <div class="btn-group">
-                <a class="btn " href='<@s.url value="/account/new"/>'>Register </a> 
-                <a class="btn " href='<@s.url value="/account/recover"/>'>Reset Password</a>
+                <a class="btn " href='<@s.url value="/account/new"/>' rel="nofollow">Register </a> 
+                <a class="btn " href='<@s.url value="/account/recover"/>' rel="nofollow">Reset Password</a>
             </div>
         </div>
     </div>

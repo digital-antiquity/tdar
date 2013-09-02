@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -164,6 +163,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (isPostRequest() && DELETE.equals(getDelete())) {
             try {
                 checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
+                checkForNonContributorCrud();
                 if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
                     addActionError("cannot delete item because references still exist");
                     return CONFIRM;
@@ -332,15 +332,31 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (!isAbleToCreateBillableItem()) {
             return BILLING;
         }
-        
+
         //FIXME:make this a preference...
         if (getPersistable() instanceof HasStatus && isEditor() && !isAdministrator()) {
             ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
         }
         
         checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
+        checkForNonContributorCrud();
         logAction("CREATING");
         return loadAddMetadata();
+    }
+
+    /**
+     * The 'contributor' property only affects which menu items we show (for now).  Let non-contributors perform
+     * CRUD actions, but send them a reminder about the 'contributor' option in the prefs page
+     * 
+     * FIXME: this needs to be centralized, as it's not going to be caught in all of the location it exists in ... eg: editColumnMetadata ...
+     */
+    protected void checkForNonContributorCrud() {
+        if(!getAuthenticatedUser().getContributor()) {
+            //FIXME: The html here could benefit from link to the prefs page.  Devise a way to hint to the view-layer that certain messages can be decorated and/or replaced.
+            addActionMessage("The system has hidden the menu options for creating and editing records based on your " +
+                    "current preferences.  You can change this setting by going to your account page and enabling the " +
+                    "\"contributor\" option.");
+        }
     }
 
     protected boolean isAbleToCreateBillableItem() {
@@ -359,7 +375,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public String edit() throws TdarActionException {
         // ensureValidEditRequest();
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-
+        checkForNonContributorCrud();
         logAction("EDITING");
         return loadEditMetadata();
     }
@@ -367,19 +383,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public String loadEditMetadata() throws TdarActionException {
         return loadViewMetadata();
     }
-
-    // @SuppressWarnings("unused")
-    // private void ensureValidEditRequest() throws TdarActionException {
-    // // first make sure the user is even authenticated
-    // if (!getSessionData().isAuthenticated()) {
-    // abort(StatusCode.OK.withResultName(LOGIN), "Unauthenticated edit request.");
-    // }
-    // if (!isEditable()) {
-    // // we performed an authz check that failed (not a structural issue with the persistable)
-    // abort(StatusCode.UNAUTHORIZED,
-    // String.format("You do not have permissions to edit %s (id: %s)", getPersistableClass().getSimpleName(), getPersistable().getId()));
-    // }
-    // }
 
     public enum RequestType {
         EDIT(true),
@@ -414,6 +417,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @throws TdarActionException
      *             -- this will contain the return status, if any SUCCESS vs. INVALID, INPUT, ETC
      */
+    //FIXME: revies and consolidate status codes where possible
     protected void checkValidRequest(RequestType userAction, CrudAction<P> action, InternalTdarRights adminRightsCheck)
             throws TdarActionException {
         // first check the session
@@ -442,6 +446,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     if (action.isCreatable()) {
                         return;
                     }
+                //(intentional fall-through)
                 case EDIT:
                 default:
                     if (persistable == null) {
@@ -452,7 +457,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                         abort(StatusCode.BAD_REQUEST, String.format(
                                 "Sorry, the system does not recognize this type of request on a %s ", persistable.getClass().getSimpleName()));
                     }
-
             }
         }
 
@@ -711,6 +715,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @Override
     public void validate() {
+        reportAnyJavascriptErrors();
         logger.debug("validating resource {} - {}", getPersistable(), getPersistableClass().getSimpleName());
         if (getPersistable() == null) {
             logger.warn("Null being validated.");

@@ -6,14 +6,20 @@
 (function(){
     "use strict";
     //assume that no libraries or globals are available to us yet
-    var _errors = [];
     var _head =  document.getElementsByTagName('head')[0];
-    var _delim = "\n****************************";
-    var _errs = window.__errorMessages;
+    if(typeof(TDAR_jsErrorDelim)==='undefined') TDAR_jsErrorDelim = "\r\n";
+    var _delim = TDAR_jsErrorDelim;
+    var _errors = window.__errorMessages = [];
 
+    var _start = Date.now();
+
+    //no now() in ie8
+    function _now() {
+        return (new Date()).getTime();
+    }
 
     function _id(id) {
-        var elem = document.getElement(id);
+        var elem = document.getElementById(id);
         return elem;
     }
 
@@ -26,7 +32,7 @@
     }
 
     function _errorTextarea() {
-        var elem = _id('errorTextarea');
+        var elem = _id('javascriptErrorLog');
         if(!elem) {
             //TODO: create the element if it's not found (make sure it's hidden)
         }
@@ -34,14 +40,22 @@
     }
 
     function _addErr(obj) {
-        _errs.push(obj.message); //todo: remove this line after you've updated selenium tests
-        console.log(_json(obj));
+        var txt = "";
+        if(_errors.length > 0) {
+            txt += _delim;
+        }
+        obj.time = ((_now() - _start) / 1000).toFixed(3) + 's';
+
+        _errors.push(obj.message);
+        //console.log(_json(obj));
         var ta = _errorTextarea();
-        if(!ta) return;
-        var txt = _delim;
-        for(var k in obj) {
-            txt += "\n" + k + ":";
-            txt += "\n" + obj[k];
+        //a page might not have a textarea (e.g. a view page) or an error event happened before it was parsed
+        if(ta) {
+            txt = ta.value;
+            for(var k in obj) {
+                txt += "\n" + k + ":"  + obj[k];
+            }
+            ta.value = txt;
         }
     }
 
@@ -49,46 +63,31 @@
         var evt = e || window.event;
         var tgt = evt.target;
         var obj = {
-            message: evt.message || "failure in script",
-            url: tgt.outerHTML,
-            lineno: tgt.lineno
+            message: "errorEvent::" +  (evt.message || "(no error message)"),
+            filename: evt.filename || "(filename hidden)",
+            line: evt.lineno
         };
-        _addErr(obj);
+
+        if(tgt !== window) {
+            obj.tag = tgt.outerHTML;
+        }
+        if(!!tgt.tagName && tgt.tagName !== "SCRIPT") {
+            //TODO: not a script issue (e.g. missing css or image), put this in another global error list
+        } else {
+            _addErr(obj);
+        }
     }, true);
 
-
-    window.onerror = function(msg, url, line) {
-        //ignore dom error events, they're handled by the error listener
-        if(typeof msg !== "string") return;
-        _addErr({
-            message: msg,
-            url: url,
-            lineno: line
-        });
-    }
-
+//TODO: onerror callback is not as helpful, since it isn't called for missing/unloaded files, but it might be necessary for ie8
 //    window.onerror = function(msg, url, line) {
-//        console.error("You've Got Errors!");
-//        console.error(msg, url, line);
-//        //is msg really an  "error" Event? (e.g. script failed to load/parse)
-//        if(typeof msg === "object" && (typeof JSON !== "undefined") ) {
-//            if(!msg.target) {
-//                msg.target = {src: "na", text:"na"};
-//            }
-//            var t = msg.target;
-//            errs.push("msg:" + msg.message + "\n src:" + t.src  + "\n text:" + t.text);
+//        //ignore dom error events, they're handled by the error listener
+//        if(typeof msg !== "string") return;
 //
-//            if(msg.stopPropagation) msg.stopPropagation();
-//
-//            //just a regular error - capture msg, url, line#
-//        } else {
-//            errs.push(msg + " url:" + url + " line:" + line);
-//            console.log("logged error message");
-//            return false;
-//        }
-//    };
-
-
-
+//        _addErr({
+//            message: "onerror::" + msg,
+//            filename: url,
+//            line: line
+//        });
+//    }
 })();
 

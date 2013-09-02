@@ -29,7 +29,7 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     public Map<Date, Map<StatisticType, Long>> getResourceStatistics() {
         List<StatisticType> types = Arrays.asList(StatisticType.NUM_CODING_SHEET, StatisticType.NUM_DATASET, StatisticType.NUM_DOCUMENT,
                 StatisticType.NUM_IMAGE, StatisticType.NUM_ONTOLOGY, StatisticType.NUM_PROJECT, StatisticType.NUM_SENSORY_DATA, StatisticType.NUM_VIDEO,
-                StatisticType.NUM_ARCHIVES);
+                StatisticType.NUM_ARCHIVES, StatisticType.NUM_GIS);
         return getDao().getStatistics(startDate, new Date(), types.toArray(new StatisticType[0]));
     }
 
@@ -63,7 +63,8 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
 
     public Map<Date, Map<StatisticType, Long>> getResourceStatisticsWithFiles() {
         List<StatisticType> types = Arrays.asList(StatisticType.NUM_CODING_SHEET_WITH_FILES, StatisticType.NUM_DATASET_WITH_FILES, StatisticType.NUM_DOCUMENT_WITH_FILES,
-                StatisticType.NUM_IMAGE_WITH_FILES, StatisticType.NUM_ONTOLOGY_WITH_FILES, StatisticType.NUM_PROJECT, StatisticType.NUM_SENSORY_DATA_WITH_FILES, StatisticType.NUM_VIDEO_WITH_FILES);
+                StatisticType.NUM_IMAGE_WITH_FILES, StatisticType.NUM_ONTOLOGY_WITH_FILES, StatisticType.NUM_PROJECT, StatisticType.NUM_SENSORY_DATA_WITH_FILES, StatisticType.NUM_VIDEO_WITH_FILES,
+                 StatisticType.NUM_GIS_WITH_FILES, StatisticType.NUM_ARCHIVES_WITH_FILES);
         return getDao().getStatistics(startDate, new Date(), types.toArray(new StatisticType[0]));
     }
 

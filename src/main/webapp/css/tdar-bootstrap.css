@@ -783,6 +783,10 @@ aside.tdar-icon:before {
 	display: inline-block;
 }
 
+pull-left search-list-checkedbox-grey {
+    padding-right:4px;
+}
+
 .search-list-checkedbox-grey {
 	background: url(/images/r4/resource-types-large.gif) -30px -2578px
 		no-repeat;

@@ -33,6 +33,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -314,7 +315,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         for (ResourceCollection collection : incoming_) {
             ResourceCollection collectionToAdd = null;
             if (collection.isTransient()) {
-                ResourceCollection potential = getDao().findCollectionsWithName(authenticatedUser, collection);
+                ResourceCollection potential = getDao().findCollectionWithName(authenticatedUser, collection, GeneralPermissions.ADMINISTER_GROUP);
                 if (potential != null) {
                     collectionToAdd = potential;
                 } else {
@@ -417,7 +418,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     public List<AuthorizedUser> getAuthorizedUsersForCollection(ResourceCollection persistable, Person authenticatedUser) {
         List<AuthorizedUser> users = new ArrayList<>(persistable.getAuthorizedUsers());
-        applyTransientEnabledPermission(authenticatedUser, users, !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, persistable));
+        applyTransientEnabledPermission(authenticatedUser, users, authenticationAndAuthorizationService.canEditCollection(authenticatedUser, persistable));
         return users;
     }
 

@@ -1002,6 +1002,8 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
+    @XmlTransient
+    @JSONTransient
     public List<InformationResourceFile> getNonDeletedFiles() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irf : getInformationResourceFiles()) {
@@ -1052,6 +1054,8 @@ public abstract class InformationResource extends Resource {
 
     };
 
+    @XmlTransient
+    @JSONTransient
     public List<InformationResourceFile> getFilesWithProcessingErrors() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile file : getInformationResourceFiles()) {
@@ -1062,6 +1066,8 @@ public abstract class InformationResource extends Resource {
         return files;
     }
 
+    @XmlTransient
+    @JSONTransient
     public List<InformationResourceFile> getFilesWithFatalProcessingErrors() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile file : getInformationResourceFiles()) {

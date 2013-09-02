@@ -370,7 +370,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                            prefix="authorizedUsers" includeRights=true includeRepeatRow=false />
                     </div>
                     <div class="span1">
-                        <@nav.clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=disabled />
+                        <@nav.clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=!authorizedUser.enabled />
                     </div>
                 </div>
             </#if>

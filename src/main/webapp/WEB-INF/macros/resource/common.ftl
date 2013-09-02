@@ -112,9 +112,9 @@ TDAR.uri = function(path) {
 <#macro loginButton class="">
     <#local _current = (currentUrl!'/') >
     <#if _current == '/' || currentUrl?starts_with('/login')>
-        <a class="${class}" href="/login">Log In</a>
+        <a class="${class}" href="/login" rel="nofollow">Log In</a>
     <#else>
-        <a class="${class}" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>">Log In</a>
+        <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>">Log In</a>
     </#if>
 </#macro>
 
@@ -865,7 +865,7 @@ this bit of freemarker is voodoo:
     <ul class="subnav-rht hidden-phone hidden-tablet">
  </#if>
         <#if !(authenticatedUser??) > 
-                <li><a href="<@s.url value="/account/new" />" class="button">Sign Up</a></li>
+                <li><a href="<@s.url value="/account/new" />" class="button" rel="nofollow">Sign Up</a></li>
                 <li><@loginButton class="button" /></li>
         <#else>
                 <li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>
@@ -1114,5 +1114,14 @@ this bit of freemarker is voodoo:
   </ul>
 </#macro>
 
+<#function showContributorMenuItems>
+    <#-- show the 'upload' (even when logged out)  unless user.contributor flag is off -->
+    <#return (authenticatedUser.contributor)!true >
+</#function>
+
+<#macro jsErrorLog>
+    <textarea style="display:none" name="javascriptErrorLog"  id="javascriptErrorLog" class="devconsole oldschool input-block-level" rows="10" cols="20" maxlength="${(160 * 80 * 2)?c}">${javascriptErrorLogDefault!'NOSCRIPT'}</textarea>
+    <script>document.getElementById('javascriptErrorLog').value="";</script>
+</#macro>
 
 </#escape>

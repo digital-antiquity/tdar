@@ -27,7 +27,7 @@
         <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
         <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
         <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}"> 
-
+		<script>		TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
         <script type="text/javascript" src="/includes/tdar.errorutils.js?build${common.tdarBuildId}"></script>
 		<#-- dev only
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
@@ -36,9 +36,9 @@
 
 		<link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
 		<#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
-		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet" media="print">
+		<link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet" media="print">
 
-        <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'>
+        <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'>
         <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet">
         <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-print.css"/>" rel="stylesheet" media="print">        
         <#if qunit>
@@ -119,7 +119,7 @@
                     <ul class="hidden-phone-portrait">
                         <#include "${themeDir}/nav-items.dec" />
                         <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
-                        <li class="button hidden-phone"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li>
+                        <#if common.showContributorMenuItems()><li class="button hidden-phone"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li></#if>
                         <li>
                         <#if bodyid != 'home'>
                             <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform hidden-phone hidden-tablet  screen">
@@ -295,17 +295,15 @@ ${_stacktrace?html}
         </script>
     <@header.scripts production />
     <script type="text/javascript">
-    //FIXME: this is a temporary hack! omitting the api key to see if this resolves some issues in build
-    TDAR.maps.googleApiKey = "${googleMapsApiKey!''}";
-    TDAR.maps.defaults.center.lat = ${mapDefaultLat};
-    TDAR.maps.defaults.center.lng = ${mapDefaultLng};
-    TDAR.maps.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};
-    TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
-
-    TDAR.common.sessionTimeout = ${sessionTimeout?c};
-    <#if authenticatedUser?has_content>
-    TDAR.common.currentTime = 1;
-    </#if>
+	    TDAR.maps.googleApiKey = "${googleMapsApiKey!''}";
+	    TDAR.maps.defaults.center.lat = ${mapDefaultLat};
+	    TDAR.maps.defaults.center.lng = ${mapDefaultLng};
+	    TDAR.maps.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};
+	    TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
+	    TDAR.common.sessionTimeout = ${sessionTimeout?c};
+	    <#if authenticatedUser?has_content>
+		    TDAR.common.currentTime = 1;
+	    </#if>
     </script>
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
     <#if qunit>

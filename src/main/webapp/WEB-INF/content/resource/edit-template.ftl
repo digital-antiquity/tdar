@@ -49,8 +49,8 @@ $(function(){
 <#assign fileReminder=true />
 <#assign prefix="${resource.resourceType.label?lower_case}" />
 <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
-
-	<#if local_.topSection?? && local_.topSection?is_macro>
+	<@common.jsErrorLog />
+    <#if local_.topSection?? && local_.topSection?is_macro>
 		<@local_.topSection />
 	</#if>
 
@@ -249,7 +249,6 @@ $(function(){
     <#else>
       <@edit.submit fileReminder=false />
     </#if>
-
 </@s.form>
 
 <@edit.asyncUploadTemplates />
@@ -341,7 +340,6 @@ TDAR.inheritance.applyInheritance(formSelector);
 });
 </#noescape>
 </script>
-  
 
 </body>
 </#escape>
