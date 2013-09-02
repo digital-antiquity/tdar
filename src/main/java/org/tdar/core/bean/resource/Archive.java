@@ -21,11 +21,9 @@ public class Archive extends InformationResource {
     private static final long serialVersionUID = -3052481706474354766L;
     
     @XmlTransient
-    @Transient
     private boolean importDone;
 
     @XmlTransient
-    @Transient
     private boolean doImportContent;
     
     public Archive() {
