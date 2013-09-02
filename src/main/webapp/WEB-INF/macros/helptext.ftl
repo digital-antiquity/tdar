@@ -222,3 +222,11 @@ Please enter a Spatial Reference System ID, datum and projection. eg:
 	</ul>
 </div>
 </#macro>
+
+<#macro unpackArchiveTip>
+<div id="divUnpackArchiveTip" class="hidden"> 
+If checked, a process will run sometime after the saving of the archive, that will unpack the contents of the archive, and them import them as resources in
+the parent project.<br />
+<strong>NB:</strong> This is a process that can only be run once!
+</div>
+</#macro>
