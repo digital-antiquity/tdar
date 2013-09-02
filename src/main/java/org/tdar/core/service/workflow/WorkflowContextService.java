@@ -150,7 +150,7 @@ public class WorkflowContextService {
         }
     }
 
-    /*
+    /**
      * given any InformationResourceFileVersion (for an uploaded file) this will create a workflow context
      */
     public WorkflowContext initializeWorkflowContext(Workflow w, InformationResourceFileVersion... versions) {
@@ -161,7 +161,6 @@ public class WorkflowContextService {
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
         ctx.setInformationResourceId(versions[0].getInformationResourceId());
         ctx.setWorkflowClass(w.getClass());
-        // ctx.setInformationResourceFileId(version.getInformationResourceFileId());
         ctx.setWorkingDirectory(TdarConfiguration.getInstance().getTempDirectory());
         ctx.setXmlService(xmlService);
         ctx.setGenericDaoService(genericDao);
