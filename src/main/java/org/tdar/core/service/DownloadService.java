@@ -117,13 +117,17 @@ public class DownloadService {
         }
 
         try {
-        if (irFileVersions.length > 1) {
-            resourceFile = File.createTempFile("archiveDownload", ".zip", TdarConfiguration.getInstance().getTempDirectory());
-            generateZipArchive(files, resourceFile);
-            mimeType = "application/zip";
-            dh.setInputStream(new FileInputStream(resourceFile));
-        }
-        } catch (Exception e) {
+            if (irFileVersions.length > 1) {
+                resourceFile = File.createTempFile("archiveDownload", ".zip", TdarConfiguration.getInstance().getTempDirectory());
+                generateZipArchive(files, resourceFile);
+                mimeType = "application/zip";
+                dh.setInputStream(new FileInputStream(resourceFile));
+            }
+        } catch (FileNotFoundException ex) {
+            logger.error("Could not generate zip file to download: file not found", ex);
+            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
+        } catch (IOException ex) {
+            logger.error("Could not generate zip file to download: IO exeption", ex);
             throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
         }
         try {
