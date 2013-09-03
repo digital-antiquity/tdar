@@ -273,6 +273,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     public void reprocessInformationResourceFiles(T ir, ActionMessageErrorSupport listener) throws Exception {
         List<InformationResourceFileVersion> latestVersions = new ArrayList<>();
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
+            if (irFile.isDeleted()) {
+                continue;
+            }
             InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
             original.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(original));
             latestVersions.add(original);

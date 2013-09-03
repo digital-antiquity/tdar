@@ -124,9 +124,9 @@ $(function(){
 	
 	<@edit.accountSection />
 
-
+	<#if !resource.resourceType.project>
 	<@edit.resourceCreators '${resource.resourceType.label} Creators' authorshipProxies 'authorship' />
-
+	</#if>
 
      <#if !resource.resourceType.codingSheet && !resource.resourceType.ontology>
 	<div id="citationInformation" class="well-alt"> 
