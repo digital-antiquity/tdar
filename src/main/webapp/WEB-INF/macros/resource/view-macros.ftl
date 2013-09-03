@@ -252,6 +252,7 @@ View freemarker macros
             </thead>
         <tbody>
         <@fileInfoSection extended=true; irfile, showAll, ext>
+        <#if irfile.viewable>
         <#local twoRow = (irfile.hasTranslatedVersion || irfile.description?has_content ) />
             <tr class="${irfile.status!""}">
                 <td <#if twoRow>rowspan=2</#if>><@fileIcon irfile=irfile /></td>
@@ -272,7 +273,8 @@ View freemarker macros
                     <@translatedFileSection irfile />
                 </td>
                 </tr>
-			</#if>            
+			</#if>           
+		</#if> 
         </@fileInfoSection>
         </tbody>
         </table>

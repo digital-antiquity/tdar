@@ -328,9 +328,9 @@ var FileuploadValidator;
     TDAR.fileupload.addGisValidation = function(validator) {
         var fileinfo = {
             shapefile: ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
-            jpeg:["jpg", "jpeg", "jpw"],
+            jpeg:["jpg", "jpeg", "jpw","jgw"],
             tiff:["tif", "tiff", "tfw"],
-            image: ["jpg", "jpeg", "jpw", "tfw", "aux", "ovr", "rrd", "aux.xml"]
+            image: ["jpg", "jpeg", "jpw","jgw", "tfw", "aux", "ovr", "rrd", "aux.xml"]
         };
 
         var requiredFiles = {
@@ -339,11 +339,17 @@ var FileuploadValidator;
 
         //require image files if image metadata file is present
         validator.addRule("required", {
-                extension: ["jpg", "jpeg"],
-                when: _hasFileWithExtension("jpw")
-            },
-            "A jpg file must accompany a jpw file"
-        );
+            extension: ["jpg", "jpeg"],
+            when: _hasFileWithExtension("jpw")
+        },
+        "A jpg file must accompany a jpw file"
+    );
+        validator.addRule("required", {
+            extension: ["jpg", "jpeg"],
+            when: _hasFileWithExtension("jgw")
+        },
+        "A jpg file must accompany a jgw file"
+    );
         validator.addRule("required", {
                 extension: ["tif", "tiff"],
                 when: _hasFileWithExtension("tfw")
