@@ -117,21 +117,20 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         }
 
         // if we can't get the archive, we don't have enough information to run...
-        GenericDao genericDao = ctx.getGenericDao();
-        if (genericDao == null) {
-            recordErrorAndExit("Generic DAO to retrieve archive not available...");
+        Archive archive = (Archive) ctx.getTransientResource();
+        if (archive == null) {
+            recordErrorAndExit("Transient copy of archive not available...");
         }
 
         // are we to import the archive's content?
-        Archive resource = (Archive) genericDao.find(resourceClass, ctx.getInformationResourceId());
-        if (!resource.isDoImportContent()) {
-            getLogger().info(getLogMessage("Archive is set to ignore import.", resource));
+        if (!archive.isDoImportContent()) {
+            getLogger().info(getLogMessage("Archive is set to ignore import.", archive));
             return;
         }
 
         // we don't want to import the tar ball twice!
-        if (resource.isImportPeformed()) {
-            getLogger().info(getLogMessage("Archive has already been imported.", resource));
+        if (archive.isImportPeformed()) {
+            getLogger().info(getLogMessage("Archive has already been imported.", archive));
             return;
         }
 
@@ -153,20 +152,18 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         }
 
         // Preconditions have been checked, now to write the control file and set up the copy of the archive to work with.
-        // ATOMIC: this isn't. If something goes wrong in the command line import phase, then there is a fair bit of clean up to do.
-        // So when is the best time to mark and save the archive? I'm not sure.
-        resource.setImportPeformed(true);
-        resource.setDoImportContent(false);
-        genericDao.saveOrUpdate(resource);
-
+  
         // at the moment there should be only one of these files: however, that should only be an artifact of the user interface.
         for (InformationResourceFileVersion version : archiveFiles) {
             File copyOfTarball = makeCopyOfSourceFile(version);
             if (!copyOfTarball.exists()) {
                 recordErrorAndExit("Copy of file for archive extract not found! Expected: " + copyOfTarball.getAbsolutePath());
             }
-            writeKettleControlFileToDisk(resource, copyOfTarball);
+            writeKettleControlFileToDisk(archive, copyOfTarball);
         }
+        // We hope that the save of the changes to the archive will happen on the other side of the work flow...
+        archive.setImportPeformed(true);
+        archive.setDoImportContent(false);
     }
 
     private void writeKettleControlFileToDisk(Archive archive, File copy) throws IOException, TemplateException {

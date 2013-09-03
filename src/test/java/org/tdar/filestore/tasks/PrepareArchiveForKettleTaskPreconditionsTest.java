@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
@@ -23,21 +22,10 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     PrepareArchiveForKettleTask task;
     Archive archive;
     
-    private static GenericDao getDaoThatWillReturn(final Archive archive) {
-        GenericDao dao = new GenericDao () {
-            @SuppressWarnings("unchecked")
-            @Override
-            public <E> E find(Class<E> cls, Long id) {
-                return (E)archive;
-            }
-        };
-        return dao;
-    }
-
     private static WorkflowContext getContextForArchive(final Archive archive) {
         WorkflowContext ctx = new WorkflowContext();
         ctx.setResourceType(ResourceType.ARCHIVE);
-        ctx.setGenericDao(getDaoThatWillReturn(archive));
+        ctx.setTransientResource(archive);
         return ctx;
     }
     
@@ -64,13 +52,13 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     }
     
     @Test
-    public void mustHaveNonNullDao() {
-        task.getWorkflowContext().setGenericDao(null);
+    public void mustHaveNonNullArchive() {
+        task.getWorkflowContext().setTransientResource(null);
         try {
             task.run();
         } catch (Exception e) {
            assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
-           assertTrue(e.getMessage(), e.getMessage().startsWith("Generic DAO to retrieve archive not available..."));
+           assertTrue(e.getMessage(), e.getMessage().startsWith("Transient copy of archive not available..."));
         }
     }
     

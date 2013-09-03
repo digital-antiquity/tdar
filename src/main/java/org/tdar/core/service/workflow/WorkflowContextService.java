@@ -157,13 +157,14 @@ public class WorkflowContextService {
         WorkflowContext ctx = new WorkflowContext();
         ctx.getOriginalFiles().addAll(Arrays.asList(versions));
         ctx.setTargetDatabase(tdarDataImportDatabase);
-        ctx.setResourceType(versions[0].getInformationResourceFile().getInformationResource().getResourceType());
+        final InformationResource informationResource = versions[0].getInformationResourceFile().getInformationResource();
+        ctx.setResourceType(informationResource.getResourceType());
+        ctx.setTransientResource(informationResource.getTransientCopyForWorkflow());
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
         ctx.setInformationResourceId(versions[0].getInformationResourceId());
         ctx.setWorkflowClass(w.getClass());
         ctx.setWorkingDirectory(TdarConfiguration.getInstance().getTempDirectory());
         ctx.setXmlService(xmlService);
-        ctx.setGenericDao(genericDao);
         w.initializeWorkflowContext(ctx, versions); // handle any special bits here
         try {
             if (logger.isTraceEnabled()) {

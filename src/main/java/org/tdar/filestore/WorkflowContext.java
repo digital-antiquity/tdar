@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -52,7 +53,6 @@ public class WorkflowContext implements Serializable {
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
     private transient XmlService xmlService;
     private transient TargetDatabase targetDatabase;
-    private transient GenericDao genericDao;
 
     private List<ExceptionWrapper> exceptions = new ArrayList<>();
 
@@ -263,15 +263,6 @@ public class WorkflowContext implements Serializable {
      */
     public void setErrorFatal(boolean isErrorFatal) {
         this.isErrorFatal = isErrorFatal;
-    }
-
-    @XmlTransient
-    public GenericDao getGenericDao() {
-        return genericDao;
-    }
-    
-    public void setGenericDao(GenericDao genericDaoService) {
-        this.genericDao = genericDaoService;
     }
 
 }

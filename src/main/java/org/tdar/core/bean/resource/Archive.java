@@ -1,5 +1,8 @@
 package org.tdar.core.bean.resource;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -21,7 +24,7 @@ public class Archive extends InformationResource {
     private static final long serialVersionUID = -3052481706474354766L;
     
     @XmlTransient
-    private boolean importDone;
+    private boolean importPerformed;
 
     @XmlTransient
     private boolean doImportContent;
@@ -34,11 +37,11 @@ public class Archive extends InformationResource {
      * @return true if the import has been done, false otherwise. This is to stop the import being run multiple times.
      */
     public boolean isImportPeformed() {
-        return importDone;
+        return importPerformed;
     }
 
     public void setImportPeformed(boolean importPeformed) {
-        this.importDone = importPeformed;
+        this.importPerformed = importPeformed;
     }
 
     /**
@@ -52,4 +55,13 @@ public class Archive extends InformationResource {
         this.doImportContent = doImportContent;
     }
 
+    @Override
+    public Archive getTransientCopyForWorkflow() {
+        final Archive result = new Archive();
+        result.setId(this.getId());
+        result.setProjectId(this.getProjectId());
+        result.setImportPeformed(this.importPerformed);
+        result.setDoImportContent(this.doImportContent);
+        return result;
+    }
 }
