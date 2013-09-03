@@ -63,7 +63,7 @@
 
 <#if combine>
    <!-- call to http://code.google.com/p/webutilities/wiki/JSCSSMergeServlet#URLs_in_CSS -->
-    <script type="text/javascript" src="<#list srcs as src><#if src_index != 0>,</#if>${src?replace(".js","")}</#list>.js"></script>
+    <script type="text/javascript" src="<#list srcs as src><#if src_index != 0>,</#if>${src?replace(".js","")}</#list>.js?build=${common.tdarBuildId}"></script>
 <#else>
 <#list srcs as src>
   <script type="text/javascript" src="${src}"></script>
