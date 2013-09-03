@@ -32,6 +32,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -51,6 +53,8 @@ public class ExcelService {
 
     // official office spec states that sheet max is limited by available RAM but has no max. So this is an arbitrary number.
     public static final int MAX_SHEETS_PER_WORKBOOK = 32;
+
+    public final Logger logger = LoggerFactory.getLogger(getClass());
 
 
     public static final int FIRST_ROW = 0;
@@ -217,6 +221,7 @@ public class ExcelService {
             } else {
                 if (value.length() > DEFAULT_EXCEL_VERSION.getMaxTextLength()) {
                     cell.setCellValue(StringUtils.substring(value, 0, DEFAULT_EXCEL_VERSION.getMaxTextLength() - 1));
+                    logger.error("truncated cell that was too long");
                 } else {
                     cell.setCellValue(value);
                 }
