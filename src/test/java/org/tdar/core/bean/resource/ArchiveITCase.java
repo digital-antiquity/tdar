@@ -76,7 +76,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         assertNotNull("IrFile is null", irFile);
         assertEquals(FileStatus.PROCESSING_WARNING, irFile.getStatus());
 
-        irFile.setStatus(FileStatus.DELETED);
+        irFile.setStatus(FileStatus.PROCESSED);
         irFile.setErrorMessage("blah");
         genericService.saveOrUpdate(irFile);
         genericService.synchronize();

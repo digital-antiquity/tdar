@@ -30,7 +30,7 @@ TDAR.fileupload.addGisValidation(TDAR.fileupload.validator);
     </span>
 
 
-    <span data-tiplabel="Scale" data-tooltipcontent="Please provide the scale for the map, eg: 1:1000" class="">
+    <span data-tiplabel="Scale" data-tooltipcontent="Please provide the scale for the map, e.g. 1:1000" class="">
             <@s.textfield label="Scale" maxlength=50
 			name='geospatial.scale' cssClass="tdartext longfield  input-xxlarge" />
     </span>

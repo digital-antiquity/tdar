@@ -213,7 +213,7 @@ Use this field to nominate a primary copyright holder. Other information about c
 
 <#macro srid>
 <div id="sridTip" class="hidden">
-Please enter a Spatial Reference System ID, datum and projection. eg: 
+Please enter a Spatial Reference System ID, datum and projection. e.g.: 
 	<ul>
 		<li>EPSG:3857 </li>
 		<li>WGS:84</li>

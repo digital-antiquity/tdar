@@ -32,6 +32,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -46,17 +48,19 @@ import org.tdar.core.service.excel.SheetProxy;
 public class ExcelService {
 
     // Office 2003 row/sheet max
-    public static final int MAX_ROWS_PER_SHEET = 65536;
-    public static final int MAX_COLUMNS_PER_SHEET = 256;
+//    public static final int MAX_ROWS_PER_SHEET = 65536;
+//    public static final int MAX_COLUMNS_PER_SHEET = 256;
 
     // official office spec states that sheet max is limited by available RAM but has no max. So this is an arbitrary number.
     public static final int MAX_SHEETS_PER_WORKBOOK = 32;
 
-    public static final int MAX_ROWS_PER_WORKBOOK = MAX_ROWS_PER_SHEET * MAX_SHEETS_PER_WORKBOOK;
+    public final Logger logger = LoggerFactory.getLogger(getClass());
+
 
     public static final int FIRST_ROW = 0;
     public static final int FIRST_COLUMN = 0;
     public static final SpreadsheetVersion DEFAULT_EXCEL_VERSION = SpreadsheetVersion.EXCEL97;
+    public static final int MAX_ROWS_PER_WORKBOOK = DEFAULT_EXCEL_VERSION.getMaxRows() * MAX_SHEETS_PER_WORKBOOK;
 
     /*
      * Add validation to a given column
@@ -161,11 +165,11 @@ public class ExcelService {
 
     // helper for creating a workbook
     public Workbook createWorkbook() {
-        return createWorkbook(SpreadsheetVersion.EXCEL97);
+        return createWorkbook(DEFAULT_EXCEL_VERSION);
     }
 
     public Workbook createWorkbook(SpreadsheetVersion version) {
-        if (version == SpreadsheetVersion.EXCEL97)
+        if (version == DEFAULT_EXCEL_VERSION)
             return new HSSFWorkbook();
         else
             return new XSSFWorkbook();
@@ -215,7 +219,12 @@ public class ExcelService {
             if (StringUtils.isNumeric(value)) {
                 cell.setCellValue(Double.valueOf(value));
             } else {
-                cell.setCellValue(value);
+                if (value.length() > DEFAULT_EXCEL_VERSION.getMaxTextLength()) {
+                    cell.setCellValue(StringUtils.substring(value, 0, DEFAULT_EXCEL_VERSION.getMaxTextLength() - 1));
+                    logger.error("truncated cell that was too long");
+                } else {
+                    cell.setCellValue(value);
+                }
             }
         }
         if (style != null) {
@@ -284,7 +293,7 @@ public class ExcelService {
      * add a row with the following fields
      */
     public CellStyle addRow(Sheet sheet, int rowNum, int startCol, List<? extends Object> fields, CellStyle headerStyle) {
-        if (rowNum > MAX_ROWS_PER_SHEET) {
+        if (rowNum > DEFAULT_EXCEL_VERSION.getMaxRows()) {
             throw new TdarRecoverableRuntimeException("could not write row -- too many rows for excel");
         }
         Row row = sheet.getRow(rowNum);

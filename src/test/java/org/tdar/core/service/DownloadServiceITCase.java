@@ -1,17 +1,9 @@
 package org.tdar.core.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -21,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
@@ -31,12 +24,17 @@ import de.schlichtherle.truezip.file.TConfig;
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TVFS;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+
 public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
     private static final File ROOT_SRC = new File(TestConstants.TEST_ROOT_DIR);
 
     // don't need injection (yet)
     DownloadService downloadService = new DownloadService();
+    int COVER_PAGE_WIGGLE_ROOM = 155_000;
 
     @Before
     public void prepareDir() throws IOException {
@@ -54,6 +52,10 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     }
 
     public void assertArchiveContents(Collection<File> expectedFiles, File archive) throws IOException {
+        assertArchiveContents(expectedFiles, archive, true);
+    }
+
+    public void assertArchiveContents(Collection<File> expectedFiles, File archive, boolean strict) throws IOException {
         TConfig.get().setArchiveDetector(TArchiveDetector.ALL);
         TFile arc = new TFile(archive, TArchiveDetector.ALL);
 
@@ -64,7 +66,6 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
         HashMap<String, TFile> dmap = new HashMap<>();
         Assert.assertNotNull(arc);
-//        Assert.assertNotNull(((File)arc).listFiles());
         logger.info("files:{}", arc.list());
         for (TFile file : arc.listFiles()) {
             dmap.put(file.getName(), file);
@@ -79,8 +80,16 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
             }
             File temp = File.createTempFile("test123", ".tmp");
             actual.cp(temp);
-            if (!FileUtils.contentEquals(expected, temp)) {
-                errs.add(String.format("%s: item in archive %s does not have same content", actual, expected));
+            //if doing a strict test,  assert that file is exactly the same
+            if(strict) {
+                if (!FileUtils.contentEquals(expected, temp)) {
+                    errs.add(String.format("%s: item in archive %s does not have same content", actual, expected));
+                }
+            //otherwise,  just make sure that the actual file is not empty
+            } else {
+                if(expected.length() > 0) {
+                    assertThat(temp.length(), greaterThan(0L));
+                }
             }
         }
         if (errs.size() > 0) {
@@ -108,12 +117,16 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     public void testDownloadArchiveController() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
-        File file1 = new File(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
+
         List<File> files = new ArrayList<>();
+        File file1 = new File(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
         files.add(file1);
         files.add(new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME));
-        Document document = generateDocumentWithFileAndUser();
-        addFileToResource(document, file1);
+        Document document = generateDocumentWithUser();
+        for(File file : files) {
+            addFileToResource(document, file);
+        }
+
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
         controller.setInformationResourceId(document.getId());
         assertEquals(TdarActionSupport.SUCCESS, controller.downloadZipArchive());
@@ -125,8 +138,9 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         assertTrue("file should have been created", file.exists());
         assertTrue("file should be non-empty", file.length() > 0);
         TVFS.umount();
-        //FIXME:I don't work right..
-//        assertArchiveContents(files, file);
+
+        //don't do strict test since the downloaded pdf's will have a cover page
+        assertArchiveContents(files, file, false);
     }
 
 }

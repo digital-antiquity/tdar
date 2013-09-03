@@ -10,7 +10,7 @@
 	            <ol>
 	              <li><a href="template" class="button" target="_blank">Download</a> the template file (<a href="template" target="_blank" >link</a>).</li>
 	              <li>create a row for each file you're uploading</li>
-	              <li>the first column should always be the filename the record references [eg. document1.pdf ]</li>
+	              <li>the first column should always be the filename the record references [e.g. document1.pdf ]</li>
 	              <li>enter in any other metadata by using the field names specified.</li>
 	              <li>upload the mapping file in the mapping file in the input immediately below</li>
 	            </ol>

@@ -270,7 +270,7 @@
        If this column has filenames in it, ${siteAcronym} will associate the filename with the filename of the image or document and load the row
        data as additional fields in the ${siteAcronym} record.
        </p>
-        <@s.textfield name="dataTableColumns[${column_index}].delimiterValue" value="${column.delimiterValue!''}" placeholder="eg. ; , |" label="Delimiter" labelposition="left" maxLength="1"/>
+        <@s.textfield name="dataTableColumns[${column_index}].delimiterValue" value="${column.delimiterValue!''}" placeholder="e.g. ; , |" label="Delimiter" labelposition="left" maxLength="1"/>
         <br/>
         <#assign ignoreExt = "false" />
         <#if column.ignoreFileExtension??>
