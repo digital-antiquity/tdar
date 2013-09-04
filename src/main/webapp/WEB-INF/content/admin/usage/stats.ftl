@@ -11,38 +11,46 @@
 
 
 <h2>Usage Stats</h2>
-<table class="tableFormat table">
-    <tr>
-        <th>resource</th>
-        <th>views</th>
-        <th>day</th>
-    </tr>
-<#list usageStats as stats>
-    <tr>
-        <td><a href="<@s.url value="/${stats.resource.resourceType.urlNamespace}/${stats.resource.id?c}" />">${stats.resource.title}</a> (${stats.resource.id?c})</td>
-        <td>${stats.count}</td>
-        <td>${stats.aggregateDate}</td>
-    </tr>
-</#list>
+<table class="tableFormat table" id="tblUsageStats">
+    <thead>
+        <tr>
+            <th>resource</th>
+            <th>views</th>
+            <th>day</th>
+        </tr>
+    </thead>
+    <tbody>
+        <#list usageStats as stats>
+        <tr>
+            <td><a href="<@s.url value="/${stats.resource.resourceType.urlNamespace}/${stats.resource.id?c}" />">${stats.resource.title}</a> (${stats.resource.id?c})</td>
+            <td>${stats.count}</td>
+            <td>${stats.aggregateDate}</td>
+        </tr>
+        </#list>
+    </tbody>
 </table>
 
 <h2>Download Stats</h2>
-<table class="tableFormat table">
-    <tr>
-    	<th>Resource</th>
-        <th>File</th>
-        <th>Downloads</th>
-        <th>day</th>
-    </tr>
-<#list downloadStats as stats>
-    <tr>
-        <td><a href="<@s.url value="/${stats.informationResource.resourceType.urlNamespace}/${stats.informationResource.id?c}" />">${stats.informationResource.title}</a> (${stats.informationResource.id?c})</td>
-        <td>
-        <a href="<@s.url value="/filestore/${stats.informationResourceFileId?c}" />">${stats.filename}</a> (${stats.informationResourceId?c})</td>
-        <td>${stats.count}</td>
-        <td>${stats.aggregateDate}</td>
-    </tr>
-</#list>
+<table class="tableFormat table" id="tblDownloadStats">
+    <thead>
+        <tr>
+            <th>Resource</th>
+            <th>File</th>
+            <th>Downloads</th>
+            <th>day</th>
+        </tr>
+    </thead>
+    <tbody>
+        <#list downloadStats as stats>
+        <tr>
+            <td><a href="<@s.url value="/${stats.informationResource.resourceType.urlNamespace}/${stats.informationResource.id?c}" />">${stats.informationResource.title}</a> (${stats.informationResource.id?c})</td>
+            <td>
+            <a href="<@s.url value="/filestore/${stats.informationResourceFileId?c}" />">${stats.filename}</a> (${stats.informationResourceId?c})</td>
+            <td>${stats.count}</td>
+            <td>${stats.aggregateDate}</td>
+        </tr>
+        </#list>
+    </tbody>
 </table>
 <script>
 $(function(){

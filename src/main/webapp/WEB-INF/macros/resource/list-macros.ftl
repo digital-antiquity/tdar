@@ -339,4 +339,10 @@
       </#if>
   </#if>
 </#macro>
+
+
+<#macro table data=[] id="tbl${data.hashCode()?string?url}" cssClass="table tableFormat datatableSortable" cols=data?keys colLabels=cols>
+
+</#macro>
+
 </#escape>
