@@ -16,7 +16,6 @@ pre, td {
 <body>
 <@admin.header/>
 <h1>Recent System Activity</h1>
-<hr/>
 <@s.actionerror />
 
 <h3>Active Users</h3>
@@ -52,7 +51,7 @@ pre, td {
 </table>
 <br/>
 <h3>Recent Activity</h3>
-<table class="tableFormat table">
+<table class="tableFormat table" id="tblRecentActivity">
     <thead>
         <tr>
             <th>date</th><th>user</th><th>total time (ms)</th><th>request</th>
@@ -106,34 +105,39 @@ pre, td {
 ${sessionStatistics}
 </pre>
 
-<table class="tableFormat table">
-<tr><th><b>query</b></th>
-<th>executionCount</th>
-<th>executionAvgTime</th>
-<th>executionMaxTime</th>
-<th>executionMinTime</th>
-<th>cacheHitCount</th>
-<th>cacheMissCount</th>
-<th>cachePutCount</th>
-<th>executionRowCount</th>
-</tr>
-<#list sessionStatistics.queries as query>
-<#assign stat = sessionStatistics.getQueryStatistics(query) />
-<tr><td><b>${query}</b></td>
-<td>${stat.executionCount}</td>
-<td>${stat.executionAvgTime}</td>
-<td>${stat.executionMaxTime}</td>
-<td>${stat.executionMinTime}</td>
-<td>${stat.cacheHitCount}</td>
-<td>${stat.cacheMissCount}</td>
-<td>${stat.cachePutCount}</td>
-<td>${stat.executionRowCount}</td>
-</tr>
-</#list>
+<table class="tableFormat table" id="tblQueryStats">
+    <thead>
+        <tr>
+            <th><b>query</b></th>
+            <th>executionCount</th>
+            <th>executionAvgTime</th>
+            <th>executionMaxTime</th>
+            <th>executionMinTime</th>
+            <th>cacheHitCount</th>
+            <th>cacheMissCount</th>
+            <th>cachePutCount</th>
+            <th>executionRowCount</th>
+        </tr>
+    </thead>
+    <tbody>
+        <#list sessionStatistics.queries as query>
+        <#assign stat = sessionStatistics.getQueryStatistics(query) />
+        <tr><td><b>${query}</b></td>
+        <td>${stat.executionCount}</td>
+        <td>${stat.executionAvgTime}</td>
+        <td>${stat.executionMaxTime}</td>
+        <td>${stat.executionMinTime}</td>
+        <td>${stat.cacheHitCount}</td>
+        <td>${stat.cacheMissCount}</td>
+        <td>${stat.cachePutCount}</td>
+        <td>${stat.executionRowCount}</td>
+        </tr>
+        </#list>
+    </tbody>
 </table>
 <script>
 $(function(){
-    $(".tableFormat").dataTable({"bFilter": false, "bInfo": false, "bPaginate":false});
+    $("#tblRecentActivity, #tblQueryStats").dataTable({"bFilter": false, "bInfo": false, "bPaginate":false});
 });
 </script>
 </body>
