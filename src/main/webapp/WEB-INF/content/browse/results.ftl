@@ -84,7 +84,15 @@
 					
 					<#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !keyword.@name?contains("Fips "))>
 						<#assign seen_kwds = seen_kwds +1 />
-						<li>${keyword.@name}</li>
+						<#assign tst = keyword.@simpleClassName!"" />
+						<#assign keywordType = keywordTypeBySimpleName.get(tst?string) />
+						<li>
+						<#assign term = keyword.@id />
+						<#if !keywordType.fieldName?contains("IdList")>
+							<#assign term = keyword.@name?url />						
+						</#if>
+						<a href="<@s.url value="/search/results?groups%5B0%5D.operator=AND&groups%5B0%5D.${keywordType.fieldName}%5B0%5D=${term}&groups%5B0%5D.fieldTypes%5B0%5D=${keywordType}"/>">${keyword.@name}</a>
+						</li>
 					</#if>
 					</#if>
 				</#list>

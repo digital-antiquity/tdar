@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.MaterialKeyword;
+import org.tdar.core.bean.keyword.OtherKeyword;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.keyword.TemporalKeyword;
 
 public enum SearchFieldType implements HasLabel {
 
@@ -21,18 +29,18 @@ public enum SearchFieldType implements HasLabel {
     FILENAME("filenames", SearchFieldGroup.BASIC_FIELDS, "File Name"),
 
     // freeform keywords
-    FFK_GEOGRAPHIC("geographicKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Geographic Keywords"),
-    FFK_SITE("siteNames", SearchFieldGroup.FREEFORM_KEYWORDS, "Site Names"),
+    FFK_GEOGRAPHIC("geographicKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Geographic Keywords",GeographicKeyword.class),
+    FFK_SITE("siteNames", SearchFieldGroup.FREEFORM_KEYWORDS, "Site Names",SiteNameKeyword.class),
     FFK_SITE_TYPE("uncontrolledSiteTypes", SearchFieldGroup.FREEFORM_KEYWORDS, "Site Type"),
     FFK_CULTURAL("uncontrolledCultureKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Culture Keywords"),
-    FFK_TEMPORAL("temporalKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Temporal Keywords"),
-    FFK_GENERAL("otherKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "General Keywords"),
+    FFK_TEMPORAL("temporalKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Temporal Keywords", TemporalKeyword.class),
+    FFK_GENERAL("otherKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "General Keywords",OtherKeyword.class),
 
     // managed keywords
-    KEYWORD_INVESTIGATION("investigationTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Investigation Types", false),
-    KEYWORD_SITE("approvedSiteTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Site Type(Controlled)", false),
-    KEYWORD_MATERIAL("materialKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Material Types", false),
-    KEYWORD_CULTURAL("approvedCultureKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Culture Keywords", false),
+    KEYWORD_INVESTIGATION("investigationTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Investigation Types", false, InvestigationType.class),
+    KEYWORD_SITE("approvedSiteTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Site Type(Controlled)", false,SiteTypeKeyword.class),
+    KEYWORD_MATERIAL("materialKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Material Types", false,MaterialKeyword.class),
+    KEYWORD_CULTURAL("approvedCultureKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Culture Keywords", false,CultureKeyword.class),
 
     // TODO: add these
     CREATION_DECADE("creationDecades", SearchFieldGroup.EXPLORE, "Creation Decade", false),
@@ -45,15 +53,25 @@ public enum SearchFieldType implements HasLabel {
     private SearchFieldGroup fieldGroup;
     private String fieldName = "";
     private boolean simple = true;
-
+    private Class<?> associatedClass;
+    
     private SearchFieldType() {
         this.fieldGroup = SearchFieldGroup.BASIC_FIELDS;
     }
 
+    private SearchFieldType(String fieldName, SearchFieldGroup fieldGroup, String label, boolean simple,Class<?> associatedClass) {
+        this(fieldName,fieldGroup,label,simple);
+        this.setAssociatedClass(associatedClass);
+    }
+
+
+    private SearchFieldType(String fieldName, SearchFieldGroup fieldGroup, String label, Class<?> associatedClass) {
+        this(fieldName,fieldGroup,label);
+        this.setAssociatedClass(associatedClass);
+    }
+
     private SearchFieldType(String fieldName, SearchFieldGroup fieldGroup, String label, boolean simple) {
-        this.label = label;
-        this.fieldGroup = fieldGroup;
-        this.fieldName = fieldName;
+        this(fieldName,fieldGroup,label);
         this.simple = simple;
     }
 
@@ -96,6 +114,14 @@ public enum SearchFieldType implements HasLabel {
             return true;
         }
         return false;
+    }
+
+    public Class<?> getAssociatedClass() {
+        return associatedClass;
+    }
+
+    public void setAssociatedClass(Class<?> associatedClass) {
+        this.associatedClass = associatedClass;
     }
 
 }

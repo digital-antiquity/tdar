@@ -6,8 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
@@ -90,6 +93,7 @@ public class BrowseController extends AbstractLookupController {
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private String creatorXml;
     private List<Account> accounts = new ArrayList<Account>();
+    Map<String,SearchFieldType> searchFieldLookup = new HashMap<>();
 
     private transient InputStream inputStream;
     private Long contentLength;
@@ -393,4 +397,14 @@ public class BrowseController extends AbstractLookupController {
         this.nodeModel = nodeModel;
     }
 
+    public Map<String, SearchFieldType> getKeywordTypeBySimpleName() {
+        if (CollectionUtils.isEmpty(searchFieldLookup.keySet())) {
+            for (SearchFieldType type: SearchFieldType.values()) {
+                if (type.getAssociatedClass() != null) {
+                    searchFieldLookup.put(type.getAssociatedClass().getSimpleName(), type);
+                }
+            }
+        }
+        return searchFieldLookup;
+    }
 }
