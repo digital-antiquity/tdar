@@ -105,6 +105,32 @@ pre, td {
 <pre>
 ${sessionStatistics}
 </pre>
+
+<table class="tableFormat table">
+<tr><th><b>query</b></th>
+<th>executionCount</th>
+<th>executionAvgTime</th>
+<th>executionMaxTime</th>
+<th>executionMinTime</th>
+<th>cacheHitCount</th>
+<th>cacheMissCount</th>
+<th>cachePutCount</th>
+<th>executionRowCount</th>
+</tr>
+<#list sessionStatistics.queries as query>
+<#assign stat = sessionStatistics.getQueryStatistics(query) />
+<tr><td><b>${query}</b></td>
+<td>${stat.executionCount}</td>
+<td>${stat.executionAvgTime}</td>
+<td>${stat.executionMaxTime}</td>
+<td>${stat.executionMinTime}</td>
+<td>${stat.cacheHitCount}</td>
+<td>${stat.cacheMissCount}</td>
+<td>${stat.cachePutCount}</td>
+<td>${stat.executionRowCount}</td>
+</tr>
+</#list>
+</table>
 <script>
 $(function(){
     $(".tableFormat").dataTable({"bFilter": false, "bInfo": false, "bPaginate":false});
