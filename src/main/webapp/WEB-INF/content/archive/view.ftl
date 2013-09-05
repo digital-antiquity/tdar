@@ -3,8 +3,8 @@
     <#macro afterBasicInfo>
         <h2>Status</h2>
         <p>This archive<strong>
-           <#if resource.isImportPeformed()>is
-           <#else>is not
+           <#if resource.isImportDone()>is
+           <#else>is not yet
            </#if>
             </strong> unpacked into the repository.
         </p>

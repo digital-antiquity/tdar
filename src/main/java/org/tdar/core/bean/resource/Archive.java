@@ -1,18 +1,14 @@
 package org.tdar.core.bean.resource;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Indexed;
 
 /**
  * A compressed archive. From FAIMS, the hope is that it will be unpacked and its constituent parts imported as separate documents.
+ * 
  * @author Martin Paulo
  */
 @Entity
@@ -22,13 +18,10 @@ import org.hibernate.search.annotations.Indexed;
 public class Archive extends InformationResource {
 
     private static final long serialVersionUID = -3052481706474354766L;
-    
-    @XmlTransient
-    private boolean importPerformed;
 
-    @XmlTransient
+    private boolean importdone;
     private boolean doImportContent;
-    
+
     public Archive() {
         setResourceType(ResourceType.ARCHIVE);
     }
@@ -36,12 +29,12 @@ public class Archive extends InformationResource {
     /**
      * @return true if the import has been done, false otherwise. This is to stop the import being run multiple times.
      */
-    public boolean isImportPeformed() {
-        return importPerformed;
+    public boolean isImportDone() {
+        return importdone;
     }
 
-    public void setImportPeformed(boolean importPeformed) {
-        this.importPerformed = importPeformed;
+    public void setImportDone(boolean importDone) {
+        this.importdone = importDone;
     }
 
     /**
@@ -60,8 +53,22 @@ public class Archive extends InformationResource {
         final Archive result = new Archive();
         result.setId(this.getId());
         result.setProjectId(this.getProjectId());
-        result.setImportPeformed(this.importPerformed);
+        result.setImportDone(this.importdone);
         result.setDoImportContent(this.doImportContent);
         return result;
+    }
+
+    /**
+     * This method will write back the fields that may have been changed in the transient copy
+     * 
+     * @param transientArchive
+     */
+    public void updateFromTransientResource(Archive transientArchive) {
+        if (transientArchive == null) {
+            // Should never be here, so perhaps we should do more than return?
+            return;
+        }
+        this.doImportContent = transientArchive.isDoImportContent();
+        this.importdone = transientArchive.isImportDone();
     }
 }

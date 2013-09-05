@@ -129,7 +129,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         }
 
         // we don't want to import the tar ball twice!
-        if (archive.isImportPeformed()) {
+        if (archive.isImportDone()) {
             getLogger().info(getLogMessage("Archive has already been imported.", archive));
             return;
         }
@@ -162,7 +162,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             writeKettleControlFileToDisk(archive, copyOfTarball);
         }
         // We hope that the save of the changes to the archive will happen on the other side of the work flow...
-        archive.setImportPeformed(true);
+        archive.setImportDone(true);
         archive.setDoImportContent(false);
     }
 

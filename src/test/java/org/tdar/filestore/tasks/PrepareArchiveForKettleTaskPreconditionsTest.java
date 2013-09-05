@@ -70,20 +70,20 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
         } catch (Exception e) {
             assertTrue("Should not be here: " + e.getMessage(), false);
         }
-        assertFalse(archive.isImportPeformed());
+        assertFalse(archive.isImportDone());
     }
 
 
     @Test
     public void mustNotHavePerformedImport() {
-        archive.setImportPeformed(true);
+        archive.setImportDone(true);
         try {
             task.run();
         } catch (Exception e) {
             assertTrue("Should not be here: " + e.getMessage(), false);
         }
         // these should not have been changed by test
-        assertTrue(archive.isImportPeformed());
+        assertTrue(archive.isImportDone());
         assertTrue(archive.isDoImportContent());
     }
    
