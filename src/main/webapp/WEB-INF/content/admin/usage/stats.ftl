@@ -52,6 +52,8 @@
         </#list>
     </tbody>
 </table>
+
+
 <script>
 $(function(){
     $(".tableFormat").dataTable({"bFilter": false, "bInfo": false, "bPaginate":false});

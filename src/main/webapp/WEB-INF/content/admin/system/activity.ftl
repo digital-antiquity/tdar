@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html >
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "../admin-common.ftl" as admin>
 
 
@@ -31,53 +32,13 @@ pre, td {
 </ul>
 
 
+
 <h3>User Agents</h3>
-<table class="tableFormat table">
-    <thead>
-        <tr>
-            <th>browser</th><th>count</th>
-        </tr>
-    </thead>
-    <tbody>
-        <#list counters?keys as count>
-        <#if count?has_content>
-         <tr>
-             <td>${count}</td>
-             <td>${counters.get(count)}</td>
-          </tr>
-        </#if>
-        </#list>
-    </tbody>
-</table>
-<br/>
+<@list.hashtable data=counters keyLabel="Browser" valueLabel="Count" />
+
 <h3>Recent Activity</h3>
-<table class="tableFormat table" id="tblRecentActivity">
-    <thead>
-        <tr>
-            <th>date</th><th>user</th><th>total time (ms)</th><th>request</th>
-        </tr>
-    </thead>
-    <tbody>
-    <#list activityList as activity>
-    <#assign highlight = false/>
-    <#assign highlightPost = false/>
-    <#if activity.user?has_content>
-    	<#assign highlight=true />
-	</#if>
-	<#if activity.name?contains("POST") >
-		<#assign highlightPost=true />
-	</#if>
-     <tr class="${highlight?string('highlightrow-yellow','')} ${highlightPost?string('highlightrow-green','')}">
-        <td>${activity.startDate?datetime}</td>
-        <td><#if activity.user?has_content>${activity.user.properName}</#if></td>
-        <td>${(activity.totalTime?c)!default("-")}</td>
-        <#noescape>
-        <td width=550>${(activity.name!"")?html?replace("&", "<br>&")}</td>
-        </#noescape>
-      </tr>
-    </#list>
-    </tbody>
-</table>
+<@list.easytable id="tblRecentActivity" data=activityList cols=["startDate", "user", "totalTime", "name"] />
+
 <h3>Scheduled Processes Currently in the Queue</h3>
 <#if scheduledProcessesEnabled??>
 <ol>
