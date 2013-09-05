@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.admin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +23,7 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.struts.RequiresTdarUserGroup;
+import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 
