@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -20,8 +19,8 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.WorkflowContextService;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.db.model.abstracts.TargetDatabase;
@@ -29,11 +28,16 @@ import org.tdar.filestore.tasks.Task;
 import org.tdar.utils.ExceptionWrapper;
 
 /**
+ * <p>A work in progress.
+ * <p>The Workflow context is flattened to XML (hence the Serializable) and passed to the messaging service that will then reflate it and act on its contents.
+ * Hence nothing that is not cleanly serializable should be added to the context (no dao's etc). Once the messaging service is finished it will flatten
+ * the context back to XML and then return that structure to the application. In this way the workflow tasks are decoupled from the application, I 
+ * assume with the eventual goal of allowing long running tasks to be run in the background without impacting the user.
+ * @see MessageService#sendFileProcessingRequest(Workflow, InformationResourceFileVersion...)
  * @author Adam Brin
- * 
  */
 @XmlRootElement
-public class WorkflowContext implements Serializable {
+public final class WorkflowContext implements Serializable {
 
     private static final long serialVersionUID = -1020989469518487007L;
 
@@ -58,9 +62,11 @@ public class WorkflowContext implements Serializable {
 
     private boolean isErrorFatal;
 
-
+    /**
+     * <b>Don't use</b>: currently not yet implemented!
+     */
     public void logTask(Task t, StringBuilder message) {
-
+        // TODO!
     }
 
     /*
