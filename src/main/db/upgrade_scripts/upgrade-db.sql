@@ -10,3 +10,6 @@ alter table geospatial add column map_source varchar(500);
 -- jdevos 9/5/2013
 alter table person add column tos_level integer not null default 0;
 alter table person add column creator_agreement_level integer not null default 0;
+
+alter table person rename column tos_level  to tos_version;
+alter table person rename column creator_agreement_level  to creator_agreement_version;

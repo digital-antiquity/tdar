@@ -82,9 +82,23 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String FORBIDDEN = "forbidden";
     public static final String SUCCESS_ASYNC = "SUCCESS_ASYNC";
     public static final String NOT_FOUND = "not_found";
+    /**
+     * The action could not execute because the action requires an authenticated user.
+     */
     public static final String UNAUTHORIZED = "unauthorized";
+
+    //TODO: jtd: struts docs imply that Action.NONE is a more appropriate result. Research further then decide.
     public static final String AUTHENTICATED = "authenticated";
+
+    /**
+     * The action could not execute because one or more resources referenced in the action are no longer
+     * available (as opposed to a resource that is simply not found)
+     */
     public static final String GONE = "gone";
+
+    /**
+     * The action could not execute because the request has invalid or insufficient information
+     */
     public static final String BAD_REQUEST = "badrequest";
     public static final String SAVE = "save";
     public static final String ADD = "add";
@@ -95,6 +109,13 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String CONFIRM = "confirm";
     public static final String DELETE = "delete";
     public static final String NEW = "new";
+
+    /**
+     * The system has authenticated the user and the user is authorized to perform the requested action, but
+     * the action could not execute because the user must explicitly acknowledge/accept certain items (e.g.
+     * updated Terms Of Service)
+     */
+    public static final String USER_AGREEMENT = "user_agreement";
 
     private String javascriptErrorLog;
 

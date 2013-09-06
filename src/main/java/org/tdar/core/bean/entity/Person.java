@@ -166,11 +166,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     //version of the latest TOS that the user has accepted
     @Column(name = "tos_version", nullable = false, columnDefinition = "default 0")
-    private Integer tosVersion;
+    private Integer tosVersion = 0;
 
     //version of the latest Creator Agreement that the user has accepted
     @Column(name = "creator_agreement_version", nullable = false, columnDefinition = "default 0")
-    private Integer creatorAgreementVersion;
+    private Integer creatorAgreementVersion = 0;
 
     /**
      * Returns the person's name in [last name, first name] format.

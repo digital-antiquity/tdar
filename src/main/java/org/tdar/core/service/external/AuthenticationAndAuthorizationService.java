@@ -49,8 +49,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<Person, TdarGroup>();
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final Integer LATEST_TOS_VERSION = 2;
-    private static final Integer LATEST_CREATOR_AGREEMENT_VERSION = 1;
+    public static final Integer LATEST_TOS_VERSION = 2;
+    public static final Integer LATEST_CONTRIBUTOR_AGREEMENT_VERSION = 1;
 
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
@@ -575,22 +575,42 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         return Arrays.asList(getAuthenticationProvider().findGroupMemberships(person));
     }
 
-    public boolean userHasPendingNotifications(Person user) {
-        return getUserNotifications(user).isEmpty();
+    /**
+     * @param user
+     * @return true if user has pending requirements, otherwise false
+     */
+    public boolean userHasPendingRequirements(Person user) {
+        return !getUserRequirements(user).isEmpty();
     }
 
-    public List<NotificationType> getUserNotifications(Person user) {
-        List<NotificationType> notifications = new ArrayList<>();
+    /**
+     * @param user
+     * @return List containing pending requirements for the specified user
+     */
+    public List<AuthNotice> getUserRequirements(Person user) {
+        List<AuthNotice> notifications = new ArrayList<>();
         if(user.getTosVersion() < LATEST_TOS_VERSION) {
-            notifications.add(NotificationType.TOS_AGREEMENT);
+            notifications.add(AuthNotice.TOS_AGREEMENT);
         }
 
-        if(user.getContributor() && user.getCreatorAgreementVersion() < LATEST_CREATOR_AGREEMENT_VERSION) {
-            notifications.add(NotificationType.CREATOR_AGREEMENT);
+        if(user.getContributor() && user.getCreatorAgreementVersion() < LATEST_CONTRIBUTOR_AGREEMENT_VERSION) {
+            notifications.add(AuthNotice.CONTRIBUTOR_AGREEMENT);
         }
         return notifications;
     }
 
+    /**
+     * Update Person record to indicate  that the specified user has satisfied a required task
+     * @param user
+     * @param req
+     */
+    public void satisfyPrerequisite(Person user, AuthNotice req) {
+        if(req == AuthNotice.CONTRIBUTOR_AGREEMENT) {
+            user.setCreatorAgreementVersion(LATEST_CONTRIBUTOR_AGREEMENT_VERSION);
+        } else if(req == AuthNotice.TOS_AGREEMENT){
+            user.setTosVersion(LATEST_TOS_VERSION);
+        }
+    }
 
 
 
