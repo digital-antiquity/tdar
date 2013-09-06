@@ -905,7 +905,7 @@ function _enableMap() {
                     _options.inheritSectionCallback();
                 } else {
                     //not safe!  ask the user for confirmation
-                    _confirm("Inheriting from '" + htmlEncode(TDAR.inheritance.project.title) + "' will overwrite existing values. Continue?",
+                    _confirm("Inheriting from '" + TDAR.common.htmlEncode(TDAR.inheritance.project.title) + "' will overwrite existing values. Continue?",
                         function(){
                             _options.inheritSectionCallback();
                         },
