@@ -661,4 +661,11 @@ public class TdarConfiguration {
         return assistant.getIntProperty("creator.analytics.days.to.process", 10);
     }
 
+    public String getContributorAgreementUrl() {
+        return assistant.getStringProperty("contributor.url", "/about/contributor-agreement");
+    }
+
+    public String getTosUrl() {
+        return assistant.getStringProperty("tos.url", "/about/terms-of-use");
+    }
 }

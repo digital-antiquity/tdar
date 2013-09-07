@@ -28,17 +28,23 @@ public class UserAgreementAction extends AuthenticationAware.Base implements Pre
 //public class UserAgreementAction extends ActionSupport {
 
 
-    private List<AuthNotice> authNotices = new ArrayList<>();
+    List<AuthNotice> authNotices = new ArrayList<>();
+    String tosUrl;
+
+
+    String contributorAgreementUrl;
 
     @Override
     public void prepare() {
         Person user = getAuthenticatedUser();
         authNotices.addAll(getAuthenticationAndAuthorizationService().getUserRequirements(user));
+        tosUrl = getTdarConfiguration().getTosUrl();
+        contributorAgreementUrl = getTdarConfiguration().getContributorAgreementUrl();
     }
 
-    //FIXME: though we should exclude authenticationInterceptor, we should require user to be logged in
     @Override
     public String execute() {
+        if(!isAuthenticated()) return LOGIN;
         return SUCCESS;
     }
 
@@ -53,4 +59,13 @@ public class UserAgreementAction extends AuthenticationAware.Base implements Pre
     public boolean isContributorAgreementAcceptanceRequired() {
         return authNotices.contains(AuthNotice.CONTRIBUTOR_AGREEMENT);
     }
+
+    public String getTosUrl() {
+        return tosUrl;
+    }
+
+    public String getContributorAgreementUrl() {
+        return contributorAgreementUrl;
+    }
+
 }

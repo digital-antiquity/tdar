@@ -90,9 +90,12 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
                 // user is authenticated and authorized to perform  requested action.
                 // now we check for any outstanding notices require user attention
                 if(authenticationAndAuthorizationService.userHasPendingRequirements(user)) {
+                    logger.debug("user has pending requirements, result is USER_AGREEMENT");
                     result = TdarActionSupport.USER_AGREEMENT;
                 } else {
+                    logger.debug("no pending requirements, continue invoke");
                     result = invocation.invoke();
+                    logger.debug("action:{}  result:{}", action, result);
                 }
                 return result;
             }

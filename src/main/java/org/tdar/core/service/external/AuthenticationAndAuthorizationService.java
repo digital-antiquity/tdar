@@ -604,11 +604,19 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      * @param user
      * @param req
      */
+    @Transactional(readOnly = false)
     public void satisfyPrerequisite(Person user, AuthNotice req) {
         if(req == AuthNotice.CONTRIBUTOR_AGREEMENT) {
             user.setCreatorAgreementVersion(LATEST_CONTRIBUTOR_AGREEMENT_VERSION);
         } else if(req == AuthNotice.TOS_AGREEMENT){
             user.setTosVersion(LATEST_TOS_VERSION);
+        }
+    }
+
+    @Transactional(readOnly = false)
+    public void satisfyPrerequisites(Person user,  Collection<AuthNotice> notices) {
+        for(AuthNotice notice : notices) {
+            satisfyPrerequisite(user, notice);
         }
     }
 
