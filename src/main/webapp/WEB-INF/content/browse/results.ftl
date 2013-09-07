@@ -91,14 +91,16 @@
                                     <#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !keyword.@name?contains("Fips "))>
                                         <#assign seen_kwds = seen_kwds +1 />
                                         <#assign tst = keyword.@simpleClassName!"" />
-                                        <#assign keywordType = keywordTypeBySimpleName.get(tst?string) />
-                                        <li>
-                                            <#assign term = keyword.@id />
-                                            <#if !keywordType.fieldName?contains("IdList")>
-                                                <#assign term = keyword.@name?url />
-                                            </#if>
-                                            <a href="<@s.url value="/search/results?groups%5B0%5D.operator=AND&groups%5B0%5D.${keywordType.fieldName}%5B0%5D=${term}&groups%5B0%5D.fieldTypes%5B0%5D=${keywordType}"/>">${keyword.@name}</a>
-                                        </li>
+                                        <#if keywordTypeBySimpleName[tst]?? >
+                                            <#assign keywordType = keywordTypeBySimpleName[tst] />
+                                            <li>
+                                                <#assign term = keyword.@id />
+                                                <#if !keywordType.fieldName?contains("IdList")>
+                                                    <#assign term = keyword.@name?url />
+                                                </#if>
+                                                <a href="<@s.url value="/search/results?groups%5B0%5D.operator=AND&groups%5B0%5D.${keywordType.fieldName}%5B0%5D=${term}&groups%5B0%5D.fieldTypes%5B0%5D=${keywordType}"/>">${keyword.@name}</a>
+                                            </li>
+                                        </#if>
                                     </#if>
                                 </#if>
                             </#list>
@@ -230,7 +232,8 @@
                                 </ul>
                             </div>
                         </div>
-                    </#if>                    <#if creator.addresses?has_content >
+                    </#if>
+                <#if creator.addresses?has_content >
                     <h3>Addresses</h3>
 
                     <div class="row">
@@ -265,7 +268,6 @@
 
         <#if editor && creatorXml?has_content>
         ${creatorXml?html}
-
         </#if>
 
     <div class="tdarresults">
