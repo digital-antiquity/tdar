@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Namespace("/")
-@ParentPackage("default")
+@ParentPackage("secured")
 @Component
 @Scope("prototype")
 @Action(value = "agreement-response")
@@ -73,8 +73,8 @@ public class UserAgreementAcceptAction  extends AuthenticationAware.Base impleme
         getAuthenticationAndAuthorizationService().satisfyPrerequisites(user, acceptedAuthNotices);
 
         //FIXME: the update and sync are not needed,  but I'm trying to figure out why the user tos fields aren't updated by the time the SUCCESS redirect happens
-        getGenericService().update(user);
-        getGenericService().synchronize();
+        //getGenericService().update(user);
+        //getGenericService().synchronize();
 
 
         boolean allRequirementsMet = !getAuthenticationAndAuthorizationService().userHasPendingRequirements(user);

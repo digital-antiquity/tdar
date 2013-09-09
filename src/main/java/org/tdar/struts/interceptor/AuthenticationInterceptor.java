@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.UserAgreementAcceptAction;
+import org.tdar.struts.action.UserAgreementAction;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
@@ -54,6 +57,10 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         this.authenticationAndAuthorizationService = authenticationService;
     }
 
+    @Autowired
+    GenericService genericService;
+
+
     @Override
     public void destroy() {
         authenticationAndAuthorizationService = null;
@@ -87,23 +94,30 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             }
             Person user = sessionData.getPerson();
             if (getAuthenticationAndAuthorizationService().isMember(user, group)) {
-                // user is authenticated and authorized to perform  requested action.
-                // now we check for any outstanding notices require user attention
-                if(authenticationAndAuthorizationService.userHasPendingRequirements(user)) {
-                    logger.debug("user has pending requirements, result is USER_AGREEMENT");
-                    result = TdarActionSupport.USER_AGREEMENT;
-                } else {
-                    logger.debug("no pending requirements, continue invoke");
-                    result = invocation.invoke();
-                    logger.debug("action:{}  result:{}", action, result);
-                }
-                return result;
+                // user is authenticated and authorized to perform  requested action
+                return interceptPendingNotices(invocation, user);
             }
             logger.debug(String.format("unauthorized access to %s/%s from %s with required group %s", action.getClass().getSimpleName(), methodName, user, group));
             return TdarActionSupport.UNAUTHORIZED;
         }
         setReturnUrl(invocation);
         return Action.LOGIN;
+    }
+
+    private String  interceptPendingNotices(ActionInvocation invocation, Person user) throws Exception {
+        //FIXME: without this refresh,  the redirect from /agreement-response to /dashboard  is broken. Why??
+        genericService.refresh(user);
+
+        Object action = invocation.getAction();
+        // user is authenticated and authorized to perform  requested action.
+        // now we check for any outstanding notices require user attention
+        if(authenticationAndAuthorizationService.userHasPendingRequirements(user)
+                //avoid infinite redirect
+                && !(action instanceof UserAgreementAction) && !(action instanceof UserAgreementAcceptAction)) {
+            return TdarActionSupport.USER_AGREEMENT;
+        } else {
+            return invocation.invoke();
+        }
     }
 
 

@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 @Namespace("/")
-@ParentPackage("default")
+@ParentPackage("secured")
 @Component
 @Scope("prototype")
 @Action(value="show-notices")
