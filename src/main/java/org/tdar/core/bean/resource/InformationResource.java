@@ -667,7 +667,7 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @XmlTransient
-    private boolean isProjectVisible() {
+    public boolean isProjectVisible() {
         // FIXME: indexing was dying when project below was replaced with getProject()
         return getProject().isActive() || getProject().isDraft();
     }
