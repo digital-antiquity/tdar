@@ -107,7 +107,7 @@
 
 <div id="subtitle"> 
     <p>Part of the  
-  <#if resource.project.active || editable>
+  <#if resource.projectVisible || editable>
     <a href="<@s.url value='/project/view'><@s.param name="id" value="${resource.project.id?c}"/></@s.url>">${resource.project.coreTitle}</a>
   <#else>
   ${resource.project.coreTitle}
