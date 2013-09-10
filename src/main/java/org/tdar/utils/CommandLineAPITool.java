@@ -181,13 +181,13 @@ public class CommandLineAPITool {
             importer.setFiles(line.getOptionValues(OPTION_FILE));
         }
         if (line.hasOption(OPTION_PROJECT_ID)) {
-            importer.setProjectId(new Long(line.getOptionValue(OPTION_PROJECT_ID)));
+            importer.setProjectId(getAsLong(line.getOptionValue(OPTION_PROJECT_ID)));
         }
         if (line.hasOption(OPTION_ACCOUNTID)) {
-            importer.setAccountId(new Long(line.getOptionValue(OPTION_ACCOUNTID)));
+            importer.setAccountId(getAsLong(line.getOptionValue(OPTION_ACCOUNTID)));
         }
         if (line.hasOption(OPTION_SLEEP)) {
-            importer.setMsSleepBetween(new Long(line.getOptionValue(OPTION_SLEEP)));
+            importer.setMsSleepBetween(getAsLong(line.getOptionValue(OPTION_SLEEP)));
         }
         if (line.hasOption(OPTION_ACCESS_RESTRICTION)) {
             importer.setFileAccessRestriction(FileAccessRestriction.valueOf(line.getOptionValue(OPTION_ACCESS_RESTRICTION)));
@@ -235,38 +235,43 @@ public class CommandLineAPITool {
         // we only want to set the properties that are actually in the file
         for (Object key : properties.keySet()) {
             final String option = (String) key;
+            final String property = properties.getProperty(option);
             switch (option) {
                 case OPTION_HOST:
-                    importer.setHostname(properties.getProperty(option));
+                    importer.setHostname(property);
                     break;
                 case OPTION_USERNAME:
-                    importer.setUsername(properties.getProperty(option));
+                    importer.setUsername(property);
                     break;
                 case OPTION_PASSWORD:
-                    importer.setPassword(properties.getProperty(option));
+                    importer.setPassword(property);
                     break;
                 case OPTION_PROJECT_ID:
-                    importer.setProjectId(new Long(properties.getProperty(option)));
+                    importer.setProjectId(getAsLong(property));
                     break;
                 case OPTION_ACCOUNTID:
-                    importer.setAccountId(new Long(properties.getProperty(option)));
+                    importer.setAccountId(getAsLong(property));
                     break;
                 case OPTION_SLEEP:
-                    importer.setMsSleepBetween(new Long(properties.getProperty(option)));
+                    importer.setMsSleepBetween(getAsLong(property));
                     break;
                 case OPTION_LOG_FILE:
-                    importer.setLogFile(properties.getProperty(option));
+                    importer.setLogFile(property);
                     break;
                 case OPTION_ACCESS_RESTRICTION:
-                    importer.setFileAccessRestriction(FileAccessRestriction.valueOf((properties.getProperty(option))));
+                    importer.setFileAccessRestriction(FileAccessRestriction.valueOf(property));
                     break;
                 case OPTION_FILE:
-                    importer.setFiles(properties.getProperty(option).split(","));
+                    importer.setFiles(property.split(","));
                     break;
                 default:
                     throw new IOException("unknown property found in config file: " + option);
             }
         }
+    }
+
+    private static Long getAsLong(final String property) {
+        return new Long(property.trim());
     }
 
     private static void copyLogOutputToScreen() {
