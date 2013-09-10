@@ -98,6 +98,8 @@
             <result name="gone" type="freemarker">/WEB-INF/content/errors/resource-deleted.ftl</result>
             <result name="not_found" type="freemarker">/WEB-INF/content/errors/page-not-found.ftl</result>
             <result name="invalid.token" type="freemarker">/WEB-INF/content/errors/double-submit.ftl</result>
+            <result name="user_agreement" type="redirect">/show-notices</result>
+            <result name="login" type="redirect">/login</result>
         </global-results>
         <!-- XXX: swallows all unhandled RuntimeExceptions and sends them to the
              exception result configured above -->
