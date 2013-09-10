@@ -23,6 +23,7 @@
   <package name="default" extends="struts-default" namespace="/">
     <result-types>
       <result-type name="jaxbdocument" class="org.tdar.struts.result.JaxbDocumentResult"/>
+      <result-type name="freemarkerhttp" class="org.tdar.struts.result.FreemarkerHttpHeaderResult"/>
     </result-types>
     <interceptors>
       <interceptor name="sessionSecurity" class="org.tdar.struts.interceptor.SessionSecurityInterceptor"/>
@@ -76,15 +77,21 @@
     <global-results>
       <result name="access-denied" type="redirect">/access-denied</result>
       <result name="login" type="redirect">/login</result>
-      <result name="error" type="freemarker">/WEB-INF/content/errors/error.ftl</result>
-      <result name="badrequest" type="freemarker">/WEB-INF/content/errors/error.ftl</result>
+        <result name="error" type="freemarkerhttp">
+            <param name="status">500</param>
+            <param name="location">/WEB-INF/content/errors/error.ftl</param>
+        </result>
+      <result name="badrequest" type="freemarkerhttp">
+          <param name="status">400</param>
+          <param name="location">/WEB-INF/content/errors/error.ftl</param>
+      </result>
       <!-- 
       <result name="exception" type="freemarker">/WEB-INF/content/errors/exception.ftl</result>
        -->
        <!-- good: we send propper http error code(so google doesn't keep this page).  Bad: user gets ugly page with no helpful message.  -->
-      <result name="exception" type="httpheader">
-          <param name="error">500</param>
-          <param name="errorMessage">The system experienced an unhandled exception</param>       
+      <result name="exception" type="freemarkerhttp">
+          <param name="status">500</param>
+          <param name="location">/WEB-INF/content/errors/exception.ftl</param>
       </result>
       <result name="unauthorized" type="freemarker">/WEB-INF/content/errors/unauthorized.ftl</result>
       <result name="gone" type="freemarker">/WEB-INF/content/errors/resource-deleted.ftl</result>
