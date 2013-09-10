@@ -109,6 +109,11 @@ public class XmlService implements Serializable {
         if (jaxbClasses == null) {
             jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
         }
+
+        if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
+            object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
+        }
+
         JAXBContext jc = JAXBContext.newInstance(jaxbClasses);
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
