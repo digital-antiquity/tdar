@@ -39,7 +39,8 @@ public class DateAnalyzerTest {
             "1234.6",
             "stringa4",
             "14/13/2013",
-            "1-Feb-03"
+            "1-Feb-03",
+            "personal communication, email 2/23/08"
     };
     
 

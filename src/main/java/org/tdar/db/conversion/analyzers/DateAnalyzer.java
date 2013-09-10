@@ -3,7 +3,10 @@ package org.tdar.db.conversion.analyzers;
 import java.util.Date;
 import java.util.List;
 
+import mx4j.log.Logger;
+
 import org.antlr.runtime.tree.Tree;
+import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 import com.joestelmach.natty.DateGroup;
@@ -53,7 +56,8 @@ public class DateAnalyzer implements ColumnAnalyzer {
         Date result = null;
         List<DateGroup> candidateDates = new Parser().parse(value);
         if (isOnlyOneDateFound(candidateDates)) {
-            Tree syntaxTree = candidateDates.get(0).getSyntaxTree();
+            DateGroup candidate = candidateDates.get(0);
+            Tree syntaxTree = candidate.getSyntaxTree();
             // At the top of the syntax tree we want a single date_time alternative (more than one means alternate dates were be found)
             if (syntaxTree.getChildCount() == 1) {
                 Tree datetime = syntaxTree.getChild(0);
@@ -63,8 +67,13 @@ public class DateAnalyzer implements ColumnAnalyzer {
                 // we are only interested in the date component if it is an explicit date.
                 if ("EXPLICIT_DATE".equals(firstChild.toString())) {
                     // could further demand a day, a month and a year
-                    result = candidateDates.get(0).getDates().get(0);
+                    result = candidate.getDates().get(0);
                 }
+            }
+            // Dealing with case: 'personal communication, email 2/23/08' gets parsed, want to make sure we're not cherry-picking a date from a larger piece of
+            // text
+            if (!StringUtils.equals(candidate.getText(), value)) {
+                return null;
             }
         }
         return result;
