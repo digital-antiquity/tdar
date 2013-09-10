@@ -1093,7 +1093,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 i++;
                 getDownloadStats().put(String.format("%s. %s", i, file.getFileName()),
                         getResourceService().getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
-                logger.info("{} {}", file.getId(), getDownloadStats().get(file.getFileName()));
             }
         }
         return SUCCESS;
