@@ -605,7 +605,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      * @param req
      */
     @Transactional(readOnly = false)
-    public void satisfyPrerequisite(Person user, AuthNotice req) {
+    void satisfyPrerequisite(Person user, AuthNotice req) {
         if(req == AuthNotice.CONTRIBUTOR_AGREEMENT) {
             user.setCreatorAgreementVersion(LATEST_CONTRIBUTOR_AGREEMENT_VERSION);
         } else if(req == AuthNotice.TOS_AGREEMENT){
@@ -614,12 +614,25 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     }
 
     @Transactional(readOnly = false)
-    public void satisfyPrerequisites(Person user,  Collection<AuthNotice> notices) {
+    void satisfyPrerequisites(Person user,  Collection<AuthNotice> notices) {
         for(AuthNotice notice : notices) {
             satisfyPrerequisite(user, notice);
         }
     }
 
-
+    /**
+     * Indicate that the user associated with the specified session has acknowledged/accepted the specified notices
+     * (e.g. user agreements)
+     * @param sessionData
+     * @param notices
+     */
+    public void satisfyUserPrerequisites(SessionData sessionData, Collection<AuthNotice> notices) {
+        //we actually need to update two person instances:  the persisted user record, and the detached user
+        //associated with the session. We hide this detail from the caller.
+        Person detachedUser = sessionData.getPerson();
+        Person persistedUser = personDao.find(detachedUser.getId());
+        satisfyPrerequisites(detachedUser, notices);
+        satisfyPrerequisites(persistedUser, notices);
+    }
 
 }

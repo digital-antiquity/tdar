@@ -70,7 +70,7 @@ public class UserAgreementAcceptAction  extends AuthenticationAware.Base impleme
     boolean processResponse() {
         logger.debug(" pending notices:{}", authNotices);
         logger.debug("accepted notices:{}", acceptedAuthNotices);
-        getAuthenticationAndAuthorizationService().satisfyPrerequisites(user, acceptedAuthNotices);
+        getAuthenticationAndAuthorizationService().satisfyUserPrerequisites(getSessionData(), acceptedAuthNotices);
 
         //FIXME: the update and sync are not needed,  but I'm trying to figure out why the user tos fields aren't updated by the time the SUCCESS redirect happens
         //getGenericService().update(user);

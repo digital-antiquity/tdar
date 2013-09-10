@@ -106,7 +106,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
     private String  interceptPendingNotices(ActionInvocation invocation, Person user) throws Exception {
         //FIXME: without this refresh,  the redirect from /agreement-response to /dashboard  is broken. Why??
-        genericService.refresh(user);
+        //genericService.refresh(user);
 
         Object action = invocation.getAction();
         // user is authenticated and authorized to perform  requested action.
