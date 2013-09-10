@@ -250,7 +250,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         assertEquals(DataTableColumnType.DOUBLE, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
         Long datasetId = dataset.getId();
         dataset = null;
-        dataset = setupAndLoadResource(filename, Dataset.class, datasetId);
+        dataset = replaceFile(filename, "dataset_with_floats.xls", Dataset.class,datasetId);
         assertEquals(DataTableColumnType.VARCHAR, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
 
     }

@@ -25,6 +25,8 @@ import static org.junit.Assert.*;
 
 public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCase {
 
+    private static final String TAB_MAPPING_DATASET_TAB = "tab_mapping_dataset.tab";
+
     @Autowired
     DatasetService datasetService;
 
@@ -44,7 +46,7 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         project.markUpdated(getSessionUser());
         genericService.save(project);
 
-        Dataset dataset = setupAndLoadResource("tab_mapping_dataset.tab",Dataset.class);
+        Dataset dataset = setupAndLoadResource(TAB_MAPPING_DATASET_TAB,Dataset.class);
         Long datasetId = dataset.getId();
         dataset = null;
         DatasetController controller = generateNewInitializedController(DatasetController.class);
@@ -109,7 +111,7 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         testDatasetMapping();
         Dataset dataset = sharedDataset;
 
-        setupAndLoadResource("tab_mapping_dataset2.tab", Dataset.class, dataset.getId());
+        replaceFile("tab_mapping_dataset2.tab", TAB_MAPPING_DATASET_TAB, Dataset.class, dataset.getId());
 
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override

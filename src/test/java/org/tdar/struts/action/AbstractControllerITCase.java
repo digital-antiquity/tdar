@@ -213,6 +213,42 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, id);
     }
 
+    public <C> C replaceFile(String uploadFile, String replaceFile, Class<C> cls, Long id) throws TdarActionException {
+        AbstractInformationResourceController<?> controller = null;
+        Long ticketId = -1L;
+        if (cls.equals(Ontology.class)) {
+            controller = generateNewInitializedController(OntologyController.class);
+        } else if (cls.equals(Dataset.class)) {
+            controller = generateNewInitializedController(DatasetController.class);
+            ticketId = uploadFile(getTestFilePath(), uploadFile);
+        } else if (cls.equals(Document.class)) {
+            controller = generateNewInitializedController(DocumentController.class);
+            ticketId = uploadFile(getTestFilePath(), uploadFile);
+        } else if (cls.equals(Image.class)) {
+            controller = generateNewInitializedController(ImageController.class);
+            ticketId = uploadFile(getTestFilePath(), uploadFile);
+        } else if (cls.equals(CodingSheet.class)) {
+            controller = generateNewInitializedController(CodingSheetController.class);
+        }
+        controller.setId(id);
+        controller.prepare();
+        controller.edit();
+//        FileProxy newProxy = new FileProxy(uploadFile, VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
+//        newProxy.setAction(FileAction.REPLACE);
+        for (FileProxy proxy : controller.getFileProxies()) {
+            if (proxy.getFilename().equals(replaceFile)) {
+                proxy.setFilename(uploadFile);
+                proxy.setAction(FileAction.REPLACE);
+//                newProxy.set
+            }
+        }
+//        controller.getFileProxies().add(newProxy);
+        controller.setTicketId(ticketId);
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        return (C) controller.getResource();
+    }
+    
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) {
 
