@@ -107,10 +107,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
         processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
         List<InformationResourceFileVersion> filesToProcess = new ArrayList<>();
+        List<InformationResourceFile> irFiles = new ArrayList<>();
 
         for (FileProxy proxy : fileProxiesToProcess) {
             if (proxy.getAction().requiresWorkflowProcessing()) {
                 InformationResourceFile irFile = proxy.getInformationResourceFile();
+                irFiles.add(irFile);
                 InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
                 logger.trace("version: {} proxy: {} ", version, proxy);
                 getDao().saveOrUpdate(irFile);
@@ -125,6 +127,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 }
             }
         }
+        
+        addExistingCompositeFilesForProcessing(resource, filesToProcess, irFiles);
         processFiles(resource, filesToProcess);
 
         /*
@@ -136,6 +140,22 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         if (ticketId != null) {
             PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
             personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
+        }
+    }
+
+    /*
+     * When processing informationResourceFileVersions, make sure that we have ALL of the files available
+     * This may mean trolling through the active files on the resource and adding them to the proxy
+     */
+    private void addExistingCompositeFilesForProcessing(T resource, List<InformationResourceFileVersion> filesToProcess, List<InformationResourceFile> irFiles) throws FileNotFoundException {
+        if (resource.getResourceType().isCompositeFilesEnabled()) {
+            for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
+                if (!irFiles.contains(file) && !file.isDeleted()) {
+                    InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
+                    latestUploadedVersion.setTransientFile(filestore.retrieveFile(latestUploadedVersion));
+                    filesToProcess.add(latestUploadedVersion);
+                }
+            }
         }
     }
 

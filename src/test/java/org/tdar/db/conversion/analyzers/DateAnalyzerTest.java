@@ -30,7 +30,6 @@ public class DateAnalyzerTest {
     // Faulty dates are accepted: they are just either nudged along into the next month or have parts dropped.
     private String[] faultyDates = {
             "31st February, 2011", // not a leap year
-            "40/4/2011",
     };
 
     // It could be argued that some of these invalid dates are actually perfectly acceptable.
@@ -39,7 +38,9 @@ public class DateAnalyzerTest {
             "1234.6",
             "stringa4",
             "14/13/2013",
-            "1-Feb-03"
+            "40/4/2011",
+            "1-Feb-03",
+            "personal communication, email 2/23/08"
     };
     
 

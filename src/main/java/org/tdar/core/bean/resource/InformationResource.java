@@ -662,108 +662,104 @@ public abstract class InformationResource extends Resource {
     @IndexedEmbedded
     @Override
     public Set<InvestigationType> getActiveInvestigationTypes() {
-        return isProjectActive() && isInheritingInvestigationInformation() ? project.getInvestigationTypes() : getInvestigationTypes();
+        return isProjectVisible() && isInheritingInvestigationInformation() ? project.getInvestigationTypes() : getInvestigationTypes();
     }
 
     @Transient
     @XmlTransient
-    private boolean isProjectActive() {
+    public boolean isProjectVisible() {
         // FIXME: indexing was dying when project below was replaced with getProject()
-        return getProject().isActive();
-        // if (project != null && project != Project.NULL && project.isActive()) {
-        // return true;
-        // }
-        // return false;
+        return getProject().isActive() || getProject().isDraft();
     }
 
     @IndexedEmbedded
     @Override
     public Set<SiteNameKeyword> getActiveSiteNameKeywords() {
-        return isProjectActive() && isInheritingSiteInformation() ? project.getSiteNameKeywords() : getSiteNameKeywords();
+        return isProjectVisible() && isInheritingSiteInformation() ? project.getSiteNameKeywords() : getSiteNameKeywords();
     }
 
     @IndexedEmbedded
     @Override
     public Set<SourceCollection> getActiveSourceCollections() {
-        return isProjectActive() && isInheritingCollectionInformation() ? project.getSourceCollections() : getSourceCollections();
+        return isProjectVisible() && isInheritingCollectionInformation() ? project.getSourceCollections() : getSourceCollections();
     }
 
     @IndexedEmbedded
     @Override
     public Set<RelatedComparativeCollection> getActiveRelatedComparativeCollections() {
-        return isProjectActive() && isInheritingCollectionInformation() ? project.getRelatedComparativeCollections() : getRelatedComparativeCollections();
+        return isProjectVisible() && isInheritingCollectionInformation() ? project.getRelatedComparativeCollections() : getRelatedComparativeCollections();
     }
 
     @IndexedEmbedded
     @Override
     public Set<SiteTypeKeyword> getActiveSiteTypeKeywords() {
-        return isProjectActive() && isInheritingSiteInformation() ? project.getSiteTypeKeywords() : getSiteTypeKeywords();
+        return isProjectVisible() && isInheritingSiteInformation() ? project.getSiteTypeKeywords() : getSiteTypeKeywords();
     }
 
     public Set<SiteTypeKeyword> getActiveApprovedSiteTypeKeywords() {
-        return isProjectActive() && isInheritingSiteInformation() ? project.getApprovedSiteTypeKeywords() : getApprovedSiteTypeKeywords();
+        return isProjectVisible() && isInheritingSiteInformation() ? project.getApprovedSiteTypeKeywords() : getApprovedSiteTypeKeywords();
     }
 
     public Set<SiteTypeKeyword> getActiveUncontrolledSiteTypeKeywords() {
-        return isProjectActive() && isInheritingSiteInformation() ? project.getUncontrolledSiteTypeKeywords() : getUncontrolledSiteTypeKeywords();
+        return isProjectVisible() && isInheritingSiteInformation() ? project.getUncontrolledSiteTypeKeywords() : getUncontrolledSiteTypeKeywords();
     }
 
     @Override
     @IndexedEmbedded
     public Set<MaterialKeyword> getActiveMaterialKeywords() {
-        return isProjectActive() && isInheritingMaterialInformation() ? project.getMaterialKeywords() : getMaterialKeywords();
+        return isProjectVisible() && isInheritingMaterialInformation() ? project.getMaterialKeywords() : getMaterialKeywords();
     }
 
     @Override
     @IndexedEmbedded(targetElement = OtherKeyword.class)
     public Set<OtherKeyword> getActiveOtherKeywords() {
-        return isProjectActive() && isInheritingOtherInformation() ? project.getOtherKeywords() : getOtherKeywords();
+        return isProjectVisible() && isInheritingOtherInformation() ? project.getOtherKeywords() : getOtherKeywords();
     }
 
     @Override
     @IndexedEmbedded
     public Set<CultureKeyword> getActiveCultureKeywords() {
-        return isProjectActive() && isInheritingCulturalInformation() ? project.getCultureKeywords() : getCultureKeywords();
+        return isProjectVisible() && isInheritingCulturalInformation() ? project.getCultureKeywords() : getCultureKeywords();
     }
 
     public Set<CultureKeyword> getActiveApprovedCultureKeywords() {
-        return isProjectActive() && isInheritingCulturalInformation() ? project.getApprovedCultureKeywords() : getApprovedCultureKeywords();
+        return isProjectVisible() && isInheritingCulturalInformation() ? project.getApprovedCultureKeywords() : getApprovedCultureKeywords();
     }
 
     public Set<ResourceNote> getActiveResourceNotes() {
-        return isProjectActive() && isInheritingNoteInformation() ? project.getResourceNotes() : getResourceNotes();
+        return isProjectVisible() && isInheritingNoteInformation() ? project.getResourceNotes() : getResourceNotes();
     }
 
     public Set<ResourceAnnotation> getActiveResourceAnnotations() {
-        return isProjectActive() && isInheritingIdentifierInformation() ? project.getResourceAnnotations() : getResourceAnnotations();
+        return isProjectVisible() && isInheritingIdentifierInformation() ? project.getResourceAnnotations() : getResourceAnnotations();
     }
 
     public Set<CultureKeyword> getActiveUncontrolledCultureKeywords() {
-        return isProjectActive() && isInheritingCulturalInformation() ? project.getUncontrolledCultureKeywords() : getUncontrolledCultureKeywords();
+        return isProjectVisible() && isInheritingCulturalInformation() ? project.getUncontrolledCultureKeywords() : getUncontrolledCultureKeywords();
     }
 
     @Override
     @IndexedEmbedded
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
-        return isProjectActive() && isInheritingSpatialInformation() ? project.getGeographicKeywords() : getGeographicKeywords();
+        return isProjectVisible() && isInheritingSpatialInformation() ? project.getGeographicKeywords() : getGeographicKeywords();
     }
 
     @Override
     @IndexedEmbedded
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
-        return isProjectActive() && isInheritingSpatialInformation() ? project.getLatitudeLongitudeBoxes() : getLatitudeLongitudeBoxes();
+        return isProjectVisible() && isInheritingSpatialInformation() ? project.getLatitudeLongitudeBoxes() : getLatitudeLongitudeBoxes();
     }
 
     @Override
     @IndexedEmbedded
     public Set<TemporalKeyword> getActiveTemporalKeywords() {
-        return isProjectActive() && isInheritingTemporalInformation() ? project.getTemporalKeywords() : getTemporalKeywords();
+        return isProjectVisible() && isInheritingTemporalInformation() ? project.getTemporalKeywords() : getTemporalKeywords();
     }
 
     @Override
     @IndexedEmbedded
     public Set<CoverageDate> getActiveCoverageDates() {
-        return isProjectActive() && isInheritingTemporalInformation() ? project.getCoverageDates() : getCoverageDates();
+        return isProjectVisible() && isInheritingTemporalInformation() ? project.getCoverageDates() : getCoverageDates();
     }
 
     @Override
@@ -893,7 +889,7 @@ public abstract class InformationResource extends Resource {
     @JSONTransient
     public List<Obfuscatable> obfuscate() {
         // don't claim to inherit data from Projects which are inactive
-        if (!isProjectActive()) {
+        if (!isProjectVisible()) {
             setProject(Project.NULL);
             // setting the project to null should be enough...
             setInheritingCulturalInformation(false);

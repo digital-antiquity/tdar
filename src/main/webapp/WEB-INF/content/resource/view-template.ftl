@@ -107,7 +107,7 @@
 
 <div id="subtitle"> 
     <p>Part of the  
-  <#if resource.project.active || editable>
+  <#if resource.projectVisible || editable>
     <a href="<@s.url value='/project/view'><@s.param name="id" value="${resource.project.id?c}"/></@s.url>">${resource.project.coreTitle}</a>
   <#else>
   ${resource.project.coreTitle}
@@ -257,7 +257,7 @@
         <#if resource.externalId?has_content>; ${resource.externalId}
         <#elseif resource.lessThanDayOld && !resource.citationRecord>
         <br/>
-            <em>Note:</em>A DOI will be generated in the next day for this resource.
+            <em>Note:</em>A DOI will be generated <#if resource.draft>when this resource is no longer a draft<#else> in the next day for this resource</#if>.
         </#if>
         </p>
     </div>
