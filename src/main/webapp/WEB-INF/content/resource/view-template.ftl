@@ -257,7 +257,7 @@
         <#if resource.externalId?has_content>; ${resource.externalId}
         <#elseif resource.lessThanDayOld && !resource.citationRecord>
         <br/>
-            <em>Note:</em>A DOI will be generated in the next day for this resource.
+            <em>Note:</em>A DOI will be generated <#if resource.draft>when this resource is no longer a draft<#else> in the next day for this resource</#if>.
         </#if>
         </p>
     </div>

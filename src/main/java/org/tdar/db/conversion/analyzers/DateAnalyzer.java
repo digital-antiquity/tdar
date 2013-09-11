@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.antlr.runtime.tree.Tree;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 import com.joestelmach.natty.DateGroup;
@@ -50,12 +53,18 @@ public class DateAnalyzer implements ColumnAnalyzer {
      * @return Either null if no date was found in the String, or the date expressed as a java.util.Date
      */
     public static Date convertValue(final String value) {
+        Logger logger = LoggerFactory.getLogger(DateAnalyzer.class);
+
         Date result = null;
+        logger.trace("---> " + value);
         List<DateGroup> candidateDates = new Parser().parse(value);
         if (isOnlyOneDateFound(candidateDates)) {
-            Tree syntaxTree = candidateDates.get(0).getSyntaxTree();
+            logger.trace("only one found");
+            DateGroup candidate = candidateDates.get(0);
+            Tree syntaxTree = candidate.getSyntaxTree();
             // At the top of the syntax tree we want a single date_time alternative (more than one means alternate dates were be found)
             if (syntaxTree.getChildCount() == 1) {
+                logger.trace("only one child");
                 Tree datetime = syntaxTree.getChild(0);
                 // The date_time instance will have a date plus a time, or a date, or a time
                 // For the possible tree see: http://natty.joestelmach.com/doc.jsp
@@ -63,9 +72,16 @@ public class DateAnalyzer implements ColumnAnalyzer {
                 // we are only interested in the date component if it is an explicit date.
                 if ("EXPLICIT_DATE".equals(firstChild.toString())) {
                     // could further demand a day, a month and a year
-                    result = candidateDates.get(0).getDates().get(0);
+                    result = candidate.getDates().get(0);
                 }
             }
+            // Dealing with case: 'personal communication, email 2/23/08' gets parsed, want to make sure we're not cherry-picking a date from a larger piece of
+            // text
+            logger.trace("{}<==>{}", candidate.getText(),value);
+            if (!StringUtils.equals(candidate.getText(), value)) {
+                result = null;
+            }
+            logger.trace("== result: {} ", result);
         }
         return result;
     }
