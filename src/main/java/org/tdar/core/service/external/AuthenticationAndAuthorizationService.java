@@ -49,8 +49,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<Person, TdarGroup>();
     private final Logger logger = Logger.getLogger(getClass());
 
-    public static final Integer LATEST_TOS_VERSION = 2;
-    public static final Integer LATEST_CONTRIBUTOR_AGREEMENT_VERSION = 1;
+    private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
+
+    public final Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
+    public final Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
 
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
@@ -589,11 +591,11 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      */
     public List<AuthNotice> getUserRequirements(Person user) {
         List<AuthNotice> notifications = new ArrayList<>();
-        if(user.getTosVersion() < LATEST_TOS_VERSION) {
+        if(user.getTosVersion() < tosLatestVersion) {
             notifications.add(AuthNotice.TOS_AGREEMENT);
         }
 
-        if(user.getContributor() && user.getCreatorAgreementVersion() < LATEST_CONTRIBUTOR_AGREEMENT_VERSION) {
+        if(user.getContributor() && user.getContributorAgreementVersion() < contributorAgreementLatestVersion) {
             notifications.add(AuthNotice.CONTRIBUTOR_AGREEMENT);
         }
         return notifications;
@@ -608,10 +610,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public void satisfyPrerequisite(Person user, AuthNotice req) {
         switch (req) {
             case CONTRIBUTOR_AGREEMENT:
-                user.setCreatorAgreementVersion(LATEST_CONTRIBUTOR_AGREEMENT_VERSION);
+                user.setContributorAgreementVersion(contributorAgreementLatestVersion);
                 break;
             case TOS_AGREEMENT:
-                user.setTosVersion(LATEST_TOS_VERSION);
+                user.setTosVersion(tosLatestVersion);
                 break;
             case GUEST_ACCOUNT:
                 break;

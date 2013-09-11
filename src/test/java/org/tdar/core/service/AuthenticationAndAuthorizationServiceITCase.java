@@ -9,19 +9,19 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.tdar.core.service.external.AuthenticationAndAuthorizationService.LATEST_CONTRIBUTOR_AGREEMENT_VERSION;
-import static org.tdar.core.service.external.AuthenticationAndAuthorizationService.LATEST_TOS_VERSION;
 
 // jtd 9/5:  this doesn't need to be an integration test atm, but I figure we'll eventually want to add tests that
 // need a non-mocked service.
 public class AuthenticationAndAuthorizationServiceITCase {
     AuthenticationAndAuthorizationService service = new AuthenticationAndAuthorizationService();
+    int tosLatestVersion = service.tosLatestVersion;
+    int contributorAgreementLatestVersion = service.contributorAgreementLatestVersion;
 
     Person user(boolean contributor, int tosVersion, int creatorAgreementVersion) {
         Person user = new Person("bob", "loblaw", "jim.devos@zombo.com");
         user.setContributor(contributor);
         user.setTosVersion(tosVersion);
-        user.setCreatorAgreementVersion(creatorAgreementVersion);
+        user.setContributorAgreementVersion(creatorAgreementVersion);
         return user;
     }
 
@@ -34,7 +34,7 @@ public class AuthenticationAndAuthorizationServiceITCase {
         assertThat(service.userHasPendingRequirements(legacyContributor), is(true));
 
         //if user registered after latest version of TOS/CA, they have not pending requirements
-        Person newUser = user(false, LATEST_TOS_VERSION, LATEST_CONTRIBUTOR_AGREEMENT_VERSION);
+        Person newUser = user(false, tosLatestVersion, contributorAgreementLatestVersion);
         assertThat(service.userHasPendingRequirements(newUser), is(false));
 
     }
@@ -47,11 +47,11 @@ public class AuthenticationAndAuthorizationServiceITCase {
         assertThat(requirements, hasItems(AuthNotice.TOS_AGREEMENT, AuthNotice.CONTRIBUTOR_AGREEMENT));
 
         //should satisfy all requirements
-        Person newUser = user(false, LATEST_TOS_VERSION, LATEST_CONTRIBUTOR_AGREEMENT_VERSION);
+        Person newUser = user(false, tosLatestVersion, contributorAgreementLatestVersion);
         assertThat(service.getUserRequirements(newUser), empty());
 
         //should satisfy all requirements
-        Person newContributor = user(true, LATEST_TOS_VERSION, LATEST_CONTRIBUTOR_AGREEMENT_VERSION);
+        Person newContributor = user(true, tosLatestVersion, contributorAgreementLatestVersion);
         assertThat(service.getUserRequirements(newContributor), empty());
     }
 

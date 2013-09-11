@@ -47,7 +47,7 @@ public class SQLExtract {
     private String DEBUG_NORM = "1";
     private String DEBUG_ERR = "2";
     public String DRIVER = "org.postgresql.Driver";
-    public String URL = "jdbc:postgresql://localhost/tdarmetadata";
+    public String URL = "jdbc:postgresql://localhost/tdarmetadata_stable";
     public String USER = "tdar";
     public String PASSWORD = "";
     public String PATH_TO_FILE = "";

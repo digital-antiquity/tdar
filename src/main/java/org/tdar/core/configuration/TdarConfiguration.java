@@ -668,4 +668,12 @@ public class TdarConfiguration {
     public String getTosUrl() {
         return assistant.getStringProperty("tos.url", "/about/terms-of-use");
     }
+
+    public int getContributorAgreementLatestVersion() {
+        return assistant.getIntProperty("contributor.agreement.version", 1);
+    }
+
+    public int getTosLatestVersion() {
+        return assistant.getIntProperty("tos.version", 1);
+    }
 }

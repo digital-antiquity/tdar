@@ -169,8 +169,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private Integer tosVersion = 0;
 
     //version of the latest Creator Agreement that the user has accepted
-    @Column(name = "creator_agreement_version", nullable = false, columnDefinition = "int default 0")
-    private Integer creatorAgreementVersion = 0;
+    @Column(name = "contributor_agreement_version", nullable = false, columnDefinition = "int default 0")
+    private Integer contributorAgreementVersion = 0;
 
     /**
      * Returns the person's name in [last name, first name] format.
@@ -521,12 +521,12 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.tempDisplayName = tempName;
     }
 
-    public Integer getCreatorAgreementVersion() {
-        return creatorAgreementVersion;
+    public Integer getContributorAgreementVersion() {
+        return contributorAgreementVersion;
     }
 
-    public void setCreatorAgreementVersion(Integer creatorAgreementVersion) {
-        this.creatorAgreementVersion = creatorAgreementVersion;
+    public void setContributorAgreementVersion(Integer contributorAgreementVersion) {
+        this.contributorAgreementVersion = contributorAgreementVersion;
     }
 
     public Integer getTosVersion() {
