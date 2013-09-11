@@ -13,3 +13,6 @@ alter table person add column creator_agreement_level integer not null default 0
 
 alter table person rename column tos_level  to tos_version;
 alter table person rename column creator_agreement_level  to creator_agreement_version;
+
+-- jdevos 9/11/2013
+alter table person rename column creator_agreement_version  to contributor_agreement_version;
