@@ -3,8 +3,6 @@ package org.tdar.db.conversion.analyzers;
 import java.util.Date;
 import java.util.List;
 
-import mx4j.log.Logger;
-
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
