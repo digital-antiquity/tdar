@@ -595,4 +595,12 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         this.reCaptchaText = reCaptchaText;
     }
 
+    public String getTosUrl() {
+        return getTdarConfiguration().getTosUrl();
+    }
+
+    public String getContributorAgreementUrl() {
+        return getTdarConfiguration().getContributorAgreementUrl();
+    }
+
 }

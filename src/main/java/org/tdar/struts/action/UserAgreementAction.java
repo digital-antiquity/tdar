@@ -29,17 +29,11 @@ public class UserAgreementAction extends AuthenticationAware.Base implements Pre
 
 
     List<AuthNotice> authNotices = new ArrayList<>();
-    String tosUrl;
-
-
-    String contributorAgreementUrl;
 
     @Override
     public void prepare() {
         Person user = getAuthenticatedUser();
         authNotices.addAll(getAuthenticationAndAuthorizationService().getUserRequirements(user));
-        tosUrl = getTdarConfiguration().getTosUrl();
-        contributorAgreementUrl = getTdarConfiguration().getContributorAgreementUrl();
     }
 
     @Override
@@ -61,11 +55,11 @@ public class UserAgreementAction extends AuthenticationAware.Base implements Pre
     }
 
     public String getTosUrl() {
-        return tosUrl;
+        return getTdarConfiguration().getTosUrl();
     }
 
     public String getContributorAgreementUrl() {
-        return contributorAgreementUrl;
+        return getTdarConfiguration().getContributorAgreementUrl();
     }
 
 }
