@@ -14,8 +14,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.action.UserAgreementAcceptAction;
-import org.tdar.struts.action.UserAgreementAction;
+import org.tdar.struts.action.UserAgreementController;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
@@ -105,15 +104,13 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
     }
 
     private String  interceptPendingNotices(ActionInvocation invocation, Person user) throws Exception {
-        //FIXME: without this refresh,  the redirect from /agreement-response to /dashboard  is broken. Why??
-        //genericService.refresh(user);
 
         Object action = invocation.getAction();
         // user is authenticated and authorized to perform  requested action.
         // now we check for any outstanding notices require user attention
         if(authenticationAndAuthorizationService.userHasPendingRequirements(user)
                 //avoid infinite redirect
-                && !(action instanceof UserAgreementAction) && !(action instanceof UserAgreementAcceptAction)) {
+                &&  !(action instanceof UserAgreementController)) {
             logger.info("user: {} has pending agreements", user);
             return TdarActionSupport.USER_AGREEMENT;
         } else {

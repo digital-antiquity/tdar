@@ -20,13 +20,11 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-@Action(value = "agreement-response")
 @Results({
         @Result(name=TdarActionSupport.INPUT, type="redirectAction", params = {  "actionName", "show-notices", "namespace", "/"}),
-        @Result(name=TdarActionSupport.SUCCESS, type="redirectAction",params = {"actionName", "dashboard", "namespace", "/dashboard"}),
         @Result(name=TdarActionSupport.NONE, type="redirectAction", params = { "actionName", "logout", "namespace", "/" })
 })
-public class UserAgreementAcceptAction  extends AuthenticationAware.Base implements Preparable {
+public class UserAgreementController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = 5992094345280080761L;
     public static final String FMT1_DECLINE_MESSAGE = "You have been logged out.  Please contact us if you have any questions regarding %s policies and procedures.";
@@ -37,17 +35,15 @@ public class UserAgreementAcceptAction  extends AuthenticationAware.Base impleme
 
     @Override
     public void prepare() {
-        logger.debug("prepare phase!");
-        logger.debug("acceptedAuthNotices: {}", acceptedAuthNotices);
-        logger.debug("userResponse:{}", userResponse);
+        logger.trace("acceptedAuthNotices: {}", acceptedAuthNotices);
+        logger.trace("userResponse:{}", userResponse);
         user = getAuthenticatedUser();
         authNotices.addAll(getAuthenticationAndAuthorizationService().getUserRequirements(user));
     }
 
-    @Override
     @WriteableSession
-    public String execute() {
-        logger.debug("execute phase!");
+    @Action(value = "agreement-response", results = {@Result(name=TdarActionSupport.SUCCESS, type="redirect",location="/dashboard")})
+    public String agreementResponse() {
         if(!isAuthenticated()) return LOGIN;
 
         if("decline".equals(userResponse)) {
@@ -73,17 +69,17 @@ public class UserAgreementAcceptAction  extends AuthenticationAware.Base impleme
     }
 
     boolean processResponse() {
-        logger.debug(" pending notices:{}", authNotices);
-        logger.debug("accepted notices:{}", acceptedAuthNotices);
+        logger.trace(" pending notices:{}", authNotices);
+        logger.trace("accepted notices:{}", acceptedAuthNotices);
         getAuthenticationAndAuthorizationService().satisfyUserPrerequisites(getSessionData(), acceptedAuthNotices);
-
-        //FIXME: the update and sync are not needed,  but I'm trying to figure out why the user tos fields aren't updated by the time the SUCCESS redirect happens
-        //getGenericService().update(user);
-        //getGenericService().synchronize();
-
-
         boolean allRequirementsMet = !getAuthenticationAndAuthorizationService().userHasPendingRequirements(user);
         return allRequirementsMet;
+    }
+
+    @Action(value="show-notices")
+    public String showNotices() {
+        if(!isAuthenticated()) return LOGIN;
+        return SUCCESS;
     }
 
     public List<AuthNotice> getAuthNotices() {
@@ -98,8 +94,25 @@ public class UserAgreementAcceptAction  extends AuthenticationAware.Base impleme
         acceptedAuthNotices = value;
     }
 
-
     public void setSubmit(String value) {
         userResponse = value;
     }
+
+    public boolean isTosAcceptanceRequired() {
+        return authNotices.contains(AuthNotice.TOS_AGREEMENT);
+    }
+
+    public boolean isContributorAgreementAcceptanceRequired() {
+        return authNotices.contains(AuthNotice.CONTRIBUTOR_AGREEMENT);
+    }
+
+    public String getTosUrl() {
+        return getTdarConfiguration().getTosUrl();
+    }
+
+    public String getContributorAgreementUrl() {
+        return getTdarConfiguration().getContributorAgreementUrl();
+    }
+
+
 }
