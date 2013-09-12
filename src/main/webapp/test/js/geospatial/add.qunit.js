@@ -163,9 +163,22 @@
         });
 
         test("multiple base filenames", function() {
+            _mockUpload(gis.helper, "foo.shp");
+            _mockUpload(gis.helper, "foo.shx");
+            _mockUpload(gis.helper, "foo.dbf");
             _mockUpload(gis.helper, "foo.tiff");
             _mockUpload(gis.helper, "bar.tfw");
             ok(!gis.validator.validate(), "should be invalid because files do not have the same basename");
+        });
+
+        test("adf files excluded from basename rule", function() {
+            _mockUpload(gis.helper, "chunky-peanut-butter.shp");
+            _mockUpload(gis.helper, "chunky-peanut-butter.shx");
+            _mockUpload(gis.helper, "chunky-peanut-butter.dbf");
+            _mockUpload(gis.helper, "chunky-peanut-butter.tiff");
+            _mockUpload(gis.helper, "chunky-peanut-butter.tfw");
+            _mockUpload(gis.helper, "grape-jelly.adf");
+            ok(gis.validator.validate(), "should be valid because adf files are excluded from the same-basename requirement");
         });
 
         test("multiple image files", function() {
