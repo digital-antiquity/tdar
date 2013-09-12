@@ -26,7 +26,20 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
     public void testLoginWithPrompt() {
         logger.info(getPageBodyCode());
+        assertTextPresent("User Agreements");
+        setInput("acceptedAuthNotices", "TOS_AGREEMENT");
+        setInput("acceptedAuthNotices", "CONTRIBUTOR_AGREEMENT");
+        clickElementWithId("accept");
         assertTextPresentInPage("Welcome back,");
+    }
+
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
+    public void testLoginDeclineWithPrompt() {
+        logger.info(getPageBodyCode());
+        assertTextPresent("User Agreements");
+        clickElementWithId("decline");
+        assertTextPresentInPage("What can you dig up");
     }
 
     

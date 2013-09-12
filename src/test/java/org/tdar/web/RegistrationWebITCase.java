@@ -39,7 +39,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     public void testRegisterContributorWithTOS() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "contributor");
-        testLogin(personmap, true);
+        testLogin(personmap, true,true,true);
         
     }
     

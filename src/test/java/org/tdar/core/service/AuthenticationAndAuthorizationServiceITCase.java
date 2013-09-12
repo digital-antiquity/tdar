@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import org.junit.Test;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -27,6 +28,7 @@ public class AuthenticationAndAuthorizationServiceITCase {
     }
 
     @Test
+    @Rollback
     public void testUserHasPendingRequirements() throws Exception {
         Person legacyUser = user(false, 0, 0);
         assertThat(service.userHasPendingRequirements(legacyUser), is(true));
@@ -57,6 +59,7 @@ public class AuthenticationAndAuthorizationServiceITCase {
     }
 
     @Test
+    @Rollback
     public void testSatisfyPrerequisite() throws Exception {
         //a contributor that hasn't signed on since updated TOS and creator agreement
         Person contributor = user(true, 0, 0);

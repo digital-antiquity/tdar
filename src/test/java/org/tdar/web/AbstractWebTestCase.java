@@ -1186,6 +1186,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         for (String key : values.keySet()) {
             setInput(key, values.get(key));
         }
+        setInput("acceptedAuthNotices", "TOS_AGREEMENT");
+        setInput("acceptedAuthNotices", "CONTRIBUTOR_AGREEMENT");
         
         setInput("timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Save");
