@@ -1,15 +1,17 @@
 package org.tdar.struts.action;
 
-import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.Preparable;
-import org.apache.struts2.convention.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.entity.Person;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * contorller for presenting user notices
@@ -27,7 +29,7 @@ import java.util.List;
 public class UserAgreementAction extends AuthenticationAware.Base implements Preparable {
 //public class UserAgreementAction extends ActionSupport {
 
-
+    private static final long serialVersionUID = 581473361181921943L;
     List<AuthNotice> authNotices = new ArrayList<>();
 
     @Override

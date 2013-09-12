@@ -1,16 +1,20 @@
 package org.tdar.struts.action;
 
-import com.opensymphony.xwork2.Preparable;
-import com.opensymphony.xwork2.Validateable;
-import org.apache.struts2.convention.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.struts.WriteableSession;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.opensymphony.xwork2.Preparable;
 
 @Namespace("/")
 @ParentPackage("secured")
@@ -24,6 +28,7 @@ import java.util.List;
 })
 public class UserAgreementAcceptAction  extends AuthenticationAware.Base implements Preparable {
 
+    private static final long serialVersionUID = 5992094345280080761L;
     public static final String FMT1_DECLINE_MESSAGE = "You have been logged out.  Please contact us if you have any questions regarding %s policies and procedures.";
     List<AuthNotice> authNotices = new ArrayList<>();
     List<AuthNotice> acceptedAuthNotices = new ArrayList<>();
