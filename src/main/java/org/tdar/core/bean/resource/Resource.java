@@ -152,10 +152,9 @@ public class Resource extends JsonModel.Base implements Persistable,
     private static final long serialVersionUID = -230400285817185637L;
 
     @Transient
-
     private transient boolean obfuscated;
-    @Transient
 
+    @Transient
     private transient boolean viewable;
     @Transient
 
@@ -391,12 +390,14 @@ public class Resource extends JsonModel.Base implements Persistable,
     private transient Float score = -1f;
     private transient boolean readyToIndex = true;
 
+    @Override
     @Transient
     @XmlTransient
     public boolean isReadyToIndex() {
         return readyToIndex;
     }
 
+    @Override
     public void setReadyToIndex(boolean readyToIndex) {
         this.readyToIndex = readyToIndex;
     }
@@ -633,17 +634,20 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.investigationTypes = investigationTypes;
     }
 
+    @Override
     @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
     @XmlAttribute
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
 
     // @Boost(1.5f)
+    @Override
     @Fields({
             @Field,
             @Field(name = QueryFieldNames.TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
@@ -651,6 +655,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return title;
     }
 
+    @Override
     @Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getTitleSort() {
         if (getTitle() == null)
@@ -666,6 +671,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.description = description;
     }
 
+    @Override
     public Date getDateCreated() {
         return dateCreated;
     }
@@ -685,6 +691,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.submitter = submitter;
     }
 
+    @Override
     @Field
     // @Boost(1.2f)
     public String getDescription() {
@@ -922,6 +929,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.relatedComparativeCollections = relatedComparativeCollections;
     }
 
+    @Override
     public String toString() {
         return String.format("%s (id: %d, %s)", title, getId(), resourceType);
     }
@@ -977,6 +985,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      * 
      * @return
      */
+    @Override
     @Transient
     public String getUrlNamespace() {
         return getResourceType().getUrlNamespace();
@@ -1002,6 +1011,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.updatedBy = updatedBy;
     }
 
+    @Override
     @XmlTransient
     public Date getDateUpdated() {
         return dateUpdated;
@@ -1011,11 +1021,13 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.dateUpdated = dateUpdated;
     }
 
+    @Override
     @XmlAttribute
     public Status getStatus() {
         return status;
     }
 
+    @Override
     public void setStatus(Status status) {
         if (this.status != status) {
             setPreviousStatus(this.status);
@@ -1122,6 +1134,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return managedGeographicKeywords;
     }
 
+    @Override
     public void markUpdated(Person p) {
         setUpdatedBy(p);
         setUpdated(true);
@@ -1316,18 +1329,21 @@ public class Resource extends JsonModel.Base implements Persistable,
         return null;
     }
 
+    @Override
     @Transient
     @XmlTransient
     public boolean isDeleted() {
         return status == Status.DELETED;
     }
 
+    @Override
     @Transient
     @XmlTransient
     public boolean isActive() {
         return status == Status.ACTIVE;
     }
 
+    @Override
     @Transient
     @XmlTransient
     public boolean isDraft() {
@@ -1339,28 +1355,33 @@ public class Resource extends JsonModel.Base implements Persistable,
         return status == Status.DUPLICATE;
     }
 
+    @Override
     @Transient
     @XmlTransient
     public boolean isFlagged() {
         return status == Status.FLAGGED;
     }
 
+    @Override
     @Transient
     @XmlTransient
     public String getName() {
         return getTitle();
     }
 
+    @Override
     @Transient
     @XmlTransient
     public Float getScore() {
         return score;
     }
 
+    @Override
     public void setScore(Float score) {
         this.score = score;
     }
 
+    @Override
     @JSONTransient
     public boolean isValid() {
         if (isValidForController() == true) {
@@ -1378,6 +1399,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return false;
     }
 
+    @Override
     @JSONTransient
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
@@ -1458,7 +1480,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Override
     public List<Obfuscatable> obfuscate() {
-        List<Obfuscatable> toObfuscate = new ArrayList<Obfuscatable>();
+        List<Obfuscatable> toObfuscate = new ArrayList<>();
         toObfuscate.addAll(getLatitudeLongitudeBoxes());
         toObfuscate.add(getSubmitter());
         toObfuscate.add(getUpdatedBy());
@@ -1474,12 +1496,14 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     }
 
+    @Override
     @Transient
     @XmlTransient
     public boolean isViewable() {
         return viewable;
     }
 
+    @Override
     public void setViewable(boolean viewable) {
         this.viewable = viewable;
     }

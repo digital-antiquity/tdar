@@ -166,7 +166,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = true, name = "creator_id")
     @NotNull
-    private Set<Address> addresses = new LinkedHashSet<Address>();
+    private Set<Address> addresses = new LinkedHashSet<>();
 
     private transient Float score = -1f;
     private transient Explanation explanation;
@@ -253,6 +253,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         return hashCode;
     }
 
+    @Override
     @XmlTransient
     public List<?> getEqualityFields() {
         return Collections.emptyList();
@@ -269,26 +270,31 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     /**
      * @return the description
      */
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     @Transient
     @XmlTransient
     public Float getScore() {
         return score;
     }
 
+    @Override
     public void setScore(Float score) {
         this.score = score;
     }
 
+    @Override
     @Transient
     @XmlTransient
     public Explanation getExplanation() {
         return explanation;
     }
 
+    @Override
     public void setExplanation(Explanation explanation) {
         this.explanation = explanation;
     }
@@ -309,19 +315,23 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         setDateUpdated(new Date());
     }
 
+    @Override
     @XmlAttribute
     public Status getStatus() {
         return this.status;
     }
 
+    @Override
     public void setStatus(Status status) {
         this.status = status;
     }
 
+    @Override
     public boolean isActive() {
         return this.status == Status.ACTIVE;
     }
 
+    @Override
     public boolean isDeleted() {
         return this.status == Status.DELETED;
     }
@@ -338,6 +348,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
      * this.updatedBy = updatedBy;
      * }
      */
+    @Override
     @XmlTransient
     public Date getDateUpdated() {
         return dateUpdated;
@@ -352,32 +363,38 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         return getProperName();
     }
 
+    @Override
     public Date getDateCreated() {
         return dateCreated;
     }
 
+    @Override
     @XmlTransient
     @JSONTransient
     public boolean isObfuscated() {
         return obfuscated;
     }
 
+    @Override
     public void setObfuscated(boolean obfuscated) {
         this.obfuscated = obfuscated;
     }
 
+    @Override
     public String getUrlNamespace() {
         return URLConstants.ENTITY_NAMESPACE;
     }
 
     public abstract boolean hasNoPersistableValues();
 
+    @Override
     @Transient
     @XmlTransient
     public boolean isReadyToIndex() {
         return readyToIndex;
     }
 
+    @Override
     public void setReadyToIndex(boolean readyToIndex) {
         this.readyToIndex = readyToIndex;
     }
@@ -390,12 +407,14 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         this.addresses = addresses;
     }
 
+    @Override
     @Transient
     @XmlTransient
     public boolean isDraft() {
         return status == Status.DRAFT;
     }
 
+    @Override
     @Transient
     @XmlTransient
     public boolean isFlagged() {

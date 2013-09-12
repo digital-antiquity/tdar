@@ -72,6 +72,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @Length(max = 255)
     private String name;
 
+    @Override
     public int compareTo(Institution candidate) {
         return name.compareTo(candidate.name);
     }
@@ -119,6 +120,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return null;
     }
 
+    @Override
     public String toString() {
         return name;
     }
@@ -145,6 +147,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return IGNORE_PROPERTIES_FOR_UNIQUENESS;
     }
 
+    @Override
     public List<Obfuscatable> obfuscate() {
         return null;
     }
@@ -159,6 +162,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return isValidForController() && getId() != null;
     }
 
+    @Override
     public Set<Institution> getSynonyms() {
         return synonyms;
     }
@@ -167,6 +171,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         this.synonyms = synonyms;
     }
 
+    @Override
     public boolean hasNoPersistableValues() {
         if (StringUtils.isBlank(getName())) {
             return true;
@@ -175,6 +180,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     }
 
 
+    @Override
     @Field(norms = Norms.NO, store = Store.YES)
     @DateBridge(resolution = Resolution.MILLISECOND)
     public Date getDateUpdated() {

@@ -104,7 +104,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     @Deprecated
-    /*
+    /**
      * This property should only be used by hibernate or if you REALLY need the unobfuscated version
      */
     public Double getMinimumLatitude() {
@@ -231,7 +231,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     @Deprecated
-    /*
+    /**
      * This property should only be used by hibernate or if you REALLY need the unobfuscated version
      */
     public Double getMaximumLatitude() {
@@ -246,7 +246,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     @Deprecated
-    /*
+    /**
      * This property should only be used by hibernate or if you REALLY need the unobfuscated version
      */
     public Double getMinimumLongitude() {
@@ -261,7 +261,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     @Deprecated
-    /*
+    /**
      * This property should only be used by hibernate or if you REALLY need the unobfuscated version
      */
     public Double getMaximumLongitude() {

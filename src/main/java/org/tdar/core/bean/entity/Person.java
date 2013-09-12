@@ -273,6 +273,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.institution = institution;
     }
 
+    @Override
     public String toString() {
         if (institution != null && !StringUtils.isBlank(institution.toString())) {
             return String.format("%s [%s | %s | %s]", getName(), getId(), email, institution);
@@ -283,6 +284,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     /**
      * Compares by last name, first name, and then finally email.
      */
+    @Override
     public int compareTo(Person otherPerson) {
         if (this == otherPerson)
             return 0;
@@ -365,6 +367,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return CreatorType.PERSON;
     }
 
+    @Override
     @Transient
     public String getInstitutionName() {
         String name = null;
@@ -415,6 +418,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return IGNORE_PROPERTIES_FOR_UNIQUENESS;
     }
 
+    @Override
     public List<Obfuscatable> obfuscate() {
         setObfuscated(true);
         // check if email and phone are actually confidential
@@ -461,6 +465,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.username = username;
     }
 
+    @Override
     public Set<Person> getSynonyms() {
         return synonyms;
     }
@@ -479,6 +484,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.wildcardName = wildcardName;
     }
 
+    @Override
     @Field(norms = Norms.NO, store = Store.YES)
     @DateBridge(resolution = Resolution.MILLISECOND)
     public Date getDateUpdated() {
