@@ -51,6 +51,8 @@ public class ExcelService {
 //    public static final int MAX_ROWS_PER_SHEET = 65536;
 //    public static final int MAX_COLUMNS_PER_SHEET = 256;
 
+    private static final String TRUNCATED = "[TRUNCATED]";
+
     // official office spec states that sheet max is limited by available RAM but has no max. So this is an arbitrary number.
     public static final int MAX_SHEETS_PER_WORKBOOK = 32;
 
@@ -220,7 +222,11 @@ public class ExcelService {
                 cell.setCellValue(Double.valueOf(value));
             } else {
                 if (value.length() > DEFAULT_EXCEL_VERSION.getMaxTextLength()) {
-                    cell.setCellValue(StringUtils.substring(value, 0, DEFAULT_EXCEL_VERSION.getMaxTextLength() - 1));
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(TRUNCATED);
+                    sb.append(" ");
+                    sb.append(StringUtils.substring(value, 0, DEFAULT_EXCEL_VERSION.getMaxTextLength() - TRUNCATED.length() - 2));
+                    cell.setCellValue(sb.toString());
                     logger.error("truncated cell that was too long");
                 } else {
                     cell.setCellValue(value);
