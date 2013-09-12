@@ -670,10 +670,10 @@ public class TdarConfiguration {
     }
 
     public int getContributorAgreementLatestVersion() {
-        return assistant.getIntProperty("contributor.agreement.version", 1);
+        return assistant.getIntProperty("contributor.agreement.version", 0);
     }
 
     public int getTosLatestVersion() {
-        return assistant.getIntProperty("tos.version", 1);
+        return assistant.getIntProperty("tos.version", 0);
     }
 }

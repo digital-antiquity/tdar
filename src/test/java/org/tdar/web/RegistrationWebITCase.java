@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 /**
  * @author Adam Brin
@@ -33,6 +34,15 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         gotoPage("/logout");
     }
 
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
+    public void testRegisterContributorWithTOS() {
+        Map<String, String> personmap = new HashMap<String, String>();
+        setupBasicUser(personmap, "contributor");
+        testLogin(personmap, true);
+        
+    }
+    
     @Test
     public void testInvalidView() {
         gotoPage("/account/view?personId=1");

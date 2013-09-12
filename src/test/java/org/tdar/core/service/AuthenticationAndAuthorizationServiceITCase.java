@@ -3,6 +3,7 @@ package org.tdar.core.service;
 import org.junit.Test;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 
 import java.util.List;
@@ -14,8 +15,8 @@ import static org.hamcrest.Matchers.*;
 // need a non-mocked service.
 public class AuthenticationAndAuthorizationServiceITCase {
     AuthenticationAndAuthorizationService service = new AuthenticationAndAuthorizationService();
-    int tosLatestVersion = service.tosLatestVersion;
-    int contributorAgreementLatestVersion = service.contributorAgreementLatestVersion;
+    int tosLatestVersion = TdarConfiguration.getInstance().getTosLatestVersion();
+    int contributorAgreementLatestVersion = TdarConfiguration.getInstance().getContributorAgreementLatestVersion();
 
     Person user(boolean contributor, int tosVersion, int creatorAgreementVersion) {
         Person user = new Person("bob", "loblaw", "jim.devos@zombo.com");

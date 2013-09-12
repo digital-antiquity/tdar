@@ -2716,4 +2716,4 @@ insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_file
 SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);
 update pos_billing_activity set activity_type='PRODUCTION';
 update pos_billing_activity set activity_type = 'TEST' where name in ('good','error', 'decline', 'unknown');
-update person set tos_version = 99, contributor_agreement_version = 99;
+-- update person set tos_version = 99, contributor_agreement_version = 99;

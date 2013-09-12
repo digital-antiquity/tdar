@@ -14,11 +14,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.*;
+import org.tdar.core.bean.AuthNotice;
+import org.tdar.core.bean.HasStatus;
+import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthenticationToken;
@@ -47,12 +52,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public static final String USERNAME_INVALID = "Username Invalid, cannot authenticated user";
     public static final String YOU_ARE_NOT_ALLOWED_TO_SEARCH_FOR_RESOURCES_WITH_THE_SELECTED_STATUS = "You are not allowed to search for resources with the selected status";
     private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<Person, TdarGroup>();
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
 
-    public final Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
-    public final Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
 
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
@@ -591,6 +594,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      */
     public List<AuthNotice> getUserRequirements(Person user) {
         List<AuthNotice> notifications = new ArrayList<>();
+        // not public static final because don't work in testing
+        Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
+        Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
+
         if(user.getTosVersion() < tosLatestVersion) {
             notifications.add(AuthNotice.TOS_AGREEMENT);
         }
@@ -608,6 +615,9 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      */
     @Transactional(readOnly = false)
     public void satisfyPrerequisite(Person user, AuthNotice req) {
+        // not public static final because don't work in testing
+        Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
+        Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
         switch (req) {
             case CONTRIBUTOR_AGREEMENT:
                 user.setContributorAgreementVersion(contributorAgreementLatestVersion);

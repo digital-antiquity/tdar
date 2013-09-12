@@ -114,6 +114,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         if(authenticationAndAuthorizationService.userHasPendingRequirements(user)
                 //avoid infinite redirect
                 && !(action instanceof UserAgreementAction) && !(action instanceof UserAgreementAcceptAction)) {
+            logger.info("user: {} has pending agreements", user);
             return TdarActionSupport.USER_AGREEMENT;
         } else {
             return invocation.invoke();
