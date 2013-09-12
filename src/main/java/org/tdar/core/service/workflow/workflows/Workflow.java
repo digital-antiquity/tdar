@@ -115,7 +115,7 @@ public interface Workflow {
         public void addTask(Class<? extends Task> task, WorkflowPhase phase) {
             List<Class<? extends Task>> taskList = workflowPhaseToTasks.get(phase);
             if (taskList == null) {
-                taskList = new ArrayList<Class<? extends Task>>();
+                taskList = new ArrayList<>();
                 workflowPhaseToTasks.put(phase, taskList);
             }
             taskList.add(task);
@@ -149,7 +149,7 @@ public interface Workflow {
             for (ResourceType type : resourceTypes) {
                 Set<String> validExtensions = resourceTypeToExtensions.get(type);
                 if (validExtensions == null) {
-                    validExtensions = new HashSet<String>();
+                    validExtensions = new HashSet<>();
                     resourceTypeToExtensions.put(type, validExtensions);
                 }
                 validExtensions.add(fileExtension);

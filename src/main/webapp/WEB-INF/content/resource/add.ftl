@@ -55,7 +55,10 @@
             A video
         </div>
     </#if>
-
+        <div class="span4">
+            <h3 class="audio-mid-red"><@link "audio" "Audio" /></h3>
+            An audio file
+        </div>
     </div>
     <div class="row">
         <div class="span4">

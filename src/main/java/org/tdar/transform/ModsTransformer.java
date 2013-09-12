@@ -22,6 +22,7 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Archive;
+import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -123,7 +124,7 @@ public abstract class ModsTransformer<R extends Resource> implements
 
         for (LatitudeLongitudeBox longLat : source.getActiveLatitudeLongitudeBoxes()) {
             Subject sub = mods.createSubject();
-            List<String> coords = new ArrayList<String>();
+            List<String> coords = new ArrayList<>();
             coords.add("MaxY: ".concat(longLat.getMaxObfuscatedLatitude().toString()));
             coords.add("MinY: ".concat(longLat.getMinObfuscatedLatitude().toString()));
             coords.add("MaxX: "
@@ -204,7 +205,7 @@ public abstract class ModsTransformer<R extends Resource> implements
 
             // populate authors, but filter editors and series editors -- we will determine where to
             // put them later
-            List<ResourceCreator> editors = new ArrayList<ResourceCreator>();
+            List<ResourceCreator> editors = new ArrayList<>();
             for (ResourceCreator auth : source.getPrimaryCreators()) {
                 ResourceCreatorRole role = auth.getRole();
 
@@ -378,31 +379,43 @@ public abstract class ModsTransformer<R extends Resource> implements
     }
 
     public static class DatasetTransformer extends ModsTransformer<Dataset> {
+        // marker class
     }
 
     public static class CodingSheetTransformer extends ModsTransformer<CodingSheet> {
+        // marker class
     }
 
     public static class ImageTransformer extends ModsTransformer<Image> {
+        // marker class
     }
 
     public static class SensoryDataTransformer extends ModsTransformer<SensoryData> {
+        // marker class
     }
 
     public static class OntologyTransformer extends ModsTransformer<Ontology> {
+        // marker class
     }
 
     public static class ProjectTransformer extends ModsTransformer<Project> {
+        // marker class
     }
-    
+
     public static class ArchiveTransformer extends ModsTransformer<Archive> {
         // marker class
     }
 
+    public static class AudioTransformer extends ModsTransformer<Audio> {
+        // marker class
+    }
+
     public static class VideoTransformer extends ModsTransformer<Video> {
+        // marker class
     }
 
     public static class GeospatialTransformer extends ModsTransformer<Geospatial> {
+        // marker class
     }
 
     public static class DcmiModsTypeMapper {
@@ -410,7 +423,7 @@ public abstract class ModsTransformer<R extends Resource> implements
         private static final Map<String, TypeOfResourceValue> typeMap = initTypeMap();
 
         private static Map<String, TypeOfResourceValue> initTypeMap() {
-            Map<String, TypeOfResourceValue> map = new HashMap<String, TypeOfResourceValue>();
+            Map<String, TypeOfResourceValue> map = new HashMap<>();
             map.put("Software", TypeOfResourceValue.SOFTWARE_MULTIMEDIA);
             map.put("Still Image", TypeOfResourceValue.STILL_IMAGE);
             map.put("Sound", TypeOfResourceValue.SOUND_RECORDING);
@@ -453,6 +466,8 @@ public abstract class ModsTransformer<R extends Resource> implements
                 return new GeospatialTransformer().transform((Geospatial) resource);
             case ARCHIVE:
                 return new ArchiveTransformer().transform((Archive) resource);
+            case AUDIO:
+                return new AudioTransformer().transform((Audio) resource);
             default:
                 break;
         }

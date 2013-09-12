@@ -3,6 +3,7 @@ package org.tdar.core.bean.resource;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
 
 /**
  * $Id$
@@ -22,10 +23,16 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
     ONTOLOGY("Ontology", 9, "Dataset", "unknown", "Dataset", Ontology.class),
     PROJECT("Project", 5, "ItemList", Project.class),
     VIDEO("Video", 4, "Moving Image", "unknown", "Movie", Video.class),
-    ARCHIVE("Site Archive", 8, "Collection", "unknown", "SoftwareApplication", Archive.class);
+    ARCHIVE("Site Archive", 8, "Collection", "unknown", "SoftwareApplication", Archive.class),
+    AUDIO("Audio", 11, "Sound", "unknown", "AudioObject", Audio.class);
     
 
     private final String label;
+    /**
+     * If possible, should match one of the strings referenced in the DcmiModsTypeMapper...
+     * At the moment PROJECT and ARCHIVE don't match. Is this an issue?
+     * @see DcmiModsTypeMapper
+     */
     private final String dcmiTypeString;
     private final String openUrlGenre;
     private int order;
@@ -55,6 +62,8 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
                 return SENSORY_DATA.label;
             case GEOSPATIAL:
                 return GEOSPATIAL.label;
+            case AUDIO:
+                return AUDIO.label;
             default:
                 return getLabel().concat("s");
         }
@@ -79,12 +88,12 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
         return StringUtils.uncapitalize(sb.toString());
     }
 
-    public boolean isDataset() {
-        return this == DATASET;
-    }
-
     public String getSortName() {
         return this.order + this.name();
+    }
+
+    public boolean isDataset() {
+        return this == DATASET;
     }
 
     public boolean isSensoryData() {
@@ -121,6 +130,10 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
     
     public boolean isArchive() {
         return this == ARCHIVE;
+    }
+    
+    public boolean isAudio() {
+        return this == AUDIO;
     }
 
     @Override
@@ -161,7 +174,6 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
             if (type.getResourceClass().equals(clas))
                 return type;
         }
-
         return null;
     }
 

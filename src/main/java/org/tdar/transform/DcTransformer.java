@@ -21,6 +21,7 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Archive;
+import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -49,7 +50,7 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
         dc.getTitle().add(source.getTitle());
 
         // add creators and contributors
-        List<ResourceCreator> sortedResourceCreators = new ArrayList<ResourceCreator>(source.getResourceCreators());
+        List<ResourceCreator> sortedResourceCreators = new ArrayList<>(source.getResourceCreators());
         Collections.sort(sortedResourceCreators);
         for (ResourceCreator resourceCreator : source.getResourceCreators()) {
             String name;
@@ -280,30 +281,43 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
     }
 
     public static class DatasetTransformer extends InformationResourceTransformer<Dataset> {
+        // marker class
     }
 
     public static class SensoryDataTransformer extends InformationResourceTransformer<SensoryData> {
+        // marker class
     }
 
     public static class VideoTransformer extends InformationResourceTransformer<Video> {
+        // marker class
     }
 
     public static class GeospatialTransformer extends InformationResourceTransformer<Geospatial> {
+        // marker class
     }
 
     public static class CodingSheetTransformer extends InformationResourceTransformer<CodingSheet> {
+        // marker class
     }
 
     public static class ImageTransformer extends InformationResourceTransformer<Image> {
+        // marker class
     }
 
     public static class ArchiveTransformer extends InformationResourceTransformer<Archive> {
         // marker class
     }
+
+    public static class AudioTransformer extends InformationResourceTransformer<Audio> {
+        // marker class
+    }
+
     public static class OntologyTransformer extends InformationResourceTransformer<Ontology> {
+        // marker class
     }
 
     public static class ProjectTransformer extends DcTransformer<Project> {
+        // marker class
     }
 
     public static DublinCoreDocument transformAny(Resource resource) {
@@ -327,11 +341,13 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
             case SENSORY_DATA:
                 return new SensoryDataTransformer().transform((SensoryData) resource);
             case VIDEO:
-                return new VideoTransformer().transform((Video)resource);
+                return new VideoTransformer().transform((Video) resource);
             case GEOSPATIAL:
-                return new GeospatialTransformer().transform((Geospatial)resource);
+                return new GeospatialTransformer().transform((Geospatial) resource);
             case ARCHIVE:
                 return new ArchiveTransformer().transform((Archive) resource);
+            case AUDIO:
+                return new AudioTransformer().transform((Audio) resource);
             default:
                 break;
         }

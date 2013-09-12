@@ -37,7 +37,7 @@ public class FileAnalyzer {
 
     private static final String NO_WORKFLOW_FOUND = "no workflow could be found for these files %s";
     private List<Workflow> workflows;
-    private Map<String, Workflow> fileExtensionToWorkflowMap = new HashMap<String, Workflow>();
+    private Map<String, Workflow> fileExtensionToWorkflowMap = new HashMap<>();
     private Map<FileType, List<String>> primaryExtensionList = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -60,7 +60,7 @@ public class FileAnalyzer {
      * @return
      */
     public Set<String> getExtensionsForType(ResourceType type) {
-        Set<String> toReturn = new HashSet<String>();
+        Set<String> toReturn = new HashSet<>();
         for (Workflow w : workflows) {
             Set<String> exts = w.getValidExtensionsForResourceType(type);
             if (CollectionUtils.isNotEmpty(exts)) {
@@ -77,7 +77,7 @@ public class FileAnalyzer {
     }
 
     public Set<String> getExtensionsForTypes(ResourceType... resourceTypes) {
-        Set<String> extensions = new HashSet<String>();
+        Set<String> extensions = new HashSet<>();
         for (Workflow workflow : workflows) {
             for (ResourceType resourceType : resourceTypes) {
                 extensions.addAll(workflow.getValidExtensionsForResourceType(resourceType));

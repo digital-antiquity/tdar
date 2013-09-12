@@ -99,7 +99,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     public enum FileType {
-        IMAGE, DOCUMENT, COLUMNAR_DATA, FILE_ARCHIVE, GEOSPATIAL, OTHER;
+        IMAGE, DOCUMENT, COLUMNAR_DATA, FILE_ARCHIVE, GEOSPATIAL, AUDIO, OTHER;
 
         public boolean isComposite() {
             switch (this) {
