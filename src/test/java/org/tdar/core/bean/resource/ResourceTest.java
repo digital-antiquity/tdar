@@ -85,6 +85,8 @@ public class ResourceTest {
     public void testResourceType() {
         assertEquals(null, ResourceType.fromString(""));
         assertEquals(ResourceType.DOCUMENT, ResourceType.fromString("DOCUMENT"));
+        assertEquals(ResourceType.AUDIO, ResourceType.fromString("AUDIO"));
+        assertEquals(ResourceType.ARCHIVE, ResourceType.fromString("ARCHIVE"));
     }
 
     @Test
@@ -112,13 +114,16 @@ public class ResourceTest {
         type = ResourceType.ARCHIVE;
         assertTrue(type.isArchive());
         assertFalse(type.isDataset());
-
-        assertEquals(ResourceType.DOCUMENT, ResourceType.fromString("DOCUMENT"));
+        type =ResourceType.VIDEO;
+        assertTrue(type.isVideo());
+        assertFalse(type.isDataset());
     }
 
     @Test
     public void testResourceTypeFromClass() {
         assertEquals(ResourceType.DOCUMENT, ResourceType.fromClass(Document.class));
+        assertEquals(ResourceType.AUDIO, ResourceType.fromClass(Audio.class));
+        assertEquals(ResourceType.ARCHIVE, ResourceType.fromClass(Archive.class));
     }
 
     @Test
@@ -156,9 +161,9 @@ public class ResourceTest {
     @Test
     @SuppressWarnings("deprecation")
     public void testCoreProjectTitle() {
-        Project app = new Project(-5L, "The Alan Parsons Project");
-        Project cure = new Project(-6L, "The Cure");
-        Project gotan = new Project(-7L, "Gotan project");
+        Project app = new Project(-5L, "The Alan Parsons Project"); // What goes up, must come down. An insightful lyric, as ever...
+        Project cure = new Project(-6L, "The Cure"); // last seen falling off a cliff?
+        Project gotan = new Project(-7L, "Gotan project"); // http://www.gotanproject.com/
 
         String expectedName = "Paleoethnobotany of Otumba";
 
