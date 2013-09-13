@@ -51,8 +51,8 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(ResourceType.IMAGE, fileAnalyzer.suggestTypeForFileExtension("gif", ResourceType.IMAGE, ResourceType.SENSORY_DATA));
         assertNull(fileAnalyzer.suggestTypeForFileExtension("xls", ResourceType.ONTOLOGY));
         assertEquals(ResourceType.CODING_SHEET, fileAnalyzer.suggestTypeForFileExtension("xls", ResourceType.ONTOLOGY, ResourceType.CODING_SHEET));
-
         assertFalse(fileAnalyzer.getExtensionsForType(ResourceType.ARCHIVE).contains("xml"));
+        assertEquals(ResourceType.AUDIO, fileAnalyzer.suggestTypeForFileExtension("aiff", ResourceType.values()));
     }
 
     @Test
