@@ -42,7 +42,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
     public void testRegisterContributorWithTOS() {
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "contributor");
+        setupBasicUser(personmap, "contributorrr");
         testLogin(personmap, true,true,true);
         
     }
