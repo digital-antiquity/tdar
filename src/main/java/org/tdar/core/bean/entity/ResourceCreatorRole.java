@@ -42,12 +42,12 @@ public enum ResourceCreatorRole implements HasLabel {
     PERMITTER("Permitting Agency", ResourceCreatorRoleType.CREDIT, CreatorType.INSTITUTION),
     REPOSITORY("Repository", ResourceCreatorRoleType.CREDIT, CreatorType.INSTITUTION),
     CREATOR("Creator", ResourceCreatorRoleType.AUTHORSHIP, null, ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.IMAGE, ResourceType.DATASET,
-            ResourceType.SENSORY_DATA, ResourceType.ARCHIVE, ResourceType.GEOSPATIAL, ResourceType.VIDEO),
+            ResourceType.SENSORY_DATA, ResourceType.ARCHIVE, ResourceType.GEOSPATIAL, ResourceType.VIDEO, ResourceType.AUDIO),
     PREPARER("Prepared By", ResourceCreatorRoleType.CREDIT, CreatorType.INSTITUTION),
     SUBMITTED_TO("Submitted To", ResourceCreatorRoleType.CREDIT, CreatorType.INSTITUTION),
     COPYRIGHT_HOLDER("Copyright Holder", ResourceCreatorRoleType.OTHER, null, ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.IMAGE,
             ResourceType.DATASET, ResourceType.ARCHIVE, ResourceType.GEOSPATIAL, ResourceType.VIDEO,
-            ResourceType.SENSORY_DATA, ResourceType.DOCUMENT),
+            ResourceType.SENSORY_DATA, ResourceType.DOCUMENT, ResourceType.AUDIO),
     SUBMITTER("Submitter", ResourceCreatorRoleType.OTHER, CreatorType.PERSON),
     UPDATER("Updater", ResourceCreatorRoleType.OTHER, CreatorType.PERSON),
     RESOURCE_PROVIDER("Resource Provider", ResourceCreatorRoleType.OTHER, CreatorType.INSTITUTION), 
@@ -80,14 +80,14 @@ public enum ResourceCreatorRole implements HasLabel {
      */
     // FIXME: can we use our internal data structure to populate this?
     public static Set<ResourceCreatorRole> getPrimaryCreatorRoles(ResourceType resourceType) {
-        Map<ResourceType, List<ResourceCreatorRole>> map = new HashMap<ResourceType, List<ResourceCreatorRole>>();
+        Map<ResourceType, List<ResourceCreatorRole>> map = new HashMap<>();
         for (ResourceType resourceType_ : ResourceType.values()) {
             map.put(resourceType_, Arrays.asList(CREATOR));
         }
         // overriding for and document
         map.put(ResourceType.DOCUMENT, Arrays.asList(AUTHOR));
         map.put(ResourceType.PROJECT, Arrays.asList(PRINCIPAL_INVESTIGATOR, PROJECT_DIRECTOR, SPONSOR));
-        return new HashSet<ResourceCreatorRole>(map.get(resourceType));
+        return new HashSet<>(map.get(resourceType));
     }
 
     private ResourceCreatorRole(String label, ResourceCreatorRoleType type) {
@@ -109,10 +109,11 @@ public enum ResourceCreatorRole implements HasLabel {
             this.relevantResourceTypes = Collections.emptySet();
         }
         else {
-            this.relevantResourceTypes = new HashSet<ResourceType>(Arrays.asList(resourceTypes));
+            this.relevantResourceTypes = new HashSet<>(Arrays.asList(resourceTypes));
         }
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -130,7 +131,7 @@ public enum ResourceCreatorRole implements HasLabel {
     }
 
     public static List<ResourceCreatorRole> getAll() {
-        List<ResourceCreatorRole> relevantRoles = new ArrayList<ResourceCreatorRole>();
+        List<ResourceCreatorRole> relevantRoles = new ArrayList<>();
         relevantRoles.addAll(getAuthorshipRoles());
         relevantRoles.addAll(getCreditRoles());
         return relevantRoles;
@@ -145,7 +146,7 @@ public enum ResourceCreatorRole implements HasLabel {
     }
 
     public static List<ResourceCreatorRole> getRoles(CreatorType creatorType) {
-        ArrayList<ResourceCreatorRole> relevantRoles = new ArrayList<ResourceCreatorRole>();
+        ArrayList<ResourceCreatorRole> relevantRoles = new ArrayList<>();
         for (ResourceCreatorRole role : values()) {
             if (role.isRelevantFor(creatorType)) {
                 relevantRoles.add(role);
@@ -156,7 +157,7 @@ public enum ResourceCreatorRole implements HasLabel {
     }
 
     public static List<ResourceCreatorRole> getRoles(CreatorType creatorType, ResourceType resourceType) {
-        ArrayList<ResourceCreatorRole> resourceCreatorRoles = new ArrayList<ResourceCreatorRole>();
+        ArrayList<ResourceCreatorRole> resourceCreatorRoles = new ArrayList<>();
         for (ResourceCreatorRole role : values()) {
             if (role.isRelevantFor(creatorType, resourceType)) {
                 resourceCreatorRoles.add(role);
@@ -172,7 +173,7 @@ public enum ResourceCreatorRole implements HasLabel {
 
     private static List<ResourceCreatorRole> getRolesOfType(ResourceCreatorRoleType type) {
         // get mutable list of all roles, then remove the authorship roles
-        ArrayList<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
+        ArrayList<ResourceCreatorRole> roles = new ArrayList<>();
         for (ResourceCreatorRole role : values()) {
             if (role.getType() == type) {
                 roles.add(role);
@@ -186,19 +187,19 @@ public enum ResourceCreatorRole implements HasLabel {
     }
 
     public static List<ResourceCreatorRole> getAuthorshipRoles(CreatorType creatorType, ResourceType resourceType) {
-        HashSet<ResourceCreatorRole> s1 = new HashSet<ResourceCreatorRole>(getAuthorshipRoles());
-        HashSet<ResourceCreatorRole> s2 = new HashSet<ResourceCreatorRole>(getRoles(creatorType, resourceType));
+        HashSet<ResourceCreatorRole> s1 = new HashSet<>(getAuthorshipRoles());
+        HashSet<ResourceCreatorRole> s2 = new HashSet<>(getRoles(creatorType, resourceType));
         s1.retainAll(s2);
-        List<ResourceCreatorRole> sortedRoles = new ArrayList<ResourceCreatorRole>(s1);
+        List<ResourceCreatorRole> sortedRoles = new ArrayList<>(s1);
         Collections.sort(sortedRoles);
         return sortedRoles;
     }
 
     public static List<ResourceCreatorRole> getCreditRoles(CreatorType creatorType, ResourceType resourceType) {
-        HashSet<ResourceCreatorRole> s1 = new HashSet<ResourceCreatorRole>(getCreditRoles());
-        HashSet<ResourceCreatorRole> s2 = new HashSet<ResourceCreatorRole>(getRoles(creatorType, resourceType));
+        HashSet<ResourceCreatorRole> s1 = new HashSet<>(getCreditRoles());
+        HashSet<ResourceCreatorRole> s2 = new HashSet<>(getRoles(creatorType, resourceType));
         s1.retainAll(s2);
-        List<ResourceCreatorRole> sortedRoles = new ArrayList<ResourceCreatorRole>(s1);
+        List<ResourceCreatorRole> sortedRoles = new ArrayList<>(s1);
         Collections.sort(sortedRoles);
         return sortedRoles;
     }

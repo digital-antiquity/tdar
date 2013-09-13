@@ -51,6 +51,23 @@ public class ResourceTest {
             assertTrue("at least one role should be defined for " + type, ok);
         }
     }
+    
+    /**
+     * This test serves as a reminder to consider copyright when adding new resource types.
+     */
+    @SuppressWarnings("static-method")
+    @Test
+    public void testResourceCopyrightHolderRoles() {
+        for (ResourceType type : ResourceType.values()) {
+            boolean ok = false;
+            if (type.isProject())
+                continue;
+            if (ResourceCreatorRole.COPYRIGHT_HOLDER.isRelevantFor(type)) {
+                ok = true;
+            }
+            assertTrue("at least one role should be defined for " + type, ok);
+        }
+    }
 
     @Test
     public void testTitleRegex() {
