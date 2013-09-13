@@ -1,6 +1,7 @@
 package org.tdar.web.functional;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -167,6 +168,8 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     @Test
     //create a project, fill out a couple inheritable sections, then inherit
     public void testBasicInheritance() throws InterruptedException {
+        //ignore misc javascript errors (gmaps, et. al),  our asserts will break if relevant javascript had problems
+        ignoreJavascriptErrors=true;
         gotoPage("/project/add");
 
         Project project = new Project();
@@ -198,6 +201,10 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         assertTrue("other keywords should be set", StringUtils.isNotBlank(find("#metadataForm_otherKeywords_0_").val()));
     }
 
+    @After
+    public void turnIgnoresOff() {
+        ignoreJavascriptErrors = false;
+    }
 
 
 }
