@@ -8,15 +8,18 @@
 	            one file. Documents must be in the following types: xls,xlsx">
 	             <h4>Instructions:</h4>
 	            <ol>
-	              <li><a href="template" class="button" target="_blank">Download</a> the template file (<a href="template" target="_blank" >link</a>).</li>
-	              <li>create a row for each file you're uploading</li>
-	              <li>the first column should always be the filename the record references [e.g. document1.pdf ]</li>
-	              <li>enter in any other metadata by using the field names specified.</li>
-	              <li>upload the mapping file in the mapping file in the input immediately below</li>
+	              <li><a href="template" class="button" target="_blank">Download</a> the mapping file template (<a href="template" target="_blank" >link</a>).</li>
+	              <li>Create a row for each file you're uploading.</li>
+	              <li>The first column should always be the filename the record references (e.g. <em>document1.pdf</em> ).</li>
+	              <li>Enter in any other metadata by using the field names specified.</li>
+                  <li>Upload your modified mapping file by clicking the upload button below.
+                        <@s.file label="Upload Mapping File" cssClass="bulkValidateFileType" labelposition='top' name='uploadedFiles' size='40'/>
+                  </li>
+                  <li>Finally, click the "<em>Validate Template</em>" button.</li>
 	            </ol>
 	            </div>
 	            <br/>
-	                <@s.file label="Upload a Mapping File" cssClass="bulkValidateFileType" labelposition='top' name='uploadedFiles' size='40'/>
+
 	<#else>
 	<@s.hidden name="templateFilename" />
 	<strong>Template File</strong>:${templateFilename}

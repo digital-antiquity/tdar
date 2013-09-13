@@ -30,6 +30,28 @@ var FileuploadValidator;
         });
     };
 
+    //if group method rule specifies ignored files, return trimmed list.  Otherwise, return ref to same files list
+    var _trimIgnoredFiles = function(files, settings) {
+        if(!settings.ignores) {return files}
+        var _files = $.grep(files, function(file) {
+            var ignoreThisFile = false;
+            $.each(settings.ignores, function(idx, val) {
+                //an ignorefile 'rule' can be a callback or a string ( if callback is true, we should ignore file)
+                if(typeof val === "function") {
+                    ignoreThisFile = val.call(settings, file);
+                } else {
+                    ignoreThisFile = val.toLowerCase() === file.filename.toLowerCase();
+                }
+                //stop iterating over ignoreFiles if we already know that we
+                return !ignoreThisFile;
+            });
+            //if ignoring,  return false so that grep wont include it
+            return !ignoreThisFile;
+        });
+
+        return _files;
+    }
+
     var _defaults = {
         errorContainer: "#fileuploadErrors",
         errorWrapper: "<li class='fileupload-error'></li>",
@@ -171,8 +193,9 @@ var FileuploadValidator;
 
                     //if this is a group method,  execute just once
                     if($.inArray(rule.methodName, self.groupMethods) > -1) {
+                        files = _trimIgnoredFiles(files, rule.settings);
                         var valid = method(files, rule.settings);
-                        console.log("applying rule, method:%s   valid:%s", rule.methodName, valid);
+                        //console.log("applying rule, method:%s   valid:%s", rule.methodName, valid);
                         if(!valid) {
                             var error = {
                                 "file": null,
@@ -392,7 +415,8 @@ var FileuploadValidator;
         });
 
         //all files must have the same base name
-        validator.addGroupMethod("same-basename", function(files) {
+        //todo: move 'same-basename' to default group methods
+        validator.addGroupMethod("same-basename", function(files, settings) {
             var basenames = [];
             $.each(files, function(idx, file){
                 if($.inArray(file.base.toLowerCase(), basenames) === -1) {
@@ -401,7 +425,11 @@ var FileuploadValidator;
             });
             return basenames.length <= 1;
         }, "all files must have the same base filename");
-        validator.addRule("same-basename");
+
+        validator.addRule("same-basename", {
+            //adf files are excluded from the same-basename requirement
+            ignores: [function(file){return file.ext === "adf"}]
+        });
 
         //only one image metadata file
         validator.addRule("filecount",
