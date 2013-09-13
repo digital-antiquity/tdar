@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.WorkflowContext;
 
@@ -98,7 +99,18 @@ public interface Task extends Serializable {
             }
             return version;
         }
-
+        
+        /**
+         * Utility method to mark and log a fatal error, and then complete by throwing a TdarRecoverableRuntimeException
+         * @param message The message to be logged as an error.
+         * @Throws TdarRecoverableRuntimeException <b>NB</b> Each and every time this method is called!
+         */
+        protected void recordErrorAndExit(final String message) {
+            getWorkflowContext().setErrorFatal(true); // anything that stops us running should be reported as an error, IMHO.
+            getLogger().error(message);
+            throw new TdarRecoverableRuntimeException(message);
+        }
+        
         void mkParentDirs(File outputFile) {
             File outputFileDirectory = getParentDirectory(outputFile);
             try {

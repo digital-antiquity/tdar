@@ -197,10 +197,4 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         return new File(workingDir, originalFile.getName());
     }
 
-    private void recordErrorAndExit(final String message) {
-        getWorkflowContext().setErrorFatal(true); // anything that stops us running should be reported as an error, IMHO.
-        getLogger().error(message);
-        throw new TdarRecoverableRuntimeException(message);
-    }
-
 }
