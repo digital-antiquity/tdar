@@ -108,14 +108,16 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         Object action = invocation.getAction();
         // user is authenticated and authorized to perform  requested action.
         // now we check for any outstanding notices require user attention
+        String result = null;
         if(authenticationAndAuthorizationService.userHasPendingRequirements(user)
                 //avoid infinite redirect
                 &&  !(action instanceof UserAgreementController)) {
             logger.info("user: {} has pending agreements", user);
-            return TdarActionSupport.USER_AGREEMENT;
+            result =  TdarActionSupport.USER_AGREEMENT;
         } else {
-            return invocation.invoke();
+            result =  invocation.invoke();
         }
+        return result;
     }
 
 

@@ -16,14 +16,10 @@ import org.tdar.struts.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
-@Namespace("/")
-@ParentPackage("secured")
 @Component
 @Scope("prototype")
-@Results({
-        @Result(name=TdarActionSupport.INPUT, type="redirectAction", params = {  "actionName", "show-notices", "namespace", "/"}),
-        @Result(name=TdarActionSupport.NONE, type="redirectAction", params = { "actionName", "logout", "namespace", "/" })
-})
+@Namespace("/")
+@ParentPackage("secured")
 public class UserAgreementController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = 5992094345280080761L;
@@ -42,7 +38,11 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     }
 
     @WriteableSession
-    @Action(value = "agreement-response", results = {@Result(name=TdarActionSupport.SUCCESS, type="redirect",location="/dashboard")})
+    @Action(value = "agreement-response", results = {
+            @Result(name=TdarActionSupport.SUCCESS, type="redirect",location="/dashboard"),
+            @Result(name=TdarActionSupport.NONE, type="redirectAction", params = { "actionName", "logout", "namespace", "/" }),
+            @Result(name=TdarActionSupport.INPUT, type="redirectAction", params = {  "actionName", "show-notices", "namespace", "/"})
+    })
     public String agreementResponse() {
         if(!isAuthenticated()) return LOGIN;
 
