@@ -1,11 +1,15 @@
 package org.tdar.core.service;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 import java.util.List;
 
@@ -14,7 +18,9 @@ import static org.hamcrest.Matchers.*;
 
 // jtd 9/5:  this doesn't need to be an integration test atm, but I figure we'll eventually want to add tests that
 // need a non-mocked service.
-public class AuthenticationAndAuthorizationServiceITCase {
+@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
+public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegrationTestCase {
     AuthenticationAndAuthorizationService service = new AuthenticationAndAuthorizationService();
     int tosLatestVersion = TdarConfiguration.getInstance().getTosLatestVersion();
     int contributorAgreementLatestVersion = TdarConfiguration.getInstance().getContributorAgreementLatestVersion();

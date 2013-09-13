@@ -29,7 +29,7 @@ public class ContextSwitchingController extends AuthenticationAware.Base {
                     location = "../../errors/access-denied.ftl") })
     })
     public String execute() {
-        logger.info(System.getProperty("enableContextSwitchingConfig"));
+        logger.trace(System.getProperty("enableContextSwitchingConfig"));
         if (getConfigurationFile() != null && System.getProperty("enableContextSwitchingConfig", "false").equalsIgnoreCase("true")) {
             logger.info("switching tDarConfig to:" + getConfigurationFile());
             TdarConfiguration.getInstance().setConfigurationFile(configurationFile);

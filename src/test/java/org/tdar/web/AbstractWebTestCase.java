@@ -778,7 +778,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             @Override
             public void error(CSSParseException exception) throws CSSException {
                 if (exception.getURI().contains(getBaseUrl())) {
-                    logger.debug("CSS Error: {} ", exception.getURI(), exception);
+                    logger.debug("CSS Error: {} ; message: {} line: {} ", exception.getURI(), exception.getMessage(), exception.getLineNumber());
                 }
             }
         });
@@ -1183,12 +1183,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
         gotoPage("/");
         clickLinkOnPage("Sign Up");
+        logger.info(getPageCode());
         for (String key : values.keySet()) {
             setInput(key, values.get(key));
         }
-        setInput("acceptedAuthNotices", "TOS_AGREEMENT");
-        setInput("acceptedAuthNotices", "CONTRIBUTOR_AGREEMENT");
-        
+//        if (includeTos) {
+//            setInput("acceptedAuthNotices", "TOS_AGREEMENT");
+//        }
+        if (includeUserAgreement) {
+            setInput("requestingContributorAccess", "CONTRIBUTOR_AGREEMENT");
+        }
         setInput("timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Save");
         genericService.synchronize();
