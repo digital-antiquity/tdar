@@ -41,7 +41,6 @@
             <li><strong>DOI</strong><br>${resource.externalId}</li>
         </#if>
 
-
         <#if resource.documentType?has_content>
         <#if (resource.startPage?has_content) || (resource.endPage?has_content) || (resource.totalNumberOfPages?has_content)>
         <li>
@@ -57,6 +56,22 @@
               <#if showParen >)</#if>
            </li>
         </#if>
+
+            <#if (((resource.publisher.name)?has_content ||  resource.publisherLocation?has_content))>
+            <li><strong>
+            <#-- label -->
+                <#if resource.documentType?has_content>
+                ${resource.documentType.publisherName}
+                <#else>
+                    Publisher
+                </#if></strong><br>
+                <#if resource.publisher?has_content><span itemprop="publisher"><@view.browse creator=resource.publisher /></span></#if>
+                <#if resource.degree?has_content>${resource.degree.label}</#if>
+                <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
+            </li>
+            </#if>
+
+
         <li>
             <strong>Document Type</strong><br>
             ${resource.documentType.label}

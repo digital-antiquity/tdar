@@ -327,7 +327,7 @@
 					<#if local_.sidebarDataTop?? && local_.sidebarDataTop?is_macro>
 						<@local_.sidebarDataTop />
 					</#if>
-                    <#if ((resource.publisher.name)?has_content ||  resource.publisherLocation?has_content)>
+                    <#if (((resource.publisher.name)?has_content ||  resource.publisherLocation?has_content) && !((resource.resourceType.document)!false) )>
                         <li><strong>
                         <#-- label -->
                         <#if resource.documentType?has_content>
