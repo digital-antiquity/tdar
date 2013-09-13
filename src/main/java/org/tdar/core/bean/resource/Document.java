@@ -286,6 +286,7 @@ public class Document extends InformationResource {
     // FIXME: ADD IS?N
     @JSONTransient
     @Override
+    //TODO: refactor using MessageFormat or with a freemarker template
     public String getFormattedSourceInformation() {
         StringBuilder sb = new StringBuilder();
         switch (getDocumentType()) {
@@ -309,7 +310,9 @@ public class Document extends InformationResource {
                     sb.append(".");
                 }
                 appendIfNotBlank(sb, getVolume(), "", "");
-                appendIfNotBlank(sb, getJournalNumber(), "", "");
+                if(StringUtils.isNotBlank(getJournalNumber())) {
+                    appendIfNotBlank(sb, "(" + getJournalNumber() + ")", "", "");
+                }
                 appendIfNotBlank(sb, getPageRange(), ":", "");
                 break;
             case OTHER:
