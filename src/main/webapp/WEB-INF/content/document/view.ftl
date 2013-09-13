@@ -8,11 +8,12 @@
             <li><strong>Series number</strong><br>${resource.seriesNumber}</li>
         </#if>
         <#if resource.journalName?has_content>
-            <li><strong>Journal</strong><br>${resource.journalName}
-                <!-- issue -->
-                <#if resource.journalNumber?has_content> (${resource.journalNumber}) </#if>
-            </li>
+            <li><strong>Journal</strong><br>${resource.journalName}</li>
         </#if>
+        <#if resource.journalNumber?has_content> 
+	        <li><strong>Issue</strong><br>${resource.journalNumber}</li>
+        </#if>
+
         <#if resource.volume?has_content>
             <li><strong>Volume</strong><br>${resource.volume}</li>
         </#if>
@@ -45,15 +46,12 @@
         <#if (resource.startPage?has_content) || (resource.endPage?has_content) || (resource.totalNumberOfPages?has_content)>
         <li>
             <strong>Pages</strong><br>
-			<#if resource.documentType.partOfLargerDocument>
-                ${resource.startPage!} <#if resource.startPage?has_content && resource.endPage?has_content>-</#if> ${resource.endPage!}
+               <#assign showParen = false/>
+			<#if resource.documentType.partOfLargerDocument>${resource.pageRange}
+              <#assign showParen = true/>
 			</#if>
             </#if>
               <#if resource.totalNumberOfPages?? >
-              <#assign showParen = false/>
-              <#if ((resource.startPage?has_content || resource.endPage?has_content) && !resource.documentType.partOfLargerDocument) >
-              <#assign showParen = true/>
-               </#if>
               <#if showParen >(</#if>
                 ${resource.totalNumberOfPages}
               <#if showParen >)</#if>
