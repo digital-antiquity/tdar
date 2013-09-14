@@ -650,6 +650,11 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         Person persistedUser = personDao.find(detachedUser.getId());
         satisfyPrerequisites(detachedUser, notices);
         satisfyPrerequisites(persistedUser, notices);
+        logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getTosVersion(), detachedUser.getContributorAgreementVersion());
+        logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
+
+//        personDao.update(persistedUser); //i shouldn't need to do this.
+//        personDao.synchronize();
     }
 
 }
