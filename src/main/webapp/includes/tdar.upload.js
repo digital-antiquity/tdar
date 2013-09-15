@@ -18,7 +18,7 @@ TDAR.fileupload = function() {
         //selector to the element that we will bind the fileupload widget to.  It can be any element so long as it contains the file input element and the files table.
         fileuploadSelector: "#divFileUpload",
         dropZone:  "#divFileUpload",
-        pasteZone:  "#divFileUpload"
+        pasteZone:  "#divFileUpload input[type=file]"
     }
 
     //main file upload registration function
@@ -64,7 +64,7 @@ TDAR.fileupload = function() {
         $fileupload.bind('fileuploadpaste', function (e, data) {
         	if (data.files.length == 0) {
         		console.log("interpreting text paste instead of file");
-        		return false;
+        		return true;
         	}
             $.each(data.files, function (index, file) {
                 console.log('Pasted file type: ' + file.type);
