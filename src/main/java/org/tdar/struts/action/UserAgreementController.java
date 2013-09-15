@@ -7,7 +7,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AuthNotice;
@@ -22,6 +21,8 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 public class UserAgreementController extends AuthenticationAware.Base implements Preparable {
 
+    private static final String ACCEPT = "accept";
+    private static final String DECLINE = "decline";
     private static final long serialVersionUID = 5992094345280080761L;
     public static final String FMT1_DECLINE_MESSAGE = "You have been logged out.  Please contact us if you have any questions regarding %s policies and procedures.";
     List<AuthNotice> authNotices = new ArrayList<>();
@@ -46,14 +47,14 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     public String agreementResponse() {
         if(!isAuthenticated()) return LOGIN;
 
-        if("decline".equals(userResponse)) {
+        if(DECLINE.equals(userResponse)) {
             String fmt = FMT1_DECLINE_MESSAGE;
             addActionMessage(String.format(fmt, getSiteAcronym()));
             logger.debug("agreements declined,  redirecting to logout page");
             return NONE;
         }
 
-        if("accept".equals(userResponse))  {
+        if(ACCEPT.equals(userResponse))  {
             if(processResponse()) {
                 logger.debug("all requirements met,  success!! returning success");
                 return SUCCESS;

@@ -643,6 +643,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      * @param sessionData
      * @param notices
      */
+    @Transactional(readOnly=false)
     public void satisfyUserPrerequisites(SessionData sessionData, Collection<AuthNotice> notices) {
         //we actually need to update two person instances:  the persisted user record, and the detached user
         //associated with the session. We hide this detail from the caller.
@@ -650,6 +651,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         Person persistedUser = personDao.find(detachedUser.getId());
         satisfyPrerequisites(detachedUser, notices);
         satisfyPrerequisites(persistedUser, notices);
+        personDao.saveOrUpdate(persistedUser);
         logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getTosVersion(), detachedUser.getContributorAgreementVersion());
         logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
 
