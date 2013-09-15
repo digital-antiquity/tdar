@@ -61,6 +61,15 @@ TDAR.fileupload = function() {
 
         var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
         
+        $fileupload.bind('fileuploadpaste', function (e, data) {
+        	if (data.files.length == 0) {
+        		console.log("interpreting text paste instead of file");
+        		return false;
+        	}
+            $.each(data.files, function (index, file) {
+                console.log('Pasted file type: ' + file.type);
+            });
+        });
         $fileupload.bind("fileuploadcompleted", _updateReminder);
         //make sure the sequenceNumber field is correct after files are added (or the operation fails)
         var _updateSequenceNumbers =  function(e, data){
