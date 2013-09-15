@@ -121,8 +121,8 @@ ${sessionStatistics}
     </thead>
     <tbody>
         <#list sessionStatistics.queries as query>
+	        <#assign stat = sessionStatistics.getQueryStatistics(query) />
 	        <#if (stat.executionAvgTime > 30 || stat.executionMaxTime > 30) >
-		        <#assign stat = sessionStatistics.getQueryStatistics(query) />
 		        <tr><td><b>${query}</b></td>
 		        <td>${stat.executionCount}</td>
 		        <td>${stat.executionAvgTime}</td>
