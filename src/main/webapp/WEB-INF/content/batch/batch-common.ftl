@@ -12,7 +12,7 @@
 	              <li>Create a row for each file you're uploading.</li>
 	              <li>The first column should always be the filename the record references (e.g. <em>document1.pdf</em> ).</li>
 	              <li>Enter in any other metadata by using the field names specified.</li>
-                  <li>Upload your modified mapping file by clicking the upload button below.
+                  <li>Upload the mapping file in the input immediately below.
                         <@s.file label="Upload Mapping File" cssClass="bulkValidateFileType" labelposition='top' name='uploadedFiles' size='40'/>
                   </li>
                   <li>Finally, click the "<em>Validate Template</em>" button.</li>
