@@ -16,7 +16,9 @@ TDAR.fileupload = function() {
         inputSelector: "#fileAsyncUpload",
 
         //selector to the element that we will bind the fileupload widget to.  It can be any element so long as it contains the file input element and the files table.
-        fileuploadSelector: "#divFileUpload"
+        fileuploadSelector: "#divFileUpload",
+        dropZone:  "#divFileUpload",
+        pasteZone:  "#divFileUpload"
     }
 
     //main file upload registration function
