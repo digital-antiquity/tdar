@@ -62,15 +62,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testCollectionLookup() {
-        List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
-        for (String collectionName : collectionNames) {
-            ResourceCollection e = new ResourceCollection(collectionName, collectionName, SortOption.TITLE, CollectionType.SHARED, true, getBasicUser());
-            collections.add(e);
-            e.markUpdated(getBasicUser());
-
-        }
-        genericService.save(collections);
-        searchIndexService.index(collections.toArray(new ResourceCollection[0]));
+        setupCollections();
         controller.setTerm("Kin");
         controller.lookupResourceCollection();
         for (Indexable collection_ : controller.getResults()) {
@@ -91,6 +83,36 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
             }
         }
 
+    }
+
+    @Test
+    @Rollback(true)
+    public void testCollectionLookupUnauthenticated() {
+        setupCollections();
+        controller = generateNewController(LookupController.class);
+        initAnonymousUser(controller);
+        controller.setTerm("Kintigh - C");
+        controller.lookupResourceCollection();
+        for (Indexable collection_ : controller.getResults()) {
+            ResourceCollection collection = (ResourceCollection) collection_;
+            logger.info("{}", collection);
+            if (collection != null) {
+                assertTrue(collection.getTitle().contains("Kintigh - C"));
+            }
+        }
+
+    }
+
+    private void setupCollections() {
+        List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
+        for (String collectionName : collectionNames) {
+            ResourceCollection e = new ResourceCollection(collectionName, collectionName, SortOption.TITLE, CollectionType.SHARED, true, getBasicUser());
+            collections.add(e);
+            e.markUpdated(getBasicUser());
+
+        }
+        genericService.save(collections);
+        searchIndexService.index(collections.toArray(new ResourceCollection[0]));
     }
 
     @Test

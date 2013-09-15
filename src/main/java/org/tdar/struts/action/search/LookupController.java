@@ -227,11 +227,11 @@ public class LookupController extends AbstractLookupController<Indexable> {
             // setup the rights; by default allow people to see things they have the rights to "view" or are public
             QueryPartGroup rightsGroup = new QueryPartGroup(Operator.OR);
             rightsGroup.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
-            FieldQueryPart<Long> fieldQueryPart = new FieldQueryPart<>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, getAuthenticatedUser().getId());
 
             // if the Permissions property is set, we're in the context of the Resource or Collection Controllers and are likely looking
             // for collections the person administers and thus can modify contents (ADMINISTER_GROUP); but MODIFY may be useful in the future
             if (Persistable.Base.isNotNullOrTransient(getAuthenticatedUser())) {
+                FieldQueryPart<Long> fieldQueryPart = new FieldQueryPart<>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, getAuthenticatedUser().getId());
                 switch (getPermission()) {
                     case MODIFY_RECORD:
                     case MODIFY_METADATA:

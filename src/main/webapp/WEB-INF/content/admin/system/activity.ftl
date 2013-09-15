@@ -82,17 +82,19 @@ ${sessionStatistics}
     </thead>
     <tbody>
         <#list sessionStatistics.queries as query>
-        <#assign stat = sessionStatistics.getQueryStatistics(query) />
-        <tr><td><b>${query}</b></td>
-        <td>${stat.executionCount}</td>
-        <td>${stat.executionAvgTime}</td>
-        <td>${stat.executionMaxTime}</td>
-        <td>${stat.executionMinTime}</td>
-        <td>${stat.cacheHitCount}</td>
-        <td>${stat.cacheMissCount}</td>
-        <td>${stat.cachePutCount}</td>
-        <td>${stat.executionRowCount}</td>
-        </tr>
+	        <#assign stat = sessionStatistics.getQueryStatistics(query) />
+	        <#if (stat.executionAvgTime > 30 || stat.executionMaxTime > 30) >
+		        <tr><td><b>${query}</b></td>
+		        <td>${stat.executionCount}</td>
+		        <td>${stat.executionAvgTime}</td>
+		        <td>${stat.executionMaxTime}</td>
+		        <td>${stat.executionMinTime}</td>
+		        <td>${stat.cacheHitCount}</td>
+		        <td>${stat.cacheMissCount}</td>
+		        <td>${stat.cachePutCount}</td>
+		        <td>${stat.executionRowCount}</td>
+		        </tr>
+	        </#if>
         </#list>
     </tbody>
 </table>
