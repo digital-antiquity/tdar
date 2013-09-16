@@ -58,6 +58,7 @@ public class AudioController extends AbstractInformationResourceController<Audio
 
     @Override
     public boolean isMultipleFileUploadEnabled() {
+        // explicitly set to 1: for if we have multiple files then we need to add some sort of bridging table to contain the info on each file uploaded.
         return false;
     }
 
