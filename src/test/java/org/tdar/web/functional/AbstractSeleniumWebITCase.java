@@ -474,7 +474,7 @@ public abstract class AbstractSeleniumWebITCase {
     // }
 
     public WebElementSelection waitFor(String selector) {
-        return waitFor(selector, 10);
+        return waitFor(selector, 20);
     }
 
     public WebElementSelection waitFor(String cssSelector, int timeoutInSeconds) {
