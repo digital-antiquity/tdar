@@ -14,7 +14,10 @@ import org.hibernate.validator.constraints.Length;
  * Not done yet are:
  *   Transcript
  * Also, not yet resolved: we should try to automatically extract some of the fields from the audio file: are the ones below enough?
- * Note: the length of the recording is kept on the InformationResourceFileVersion
+ * Note: the length of the recording is kept on the InformationResourceFileVersion...
+ * Until I get a better understanding from actual users as to how the audio is to work I'm not populating the fields below. I'm going to simply put a very
+ * long descriptive string into the audio codec that displays all of the information suggested by the guide above, and show that on the form.
+ * 
  * @author Martin Paulo
  */
 @Entity
