@@ -105,11 +105,8 @@ public class WorkflowContextService {
                     datasetService.refreshAssociatedDataTables(codingSheet);
                     break;
                 case ARCHIVE:
-                    ((Archive)resource).updateFromTransientResource((Archive) ctx.getTransientResource());
-                    genericDao.saveOrUpdate(resource);
-                    break;
                 case AUDIO:
-                    ((Audio)resource).updateFromTransientResource((Audio) ctx.getTransientResource());
+                    ((InformationResource)resource).updateFromTransientResource((InformationResource)ctx.getTransientResource());
                     genericDao.saveOrUpdate(resource);
                     break;
                 default:

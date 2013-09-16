@@ -58,16 +58,13 @@ public class Archive extends InformationResource {
         return result;
     }
 
-    /**
-     * This method will write back the fields that may have been changed in the transient copy
-     * 
-     * @param transientArchive
-     */
-    public void updateFromTransientResource(Archive transientArchive) {
-        if (transientArchive == null) {
+    @Override
+    public void updateFromTransientResource(InformationResource transientResource) {
+        if (transientResource == null) {
             // Should never be here, so perhaps we should do more than return?
             return;
         }
+        final Archive transientArchive = (Archive)transientResource;
         this.doImportContent = transientArchive.isDoImportContent();
         this.importdone = transientArchive.isImportDone();
     }

@@ -1093,4 +1093,11 @@ public abstract class InformationResource extends Resource {
         return null;
     }
     
+    /**
+     * Override this method to write back the fields that may have been changed in the transient copy
+     * @param transientCopy
+     */
+    public void updateFromTransientResource(InformationResource transientCopy) {
+        // Should we throw an exception if we are here ?
+    }
 }
