@@ -11,7 +11,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-public class PlaceholderServletContext implements ServletContext{
+public class PlaceholderServletContext implements ServletContext {
 
     @Override
     public ServletContext getContext(String uripath) {

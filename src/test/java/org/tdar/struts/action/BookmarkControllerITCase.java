@@ -79,7 +79,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
         document.setDescription("bacd");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             Creator copyrightHolder = genericService.find(Person.class, 1L);
-            document.setCopyrightHolder(copyrightHolder );
+            document.setCopyrightHolder(copyrightHolder);
         }
         genericService.save(document);
         return document;

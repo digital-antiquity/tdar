@@ -35,12 +35,13 @@ public class ExtractAudioInfoTaskTest {
     public void readWavFileMetadata() throws UnsupportedAudioFileException, IOException {
         testFileCodec("testing.wav", WAV_EXPECTED);
     }
-    
+
     private void testFileCodec(String fileName, String expected) throws UnsupportedAudioFileException, IOException {
         ExtractAudioInfoTask task = new ExtractAudioInfoTask();
         File audioFile = new File(TestConstants.TEST_AUDIO_DIR + fileName);
         task.writeFileMetadataToAudioFile(testSubject, audioFile);
-        assertTrue(expected.equals(testSubject.getAudioCodec()));;
+        assertTrue(expected.equals(testSubject.getAudioCodec()));
+        ;
     }
 
 }

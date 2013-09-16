@@ -105,7 +105,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     @Override
     protected void batchCleanup() {
         long total = 0;
-        Map<String,Object> map = new HashMap<String,Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
         if (batchResults != null) {
             map.put(DoiProcess.CREATED, batchResults.get(DoiProcess.CREATED));
             map.put(DoiProcess.UPDATED, batchResults.get(DoiProcess.UPDATED));
@@ -114,12 +114,12 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
             total += batchResults.get(DoiProcess.UPDATED).size();
             total += batchResults.get(DoiProcess.DELETED).size();
         }
-        map.put("total",total);
-        map.put("date",new Date());
-        
+        map.put("total", total);
+        map.put("date", new Date());
+
         if (total > 0) {
             logger.info("sending email");
-            emailService.sendTemplate("doi-daily.ftl", map, emailService.getTdarConfiguration().getSiteAcronym()+ SUBJECT);
+            emailService.sendTemplate("doi-daily.ftl", map, emailService.getTdarConfiguration().getSiteAcronym() + SUBJECT);
         }
         batchResults.clear();
         initializeBatchResults();

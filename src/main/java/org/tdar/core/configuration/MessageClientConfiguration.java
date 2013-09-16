@@ -13,14 +13,14 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Adam Brin
- *
+ * 
  */
 @Configuration
 public class MessageClientConfiguration extends AbstractMessageConfiguration {
 
     @Bean
     public Queue filesToProcessQueue() {
-            return new Queue(TdarConfiguration.getInstance().getQueuePrefix() + TO_PROCESS);
+        return new Queue(TdarConfiguration.getInstance().getQueuePrefix() + TO_PROCESS);
     }
 
     @Bean

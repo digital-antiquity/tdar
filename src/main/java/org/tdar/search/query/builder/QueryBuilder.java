@@ -30,7 +30,7 @@ public abstract class QueryBuilder extends QueryPartGroup {
     protected final Logger logger = Logger.getLogger(getClass());
     private Class<?>[] classes;
     private List<DynamicQueryComponent> overrides = new ArrayList<DynamicQueryComponent>();
-//    private List<String> omitContainedLabels = Arrays.asList("_auto");
+    // private List<String> omitContainedLabels = Arrays.asList("_auto");
     private Operator operator = Operator.AND;
     private QueryParser queryParser;
     private Query query;
@@ -56,7 +56,7 @@ public abstract class QueryBuilder extends QueryPartGroup {
      */
     public Query buildQuery() throws ParseException {
         String qstring = rawQuery;
-        if(StringUtils.isBlank(qstring)) {
+        if (StringUtils.isBlank(qstring)) {
             qstring = this.toString();
         }
         setQuery(new MatchAllDocsQuery());
@@ -66,13 +66,12 @@ public abstract class QueryBuilder extends QueryPartGroup {
         }
         return getQuery();
     }
-    
+
     protected Map<String, Class<? extends Analyzer>> createPartialLabelOverrides() {
         Map<String, Class<? extends Analyzer>> map = new HashMap<String, Class<? extends Analyzer>>();
         map.put("_auto", NonTokenizingLowercaseKeywordAnalyzer.class);
         return map;
     }
-    
 
     /*
      * Use setClasses to specify exactly which classes should be inspected to
@@ -88,12 +87,12 @@ public abstract class QueryBuilder extends QueryPartGroup {
     public Class<?>[] getClasses() {
         return classes;
     }
-    
 
     public String stringContainedInLabel(String label) {
-        if(createPartialLabelOverrides() == null) return null;
+        if (createPartialLabelOverrides() == null)
+            return null;
         Set<String> omitContainedLabels = getPartialLabelOverrides().keySet();
-        
+
         for (String omitItem : omitContainedLabels) {
             if (StringUtils.containsIgnoreCase(label, omitItem)) {
                 return omitItem;
@@ -101,9 +100,9 @@ public abstract class QueryBuilder extends QueryPartGroup {
         }
         return null;
     }
-  
+
     public Map<String, Class<? extends Analyzer>> getPartialLabelOverrides() {
-        //TODO: see if it's safe to cache this
+        // TODO: see if it's safe to cache this
         return createPartialLabelOverrides();
     }
 

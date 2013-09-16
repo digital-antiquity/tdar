@@ -23,7 +23,7 @@ public interface QueryPart<T> {
     public abstract String getDescriptionHtml();
 
     public abstract boolean isEmpty();
-    
+
     public abstract Operator getOperator();
-    
+
 }

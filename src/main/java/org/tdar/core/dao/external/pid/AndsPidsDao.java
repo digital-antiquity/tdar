@@ -43,7 +43,7 @@ public class AndsPidsDao implements ExternalIDProvider {
     private static final String DOI_PROVIDER_AUTHDOMAIN = "doi.provider.authdomain";
 
     public static final String DOI_KEY = "DOI";
-    public static final String DATACITE_PROFILE_NAME = "datacite";    
+    public static final String DATACITE_PROFILE_NAME = "datacite";
     public static final String DATACITE_TITLE = DATACITE_PROFILE_NAME + ".title";
     public static final int DATACITE_TITLE_INDEX = 1;
 
@@ -113,7 +113,6 @@ public class AndsPidsDao implements ExternalIDProvider {
     public Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException {
         Map<String, String> typeMap = new HashMap<String, String>();
 
-        
         try {
             AndsPidResponse response = pidsClient.mintHandleFormattedResponse(HandleType.URL, 0, resourceUrl);
             String handle = response.getHandle();
@@ -131,7 +130,6 @@ public class AndsPidsDao implements ExternalIDProvider {
         return typeMap;
     }
 
-
     /*
      * returns a map of all of the information the Ands Pids server has on the resource
      */
@@ -146,9 +144,9 @@ public class AndsPidsDao implements ExternalIDProvider {
 
         try {
             typeMap.put(DOI_KEY, identifier);
-            AndsPidResponse response = pidsClient.getHandleFormattedResponse(identifier);            
+            AndsPidResponse response = pidsClient.getHandleFormattedResponse(identifier);
             List<AndsPidResponseProperty> properties = response.getProperties();
-            typeMap.put(DATACITE_TITLE, properties.get(DATACITE_TITLE_INDEX-1).getValue());            
+            typeMap.put(DATACITE_TITLE, properties.get(DATACITE_TITLE_INDEX - 1).getValue());
         } catch (Exception e) {
             logger.debug("could not get properties for handle: {}", identifier);
             throw new ClientProtocolException(e);

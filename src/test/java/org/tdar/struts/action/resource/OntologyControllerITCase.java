@@ -135,7 +135,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         final List<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>(ont.getOntologyNodes());
         assertNotNull(ontologyNodes);
         logger.info("ontology nodes: {}", ontologyNodes);
-        final Pair<Dataset,CodingSheet> returned = setupMappingsForTest(ont);
+        final Pair<Dataset, CodingSheet> returned = setupMappingsForTest(ont);
         final CodingSheet generatedSheet = returned.getSecond();
         final Collection<InformationResourceFileVersion> latestVersions = ont.getLatestVersions();
         controller = super.generateNewInitializedController(OntologyController.class);
@@ -178,7 +178,8 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
                         displayNameToNode.get("Core").getId(), updatedDisplayNameToNode.get("Core").getId());
                 assertThat(displayNameToNode.get("Other Tool").getImportOrder(), is(not(updatedDisplayNameToNode.get("Unknown Tool").getImportOrder())));
                 assertFalse(latestVersions.equals(ont.getLatestUploadedVersions()));
-                assertEquals("Uploading new ontology didn't preserve coding rule -> ontology node references properly", ont.getNodeByName("Tool"), generatedSheet.getCodingRuleByCode("Tool").getOntologyNode());
+                assertEquals("Uploading new ontology didn't preserve coding rule -> ontology node references properly", ont.getNodeByName("Tool"),
+                        generatedSheet.getCodingRuleByCode("Tool").getOntologyNode());
 
                 for (InformationResourceFile file : ont.getInformationResourceFiles()) {
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
@@ -267,7 +268,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertThat(displayNameToNode.get("Other Tool").getImportOrder(), is(not(updatedDisplayNameToNode.get("Unknown Tool").getImportOrder())));
     }
 
-    public Pair<Dataset,CodingSheet> setupMappingsForTest(Ontology ontology) {
+    public Pair<Dataset, CodingSheet> setupMappingsForTest(Ontology ontology) {
         // create dataset
         Dataset dataset = new Dataset();
         dataset.setTitle("test");
@@ -291,7 +292,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         dataTable.getDataTableColumns().add(dataTableColumn);
         dataset.getDataTables().add(dataTable);
         // FIXME: this won't work since it expects the DataTableColumn to be a real column with data in the data import db
-//        CodingSheet codingSheet = dataIntegrationService.createGeneratedCodingSheet(dataTableColumn, getUser(), ontology);
+        // CodingSheet codingSheet = dataIntegrationService.createGeneratedCodingSheet(dataTableColumn, getUser(), ontology);
         CodingSheet codingSheet = new CodingSheet();
         codingSheet.setTitle("generated coding sheet for test column");
         codingSheet.setDescription("system generated identity coding sheet");

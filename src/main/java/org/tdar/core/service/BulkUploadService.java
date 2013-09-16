@@ -47,7 +47,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.BulkImportField;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
@@ -139,7 +138,7 @@ public class BulkUploadService {
             final Long ticketId, final File excelManifest,
             final Collection<FileProxy> fileProxies, Long accountId) {
         Map<String, Resource> resourcesCreated = new HashMap<String, Resource>();
-        Person submitter=  genericDao.find(Person.class, submitterId);
+        Person submitter = genericDao.find(Person.class, submitterId);
         logger.debug("BEGIN ASYNC: " + image + fileProxies);
 
         // in an async method the image's persistent associations will have

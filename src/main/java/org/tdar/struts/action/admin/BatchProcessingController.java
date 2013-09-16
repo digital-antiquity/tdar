@@ -41,7 +41,7 @@ public class BatchProcessingController extends AuthenticationAware.Base {
     private List<Resource> filteredFullUserProjects;
     private List<Resource> fullUserProjects;
     private BatchAction batchAction;
-    
+
     @Override
     @Action("batch")
     public String execute() {

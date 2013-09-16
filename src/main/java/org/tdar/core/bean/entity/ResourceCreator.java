@@ -54,7 +54,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
         setCreator(creator);
         setRole(role);
     }
-    
+
     public ResourceCreator() {
     }
 

@@ -19,7 +19,6 @@ import org.tdar.core.service.resource.ResourceService;
 @Component
 public class SerializeResourceRecordToXml extends ScheduledBatchProcess<Resource> {
 
-    
     /**
      * 
      */
@@ -51,7 +50,7 @@ public class SerializeResourceRecordToXml extends ScheduledBatchProcess<Resource
     public int getBatchSize() {
         return 500;
     }
-    
+
     @Override
     public boolean isEnabled() {
         return true;

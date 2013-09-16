@@ -60,7 +60,7 @@ public class HomepageResourceCountCache extends Persistable.Base implements Comp
     public String getLabel() {
         return getResourceType().getPlural();
     }
-    
+
     public ResourceType getKey() {
         return getResourceType();
     }

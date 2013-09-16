@@ -208,7 +208,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
                     }
                 }, false);
     }
-    
+
     @Test
     @Rollback
     public void testConverterWithFloats() throws Exception {

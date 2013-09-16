@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +52,9 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         assertEquals("result should be success", LookupController.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         logger.info("{}", people);
-        assertTrue("person list should have at least two items",  people.size() >= 2);
+        assertTrue("person list should have at least two items", people.size() >= 2);
         for (Indexable p : controller.getResults()) {
-            Person pers = (Person)p;
+            Person pers = (Person) p;
             assertTrue(pers.getInstitution().getName().contains(" "));
         }
     }
@@ -146,7 +145,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         for (Indexable indx : results) {
             Institution inst = (Institution) indx;
             logger.info(inst.getName());
-             assertTrue("expecting 'u.s.' contained in " + inst.getName(), inst.getName().toLowerCase().contains(lookingFor.toLowerCase()));
+            assertTrue("expecting 'u.s.' contained in " + inst.getName(), inst.getName().toLowerCase().contains(lookingFor.toLowerCase()));
         }
     }
 

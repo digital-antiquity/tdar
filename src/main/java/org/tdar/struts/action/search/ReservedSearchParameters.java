@@ -20,7 +20,7 @@ public class ReservedSearchParameters extends SearchParameters {
     private Person authenticatedUser;
     private TdarGroup tdarGroup;
     private boolean useSubmitterContext = false;
-    
+
     public ReservedSearchParameters() {
         setOperator(Operator.AND);
     }

@@ -59,6 +59,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 
 /**
  * http://thegenomefactory.blogspot.com.au/2013/08/minimum-standards-for-bioinformatics.html
+ * 
  * @author Adam Brin
  */
 public class CommandLineAPITool {
@@ -497,7 +498,7 @@ public class CommandLineAPITool {
         logger.info(record.toString() + " - " + response.getStatusLine());
         HttpEntity entity = response.getEntity();
         if (entity != null) {
-            String resp =  StringEscapeUtils.unescapeHtml4(EntityUtils.toString(entity));
+            String resp = StringEscapeUtils.unescapeHtml4(EntityUtils.toString(entity));
             entity.consumeContent();
             if (resp != null && resp != "") {
                 logger.info(resp);

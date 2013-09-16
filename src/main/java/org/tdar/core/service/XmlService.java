@@ -72,7 +72,6 @@ public class XmlService implements Serializable {
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Class<?>[] jaxbClasses;
-    
 
     @Autowired
     JaxbPersistableConverter persistableConverter;

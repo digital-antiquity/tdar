@@ -6,7 +6,8 @@
  */
 package org.tdar.core;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class AndsPidsITCase extends AbstractSearchControllerITCase {
     @Autowired
     UrlService urlService;
 
-    @Test 
+    @Test
     public void testLogin() {
         try {
             assertTrue(pidsDao.connect());
@@ -74,14 +75,14 @@ public class AndsPidsITCase extends AbstractSearchControllerITCase {
             pidsDao.modify(r, absoluteUrl, doi);
 
             metadata = pidsDao.getMetadata(doi);
-            //assertEquals(r.getTitle(), metadata.get(AndsPidsDao.DATACITE_TITLE));
+            // assertEquals(r.getTitle(), metadata.get(AndsPidsDao.DATACITE_TITLE));
 
             r.setStatus(Status.DELETED);
             pidsDao.delete(r, absoluteUrl, doi);
 
             metadata = pidsDao.getMetadata(doi);
-            // should no longer exist            
-            //assertFalse(metadata.containsKey(AndsPidsDao.DATACITE_TITLE));
+            // should no longer exist
+            // assertFalse(metadata.containsKey(AndsPidsDao.DATACITE_TITLE));
         } catch (Exception e) {
             e.printStackTrace();
         }

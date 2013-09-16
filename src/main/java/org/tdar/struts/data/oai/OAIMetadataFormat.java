@@ -10,14 +10,14 @@ import org.tdar.core.exception.OAIException;
 
 /**
  * @author Adam Brin
- *
+ * 
  */
 public enum OAIMetadataFormat {
-	// http://www.openarchives.org/OAI/openarchivesprotocol.html#MetadataNamespaces
+    // http://www.openarchives.org/OAI/openarchivesprotocol.html#MetadataNamespaces
     DC("oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/", "http://www.openarchives.org/OAI/2.0/oai_dc.xsd"),
     MODS("mods", "http://www.loc.gov/mods/v3", "http://www.loc.gov/standards/mods/v3/mods-3-1.xsd"),
     TDAR("tdar", "http://www.tdar.org/namespace", "/schema/current");
-    
+
     private String prefix;
     private String namespace;
     private String schemaLocation;
@@ -43,28 +43,30 @@ public enum OAIMetadataFormat {
     public String getNamespace() {
         return namespace;
     }
-    
+
     /**
-     * @param namespace the XML namespace URI
+     * @param namespace
+     *            the XML namespace URI
      */
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
-    
+
     /**
      * @return the XML schema location
      */
     public String getSchemaLocation() {
         return schemaLocation;
     }
-    
+
     /**
-     * @param schemaLocation the XML schema location
+     * @param schemaLocation
+     *            the XML schema location
      */
     public void setSchemaLocation(String schemaLocation) {
         this.schemaLocation = schemaLocation;
     }
-    
+
     /**
      * @return the prefix
      */
@@ -73,11 +75,11 @@ public enum OAIMetadataFormat {
     }
 
     /**
-     * @param prefix the prefix to set
+     * @param prefix
+     *            the prefix to set
      */
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 
 }
-

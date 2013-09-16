@@ -47,6 +47,7 @@ public interface Dao<T> {
     /**
      * Returns a list of entities that match the set of ids passed in, i.e.,
      * FROM entity-class-name WHERE id in (:ids)
+     * 
      * @param ids
      * @return
      */
@@ -181,11 +182,11 @@ public interface Dao<T> {
         public List<E> findAll() {
             return super.findAll(persistentClass);
         }
-        
+
         public List<Long> findAllIds() {
             return super.findAllIds(persistentClass);
         }
-        
+
         public List<E> findAll(List<Long> ids) {
             return super.findAll(persistentClass, ids);
         }

@@ -1,6 +1,6 @@
 package org.tdar.core.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -19,6 +19,6 @@ public class ReflectionServiceITCase extends AbstractIntegrationTestCase {
         String test = "Document";
         Class<Persistable> document = reflectionService.getMatchingClassForSimpleName(test);
         logger.debug("{}", document);
-        assertEquals(Document.class,document);
+        assertEquals(Document.class, document);
     }
 }

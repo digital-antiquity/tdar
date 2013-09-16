@@ -5,8 +5,6 @@ package org.tdar.core.filestore;
 
 import java.io.File;
 
-import javax.persistence.Id;
-
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,7 +14,6 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
@@ -33,7 +30,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     FileAnalyzer fileAnalyzer;
-    
+
     @Test
     @Rollback
     public void testGeoTiffArc10WithWorldFile() throws Exception {
@@ -46,7 +43,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         Workflow workflow = fileAnalyzer.getWorkflow(originalFile, supportingFile);
         wc.getOriginalFiles().add(originalFile);
         wc.getOriginalFiles().add(supportingFile);
-        
+
         workflow.run(wc);
         task.setWorkflowContext(wc);
         task.run();
@@ -130,7 +127,6 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         task.setWorkflowContext(wc);
         task.run();
     }
-
 
     @Test
     @Rollback

@@ -65,9 +65,9 @@ public class AuthorityManagementService {
         DELETE_DUPLICATES("Delete Duplicates (irreversable)"),
         MARK_DUPS_AND_CONSOLDIATE("Mark duplicates and update references (somewhat reversable)"),
         MARK_DUPS_ONLY("Mark As Dup (reversable)");
-        
+
         private String label;
-        
+
         private DupeMode(String label) {
             this.label = label;
         }

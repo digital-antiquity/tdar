@@ -33,7 +33,7 @@ public class CsvCodingSheetParser implements CodingSheetParser {
     public CSVReader getReader(InputStream stream) {
         return new CSVReader(new BufferedReader(new InputStreamReader(stream)));
     }
-    
+
     @Override
     public List<CodingRule> parse(CodingSheet codingSheet, InputStream stream) throws CodingSheetParserException {
         List<CodingRule> codingRules = new ArrayList<CodingRule>();
@@ -54,7 +54,7 @@ public class CsvCodingSheetParser implements CodingSheetParser {
                     continue;
                 }
                 if (StringUtils.isBlank(code) || StringUtils.isBlank(term)) {
-                    throw new TdarRecoverableRuntimeException(String.format("Null code (%s) or term(%s)",code,term));
+                    throw new TdarRecoverableRuntimeException(String.format("Null code (%s) or term(%s)", code, term));
                 }
 
                 CodingRule codingRule = new CodingRule();

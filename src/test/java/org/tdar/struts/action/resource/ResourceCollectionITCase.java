@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -46,6 +45,7 @@ import org.tdar.struts.action.CollectionController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.BrowseController;
+
 //import static org.hamcrest.MatcherAssert.assertThat;
 public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 {
@@ -67,7 +67,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     public void setup()
     {
         controller = generateNewInitializedController(CollectionController.class);
-        if(indexCount < 1) {
+        if (indexCount < 1) {
             reindex();
         }
         indexCount++;
@@ -499,16 +499,16 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals("2 redundant authusers should have been normalized", 2, rc2.getAuthorizedUsers().size());
 
         assertEquals("size should be 2", 2, rc2.getAuthorizedUsers().size());
-        
-        //if this list is truly normalized,  each queue should be length 1
+
+        // if this list is truly normalized, each queue should be length 1
         HashMap<Long, GeneralPermissions> map = new HashMap<Long, GeneralPermissions>();
-        for( AuthorizedUser authuser : rc2.getAuthorizedUsers() ) {
+        for (AuthorizedUser authuser : rc2.getAuthorizedUsers()) {
             map.put(authuser.getUser().getId(), authuser.getGeneralPermission());
         }
         assertEquals("user 1 should have best permission", GeneralPermissions.MODIFY_METADATA, map.get(user1Modifier.getUser().getId()));
         assertNotNull("only the modifier & admin authusers should remain", map.get(user2.getUser().getId()));
     }
-    
+
     @Test
     @Rollback
     public void testNormalizeAuthorizedUsers() {

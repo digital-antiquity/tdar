@@ -50,8 +50,8 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 /* not sure this is needed */
-//@InterceptorRef("paramsPrepareParamsStack")
-//@Result(name = "new", type = "redirect", location = "new")
+// @InterceptorRef("paramsPrepareParamsStack")
+// @Result(name = "new", type = "redirect", location = "new")
 @HttpsOnly
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
 
@@ -111,8 +111,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Override
     @HttpsOnly
     /* disabling because it interacts with @HttpsOnly */
-    //    @Result(name = "new", type = "redirect", location = "new")
-
+    // @Result(name = "new", type = "redirect", location = "new")
     public String execute() {
         setTimeCheck(System.currentTimeMillis());
         if (isAuthenticated()) {
@@ -176,7 +175,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     // FIXME: not implemented yet.
     @Action(value = "reminder",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") }
-    , results = { @Result(name = "success", location = "recover.ftl"), @Result(name = "input", location = "recover.ftl") })
+            , results = { @Result(name = "success", location = "recover.ftl"), @Result(name = "input", location = "recover.ftl") })
     @SkipValidation
     @HttpsOnly
     public String sendNewPassword() {
@@ -196,7 +195,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Action(value = "register",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", type = "redirect", location = "welcome"),
-            @Result(name = "input", location = "edit.ftl") })
+                    @Result(name = "input", location = "edit.ftl") })
     @HttpsOnly
     @WriteableSession
     public String create() {

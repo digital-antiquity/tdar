@@ -42,27 +42,26 @@ import org.tdar.core.configuration.TdarConfiguration;
 public class BagitTest {
 
     private BagFactory bagFactory = new BagFactory();
-    
+
     private static final String PATH = TestConstants.TEST_ROOT_DIR;
-    
+
     private TdarConfiguration cfg = TdarConfiguration.getInstance();
     private File bagHome;
-    
 
     @Before
     public void createBagHome() throws Exception {
-    	bagHome = new File(cfg.getPersonalFileStoreLocation() + "/testbag");
-    	Assert.assertTrue(bagHome.mkdirs());
+        bagHome = new File(cfg.getPersonalFileStoreLocation() + "/testbag");
+        Assert.assertTrue(bagHome.mkdirs());
     }
-    
-    //FIXME: this fails to delete the directory on windows for some reason. Something else holding on to file?
+
+    // FIXME: this fails to delete the directory on windows for some reason. Something else holding on to file?
     @After
     public void deleteBagHome() throws Exception {
-    	if(bagHome.exists()) {
-        	FileUtils.deleteQuietly(bagHome);
-    	}
+        if (bagHome.exists()) {
+            FileUtils.deleteQuietly(bagHome);
+        }
     }
-    
+
     private Bag getBag(File sourceFile, Version version, LoadOption loadOption) {
         if (version != null) {
             if (sourceFile != null) {
@@ -78,11 +77,11 @@ public class BagitTest {
             }
         }
     }
-    
+
     private Bag getBag(File sourceFile) {
-    	return getBag(sourceFile, Version.V0_96, null);
+        return getBag(sourceFile, Version.V0_96, null);
     }
-    
+
     @Test
     public void test() {
 
@@ -96,30 +95,28 @@ public class BagitTest {
         completer.setPayloadManifestAlgorithm(Algorithm.MD5);
         completer.setNonDefaultManifestSeparator("\t");
 
-        
         List<File> filesToAdd = new ArrayList<File>();
-    	filesToAdd.add(new File(PATH + "images/handbook_of_archaeology.jpg"));
-    	filesToAdd.add(new File(PATH + "data_integration_tests/evmpp-fauna.xls"));
-    	filesToAdd.add(new File(PATH + "xml/documentImport.xml"));
-  
-        
+        filesToAdd.add(new File(PATH + "images/handbook_of_archaeology.jpg"));
+        filesToAdd.add(new File(PATH + "data_integration_tests/evmpp-fauna.xls"));
+        filesToAdd.add(new File(PATH + "xml/documentImport.xml"));
+
         Bag bag = this.getBag(bagHome);
         for (File fileToAdd : filesToAdd) {
             Assert.assertTrue("file exists", fileToAdd.exists());
             bag.addFileToPayload(fileToAdd);
         }
-        
+
         Writer writer = new FileSystemWriter(bagFactory);
         Bag newBag = completer.complete(bag);
-        newBag.write(writer,bagHome);
+        newBag.write(writer, bagHome);
         Assert.assertTrue(true);
 
         CompleteVerifier completeVerifier = new CompleteVerifierImpl();
-//        completeVerifier.setMissingBagItTolerant(false);
-//        completeVerifier.setAdditionalDirectoriesInBagDirTolerant(false);
+        // completeVerifier.setMissingBagItTolerant(false);
+        // completeVerifier.setAdditionalDirectoriesInBagDirTolerant(false);
         ValidVerifier verifier = new ValidVerifierImpl(completeVerifier, new ParallelManifestChecksumVerifier());
-        
-        //assert the bag is valid (baginfo.txt matches contents) then iterate over the bag contents.  
+
+        // assert the bag is valid (baginfo.txt matches contents) then iterate over the bag contents.
         Bag bagOut = this.getBag(bagHome, Version.V0_96, LoadOption.BY_MANIFESTS);
         SimpleResult result = verifier.verify(bagOut);
         Assert.assertTrue("Bag contents valid", result.isSuccess());

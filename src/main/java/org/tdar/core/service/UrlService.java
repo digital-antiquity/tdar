@@ -1,18 +1,12 @@
 package org.tdar.core.service;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
-
-import java.net.URL;
 
 /*
  * This service attempts to centralize and support the creation of URL strings from within the java app. It's centralized here
@@ -68,23 +62,24 @@ public class UrlService {
     }
 
     /**
-     * return the path + queryString for the specified request  as originally requested by the client
+     * return the path + queryString for the specified request as originally requested by the client
+     * 
      * @param request
      * @return
      */
-    //TODO: do we want 'servlet path' instead of 'request URI'?
+    // TODO: do we want 'servlet path' instead of 'request URI'?
     public static String getOriginalUrlPath(HttpServletRequest request) {
         String path = request.getServletPath();
         String queryString = request.getQueryString();
 
         String forwardPath = getAttribute(request, "javax.servlet.forward.request_uri");
-        if(forwardPath != null) {
+        if (forwardPath != null) {
             path = forwardPath;
-            queryString = getAttribute(request, "javax.servlet.forward.query_string" );
+            queryString = getAttribute(request, "javax.servlet.forward.query_string");
         }
 
         StringBuffer sb = new StringBuffer(path);
-        if(queryString != null)  {
+        if (queryString != null) {
             sb.append("?").append(queryString);
         }
 

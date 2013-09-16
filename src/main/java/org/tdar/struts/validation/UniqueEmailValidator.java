@@ -8,9 +8,9 @@ import com.opensymphony.xwork2.validator.ValidationException;
 import com.opensymphony.xwork2.validator.validators.FieldValidatorSupport;
 
 public class UniqueEmailValidator extends FieldValidatorSupport implements ShortCircuitableValidator {
-    
+
     private EntityService entityService;
-    
+
     @Override
     public void validate(Object actionBean) throws ValidationException {
         final String fieldName = getFieldName();

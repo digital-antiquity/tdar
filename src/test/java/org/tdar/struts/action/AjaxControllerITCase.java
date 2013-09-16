@@ -13,21 +13,21 @@ import org.tdar.core.service.resource.CategoryVariableService;
 
 public class AjaxControllerITCase extends AbstractAdminControllerITCase {
     private AjaxController controller;
-    
+
     @Autowired
     private CategoryVariableService categoryVariableService;
-    
+
     @Before
     public void setup() {
         controller = generateNewInitializedController(AjaxController.class);
     }
-    
+
     @Override
     protected TdarActionSupport getController() {
         return controller;
     }
-    
-    @Test 
+
+    @Test
     public void testColumnMetadataSubcategories() {
         CategoryVariable categoryVariable = categoryVariableService.findAllCategories().iterator().next();
         controller.setCategoryVariableId(categoryVariable.getId());

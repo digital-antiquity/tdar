@@ -11,7 +11,7 @@ import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 
 @Entity
-@Table(name="homepage_cache_geographic_keyword")
+@Table(name = "homepage_cache_geographic_keyword")
 public class HomepageGeographicKeywordCache extends Base implements ResourceCache<String> {
 
     private static final long serialVersionUID = -8037868535122993612L;
@@ -21,7 +21,7 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
 
     @Column(name = "keyword_id")
     private Long keywordId;
-    
+
     @Length(max = 255)
     private String label;
 
@@ -63,16 +63,16 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
     public void setLevel(Level level) {
         this.level = level;
     }
-    
+
     public Double getLogCount() {
         return Math.log(getCount());
     }
-    
+
     @Override
     public String toString() {
-        return String.format("%s %s (%s)", label,level,count);
+        return String.format("%s %s (%s)", label, level, count);
     }
-    
+
     public String getKey() {
         return getLabel();
     }

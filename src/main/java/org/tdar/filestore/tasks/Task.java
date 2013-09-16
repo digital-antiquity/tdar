@@ -32,9 +32,10 @@ public interface Task extends Serializable {
 
     /**
      * Run method called by the task work flow process. The implicit contract is that if the task exits abnormally, it will throw an exception during
-     * the execution of this method. 
+     * the execution of this method.
      * Also, the exceptions are not necessarily logged: so if you want a record of the problem, log error before throwing the
      * exception.
+     * 
      * @see WorkflowContext#setErrorFatal(boolean)
      * @see Workflow#run(WorkflowContext)
      */
@@ -99,10 +100,12 @@ public interface Task extends Serializable {
             }
             return version;
         }
-        
+
         /**
          * Utility method to mark and log a fatal error, and then complete by throwing a TdarRecoverableRuntimeException
-         * @param message The message to be logged as an error.
+         * 
+         * @param message
+         *            The message to be logged as an error.
          * @Throws TdarRecoverableRuntimeException <b>NB</b> Each and every time this method is called!
          */
         protected void recordErrorAndExit(final String message) {
@@ -110,7 +113,7 @@ public interface Task extends Serializable {
             getLogger().error(message);
             throw new TdarRecoverableRuntimeException(message);
         }
-        
+
         void mkParentDirs(File outputFile) {
             File outputFileDirectory = getParentDirectory(outputFile);
             try {

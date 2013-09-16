@@ -414,17 +414,17 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         searchIndexService.index(proj);
 
         controller.lookupResource();
-        
+
         List<Indexable> results = controller.getResults();
-        
-        for(Indexable result : results) {
-            if(proj.getId().equals(result.getId())) {
+
+        for (Indexable result : results) {
+            if (proj.getId().equals(result.getId())) {
                 logger.debug("found same id");
                 assertEquals(result, proj);
                 break;
             }
         }
-        
+
         logger.debug("list type:{}  contents:{}", results.getClass(), results);
         boolean contained = results.contains(proj);
         assertTrue(contained);

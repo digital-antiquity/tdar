@@ -23,7 +23,7 @@ import com.sun.net.httpserver.HttpExchange;
 public class HttpTestingServer implements ITestingServer {
 
     private final Logger logger = Logger.getLogger(getClass());
-    
+
     @Autowired
     private SessionData sessionData;
 
@@ -37,41 +37,41 @@ public class HttpTestingServer implements ITestingServer {
     public SessionData getSessionData() {
         return sessionData;
     }
-    
+
     @Override
     public void createServer() {
-       configureProducer();
-       Authenticator  authenticator = new BasicAuthenticator("tDAR_odata_realm")
-       {
-           
-    public Result authenticate(HttpExchange exchange)
-       {
-           return super.authenticate(exchange);
-       }
-           
-        @Override
-        public boolean checkCredentials(String username, String password) {
-            boolean isAuthenticated = false;
-            getSessionData().setAuthenticationToken(null);
-            if (Constant.TEST_USER_NAME.equals(username) && Constant.TEST_PASSWORD.equals(password))
+        configureProducer();
+        Authenticator authenticator = new BasicAuthenticator("tDAR_odata_realm")
+        {
+
+            public Result authenticate(HttpExchange exchange)
             {
-                AuthenticationToken authenticationToken = AuthenticationToken.create(person);                
-                getSessionData().setAuthenticationToken(authenticationToken);                
-                isAuthenticated = true;
-                getLogger().info("Session data set for OData request: authentication succeeded.");
+                return super.authenticate(exchange);
             }
-            else
-            {
-                getLogger().info("Session data NOT set for OData request: authentication failed.");
+
+            @Override
+            public boolean checkCredentials(String username, String password) {
+                boolean isAuthenticated = false;
+                getSessionData().setAuthenticationToken(null);
+                if (Constant.TEST_USER_NAME.equals(username) && Constant.TEST_PASSWORD.equals(password))
+                {
+                    AuthenticationToken authenticationToken = AuthenticationToken.create(person);
+                    getSessionData().setAuthenticationToken(authenticationToken);
+                    isAuthenticated = true;
+                    getLogger().info("Session data set for OData request: authentication succeeded.");
+                }
+                else
+                {
+                    getLogger().info("Session data NOT set for OData request: authentication failed.");
+                }
+                return isAuthenticated;
             }
-            return isAuthenticated;
-        }           
-       };
-               
+        };
+
         Filter filter = new SpringAdapterRequestContextFilter();
         server = new ODataJerseyServer(Constant.SERVICE_URL, DefaultODataApplication.class, RootApplication.class)
-            .addHttpServerFilter(filter)
-            .setHttpServerAuthenticator(authenticator);
+                .addHttpServerFilter(filter)
+                .setHttpServerAuthenticator(authenticator);
     }
 
     @Override

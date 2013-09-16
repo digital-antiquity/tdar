@@ -13,8 +13,8 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
@@ -208,7 +208,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         }
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<CodingSheet> findAllUsingOntology(Ontology ontology) {
         return getDao().findAllUsingOntology(ontology, Arrays.asList(Status.ACTIVE));
     }

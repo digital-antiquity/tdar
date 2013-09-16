@@ -1,6 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +11,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SupportsResource;
-import org.tdar.core.bean.resource.*;
+import org.tdar.core.bean.resource.CategoryVariable;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -68,7 +72,8 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             return null;
         }
         InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion();
-        if(latestUploadedTextVersion != null && latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR) {
+        if (latestUploadedTextVersion != null
+                && latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR) {
             if (ObjectUtils.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
                 logger.info("incoming and current file input text is the same, skipping further actions");
                 return null;
@@ -76,7 +81,6 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
                 logger.info("processing updated text input for {}", getPersistable());
             }
         }
-
 
         try {
             // process the String uploaded via the fileTextInput box verbatim as the UPLOADED_TEXT version
@@ -180,7 +184,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     protected InformationResourceFileVersion getLatestUploadedTextVersion() {
         InformationResourceFileVersion version = null;
         Collection<InformationResourceFileVersion> versions = getPersistable().getLatestVersions(VersionType.UPLOADED_TEXT);
-        if(!versions.isEmpty()) {
+        if (!versions.isEmpty()) {
             version = getPersistable().getLatestVersions(VersionType.UPLOADED_TEXT).iterator().next();
 
         }
@@ -192,16 +196,16 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         // of these files for both text input and file uploads
         String versionText = "";
         InformationResourceFileVersion version = getLatestUploadedTextVersion();
-        if(version != null) {
+        if (version != null) {
             try {
-                versionText =  FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+                versionText = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
             } catch (IOException e) {
                 logger.debug("an error occurred when trying to load the text version of a file", e);
             }
         }
         return versionText;
     }
-    
+
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return false;

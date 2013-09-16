@@ -24,7 +24,7 @@ public class DatasetConversionFactory {
             converter.setInformationResourceFileVersion(dataset);
             return converter;
         } catch (Exception e) {
-            throw new IllegalArgumentException("No converter defined for format: " + dataset.getExtension(),e);
+            throw new IllegalArgumentException("No converter defined for format: " + dataset.getExtension(), e);
         }
     }
 

@@ -33,7 +33,7 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
     public EditInheritingSectionsWebITCase() {
         for (String inherit : InformationResource.JSON_PROPERTIES) {
             if (inherit.equals("inheritingCollectionInformation")) {
-                //not on project page
+                // not on project page
                 continue;
             }
             docValMap.put("resource." + inherit, "true");
@@ -61,7 +61,7 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
         }
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             // should only be blank on records that were not created under the copyright regime, btw.
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitForm();

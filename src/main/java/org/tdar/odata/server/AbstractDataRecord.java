@@ -12,7 +12,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 // Abstract in the sense that it can be used to represent any entity 
 // derived from EntitySet.T_DATA_RECORDS.
 public class AbstractDataRecord {
-    
+
     private Long id;
     private DataTable dataTable;
     private Map<String, Object> values = new HashMap<String, Object>();
@@ -30,7 +30,6 @@ public class AbstractDataRecord {
     public String getTableName() {
         return dataTable.getName();
     }
-
 
     public DataTable getDataTable() {
         return dataTable;
@@ -58,10 +57,10 @@ public class AbstractDataRecord {
         }
         values.put(name, value);
     }
-    
+
     public Set<String> propertyNames()
     {
-       return values.keySet();
+        return values.keySet();
     }
 
     public Map<?, ?> asMap() {
@@ -103,5 +102,5 @@ public class AbstractDataRecord {
         } else if (!values.equals(other.values))
             return false;
         return true;
-    }    
+    }
 }

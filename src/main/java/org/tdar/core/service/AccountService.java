@@ -225,7 +225,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
 
         /* update the account info in the database */
-        getDao().updateAccountInfo(account,resourceEvaluator);
+        getDao().updateAccountInfo(account, resourceEvaluator);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
 
         account.initTotals();
@@ -266,7 +266,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
                 account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
                 logger.info("marking account as FLAGGED {} {}", overdrawn, helper.getFlagged());
-            }  else {
+            } else {
                 if (account.getStatus().equals(Status.FLAGGED_ACCOUNT_BALANCE)) {
                     account.setStatus(Status.ACTIVE);
                 }
@@ -421,7 +421,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             return true;
         }
         logger.info("mode: {}", mode);
-        Object[] log = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() , space, files, resource.getId(), resource.getStatus()};
+        Object[] log = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles(), space,
+                files, resource.getId(), resource.getStatus() };
         logger.info("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})", log);
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes
         if (helper.getModel().getCountingSpace() && helper.getAvailableSpaceInBytes() - space < 0) {
@@ -639,7 +640,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
         getDao().checkCouponStillValidForCheckout(coupon, invoice);
     }
-    
+
     @Transactional
     public void redeemCode(Invoice persistable, Person user, String code) {
         if (StringUtils.isEmpty(code)) {
@@ -687,15 +688,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (coupon.getNumberOfFiles() > 0L && coupon.getNumberOfMb() > 0L) {
             throw new TdarRecoverableRuntimeException(SPECIFY_EITHER_SPACE_OR_FILES);
         }
-        
-        if ((Persistable.Base.isNullOrTransient(numberOfFiles)  || numberOfFiles < 1 ) && (Persistable.Base.isNullOrTransient(numberOfMb) || numberOfMb < 1)) {
+
+        if ((Persistable.Base.isNullOrTransient(numberOfFiles) || numberOfFiles < 1) && (Persistable.Base.isNullOrTransient(numberOfMb) || numberOfMb < 1)) {
             throw new TdarRecoverableRuntimeException(CANNOT_GENERATE_A_COUPON_FOR_NOTHING);
         }
 
         if (account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles() || account.getAvailableSpaceInMb() < coupon.getNumberOfMb()) {
             logger.info("{}", account.getTotalNumberOfFiles());
-            logger.info("{} < {} " , account.getAvailableNumberOfFiles(), coupon.getNumberOfFiles());
-            logger.info("{} < {} " , account.getAvailableSpaceInMb(), coupon.getNumberOfMb());
+            logger.info("{} < {} ", account.getAvailableNumberOfFiles(), coupon.getNumberOfFiles());
+            logger.info("{} < {} ", account.getAvailableSpaceInMb(), coupon.getNumberOfMb());
             throw new TdarRecoverableRuntimeException(NOT_ENOUGH_SPACE_OR_FILES);
         }
         genericDao.save(coupon);
@@ -707,7 +708,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             code.append(codes.get((int) (Math.random() * (double) codes.size())));
             code.append("-");
         }
-        code.append((int)(Math.random() * 9999));
+        code.append((int) (Math.random() * 9999));
         coupon.setCode(code.toString());
         account.getCoupons().add(coupon);
         logger.info("adding coupon: {}  to account: {}", coupon, account);

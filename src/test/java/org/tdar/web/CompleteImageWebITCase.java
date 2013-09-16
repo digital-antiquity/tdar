@@ -36,7 +36,7 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
     private static final String COPYRIGHT_HOLDER_PERSON_LAST_NAME = "copyrightHolderProxies.person.lastName";
     private static final List<String> VALUES_NOT_SHOWN_ON_OVERVIEW_PAGE = Arrays.asList(new String[] { COPYRIGHT_HOLDER_PERSON_FIRST_NAME,
             COPYRIGHT_HOLDER_PERSON_LAST_NAME });
-//, TestConstants.COPYRIGHT_HOLDER_TYPE
+    // , TestConstants.COPYRIGHT_HOLDER_TYPE
     public static HashMap<String, String> docValMap = new HashMap<String, String>();
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
@@ -67,15 +67,15 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("authorshipProxies[0].person.id", "");
 
         // FIXME: this is brittle
-         docValMap.put("authorshipProxies[1].person.firstName", "Shelby");
-         docValMap.put("authorshipProxies[1].person.lastName", "Manney");
-         docValMap.put("authorshipProxies[1].person.email", "test2@test.com");
-         docValMap.put("authorshipProxies[1].role", ResourceCreatorRole.CREATOR.name());
-         docValMap.put("authorshipProxies[1].person.id", "");
-         docValMap.put("authorshipProxies[1].person.institution.name", "Digital Antiquity2");
+        docValMap.put("authorshipProxies[1].person.firstName", "Shelby");
+        docValMap.put("authorshipProxies[1].person.lastName", "Manney");
+        docValMap.put("authorshipProxies[1].person.email", "test2@test.com");
+        docValMap.put("authorshipProxies[1].role", ResourceCreatorRole.CREATOR.name());
+        docValMap.put("authorshipProxies[1].person.id", "");
+        docValMap.put("authorshipProxies[1].person.institution.name", "Digital Antiquity2");
         // FIXME: this is brittle
-         docValMap.put("creditProxies[1].institution.name", "Digital Antiquity3");
-         docValMap.put("creditProxies[1].role",  ResourceCreatorRole.COLLABORATOR.name());
+        docValMap.put("creditProxies[1].institution.name", "Digital Antiquity3");
+        docValMap.put("creditProxies[1].role", ResourceCreatorRole.COLLABORATOR.name());
 
         docValMap.put("creditProxies[0].institution.name", "Othr Institution");
         docValMap.put("creditProxies[0].role", ResourceCreatorRole.SPONSOR.name());
@@ -103,10 +103,10 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("coverageDates[1].dateType", CoverageType.RADIOCARBON_DATE.name());
 
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Person");
+            // docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Person");
             docValMap.put(COPYRIGHT_HOLDER_PERSON_LAST_NAME, "Disney");
             docValMap.put(COPYRIGHT_HOLDER_PERSON_FIRST_NAME, "Walt");
-            //docValMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Disney Corp.");
+            // docValMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Disney Corp.");
         }
 
         if (TdarConfiguration.getInstance().getLicenseEnabled()) {
@@ -152,7 +152,7 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
             if (key.startsWith("latitudeLongitudeBox")) {
                 assertTextPresentInPage(docValMap.get(key).substring(0, docValMap.get(key).indexOf(".")));
                 // these are displayed by "type" or not "displayed"
-            } else if(key.equals("resource.licenseType")) {
+            } else if (key.equals("resource.licenseType")) {
                 assertTextPresent(LicenseType.CREATIVE_COMMONS_NONCOMMERCIAL.getLicenseName());
             } else if (key.equals("resourceLanguage")) {
                 assertTextPresentInPage(docValMap.get(key), false);

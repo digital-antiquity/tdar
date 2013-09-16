@@ -11,11 +11,11 @@ public class JsonObfuscationTestCase {
     protected Logger logger = Logger.getLogger(getClass());
 
     /*
-     * these tests are around to help prevent cases of double escaping, 
+     * these tests are around to help prevent cases of double escaping,
      * JS and HTML escaping need to be handled outside of this in the autocomplete or the tool
-     *  that's calling them.
+     * that's calling them.
      */
-    
+
     @Test
     public void testHtmlEmbedded() {
         Person p = new Person();

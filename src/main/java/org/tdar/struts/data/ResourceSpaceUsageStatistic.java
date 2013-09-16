@@ -9,7 +9,7 @@ public class ResourceSpaceUsageStatistic implements Serializable {
     private Number totalSpace;
     private Number countFiles;
     private Number countResources;
-    
+
     public ResourceSpaceUsageStatistic(Number space, Number fileCount, Number resourceCount) {
         this.totalSpace = space;
         this.countFiles = fileCount;

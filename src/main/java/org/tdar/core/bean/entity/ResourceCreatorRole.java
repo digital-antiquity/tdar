@@ -50,8 +50,8 @@ public enum ResourceCreatorRole implements HasLabel {
             ResourceType.SENSORY_DATA, ResourceType.DOCUMENT, ResourceType.AUDIO),
     SUBMITTER("Submitter", ResourceCreatorRoleType.OTHER, CreatorType.PERSON),
     UPDATER("Updater", ResourceCreatorRoleType.OTHER, CreatorType.PERSON),
-    RESOURCE_PROVIDER("Resource Provider", ResourceCreatorRoleType.OTHER, CreatorType.INSTITUTION), 
-    PUBLISHER("Publisher",ResourceCreatorRoleType.OTHER);
+    RESOURCE_PROVIDER("Resource Provider", ResourceCreatorRoleType.OTHER, CreatorType.INSTITUTION),
+    PUBLISHER("Publisher", ResourceCreatorRoleType.OTHER);
     /*
      * SUGGESTIONS FOR:
      * Crew Chief

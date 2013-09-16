@@ -191,7 +191,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
     @Column(nullable = false)
-    
     private boolean visible = true;
 
     public ResourceCollection() {

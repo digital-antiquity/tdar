@@ -74,8 +74,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Ignore
     public void testProjectResourceCreator() throws Exception {
         Institution inst = new Institution("da");
-        
-        //FIXME: this test is broken becasuse it doesn't account for the logic used in entityService.findOrSavePerson,  which will only create 3
+
+        // FIXME: this test is broken becasuse it doesn't account for the logic used in entityService.findOrSavePerson, which will only create 3
         // person records out of the 6 shown here.
         Person test1 = new Person("test", "person", "");
         Person test2 = new Person("test", "person", "test@test.com");
@@ -87,15 +87,15 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         Person test5 = new Person("test", "person", null);
         Person test6 = new Person("Test", "Person", "");
-        
+
         Set<Person> personSet = new HashSet<Person>(Arrays.asList(test1, test2, test3, test4, test5, test6));
         int expectedSize = personSet.size();
-        
+
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         controller.setAsync(false);
         controller.prepare();
         controller.setServletRequest(getServletPostRequest());
-        
+
         List<ResourceCreatorProxy> creditProxies = new ArrayList<ResourceCreatorProxy>();
         creditProxies.add(new ResourceCreatorProxy(test1, ResourceCreatorRole.CONTACT)); // simple person, no institution
         creditProxies.add(new ResourceCreatorProxy(test3, ResourceCreatorRole.CONTACT)); // person1 with institution
@@ -103,13 +103,13 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         creditProxies.add(new ResourceCreatorProxy(test5, ResourceCreatorRole.CONTACT)); // person1 but with a null email instead of blank
         creditProxies.add(new ResourceCreatorProxy(test2, ResourceCreatorRole.CONTACT)); // person1 with email, no institution
         creditProxies.add(new ResourceCreatorProxy(test6, ResourceCreatorRole.CONTACT)); // person1 with case differences
-        
+
         controller.setCreditProxies(creditProxies);
         controller.getProject().setTitle("test");
         controller.getProject().setDescription("test");
         controller.setAsync(false);
         controller.save();
-        
+
         Project project = controller.getProject();
         project = genericService.merge(project);
         List<Creator> people = new ArrayList<Creator>();
@@ -121,7 +121,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertEquals("First and Second person should be the same (difference institution)", people.get(0), people.get(1));
         assertEquals("First and Sixth person should be the same (difference case)", people.get(0), people.get(5));
         assertEquals("First and Fourth person should be the same (email null)", people.get(0), people.get(1));
-        assertNotEquals("First and Third should not be the same as there's an email", people.get(0),people.get(2));
+        assertNotEquals("First and Third should not be the same as there's an email", people.get(0), people.get(2));
         assertEquals("Third and Fifth should be the same as there's the same email but one has institution", people.get(2), people.get(4));
     }
 
@@ -235,15 +235,14 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         // try and fail due to rights
         ProjectController controller = tryAndSaveCollectionToController(rc);
         assertNotEquals(TdarActionSupport.SUCCESS, controller.save());
-        
+
         rc.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.ADMINISTER_GROUP));
         genericService.saveOrUpdate(rc);
         genericService.synchronize();
         // try ... and should succeed now that we add the user + permissions
         controller = tryAndSaveCollectionToController(rc);
         assertEquals(TdarActionSupport.SUCCESS, controller.save());
-        
-        
+
         assertNotNull(controller.getProject());
         Long id = controller.getProject().getId();
         assertTrue("project should have been saved", id != null && id != -1L);
@@ -320,7 +319,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertUniqueCollections(loadedProject.getResourceCollections(), name1, name2);
 
     }
-    
+
     private void assertUniqueCollections(Collection<ResourceCollection> resourceCollections, String name1, String name2) {
         // the collections should appear in the list, though we aren't sure of the order.
         ArrayList<String> names = new ArrayList<String>();
@@ -332,7 +331,6 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(names.contains(name2));
 
     }
-    
 
     private ResourceCollection createNewEmptyCollection(String name) {
         ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);

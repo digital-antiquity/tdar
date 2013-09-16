@@ -1,5 +1,12 @@
 package org.tdar.struts.action.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,8 +45,6 @@ import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
-import static org.junit.Assert.*;
-
 /**
  * $Id$
  * 
@@ -67,7 +72,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     public void setUp() {
         controller = generateNewInitializedController(DatasetController.class);
     }
-    
+
     @Test
     @Rollback
     public void test() {
@@ -178,7 +183,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         controller = generateNewInitializedController(DatasetController.class);
         assertSame(TdarActionSupport.ERROR, controller.getTableAsXml());
     }
-    
+
     @Test
     @Rollback
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
@@ -194,7 +199,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         String xml = IOUtils.toString(xmlStream, "UTF-8");
         assertTrue(xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""));
     }
-    
+
     @Test
     @Rollback
     public void testDatasetReplaceWithMappings() throws TdarActionException {
@@ -250,7 +255,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         assertEquals(DataTableColumnType.DOUBLE, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
         Long datasetId = dataset.getId();
         dataset = null;
-        dataset = replaceFile(filename, "dataset_with_floats.xls", Dataset.class,datasetId);
+        dataset = replaceFile(filename, "dataset_with_floats.xls", Dataset.class, datasetId);
         assertEquals(DataTableColumnType.VARCHAR, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
 
     }

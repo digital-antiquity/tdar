@@ -40,28 +40,27 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         assertNotNull("IrFile is null", irFile);
         assertEquals(FileStatus.PROCESSING_WARNING, irFile.getStatus());
         assertEquals(irFile.getInformationResourceFileType(), FileType.FILE_ARCHIVE);
-        
 
         genericService.saveOrUpdate(irFile);
         genericService.synchronize();
-        
+
         // however, whatever caused the processing error is fixed
         File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFile.getLatestUploadedVersion());
         File sourceFile = new File(TestConstants.TEST_ARCHIVE_DIR + TestConstants.GOOD_ARCHIVE);
         org.apache.commons.io.FileUtils.copyFile(sourceFile, fileInStore);
 
-        // and the file is reprocessed 
+        // and the file is reprocessed
         ActionMessageErrorListener listener = new ActionMessageErrorListener();
         informationResourceService.reprocessInformationResourceFiles(ir, listener);
-        
+
         // then in memory, the following is true:
         irFile = genericService.find(InformationResourceFile.class, irFile.getId());
         assertEquals(FileStatus.PROCESSED, irFile.getStatus());
-        
-        // However, in the database the file status change has not been persisted... 
+
+        // However, in the database the file status change has not been persisted...
         // And the transaction around reprocessInformationResourceFiles has been committed
         // And there is no other transaction in progress.
-        // I'm not yet sure how to demonstrate this in the test environment, 
+        // I'm not yet sure how to demonstrate this in the test environment,
         // I'll have to play with @AfterTransaction, and make the test properly transactional...
     }
 

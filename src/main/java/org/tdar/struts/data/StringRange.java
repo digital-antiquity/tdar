@@ -55,7 +55,7 @@ public class StringRange extends Pair<String, String> implements Range<String>, 
 
         return true;
     }
-    
+
     @Override
     public boolean isValidForController() {
         return isValid();

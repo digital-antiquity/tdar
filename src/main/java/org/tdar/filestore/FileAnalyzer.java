@@ -109,7 +109,7 @@ public class FileAnalyzer {
         return wf;
     }
 
-    public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException  {
+    public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
         Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null) {
             String message = String.format(NO_WORKFLOW_FOUND, java.util.Arrays.toString(informationResourceFileVersions));
@@ -160,7 +160,7 @@ public class FileAnalyzer {
         for (Workflow workflow : workflows) {
             for (String validExtension : workflow.getValidExtensions()) {
                 String normalizedExtension = validExtension.toLowerCase();
-                if(!normalizedExtension.equals(validExtension)) {
+                if (!normalizedExtension.equals(validExtension)) {
                     logger.warn("extension had uppercase characters, normalizing from {} to {}", validExtension, normalizedExtension);
                 }
                 Workflow previousWorkflow = fileExtensionToWorkflowMap.put(normalizedExtension, workflow);

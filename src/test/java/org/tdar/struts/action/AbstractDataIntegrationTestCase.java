@@ -125,17 +125,17 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return version;
     }
 
-//    public Dataset setupAndConvertDataset(String filename, Long irFileId) throws IOException {
-//        DatasetConverter converter = convertDatabase(filename, irFileId);
-//        Dataset dataset = new Dataset();
-//        dataset.setDataTables(converter.getDataTables());
-//        dataset.setTitle(filename);
-//        dataset.setDescription(filename);
-//        dataset.markUpdated(getUser());
-//        datasetService.saveOrUpdate(dataset);
-//        datasetService.saveOrUpdateAll(dataset.getDataTables());
-//        return dataset;
-//    }
+    // public Dataset setupAndConvertDataset(String filename, Long irFileId) throws IOException {
+    // DatasetConverter converter = convertDatabase(filename, irFileId);
+    // Dataset dataset = new Dataset();
+    // dataset.setDataTables(converter.getDataTables());
+    // dataset.setTitle(filename);
+    // dataset.setDescription(filename);
+    // dataset.markUpdated(getUser());
+    // datasetService.saveOrUpdate(dataset);
+    // datasetService.saveOrUpdateAll(dataset.getDataTables());
+    // return dataset;
+    // }
 
     public DatasetConverter convertDatabase(String filename, Long irFileId) throws IOException, FileNotFoundException {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(filename, irFileId);

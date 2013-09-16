@@ -15,7 +15,7 @@ public class ActionMessageErrorListener implements Serializable, ActionMessageEr
     private List<String> actionMessages = new ArrayList<>();
     private List<String> stackTraces = new ArrayList<>();
     private Resource resource;
-    
+
     @Override
     public void addActionError(String message) {
         getActionErrors().add(message);
@@ -54,9 +54,9 @@ public class ActionMessageErrorListener implements Serializable, ActionMessageEr
     public boolean hasActionErrors() {
         return CollectionUtils.isNotEmpty(actionErrors);
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         return String.format("Action Errors: %s \r\n Action Messages: %s \r\n StackTraces: %s\r\n", actionErrors, actionMessages, stackTraces);
     }
 

@@ -43,5 +43,4 @@ public class OtherKeyword extends UncontrolledKeyword.Base<OtherKeyword> {
         return getLabel();
     }
 
-
 }

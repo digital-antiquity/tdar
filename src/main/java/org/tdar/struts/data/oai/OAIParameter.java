@@ -10,7 +10,7 @@ import org.tdar.core.exception.OAIException;
 
 /**
  * @author Conal Tuohy
- * A list of all the URL parameters acceptable to OAIController - other parameters will be rejected
+ *         A list of all the URL parameters acceptable to OAIController - other parameters will be rejected
  */
 public enum OAIParameter {
 
@@ -21,8 +21,7 @@ public enum OAIParameter {
     UNTIL("until"),
     SET("set"),
     RESUMPTION_TOKEN("resumptionToken");
-    
-    
+
     private String name;
 
     private OAIParameter(String name) {
@@ -30,7 +29,7 @@ public enum OAIParameter {
     }
 
     public static OAIParameter fromString(String val) throws OAIException {
-        for (OAIParameter parameter: OAIParameter.values()) {
+        for (OAIParameter parameter : OAIParameter.values()) {
             if (parameter.getName().equals(val)) {
                 return parameter;
             }
@@ -44,5 +43,5 @@ public enum OAIParameter {
     public String getName() {
         return name;
     }
-    
+
 }

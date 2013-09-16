@@ -114,8 +114,6 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         assertFalse("no errors present", getText().toLowerCase().contains("exception"));
     }
 
-
-
     @Test
     public void testUploadGeotiff() {
         gotoPage("/geospatial/add");
@@ -147,7 +145,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         assertFalse("no errors present", getText().toLowerCase().contains("error"));
         assertFalse("no errors present", getText().toLowerCase().contains("exception"));
 
-        String url  =getCurrentUrl();
+        String url = getCurrentUrl();
         logout();
         gotoPage(url);
         find(".media-body a").first().click();

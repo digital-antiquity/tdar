@@ -196,7 +196,7 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
                 HtmlElement input = getInput(String.format("extraItemIds[%s]", i));
                 if (input != null) {
                     String string = getItemId(name).toString();
-                    logger.info(" {}|{} ",input.getAttribute("value"), string);
+                    logger.info(" {}|{} ", input.getAttribute("value"), string);
                     if (input.getAttribute("value").equals(string)) {
                         setInput(String.format("extraItemQuantities[%s]", i), val);
                         logger.info("setting value {} {}", input.toString(), i);

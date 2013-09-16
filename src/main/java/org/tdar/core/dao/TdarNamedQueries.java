@@ -50,7 +50,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO = "rescol.accessible";
     public static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.accessibleName";
     public static final String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
-    public static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse" ;
+    public static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse";
     public static final String QUERY_COLLECTION_BY_PARENT = "collection.parent";
     public static final String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
     public static final String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
@@ -70,7 +70,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_KEYWORD_COUNT_FILE_EXTENSION = "adminStats.fileExtensions";
     public static final String QUERY_RECENT_USERS_ADDED = "adminStats.recentUsers";
     public static final String QUERY_RECENT = "adminStats.recentFiles";
-//    public static final String QUERY_MATCHING_FILES = "datasetRelated.Files";
+    // public static final String QUERY_MATCHING_FILES = "datasetRelated.Files";
     public static final String QUERY_USAGE_STATS = "adminStats.usage";
     public static final String QUERY_FILE_STATS = "adminStats.fileDetails";
     public static final String QUERY_MAPPED_CODING_RULES = "dataTableColumn.mappedCodingRules";
@@ -162,9 +162,9 @@ public interface TdarNamedQueries {
     public static final String QUERY_SQL_RESOURCES_BY_YEAR = "select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc";
     public static final String DISTINCT_SUBMITTERS = "SELECT DISTINCT submitter_id from resource";
 
-    public static final String UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT= "update %1$s set occurrence=0";
+    public static final String UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT = "update %1$s set occurrence=0";
     public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE = "update %1$s set occurrence = occurrence + coalesce((select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id and resource_id in (select project_id from information_resource where %2$s is true) group by %1$s_id),0)";
-    public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT= "update %1$s set occurrence =  occurrence + coalesce((select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id group by %1$s_id),0)";
+    public static final String UPDATE_KEYWORD_OCCURRENCE_COUNT = "update %1$s set occurrence =  occurrence + coalesce((select count(resource_id) from resource_%1$s where %1$s_id =%1$s.id group by %1$s_id),0)";
     public static final String UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT = "update creator set occurrence=0";
     public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER = "update creator set occurrence=occurrence + coalesce((select count(information_resource.id) from information_resource where publisher_id=creator.id group by publisher_id),0)";
     public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER = "update creator set occurrence=occurrence + coalesce((select count(information_resource.id) from information_resource where provider_institution_id=creator.id group by provider_institution_id),0)";

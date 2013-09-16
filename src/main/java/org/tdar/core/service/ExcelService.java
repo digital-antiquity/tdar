@@ -48,8 +48,8 @@ import org.tdar.core.service.excel.SheetProxy;
 public class ExcelService {
 
     // Office 2003 row/sheet max
-//    public static final int MAX_ROWS_PER_SHEET = 65536;
-//    public static final int MAX_COLUMNS_PER_SHEET = 256;
+    // public static final int MAX_ROWS_PER_SHEET = 65536;
+    // public static final int MAX_COLUMNS_PER_SHEET = 256;
 
     private static final String TRUNCATED = "[TRUNCATED]";
 
@@ -57,7 +57,6 @@ public class ExcelService {
     public static final int MAX_SHEETS_PER_WORKBOOK = 32;
 
     public final Logger logger = LoggerFactory.getLogger(getClass());
-
 
     public static final int FIRST_ROW = 0;
     public static final int FIRST_COLUMN = 0;
@@ -82,7 +81,7 @@ public class ExcelService {
         sheet.addValidationData(dataValidation);
         return dataValidation;
     }
-    
+
     public HSSFDataValidation addNumericColumnValidation(HSSFSheet sheet, int i, HSSFDataValidationHelper validationHelper, String formula1, String formula2) {
         DataValidationConstraint validationConstraint = validationHelper.createDecimalConstraint(DVConstraint.OperatorType.IGNORED, formula1, formula2);
         HSSFDataValidation dataValidation = setupSheetValidation(sheet, i, validationConstraint);
@@ -94,9 +93,6 @@ public class ExcelService {
         HSSFDataValidation dataValidation = setupSheetValidation(sheet, i, validationConstraint);
         return dataValidation;
     }
-
-    
-    
 
     /*
      * get all of the names of enums passed in a list
@@ -198,11 +194,9 @@ public class ExcelService {
         sheet.getRow(rowNum).getCell(colNum).setCellStyle(style);
     }
 
-    
     public String getCellValue(DataFormatter formatter, FormulaEvaluator evaluator, Row columnNamesRow, int columnIndex) {
         return formatter.formatCellValue(columnNamesRow.getCell(columnIndex), evaluator);
     }
-
 
     /*
      * Create a cell and be smart about it. If there's a link, make it a link, if numeric, set the type
@@ -391,10 +385,10 @@ public class ExcelService {
         proxy.postProcess();
     }
 
-//    private void prepareSheet(Sheet sheet) {
-//        // FIXME: maybe this should be configurable?
-//        sheet.createFreezePane(ExcelService.FIRST_COLUMN, 1, 0, 1);
-//    }
+    // private void prepareSheet(Sheet sheet) {
+    // // FIXME: maybe this should be configurable?
+    // sheet.createFreezePane(ExcelService.FIRST_COLUMN, 1, 0, 1);
+    // }
 
     private void cleanupSheet(Sheet sheet) {
         // auto-sizing columns
@@ -414,6 +408,5 @@ public class ExcelService {
     public void setColumnWidth(Sheet sheet, int i, int size) {
         sheet.setColumnWidth(i, size);
     }
-
 
 }

@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ public class ResourceTypeTest {
     /**
      * This test is only useful in that it guards against accidental changes to the expected elements of the Audio ResourceType.
      * Is this a useful thing to test? I guess it depends on the assumptions underlying the resource type, and how the values in the fields are changed.
-     * The test could made more generic, so that a simple set of expected results is compared to the actual: in that way all resource types could be 
+     * The test could made more generic, so that a simple set of expected results is compared to the actual: in that way all resource types could be
      * tested like this.
      */
     @SuppressWarnings("static-method")

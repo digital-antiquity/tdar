@@ -142,8 +142,8 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testMapAndOtherOrientations() {
         for (DisplayOrientation orientation : DisplayOrientation.values()) {
-            gotoPage(SEARCH_RESULTS_BASE_URL + "?query=Philadelphia&orientation="+ orientation.name()); //has obfuscated data
-            gotoPage(SEARCH_RESULTS_BASE_URL + "?query=Nebraska&orientation="+ orientation.name()); // doesn't
+            gotoPage(SEARCH_RESULTS_BASE_URL + "?query=Philadelphia&orientation=" + orientation.name()); // has obfuscated data
+            gotoPage(SEARCH_RESULTS_BASE_URL + "?query=Nebraska&orientation=" + orientation.name()); // doesn't
         }
     }
 
@@ -152,16 +152,16 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(SEARCH_RESULTS_BASE_URL + "?query=&id=" + TestConstants.PROJECT_ID);
     }
 
-
     @Test
     public void testLatLongSearch() {
-        gotoPage(SEARCH_RESULTS_BASE_URL + "?groups%5B0%5D.operator=AND&groups%5B0%5D.fieldTypes%5B0%5D=ALL_FIELDS&groups%5B0%5D.allFields%5B0%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLongitude=-85.078125&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLatitude=38.341656192795924&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLongitude=-92.373046875&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLatitude=43.58039085560786&");
+        gotoPage(SEARCH_RESULTS_BASE_URL
+                + "?groups%5B0%5D.operator=AND&groups%5B0%5D.fieldTypes%5B0%5D=ALL_FIELDS&groups%5B0%5D.allFields%5B0%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLongitude=-85.078125&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLatitude=38.341656192795924&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLongitude=-92.373046875&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLatitude=43.58039085560786&");
         assertTextPresent("Philadelphia");
         gotoPage(SEARCH_RESULTS_BASE_URL + "?latLongBox=-92.373046875,38.341656192795924,-85.078125,43.58039085560786&");
         assertTextPresent("Philadelphia");
     }
 
-@Test
+    @Test
     @Rollback
     public void testFacets() throws InstantiationException,
             IllegalAccessException {
@@ -194,7 +194,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             clickLinkOnPage(type.getPlural());
             boolean sawSomething = false;
             for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("h3 a")) {
-                Element element = (Element)element_;
+                Element element = (Element) element_;
                 String href = element.getAttribute("href");
                 if (!element.getAttribute("href").toLowerCase()
                         .contains("bookmark")) {
@@ -215,7 +215,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/search/results?recordsPerPage=2&includedStatuses=DRAFT&includedStatuses=ACTIVE&includedStatuses=DELETED");
         boolean sawSomething = false;
         for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll(".pagin a")) {
-            Element element = (Element)element_;
+            Element element = (Element) element_;
             String href = element.getAttribute("href");
             if (!element.getAttribute("href").toLowerCase().contains("bookmark")) {
                 gotoPage("/search/results" + href);

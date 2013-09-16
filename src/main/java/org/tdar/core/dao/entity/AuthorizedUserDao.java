@@ -108,16 +108,14 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         }
         query.setParameter("allStatuses", false);
         query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        return  query.list();
+        return query.list();
     }
 
     public Set<Resource> findEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin) {
         return new HashSet<>(findEditableResources(person, resourceTypes, isAdmin, false));
     }
 
-
-
-        public Set<Resource> findEditableResources(Person person, boolean isAdmin) {
+    public Set<Resource> findEditableResources(Person person, boolean isAdmin) {
         return findEditableResources(person, Arrays.asList(ResourceType.values()), isAdmin);
     }
 

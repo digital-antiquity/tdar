@@ -42,9 +42,9 @@ public class InstitutionQueryPart extends FieldQueryPart<Institution> {
         }
 
         StringBuilder sbacro = new StringBuilder();
-        //match ASU, but not "arizona state"
+        // match ASU, but not "arizona state"
         if (!containsSpaces) {
-            sb.append( " OR ");
+            sb.append(" OR ");
             for (int i = 0; i < getFieldValues().size(); i++) {
                 appendPhrase(sbacro, i);
             }

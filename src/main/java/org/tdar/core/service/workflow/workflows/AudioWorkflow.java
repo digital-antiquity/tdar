@@ -32,7 +32,7 @@ public class AudioWorkflow extends BaseWorkflow {
      * <p>
      * jFLAC is at: http://jflac.sourceforge.net/
      */
-    public static final Collection<String> AUDIO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "wav", "aif", "aiff" }); 
+    public static final Collection<String> AUDIO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "wav", "aif", "aiff" });
 
     public AudioWorkflow() {
         for (String extension : AUDIO_EXTENSIONS_SUPPORTED) {

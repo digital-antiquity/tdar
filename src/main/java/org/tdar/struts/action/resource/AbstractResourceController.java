@@ -101,7 +101,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public static final String THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS = "this record is in draft and is only available to authorized users";
     public static final String WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT = "We were unable to process the uploaded content.";
 
-
     private static final long serialVersionUID = 8620875853247755760L;
 
     private List<MaterialKeyword> allMaterialKeywords;
@@ -114,7 +113,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceCollection> effectiveResourceCollections = new ArrayList<ResourceCollection>();
 
     private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
-    
+
     // containers for submitted data.
     private List<String> siteNameKeywords;
 
@@ -150,7 +149,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceCreatorProxy> creditProxies;
     private List<ResourceCreatorProxy> contactProxies;
 
-
     private List<ResourceAnnotation> resourceAnnotations;
     private Long activeResourceCount;
 
@@ -181,7 +179,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 creditProxies.add(proxy);
             }
 
-            if(ResourceCreatorRole.CONTACT == proxy.getRole()) {
+            if (ResourceCreatorRole.CONTACT == proxy.getRole()) {
                 getContactProxies().add(proxy);
             }
         }
@@ -366,10 +364,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public boolean isCreatable() throws TdarActionException {
-//FIXME: this is really an authorization thing...
-//        if (!getAuthenticatedUser().getContributor()) {
-//            return false;
-//        }
+        // FIXME: this is really an authorization thing...
+        // if (!getAuthenticatedUser().getContributor()) {
+        // return false;
+        // }
         return true;
     }
 
@@ -924,7 +922,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public List<ResourceCreatorProxy> getContactProxies() {
-        if(CollectionUtils.isEmpty(contactProxies)) {
+        if (CollectionUtils.isEmpty(contactProxies)) {
             contactProxies = new ArrayList<>();
         }
         return contactProxies;
@@ -994,7 +992,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public void setResourceAnnotations(List<ResourceAnnotation> resourceAnnotations) {
         this.resourceAnnotations = resourceAnnotations;
     }
-    
+
     public List<ResourceType> getAllResourceTypes() {
         return Arrays.asList(ResourceType.values());
     }
@@ -1051,8 +1049,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         viewableResourceCollections = new ArrayList<ResourceCollection>(collections);
         return viewableResourceCollections;
     }
-    
-    
+
     @SkipValidation
     @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
     @WriteableSession
@@ -1062,20 +1059,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // FIXME: trying to avoid concurrent modification exceptions
         // NOTE: this processes deleted ones again too
         // NOTE2: this is ignored in the quota on purpose -- it's on us
-        if(getResource() instanceof InformationResource) {
+        if (getResource() instanceof InformationResource) {
             InformationResource ir = (InformationResource) getResource();
-        try {
-            getInformationResourceService().reprocessInformationResourceFiles(ir, this);
-        } catch (Exception e) {
-            addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
-        }
-        if (hasActionErrors()) {
-            return ERROR;
-        }
+            try {
+                getInformationResourceService().reprocessInformationResourceFiles(ir, this);
+            } catch (Exception e) {
+                addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
+            }
+            if (hasActionErrors()) {
+                return ERROR;
+            }
         }
         return SUCCESS;
     }
-
 
     @SkipValidation
     @Action(value = ADMIN, results = {
@@ -1083,7 +1079,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     })
     public String viewAdmin() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ADMIN_INFO);
-        //view();
+        // view();
         setResourceLogEntries(getResourceService().getLogsForResource(getPersistable()));
         setUsageStatsForResources(getResourceService().getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
                 Arrays.asList(getPersistable().getId())));

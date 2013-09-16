@@ -33,10 +33,10 @@ import org.tdar.struts.data.FileProxy;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
- @Results({
- @Result(name = "exception", type = "httpheader", params = { "error", "500" }),
- @Result(name = "input", type = "httpheader", params = { "error", "500" })
- })
+@Results({
+        @Result(name = "exception", type = "httpheader", params = { "error", "500" }),
+        @Result(name = "input", type = "httpheader", params = { "error", "500" })
+})
 public class UploadController extends AuthenticationAware.Base {
 
     @Autowired
@@ -59,9 +59,8 @@ public class UploadController extends AuthenticationAware.Base {
     // this is the groupId that comes back to us from the the various upload requests
     private Long ticketId;
 
-    //indicates that client is not sending a ticket because the server should create a new ticket for this upload 
+    // indicates that client is not sending a ticket because the server should create a new ticket for this upload
     private boolean ticketRequested = false;
-    
 
     @Action(value = "index", results = { @Result(name = "success", location = "index.ftl") })
     public String index() {
@@ -78,7 +77,7 @@ public class UploadController extends AuthenticationAware.Base {
     public String upload() {
         PersonalFilestoreTicket ticket = null;
         logger.info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
-        if(ticketRequested) {
+        if (ticketRequested) {
             grabTicket();
             ticketId = personalFilestoreTicket.getId();
             ticket = personalFilestoreTicket;
@@ -87,13 +86,13 @@ public class UploadController extends AuthenticationAware.Base {
             ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
             logger.debug("UPLOAD CONTROLLER: upload request with ticket included: {}", ticket);
             if (ticket == null) {
-                addActionError("asynchronous uploads require a valid ticket"); 
+                addActionError("asynchronous uploads require a valid ticket");
             }
         }
         if (CollectionUtils.isEmpty(uploadFile)) {
             addActionError("No files in this request");
         }
-        if(CollectionUtils.isEmpty(getActionErrors())) {
+        if (CollectionUtils.isEmpty(getActionErrors())) {
             Person submitter = getAuthenticatedUser();
             for (int i = 0; i < uploadFile.size(); i++) {
                 File file = uploadFile.get(i);
@@ -239,13 +238,12 @@ public class UploadController extends AuthenticationAware.Base {
         this.callback = callback;
     }
 
-
     /**
-     * @return list of file sizes.  Struts uses this naming convention for contentType and fileName lists, so we do the same here
+     * @return list of file sizes. Struts uses this naming convention for contentType and fileName lists, so we do the same here
      */
     public List<Long> getUploadFileSize() {
         List<Long> sizes = new ArrayList<Long>();
-        for(File file : uploadFile) {
+        for (File file : uploadFile) {
             sizes.add(file.length());
         }
         return sizes;

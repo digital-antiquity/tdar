@@ -44,7 +44,7 @@ public class OntologyDao extends ResourceDao<Ontology> {
                 continue;
             toDelete.add(node);
         }
-        logger.debug("removing coding rule references to {} " , toDelete);
+        logger.debug("removing coding rule references to {} ", toDelete);
         if (CollectionUtils.isEmpty(toDelete))
             return;
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES);

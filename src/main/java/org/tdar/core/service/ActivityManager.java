@@ -47,8 +47,6 @@ public class ActivityManager {
         }
         return null;
     }
-    
-    
 
     public synchronized void cleanup(long expirationTimeInMillis) {
         Iterator<Activity> iterator = activityQueue.iterator();
@@ -69,7 +67,7 @@ public class ActivityManager {
          * we could have multiple indexing activities, try reporting the one that's active before reporting that it's done
          */
         for (Activity activity : ActivityManager.getInstance().getActivityQueue()) {
-            if (activity.isIndexingActivity() ) {
+            if (activity.isIndexingActivity()) {
                 latest = activity;
                 if (!activity.hasEnded())
                     active = activity;

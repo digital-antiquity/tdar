@@ -86,24 +86,23 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         return String.format("%s/%s", getStoreLocation(person), type.getPathname());
     }
 
-
     /**
-     * Attempt to instantiate a bag, retrying if first attempt unsuccessful.  This can apparently happen when manifest.txt.biltemp is present
-     * at beginning of {@link BagFactory#createBag()} but is deleted before the method completes (likely from a previous call 
+     * Attempt to instantiate a bag, retrying if first attempt unsuccessful. This can apparently happen when manifest.txt.biltemp is present
+     * at beginning of {@link BagFactory#createBag()} but is deleted before the method completes (likely from a previous call
      * to {@link Completer#complete(Bag)}).
      */
-    
+
     private Bag attemptCreateBag(File sourceFile) {
-        //give the OS 1 second to delete the tempfile.  Then give up.
+        // give the OS 1 second to delete the tempfile. Then give up.
         int attempt = 0;
         final int maxAttempts = 20;
-        final int waitPerAttempt = 50;  
+        final int waitPerAttempt = 50;
         Bag bag = null;
         RuntimeException lastException = null;
         while (attempt < maxAttempts && bag == null) {
             try {
                 bag = bagFactory.createBag(sourceFile, BAGIT_VERSION, LoadOption.BY_MANIFESTS);
-            } catch(RuntimeException rex) {
+            } catch (RuntimeException rex) {
                 try {
                     lastException = rex;
                     Thread.sleep(waitPerAttempt);
@@ -113,12 +112,12 @@ public class BagitPersonalFilestore implements PersonalFilestore {
             }
             attempt++;
         }
-        if(bag == null)  {
+        if (bag == null) {
             throw new RuntimeException("could not successfully call createBag after repeated attempts.", lastException);
         }
-        if(attempt > 1) {
-            //FIXME: lower to WARN once we are satisfied we've worked around this bug.
-            logger.error("successfully called createBag() after {} failed attempts spanning {}ms", attempt-1, (attempt-1) * waitPerAttempt);
+        if (attempt > 1) {
+            // FIXME: lower to WARN once we are satisfied we've worked around this bug.
+            logger.error("successfully called createBag() after {} failed attempts spanning {}ms", attempt - 1, (attempt - 1) * waitPerAttempt);
         }
         return bag;
     }
@@ -130,7 +129,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
 
     @Override
     public synchronized File store(PersonalFilestoreTicket personalFilestoreTicket, File file, String incomingFileName) throws IOException {
-        logger.debug("ticket:{}\t file:{}\t name:{}", new Object[]{personalFilestoreTicket, file, incomingFileName});
+        logger.debug("ticket:{}\t file:{}\t name:{}", new Object[] { personalFilestoreTicket, file, incomingFileName });
         String pathToBag = getPath(personalFilestoreTicket);
         File pathToBagFile = new File(pathToBag);
 

@@ -90,11 +90,11 @@ public class ProjectDao extends ResourceDao<Project> {
         return query.list();
     }
 
-    public Set<InformationResource> findAllResourcesInProject(Project project, Status ... statuses) {
-    	Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_IN_PROJECT);
+    public Set<InformationResource> findAllResourcesInProject(Project project, Status... statuses) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_IN_PROJECT);
         if (ArrayUtils.isNotEmpty(statuses)) {
             query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_IN_PROJECT_WITH_STATUS);
-        	query.setParameterList("statuses", statuses);
+            query.setParameterList("statuses", statuses);
         }
         query.setParameter("projectId", project.getId());
         project.setCachedInformationResources(new HashSet<InformationResource>(query.list()));

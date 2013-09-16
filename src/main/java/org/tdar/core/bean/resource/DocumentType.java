@@ -13,12 +13,12 @@ import org.tdar.search.query.QueryFieldNames;
  */
 public enum DocumentType implements HasLabel, Facetable<DocumentType> {
 
-    BOOK("Book / Report", "Books / Reports", "book","Book"),
-    BOOK_SECTION("Book Chapter / Section", "Book Chapters / Sections", "bookitem","Book"),
-    JOURNAL_ARTICLE("Journal Article", "Journal Articles", "article","Article"),
-    THESIS("Thesis / Dissertation", "Theses / Dissertations", "thesis", "Institution", "Department","Book"),
-    CONFERENCE_PRESENTATION("Conference Presentation", "Conference Presentations", "conference", "Conference", "Conference Location","Book"),
-    OTHER("Other", "Other", "unknown","Book");
+    BOOK("Book / Report", "Books / Reports", "book", "Book"),
+    BOOK_SECTION("Book Chapter / Section", "Book Chapters / Sections", "bookitem", "Book"),
+    JOURNAL_ARTICLE("Journal Article", "Journal Articles", "article", "Article"),
+    THESIS("Thesis / Dissertation", "Theses / Dissertations", "thesis", "Institution", "Department", "Book"),
+    CONFERENCE_PRESENTATION("Conference Presentation", "Conference Presentations", "conference", "Conference", "Conference Location", "Book"),
+    OTHER("Other", "Other", "unknown", "Book");
 
     public static final String PUBLISHER = "Publisher";
     public static final String PUBLISHER_LOCATION = "Publisher Location";
@@ -41,14 +41,14 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         }
     }
 
-    private DocumentType(String label, String plural, String genre,String schema) {
+    private DocumentType(String label, String plural, String genre, String schema) {
         this.label = label;
         this.plural = plural;
         this.openUrlGenre = genre;
         this.schema = schema;
     }
 
-    private DocumentType(String label, String plural, String genre, String pubName, String pubLoc,String schema) {
+    private DocumentType(String label, String plural, String genre, String pubName, String pubLoc, String schema) {
         this.label = label;
         this.plural = plural;
         this.openUrlGenre = genre;

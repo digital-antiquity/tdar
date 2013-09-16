@@ -45,8 +45,8 @@ public class IntegrationDataResult implements Serializable {
     public List<IntegrationColumn> getIntegrationColumns() {
         return integrationColumns;
     }
-    
+
     public String toString() {
-        return String.format("integration data result for %s and columns %s", dataTable, integrationColumns); 
+        return String.format("integration data result for %s and columns %s", dataTable, integrationColumns);
     }
 }

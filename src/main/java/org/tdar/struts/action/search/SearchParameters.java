@@ -328,11 +328,14 @@ public class SearchParameters {
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, "Project ", "project.", Resource.class, getProjects()));
         queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, "ID", Operator.OR, getResourceIds()));
 
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, "Resource Type", getResourceTypes(), Operator.OR, Arrays.asList(ResourceType.values()));
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE, "Integratable", getIntegratableOptions(), Operator.OR, Arrays.asList(IntegratableOptions.values()));
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, "Resource Type", getResourceTypes(), Operator.OR,
+                Arrays.asList(ResourceType.values()));
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE, "Integratable", getIntegratableOptions(), Operator.OR,
+                Arrays.asList(IntegratableOptions.values()));
 
         queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, "Document Type", Operator.OR, getDocumentTypes()));
-        queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, "Resource Access Type", Operator.OR, getResourceAccessTypes()));
+        queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, "Resource Access Type", Operator.OR,
+                getResourceAccessTypes()));
 
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_CREATED, operator, getRegisteredDates()));
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, operator, getUpdatedDates()));
@@ -378,7 +381,8 @@ public class SearchParameters {
         return q;
     }
 
-    protected <C> void appendFieldQueryPart(QueryPartGroup queryPartGroup, String fieldName, String fieldDisplayName, List<C> incomingList, Operator operator, List<C> fullList) {
+    protected <C> void appendFieldQueryPart(QueryPartGroup queryPartGroup, String fieldName, String fieldDisplayName, List<C> incomingList, Operator operator,
+            List<C> fullList) {
         Set<C> emptyCheck = new HashSet<C>(fullList);
         for (C item : incomingList) {
             emptyCheck.remove(item);

@@ -168,12 +168,12 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         query.setParameter("ownerId", user.getId());
         return (Coupon) query.uniqueResult();
     }
-    
+
     @SuppressWarnings("unchecked")
     public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_INVOICE_FOR_COUPON);
         query.setParameter("code", coupon.getCode().toLowerCase());
-        for (Invoice inv : (List<Invoice>)query.list()) {
+        for (Invoice inv : (List<Invoice>) query.list()) {
             if (inv.getTransactionStatus().isComplete()) {
                 throw new TdarRecoverableRuntimeException("Cannot use Coupon, it has already been used");
             }

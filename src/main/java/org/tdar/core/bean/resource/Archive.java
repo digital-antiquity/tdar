@@ -64,7 +64,7 @@ public class Archive extends InformationResource {
             // Should never be here, so perhaps we should do more than return?
             return;
         }
-        final Archive transientArchive = (Archive)transientResource;
+        final Archive transientArchive = (Archive) transientResource;
         this.doImportContent = transientArchive.isDoImportContent();
         this.importdone = transientArchive.isImportDone();
     }

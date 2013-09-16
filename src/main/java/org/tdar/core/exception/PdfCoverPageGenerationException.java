@@ -7,11 +7,11 @@ public class PdfCoverPageGenerationException extends TdarRecoverableRuntimeExcep
     public PdfCoverPageGenerationException() {
         super();
     }
-    
+
     public PdfCoverPageGenerationException(String message) {
         super(message);
     }
-    
+
     public PdfCoverPageGenerationException(String message, Throwable cause) {
         super(message, cause);
     }

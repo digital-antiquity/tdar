@@ -26,7 +26,7 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
     public void teardown() {
         logout();
     }
-    
+
     @Test
     public void testAbstractLogin() {
         assertTrue(getText().contains("Welcome back,"));
@@ -52,12 +52,11 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
         logout();
         assertTrue(getText().contains("Log In"));
     }
-    
+
     @Test
     public void testClickSomething() {
-        find(By.linkText("edit")).first().click(); //one way of getting to a page
-        gotoPage("/dashboard");  //another way
+        find(By.linkText("edit")).first().click(); // one way of getting to a page
+        gotoPage("/dashboard"); // another way
     }
-    
 
 }

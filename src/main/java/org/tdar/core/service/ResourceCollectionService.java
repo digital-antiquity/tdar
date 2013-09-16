@@ -58,7 +58,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     @Autowired
     SearchService searchService;
-    
+
     @Transactional
     public List<Resource> reconcileIncomingResourcesForCollection(ResourceCollection persistable, Person authenticatedUser, List<Resource> resources) {
         Map<Long, Resource> incomingIdMap = Persistable.Base.createIdMap(resources);
@@ -436,14 +436,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     /*
-     * FIXME; this does not seem to find some of the deep collection children 
+     * FIXME; this does not seem to find some of the deep collection children
      */
-    public void reconcileCollectionTree2(List<ResourceCollection> resourceCollections, Person authenticatedUser, List<Long> collectionIds) throws ParseException {
+    public void reconcileCollectionTree2(List<ResourceCollection> resourceCollections, Person authenticatedUser, List<Long> collectionIds)
+            throws ParseException {
         Map<Long, ResourceCollection> idMap = Persistable.Base.createIdMap(resourceCollections);
         ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
-        queryBuilder.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_TREE, Operator.OR,idMap.keySet()));
+        queryBuilder.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_TREE, Operator.OR, idMap.keySet()));
         queryBuilder.setOperator(Operator.OR);
-        FullTextQuery search = searchService.search(queryBuilder,null);
+        FullTextQuery search = searchService.search(queryBuilder, null);
         ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
         while (results.next()) {
             ResourceCollection coll = (ResourceCollection) results.get()[0];
@@ -456,7 +457,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             if (parent != null) {
                 parent.getTransientChildren().add(coll);
             }
-//            logger.info("parent: {} child: {} ", parent, coll);
+            // logger.info("parent: {} child: {} ", parent, coll);
         }
     }
 

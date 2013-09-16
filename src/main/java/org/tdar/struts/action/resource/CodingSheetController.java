@@ -67,7 +67,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
      * Save basic metadata of the registering concept.
      * 
      * @param concept
-     * @throws TdarActionException 
+     * @throws TdarActionException
      */
     @Override
     protected String save(CodingSheet codingSheet) throws TdarActionException {
@@ -82,7 +82,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         super.saveInformationResourceProperties();
         super.saveCategories();
 
-//        getGenericService().saveOrUpdate(codingSheet);
+        // getGenericService().saveOrUpdate(codingSheet);
         handleUploadedFiles();
         return SUCCESS;
     }

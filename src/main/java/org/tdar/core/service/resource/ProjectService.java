@@ -1,13 +1,21 @@
 package org.tdar.core.service.resource;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.*;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.ServiceInterface;

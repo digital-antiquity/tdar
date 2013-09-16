@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.Length;
  * The elements on this resource are inspired by:
  * http://guides.archaeologydataservice.ac.uk/g2gp/Audio_3
  * Not done yet are:
- *   Transcript
+ * Transcript
  * Also, not yet resolved: we should try to automatically extract some of the fields from the audio file: are the ones below enough?
  * Note: the length of the recording is kept on the InformationResourceFileVersion...
  * Until I get a better understanding from actual users as to how the audio is to work I'm not populating the fields below. I'm going to simply put a very
@@ -31,7 +31,7 @@ public final class Audio extends InformationResource {
     @Column(name = "software")
     @Length(max = 255)
     private String software;
-    
+
     // all the following fields should be in the header (and probably length)
     @Column(name = "bit_depth")
     private Integer bitDepth;
@@ -138,7 +138,7 @@ public final class Audio extends InformationResource {
             // Should never be here, so perhaps we should do more than return?
             return;
         }
-        this.audioCodec = ((Audio)transientAudio).getAudioCodec();
+        this.audioCodec = ((Audio) transientAudio).getAudioCodec();
     }
 
 }

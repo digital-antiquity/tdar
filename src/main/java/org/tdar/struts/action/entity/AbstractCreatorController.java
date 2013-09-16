@@ -70,7 +70,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     public String deleteAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Address toDelete = getAddress();
-        logger.info("to delete: {} " , toDelete);
+        logger.info("to delete: {} ", toDelete);
         boolean remove = getPersistable().getAddresses().remove(toDelete);
         logger.info("did it work: {} ", remove);
         // this is likely superflouous, but I'm tired

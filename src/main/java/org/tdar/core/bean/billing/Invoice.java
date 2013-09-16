@@ -253,10 +253,13 @@ public class Invoice extends Base implements Updatable {
         return totalFiles;
     }
 
-    private <T> T coalesce(T ...items) {
-        for(T i : items) if(i != null) return i;
+    private <T> T coalesce(T... items) {
+        for (T i : items)
+            if (i != null)
+                return i;
         return null;
     }
+
     private void initTotals() {
         if (!initialized) {
             // if (coupon != null) {
@@ -266,15 +269,15 @@ public class Invoice extends Base implements Updatable {
             Long discountedSpace = 0L;
             Long discountedFiles = 0L;
             if (coupon != null) {
-                discountedFiles = coalesce(coupon.getNumberOfFiles(),0L);
-                discountedSpace = coalesce(coupon.getNumberOfMb(),0L);
+                discountedFiles = coalesce(coupon.getNumberOfFiles(), 0L);
+                discountedSpace = coalesce(coupon.getNumberOfMb(), 0L);
             }
 
             for (BillingItem item : getItems()) {
                 BillingActivity activity = item.getActivity();
-                Long numberOfFiles = coalesce(activity.getNumberOfFiles(),0L);
-                Long space = coalesce(activity.getNumberOfMb(),0L);
-                Long numberOfResources = coalesce(activity.getNumberOfResources(),0L);
+                Long numberOfFiles = coalesce(activity.getNumberOfFiles(), 0L);
+                Long space = coalesce(activity.getNumberOfMb(), 0L);
+                Long numberOfResources = coalesce(activity.getNumberOfResources(), 0L);
 
                 if (numberOfFiles > 0 && discountedFiles > 0) {
                     couponValue += activity.getPrice() * discountedFiles;

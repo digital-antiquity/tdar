@@ -44,7 +44,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
             }
         }
         if (sb.length() != 0) {
-            constructQueryPhrase(sb,getFieldName());
+            constructQueryPhrase(sb, getFieldName());
         }
         if (CollectionUtils.isEmpty(trans)) {
             return sb.toString();

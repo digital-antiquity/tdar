@@ -10,7 +10,7 @@ public class IdList extends ArrayList<Long> {
 
     private static final long serialVersionUID = 1025919231860518950L;
 
-    @XmlElementWrapper(name="ids")
+    @XmlElementWrapper(name = "ids")
     public IdList getList() {
         return this;
     }

@@ -6,7 +6,7 @@
         },
         elementFormDefault = XmlNsForm.QUALIFIED)
 package org.tdar.core.bean.billing;
- 
+
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
 

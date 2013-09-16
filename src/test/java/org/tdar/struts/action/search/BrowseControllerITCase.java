@@ -26,7 +26,6 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     private BrowseController controller;
     private Logger log = Logger.getLogger(getClass());
 
-   
     @Before
     public void initController() {
         controller = generateNewInitializedController(BrowseController.class);
@@ -38,7 +37,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     public void testBrowsePersonWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
         testBrowseController(getAdminUser());
     }
-    
+
     @Test
     @Rollback
     public void testBrowseInstitutionWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
@@ -46,7 +45,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         entityService.save(institution);
         testBrowseController(institution);
     }
-    
+
     @Test
     @Rollback
     public void testBrowseInstitutionWithResultsViaResourceProvider() throws Exception {
@@ -61,7 +60,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         List<Creator> results = controller.getResults();
         assertTrue(results.contains(doc));
     }
-    
+
     @Test
     @Rollback
     public void testNewCreatorHasNoResourceAssociations() throws ParseException, TdarActionException {
@@ -76,7 +75,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         controller.setId(creator.getId());
         controller.browseCreators();
         assertEquals(0, controller.getResults().size());
-        
+
     }
 
     @Override
@@ -86,7 +85,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     private void testBrowseController(Creator creator) throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
         Document doc = genericService.find(Document.class, setupDatedDocument());
-        ResourceCreator rc = new ResourceCreator( creator, ResourceCreatorRole.CONTRIBUTOR);
+        ResourceCreator rc = new ResourceCreator(creator, ResourceCreatorRole.CONTRIBUTOR);
         assertTrue(rc.isValidForResource(doc));
         doc.getResourceCreators().add(rc);
         genericService.saveOrUpdate(rc);

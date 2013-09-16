@@ -17,14 +17,13 @@ import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.ResourceCreatorRoleType;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
-
 
 public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
@@ -99,7 +98,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     // an malformed file should take you back to save.action and contain an action error
     @Test
     public void testMalformedAttachmentDisplaysError() {
-        
+
         // create a new dataset resource w/o a file
         gotoPage("/dataset/add");
         setInput("projectId", "-1");
@@ -107,7 +106,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("dataset.date", "2002");
         setInput("dataset.description", "trying to save this with a malformed csv should return action errors ");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitForm();
@@ -116,7 +115,6 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTrue("Expected integer number for ticket - but got: " + ticketId, ticketId.matches("([0-9]*)"));
 
         uploadFileToPersonalFilestore(ticketId, MALFORMED_DATASET_FILE);
-
 
         gotoPage(url);
         // now go to the edit page and try to upload a malformed file
@@ -131,41 +129,40 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresent("has more columns");
         assertTextPresentInCode("action-errors");
     }
-    
+
     @Test
     public void testFakeRolesShouldNotAppearInEditSelects() {
-    	//FIXME: there's a more automagical way to create this list, yeah?
-    	List<String> urls = new ArrayList<String>();
-    	for(ResourceType resourceType : ResourceType.values()) {
-    	    String url = String.format("/%s/add", resourceType.getUrlNamespace());
-    		assertNoFakeRoles(url);
-    	}
+        // FIXME: there's a more automagical way to create this list, yeah?
+        List<String> urls = new ArrayList<String>();
+        for (ResourceType resourceType : ResourceType.values()) {
+            String url = String.format("/%s/add", resourceType.getUrlNamespace());
+            assertNoFakeRoles(url);
+        }
     }
 
     @Test
-    //failing to fill out all required fields should cause controller to send us back to the edit page (i.e.action should return INPUT)
+    // failing to fill out all required fields should cause controller to send us back to the edit page (i.e.action should return INPUT)
     public void testDocumentInputPage() {
         gotoPage("/document/add");
-        
-        setInput(TestConstants.DOCUMENT_FIELD_TITLE, ""); 
+
+        setInput(TestConstants.DOCUMENT_FIELD_TITLE, "");
         setInput(TestConstants.DOCUMENT_FIELD_DESCRIPTION, "");
         setInput("projectId", TestConstants.PARENT_PROJECT_ID);
         submitForm();
-        
-        //we should be sent back to the edit page with some error messages at the top (but no exceptions/ stack traces)
+
+        // we should be sent back to the edit page with some error messages at the top (but no exceptions/ stack traces)
         assertNoErrorTextPresent();
     }
 
-    
     private void assertNoFakeRoles(String editPage) {
         gotoPage(editPage);
         for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll(".creator-role-select option")) {
-            Element element = (Element)element_;
-    		HtmlOption option = (HtmlOption) element;
-    		logger.trace("looking for fake roles in {}", option);
-			ResourceCreatorRole role = ResourceCreatorRole.valueOf(option.getValueAttribute());
-			assertThat("OTHER role should not appear on this page", role.getType(), not(ResourceCreatorRoleType.OTHER));
-    	}
+            Element element = (Element) element_;
+            HtmlOption option = (HtmlOption) element;
+            logger.trace("looking for fake roles in {}", option);
+            ResourceCreatorRole role = ResourceCreatorRole.valueOf(option.getValueAttribute());
+            assertThat("OTHER role should not appear on this page", role.getType(), not(ResourceCreatorRoleType.OTHER));
+        }
     }
 
 }

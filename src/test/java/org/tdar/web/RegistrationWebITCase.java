@@ -21,7 +21,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user");
         personmap.put("requestingContributorAccess", "false");
-        testLogin(personmap, true,false,true);
+        testLogin(personmap, true, false, true);
         assertTextNotPresent("Create a new project");
         gotoPage("/logout");
     }
@@ -43,10 +43,10 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     public void testRegisterContributorWithTOS() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "contributorrr");
-        testLogin(personmap, true,true,true);
-        
+        testLogin(personmap, true, true, true);
+
     }
-    
+
     @Test
     public void testInvalidView() {
         gotoPage("/account/view?personId=1");

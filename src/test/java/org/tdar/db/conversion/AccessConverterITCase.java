@@ -1,5 +1,8 @@
 package org.tdar.db.conversion;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -28,8 +31,6 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-
-import static org.junit.Assert.*;
 
 public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
 
@@ -60,7 +61,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         }
 
     }
-    
+
     // only necessary when database hasn't been wiped out since last integration test
     @Test
     @Rollback(true)
@@ -78,8 +79,8 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         logger.info("{}", converter.getRelationships());
         List<DataTableRelationship> listRelationshipsForColumns = datasetService.listRelationshipsForColumns(dataTable.getColumnByName("basic_int"));
         assertEquals(1, listRelationshipsForColumns.size());
-//        assertEquals("d_503_spital_abone_database_mdb_basic_int", listRelationshipsForColumns.get(0).getLocalTable().getName());
-//        assertEquals("d_503_spital_abone_database_mdb_context_data", listRelationshipsForColumns.get(0).getForeignTable().getName());
+        // assertEquals("d_503_spital_abone_database_mdb_basic_int", listRelationshipsForColumns.get(0).getLocalTable().getName());
+        // assertEquals("d_503_spital_abone_database_mdb_context_data", listRelationshipsForColumns.get(0).getForeignTable().getName());
         assertEquals("basic_int", listRelationshipsForColumns.get(0).getColumnRelationships().iterator().next().getLocalColumn().getName());
         assertEquals("basic_int", listRelationshipsForColumns.get(0).getColumnRelationships().iterator().next().getForeignColumn().getName());
     }
@@ -117,8 +118,8 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         Set<DataTableRelationship> rels = converter.getRelationships();
         assertTrue(rels.size() > 0);
         DataTableRelationship rel = converter.getRelationshipsWithTable("d_503_spital_abone_database_mdb_basic_int").get(0);
-//        assertEquals("d_503_spital_abone_database_mdb_basic_int", rel.getLocalTable().getName());
-//        assertEquals("d_503_spital_abone_database_mdb_context_data", rel.getForeignTable().getName());
+        // assertEquals("d_503_spital_abone_database_mdb_basic_int", rel.getLocalTable().getName());
+        // assertEquals("d_503_spital_abone_database_mdb_context_data", rel.getForeignTable().getName());
         assertEquals("basic_int", rel.getColumnRelationships().iterator().next().getLocalColumn().getName());
         assertEquals("basic_int", rel.getColumnRelationships().iterator().next().getForeignColumn().getName());
 
@@ -235,9 +236,6 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
 
     }
 
-    
-
-
     @Test
     @Rollback(true)
     public void testDatabaseWithDateTimeAndDuplicateTableNames() throws FileNotFoundException, IOException {
@@ -246,6 +244,6 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
             logger.info("{}", table);
         }
 
-        //FIXME: add more depth to testing
+        // FIXME: add more depth to testing
     }
 }

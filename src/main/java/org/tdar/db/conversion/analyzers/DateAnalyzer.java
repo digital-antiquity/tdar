@@ -77,7 +77,7 @@ public class DateAnalyzer implements ColumnAnalyzer {
             }
             // Dealing with case: 'personal communication, email 2/23/08' gets parsed, want to make sure we're not cherry-picking a date from a larger piece of
             // text
-            logger.trace("{}<==>{}", candidate.getText(),value);
+            logger.trace("{}<==>{}", candidate.getText(), value);
             if (!StringUtils.equals(candidate.getText(), value)) {
                 result = null;
             }

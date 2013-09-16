@@ -17,7 +17,7 @@ import org.tdar.core.dao.TdarNamedQueries;
  * $Id$
  * 
  * DAO access for DataTableColumnS.
- *
+ * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
@@ -27,7 +27,7 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
     public DataTableColumnDao() {
         super(DataTableColumn.class);
     }
-    
+
     public List<CodingRule> findMappedCodingRules(DataTableColumn column, List<String> valuesToMatch) {
         if (column == null || CollectionUtils.isEmpty(valuesToMatch)) {
             getLogger().debug("No mapped coding rules available for column {} and values {}", column, valuesToMatch);

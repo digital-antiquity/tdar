@@ -6,6 +6,10 @@
  */
 package org.tdar.struts.action.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +17,13 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin
@@ -41,7 +43,6 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
-    
     @Test
     @Rollback
     public void testEmbargoed() throws InstantiationException, IllegalAccessException {
@@ -231,7 +232,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDownloadControllerFullUser() throws InstantiationException, IllegalAccessException , TdarActionException{
+    public void testDownloadControllerFullUser() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getLatestUploadedVersion().getId());
@@ -259,7 +260,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
                 .getCurrentVersion(VersionType.WEB_SMALL).getId());
         assertEquals(DownloadController.SUCCESS, controller.thumbnail());
     }
-    
+
     /*
      * (non-Javadoc)
      * 

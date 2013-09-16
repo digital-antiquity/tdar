@@ -20,7 +20,7 @@ public class CreatePdfATask extends AbstractTask {
     @Override
     public void run() throws Exception {
 
-//gs -dPDFA -dBATCH  -dUseCIEColor -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=$file.pdfa $file      
+        // gs -dPDFA -dBATCH -dUseCIEColor -sProcessColorModel=DeviceCMYK -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=$file.pdfa $file
         CommandLine cmdLine = new CommandLine("gs");
         cmdLine.addArgument("-dPDFA");
         cmdLine.addArgument("-dBATCH");
@@ -30,14 +30,14 @@ public class CreatePdfATask extends AbstractTask {
         cmdLine.addArgument("-dPDFACompatibilityPolicy=1");
         cmdLine.addArgument("-sOutputFile=${outFile}");
         cmdLine.addArgument("${file}");
-        HashMap<String,File> map = new HashMap<>();
+        HashMap<String, File> map = new HashMap<>();
         map.put("file", new File("invoice.pdf"));
         map.put("outFile", new File("invoice.pdfa"));
         cmdLine.setSubstitutionMap(map);
 
         DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
 
-        ExecuteWatchdog watchdog = new ExecuteWatchdog(60*1000);
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(60 * 1000);
         Executor executor = new DefaultExecutor();
         executor.setExitValue(1);
         executor.setWatchdog(watchdog);

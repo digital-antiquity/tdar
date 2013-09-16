@@ -11,7 +11,6 @@ import org.junit.Test;
 
 public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    
     private void assertJsonResult(String url, String resultField, int minResults) {
         int status = gotoPageWithoutErrorCheck(url);
         Assert.assertEquals("http result should be 200 OK", HttpServletResponse.SC_OK, status);
@@ -22,54 +21,53 @@ public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         JSONArray jarr = jso.getJSONArray(resultField);
         Assert.assertTrue(resultField + " array list should not be empty", JSONArray.toCollection(jarr).size() >= minResults);
     }
+
     private void assertJsonResult(String url, String resultField) {
         assertJsonResult(url, resultField, 1);
     }
-    
+
     private static int indexCount = 0;
-   
-    
+
     @Before
     public void lookupPrep() {
-        if(indexCount++ < 1) {
+        if (indexCount++ < 1) {
             reindex();
         }
     }
-    
+
     @Test
-    //TODO: These tests should assert more than just valid json and result counts. 
+    // TODO: These tests should assert more than just valid json and result counts.
     public void testValidPersonLookup() {
         assertJsonResult("/lookup/person?minLookupLength=0", "people");
     }
-    
-    
-    @Test 
+
+    @Test
     public void testValidInstitutionLookup() {
         assertJsonResult("/lookup/institution?minLookupLength=0", "institutions");
         logger.debug(getPageCode());
     }
-    
-    @Test 
+
+    @Test
     public void testValidResourceLookup() {
         assertJsonResult("/lookup/resource?minLookupLength=0", "resources");
     }
-    
-    @Test 
+
+    @Test
     public void testValidKeywordLookup() {
         assertJsonResult("/lookup/keyword?minLookupLength=0", "items");
     }
-    
-//    @Test 
-//    public void testValidCollectionLookup() {
-//        //TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
-//        assertJsonResult("/lookup/collection?minLookupLength=0", "collections", 0);
-//    }
-//    
-//    @Test 
-//    public void testValidAnnotationKeyLookup() {
-//        //TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
-//        assertJsonResult("/lookup/annotationkey?minLookupLength=0", "items", 0);
-//    }
-//    
-    
+
+    // @Test
+    // public void testValidCollectionLookup() {
+    // //TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
+    // assertJsonResult("/lookup/collection?minLookupLength=0", "collections", 0);
+    // }
+    //
+    // @Test
+    // public void testValidAnnotationKeyLookup() {
+    // //TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
+    // assertJsonResult("/lookup/annotationkey?minLookupLength=0", "items", 0);
+    // }
+    //
+
 }

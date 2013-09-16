@@ -14,10 +14,9 @@ import org.tdar.core.bean.resource.CategoryVariable;
 /**
  * $Id$
  * <p>
- * Handles ajax requests.  Currently only used for subcategory variables displayed for
- * editing column metadata for a dataset.
+ * Handles ajax requests. Currently only used for subcategory variables displayed for editing column metadata for a dataset.
  * 
- *
+ * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
@@ -27,12 +26,12 @@ import org.tdar.core.bean.resource.CategoryVariable;
 public class AjaxController extends TdarActionSupport {
 
     private static final long serialVersionUID = -1202795099371942148L;
-    
+
     private Long categoryVariableId;
-    
+
     @Action("column-metadata-subcategories")
     public String columnMetadataSubcategories() {
-        if (Persistable.Base.isNullOrTransient(categoryVariableId)){
+        if (Persistable.Base.isNullOrTransient(categoryVariableId)) {
             logger.error("Invalid category variable: " + categoryVariableId);
         }
         return SUCCESS;
@@ -41,13 +40,14 @@ public class AjaxController extends TdarActionSupport {
     public CategoryVariable getCategoryVariable() {
         return getCategoryVariableService().find(categoryVariableId);
     }
-    
+
     /**
      * Returns a list of CategoryVariables that are subcategories of the category variable id.
+     * 
      * @return
      */
     public List<CategoryVariable> getSubcategories() {
-        if (Persistable.Base.isNullOrTransient(categoryVariableId)){
+        if (Persistable.Base.isNullOrTransient(categoryVariableId)) {
             return Collections.emptyList();
         }
         return new ArrayList<CategoryVariable>(getCategoryVariable().getSortedChildren());

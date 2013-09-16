@@ -1,5 +1,10 @@
 package org.tdar.struts.action.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,8 +25,6 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
-
-import static org.junit.Assert.*;
 
 public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCase {
 
@@ -46,7 +49,7 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         project.markUpdated(getSessionUser());
         genericService.save(project);
 
-        Dataset dataset = setupAndLoadResource(TAB_MAPPING_DATASET_TAB,Dataset.class);
+        Dataset dataset = setupAndLoadResource(TAB_MAPPING_DATASET_TAB, Dataset.class);
         Long datasetId = dataset.getId();
         dataset = null;
         DatasetController controller = generateNewInitializedController(DatasetController.class);

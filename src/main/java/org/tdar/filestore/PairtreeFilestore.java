@@ -65,7 +65,7 @@ public class PairtreeFilestore extends BaseFilestore {
             throw new TdarRuntimeException(error, e);
         }
     }
-    
+
     public String store(InputStream content, InformationResourceFileVersion version) throws IOException {
         StorageMethod rotate = StorageMethod.NO_ROTATION;
         return storeAndRotate(content, version, rotate);
@@ -82,11 +82,11 @@ public class PairtreeFilestore extends BaseFilestore {
         if (outFile.exists() && rotate.getRotations() > 0) {
             rotate(outFile, rotate);
         }
-        
+
         if (rotate == StorageMethod.DATE) {
             String baseName = FilenameUtils.getBaseName(outFile.getName());
             String ext = FilenameUtils.getExtension(outFile.getName());
-            
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss");
             String rotationTarget = String.format("%s.%s.%s", baseName, sdf.format(new Date()), ext);
             outFile = new File(outFile.getParentFile(), rotationTarget);
@@ -169,7 +169,7 @@ public class PairtreeFilestore extends BaseFilestore {
         if (!file.isFile())
             throw new FileNotFoundException("Could not find file: " + file.getAbsolutePath());
 
-//        version.setTransientFile(file);
+        // version.setTransientFile(file);
         return file;
     }
 
@@ -269,7 +269,7 @@ public class PairtreeFilestore extends BaseFilestore {
                 // if archival, need to go up one more
                 if (version.isArchival())
                     file = file.getParentFile();
-                logger.debug("renaming: {} -> {}", 
+                logger.debug("renaming: {} -> {}",
                         file.getParentFile().getAbsolutePath(),
                         new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX).getAbsoluteFile());
                 FileUtils.moveDirectory(file.getParentFile(), new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX));

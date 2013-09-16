@@ -12,11 +12,11 @@ import org.tdar.core.bean.entity.Person;
 
 /**
  * @author Adam Brin
- *
+ * 
  */
 public interface Updatable {
 
     public void markUpdated(Person p);
-    
+
     public Date getDateUpdated();
 }

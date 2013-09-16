@@ -398,28 +398,27 @@ public class ReflectionService {
             if (annotation != null) {
                 String fieldPrefix = prefix;
                 if (StringUtils.isNotBlank(annotation.label())) {
-                    fieldPrefix = StringUtils.trim( annotation.label());
-//                    fieldPrefix = fieldPrefix.trim();
+                    fieldPrefix = StringUtils.trim(annotation.label());
+                    // fieldPrefix = fieldPrefix.trim();
                 }
-                
-                
+
                 Class<?> type = field.getType();
                 if (ObjectUtils.equals(field, runAsField)) {
                     type = runAs;
                     logger.trace(" ** overriding type with " + type.getSimpleName());
                 }
-                
-                if (Collection.class.isAssignableFrom(type)) 
+
+                if (Collection.class.isAssignableFrom(type))
                 // handle Collection private List<ResourceCreator> ...
                 {
                     ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
                     Class<?> cls = (Class<?>) stringListType.getActualTypeArguments()[0];
                     set.addAll(findBulkAnnotationsOnClass(cls, stack, fieldPrefix));
-                } 
+                }
                 // handle Singleton private Person owner ...
                 else if (Persistable.class.isAssignableFrom(type)) {
                     set.addAll(findBulkAnnotationsOnClass(type, stack, fieldPrefix));
-                } 
+                }
                 // handle more primative fields private String ...
                 else {
                     logger.trace("adding {} ({})", field, stack);
@@ -439,8 +438,6 @@ public class ReflectionService {
         }
         return set;
     }
-
-
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void validateAndSetProperty(Object beanToProcess, String name, String value) {

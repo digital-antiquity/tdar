@@ -37,7 +37,7 @@ public class GenericKeywordDao extends GenericDao {
     public static final String INHERITANCE_TOGGLE_FIELDNAME = "INHERITANCE_TOGGLE";
 
     @Transactional
-    public <K extends HierarchicalKeyword<K>> List<K> findAllDescendants(Class<K> cls,K keyword) {
+    public <K extends HierarchicalKeyword<K>> List<K> findAllDescendants(Class<K> cls, K keyword) {
         String index = keyword.getIndex();
         if (StringUtils.isBlank(index))
             return Collections.emptyList();
@@ -52,22 +52,22 @@ public class GenericKeywordDao extends GenericDao {
         // FIXME: turn this into a generic named query?
         return findByProperty(cls, "label", label);
     }
-    
+
     @Transactional
     public <K extends Keyword> List<K> findAllByLabels(Class<K> cls, List<String> labels) {
         return findAllFromList(cls, "label", labels);
     }
-    
+
     @Transactional
     protected <T extends Keyword> List<Pair<T, Integer>> getKeywordStats(String namedQuery) {
         List<Pair<T, Integer>> list = new ArrayList<Pair<T, Integer>>();
         Query q = getCurrentSession().getNamedQuery(namedQuery);
-        for(Object result: q.list()) {
-            Object[] cols = (Object[])result;
+        for (Object result : q.list()) {
+            Object[] cols = (Object[]) result;
             @SuppressWarnings("unchecked")
-            T keyword = (T)cols[0];
-            Integer count = (int)((long)((Long)cols[1])); //this feels dumb
-            Pair<T, Integer> pair =  new Pair<T, Integer>(keyword, count);
+            T keyword = (T) cols[0];
+            Integer count = (int) ((long) ((Long) cols[1])); // this feels dumb
+            Pair<T, Integer> pair = new Pair<T, Integer>(keyword, count);
             list.add(pair);
         }
         return list;
@@ -77,17 +77,17 @@ public class GenericKeywordDao extends GenericDao {
     public List<Pair<CultureKeyword, Integer>> getUncontrolledCultureKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_UNCONTROLLED);
     }
-    
+
     @Transactional
     public List<Pair<CultureKeyword, Integer>> getControlledCultureKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED);
     }
-    
+
     @Transactional
     public List<Pair<GeographicKeyword, Integer>> getGeographicKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_GEOGRAPHIC_KEYWORD);
     }
-    
+
     @Transactional
     public List<Pair<InvestigationType, Integer>> getInvestigationTypeStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_INVESTIGATION_TYPE);
@@ -112,23 +112,23 @@ public class GenericKeywordDao extends GenericDao {
     public List<Pair<SiteTypeKeyword, Integer>> getControlledSiteTypeKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_SITE_TYPE_KEYWORD_CONTROLLED);
     }
-    
+
     @Transactional
     public List<Pair<SiteTypeKeyword, Integer>> getUncontrolledSiteTypeKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_SITE_TYPE_KEYWORD_UNCONTROLLED);
     }
-    
+
     @Transactional
     public List<Pair<TemporalKeyword, Integer>> getTemporalKeywordStats() {
         return getKeywordStats(TdarNamedQueries.QUERY_KEYWORD_COUNT_TEMPORAL_KEYWORD);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void updateOccuranceValues() {
         for (Class<?> cls : LookupSource.KEYWORD.getClasses()) {
             try {
-                String inheritanceField = (String)FieldUtils.readStaticField(cls, INHERITANCE_TOGGLE_FIELDNAME);
-                String tableName = (String)AnnotationUtils.getValue(AnnotationUtils.getAnnotation(cls, Table.class), NAME);
+                String inheritanceField = (String) FieldUtils.readStaticField(cls, INHERITANCE_TOGGLE_FIELDNAME);
+                String tableName = (String) AnnotationUtils.getValue(AnnotationUtils.getAnnotation(cls, Table.class), NAME);
                 Session session = getCurrentSession();
                 logger.info("{} {} ", inheritanceField, tableName);
                 session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT, tableName)).executeUpdate();
@@ -140,7 +140,7 @@ public class GenericKeywordDao extends GenericDao {
                 session.createSQLQuery(format).executeUpdate();
                 logger.info("completed update on {}", tableName);
             } catch (IllegalAccessException e) {
-                logger.error("could not update keywords",e);
+                logger.error("could not update keywords", e);
             }
         }
     }
@@ -157,5 +157,5 @@ public class GenericKeywordDao extends GenericDao {
             return find(kwd.getClass(), result.get(0).longValue());
         }
     }
-    
+
 }

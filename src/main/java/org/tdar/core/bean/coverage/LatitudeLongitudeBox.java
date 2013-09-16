@@ -254,7 +254,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public void setMinimumLongitude(Double minimumLongitude) {
-        if (minimumLongitude!= null && !isValidLongitude(minimumLongitude)) {
+        if (minimumLongitude != null && !isValidLongitude(minimumLongitude)) {
             throw new TdarRuntimeException("specified longitude is not a valid longitude");
         }
         this.minimumLongitude = minimumLongitude;
@@ -269,7 +269,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public void setMaximumLongitude(Double maximumLongitude) {
-        if (maximumLongitude!= null && !isValidLongitude(maximumLongitude)) {
+        if (maximumLongitude != null && !isValidLongitude(maximumLongitude)) {
             throw new TdarRuntimeException("specified longitude is not a valid longitude");
         }
         this.maximumLongitude = maximumLongitude;
@@ -495,7 +495,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         }
         return true;
     }
-    
+
     public boolean isInitializedAndValid() {
         return isInitialized() && isValid();
     }

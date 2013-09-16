@@ -72,12 +72,12 @@ public class FilestoreTest {
     public void sanitizeFilenameTest() {
         assertEquals("abc.txt", PairtreeFilestore.sanitizeFilename("abc.txt"));
         assertEquals("abc.txt", PairtreeFilestore.sanitizeFilename("abc'.txt"));
-        assertEquals( "abc.tar.gz", PairtreeFilestore.sanitizeFilename("abc.tar.gz"));
-        assertEquals( "abc.tar.bz2", PairtreeFilestore.sanitizeFilename("abc.tar.bz2"));
-        assertEquals( "abc-tar.bz2", PairtreeFilestore.sanitizeFilename("abc-tar.bz2"));
-        assertEquals( "abc.tar.bz2", PairtreeFilestore.sanitizeFilename("abc-.tar.bz2"));
+        assertEquals("abc.tar.gz", PairtreeFilestore.sanitizeFilename("abc.tar.gz"));
+        assertEquals("abc.tar.bz2", PairtreeFilestore.sanitizeFilename("abc.tar.bz2"));
+        assertEquals("abc-tar.bz2", PairtreeFilestore.sanitizeFilename("abc-tar.bz2"));
+        assertEquals("abc.tar.bz2", PairtreeFilestore.sanitizeFilename("abc-.tar.bz2"));
         assertEquals("abc-a----------_----+-----.txt", PairtreeFilestore.sanitizeFilename("abc\"a!@#$%^&*()_{}[]+<>?/\\\\.txt"));
-        for (String archiveExtension: ListArchiveTask.getUnderstoodExtensions()) {
+        for (String archiveExtension : ListArchiveTask.getUnderstoodExtensions()) {
             String fileName = "test." + archiveExtension;
             String sanitizedFileName = PairtreeFilestore.sanitizeFilename(fileName);
             assertEquals("Oh-oh: filename should not have altered from: " + fileName + " to: " + sanitizedFileName, fileName, sanitizedFileName);
@@ -147,23 +147,23 @@ public class FilestoreTest {
                 FilenameUtils.getExtension(tmpFile.getName())));
         assertTrue(rotated.exists());
     }
-    
-//    @Test
-//    @Rollback(true)
-//    public void filestoreDateRotationTest() throws IOException {
-//        cleanup();
-//        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-//        InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
-//        File f = new File(TEST_DOCUMENT);
-//        StorageMethod rotate = StorageMethod.DATE;
-//        store.storeAndRotate(f, version, rotate);
-//
-//        File tmpFile = version.getFile();
-//        assertTrue(tmpFile.exists());
-//        File rotated = new File(tmpFile.getParentFile(), String.format("%s.1.%s", FilenameUtils.getBaseName(tmpFile.getName()),
-//                FilenameUtils.getExtension(tmpFile.getName())));
-//        assertTrue(rotated.exists());
-//    }
+
+    // @Test
+    // @Rollback(true)
+    // public void filestoreDateRotationTest() throws IOException {
+    // cleanup();
+    // PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+    // InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
+    // File f = new File(TEST_DOCUMENT);
+    // StorageMethod rotate = StorageMethod.DATE;
+    // store.storeAndRotate(f, version, rotate);
+    //
+    // File tmpFile = version.getFile();
+    // assertTrue(tmpFile.exists());
+    // File rotated = new File(tmpFile.getParentFile(), String.format("%s.1.%s", FilenameUtils.getBaseName(tmpFile.getName()),
+    // FilenameUtils.getExtension(tmpFile.getName())));
+    // assertTrue(rotated.exists());
+    // }
 
     private InformationResourceFileVersion generateVersion(String name) {
         Document ir = new Document();

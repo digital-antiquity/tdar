@@ -137,7 +137,8 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
                                 )
                         );
             }
-            q.append(String.format(" AND %s:[%s TO %s] ",QueryFieldNames.SCALE, TdarIndexNumberFormatter.MIN_ALLOWED, TdarIndexNumberFormatter.format(spatialLimit.getScale() + SCALE_RANGE)));
+            q.append(String.format(" AND %s:[%s TO %s] ", QueryFieldNames.SCALE, TdarIndexNumberFormatter.MIN_ALLOWED,
+                    TdarIndexNumberFormatter.format(spatialLimit.getScale() + SCALE_RANGE)));
 
         }
         return q.toString();

@@ -42,7 +42,7 @@ public class SearchServiceTest {
         for (DynamicQueryComponent dqc : createFields) {
             if (dqc.getLabel().equalsIgnoreCase(QueryFieldNames.INTEGRATABLE))
                 found = true;
-            if (dqc.getLabel().toLowerCase().endsWith("etype")  || dqc.getLabel().toLowerCase().contains("status") || dqc.getLabel().contains("integratable")) {
+            if (dqc.getLabel().toLowerCase().endsWith("etype") || dqc.getLabel().toLowerCase().contains("status") || dqc.getLabel().contains("integratable")) {
                 Assert.assertNotNull(dqc.getAnalyzer());
             }
         }

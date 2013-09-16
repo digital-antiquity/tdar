@@ -52,7 +52,9 @@ public abstract class AbstractConfigurableService<S extends Configurable> implem
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ConfigurableService#getProvider()
      */
     @Override
@@ -65,7 +67,9 @@ public abstract class AbstractConfigurableService<S extends Configurable> implem
         return allServices.get(0);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ConfigurableService#isServiceRequired()
      */
     @Override

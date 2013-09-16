@@ -1,4 +1,5 @@
 package org.tdar.web.functional;
+
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -17,12 +18,12 @@ public class BrowseSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         logger.debug("on page: {}", url);
         find(By.partialLinkText("EDIT")).first().click();
         String editUrl = getDriver().getCurrentUrl();
-        assertTrue("url should contain 'edit'. url:"  + editUrl, editUrl.contains("edit"));
+        assertTrue("url should contain 'edit'. url:" + editUrl, editUrl.contains("edit"));
 
-        //we could do this implicitly by going to any other page but this makes the test faster
+        // we could do this implicitly by going to any other page but this makes the test faster
         reportJavascriptErrors();
     }
-    
+
     @Test
     public void testOntology() {
         browseTest("/ontology/3029");

@@ -93,7 +93,7 @@ public class BrowseController extends AbstractLookupController {
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private String creatorXml;
     private List<Account> accounts = new ArrayList<Account>();
-    Map<String,SearchFieldType> searchFieldLookup = new HashMap<>();
+    Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
     private transient InputStream inputStream;
     private Long contentLength;
@@ -399,7 +399,7 @@ public class BrowseController extends AbstractLookupController {
 
     public Map<String, SearchFieldType> getKeywordTypeBySimpleName() {
         if (CollectionUtils.isEmpty(searchFieldLookup.keySet())) {
-            for (SearchFieldType type: SearchFieldType.values()) {
+            for (SearchFieldType type : SearchFieldType.values()) {
                 if (type.getAssociatedClass() != null) {
                     searchFieldLookup.put(type.getAssociatedClass().getSimpleName(), type);
                 }

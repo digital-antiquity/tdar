@@ -15,7 +15,7 @@ public interface ScheduledProcess<P extends Persistable> extends Serializable {
     public void execute();
 
     public boolean isEnabled();
-    
+
     public boolean shouldRunAtStartup();
 
     public String getDisplayName();
@@ -23,16 +23,16 @@ public interface ScheduledProcess<P extends Persistable> extends Serializable {
     public Class<P> getPersistentClass();
 
     /**
-     * Returns true if this process has run to completion.  
+     * Returns true if this process has run to completion.
      * 
      * @return
      */
     public boolean isCompleted();
-    
+
     /**
      * Performs any cleanup on this process, emailing any accumulated errors, etc.
-     * Also resets this process to its initial state, typically clearing its completion status as well.  
-     * After invoking this method isCompleted() should return false again.  
+     * Also resets this process to its initial state, typically clearing its completion status as well.
+     * After invoking this method isCompleted() should return false again.
      */
     public void cleanup();
 
@@ -46,7 +46,6 @@ public interface ScheduledProcess<P extends Persistable> extends Serializable {
     public Long getLastId();
 
     public void setLastId(Long lastId);
-
 
     public static abstract class Base<Q extends Persistable> implements ScheduledProcess<Q> {
 
@@ -93,7 +92,7 @@ public interface ScheduledProcess<P extends Persistable> extends Serializable {
         public String toString() {
             return getDisplayName();
         }
-        
+
         public boolean shouldRunAtStartup() {
             return false;
         }

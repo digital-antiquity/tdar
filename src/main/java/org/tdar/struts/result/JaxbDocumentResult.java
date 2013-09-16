@@ -3,12 +3,15 @@ package org.tdar.struts.result;
 import java.io.Writer;
 
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.struts2.ServletActionContext;
+import org.slf4j.Logger;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
+
 import edu.asu.lib.jaxb.JaxbDocument;
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
-import org.slf4j.Logger;
 
 @SuppressWarnings("unused")
 public class JaxbDocumentResult implements Result {
@@ -27,35 +30,35 @@ public class JaxbDocumentResult implements Result {
     private Boolean formatOutput;
 
     public JaxbDocumentResult() {
-    	super();
-    } 
-    
-    public JaxbDocumentResult(String documentName) {
-    	this();
-    	this.documentName = documentName;
-    	formatOutput = false;
+        super();
     }
-    
-	public String getDocumentName() {
-		return documentName;
-	}
 
-	public void setDocumentName(String documentName) {
-		this.documentName = documentName;
-	}
+    public JaxbDocumentResult(String documentName) {
+        this();
+        this.documentName = documentName;
+        formatOutput = false;
+    }
 
-	public Boolean getFormatOutput() {
-		return formatOutput;
-	}
+    public String getDocumentName() {
+        return documentName;
+    }
 
-	public void setFormatOutput(Boolean formatOutput) {
-		this.formatOutput = formatOutput;
-	}
+    public void setDocumentName(String documentName) {
+        this.documentName = documentName;
+    }
 
-	@Override
-	public void execute(ActionInvocation invocation) throws Exception {
+    public Boolean getFormatOutput() {
+        return formatOutput;
+    }
+
+    public void setFormatOutput(Boolean formatOutput) {
+        this.formatOutput = formatOutput;
+    }
+
+    @Override
+    public void execute(ActionInvocation invocation) throws Exception {
         JaxbDocument jaxbDocument = (JaxbDocument) invocation.getStack().findValue(documentName);
-		if (jaxbDocument == null) {
+        if (jaxbDocument == null) {
             String msg = String.format(FMT_ERROR_DOCUMENT_NOT_FOUND, documentName);
             logger.error(msg);
             throw new IllegalArgumentException(msg);
@@ -64,12 +67,13 @@ public class JaxbDocumentResult implements Result {
         resp.setCharacterEncoding(UTF_8);
         resp.setContentType(CONTENT_TYPE_XML);
         Writer writer = null;
-		try {
-			writer = resp.getWriter();
+        try {
+            writer = resp.getWriter();
             JaxbDocumentWriter.write(jaxbDocument, writer, formatOutput);
             logger.trace("Serving Jaxb result [{}]", documentName);
         } finally {
-        	if (writer != null) writer.close();
+            if (writer != null)
+                writer.close();
         }
-	}
+    }
 }

@@ -13,8 +13,8 @@ import org.openqa.selenium.WebElement;
 
 public class ArchiveFileUploadSeleniumITCase extends AbstractBasicSeleniumWebITCase {
 
-    private final List<String> REQUIRED_FIELDS = java.util.Arrays.asList(new String[] { 
-            "resourceRegistrationTitle", "dateCreated", "resourceDescription", "projectId", "resourceRegistrationTitle", "dateCreated", 
+    private final List<String> REQUIRED_FIELDS = java.util.Arrays.asList(new String[] {
+            "resourceRegistrationTitle", "dateCreated", "resourceDescription", "projectId", "resourceRegistrationTitle", "dateCreated",
             "resourceDescription", "projectId" });
 
     @Test

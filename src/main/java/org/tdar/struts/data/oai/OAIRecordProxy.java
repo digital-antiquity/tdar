@@ -34,7 +34,7 @@ public class OAIRecordProxy {
     public void setMetadata(NodeModel metadata) {
         this.metadata = metadata;
     }
-    
+
     public OAIRecordProxy(String repositoryNamespaceIdentifier, OAIRecordType recordType, long numericIdentifier, Date datestamp) {
         this.identifier = "oai:" + repositoryNamespaceIdentifier + ":" + recordType.getName() + ":" + String.valueOf(numericIdentifier);
         this.datestamp = datestamp;

@@ -252,7 +252,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     logger.trace(relationship.isOneToOne() + " one to one");
                     logger.trace(relationship.cascadeDeletes() + " cascade deletes");
                     logger.trace(relationship.cascadeUpdates() + " cascade updates");
-//                    logger.trace(relationship.getFlags() + " :flags");
+                    // logger.trace(relationship.getFlags() + " :flags");
                     logger.trace("++++++++++++++++++++++++++++++++++++++++++++++++++++");
                     logger.info("{}", relationshipToPersist);
                     relationships.add(relationshipToPersist);

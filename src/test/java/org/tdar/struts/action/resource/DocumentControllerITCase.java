@@ -545,7 +545,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         dc = generateNewInitializedController(DocumentController.class, newUser);
         dc.setId(id);
         dc.prepare();
-        boolean seenException  = false;
+        boolean seenException = false;
         try {
             dc.edit();
             FileProxy fileProxy = new FileProxy();
@@ -560,8 +560,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
             seenException = true;
         }
         assertTrue(seenException);
-//        assertNotEmpty(dc.getActionErrors());
-//        setIgnoreActionErrors(true);
+        // assertNotEmpty(dc.getActionErrors());
+        // setIgnoreActionErrors(true);
 
     }
 

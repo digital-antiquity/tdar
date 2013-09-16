@@ -1,4 +1,3 @@
-
 package org.tdar.tag;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,11 +5,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for resultType complex type.
+ * <p>
+ * Java class for resultType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="resultType">
@@ -32,11 +32,11 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "resultType", propOrder = {
-    "title",
-    "identifier",
-    "summary",
-    "url",
-    "publisher"
+        "title",
+        "identifier",
+        "summary",
+        "url",
+        "publisher"
 })
 public class ResultType {
 
@@ -55,9 +55,8 @@ public class ResultType {
      * Gets the value of the title property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is {@link String }
+     * 
      */
     public String getTitle() {
         return title;
@@ -67,9 +66,8 @@ public class ResultType {
      * Sets the value of the title property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setTitle(String value) {
         this.title = value;
@@ -79,9 +77,8 @@ public class ResultType {
      * Gets the value of the identifier property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is {@link String }
+     * 
      */
     public String getIdentifier() {
         return identifier;
@@ -91,9 +88,8 @@ public class ResultType {
      * Sets the value of the identifier property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setIdentifier(String value) {
         this.identifier = value;
@@ -103,9 +99,8 @@ public class ResultType {
      * Gets the value of the summary property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is {@link String }
+     * 
      */
     public String getSummary() {
         return summary;
@@ -115,9 +110,8 @@ public class ResultType {
      * Sets the value of the summary property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setSummary(String value) {
         this.summary = value;
@@ -127,9 +121,8 @@ public class ResultType {
      * Gets the value of the url property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is {@link String }
+     * 
      */
     public String getUrl() {
         return url;
@@ -139,9 +132,8 @@ public class ResultType {
      * Sets the value of the url property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setUrl(String value) {
         this.url = value;
@@ -151,9 +143,8 @@ public class ResultType {
      * Gets the value of the publisher property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is {@link String }
+     * 
      */
     public String getPublisher() {
         return publisher;
@@ -163,9 +154,8 @@ public class ResultType {
      * Sets the value of the publisher property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setPublisher(String value) {
         this.publisher = value;

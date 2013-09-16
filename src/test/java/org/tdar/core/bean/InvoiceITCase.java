@@ -1,6 +1,6 @@
 package org.tdar.core.bean;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -45,7 +45,6 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         Assert.assertEquals(items.get(0).getActivity().getNumberOfFiles().intValue(), 1);
     }
 
-    
     @Test
     @Rollback
     public void testInvoicePricingMBOnly() {
@@ -80,7 +79,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         assertTrue(item.isValid());
         assertTrue(item.isValidForController());
     }
-    
+
     @Test
     @Rollback
     public void testJsonStatus() {
@@ -88,7 +87,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         invoice.setTransactionStatus(TransactionStatus.PREPARED);
         String json = invoice.toJSON().toString();
         assertTrue("status in json", json.indexOf(TransactionStatus.PREPARED.name()) > -1);
-        
+
     }
 
     private List<BillingItem> setupBillingItem(Invoice invoice, long numberOfFiles, long numberOfMb) {

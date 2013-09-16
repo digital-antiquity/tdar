@@ -27,7 +27,6 @@ public class PaddedNumberQueryPart<C> extends FieldQueryPart<C> {
         setOperator(oper);
     }
 
-    
     @Override
     protected String formatValueAsStringForQuery(int index) {
         C item = getFieldValues().get(index);
@@ -35,7 +34,7 @@ public class PaddedNumberQueryPart<C> extends FieldQueryPart<C> {
             return "";
         }
         if (item instanceof Number) {
-            return TdarIndexNumberFormatter.format((Number)item);
+            return TdarIndexNumberFormatter.format((Number) item);
         } else {
             return item.toString();
         }

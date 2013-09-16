@@ -68,7 +68,7 @@ public interface TargetDatabase extends Database {
     public String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
             Map<List<OntologyNode>, Map<DataTable, Integer>> pivot);
 
-//    public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
+    // public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
 
     public String getResultSetValueAsString(ResultSet resultSet, int resultSetPosition, DataTableColumn column) throws SQLException;
 
@@ -76,9 +76,10 @@ public interface TargetDatabase extends Database {
 
     public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
 
-    public List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,  String query);
-    
-    public <T> T selectRowFromTable(DataTable dataTable,  ResultSetExtractor<T> resultSetExtractor, Long rowId);
+    public List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
+            String query);
+
+    public <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId);
 
     public String selectTableAsXml(DataTable dataTable);
 

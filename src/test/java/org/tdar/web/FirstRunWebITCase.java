@@ -3,7 +3,6 @@
  */
 package org.tdar.web;
 
-
 import java.net.URL;
 
 import org.junit.Test;
@@ -37,7 +36,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         uploadFileToPersonalFilestore(ticketId, TestConstants.TEST_DOCUMENT);
         gotoPage(originalLocation);
         // assume that you're at /project/list
-//        logger.info(getPageText());
+        // logger.info(getPageText());
 
         clickLinkWithText("UPLOAD");
         clickLinkWithText(ResourceType.DOCUMENT.getLabel());
@@ -48,12 +47,12 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("ticketId", ticketId);
         setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
-        
+
         addFileProxyFields(0, FileAccessRestriction.PUBLIC, TestConstants.TEST_DOCUMENT_NAME);
-//        logger.info(getPageCode());
+        // logger.info(getPageCode());
         submitForm();
         HtmlPage page = (HtmlPage) internalPage;
         logger.info(page.getUrl().toString());
@@ -95,10 +94,10 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("fileTextInput", codingSheetRules);
         setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
-        
+
         submitForm();
         assertPageTitleEquals(TEST_TITLE);
         assertTextPresentInPage(TEST_ABSTRACT);

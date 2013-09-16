@@ -90,9 +90,9 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         List<BigInteger> result = (List<BigInteger>) query.list();
         if (CollectionUtils.isNotEmpty(result)) {
             try {
-            return find(result.get(0).longValue());
+                return find(result.get(0).longValue());
             } catch (Exception e) {
-                logger.error("could not find master for {} {}",dup, result);
+                logger.error("could not find master for {} {}", dup, result);
             }
         }
         return null;

@@ -233,22 +233,22 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         controller.setId(id);
         controller.prepare();
         controller.edit();
-//        FileProxy newProxy = new FileProxy(uploadFile, VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
-//        newProxy.setAction(FileAction.REPLACE);
+        // FileProxy newProxy = new FileProxy(uploadFile, VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
+        // newProxy.setAction(FileAction.REPLACE);
         for (FileProxy proxy : controller.getFileProxies()) {
             if (proxy.getFilename().equals(replaceFile)) {
                 proxy.setFilename(uploadFile);
                 proxy.setAction(FileAction.REPLACE);
-//                newProxy.set
+                // newProxy.set
             }
         }
-//        controller.getFileProxies().add(newProxy);
+        // controller.getFileProxies().add(newProxy);
         controller.setTicketId(ticketId);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         return (C) controller.getResource();
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) {
 

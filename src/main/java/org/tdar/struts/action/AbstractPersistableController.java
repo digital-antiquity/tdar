@@ -90,7 +90,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * 
      * @param persistable
      * @return the String result code to use.
-     * @throws TdarActionException 
+     * @throws TdarActionException
      */
     protected abstract String save(P persistable) throws TdarActionException;
 
@@ -230,7 +230,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 }
                 actionReturnStatus = save(persistable);
 
-                
                 try {
                     postSaveCallback(actionReturnStatus);
                 } catch (TdarRecoverableRuntimeException tex) {
@@ -241,7 +240,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 if (shouldSaveResource()) {
                     getGenericService().saveOrUpdate(persistable);
                 }
-                
+
                 indexPersistable();
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
@@ -325,7 +324,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @SkipValidation
     @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = BILLING, type=TYPE_REDIRECT, location = URLConstants.CART_ADD)
+            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD)
     })
     @HttpsOnly
     public String add() throws TdarActionException {
@@ -333,11 +332,11 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             return BILLING;
         }
 
-        //FIXME:make this a preference...
+        // FIXME:make this a preference...
         if (getPersistable() instanceof HasStatus && isEditor() && !isAdministrator()) {
             ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
         }
-        
+
         checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         checkForNonContributorCrud();
         logAction("CREATING");
@@ -345,14 +344,15 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     /**
-     * The 'contributor' property only affects which menu items we show (for now).  Let non-contributors perform
+     * The 'contributor' property only affects which menu items we show (for now). Let non-contributors perform
      * CRUD actions, but send them a reminder about the 'contributor' option in the prefs page
      * 
      * FIXME: this needs to be centralized, as it's not going to be caught in all of the location it exists in ... eg: editColumnMetadata ...
      */
     protected void checkForNonContributorCrud() {
-        if(!getAuthenticatedUser().getContributor()) {
-            //FIXME: The html here could benefit from link to the prefs page.  Devise a way to hint to the view-layer that certain messages can be decorated and/or replaced.
+        if (!getAuthenticatedUser().getContributor()) {
+            // FIXME: The html here could benefit from link to the prefs page. Devise a way to hint to the view-layer that certain messages can be decorated
+            // and/or replaced.
             addActionMessage("The system has hidden the menu options for creating and editing records based on your " +
                     "current preferences.  You can change this setting by going to your account page and enabling the " +
                     "\"contributor\" option.");
@@ -417,7 +417,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * @throws TdarActionException
      *             -- this will contain the return status, if any SUCCESS vs. INVALID, INPUT, ETC
      */
-    //FIXME: revies and consolidate status codes where possible
+    // FIXME: revies and consolidate status codes where possible
     protected void checkValidRequest(RequestType userAction, CrudAction<P> action, InternalTdarRights adminRightsCheck)
             throws TdarActionException {
         // first check the session
@@ -446,7 +446,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     if (action.isCreatable()) {
                         return;
                     }
-                //(intentional fall-through)
+                    // (intentional fall-through)
                 case EDIT:
                 default:
                     if (persistable == null) {
@@ -600,7 +600,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * This method is invoked when the paramsPrepareParamsInterceptor stack is
      * applied. It allows us to fetch an entity from the database based on the
      * incoming resourceId param, and then re-apply params on that resource.
-     * @see <a href="http://blog.mattsch.com/2011/04/14/things-discovered-in-struts-2/">Things discovered in Struts 2</a> 
+     * 
+     * @see <a href="http://blog.mattsch.com/2011/04/14/things-discovered-in-struts-2/">Things discovered in Struts 2</a>
      */
     @Override
     public void prepare() {

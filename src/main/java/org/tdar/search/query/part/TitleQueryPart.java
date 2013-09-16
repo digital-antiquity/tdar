@@ -50,7 +50,7 @@ public class TitleQueryPart extends FieldQueryPart<String> {
         if (value.contains(" ")) {
             wordsInTitle.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
         } else {
-        wordsInTitle.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
+            wordsInTitle.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
         }
         FieldQueryPart<String> wholeTitle = new FieldQueryPart<String>(getPrefix() + QueryFieldNames.TITLE_AUTO, value);
         wholeTitle.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED).setBoost(TITLE_BOOST);

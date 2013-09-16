@@ -232,7 +232,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
             totalFiles += invoice.getTotalNumberOfFiles();
             totalSpaceInBytes += invoice.getTotalSpaceInBytes();
         }
-        
+
         logger.trace(String.format("Totals: %s r %s f %s b", totalResources, totalFiles, totalSpaceInBytes));
     }
 

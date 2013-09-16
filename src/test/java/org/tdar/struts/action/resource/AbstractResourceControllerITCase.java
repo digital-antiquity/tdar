@@ -70,7 +70,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         controller.setNumberOfFiles(numberOfFiles);
         controller.setNumberOfMb(numberOfMb);
         try {
-        assertEquals(TdarActionSupport.SUCCESS,controller.createCouponCode());
+            assertEquals(TdarActionSupport.SUCCESS, controller.createCouponCode());
         } catch (Exception e) {
             logger.warn("{}", e);
         }
@@ -83,7 +83,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         genericService.saveOrUpdate(invoice);
         genericService.synchronize();
         logger.info("{}", invoice);
-        
+
         assertTrue(invoice.getNumberOfFiles() > 0);
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
         controller.setInvoiceId(invoice.getId());
@@ -109,6 +109,5 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         controller.setServletRequest(getServletPostRequest());
         return controller;
     }
-
 
 }

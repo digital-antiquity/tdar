@@ -3,6 +3,10 @@
  */
 package org.tdar.core.filestore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
@@ -22,8 +26,6 @@ import org.tdar.core.service.workflow.workflows.PDFWorkflow;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin
@@ -55,7 +57,6 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
     }
 
-
     @Test
     public void testRTFTextExtraction() throws Exception {
         String filename = "test-file.rtf";
@@ -74,7 +75,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         assertTrue(result);
         assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
         InformationResourceFileVersion indexableVersion = informationResourceFile.getIndexableVersion();
-        logger.info("version: {}" , indexableVersion);
+        logger.info("version: {}", indexableVersion);
         String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(indexableVersion));
         logger.info(text);
         assertTrue(text.toLowerCase().contains("have fun digging"));

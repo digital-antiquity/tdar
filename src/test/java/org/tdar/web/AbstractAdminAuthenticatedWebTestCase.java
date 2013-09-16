@@ -14,25 +14,24 @@ import org.tdar.core.bean.resource.Resource;
 
 /**
  * @author Adam Brin
- *
+ * 
  */
 public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuthenticatedWebTestCase {
-   
+
     @Before
     public void setUp() {
-    	loginAdmin();
+        loginAdmin();
     }
-
 
     public void createTestCollection(String name, String desc, List<? extends Resource> someResources) {
         assertNotNull(genericService);
         gotoPage("/collection/add");
         setInput("resourceCollection.name", name);
         setInput("resourceCollection.description", desc);
-        
-        for(int i = 0 ; i < someResources.size(); i++) {
+
+        for (int i = 0; i < someResources.size(); i++) {
             Resource resource = someResources.get(i);
-            //FIXME: we don't set id's in the form this way but setInput() doesn't understand 'resources.id' syntax.   fix it so that it can.
+            // FIXME: we don't set id's in the form this way but setInput() doesn't understand 'resources.id' syntax. fix it so that it can.
             String fieldName = "resources[" + i + "].id";
             String fieldValue = "" + resource.getId();
             logger.debug("setting  fieldName:{}\t value:{}", fieldName, fieldValue);
@@ -43,22 +42,22 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
 
     protected List<? extends Resource> getSomeResources() {
         List<? extends Resource> alldocs = genericService.findAll(Document.class);
-        List<? extends Resource> somedocs = alldocs.subList(0, Math.min(10, alldocs.size())); //get no more than 10 docs, pls
+        List<? extends Resource> somedocs = alldocs.subList(0, Math.min(10, alldocs.size())); // get no more than 10 docs, pls
         return somedocs;
     }
-    
+
     protected List<Person> getSomeUsers() {
-        //let's only get authorized users
+        // let's only get authorized users
         List<Person> allRegisteredUsers = entityService.findAllRegisteredUsers(null);
-        List<Person> someRegisteredUsers = allRegisteredUsers.subList(0, Math.min(10,  allRegisteredUsers.size()));
+        List<Person> someRegisteredUsers = allRegisteredUsers.subList(0, Math.min(10, allRegisteredUsers.size()));
         return someRegisteredUsers;
     }
-    
+
     protected List<Person> getSomePeople() {
         List<Person> allNonUsers = entityService.findAll();
         allNonUsers.removeAll(entityService.findAllRegisteredUsers(null));
-        List<Person> someNonUsers = allNonUsers.subList(0, Math.min(10,  allNonUsers.size()));
+        List<Person> someNonUsers = allNonUsers.subList(0, Math.min(10, allNonUsers.size()));
         return someNonUsers;
     }
-    
+
 }

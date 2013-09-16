@@ -66,8 +66,8 @@ public class CodingSheetServiceITCase extends AbstractControllerITCase {
             e = ex;
         }
         assertEquals(CodingSheetParserException.class, e.getClass());
-        logger.debug("dupes:{}", ((CodingSheetParserException)e).getContributingFactors() );
-        assertTrue(((CodingSheetParserException)e).getContributingFactors().contains("CODE2"));
+        logger.debug("dupes:{}", ((CodingSheetParserException) e).getContributingFactors());
+        assertTrue(((CodingSheetParserException) e).getContributingFactors().contains("CODE2"));
     }
 
     /*

@@ -69,8 +69,6 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
 
-    
-    
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
 
     @Autowired
@@ -218,7 +216,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         if (b == Boolean.TRUE) {
             Assert.assertTrue(String.format("there should be an exception %s or returned input %s", e, msg),
                     e != null || AbstractLookupController.INPUT.equals(msg));
-        } else if (b == Boolean.FALSE){
+        } else if (b == Boolean.FALSE) {
             Assert.assertTrue("there should not be an exception: " + ExceptionUtils.getFullStackTrace(e), e == null);
             assertEquals(AbstractLookupController.SUCCESS, msg);
         } else {

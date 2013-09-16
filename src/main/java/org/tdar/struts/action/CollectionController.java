@@ -1,6 +1,12 @@
 package org.tdar.struts.action;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -212,12 +218,11 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Action(value = "listChildren", results = { @Result(name = SUCCESS, location = "list-children.ftl", params = { "contentType", "application/json" },
             type = "freemarker") })
     public String listChildren() {
-        setCollections(getResourceCollectionService().findDirectChildCollections(getId(),Boolean.TRUE,CollectionType.SHARED));
-        //FIXME: make this "json"
+        setCollections(getResourceCollectionService().findDirectChildCollections(getId(), Boolean.TRUE, CollectionType.SHARED));
+        // FIXME: make this "json"
         return SUCCESS;
     }
 
-    
     @Override
     @SkipValidation
     @Action(value = EDIT, results = {
@@ -270,7 +275,8 @@ public class CollectionController extends AbstractPersistableController<Resource
                         Arrays.asList(Status.ACTIVE, Status.DRAFT)));
             }
         } else {
-            findAllChildCollections = new LinkedHashSet<ResourceCollection>(getResourceCollectionService().findDirectChildCollections(getId(), true, CollectionType.SHARED));
+            findAllChildCollections = new LinkedHashSet<ResourceCollection>(getResourceCollectionService().findDirectChildCollections(getId(), true,
+                    CollectionType.SHARED));
         }
         setCollections(new ArrayList<>(findAllChildCollections));
         Collections.sort(collections);

@@ -7,10 +7,9 @@ public class SearchPaginationException extends TdarRecoverableRuntimeException {
     public SearchPaginationException() {
         super();
     }
-    
+
     public SearchPaginationException(String message) {
         super(message);
     }
-
 
 }

@@ -29,7 +29,7 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
     public SimpleConverter() {
     }
 
-    public SimpleConverter(TargetDatabase targetDatabase, InformationResourceFileVersion ... versions) {
+    public SimpleConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
     }

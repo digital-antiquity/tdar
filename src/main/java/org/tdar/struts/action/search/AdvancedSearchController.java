@@ -996,5 +996,5 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public void setGeoMode(GeoRssMode geoMode) {
         this.geoMode = geoMode;
     }
-    
+
 }

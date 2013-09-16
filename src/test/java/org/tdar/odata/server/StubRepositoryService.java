@@ -27,7 +27,7 @@ public class StubRepositoryService implements InitialisableRepositoryService {
         this(new ArrayList<String>());
     }
 
-    public StubRepositoryService(List <String>entityNames) {
+    public StubRepositoryService(List<String> entityNames) {
         super();
         this.entityNames = entityNames;
     }
@@ -42,13 +42,13 @@ public class StubRepositoryService implements InitialisableRepositoryService {
         Dataset dataset = dataTable.getDataset();
         String dataSetKey = dataset.getName();
         Map<String, Map<String, Object>> knownDataSetMap = dataModel.get(dataSetKey);
-        if (knownDataSetMap == null){
+        if (knownDataSetMap == null) {
             knownDataSetMap = new HashMap<String, Map<String, Object>>();
             dataModel.put(dataSetKey, knownDataSetMap);
         }
         String dataTableName = dataTable.getName();
         Map<String, Object> knownDataTableMap = knownDataSetMap.get(dataTableName);
-        if (knownDataTableMap == null){
+        if (knownDataTableMap == null) {
             knownDataTableMap = new HashMap<String, Object>();
             knownDataSetMap.put(dataTableName, knownDataTableMap);
         }
@@ -96,7 +96,7 @@ public class StubRepositoryService implements InitialisableRepositoryService {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     // Initialisation
 
     @Override

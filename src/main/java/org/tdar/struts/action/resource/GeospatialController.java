@@ -33,7 +33,6 @@ import org.tdar.struts.data.FileProxy;
 @Result(name = TdarActionSupport.INPUT, location = "edit.ftl")
 public class GeospatialController extends AbstractDatasetController<Geospatial> {
 
-
     private static final long serialVersionUID = 6576781526708737335L;
 
     @Override
@@ -41,7 +40,7 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
         super.saveBasicResourceMetadata();
 
         super.saveInformationResourceProperties();
-//        getDatasetService().saveOrUpdate(persistable);
+        // getDatasetService().saveOrUpdate(persistable);
         // HACK: implicitly cache fullUsers via call to getProjectAsJson() as workaround for TDAR-1162. This is the software equivalent of turning the radio up
         // to mask weird sounds your engine is making
 
@@ -69,21 +68,22 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
     public void setGeospatial(Geospatial dataset) {
         setPersistable(dataset);
     }
-    
+
     @Override
     public Set<String> getValidFileExtensions() {
         Set<String> extensionsForTypes = analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET, ResourceType.IMAGE);
-        //FIXME: these should come from the analyzer
-        //Note: aux.xml and shp.xml omitted because we know view layer logic will accept any .xml (so will server, for that matter)
-        String[] geoexts  =  {"shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg", "jpw", "jgw", "tfw", "aux", "aux","ovr","rrd", "mxd","adf"};
+        // FIXME: these should come from the analyzer
+        // Note: aux.xml and shp.xml omitted because we know view layer logic will accept any .xml (so will server, for that matter)
+        String[] geoexts = { "shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg", "jpw", "jgw", "tfw",
+                "aux", "aux", "ovr", "rrd", "mxd", "adf" };
         Collections.addAll(extensionsForTypes, geoexts);
 
-//        extensionsForTypes.add("shx");
-//        extensionsForTypes.add("shp.xml");
-//        extensionsForTypes.add("sbx");
-//        extensionsForTypes.add("xml");
-//        extensionsForTypes.add("dbf");
-//        extensionsForTypes.add("sbn");
+        // extensionsForTypes.add("shx");
+        // extensionsForTypes.add("shp.xml");
+        // extensionsForTypes.add("sbx");
+        // extensionsForTypes.add("xml");
+        // extensionsForTypes.add("dbf");
+        // extensionsForTypes.add("sbn");
         return extensionsForTypes;
     }
 
@@ -94,12 +94,11 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
         return getPersistable();
     }
 
-
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return true;
     }
-    
+
     public Geospatial getDataset() {
         return getPersistable();
     }

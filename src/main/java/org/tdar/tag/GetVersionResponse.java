@@ -1,4 +1,3 @@
-
 package org.tdar.tag;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,11 +5,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for GetVersionResponse complex type.
+ * <p>
+ * Java class for GetVersionResponse complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="GetVersionResponse">
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetVersionResponse", propOrder = {
-    "version"
+        "version"
 })
 public class GetVersionResponse {
 
@@ -39,9 +39,8 @@ public class GetVersionResponse {
      * Gets the value of the version property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is {@link String }
+     * 
      */
     public String getVersion() {
         return version;
@@ -51,9 +50,8 @@ public class GetVersionResponse {
      * Sets the value of the version property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setVersion(String value) {
         this.version = value;

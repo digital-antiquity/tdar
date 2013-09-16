@@ -12,12 +12,13 @@ import org.tdar.search.index.TdarIndexNumberFormatter;
  * 
  * @author <a href="mailto:matt.cordial@asu.edu">Matt Cordial</a>
  * @version $Rev$
- *
+ * 
  */
 public class TdarPaddedNumberBridge implements StringBridge {
-	public String objectToString(Object object) {
-		if (object == null) return "";
-	    Number n = (Number) object;
-	    return TdarIndexNumberFormatter.format(n);
-	}
+    public String objectToString(Object object) {
+        if (object == null)
+            return "";
+        Number n = (Number) object;
+        return TdarIndexNumberFormatter.format(n);
+    }
 }

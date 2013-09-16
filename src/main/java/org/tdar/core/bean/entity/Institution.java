@@ -179,7 +179,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return false;
     }
 
-
     @Override
     @Field(norms = Norms.NO, store = Store.YES)
     @DateBridge(resolution = Resolution.MILLISECOND)

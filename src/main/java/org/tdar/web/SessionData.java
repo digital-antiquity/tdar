@@ -31,7 +31,7 @@ public class SessionData implements Serializable {
     {
         super();
     }
-    
+
     public Person getPerson() {
         if (authenticationToken == null) {
             return null;

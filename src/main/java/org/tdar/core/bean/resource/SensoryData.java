@@ -31,7 +31,6 @@ import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 @Table(name = "sensory_data")
 @XmlRootElement(name = "sensoryData")
 public class SensoryData extends Dataset {
-    
 
     /**
      * 
@@ -95,20 +94,22 @@ public class SensoryData extends Dataset {
     @Length(max = 255)
     @Column(name = "control_data_filename")
     private String controlDataFilename;
-    
-    
+
     public enum RgbCapture {
         NA("Not Specified"),
         INTERNAL("Internal"),
         EXTERNAL("External");
         String label;
+
         RgbCapture(String label) {
             this.label = label;
         }
+
         public String getLabel() {
             return label;
         }
     }
+
     @Column(name = "rgb_capture", length = 255)
     @Enumerated(EnumType.STRING)
     private RgbCapture rgbCapture;
@@ -218,14 +219,14 @@ public class SensoryData extends Dataset {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "sensory_data_id")
     private Set<SensoryDataImage> sensoryDataImages = new LinkedHashSet<SensoryDataImage>();
-    
+
     @Column(name = "scanner_technology", length = 255)
     @Enumerated(EnumType.STRING)
     private ScannerTechnologyType scannerTechnology;
 
     @Column(name = "camera_details", length = 255)
     private String cameraDetails;
-    
+
     public SensoryData() {
         setResourceType(ResourceType.SENSORY_DATA);
     }
@@ -599,7 +600,7 @@ public class SensoryData extends Dataset {
     public void setScannerTechnology(ScannerTechnologyType scannerTechnology) {
         this.scannerTechnology = scannerTechnology;
     }
-    
+
     public RgbCapture getRgbCapture() {
         return rgbCapture;
     }
@@ -615,7 +616,7 @@ public class SensoryData extends Dataset {
     public void setCameraDetails(String cameraDetails) {
         this.cameraDetails = cameraDetails;
     }
-    
+
     @Override
     @Transient
     public boolean isHasBrowsableImages() {

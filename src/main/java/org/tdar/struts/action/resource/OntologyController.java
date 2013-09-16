@@ -60,7 +60,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
      * Sets the various pieces of metadata on this ontology and then saves it.
      * 
      * @param ontology
-     * @throws TdarActionException 
+     * @throws TdarActionException
      */
     @Override
     protected String save(Ontology ontology) throws TdarActionException {
@@ -82,7 +82,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         super.loadCustomMetadata();
         getCodingSheetsWithMappings().addAll(getCodingSheetService().findAllUsingOntology(getOntology()));
     }
-    
+
     @Override
     public Set<String> getValidFileExtensions() {
         return analyzer.getExtensionsForType(ResourceType.ONTOLOGY);
@@ -111,7 +111,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         }
         setChildren(getChildElements(node));
         setParentNode(getOntologyNodeService().getParent(node));
-        
+
         setDatasetsWithMappingsToNode(getOntologyNodeService().listDatasetsWithMappingsToNode(getNode()));
         return SUCCESS;
     }

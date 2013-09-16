@@ -106,15 +106,15 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         public String getCode() {
             return this.code;
         }
-        
+
         public boolean isPerson() {
-            return this ==PERSON;
+            return this == PERSON;
         }
 
         public boolean isInstitution() {
             return this == INSTITUTION;
         }
-        
+
     }
 
     private Long occurrence = 0L;

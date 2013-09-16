@@ -24,7 +24,7 @@ public class InformationResourceFileVersionService extends ServiceInterface.Type
 
     @Transactional(readOnly = false)
     public void delete(InformationResourceFileVersion file, boolean purge) {
-        getDao().delete(file,purge);
+        getDao().delete(file, purge);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class InformationResourceFileVersionService extends ServiceInterface.Type
     public void purgeFromFilestore(InformationResourceFileVersion file) {
         getDao().purgeFromFilestore(file);
     }
-    
+
     @Transactional
     public int deleteDerivatives(InformationResourceFileVersion version) {
         return getDao().deleteDerivatives(version);

@@ -26,33 +26,33 @@ import org.tdar.core.bean.entity.Person;
  */
 
 @Entity
-@Table(name="resource_revision_log")
+@Table(name = "resource_revision_log")
 public class ResourceRevisionLog extends Persistable.Base {
-    
+
     private static final long serialVersionUID = -6544867903833975781L;
 
-    @ManyToOne(optional=true)
-    @NotFound(action=NotFoundAction.IGNORE)
-    @ForeignKey(name="none")
+    @ManyToOne(optional = true)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @ForeignKey(name = "none")
     private Resource resource;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable=false, name="timestamp")
+    @Column(nullable = false, name = "timestamp")
     private Date timestamp;
-    
-    // the action taken 
-    @Column(name="log_message", length=512)
+
+    // the action taken
+    @Column(name = "log_message", length = 512)
     @Length(max = 512)
     private String logMessage;
-    
-    @ManyToOne(optional=false)
+
+    @ManyToOne(optional = false)
     private Person person;
-    
+
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
-    @Column(name="payload", nullable=true)
+    @Column(name = "payload", nullable = true)
     private String payload;
-    
+
     public Resource getResource() {
         return resource;
     }

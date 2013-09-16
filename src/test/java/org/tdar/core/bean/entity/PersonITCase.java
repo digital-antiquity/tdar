@@ -64,7 +64,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         person3.setLastName("DeVos");
         Person findOrSaveCreator3 = entityService.findOrSaveCreator(person3);
         logger.info("person: {} {}", findOrSaveCreator3, findOrSaveCreator3.getId());
-        assertEquals(8608L , findOrSaveCreator3.getId().longValue());
+        assertEquals(8608L, findOrSaveCreator3.getId().longValue());
     }
 
     @Test

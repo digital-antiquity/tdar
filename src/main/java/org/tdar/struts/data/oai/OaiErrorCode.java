@@ -9,10 +9,10 @@ public enum OaiErrorCode {
     NO_RECORDS_MATCH("noRecordsMatch"),
     NO_METADATA_FORMATS("noMetadataFormats"),
     NO_SET_HIERARCHY("noSetHierarchy");
-    
+
     private String code;
     private transient String message;
-    
+
     private OaiErrorCode(String code) {
         this.setCode(code);
         this.setMessage(code);

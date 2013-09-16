@@ -15,7 +15,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = {RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     String SDOC_TITLE = "a sensory document";
@@ -33,7 +33,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         setInput("sensoryData.date", "1943");
         setInput(SDOC_FIELD_DESCRIPTION, SDOC_DESC);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitForm();
@@ -67,7 +67,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryData.finalDatasetDescription", "finaldatasetsarchive val");
         sensoryHash.put("sensoryDataScans[0].filename", "filename0");
         sensoryHash.put("sensoryDataScans[0].transformationMatrix", "matrix0");
-//        sensoryHash.put("sensoryDataScans[0].monumentName", "objmon_name0");
+        // sensoryHash.put("sensoryDataScans[0].monumentName", "objmon_name0");
         sensoryHash.put("sensoryDataScans[0].scanDate", "11/01/2002");
         sensoryHash.put("sensoryDataScans[0].pointsInScan", "0");
         sensoryHash.put("sensoryDataScans[0].scannerTechnology", "TIME_OF_FLIGHT");
@@ -77,7 +77,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryDataScans[0].scanNotes", "scan notes 0");
         sensoryHash.put("sensoryDataScans[1].filename", "filename1");
         sensoryHash.put("sensoryDataScans[1].transformationMatrix", "matrix1");
-//        sensoryHash.put("sensoryDataScans[1].monumentName", "objmon_name1");
+        // sensoryHash.put("sensoryDataScans[1].monumentName", "objmon_name1");
         sensoryHash.put("sensoryDataScans[1].scanDate", "11/03/1974");
         sensoryHash.put("sensoryDataScans[1].pointsInScan", "1");
         sensoryHash.put("sensoryDataScans[1].scannerTechnology", "TRIANGULATION");
@@ -120,12 +120,12 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryData.meshColorEditions", "true"); // setting checkbox/radio
         sensoryHash.put("sensoryData.meshHealingDespiking", "true"); // setting checkbox/radio
         sensoryHash.put("sensoryData.rgbPreservedFromOriginal", "true"); // setting checkbox/radio
-        
+
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            sensoryHash.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // sensoryHash.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             sensoryHash.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
-        
+
         // fixme: use two hashes: both hashes feed setInput() but only use one for asserts
         for (String key : sensoryHash.keySet()) {
             setInput(key, sensoryHash.get(key));
@@ -171,7 +171,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash2.put("sensoryDataScans[1].id", "");
         sensoryHash2.put("sensoryDataScans[1].filename", "");
         sensoryHash2.put("sensoryDataScans[1].transformationMatrix", "");
-//        sensoryHash2.put("sensoryDataScans[1].monumentName", "");
+        // sensoryHash2.put("sensoryDataScans[1].monumentName", "");
         sensoryHash2.put("sensoryDataScans[1].scanDate", "");
         sensoryHash2.put("sensoryDataScans[1].matrixApplied", "");
         sensoryHash2.put("sensoryDataScans[1].pointsInScan", "");
@@ -191,7 +191,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         for (String key : sensoryHash2.keySet()) {
             try {
                 HtmlElement input = getInput(key);
-                logger.debug("removing: {}" ,input.asXml());
+                logger.debug("removing: {}", input.asXml());
                 getInput(key).remove();
             } catch (Exception e) {
                 e.printStackTrace();

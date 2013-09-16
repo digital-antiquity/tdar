@@ -9,8 +9,8 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.resource.BookmarkedResourceDao;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.BookmarkedResourceDao;
 
 /**
  * $Id$
@@ -22,7 +22,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 @Service
 public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<BookmarkedResource, BookmarkedResourceDao> {
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public boolean isAlreadyBookmarked(Resource resource, Person person) {
         return getDao().isAlreadyBookmarked(resource, person);
     }
@@ -64,9 +64,9 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         getDao().delete(bookmark);
         return true;
     }
-    
-    @Transactional(readOnly=true)
-    public List<Resource> findResourcesByPerson(Person person,List<Status> statuses) {
+
+    @Transactional(readOnly = true)
+    public List<Resource> findResourcesByPerson(Person person, List<Status> statuses) {
         return getDao().findResourcesByPerson(person, statuses);
     }
 }

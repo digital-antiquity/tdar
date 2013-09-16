@@ -33,7 +33,7 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
     public int getBatchSize() {
         return 10000;
     }
-    
+
     public Class<Account> getPersistentClass() {
         return Account.class;
     }
@@ -42,8 +42,8 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
     public List<Long> findAllIds() {
         List<Account> results = genericDao.findAllWithStatus(getPersistentClass(), Status.FLAGGED_ACCOUNT_BALANCE);
         if (CollectionUtils.isNotEmpty(results)) {
-        return Persistable.Base.extractIds(results);
-        } 
+            return Persistable.Base.extractIds(results);
+        }
         return null;
     }
 
@@ -51,7 +51,7 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
     public void execute() {
         List<Account> accounts = genericDao.findAll(getPersistentClass(), getNextBatch());
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("accounts",accounts);
+        map.put("accounts", accounts);
         emailService.sendTemplate("overdrawn-admin.ftl", map, SUBJECT);
     }
 

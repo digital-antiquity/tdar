@@ -14,7 +14,7 @@ import org.tdar.core.dao.TdarNamedQueries;
 /**
  * $Id$
  * 
- * @author Digital Anqituity 
+ * @author Digital Anqituity
  * @version $Revision$
  */
 @Component

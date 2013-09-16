@@ -97,14 +97,14 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 addActionErrorWithException("could not store manifest file", e);
             }
         }
-        
+
         if (getTemplateFilename() != null) {
             PersonalFilestoreFile filestoreFile = personalFilestore.retrieve(ticket, getTemplateFilename());
             if (filestoreFile != null) {
                 excelManifest = filestoreFile.getFile();
             }
         }
-        
+
         logger.debug("excel manifest is: {}", excelManifest);
         handleAsyncUploads();
         Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
@@ -142,7 +142,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         try {
             Workbook workbook = WorkbookFactory.create(getUploadedFiles().get(0));
             bulkUploadService.validateManifestFile(workbook.getSheetAt(0));
-            
+
             PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
             setTicketId(ticket.getId());
             PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
@@ -154,7 +154,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 addActionErrorWithException("could not store manifest file", e);
             }
 
-            
         } catch (Exception e) {
             addActionErrorWithException("Problem with BulkUploadTemplate", e);
             return INPUT;
@@ -210,7 +209,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
         return SUCCESS;
     }
-    
+
     /**
      * Get the current concept.
      * 
@@ -337,6 +336,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Override
     protected void postSaveCleanup(String returnString) {
-        //don't clean up personal filestore -- we have called async methods that need access to them and will handle cleanup.
+        // don't clean up personal filestore -- we have called async methods that need access to them and will handle cleanup.
     }
 }

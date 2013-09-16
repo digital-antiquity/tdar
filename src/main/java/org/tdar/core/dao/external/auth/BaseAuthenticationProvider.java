@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 public abstract class BaseAuthenticationProvider implements AuthenticationProvider {
 
     protected final Logger logger = Logger.getLogger(getClass());
-    
+
     private boolean enabled;
 
     /**
@@ -16,7 +16,8 @@ public abstract class BaseAuthenticationProvider implements AuthenticationProvid
     }
 
     /**
-     * @param enabled the enabled to set
+     * @param enabled
+     *            the enabled to set
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;

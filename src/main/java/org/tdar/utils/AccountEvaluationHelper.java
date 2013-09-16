@@ -23,7 +23,6 @@ public class AccountEvaluationHelper {
     private Set<Resource> flagged = new HashSet<Resource>();
     private Set<Resource> unflagged = new HashSet<Resource>();
 
-
     public AccountEvaluationHelper(Account account, BillingActivityModel model) {
         this.model = model;
         updateFromAccount(account);

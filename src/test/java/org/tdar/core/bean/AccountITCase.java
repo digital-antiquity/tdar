@@ -217,8 +217,8 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Account account = setupAccountWithInvoiceForOneFile(model, getUser());
         Document resource = generateDocumentWithFileAndUser();
         Document resource2 = generateDocumentWithFileAndUser();
-//        ResourceEvaluator resourceEvaluator = accountService.getResourceEvaluator(resource, resource2);
-        
+        // ResourceEvaluator resourceEvaluator = accountService.getResourceEvaluator(resource, resource2);
+
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
 
         AccountAdditionStatus statusOk = accountService.updateQuota(account, resource);
@@ -250,7 +250,6 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
     }
 
-    
     @Test
     @Rollback
     public void testAccountUpdateQuotaWithFileOnSecondEdit() throws InstantiationException, IllegalAccessException {
@@ -266,7 +265,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         AccountAdditionStatus statusOk = accountService.updateQuota(account, resource);
         genericService.refresh(account);
         addFileToResource(resource, new File(TestConstants.TEST_DOCUMENT));
-        
+
         AccountAdditionStatus status = accountService.updateQuota(account, resource);
         genericService.refresh(account);
         Resource ok = null;

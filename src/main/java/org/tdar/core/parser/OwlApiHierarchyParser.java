@@ -125,7 +125,6 @@ public class OwlApiHierarchyParser implements OntologyParser {
      * @return an integer representing the interval end for the given owl node.
      */
 
-
     private int generateIntervalLabels(OWLClass owlClass, int index) {
         Set<String> synonymLabels = new HashSet<String>();
         OntologyNode node = new OntologyNode();

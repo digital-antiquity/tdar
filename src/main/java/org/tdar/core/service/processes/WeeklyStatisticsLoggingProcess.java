@@ -50,7 +50,7 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
         stats.add(generateStatistics(StatisticType.NUM_GIS, resourceService.countActiveResources(ResourceType.GEOSPATIAL), ""));
         stats.add(generateStatistics(StatisticType.NUM_ARCHIVES, resourceService.countActiveResources(ResourceType.ARCHIVE), ""));
         stats.add(generateStatistics(StatisticType.NUM_AUDIO, resourceService.countActiveResources(ResourceType.AUDIO), ""));
-        
+
         stats.add(generateStatistics(StatisticType.NUM_DOCUMENT_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.DOCUMENT), ""));
         stats.add(generateStatistics(StatisticType.NUM_DATASET_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.DATASET), ""));
         stats.add(generateStatistics(StatisticType.NUM_VIDEO_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.VIDEO), ""));
@@ -61,7 +61,7 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
         stats.add(generateStatistics(StatisticType.NUM_GIS_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.GEOSPATIAL), ""));
         stats.add(generateStatistics(StatisticType.NUM_ARCHIVES_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.ARCHIVE), ""));
         stats.add(generateStatistics(StatisticType.NUM_AUDIO_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.AUDIO), ""));
-        
+
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers(null).size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));

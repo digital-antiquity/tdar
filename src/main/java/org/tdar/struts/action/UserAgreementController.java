@@ -40,22 +40,23 @@ public class UserAgreementController extends AuthenticationAware.Base implements
 
     @WriteableSession
     @Action(value = "agreement-response", results = {
-            @Result(name=TdarActionSupport.SUCCESS, type="redirect",location="/dashboard"),
-            @Result(name=TdarActionSupport.NONE, type="redirectAction", params = { "actionName", "logout", "namespace", "/" }),
-            @Result(name=TdarActionSupport.INPUT, type="redirectAction", params = {  "actionName", "show-notices", "namespace", "/"})
+            @Result(name = TdarActionSupport.SUCCESS, type = "redirect", location = "/dashboard"),
+            @Result(name = TdarActionSupport.NONE, type = "redirectAction", params = { "actionName", "logout", "namespace", "/" }),
+            @Result(name = TdarActionSupport.INPUT, type = "redirectAction", params = { "actionName", "show-notices", "namespace", "/" })
     })
     public String agreementResponse() {
-        if(!isAuthenticated()) return LOGIN;
+        if (!isAuthenticated())
+            return LOGIN;
 
-        if(DECLINE.equals(userResponse)) {
+        if (DECLINE.equals(userResponse)) {
             String fmt = FMT1_DECLINE_MESSAGE;
             addActionMessage(String.format(fmt, getSiteAcronym()));
             logger.debug("agreements declined,  redirecting to logout page");
             return NONE;
         }
 
-        if(ACCEPT.equals(userResponse))  {
-            if(processResponse()) {
+        if (ACCEPT.equals(userResponse)) {
+            if (processResponse()) {
                 logger.debug("all requirements met,  success!! returning success");
                 return SUCCESS;
             } else {
@@ -64,7 +65,7 @@ public class UserAgreementController extends AuthenticationAware.Base implements
                 return INPUT;
             }
         } else {
-            //unexpected response. bail out!
+            // unexpected response. bail out!
             return BAD_REQUEST;
         }
     }
@@ -77,9 +78,10 @@ public class UserAgreementController extends AuthenticationAware.Base implements
         return allRequirementsMet;
     }
 
-    @Action(value="show-notices")
+    @Action(value = "show-notices")
     public String showNotices() {
-        if(!isAuthenticated()) return LOGIN;
+        if (!isAuthenticated())
+            return LOGIN;
         return SUCCESS;
     }
 
@@ -91,7 +93,7 @@ public class UserAgreementController extends AuthenticationAware.Base implements
         return acceptedAuthNotices;
     }
 
-    public void  setAcceptedAuthNotices(List<AuthNotice> value) {
+    public void setAcceptedAuthNotices(List<AuthNotice> value) {
         acceptedAuthNotices = value;
     }
 
@@ -114,6 +116,5 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     public String getContributorAgreementUrl() {
         return getTdarConfiguration().getContributorAgreementUrl();
     }
-
 
 }

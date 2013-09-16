@@ -48,7 +48,7 @@ public class DataTableColumnTest {
             }
         }
     }
-    
+
     @Test
     public void testStringParsing() {
 

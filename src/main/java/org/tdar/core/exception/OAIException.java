@@ -12,7 +12,7 @@ import org.tdar.struts.data.oai.OaiErrorCode;
 public class OAIException extends Exception {
 
     private static final long serialVersionUID = -5909815912933964223L;
-    
+
     private OaiErrorCode code = null;
 
     public OAIException(String msg, Throwable e, OaiErrorCode code) {

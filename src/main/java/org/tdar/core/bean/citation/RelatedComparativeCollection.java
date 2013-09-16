@@ -17,10 +17,11 @@ public class RelatedComparativeCollection extends Citation {
 
     private static final long serialVersionUID = 7272722671720761334L;
 
-    public RelatedComparativeCollection() {}
-    
+    public RelatedComparativeCollection() {
+    }
+
     public RelatedComparativeCollection(String text) {
         setText(text);
     }
-    
+
 }

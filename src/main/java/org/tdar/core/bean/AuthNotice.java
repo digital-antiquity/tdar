@@ -7,7 +7,7 @@ package org.tdar.core.bean;
  * Date: 9/5/13
  * Time: 3:48 PM
  */
-//FIXME: jtd: I know this name sucks, but don't want to obsess over it right now...
+// FIXME: jtd: I know this name sucks, but don't want to obsess over it right now...
 public enum AuthNotice {
     /**
      * TOS has changed; user must accept new agreement in order to perform "logged-in" actions that require authentication

@@ -87,7 +87,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     public static final String UNAUTHORIZED = "unauthorized";
 
-    //TODO: jtd: struts docs imply that Action.NONE is a more appropriate result. Research further then decide.
+    // TODO: jtd: struts docs imply that Action.NONE is a more appropriate result. Research further then decide.
     public static final String AUTHENTICATED = "authenticated";
 
     /**
@@ -120,12 +120,12 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private String javascriptErrorLog;
 
     /**
-     * The view layer ftl primes the js error log with "NOSCRIPT", and the js init tries to clear the log.  This way
+     * The view layer ftl primes the js error log with "NOSCRIPT", and the js init tries to clear the log. This way
      * the validate() method can roughly determine if
-     * a) (if errorlog ==  'NOSCRIPT' ) javascript was disabled on the client
+     * a) (if errorlog == 'NOSCRIPT' ) javascript was disabled on the client
      * b) (errorlog is blank) no js errors were captured (still plenty of ways js errors could have happened though)
-     * c) (errorlog has junk in it)  You've Got JS Errors!!
-     *
+     * c) (errorlog has junk in it) You've Got JS Errors!!
+     * 
      */
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -631,9 +631,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getCulturalTermsLabel() {
         return getTdarConfiguration().getCulturalTermsLabel();
     }
-    
+
     private static final String JS_ERRORLOG_NOSCRIPT = "NOSCRIPT";
-//FIXME: UTF-8 here is likely inviting encoding errors/challenges especially if it ends up in the console which is often the "ASCII" charset
+    // FIXME: UTF-8 here is likely inviting encoding errors/challenges especially if it ends up in the console which is often the "ASCII" charset
     private static final String JS_ERRORLOG_DELIMITER = "ɹǝʇıɯıןǝp";
 
     public String getJavascriptErrorLogDefault() {
@@ -643,23 +643,24 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getJavascriptErrorLogDelimiter() {
         return JS_ERRORLOG_DELIMITER;
     }
-    
+
     /**
-     * Check the js error log for any client-side errors that preceeded to the current request.  If we detect any
+     * Check the js error log for any client-side errors that preceeded to the current request. If we detect any
      * errors, log them at ERROR.
      */
     public void reportAnyJavascriptErrors() {
-        if(StringUtils.isBlank(javascriptErrorLog)) {
+        if (StringUtils.isBlank(javascriptErrorLog)) {
             logger.trace("No javascript errors reported by the client");
             return;
         }
 
-        if(StringUtils.equals(getJavascriptErrorLogDefault(), javascriptErrorLog)) {
-            logger.error("JS error log contains {}, an indication that javascript was disabled on the client prior to the request", getJavascriptErrorLogDefault());
+        if (StringUtils.equals(getJavascriptErrorLogDefault(), javascriptErrorLog)) {
+            logger.error("JS error log contains {}, an indication that javascript was disabled on the client prior to the request",
+                    getJavascriptErrorLogDefault());
         } else {
             String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
             logger.error("the client {} reported {} javascript errors", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length);
-            for(String error : errors) {
+            for (String error : errors) {
                 logger.error(error);
             }
         }

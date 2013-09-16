@@ -8,7 +8,6 @@ import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
@@ -17,8 +16,6 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.junit.MultipleTdarConfigurationRunner;
-import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.resource.DatasetController;
 
 public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
@@ -96,7 +93,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void userCannotViewRestrictedRow() {
         prepareValidData();
-        
+
         for (InformationResourceFile file : dataset.getInformationResourceFiles()) {
             file.setRestriction(FileAccessRestriction.CONFIDENTIAL);
         }

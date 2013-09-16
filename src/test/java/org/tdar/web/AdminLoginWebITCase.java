@@ -5,7 +5,7 @@ import org.tdar.TestConstants;
 
 /**
  * @author Adam Brin
- *
+ * 
  */
 public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
@@ -13,9 +13,10 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testInstitutionEdit() {
-        gotoPage(String.format(ENTITY_INSTITUTION_EDIT,TestConstants.TEST_INSTITUTION_ID));
+        gotoPage(String.format(ENTITY_INSTITUTION_EDIT, TestConstants.TEST_INSTITUTION_ID));
         submitForm();
     }
+
     @Test
     public void testAdminLogin() {
         assertTextPresentInPage("Admin");
@@ -32,6 +33,7 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/admin/activity");
         assertTextPresentInPage("Recent Activity");
     }
+
     @Test
     public void testPageStats() {
         gotoPage("/project/" + EditWebITCase.PROJECT_ID);
@@ -82,6 +84,5 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/admin/searchindex/build");
         assertTextPresentInPage("Build Index");
     }
-
 
 }

@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +57,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         Person legacyContributor = user(true, 0, 0);
         assertThat(authService.userHasPendingRequirements(legacyContributor), is(true));
 
-        //if user registered after latest version of TOS/CA, they have not pending requirements
+        // if user registered after latest version of TOS/CA, they have not pending requirements
         Person newUser = user(false, tosLatestVersion, contributorAgreementLatestVersion);
         assertThat(authService.userHasPendingRequirements(newUser), is(false));
 
@@ -66,16 +65,16 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
 
     @Test
     public void testGetUserRequirements() throws Exception {
-        //should not meet either requirement
+        // should not meet either requirement
         Person legacyContributor = user(true, 0, 0);
         List<AuthNotice> requirements = authService.getUserRequirements(legacyContributor);
         assertThat(requirements, hasItems(AuthNotice.TOS_AGREEMENT, AuthNotice.CONTRIBUTOR_AGREEMENT));
 
-        //should satisfy all requirements
+        // should satisfy all requirements
         Person newUser = user(false, tosLatestVersion, contributorAgreementLatestVersion);
         assertThat(authService.getUserRequirements(newUser), empty());
 
-        //should satisfy all requirements
+        // should satisfy all requirements
         Person newContributor = user(true, tosLatestVersion, contributorAgreementLatestVersion);
         assertThat(authService.getUserRequirements(newContributor), empty());
     }
@@ -83,7 +82,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
     @Test
     @Rollback
     public void testSatisfyPrerequisite() throws Exception {
-        //a contributor that hasn't signed on since updated TOS and creator agreement
+        // a contributor that hasn't signed on since updated TOS and creator agreement
         Person contributor = user(true, 0, 0);
         authService.satisfyPrerequisite(contributor, AuthNotice.TOS_AGREEMENT);
         assertThat(authService.getUserRequirements(contributor), not(hasItem(AuthNotice.TOS_AGREEMENT)));
@@ -92,11 +91,11 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         assertThat(authService.getUserRequirements(contributor), not(hasItems(AuthNotice.TOS_AGREEMENT,
                 AuthNotice.CONTRIBUTOR_AGREEMENT)));
     }
-    
+
     @Test
     @Rollback(false)
     public void testSatisfyPrerequisiteWithSession() throws Exception {
-        //a contributor that hasn't signed on since updated TOS and creator agreement
+        // a contributor that hasn't signed on since updated TOS and creator agreement
         UserAgreementController controller = generateNewController(UserAgreementController.class);
         Person user = getBasicUser();
         user.setContributorAgreementVersion(0);

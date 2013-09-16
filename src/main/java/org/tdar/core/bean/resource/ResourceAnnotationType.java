@@ -18,14 +18,15 @@ import org.tdar.core.bean.HasLabel;
  * @version $Rev$
  */
 public enum ResourceAnnotationType implements HasLabel {
-	
-	IDENTIFIER("Resource Identifier");
-    
+
+    IDENTIFIER("Resource Identifier");
+
     private final String label;
-    
+
     private ResourceAnnotationType(String label) {
         this.label = label;
     }
+
     public String getLabel() {
         return label;
     }

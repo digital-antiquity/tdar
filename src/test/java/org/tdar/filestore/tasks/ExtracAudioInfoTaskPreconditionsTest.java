@@ -19,8 +19,6 @@ package org.tdar.filestore.tasks;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.resource.Audio;
@@ -59,18 +57,18 @@ public class ExtracAudioInfoTaskPreconditionsTest {
             assertTrue(e.getMessage(), e.getMessage().startsWith("The Extract Audio Info Task has been called for a non audio resource!"));
         }
     }
-    
+
     @Test
     public void mustHaveNonNullAudioFile() {
         task.getWorkflowContext().setTransientResource(null);
         try {
             task.run();
         } catch (Exception e) {
-           assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
-           assertTrue(e.getMessage(), e.getMessage().startsWith("Transient copy of audio not available..."));
+            assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
+            assertTrue(e.getMessage(), e.getMessage().startsWith("Transient copy of audio not available..."));
         }
     }
-    
+
     @Test
     public void mustHaveAFileToWorkWith() {
         try {

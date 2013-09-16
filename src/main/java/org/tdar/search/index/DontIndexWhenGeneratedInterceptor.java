@@ -6,14 +6,15 @@ import org.tdar.core.bean.resource.CodingSheet;
 
 /**
  * Don't index adhoc coding sheets, and remove them if they were previously indexed (perhaps they were not generated and then they became generated??)
+ * 
  * @author jimdevos
- *
+ * 
  */
-public class DontIndexWhenGeneratedInterceptor implements EntityIndexingInterceptor<CodingSheet>{
+public class DontIndexWhenGeneratedInterceptor implements EntityIndexingInterceptor<CodingSheet> {
 
     @Override
     public IndexingOverride onAdd(CodingSheet entity) {
-        if(entity.isGenerated()) {
+        if (entity.isGenerated()) {
             return IndexingOverride.SKIP;
         }
         return IndexingOverride.APPLY_DEFAULT;
@@ -21,7 +22,7 @@ public class DontIndexWhenGeneratedInterceptor implements EntityIndexingIntercep
 
     @Override
     public IndexingOverride onUpdate(CodingSheet entity) {
-        if(entity.isGenerated()) {
+        if (entity.isGenerated()) {
             return IndexingOverride.REMOVE;
         }
         return IndexingOverride.APPLY_DEFAULT;

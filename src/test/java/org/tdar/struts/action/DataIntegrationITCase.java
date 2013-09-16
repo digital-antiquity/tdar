@@ -1,5 +1,10 @@
 package org.tdar.struts.action;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,8 +27,6 @@ import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
 import org.tdar.struts.data.IntegrationDataResult;
-
-import static org.junit.Assert.*;
 
 /**
  * $Id$
@@ -79,7 +82,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         String[] plaiceFlounderTerms = { "PLAICE/FLOUNDER", "PLAICE" };
         for (String term : plaiceFlounderTerms) {
             for (CodingRule rule : codingSheet.getCodingRuleByTerm(term)) {
-            rule.setOntologyNode(plaiceFlounderOntologyNode);
+                rule.setOntologyNode(plaiceFlounderOntologyNode);
             }
         }
         OntologyNode gadidae = taxonOntology.getNodeByName("Gadidae Large (large true cods)");
@@ -145,7 +148,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         elementColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         taxonColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         mapColumnsToDataset(alexandriaDb, alexandriaTable, elementColumn, taxonColumn);
-        
+
         DataTableColumn elementColumn2 = new DataTableColumn();
         elementColumn2.setDefaultOntology(bElementOntology);
         DataTableColumn taxonColumn2 = new DataTableColumn();
@@ -234,7 +237,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         boolean seenElementNull = false;
         boolean seenSpeciesNull = false;
         for (IntegrationDataResult result : results) {
-            logger.info("{} - {}",result.getDataTable().getName(), result.getRowData().size());
+            logger.info("{} - {}", result.getDataTable().getName(), result.getRowData().size());
             assertTrue(CollectionUtils.isNotEmpty(result.getRowData()));
             // List<DataTableColumn> columnsToDisplay = result.getColumnsToDisplay();
             // for (DataTableColumn col : columnsToDisplay) { // capturing to test later
@@ -242,7 +245,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             // resultingDataTableColumns.add(col.getDisplayName());
             // }
             logger.debug("\n{}\n\trowdata: {}", result, result.getRowData());
-            assertFalse("Should have integration results from each dataset",CollectionUtils.isEmpty(result.getRowData()));
+            assertFalse("Should have integration results from each dataset", CollectionUtils.isEmpty(result.getRowData()));
             for (String[] rowData : result.getRowData()) {
                 if (rowData[1].equals(Database.NULL_EMPTY_INTEGRATION_VALUE))
                     seenElementNull = true;

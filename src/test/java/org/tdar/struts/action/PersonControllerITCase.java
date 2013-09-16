@@ -1,6 +1,6 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -122,7 +122,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         String msg = null;
         controller.setAddress(null);
         controller.setServletRequest(getServletPostRequest());
-        
+
         assertEquals(PersonController.INPUT, controller.saveAddress());
         assertEquals(Address.STREET_ADDRESS_IS_REQUIRED, controller.getActionErrors().iterator().next());
         setIgnoreActionErrors(true);
@@ -133,7 +133,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void addAddressToPerson() throws TdarActionException {
         Long presonId = addAddressToNewPerson();
-        
+
         Person person = genericService.find(Person.class, presonId);
         assertEquals(1, person.getAddresses().size());
         assertEquals("85287", person.getAddresses().iterator().next().getPostal());
@@ -163,7 +163,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.setId(presonId);
         person = null;
         controller.prepare();
-        assertEquals(controller.getAddressId(),controller.getAddress().getId());
+        assertEquals(controller.getAddressId(), controller.getAddress().getId());
         assertEquals("tempe", controller.getAddress().getCity());
         controller.getAddress().setCity("definitely not tempe");
         controller.setServletRequest(getServletPostRequest());
@@ -177,13 +177,13 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         assertEquals("85287", person.getAddresses().iterator().next().getPostal());
         assertNotEquals("tempe", person.getAddresses().iterator().next().getCity());
     }
-    
+
     @Test
     @Rollback
     public void editAddressDelete() throws TdarActionException {
         final Long presonId = addAddressToNewPerson();
         Person person = genericService.find(Person.class, presonId);
-        Long addressId =  person.getAddresses().iterator().next().getId();
+        Long addressId = person.getAddresses().iterator().next().getId();
         // this seems hokey
         genericService.detachFromSession(person);
         person = null;
@@ -196,16 +196,16 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         String saveAddress = controller.deleteAddress();
         assertEquals(PersonController.SUCCESS, saveAddress);
         controller = null;
-//        genericService.synchronize();
-//        setVerifyTransactionCallback(new TransactionCallback<Person>() {
-//            @Override
-//            public Person doInTransaction(TransactionStatus status) {
-                Person person_ = genericService.find(Person.class, presonId);
-                assertEquals(0, person_.getAddresses().size());
-                genericService.delete(person_);
-//                return null;
-//            }
-//        });
+        // genericService.synchronize();
+        // setVerifyTransactionCallback(new TransactionCallback<Person>() {
+        // @Override
+        // public Person doInTransaction(TransactionStatus status) {
+        Person person_ = genericService.find(Person.class, presonId);
+        assertEquals(0, person_.getAddresses().size());
+        genericService.delete(person_);
+        // return null;
+        // }
+        // });
     }
 
     private Long addAddressToNewPerson() throws TdarActionException {

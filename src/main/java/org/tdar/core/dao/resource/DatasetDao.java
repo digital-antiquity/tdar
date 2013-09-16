@@ -64,7 +64,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     public String normalizeTableName(String name) {
         return tdarDataImportDatabase.normalizeTableOrColumnNames(name);
     }
-    
+
     public void assignMappedDataForInformationResource(InformationResource resource) {
         String key = resource.getMappedDataKeyValue();
         DataTableColumn column = resource.getMappedDataKeyColumn();
@@ -86,7 +86,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
         Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTable(column, key, resultSetExtractor);
         resource.setRelatedDatasetData(dataTableQueryResults);
     }
-
 
     public boolean canLinkDataToOntology(Dataset dataset) {
         if (dataset == null)

@@ -6,6 +6,11 @@
  */
 package org.tdar.core.service;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +24,6 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Project;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin
@@ -57,7 +60,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         assertIsObfuscated(project);
         // remaining assertions occur in verifyPostObfuscationData to ensure that we are in a fresh new transaction.
     }
-    
+
     @AfterTransaction
     public void verifyPostObfuscationData() {
         // These remaining assertions must occur within a new transaction to ensure that the obfuscation changes
@@ -69,10 +72,10 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
                 assertNotObfuscated(project);
                 return project;
             }
-            
+
         });
     }
-    
+
     private void assertNotObfuscated(Project project) {
         assertNotNull(project.getSubmitter().getEmail());
         assertNotNull(project.getUpdatedBy().getEmail());
@@ -80,7 +83,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         assertFalse(project.getUpdatedBy().isObfuscated());
         assertFalse(project.getFirstLatitudeLongitudeBox().isObfuscated());
     }
-    
+
     private void assertIsObfuscated(Project project) {
         assertNull(project.getSubmitter().getEmail());
         assertNull(project.getUpdatedBy().getEmail());

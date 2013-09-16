@@ -56,7 +56,6 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
     private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
 
-
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
 
@@ -428,8 +427,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
          * If the Persistable supports the "Viewable" interface, then inject the
          * permissions into the transient property
          */
-        
-        //FIXME: it'd be nice if this took an array and could handle multiple lookups at once
+
+        // FIXME: it'd be nice if this took an array and could handle multiple lookups at once
         logger.trace("applying transient viewable flag to : " + p);
         if (p instanceof Viewable) {
             logger.trace("item is a 'viewable': " + p.toString());
@@ -511,7 +510,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         if (StringUtils.isBlank(username))
             return false;
 
-        return username.matches(USERNAME_REGEX+"{2,40}$");
+        return username.matches(USERNAME_REGEX + "{2,40}$");
     }
 
     public boolean isValidEmail(String email) {
@@ -598,18 +597,19 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
         Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
 
-        if(user.getTosVersion() < tosLatestVersion) {
+        if (user.getTosVersion() < tosLatestVersion) {
             notifications.add(AuthNotice.TOS_AGREEMENT);
         }
 
-        if(user.getContributor() && user.getContributorAgreementVersion() < contributorAgreementLatestVersion) {
+        if (user.getContributor() && user.getContributorAgreementVersion() < contributorAgreementLatestVersion) {
             notifications.add(AuthNotice.CONTRIBUTOR_AGREEMENT);
         }
         return notifications;
     }
 
     /**
-     * Update Person record to indicate  that the specified user has satisfied a required task
+     * Update Person record to indicate that the specified user has satisfied a required task
+     * 
      * @param user
      * @param req
      */
@@ -631,8 +631,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     }
 
     @Transactional(readOnly = false)
-    void satisfyPrerequisites(Person user,  Collection<AuthNotice> notices) {
-        for(AuthNotice notice : notices) {
+    void satisfyPrerequisites(Person user, Collection<AuthNotice> notices) {
+        for (AuthNotice notice : notices) {
             satisfyPrerequisite(user, notice);
         }
     }
@@ -640,13 +640,14 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     /**
      * Indicate that the user associated with the specified session has acknowledged/accepted the specified notices
      * (e.g. user agreements)
+     * 
      * @param sessionData
      * @param notices
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void satisfyUserPrerequisites(SessionData sessionData, Collection<AuthNotice> notices) {
-        //we actually need to update two person instances:  the persisted user record, and the detached user
-        //associated with the session. We hide this detail from the caller.
+        // we actually need to update two person instances: the persisted user record, and the detached user
+        // associated with the session. We hide this detail from the caller.
         Person detachedUser = sessionData.getPerson();
         Person persistedUser = personDao.find(detachedUser.getId());
         satisfyPrerequisites(detachedUser, notices);
@@ -655,8 +656,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getTosVersion(), detachedUser.getContributorAgreementVersion());
         logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
 
-//        personDao.update(persistedUser); //i shouldn't need to do this.
-//        personDao.synchronize();
+        // personDao.update(persistedUser); //i shouldn't need to do this.
+        // personDao.synchronize();
     }
 
 }

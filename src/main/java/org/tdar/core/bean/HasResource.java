@@ -12,5 +12,4 @@ import org.tdar.core.bean.resource.Resource;
  */
 public interface HasResource<R extends Resource> extends Validatable, Persistable {
 
-
 }

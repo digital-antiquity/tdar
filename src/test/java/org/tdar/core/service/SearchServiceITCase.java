@@ -13,12 +13,10 @@ import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.hibernate.search.FullTextQuery;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -133,7 +131,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         assertSortOrder(SortOption.DATE_REVERSE, yearComparator);
     }
 
-    @SuppressWarnings({ "unused", "rawtypes"})
+    @SuppressWarnings({ "unused", "rawtypes" })
     @Test
     public void testDateSorting() throws ParseException {
         DesignatedComparable<Resource> dateCreatedComparator = new DesignatedComparable<Resource>() {
@@ -167,7 +165,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     @Test
     // the sortInfo data structure has all the info on all the fields we sort by, which querybuilders to use, and what comparators to use
     // to assert that the searchService successfully sorted the results.
-    @SuppressWarnings({ "rawtypes"})
+    @SuppressWarnings({ "rawtypes" })
     public void testAllSortFields() throws ParseException {
 
         for (SortTestStruct sortTestInfo : sortTests) {

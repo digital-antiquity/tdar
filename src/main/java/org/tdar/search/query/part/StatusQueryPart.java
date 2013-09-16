@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
@@ -59,11 +59,11 @@ public class StatusQueryPart extends FieldQueryPart<Status> {
             }
             labels.add(status.getLabel());
         }
-        
+
         if (labels.size() == 1 && seenActive) {
             return "";
         }
-        
+
         return String.format(fmt, StringUtils.join(labels, " or "));
     }
 

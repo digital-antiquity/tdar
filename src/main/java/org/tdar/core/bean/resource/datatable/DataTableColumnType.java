@@ -16,16 +16,16 @@ import org.tdar.core.bean.HasLabel;
  * 
  */
 public enum DataTableColumnType implements HasLabel {
-    
+
     // See: http://msdn.microsoft.com/en-us/library/bb896344.aspx for EdmSimpleTypes
 
     BOOLEAN(Types.BOOLEAN, EdmSimpleType.BOOLEAN),
-    VARCHAR(Types.VARCHAR,EdmSimpleType.STRING), 
-    BIGINT(Types.BIGINT, EdmSimpleType.INT64), 
-    DOUBLE(Types.DOUBLE, EdmSimpleType.DOUBLE), 
-    TEXT(Types.CLOB, EdmSimpleType.STRING), 
-    DATE(Types.DATE, EdmSimpleType.DATETIME), 
-    DATETIME(Types.TIMESTAMP, EdmSimpleType.DATETIME), 
+    VARCHAR(Types.VARCHAR, EdmSimpleType.STRING),
+    BIGINT(Types.BIGINT, EdmSimpleType.INT64),
+    DOUBLE(Types.DOUBLE, EdmSimpleType.DOUBLE),
+    TEXT(Types.CLOB, EdmSimpleType.STRING),
+    DATE(Types.DATE, EdmSimpleType.DATETIME),
+    DATETIME(Types.TIMESTAMP, EdmSimpleType.DATETIME),
     BLOB(Types.BLOB, EdmSimpleType.BINARY);
 
     private final int sqlType;

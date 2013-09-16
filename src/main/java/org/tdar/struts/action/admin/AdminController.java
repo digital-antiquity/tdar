@@ -54,7 +54,7 @@ public class AdminController extends AuthenticationAware.Base {
     private static final long serialVersionUID = 4385039298623767568L;
 
     private List<ContributorRequest> pendingContributorRequests;
-    
+
     @Autowired
     private ScheduledProcessService scheduledProcessService;
 
@@ -72,7 +72,7 @@ public class AdminController extends AuthenticationAware.Base {
     private List<Pair<TemporalKeyword, Integer>> temporalKeywordStats;
     private Map<String, Float> extensionStats;
     private List<Person> recentUsers;
-    private List<Pair<Long,Long>> userLoginStats;
+    private List<Pair<Long, Long>> userLoginStats;
     private List<Resource> recentlyUpdatedResources;
     private Map<ResourceType, List<BigInteger>> currentResourceStats;
 
@@ -103,7 +103,8 @@ public class AdminController extends AuthenticationAware.Base {
     @Action("resource")
     public String resourceInfo() {
         setFileAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.values())));
-        setFileUploadedAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
+        setFileUploadedAverageStats(getStatisticService().getFileAverageStats(
+                Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
         setExtensionStats(getInformationResourceFileService().getAdminFileExtensionStats());
         setHistoricalResourceStats(getStatisticService().getResourceStatistics());
         setHistoricalResourceStatsWithFiles(getStatisticService().getResourceStatisticsWithFiles());
@@ -111,7 +112,7 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value="verifyFilestore",results={
+    @Action(value = "verifyFilestore", results = {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String verifyFilestore() throws IOException {
@@ -120,7 +121,7 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value="updateDois",results={
+    @Action(value = "updateDois", results = {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String updateDois() throws IOException {
@@ -129,7 +130,7 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value="runWeekly",results={
+    @Action(value = "runWeekly", results = {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String runWeekly() throws IOException {
@@ -138,7 +139,7 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value="rebuildCaches",results={
+    @Action(value = "rebuildCaches", results = {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String rebuildCaches() {
@@ -341,11 +342,11 @@ public class AdminController extends AuthenticationAware.Base {
         this.historicalResourceStatsWithFiles = historicalResourceStatsWithFiles;
     }
 
-    public List<Pair<Long,Long>> getUserLoginStats() {
+    public List<Pair<Long, Long>> getUserLoginStats() {
         return userLoginStats;
     }
 
-    public void setUserLoginStats(List<Pair<Long,Long>> userLoginStats) {
+    public void setUserLoginStats(List<Pair<Long, Long>> userLoginStats) {
         this.userLoginStats = userLoginStats;
     }
 

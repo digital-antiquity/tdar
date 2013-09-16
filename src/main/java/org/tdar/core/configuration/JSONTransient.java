@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD })
-//@Deprecated
+// @Deprecated
 // TODO:do away with this JsonModel + @JSONTransient in favor of XmlService#toJson + JAXBAnnotations and/or JacksonAnnotations
 public @interface JSONTransient {
 

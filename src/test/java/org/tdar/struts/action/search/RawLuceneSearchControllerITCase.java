@@ -50,7 +50,6 @@ public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITC
         assertHasErrors();
     }
 
-
     @Test
     @Ignore("Not currently implemented")
     public void testSearchPhraseWithColon() {
@@ -64,7 +63,6 @@ public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITC
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         doSearch("title:abc");
     }
-
 
     @Test
     @Ignore("Not currently implemented")
@@ -88,14 +86,13 @@ public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITC
         doSearch("Moon OR River");
     }
 
-
     @Override
     protected void doSearch(String query) {
         controller.setRawQuery(query);
         AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
     }
-    
+
     protected void assertHasErrors() {
         assertFalse("expecting action errors", controller.getActionErrors().isEmpty());
     }

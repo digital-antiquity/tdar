@@ -6,6 +6,11 @@ x * $Id$
  */
 package org.tdar.struts.action;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -17,8 +22,6 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.data.ResultMetadataWrapper;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin
@@ -84,7 +87,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
 
         logger.debug("{}", controller.getResultsWrapper().toJSON());
     }
-    
+
     @Test
     @Rollback
     public void testSearch() throws IOException {
@@ -96,7 +99,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
         String term = "Bird";
         ResultMetadataWrapper selectFromDataTable = datasetService.selectFromDataTable(dataTable, 0, 1, true, term);
         assertNotEmpty(selectFromDataTable.getResults());
-        for (List<String> result  : selectFromDataTable.getResults()) {
+        for (List<String> result : selectFromDataTable.getResults()) {
             String row = StringUtils.join(result.toArray());
             assertTrue(row.contains(term));
         }
@@ -104,9 +107,9 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
         term = "D";
         selectFromDataTable = datasetService.selectFromDataTable(dataTable, 0, 1, true, term);
         assertNotEmpty(selectFromDataTable.getResults());
-        for (List<String> result  : selectFromDataTable.getResults()) {
+        for (List<String> result : selectFromDataTable.getResults()) {
             String row = StringUtils.join(result.toArray());
             assertTrue(row.contains(term));
         }
-}
+    }
 }

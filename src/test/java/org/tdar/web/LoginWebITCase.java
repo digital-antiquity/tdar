@@ -42,7 +42,6 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresentInPage("What can you dig up");
     }
 
-    
     @Test
     public void testSecondLogin() {
         gotoPage("/login");

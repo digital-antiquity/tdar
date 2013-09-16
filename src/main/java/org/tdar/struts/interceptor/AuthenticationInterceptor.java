@@ -27,7 +27,7 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
  * $Id$
  * 
  * Verifies requests made for protected resources, or redirects the user to the login screen
- * while preserving the initially requested URL in the session.  
+ * while preserving the initially requested URL in the session.
  * 
  * Performs group membership checks if the {@link RequiresTdarUserGroup} annotation is set on the Action class or method.
  * By default assumes a group membership of {@link TdarGroup#TDAR_USERS}
@@ -51,14 +51,13 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
     public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
         return authenticationAndAuthorizationService;
     }
-    
+
     public void setAuthenticationAndAuthorizationService(AuthenticationAndAuthorizationService authenticationService) {
         this.authenticationAndAuthorizationService = authenticationService;
     }
 
     @Autowired
     GenericService genericService;
-
 
     @Override
     public void destroy() {
@@ -81,45 +80,46 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             methodName = "execute";
         }
         if (sessionData.isAuthenticated()) {
-            // check for group authorization 
+            // check for group authorization
             RequiresTdarUserGroup classLevelRequiresGroupAnnotation = AnnotationUtils.findAnnotation(action.getClass(), RequiresTdarUserGroup.class);
-            RequiresTdarUserGroup methodLevelRequiresGroupAnnotation = AnnotationUtils.findAnnotation(action.getClass().getMethod(methodName), RequiresTdarUserGroup.class);
+            RequiresTdarUserGroup methodLevelRequiresGroupAnnotation = AnnotationUtils.findAnnotation(action.getClass().getMethod(methodName),
+                    RequiresTdarUserGroup.class);
             TdarGroup group = TdarGroup.TDAR_USERS;
             if (methodLevelRequiresGroupAnnotation != null) {
-                group = methodLevelRequiresGroupAnnotation.value();                
+                group = methodLevelRequiresGroupAnnotation.value();
             }
             else if (classLevelRequiresGroupAnnotation != null) {
                 group = classLevelRequiresGroupAnnotation.value();
             }
             Person user = sessionData.getPerson();
             if (getAuthenticationAndAuthorizationService().isMember(user, group)) {
-                // user is authenticated and authorized to perform  requested action
+                // user is authenticated and authorized to perform requested action
                 return interceptPendingNotices(invocation, user);
             }
-            logger.debug(String.format("unauthorized access to %s/%s from %s with required group %s", action.getClass().getSimpleName(), methodName, user, group));
+            logger.debug(String.format("unauthorized access to %s/%s from %s with required group %s", action.getClass().getSimpleName(), methodName, user,
+                    group));
             return TdarActionSupport.UNAUTHORIZED;
         }
         setReturnUrl(invocation);
         return Action.LOGIN;
     }
 
-    private String  interceptPendingNotices(ActionInvocation invocation, Person user) throws Exception {
+    private String interceptPendingNotices(ActionInvocation invocation, Person user) throws Exception {
 
         Object action = invocation.getAction();
-        // user is authenticated and authorized to perform  requested action.
+        // user is authenticated and authorized to perform requested action.
         // now we check for any outstanding notices require user attention
         String result = null;
-        if(authenticationAndAuthorizationService.userHasPendingRequirements(user)
-                //avoid infinite redirect
-                &&  !(action instanceof UserAgreementController)) {
+        if (authenticationAndAuthorizationService.userHasPendingRequirements(user)
+                // avoid infinite redirect
+                && !(action instanceof UserAgreementController)) {
             logger.info("user: {} has pending agreements", user);
-            result =  TdarActionSupport.USER_AGREEMENT;
+            result = TdarActionSupport.USER_AGREEMENT;
         } else {
-            result =  invocation.invoke();
+            result = invocation.invoke();
         }
         return result;
     }
-
 
     protected void setCacheControl(String cacheControlHeaders) {
         logger.debug("Setting cache control headers to {}", cacheControlHeaders);

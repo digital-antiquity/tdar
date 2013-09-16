@@ -8,20 +8,20 @@ package org.tdar.filestore;
 
 /**
  * @author Adam Brin
- *
+ * 
  */
 public class TaintedFileException extends Exception {
 
-	/**
-	 * @param string
-	 */
-	public TaintedFileException(String message) {
-		super(message);
-	}
+    /**
+     * @param string
+     */
+    public TaintedFileException(String message) {
+        super(message);
+    }
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 2614025298404673325L;
+    private static final long serialVersionUID = 2614025298404673325L;
 
 }

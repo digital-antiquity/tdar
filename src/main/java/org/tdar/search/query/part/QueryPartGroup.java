@@ -40,7 +40,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
     public void clear() {
         parts.clear();
     }
-    
+
     public QueryPartGroup(Operator or) {
         this.operator = or;
     }
@@ -144,13 +144,13 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         }
 
         String delim = getDescriptionOperator();
-        
+
         String description = StringUtils.join(partDescriptions, delim);
 
         // Describing the role of the operator only necessary when we have multiple terms
         if (partDescriptions.size() > 1) {
-//            String optype = operator == Operator.OR ? "Any" : "All";
-//            String fmt = "%s of the following conditions: ( %s ) ";
+            // String optype = operator == Operator.OR ? "Any" : "All";
+            // String fmt = "%s of the following conditions: ( %s ) ";
             description = String.format(" (%s)", description);
         }
 
@@ -185,5 +185,5 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
             delim = " or ";
         }
         return delim;
-}
+    }
 }

@@ -127,12 +127,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 }
             }
         }
-        
+
         addExistingCompositeFilesForProcessing(resource, filesToProcess, irFiles);
         processFiles(resource, filesToProcess);
 
         /*
-         * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method 
+         * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method
          */
         new WorkflowResult(fileProxiesToProcess).addActionErrorsAndMessages(listener);
 
@@ -147,7 +147,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * When processing informationResourceFileVersions, make sure that we have ALL of the files available
      * This may mean trolling through the active files on the resource and adding them to the proxy
      */
-    private void addExistingCompositeFilesForProcessing(T resource, List<InformationResourceFileVersion> filesToProcess, List<InformationResourceFile> irFiles) throws FileNotFoundException {
+    private void addExistingCompositeFilesForProcessing(T resource, List<InformationResourceFileVersion> filesToProcess, List<InformationResourceFile> irFiles)
+            throws FileNotFoundException {
         if (resource.getResourceType().isCompositeFilesEnabled()) {
             for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
                 if (!irFiles.contains(file) && !file.isDeleted()) {
@@ -165,10 +166,10 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
             } else {
                 for (InformationResourceFileVersion version : filesToProcess) {
-                  if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
-                      // If we are re-processing, the transient file might not exist.
-                      version.setTransientFile(filestore.retrieveFile(version));
-                  }
+                    if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
+                        // If we are re-processing, the transient file might not exist.
+                        version.setTransientFile(filestore.retrieveFile(version));
+                    }
                     analyzer.processFile(version);
                 }
             }

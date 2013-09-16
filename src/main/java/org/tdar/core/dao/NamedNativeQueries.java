@@ -72,14 +72,14 @@ public final class NamedNativeQueries {
     public static String generateDashboardGraphQuery(Person user, GeneralPermissions permission) {
         return String
                 .format("select id, status, resource_type from resource where id in  (select resource_id from collection_resource,collection, authorized_user where collection.id=collection_resource.collection_id and collection.id=user_id and user_id=%s and general_permission_int > %s union select id from resource where updater_id=%s or submitter_id=%s)",
-                        user.getId(), (permission.getEffectivePermissions() -1), user.getId(), user.getId());
+                        user.getId(), (permission.getEffectivePermissions() - 1), user.getId(), user.getId());
     }
 
-	public static SQLQuery generateDashboardGraphQuery(Session currentSession) {
-		return currentSession
-				.createSQLQuery(TdarNamedQueries.QUERY_SQL_DASHBOARD)
-				.addScalar("id", StandardBasicTypes.LONG)
-				.addScalar("status", StandardBasicTypes.STRING)
-				.addScalar("resource_type", StandardBasicTypes.STRING);
-	}
+    public static SQLQuery generateDashboardGraphQuery(Session currentSession) {
+        return currentSession
+                .createSQLQuery(TdarNamedQueries.QUERY_SQL_DASHBOARD)
+                .addScalar("id", StandardBasicTypes.LONG)
+                .addScalar("status", StandardBasicTypes.STRING)
+                .addScalar("resource_type", StandardBasicTypes.STRING);
+    }
 }

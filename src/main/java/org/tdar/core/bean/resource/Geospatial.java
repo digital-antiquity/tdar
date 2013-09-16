@@ -55,7 +55,6 @@ public class Geospatial extends Dataset {
         return sb.toString();
     }
 
-    
     @Override
     @Transient
     public boolean isSupportsThumbnails() {

@@ -8,7 +8,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.MoveTargetOutOfBoundsException;
 import org.openqa.selenium.support.ui.Select;
@@ -52,10 +57,9 @@ public class WebElementSelection implements Iterable<WebElement> {
         this.driver = driver;
     }
 
-    private WebElementSelection(WebDriver driver)  {
-        this(Collections.<WebElement>emptyList(), driver);
+    private WebElementSelection(WebDriver driver) {
+        this(Collections.<WebElement> emptyList(), driver);
     }
-
 
     @Override
     public Iterator<WebElement> iterator() {
@@ -70,11 +74,12 @@ public class WebElementSelection implements Iterable<WebElement> {
     }
 
     /**
-     *
+     * 
      * @return last element of the selection, or null if this selection is empty.
      */
     public WebElement last() {
-        if(elements.isEmpty()) return null;
+        if (elements.isEmpty())
+            return null;
         return get(elements.size() - 1);
     }
 
@@ -86,7 +91,7 @@ public class WebElementSelection implements Iterable<WebElement> {
             try {
                 elem.click();
             } catch (ElementNotVisibleException ex) {
-                //if element isn't visible, maybe a scrollspy is in the way?
+                // if element isn't visible, maybe a scrollspy is in the way?
                 logger.debug("element not visible.  attempting to scoot...");
                 scoot(0, -200);
                 elem.click();
@@ -94,17 +99,17 @@ public class WebElementSelection implements Iterable<WebElement> {
         }
     }
 
-
     /**
      * attempt to scroll the browser in the specified direction. This method fails silently.
+     * 
      * @param dx
      * @param dy
      */
     private void scoot(int dx, int dy) {
         Actions actions = new Actions(driver);
-        try{
+        try {
             actions.moveByOffset(dx, dy);
-        } catch(MoveTargetOutOfBoundsException ex) {
+        } catch (MoveTargetOutOfBoundsException ex) {
 
         }
     }
@@ -534,7 +539,8 @@ public class WebElementSelection implements Iterable<WebElement> {
     }
 
     /**
-     * return  index of first occurance of the specified element within this selection
+     * return index of first occurance of the specified element within this selection
+     * 
      * @param element
      * @return index position of specified element within selection (or -1 if the speciied element was not found)
      */

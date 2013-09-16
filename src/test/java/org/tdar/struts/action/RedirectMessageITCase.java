@@ -1,12 +1,15 @@
 package org.tdar.struts.action;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-
-import static org.junit.Assert.*;
 
 /**
  * $Id$
@@ -41,8 +44,7 @@ public class RedirectMessageITCase extends AbstractControllerITCase {
         assertEquals(UserAccountController.SUCCESSFUL_REGISTRATION_MESSAGE, controller.getActionMessages().iterator().next());
         assertTrue("no errors expected", controller.getActionErrors().isEmpty());
     }
-    
-   
+
     @Override
     protected TdarActionSupport getController() {
         return controller;

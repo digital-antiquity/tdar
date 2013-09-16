@@ -168,11 +168,11 @@ public class GenericService {
         return genericDao.findAll(persistentClass, maxResults);
     }
 
-    @Transactional(readOnly=true)
-    public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status ... statuses) {
+    @Transactional(readOnly = true)
+    public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status... statuses) {
         return getDao().findAllWithStatus(persistentClass, statuses);
     }
-    
+
     @Transactional(readOnly = true)
     public <T> List<T> findAllSorted(Class<T> persistentClass) {
         return genericDao.findAllSorted(persistentClass);
@@ -250,10 +250,9 @@ public class GenericService {
     }
 
     @Transactional
-    public void detachFromSessionAndWarn(Object obj){
+    public void detachFromSessionAndWarn(Object obj) {
         genericDao.detachFromSessionAndWarn(obj);
     }
-
 
     @Transactional
     public void saveOrUpdate(Object obj) {

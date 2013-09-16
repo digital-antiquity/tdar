@@ -133,16 +133,15 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             versions.add(irf.getLatestUploadedOrArchivalVersion());
         }
         getDownloadService().handleDownload(getAuthenticatedUser(), this, versions.toArray(new InformationResourceFileVersion[0]));
-        setFileName(String.format("files-%s.zip",getInformationResourceId()));
+        setFileName(String.format("files-%s.zip", getInformationResourceId()));
         return SUCCESS;
     }
 
     @Action(value = DOWNLOAD_ALL_LANDING, results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "/WEB-INF/content/download-all.ftl")})
+            @Result(name = SUCCESS, type = "freemarker", location = "/WEB-INF/content/download-all.ftl") })
     public String showDownloadAllLandingPage() {
         return SUCCESS;
     }
-
 
     @Override
     public InputStream getInputStream() {

@@ -14,7 +14,7 @@ import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
  * @version $Revision$
  */
 public enum ResourceType implements HasLabel, Facetable<ResourceType> {
-    CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset",  CodingSheet.class),
+    CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset", CodingSheet.class),
     DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
     DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
     IMAGE("Image", 2, "Still Image", "unknown", "Photograph", Image.class),
@@ -25,12 +25,12 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
     VIDEO("Video", 4, "Moving Image", "unknown", "Movie", Video.class),
     ARCHIVE("Site Archive", 8, "Collection", "unknown", "SoftwareApplication", Archive.class),
     AUDIO("Audio", 11, "Sound", "unknown", "AudioObject", Audio.class);
-    
 
     private final String label;
     /**
      * If possible, should match one of the strings referenced in the DcmiModsTypeMapper...
      * At the moment PROJECT and ARCHIVE don't match. Is this an issue?
+     * 
      * @see DcmiModsTypeMapper
      */
     private final String dcmiTypeString;
@@ -51,7 +51,7 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
         this.setOrder(order);
         this.dcmiTypeString = dcmiTypeString;
         this.resourceClass = resourceClass;
-        this.schema=schema;
+        this.schema = schema;
     }
 
     public String getPlural() {
@@ -127,11 +127,11 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
     public boolean isProject() {
         return this == PROJECT;
     }
-    
+
     public boolean isArchive() {
         return this == ARCHIVE;
     }
-    
+
     public boolean isAudio() {
         return this == AUDIO;
     }

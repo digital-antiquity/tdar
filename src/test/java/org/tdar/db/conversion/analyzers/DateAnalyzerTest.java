@@ -1,7 +1,7 @@
 package org.tdar.db.conversion.analyzers;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +42,6 @@ public class DateAnalyzerTest {
             "1-Feb-03",
             "personal communication, email 2/23/08"
     };
-    
 
     private String[] alternativeDates = {
             "next wed or thurs",
@@ -132,7 +131,7 @@ public class DateAnalyzerTest {
             assertFalse("An alternate date has been accepted: " + aDate, da.analyze(aDate));
         }
     }
-    
+
     @Test
     public void recurringDatesAreRejected() {
         for (String aDate : recurringDates) {

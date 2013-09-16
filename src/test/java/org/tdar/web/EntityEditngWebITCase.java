@@ -9,7 +9,6 @@ public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCas
     private static final String ENTITY_PERSON_EDIT = "/entity/person/%s/edit";
     private static final String ENTITY_INSTITUTION_EDIT = "/entity/institution/%s/edit";
 
-    
     @Test
     public void testEntityEdit() {
         String url = String.format(ENTITY_PERSON_EDIT, 8424);
@@ -45,7 +44,7 @@ public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCas
         gotoPage(url);
         setInput("name", UNIVERSITY_OF_TEST);
         submitForm();
-//        assertTextNotPresent(UNIVERSITY_OF_TEST);
+        // assertTextNotPresent(UNIVERSITY_OF_TEST);
         assertTextPresent("Cannot rename institution");
     }
 
@@ -60,14 +59,13 @@ public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCas
         assertTextNotPresent(UNIVERSITY_OF_TEST);
         assertTextPresent(newName);
 
-    
         gotoPage(url);
         assertTextPresent(newName);
         setInput("name", UNIVERSITY_OF_TEST);
         submitForm();
         assertTextPresent(UNIVERSITY_OF_TEST);
         assertTextNotPresent(newName);
-}
+    }
 
     @Test
     public void testInstitutionEditChangeName() {

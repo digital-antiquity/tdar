@@ -11,37 +11,35 @@ import org.junit.Test;
 import org.tdar.core.bean.resource.Resource;
 
 public class ResourceEqualityTest {
-    
+
     @Test
-    //pick a class that doesn't overRide the base Persistable.Base implementation of equalityFields.  We are trying to assert that it's behavior 
-    //w.r.t equality is the same as Object.equals() and Object.hashCode()
+    // pick a class that doesn't overRide the base Persistable.Base implementation of equalityFields. We are trying to assert that it's behavior
+    // w.r.t equality is the same as Object.equals() and Object.hashCode()
     public void testBaseEqualityShouldBeBasedOnIdentity() {
-        
+
         Resource r1 = new Resource();
         Resource r2 = new Resource();
-        
+
         assertNotSame("objects are not identical", r1, r2);
         r1.equals(r2);
         assertNotEquals("base implementation states that two objects are only equal if they are identical", r1, r2);
         assertEquals("per equals() 'contract' an object must be equal to itself", r1, r1);
         assertEquals("per equals() 'contract' an object must be equal to itself", r2, r2);
-        
-        
-        //since equality and hashCode are strictly based on identity expect that they will be considered unique w.r.t a Set
+
+        // since equality and hashCode are strictly based on identity expect that they will be considered unique w.r.t a Set
         HashSet<Resource> set = new HashSet<Resource>();
         set.add(r1);
         set.add(r2);
         assertEquals(2, set.size());
-        
+
         set.remove(r1);
         assertEquals(1, set.size());
-        
-        //it shouldn't matter if we change field value for r2; the hashCode hasn't changed so we can still pull r2 out of a set
+
+        // it shouldn't matter if we change field value for r2; the hashCode hasn't changed so we can still pull r2 out of a set
         r2.setTitle("this is a test");
         boolean wasFound = set.remove(r2);
         assertTrue("r2 should have been found in set", wasFound);
-        
-        
+
     }
-    
+
 }

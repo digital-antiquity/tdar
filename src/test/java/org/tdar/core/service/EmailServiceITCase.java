@@ -15,7 +15,6 @@ import org.tdar.core.service.external.EmailService;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
-
     @Test
     public void testMockMailSender() {
         Person to = new Person(null, null, "toguy@mailinator.com");

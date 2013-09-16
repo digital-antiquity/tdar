@@ -100,26 +100,26 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
          */
         List<Resource> results = datasetDao.findRecentlyUpdatedItemsInLastXDays(getDaysToRun());
         Set<Long> ids = new HashSet<>();
-        logger.debug("dealing with {} resource(s) updated in the last {} days",results.size(), getDaysToRun());
+        logger.debug("dealing with {} resource(s) updated in the last {} days", results.size(), getDaysToRun());
         while (!results.isEmpty()) {
             Resource resource = results.remove(0);
             // add all children of project if project was modified (inheritance check)
             if (resource instanceof Project) {
-                results.addAll(projectDao.findAllResourcesInProject((Project)resource));
+                results.addAll(projectDao.findAllResourcesInProject((Project) resource));
             }
             logger.trace(" - adding {} creators", resource.getRelatedCreators().size());
             for (Creator creator : resource.getRelatedCreators()) {
 
-                if (creator == null) 
+                if (creator == null)
                     continue;
-                
+
                 if (creator.isDuplicate()) {
                     creator = entityService.findAuthorityFromDuplicate(creator);
                 }
-                if (creator == null || !creator.isActive()) 
+                if (creator == null || !creator.isActive())
                     continue;
                 ids.add(creator.getId());
-                
+
             }
         }
         return new ArrayList<>(ids);
@@ -142,7 +142,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             Map<Creator, Double> collaborators = new HashMap<Creator, Double>();
             Map<Keyword, Double> keywords = new HashMap<Keyword, Double>();
             int total = 0;
-            if (!creator.isActive()) 
+            if (!creator.isActive())
                 continue;
             QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null);
             try {

@@ -1,4 +1,3 @@
-
 package org.tdar.tag;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,11 +5,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for GetTopRecords complex type.
+ * <p>
+ * Java class for GetTopRecords complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="GetTopRecords">
@@ -30,9 +30,9 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetTopRecords", propOrder = {
-    "sessionId",
-    "query",
-    "numberOfRecords"
+        "sessionId",
+        "query",
+        "numberOfRecords"
 })
 public class GetTopRecords {
 
@@ -46,9 +46,8 @@ public class GetTopRecords {
      * Gets the value of the sessionId property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is {@link String }
+     * 
      */
     public String getSessionId() {
         return sessionId;
@@ -58,9 +57,8 @@ public class GetTopRecords {
      * Sets the value of the sessionId property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setSessionId(String value) {
         this.sessionId = value;
@@ -70,9 +68,8 @@ public class GetTopRecords {
      * Gets the value of the query property.
      * 
      * @return
-     *     possible object is
-     *     {@link Query }
-     *     
+     *         possible object is {@link Query }
+     * 
      */
     public Query getQuery() {
         return query;
@@ -82,9 +79,8 @@ public class GetTopRecords {
      * Sets the value of the query property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Query }
-     *     
+     *            allowed object is {@link Query }
+     * 
      */
     public void setQuery(Query value) {
         this.query = value;

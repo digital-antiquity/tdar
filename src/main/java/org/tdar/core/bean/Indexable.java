@@ -14,6 +14,7 @@ public interface Indexable extends Persistable {
 
     /**
      * The Lucene Scoring for the relevance of the item
+     * 
      * @param score
      */
     public void setScore(Float score);
@@ -26,18 +27,18 @@ public interface Indexable extends Persistable {
     @XmlTransient
     public Explanation getExplanation();
 
-    
     @Override
     public Long getId();
-    
+
     /**
      * The Lucene Explanation for why the item was found
+     * 
      * @param explanation
      */
     public void setExplanation(Explanation ex);
-    
+
     public boolean isReadyToIndex();
-    
+
     public void setReadyToIndex(boolean ready);
 
 }

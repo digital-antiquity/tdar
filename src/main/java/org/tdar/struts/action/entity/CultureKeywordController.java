@@ -22,12 +22,10 @@ public class CultureKeywordController extends AbstractKeywordController<CultureK
     public Class<CultureKeyword> getPersistableClass() {
         return CultureKeyword.class;
     }
- 
-    
-    
+
     public KeywordNode<CultureKeyword> getPotentialParents() {
         if (potentialParents == null) {
-            List<CultureKeyword>keywordsToOrganize = getGenericKeywordService().findAllApproved(CultureKeyword.class);
+            List<CultureKeyword> keywordsToOrganize = getGenericKeywordService().findAllApproved(CultureKeyword.class);
             potentialParents = KeywordNode.organizeKeywords(keywordsToOrganize);
         }
         return potentialParents;

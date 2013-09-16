@@ -28,7 +28,7 @@ public class RebuildGeographicKeywordProcess extends ScheduledBatchProcess<Resou
 
     @Override
     public boolean isEnabled() {
-        return false;//geoSearchService.isEnabled();
+        return false;// geoSearchService.isEnabled();
     }
 
     @Override

@@ -7,7 +7,7 @@ import org.junit.Test;
 public class TdarRecoverableRuntimeExceptionTest {
 
     @Test
-    //assert that recoverable errors maintain 'friendliness' 
+    // assert that recoverable errors maintain 'friendliness'
     public void testMessage() {
         String msg = "This is a message";
         TdarRecoverableRuntimeException ex = new TdarRecoverableRuntimeException(msg);
@@ -15,7 +15,7 @@ public class TdarRecoverableRuntimeExceptionTest {
     }
 
     @Test
-    //ensure message isn't munged when wrapping in another exception
+    // ensure message isn't munged when wrapping in another exception
     public void testWrappedMessage() {
         String msg = "This is a message";
         RuntimeException rtx = new RuntimeException(msg);

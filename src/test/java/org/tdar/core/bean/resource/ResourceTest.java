@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.ResourceCreatorRoleType;
 
 public class ResourceTest {
 
@@ -51,7 +50,7 @@ public class ResourceTest {
             assertTrue("at least one role should be defined for " + type, ok);
         }
     }
-    
+
     /**
      * This test serves as a reminder to consider copyright when adding new resource types.
      */
@@ -114,7 +113,7 @@ public class ResourceTest {
         type = ResourceType.ARCHIVE;
         assertTrue(type.isArchive());
         assertFalse(type.isDataset());
-        type =ResourceType.VIDEO;
+        type = ResourceType.VIDEO;
         assertTrue(type.isVideo());
         assertFalse(type.isDataset());
     }

@@ -1079,10 +1079,11 @@ public abstract class InformationResource extends Resource {
     public Set<ResourceCreator> getContacts() {
         return getResourceCreators(ResourceCreatorRole.CONTACT);
     }
-    
+
     /**
      * Override this if you need to pass resource specific information on to the work flow process.
      * Make a new instance of the resource, and then copy the fields across that will be needed by the work flow process
+     * 
      * @see Archive#getTransientCopyForWorkflow() for an implementation
      * @return <b>The default is null!</b> A copy of the information resource that will be serialised and sent to the work flow.
      */
@@ -1092,9 +1093,10 @@ public abstract class InformationResource extends Resource {
     public InformationResource getTransientCopyForWorkflow() {
         return null;
     }
-    
+
     /**
      * Override this method to write back the fields that may have been changed in the transient copy
+     * 
      * @param transientCopy
      */
     public void updateFromTransientResource(InformationResource transientCopy) {

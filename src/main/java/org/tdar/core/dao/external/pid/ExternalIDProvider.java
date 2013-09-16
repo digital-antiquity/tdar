@@ -17,10 +17,10 @@ import org.tdar.core.service.Configurable;
  * Interface managing all external ID lookups, this would be for an ARK, DOI, Handle , etc.
  * 
  * @author Adam Brin
- *
+ * 
  */
 public interface ExternalIDProvider extends Configurable {
-    
+
     public abstract boolean connect() throws ClientProtocolException, IOException;
 
     public abstract boolean logout() throws ClientProtocolException, IOException;

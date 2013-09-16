@@ -399,7 +399,7 @@ public class GenericDao {
     public void detachFromSessionAndWarn(Object entity) {
         Session session = getCurrentSession();
         if (session.contains(entity)) {
-            logger.error("This entity should not be on the session: {}",entity);
+            logger.error("This entity should not be on the session: {}", entity);
         }
         session.evict(entity);
     }

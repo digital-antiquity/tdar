@@ -152,10 +152,10 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
-    
-    @Column(name="file_created_date")
+
+    @Column(name = "file_created_date")
     private Date fileCreatedDate;
-    
+
     @Column(name = "part_of_composite")
     private Boolean partOfComposite = Boolean.FALSE;
 
@@ -353,7 +353,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public InformationResourceFileVersion getLatestUploadedOrArchivalVersion() {
         return getVersion(getLatestVersion(), VersionType.UPLOADED, VersionType.UPLOADED_TEXT, VersionType.UPLOADED_ARCHIVAL, VersionType.ARCHIVAL);
     }
-    
+
     // FIXME: improve efficiency
     public InformationResourceFileVersion getVersion(Integer versionNumber, VersionType... types) {
         int currentVersionNumber = -1;
@@ -591,9 +591,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public boolean isHasTranslatedVersion() {
         try {
-        if (getLatestTranslatedVersion() != null && getInformationResource().getResourceType().isDataTableSupported()) {
-            return true;
-        }
+            if (getLatestTranslatedVersion() != null && getInformationResource().getResourceType().isDataTableSupported()) {
+                return true;
+            }
         } catch (Exception e) {
             logger.error("cannot tell if file has translated version {}", e);
         }

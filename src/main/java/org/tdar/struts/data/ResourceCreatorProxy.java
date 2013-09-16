@@ -24,9 +24,9 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
  * @version $Rev$
  */
 public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
-    
-    //In the rare situation where javascript does not catch/correct an invalid creator proxy in client form, we need to 
-    //raise exceptions w/ human readable feedback so user has at least some idea what they need to fix.
+
+    // In the rare situation where javascript does not catch/correct an invalid creator proxy in client form, we need to
+    // raise exceptions w/ human readable feedback so user has at least some idea what they need to fix.
     private static final String ERR_DETERMINE_CREATOR_INSUFFICIENT_INFO = "This resource CreatorProxy was initialized improperly";
     private static final String ERR_FMT2_DETERMINE_CREATOR_TOO_MUCH_INFO = "" +
             "There was a problem with one of your author/creator/contributor entries. " +
@@ -119,14 +119,14 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
         return resourceCreator;
     }
 
-
     /**
      * figure out whether this proxy object represents a person or an institution.
      * 
-     * @throws TdarRecoverableRuntimeException if system cannot reliably determine creatorType.  Use  {@link #getActualCreatorType() getActualCreatorType}
-     *              if you do not want to deal w/ exceptions (e.g. calling from freemarker).
+     * @throws TdarRecoverableRuntimeException
+     *             if system cannot reliably determine creatorType. Use {@link #getActualCreatorType() getActualCreatorType} if you do not want to deal w/
+     *             exceptions (e.g. calling from freemarker).
      * 
-     * @return creatorType, if system can figure out based on available info.  otherwise null.
+     * @return creatorType, if system can figure out based on available info. otherwise null.
      */
     private CreatorType determineActualCreatorType() {
         if (institution == null && person == null) {
@@ -147,13 +147,13 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             return CreatorType.INSTITUTION;
         }
     }
-    
+
     @Transient
     public CreatorType getActualCreatorType() {
         CreatorType creatorType = null;
         try {
             creatorType = determineActualCreatorType();
-        }  catch(TdarRecoverableRuntimeException trex) {
+        } catch (TdarRecoverableRuntimeException trex) {
             logger.warn("Cannot derive actual creator: the incoming proxy is either incomplete or ambiguous: {}", this);
         }
         return creatorType;

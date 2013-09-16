@@ -32,7 +32,7 @@ public interface QueryFieldNames {
     public static final String ACTIVE_GEOGRAPHIC_KEYWORDS = "activeGeographicKeywords";
     public static final String ACTIVE_OTHER_KEYWORDS = "activeOtherKeywords";
     public static final String ACTIVE_LATITUDE_LONGITUDE_BOXES = "activeLatitudeLongitudeBoxes";
-    
+
     public static final String MAXX = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxx";
     public static final String MAXY = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxy";
     public static final String MINY = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "miny";
@@ -71,7 +71,7 @@ public interface QueryFieldNames {
     public static final String COLLECTION_USERS_WHO_CAN_ADMINISTER = "usersWhoCanAdminister";
     public static final String COLLECTION_USERS_WHO_CAN_VIEW = RESOURCE_USERS_WHO_CAN_VIEW;
     public static final String COLLECTION_USERS_WHO_CAN_MODIFY = RESOURCE_USERS_WHO_CAN_MODIFY;
-//    public static final String RESOURCE_COLLECTION_PUBLIC_IDS = "publicCollectionIds";
+    // public static final String RESOURCE_COLLECTION_PUBLIC_IDS = "publicCollectionIds";
     public static final String RESOURCE_COLLECTION_SHARED_IDS = "sharedCollectionIds";
     public static final String RESOURCE_ACCESS_TYPE = "resourceAccessType";
     public static final String PROPER_NAME = "properName";
@@ -89,5 +89,5 @@ public interface QueryFieldNames {
     public static final String FILENAME = "filename";
     public static final String DATA_VALUE_PAIR = "dataValuePair";
     public static final String COLLECTION_TREE = "collection.parentTree";
-    
+
 }

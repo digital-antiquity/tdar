@@ -12,11 +12,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -76,7 +74,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     TestConfiguration config = TestConfiguration.getInstance();
     int defaultMaxResults = config.getMaxAPIFindAll();
 
-
     @Test
     public void testAPIController() throws Exception {
         Document fake = resourceService.find(TEST_ID);
@@ -106,7 +103,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Document old = resourceService.find(TEST_ID);
         genericService.markReadOnly(old);
         old.getRelatedComparativeCollections().add(new RelatedComparativeCollection("text"));
-        //final String oldDocXml = xmlService.convertToXML(old);
+        // final String oldDocXml = xmlService.convertToXML(old);
         assertEquals(1, old.getInternalResourceCollection().getAuthorizedUsers().size());
         genericService.detachFromSession(old);
         final Person oldSubmitter = old.getSubmitter();
@@ -153,25 +150,25 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     }
 
-//    // return some public resource collections
-//    private List<ResourceCollection> getSomeResourceCollections() throws InstantiationException, IllegalAccessException {
-//        int count = 5;
-//        List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
-//        for (int i = 0; i < count; i++) {
-//            String email = "someperson" + i + "@mailinator.com";
-//            Person person = entityService.findByEmail(email);
-//            if (person == null) {
-//                person = createAndSaveNewPerson(email, "someperson");
-//            }
-//            Document document = createAndSaveNewInformationResource(Document.class, person);
-//            ResourceCollection rc = new ResourceCollection(document, getAdminUser());
-//            rc.setName("test collection " + i);
-//            rc.setSortBy(SortOption.TITLE);
-//            resourceCollectionService.saveOrUpdate(rc);
-//            resourceCollections.add(rc);
-//        }
-//        return resourceCollections;
-//    }
+    // // return some public resource collections
+    // private List<ResourceCollection> getSomeResourceCollections() throws InstantiationException, IllegalAccessException {
+    // int count = 5;
+    // List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
+    // for (int i = 0; i < count; i++) {
+    // String email = "someperson" + i + "@mailinator.com";
+    // Person person = entityService.findByEmail(email);
+    // if (person == null) {
+    // person = createAndSaveNewPerson(email, "someperson");
+    // }
+    // Document document = createAndSaveNewInformationResource(Document.class, person);
+    // ResourceCollection rc = new ResourceCollection(document, getAdminUser());
+    // rc.setName("test collection " + i);
+    // rc.setSortBy(SortOption.TITLE);
+    // resourceCollectionService.saveOrUpdate(rc);
+    // resourceCollections.add(rc);
+    // }
+    // return resourceCollections;
+    // }
 
     @Test
     @Rollback
@@ -380,7 +377,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         doc.setResourceLanguage(Language.ENGLISH);
         String docXml = xmlService.convertToXML(doc);
         doc = null;
-        docXml = StringUtils.replace(docXml, Language.ENGLISH.name(),"FNGLISH");
+        docXml = StringUtils.replace(docXml, Language.ENGLISH.name(), "FNGLISH");
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();

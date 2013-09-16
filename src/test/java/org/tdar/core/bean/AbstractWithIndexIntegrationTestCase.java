@@ -7,15 +7,16 @@ import org.tdar.struts.action.AbstractControllerITCase;
 
 public abstract class AbstractWithIndexIntegrationTestCase extends AbstractControllerITCase {
 
-    @Autowired private SearchIndexService searchIndexService;
+    @Autowired
+    private SearchIndexService searchIndexService;
 
     public SearchIndexService getSearchIndexService() {
-    	return searchIndexService;
+        return searchIndexService;
     }
 
     @Before
     public void setupIndex() {
-    	getSearchIndexService().indexAll(getAdminUser());
+        getSearchIndexService().indexAll(getAdminUser());
     }
 
 }

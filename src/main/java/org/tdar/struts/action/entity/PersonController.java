@@ -76,7 +76,6 @@ public class PersonController extends AbstractCreatorController<Person> {
             person.setInstitution(persistentInstitution);
         }
 
-        
         if (StringUtils.isBlank(proxyInstitutionName)) {
             person.setProxyInstitution(null);
         }

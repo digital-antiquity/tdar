@@ -147,7 +147,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         Long authorityId = authority.getId();
         Long dupe1Id = dupe1.getId();
         Long dupe2Id = dupe2.getId();
-        
+
         // create some many-to-one references
         Document d1 = createAndSaveNewInformationResource(Document.class);
         Document d2 = createAndSaveNewInformationResource(Document.class);
@@ -182,7 +182,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
                 Assert.assertEquals("authority should have replaced dupe", authority, user1.getUser());
                 break;
             case MARK_DUPS_AND_CONSOLDIATE:
-            // makes sure that the dupes no longer exist
+                // makes sure that the dupes no longer exist
                 Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, entityService.find(dupe1Id).getStatus());
                 Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, entityService.find(dupe2Id).getStatus());
                 Assert.assertEquals("authority should have replaced dupe", authority, d1.getSubmitter());
@@ -245,7 +245,6 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         // todo: make sure that the authority replaced all the dupes of the former referrers
         doc1 = genericService.find(Document.class, doc1.getId());
         doc2 = genericService.find(Document.class, doc2.getId());
-
 
         switch (mode) {
             case DELETE_DUPLICATES:

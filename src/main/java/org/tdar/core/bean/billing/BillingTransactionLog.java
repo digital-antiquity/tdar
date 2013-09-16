@@ -1,13 +1,16 @@
 package org.tdar.core.bean.billing;
 
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
+
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable.Base;

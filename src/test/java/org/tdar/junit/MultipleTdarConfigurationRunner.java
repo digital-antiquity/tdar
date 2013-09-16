@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractWebTestCase;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
@@ -24,14 +23,14 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         super(klass);
     }
 
-//    @Override
-//    protected Description describeChild(FrameworkMethod method) {
-        // if (method.getAnnotation(RunWithTdarConfiguration.class) != null &&
-        // method.getAnnotation(Ignore.class) == null) {
-//        return describeTest(method);
-        // }
-        // return super.describeChild(method);
-//    }
+    // @Override
+    // protected Description describeChild(FrameworkMethod method) {
+    // if (method.getAnnotation(RunWithTdarConfiguration.class) != null &&
+    // method.getAnnotation(Ignore.class) == null) {
+    // return describeTest(method);
+    // }
+    // return super.describeChild(method);
+    // }
 
     private Description describeTest(FrameworkMethod method) {
         Description description = Description.createSuiteDescription(testName(method), method.getAnnotations());
@@ -42,8 +41,8 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
                 return description;
             }
             String[] configs = annotation.runWith();
-            logger.info("RunWith: {} -- {}",testName(method), configs);
-            
+            logger.info("RunWith: {} -- {}", testName(method), configs);
+
             for (int i = 0; i < configs.length; i++) {
                 description.addChild(Description.createTestDescription(getTestClass().getJavaClass(), testName(method) + "[" + configs[i] + "] "));
             }
@@ -75,7 +74,7 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
                 }
             }
         } else {
-             super.runChild(method, notifier);
+            super.runChild(method, notifier);
         }
         setConfiguration(method, currentConfig);
     }

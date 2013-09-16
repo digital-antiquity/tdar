@@ -83,14 +83,16 @@ public class ImageThumbnailTask extends AbstractTask {
         getLogger().debug("sourceFile: " + sourceFile);
 
         String ext = FilenameUtils.getExtension(sourceFile.getName());
-        List<String> exts = Arrays.asList("jpg","gif","tif","tiff","png","jpeg","bmp");
-        /** FIXME: bad, but necessary for Geospatial images, ideally we should be smarter about divvying up these files and preventing 
-         invalid files from appearing here **/
+        List<String> exts = Arrays.asList("jpg", "gif", "tif", "tiff", "png", "jpeg", "bmp");
+        /**
+         * FIXME: bad, but necessary for Geospatial images, ideally we should be smarter about divvying up these files and preventing
+         * invalid files from appearing here
+         **/
         if (!exts.contains(ext.toLowerCase())) {
             getLogger().error("skipping file with unmatched extension: {} ", ext);
             return;
         }
-        
+
         Opener opener = new Opener();
         opener.setSilentMode(true);
         IJ.redirectErrorMessages(true);

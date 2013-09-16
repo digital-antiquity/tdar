@@ -2,7 +2,12 @@ package org.tdar.struts.action.resource;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -109,7 +114,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     /**
-     * @throws IOException If there was an IO error
+     * @throws IOException
+     *             If there was an IO error
      */
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
         throw new UnsupportedOperationException(getClass() + " didn't override properly");
@@ -390,7 +396,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             }
         }
     }
-    
+
     public FileProxy getBlankFileProxy() {
         return new FileProxy();
     }
@@ -459,7 +465,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                 potentialParents.add(getProject());
             }
             // tack the null project at the top of the sorted list
-            //Collections.sort(potentialParents);
+            // Collections.sort(potentialParents);
             potentialParents.add(0, Project.NULL);
         }
         logger.trace("Returning all editable projects: {}", potentialParents);

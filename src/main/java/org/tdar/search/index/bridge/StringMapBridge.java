@@ -34,11 +34,11 @@ public class StringMapBridge implements FieldBridge {
         for (Object key : map.keySet()) {
             String keyName = "";
             if (key instanceof DataTableColumn) {
-                keyName = ((DataTableColumn)key).getName();
+                keyName = ((DataTableColumn) key).getName();
             } else {
                 keyName = GenericService.extractStringValue(key);
             }
-            
+
             opts.addFieldToDocument(QueryFieldNames.DATA_VALUE_PAIR, keyName + ":" + map.get(key), doc);
         }
     }

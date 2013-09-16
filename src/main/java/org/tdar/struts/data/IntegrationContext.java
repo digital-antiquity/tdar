@@ -26,7 +26,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
  * @author Adam Brin
  * 
  */
-@XmlRootElement(name="integrationContext")
+@XmlRootElement(name = "integrationContext")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class IntegrationContext implements Serializable {
 
@@ -35,10 +35,10 @@ public class IntegrationContext implements Serializable {
     private Date dateCreated = new Date();
     private List<IntegrationColumn> integrationColumns;
     private List<DataTable> dataTables;
-    
-    
-    public IntegrationContext() {}
-    
+
+    public IntegrationContext() {
+    }
+
     public IntegrationContext(Person creator, List<IntegrationColumn> integrationColumns) {
         this.creator = creator;
         this.integrationColumns = integrationColumns;
@@ -60,7 +60,8 @@ public class IntegrationContext implements Serializable {
         this.dateCreated = dateCreated;
     }
 
-    @XmlElement(name="integrationColumn") @XmlElementWrapper(name="integrationColumns")
+    @XmlElement(name = "integrationColumn")
+    @XmlElementWrapper(name = "integrationColumns")
     public List<IntegrationColumn> getIntegrationColumns() {
         return integrationColumns;
     }
@@ -68,7 +69,7 @@ public class IntegrationContext implements Serializable {
     public void setIntegrationColumns(List<IntegrationColumn> integrationColumns) {
         this.integrationColumns = integrationColumns;
     }
-    
+
     @Transient
     public String getTempTableName() {
         StringBuilder sb = new StringBuilder();

@@ -26,12 +26,11 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     public GeneralSearchQueryPart(String... values) {
         add(values);
     }
-    
+
     public GeneralSearchQueryPart(Collection<String> values) {
         add(values.toArray(new String[0]));
     }
 
-    
     protected QueryPartGroup getQueryPart(String value) {
 
         String cleanedQueryString = getCleanedQueryString(value);
@@ -40,11 +39,11 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
         logger.trace(cleanedQueryString);
 
-        
         FieldQueryPart<String> titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE, cleanedQueryString);
         FieldQueryPart<String> descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, cleanedQueryString);
         FieldQueryPart<String> allFields = new FieldQueryPart<String>(QueryFieldNames.ALL, cleanedQueryString).setBoost(ANY_FIELD_BOOST);
-        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, Arrays.asList(StringUtils.split(cleanedQueryString))).setBoost(ANY_FIELD_BOOST);
+        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, Arrays.asList(StringUtils.split(cleanedQueryString)))
+                .setBoost(ANY_FIELD_BOOST);
         allFieldsAsPart.setOperator(Operator.AND);
         allFieldsAsPart.setPhraseFormatters(PhraseFormatter.ESCAPED);
 
@@ -66,7 +65,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         primary.setOperator(Operator.OR);
         return primary;
     }
-    
+
     public String getCleanedQueryString(String value) {
         String cleanedQueryString = value.trim();
         // if we have a leading and trailng quote, strip them
@@ -91,7 +90,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         if (StringUtils.isBlank(fields)) {
             return "";
         }
-        return SearchFieldType.ALL_FIELDS.getLabel() + ": "+ fields;
+        return SearchFieldType.ALL_FIELDS.getLabel() + ": " + fields;
     }
 
     @Override

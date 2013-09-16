@@ -156,11 +156,11 @@ public class TestConfiguration {
     }
 
     public String getChromeDriverPath() {
-        return assistant.getStringProperty("tdar.chromedriver.path","/Applications/chromedriver");
+        return assistant.getStringProperty("tdar.chromedriver.path", "/Applications/chromedriver");
     }
 
     public String getIEDriverPath() {
-        return assistant.getStringProperty("tdar.iedriver.path","c:\\opt\\workspace\\IEDriverServer.exe");
+        return assistant.getStringProperty("tdar.iedriver.path", "c:\\opt\\workspace\\IEDriverServer.exe");
     }
 
     public int getMaxAPIFindAll() {

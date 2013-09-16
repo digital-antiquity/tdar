@@ -9,6 +9,6 @@ package org.tdar.core.bean.resource;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum CategoryType { 
-    CATEGORY, SUBCATEGORY; //VARIABLE 
+public enum CategoryType {
+    CATEGORY, SUBCATEGORY; // VARIABLE
 }

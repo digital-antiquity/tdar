@@ -3,7 +3,6 @@ package org.tdar.web;
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
-import org.tdar.TestConstants;
 import org.tdar.utils.TestConfiguration;
 
 public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase {
@@ -27,13 +26,12 @@ public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase 
         assertButtonPresentWithText("Save");
 
     }
-    
-    @Test 
+
+    @Test
     public void testViewMyProfilePage() {
         gotoPage("/entity/person/myprofile");
         assertTextPresent(getUser().getProperName());
     }
-    
 
     @Test
     public void testPersonLoggedOut() {

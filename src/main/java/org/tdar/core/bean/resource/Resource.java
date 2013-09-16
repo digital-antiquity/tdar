@@ -157,7 +157,6 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Transient
     private transient boolean viewable;
     @Transient
-
     private transient Long transientAccessCount;
     // TODO: anything that gets returned in a tdar search should be included in
     // json results
@@ -248,19 +247,19 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     // @Boost(.5f)
     @IndexedEmbedded
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH})
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "submitter_id")
     @NotNull
     private Person submitter;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE,CascadeType.DETACH })
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "uploader_id")
     @NotNull
     private Person uploader;
 
     // @Boost(.5f)
     @IndexedEmbedded
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH})
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id")
     @NotNull
     private Person updatedBy;
@@ -771,7 +770,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         if (hasConfidentialFiles() || latLongBox == null) {
             return Boolean.FALSE;
         }
-        
+
         if (latLongBox.isInitializedAndValid()) {
             if (latLongBox.getCenterLatitudeIfNotObfuscated() != null && latLongBox.getCenterLongitudeIfNotObfuscated() != null) {
                 return Boolean.TRUE;
@@ -779,7 +778,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         }
         return Boolean.FALSE;
     }
-    
+
     public LatitudeLongitudeBox getFirstLatitudeLongitudeBox() {
         if (CollectionUtils.isEmpty(latitudeLongitudeBoxes)) {
             return null;

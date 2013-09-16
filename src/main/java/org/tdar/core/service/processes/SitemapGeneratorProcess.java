@@ -42,6 +42,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
 
     int batchCount = 0;
     boolean run = false;
+
     @Override
     public void execute() {
         run = true;

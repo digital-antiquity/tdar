@@ -20,7 +20,7 @@ import org.tdar.core.bean.Persistable;
  * @author Adam Brin
  */
 @Entity
-@Table(name="upgrade_task")
+@Table(name = "upgrade_task")
 public class UpgradeTask extends Persistable.Base {
 
     private static final long serialVersionUID = 2693033966156306987L;

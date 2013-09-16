@@ -1,6 +1,6 @@
 package org.tdar.core.bean.resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private ResourceService resourceService;
-    
+
     @Test
     @Rollback
     public void testSaveHasResource() throws InstantiationException, IllegalAccessException {
@@ -31,7 +31,7 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(0, doc.getCoverageDates().size());
 
     }
-    
+
     @Test
     @Rollback
     public void testSaveHasResourceExistingNull() throws InstantiationException, IllegalAccessException {

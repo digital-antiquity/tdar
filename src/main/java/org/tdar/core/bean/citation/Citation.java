@@ -42,12 +42,11 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
     @Type(type = "org.hibernate.type.StringClobType")
     @Length(max = 1024)
     private String text;
-    
+
     @Override
     public java.util.List<?> getEqualityFields() {
         return Arrays.asList(text);
     };
-
 
     @Field
     public String getText() {

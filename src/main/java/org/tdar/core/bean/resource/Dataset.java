@@ -71,7 +71,7 @@ public class Dataset extends InformationResource {
         public void setCount(Integer count) {
             this.count = count;
         }
-        
+
         @Override
         public String getLuceneFieldName() {
             return QueryFieldNames.INTEGRATABLE;

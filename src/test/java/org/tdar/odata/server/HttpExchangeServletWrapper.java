@@ -19,12 +19,12 @@ import com.sun.net.httpserver.HttpExchange;
 public class HttpExchangeServletWrapper implements HttpServletRequest {
 
     private HttpExchange exchange;
-    
+
     public HttpExchangeServletWrapper(HttpExchange exchange)
     {
         this.exchange = exchange;
     }
-    
+
     @Override
     public void setAttribute(String key, Object object)
     {
@@ -36,7 +36,6 @@ public class HttpExchangeServletWrapper implements HttpServletRequest {
         // Hopefully this is OK and clients will handle a null return value OK.
         return null;
     }
-
 
     @Override
     public HttpSession getSession(boolean create) {

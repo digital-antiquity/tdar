@@ -33,12 +33,12 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * The class reads an access db file, and converts it into other types of db
@@ -119,8 +119,9 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             PropertyType type = descriptors.getType();
             DataTableColumnType columnType = DataTableColumnType.BLOB;
 
-            //FIXME: not 100% sure this is right
-            if (type.getBinding().isAssignableFrom(String.class) || type.getBinding().isAssignableFrom(MultiLineString.class) || type.getBinding().isAssignableFrom(LineString.class)) {
+            // FIXME: not 100% sure this is right
+            if (type.getBinding().isAssignableFrom(String.class) || type.getBinding().isAssignableFrom(MultiLineString.class)
+                    || type.getBinding().isAssignableFrom(LineString.class)) {
                 columnType = DataTableColumnType.TEXT;
             } else if (type.getBinding().isAssignableFrom(Double.class) || type.getBinding().isAssignableFrom(Float.class)) {
                 columnType = DataTableColumnType.DOUBLE;

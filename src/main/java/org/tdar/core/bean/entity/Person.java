@@ -67,11 +67,12 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private static final long serialVersionUID = -3863573773250268081L;
 
     @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "registered","tempDisplayName" };
+    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "registered",
+            "tempDisplayName" };
 
     @Transient
     private transient String tempDisplayName;
-    
+
     public Person() {
     }
 
@@ -111,11 +112,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private Boolean emailPublic = Boolean.FALSE;
 
     @IndexedEmbedded(depth = 1)
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH}, optional = true)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
     private Institution institution;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE ,CascadeType.DETACH}, optional = true)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     /* who to contact when owner is no longer 'reachable' */
     private Institution proxyInstitution;
 
@@ -164,11 +165,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
     private Set<BookmarkedResource> bookmarkedResources;
 
-    //version of the latest TOS that the user has accepted
+    // version of the latest TOS that the user has accepted
     @Column(name = "tos_version", nullable = false, columnDefinition = "int default 0")
     private Integer tosVersion = 0;
 
-    //version of the latest Creator Agreement that the user has accepted
+    // version of the latest Creator Agreement that the user has accepted
     @Column(name = "contributor_agreement_version", nullable = false, columnDefinition = "int default 0")
     private Integer contributorAgreementVersion = 0;
 
@@ -189,10 +190,10 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return firstName + " " + lastName;
     }
 
-
     /**
-     * set the user firstname, lastname from string in "last first" format.  anything other than simple
+     * set the user firstname, lastname from string in "last first" format. anything other than simple
      * two word string is ignored.
+     * 
      * @param properName
      */
     public void setName(String name) {

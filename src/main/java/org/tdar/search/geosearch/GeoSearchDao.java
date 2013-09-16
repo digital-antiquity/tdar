@@ -74,7 +74,7 @@ public class GeoSearchDao {
 
     private final static String QUERY_ENVELOPE = "SELECT ST_Envelope(ST_Collect(the_geom)) as %2$s FROM \"%1$s\" where %3$s";
     private final static String QUERY_ENVELOPE_WEBMER = "SELECT ST_Envelope(ST_Collect(st_transform(the_geom,2163))) as %2$s FROM \"%1$s\" where %3$s";
-    
+
     private final static String QUERY_ENVELOPE_2 = "(%1$s='%2$s') ";
     private final static String POLYGON = "polygon";
     // , concat('${',%1$s,'-style?default('''')}') as style
@@ -173,7 +173,7 @@ public class GeoSearchDao {
                 logger.error("PostGIS connection is not configured");
                 setEnabled(false);
             } catch (Exception e) {
-               logger.debug("exception in geosearch:",e );
+                logger.debug("exception in geosearch:", e);
                 setEnabled(false);
             }
         }
@@ -193,7 +193,7 @@ public class GeoSearchDao {
             logger.error("gis database connection not enabled");
             databaseEnabled = false;
         } catch (Exception e) {
-            logger.debug("exception in geosearch:",e );
+            logger.debug("exception in geosearch:", e);
             databaseEnabled = false;
         }
         return queryForList;
@@ -206,7 +206,7 @@ public class GeoSearchDao {
             setEnabled(true);
             setJdbcTemplate(new JdbcTemplate(dataSource));
         } catch (Exception e) {
-            logger.debug("exception in geosearch:",e );
+            logger.debug("exception in geosearch:", e);
             setEnabled(false);
         }
     }
@@ -326,7 +326,7 @@ public class GeoSearchDao {
             }
         }
         logger.info(sql);
-        
+
         sql = String.format(QUERY_ENVELOPE_WEBMER, table.getTableName(), POLYGON, table.getIdColumn() + " is not NULL ");
         if (StringUtils.isNotBlank(limit)) {
             sql += String.format(" and %s='%s'", table.getLimitColumn(), StringEscapeUtils.escapeSql(limit));

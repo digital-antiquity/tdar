@@ -23,11 +23,11 @@ public interface SearchResultHandler<I extends Indexable> {
 
     public static final int DEFAULT_START = 0;
     public static final int DEFAULT_RESULT_SIZE = 25;
-    
+
     SortOption getSortField();
 
     void setSortField(SortOption sortField);
-    
+
     SortOption getSecondarySortField();
 
     /**
@@ -74,7 +74,6 @@ public interface SearchResultHandler<I extends Indexable> {
 
     void setMode(String mode);
 
-    
     public boolean isReindexing();
 
     /*

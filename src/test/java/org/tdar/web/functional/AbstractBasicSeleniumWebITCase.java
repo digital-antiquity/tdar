@@ -14,14 +14,14 @@ public class AbstractBasicSeleniumWebITCase extends AbstractSeleniumWebITCase {
         setIgnoreModals(false);
         setScreenshotsAllowed(true);
     }
-    
+
     @After
     @Override
     public void logout() {
-        //if we're shutting things down after aborted/failed test, don't bug me with formnavigate popups
+        // if we're shutting things down after aborted/failed test, don't bug me with formnavigate popups
         setIgnoreModals(true);
-        //the test is over, so screenshots at this point aren't helpful
+        // the test is over, so screenshots at this point aren't helpful
         super.logout();
     }
-    
+
 }

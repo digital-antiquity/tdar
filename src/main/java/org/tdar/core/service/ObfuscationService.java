@@ -27,7 +27,7 @@ public class ObfuscationService {
             obfuscate(target);
         }
     }
-    
+
     @Transactional(readOnly = true)
     public void obfuscate(Obfuscatable target) {
         /*

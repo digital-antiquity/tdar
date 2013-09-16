@@ -66,7 +66,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         // docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
-                //     authorizedUsers[0].user.id
+        // authorizedUsers[0].user.id
         docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
         docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
         docUnorderdValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
@@ -100,7 +100,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         }
 
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             docValMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         docValMap.put("siteNameKeywords[0]", "sandy");
@@ -147,14 +147,14 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docUnorderdValMap.put("resourceNotes[5].note", "I'm not internationally known, but I'm known to rock a microphone.");
 
     }
-    
+
     @Test
     @Rollback(true)
     public void testCreateDocumentEditSavehasResource() {
 
         gotoPage("/document/add");
-        
-        HashMap<String, String> docValMap2 = new HashMap<String,String>();
+
+        HashMap<String, String> docValMap2 = new HashMap<String, String>();
         docValMap2.put("document.title", "My Sample Document");
         docValMap2.put("document.documentType", "OTHER");
         docValMap2.put("document.description", "A resource description");
@@ -176,7 +176,6 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
             docValMap2.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
 
-        
         for (String key : docValMap2.keySet()) {
             setInput(key, docValMap2.get(key));
         }
@@ -231,12 +230,12 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         String path = internalPage.getUrl().getPath().toLowerCase();
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
-//        try {
-//            FileUtils.writeStringToFile(new File("post-save.html"), getPageCode());
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
+        // try {
+        // FileUtils.writeStringToFile(new File("post-save.html"), getPageCode());
+        // } catch (IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
 
         logger.info(getPageText());
         for (String key : docValMap.keySet()) {
@@ -276,12 +275,12 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         clickLinkWithText("edit");
         logger.debug("----now on edit page----");
         logger.trace(getPageText());
-//        try {
-//            FileUtils.writeStringToFile(new File("pre-save.html"), getPageCode());
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
+        // try {
+        // FileUtils.writeStringToFile(new File("pre-save.html"), getPageCode());
+        // } catch (IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
 
         for (String key : docValMap.keySet()) {
             String val = docValMap.get(key);

@@ -1,4 +1,3 @@
-
 package org.tdar.tag;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,11 +5,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for GetTopRecordsResponse complex type.
+ * <p>
+ * Java class for GetTopRecordsResponse complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="GetTopRecordsResponse">
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetTopRecordsResponse", propOrder = {
-    "searchResults"
+        "searchResults"
 })
 public class GetTopRecordsResponse {
 
@@ -39,9 +39,8 @@ public class GetTopRecordsResponse {
      * Gets the value of the searchResults property.
      * 
      * @return
-     *     possible object is
-     *     {@link SearchResults }
-     *     
+     *         possible object is {@link SearchResults }
+     * 
      */
     public SearchResults getSearchResults() {
         return searchResults;
@@ -51,9 +50,8 @@ public class GetTopRecordsResponse {
      * Sets the value of the searchResults property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link SearchResults }
-     *     
+     *            allowed object is {@link SearchResults }
+     * 
      */
     public void setSearchResults(SearchResults value) {
         this.searchResults = value;

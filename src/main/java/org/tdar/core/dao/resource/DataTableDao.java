@@ -18,19 +18,19 @@ import org.tdar.core.dao.Dao;
 @Component
 public class DataTableDao extends Dao.HibernateBase<DataTable> {
 
-	public DataTableDao() {
-		super(DataTable.class);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<DataTable> findDataTablesUsingResource(Resource resource) {
-		if (resource == null) {
-			return Collections.emptyList();
-		}
-		Query query = getCurrentSession().getNamedQuery(QUERY_DATATABLE_RELATED_ID);
-		getLogger().debug("Searching for linked resources to {}", resource.getId());
-		query.setLong("relatedId",resource.getId());
+    public DataTableDao() {
+        super(DataTable.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<DataTable> findDataTablesUsingResource(Resource resource) {
+        if (resource == null) {
+            return Collections.emptyList();
+        }
+        Query query = getCurrentSession().getNamedQuery(QUERY_DATATABLE_RELATED_ID);
+        getLogger().debug("Searching for linked resources to {}", resource.getId());
+        query.setLong("relatedId", resource.getId());
         return (List<DataTable>) query.list();
-	}
+    }
 
 }

@@ -280,7 +280,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setTimeCheck(System.currentTimeMillis() - 1000);
         String execute = setupValidUserInController(controller);
-        assertEquals("expecting result to be 'null' (validate should fail)",null, execute);
+        assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
         assertTrue(firstError.equals(UserAccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
         setIgnoreActionErrors(true);
@@ -292,7 +292,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setTimeCheck(System.currentTimeMillis() + 1000 * 61);
         String execute = setupValidUserInController(controller);
-        assertEquals("expecting result to be 'null' (validate should fail)",null, execute);
+        assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
         assertTrue(firstError.equals(UserAccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
         setIgnoreActionErrors(true);
@@ -305,7 +305,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
         controller.setComment("could you help me?  I love your site");
         String execute = setupValidUserInController(controller);
-        assertEquals("expecting result to be 'null' (validate should fail)",null, execute);
+        assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
         assertTrue(firstError.equals(UserAccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
         setIgnoreActionErrors(true);

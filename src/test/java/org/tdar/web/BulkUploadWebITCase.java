@@ -22,13 +22,11 @@ import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.utils.TestConfiguration;
 
 /**
  * @author Adam Brin
@@ -87,7 +85,8 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         assertFalse(getPageCode().contains("resource creator is not"));
     }
 
-    @Test //RunWithTdarConfiguration.TDAR, 
+    @Test
+    // RunWithTdarConfiguration.TDAR,
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUploadWithProject() throws MalformedURLException {
 
@@ -111,9 +110,9 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput(String.format("%s.%s", rt.getFieldName(), "description"), "test");
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             try {
-              setInput("accountId", accountId);
+                setInput("accountId", accountId);
             } catch (Exception e) {
-//                hasInput = false;
+                // hasInput = false;
             }
         }
         submitForm();
@@ -184,7 +183,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         assertTrue(internalPage.getUrl().toString().contains("save.action"));
         assertTextPresentIgnoreCase("Bulk Upload Status");
-//        logger.info(getPageCode());
+        // logger.info(getPageCode());
         assertTextPresentInCode("$.ajax");
         String statusPage = "/batch/checkstatus?ticketId=" + ticketId;
         gotoPage(statusPage);

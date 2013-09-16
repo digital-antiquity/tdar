@@ -78,11 +78,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         Query query = getCurrentSession().getNamedQuery(QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);// QUERY_PROJECT_EDITABLE
         query.setLong("userId", user.getId());
         query.setString("name", collection.getName());
-        //FIXME: move all this 'permission-1' hoo-ha from the caller to the query
-        query.setLong("effectivePermission", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() -1);
+        // FIXME: move all this 'permission-1' hoo-ha from the caller to the query
+        query.setLong("effectivePermission", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
         @SuppressWarnings("unchecked")
         List<ResourceCollection> list = (List<ResourceCollection>) query.list();
-        if(list.size() > 1 ) {
+        if (list.size() > 1) {
             logger.error("query found more than one resource collection: user:{}, coll:{}", user, collection);
         }
         if (CollectionUtils.isNotEmpty(list)) {

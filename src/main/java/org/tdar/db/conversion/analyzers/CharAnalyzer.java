@@ -4,30 +4,31 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 public class CharAnalyzer implements ColumnAnalyzer {
-	private int len = 0;
+    private int len = 0;
 
-	@Override
+    @Override
     public DataTableColumnType getType() {
-		return DataTableColumnType.VARCHAR;
-	}
+        return DataTableColumnType.VARCHAR;
+    }
 
-	@Override
+    @Override
     public boolean analyze(String value) {
-		if (value == null)
-			return true;
-		if ("".equals(value))
-			return true;
-		if (value.matches("(.*)(#(REF|NUM|N/A|VALUE|NAME|DIV))(.*)")) {
-		    throw new TdarRecoverableRuntimeException("data contains excel translation errors, please check for cells with #REF, #VALUE, #NUM or other Excel Errors");
-		}
-		if (value.length() > len) {
-			len = value.length();
-		}
-		return true;
-	}
+        if (value == null)
+            return true;
+        if ("".equals(value))
+            return true;
+        if (value.matches("(.*)(#(REF|NUM|N/A|VALUE|NAME|DIV))(.*)")) {
+            throw new TdarRecoverableRuntimeException(
+                    "data contains excel translation errors, please check for cells with #REF, #VALUE, #NUM or other Excel Errors");
+        }
+        if (value.length() > len) {
+            len = value.length();
+        }
+        return true;
+    }
 
-	@Override
+    @Override
     public int getLength() {
-		return len;
-	}
+        return len;
+    }
 }

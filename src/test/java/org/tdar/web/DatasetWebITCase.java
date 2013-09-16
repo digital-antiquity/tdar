@@ -79,7 +79,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Long datasetId = extractTdarIdFromCurrentURL();
         Dataset dataset = datasetService.find(datasetId);
         DataTable datatable = dataset.getDataTables().iterator().next();
-        String browseDataUrl = String.format("/dataset/view-row?id=%s&dataTableId=%s&rowId=1",datasetId, datatable.getId());
+        String browseDataUrl = String.format("/dataset/view-row?id=%s&dataTableId=%s&rowId=1", datasetId, datatable.getId());
         gotoPage(browseDataUrl);
         assertTextNotPresent("Expression dataset is undefined");
         if (TdarConfiguration.getInstance().isViewRowSupported()) {
@@ -154,7 +154,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(browseDataUrl);
         assertTextPresentInCode("{}");
     }
-    
+
     @Test
     @Rollback
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
@@ -178,7 +178,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.remove("uploadedFiles");
         uploadFileToPersonalFilestore(ticketId, filename);
 
-            gotoPage("/dataset/add");
+        gotoPage("/dataset/add");
         addCopyrightHolder(docValMap);
         setInput("ticketId", ticketId);
         addFileProxyFields(0, FileAccessRestriction.PUBLIC, filename);

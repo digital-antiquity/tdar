@@ -16,17 +16,18 @@ import com.opensymphony.xwork2.validator.validators.FieldValidatorSupport;
  * @version $Revision$
  */
 public class AccountExistsValidator extends FieldValidatorSupport implements ShortCircuitableValidator {
-    
+
     private EntityService entityService;
-    
+
     @Override
     public void validate(Object actionBean) throws ValidationException {
         String fieldName = getFieldName();
         Object value = getFieldValue(fieldName, actionBean);
-        if (value == null) return;
+        if (value == null)
+            return;
         String email = value.toString();
         Person person = entityService.findByEmail(email);
-        if (person == null || ! person.isRegistered()) {
+        if (person == null || !person.isRegistered()) {
             addFieldError(fieldName, actionBean);
         }
     }

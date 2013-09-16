@@ -1,28 +1,31 @@
 package org.tdar.struts.result;
 
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.util.TextParseUtil;
-import com.opensymphony.xwork2.util.ValueStack;
-import freemarker.template.Template;
-import freemarker.template.TemplateModel;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.http.HttpStatus;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.views.freemarker.FreemarkerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.util.TextParseUtil;
+import com.opensymphony.xwork2.util.ValueStack;
+
+import freemarker.template.Template;
+import freemarker.template.TemplateModel;
 
 /**
  * This class extends the behavior of FreemarkerResult by adding the ability to set http headers
  * as well as the http status code, similar to HttpHeaderResult
- *
+ * 
  * This class is derived from GBIF Data Portal's FreemarkerHttpHeaderResult class (Apache License v2)
  * https://code.google.com/p/gbif-dataportal/
- *
+ * 
  * @author Jim deVos
  */
 public class FreemarkerHttpHeaderResult extends FreemarkerResult {
@@ -53,10 +56,10 @@ public class FreemarkerHttpHeaderResult extends FreemarkerResult {
         super.postTemplateProcess(template, data);
         HttpServletResponse response = ServletActionContext.getResponse();
         response.setStatus(status);
-        if(!headers.isEmpty()) {
-            //allow for
+        if (!headers.isEmpty()) {
+            // allow for
             ValueStack stack = ActionContext.getContext().getValueStack();
-            for(Map.Entry<String, String> header : headers.entrySet()) {
+            for (Map.Entry<String, String> header : headers.entrySet()) {
                 String value = TextParseUtil.translateVariables(header.getValue(), stack);
                 response.setHeader(header.getKey(), header.getValue());
             }

@@ -18,7 +18,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 
 public enum SortOption {
-    RELEVANCE(null, "Relevance", null, SortField.SCORE,false ),
+    RELEVANCE(null, "Relevance", null, SortField.SCORE, false),
     ID(null, "ID", QueryFieldNames.ID, SortField.INT, false),
     ID_REVERSE(null, "ID (Reversed)", QueryFieldNames.ID, SortField.INT, true),
     COLLECTION_TITLE(ResourceCollection.class, "Title", QueryFieldNames.TITLE_SORT),
@@ -32,9 +32,9 @@ public enum SortOption {
     DATE_UPDATED_REVERSE(Resource.class, "Date Updated (Reversed)", QueryFieldNames.DATE_UPDATED, SortField.STRING, true),
     RESOURCE_TYPE(Resource.class, "Resource Type", QueryFieldNames.RESOURCE_TYPE_SORT),
     RESOURCE_TYPE_REVERSE(Resource.class, "Resource Type (Z-A)", QueryFieldNames.RESOURCE_TYPE_SORT, true),
-    LABEL(Keyword.class, "Label", QueryFieldNames.LABEL_SORT), 
-    LABEL_REVERSE(Keyword.class, "Label", QueryFieldNames.LABEL_SORT, true), 
-    CREATOR_NAME(Creator.class, "Name", QueryFieldNames.CREATOR_NAME_SORT),               
+    LABEL(Keyword.class, "Label", QueryFieldNames.LABEL_SORT),
+    LABEL_REVERSE(Keyword.class, "Label", QueryFieldNames.LABEL_SORT, true),
+    CREATOR_NAME(Creator.class, "Name", QueryFieldNames.CREATOR_NAME_SORT),
     CREATOR_NAME_REVERSE(Creator.class, "Name", QueryFieldNames.CREATOR_NAME_SORT, true),
     FIRST_NAME(Person.class, "First Name", QueryFieldNames.FIRST_NAME_SORT),
     FIRST_NAME_REVERSE(Person.class, "First Name (Reversed)", QueryFieldNames.FIRST_NAME_SORT, true),
@@ -50,6 +50,7 @@ public enum SortOption {
     public static SortOption getDefaultSortOption() {
         return RELEVANCE;
     }
+
     private SortOption(Class<? extends Indexable> context, String label, String sortField, boolean reversed) {
         this(context, label, sortField, SortField.STRING, reversed);
     }
@@ -143,11 +144,11 @@ public enum SortOption {
     public Class<? extends Indexable> getContext() {
         return context;
     }
-    
-    public static  <I extends Indexable> List<SortOption> getApplicableSortOptions(Class<I> context) {
+
+    public static <I extends Indexable> List<SortOption> getApplicableSortOptions(Class<I> context) {
         List<SortOption> sortOptions = new ArrayList<SortOption>();
-        for(SortOption sortOption : SortOption.values()) {
-            if(sortOption.context == null || context.equals(sortOption.context)) {
+        for (SortOption sortOption : SortOption.values()) {
+            if (sortOption.context == null || context.equals(sortOption.context)) {
                 sortOptions.add(sortOption);
             }
         }

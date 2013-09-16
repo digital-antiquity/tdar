@@ -10,7 +10,6 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.junit.Assert;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.filters.StringInputStream;
@@ -21,6 +20,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,7 +125,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Autowired
     XmlService xmlService;
-    
+
     @Test
     public void testHarvest() throws Exception {
         // harvest all records using ListRecords and ListIdentifiers, in all 3 formats
@@ -150,18 +150,18 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Assert.assertEquals("Number of identifiers matches number of records for tDAR format", tdarIdentifiers, tdarRecords);
 
         for (Object dis_ : CollectionUtils.subtract(modsRecordsList, modsIdentifiersList)) {
-            String dis = (String)dis_;
+            String dis = (String) dis_;
             logger.info(dis);
             if (StringUtils.isBlank(dis))
                 continue;
             if (dis.indexOf(":") != -1) {
-                dis = dis.substring(dis.lastIndexOf(":")+ 1);
+                dis = dis.substring(dis.lastIndexOf(":") + 1);
             }
             Resource find = genericService.find(Resource.class, Long.parseLong(dis));
-            logger.info("found:{}",find);
-            logger.info("found:{}",xmlService.convertToXML(find));
+            logger.info("found:{}", find);
+            logger.info("found:{}", xmlService.convertToXML(find));
         }
-        
+
         Assert.assertEquals(
                 String.format("Number of identifiers matches number of records for MODS format \n[%s] vs. \n[%s]", modsIdentifiersList, modsRecordsList),
                 modsIdentifiers, modsRecords);

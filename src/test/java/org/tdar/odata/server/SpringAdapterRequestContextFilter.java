@@ -12,31 +12,28 @@ import org.springframework.web.context.request.RequestContextListener;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 
-
 public class SpringAdapterRequestContextFilter extends Filter
 {
     private final Logger logger = Logger.getLogger(getClass());
-    
+
     private RequestContextListener contextListener = new RequestContextListener();
-    
+
     @Override
     public void doFilter(final HttpExchange exchange, final Chain chain) throws IOException {
-        
+
         ServletContext context = new PlaceholderServletContext();
         ServletRequestEvent requestEvent = null;
-        
+
         try {
             ServletRequest request = new HttpExchangeServletWrapper(exchange);
             requestEvent = new ServletRequestEvent(context, request);
             contextListener.requestInitialized(requestEvent);
             chain.doFilter(exchange);
-        }
-        catch (Throwable throwable)
+        } catch (Throwable throwable)
         {
             getLogger().info("DoFilter on Context Filter.", throwable);
             throw new RuntimeException("DoFilter on RequestContext Filter.", throwable);
-        }
-        finally
+        } finally
         {
             contextListener.requestDestroyed(requestEvent);
         }
@@ -46,11 +43,10 @@ public class SpringAdapterRequestContextFilter extends Filter
     public String description() {
         return "An adapter that converts between com.sun.net.httpserver.Filter and javax.servlet.Filter";
     }
-    
+
     public Logger getLogger()
     {
         return logger;
     }
 
 };
-

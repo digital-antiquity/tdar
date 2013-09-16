@@ -764,17 +764,17 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             @Override
             public void warning(CSSParseException exception) throws CSSException {
                 if (exception.getURI().contains(getBaseUrl())) {
-                    logger.trace("CSS Warning:",exception);
+                    logger.trace("CSS Warning:", exception);
                 }
             }
-            
+
             @Override
             public void fatalError(CSSParseException exception) throws CSSException {
                 if (exception.getURI().contains(getBaseUrl())) {
-                    logger.warn("CSS Fatal Error:",exception);
+                    logger.warn("CSS Fatal Error:", exception);
                 }
             }
-            
+
             @Override
             public void error(CSSParseException exception) throws CSSException {
                 if (exception.getURI().contains(getBaseUrl())) {
@@ -1168,12 +1168,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     @Autowired
     private AuthenticationAndAuthorizationService authService;
 
-
     public void testLogin(Map<String, String> values, boolean deleteFirst) {
         testLogin(values, deleteFirst, false, false);
     }
-    
-    public void testLogin(Map<String, String> values, boolean deleteFirst, boolean includeTos,boolean includeUserAgreement) {
+
+    public void testLogin(Map<String, String> values, boolean deleteFirst, boolean includeTos, boolean includeUserAgreement) {
 
         String username = values.get("person.username");
         if (deleteFirst) {
@@ -1187,9 +1186,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         for (String key : values.keySet()) {
             setInput(key, values.get(key));
         }
-//        if (includeTos) {
-//            setInput("acceptedAuthNotices", "TOS_AGREEMENT");
-//        }
+        // if (includeTos) {
+        // setInput("acceptedAuthNotices", "TOS_AGREEMENT");
+        // }
         if (includeUserAgreement) {
             setInput("requestingContributorAccess", "CONTRIBUTOR_AGREEMENT");
         }

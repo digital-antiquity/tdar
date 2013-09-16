@@ -13,7 +13,7 @@ public class AggregateViewStatistic implements Serializable {
     Number count;
     Resource resource;
     private Long resourceId;
-    
+
     public AggregateViewStatistic() {
     }
 

@@ -180,7 +180,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
             // return INPUT;
             // }
             //
-            Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData = 
+            Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData =
                     getDataIntegrationService().generateIntegrationData(getIntegrationColumns(), getSelectedDataTables());
 
             integrationDataResults = generatedIntegrationData.getFirst();

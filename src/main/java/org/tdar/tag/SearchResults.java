@@ -1,4 +1,3 @@
-
 package org.tdar.tag;
 
 import java.util.ArrayList;
@@ -10,11 +9,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -60,8 +60,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "meta",
-    "results"
+        "meta",
+        "results"
 })
 @XmlRootElement(name = "SearchResults")
 public class SearchResults {
@@ -75,9 +75,8 @@ public class SearchResults {
      * Gets the value of the meta property.
      * 
      * @return
-     *     possible object is
-     *     {@link SearchResults.Meta }
-     *     
+     *         possible object is {@link SearchResults.Meta }
+     * 
      */
     public SearchResults.Meta getMeta() {
         return meta;
@@ -87,9 +86,8 @@ public class SearchResults {
      * Sets the value of the meta property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link SearchResults.Meta }
-     *     
+     *            allowed object is {@link SearchResults.Meta }
+     * 
      */
     public void setMeta(SearchResults.Meta value) {
         this.meta = value;
@@ -99,9 +97,8 @@ public class SearchResults {
      * Gets the value of the results property.
      * 
      * @return
-     *     possible object is
-     *     {@link SearchResults.Results }
-     *     
+     *         possible object is {@link SearchResults.Results }
+     * 
      */
     public SearchResults.Results getResults() {
         return results;
@@ -111,19 +108,19 @@ public class SearchResults {
      * Sets the value of the results property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link SearchResults.Results }
-     *     
+     *            allowed object is {@link SearchResults.Results }
+     * 
      */
     public void setResults(SearchResults.Results value) {
         this.results = value;
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -146,12 +143,12 @@ public class SearchResults {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "sessionID",
-        "providerName",
-        "totalRecords",
-        "recordsReturned",
-        "firstRecord",
-        "lastRecord"
+            "sessionID",
+            "providerName",
+            "totalRecords",
+            "recordsReturned",
+            "firstRecord",
+            "lastRecord"
     })
     public static class Meta {
 
@@ -168,9 +165,8 @@ public class SearchResults {
          * Gets the value of the sessionID property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is {@link String }
+         * 
          */
         public String getSessionID() {
             return sessionID;
@@ -180,9 +176,8 @@ public class SearchResults {
          * Sets the value of the sessionID property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *            allowed object is {@link String }
+         * 
          */
         public void setSessionID(String value) {
             this.sessionID = value;
@@ -192,9 +187,8 @@ public class SearchResults {
          * Gets the value of the providerName property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is {@link String }
+         * 
          */
         public String getProviderName() {
             return providerName;
@@ -204,9 +198,8 @@ public class SearchResults {
          * Sets the value of the providerName property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *            allowed object is {@link String }
+         * 
          */
         public void setProviderName(String value) {
             this.providerName = value;
@@ -278,11 +271,12 @@ public class SearchResults {
 
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -302,9 +296,9 @@ public class SearchResults {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "containsIntegratableData",
-        "integratableDatasetUrl",
-        "result"
+            "containsIntegratableData",
+            "integratableDatasetUrl",
+            "result"
     })
     public static class Results {
 
@@ -334,9 +328,8 @@ public class SearchResults {
          * Gets the value of the integratableDatasetUrl property.
          * 
          * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *         possible object is {@link String }
+         * 
          */
         public String getIntegratableDatasetUrl() {
             return integratableDatasetUrl;
@@ -346,9 +339,8 @@ public class SearchResults {
          * Sets the value of the integratableDatasetUrl property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *            allowed object is {@link String }
+         * 
          */
         public void setIntegratableDatasetUrl(String value) {
             this.integratableDatasetUrl = value;
@@ -358,21 +350,19 @@ public class SearchResults {
          * Gets the value of the result property.
          * 
          * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the result property.
+         * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present
+         * inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the result property.
          * 
          * <p>
          * For example, to add a new item, do as follows:
+         * 
          * <pre>
-         *    getResult().add(newItem);
+         * getResult().add(newItem);
          * </pre>
          * 
          * 
          * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link ResultType }
+         * Objects of the following type(s) are allowed in the list {@link ResultType }
          * 
          * 
          */

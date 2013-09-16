@@ -27,27 +27,27 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             boolean hasName = false;
             if (StringUtils.isNotBlank(pers.getFirstName())) {
                 fns.add(pers.getFirstName());
-                hasName= true;
+                hasName = true;
             }
             if (StringUtils.isNotBlank(pers.getLastName())) {
                 lns.add(pers.getLastName());
-                hasName= true;
+                hasName = true;
             }
             if (!hasName && StringUtils.isNotBlank(pers.getWildcardName())) {
                 fns.add(pers.getWildcardName());
                 lns.add(pers.getWildcardName());
                 group.setOperator(Operator.OR);
                 setOperator(Operator.OR);
-                
+
             }
-            
+
             if (StringUtils.isNotBlank(pers.getEmail())) {
                 ems.add(pers.getEmail());
             }
             if (StringUtils.isNotBlank(pers.getInstitutionName())) {
                 String institution = pers.getInstitutionName();
                 institution = PhraseFormatter.ESCAPED.format(institution);
-//                institution = PhraseFormatter.WILDCARD.format(institution);
+                // institution = PhraseFormatter.WILDCARD.format(institution);
                 if (institution.contains(" ")) {
                     institution = PhraseFormatter.QUOTED.format(institution);
                 }
@@ -77,7 +77,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             group1.append(new FieldQueryPart<String>("institution.name_auto", insts));
             group.append(group1);
         }
-        
+
         if (registered) {
             QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
             qpg.append(group);

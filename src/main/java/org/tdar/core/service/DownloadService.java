@@ -6,12 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
@@ -61,10 +59,10 @@ public class DownloadService {
         return "ir-archive";
     }
 
-    public void generateZipArchive(Map<File,String> files, File destinationFile) throws IOException {
+    public void generateZipArchive(Map<File, String> files, File destinationFile) throws IOException {
         FileOutputStream fout = new FileOutputStream(destinationFile);
         ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(fout)); // what is apache ZipOutputStream? It's probably better.
-        for (Entry<File,String> entry : files.entrySet()) {
+        for (Entry<File, String> entry : files.entrySet()) {
             String filename = entry.getValue();
             if (filename == null) {
                 filename = entry.getKey().getName();
@@ -99,7 +97,7 @@ public class DownloadService {
 
         File resourceFile = null;
         String mimeType = null;
-        Map<File,String> files = new HashMap<>();
+        Map<File, String> files = new HashMap<>();
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
             resourceFile = addFileToDownload(files, authenticatedUser, dh, irFileVersion);
             mimeType = irFileVersion.getMimeType();
@@ -147,7 +145,8 @@ public class DownloadService {
         }
     }
 
-    private File addFileToDownload(Map<File,String> downloadMap, Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion irFileVersion) throws TdarActionException {
+    private File addFileToDownload(Map<File, String> downloadMap, Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion irFileVersion)
+            throws TdarActionException {
         File resourceFile = null;
         try {
             resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFileVersion);
@@ -164,10 +163,11 @@ public class DownloadService {
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
             try {
                 resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
-                //FIXME: for merge coverpages,  isn't this in a temp file/folder anyway?   Is it necessary to explicitly delete?
-//                DeleteOnCloseFileInputStream docis = new DeleteOnCloseFileInputStream(resourceFile);
+                // FIXME: for merge coverpages, isn't this in a temp file/folder anyway? Is it necessary to explicitly delete?
+                // DeleteOnCloseFileInputStream docis = new DeleteOnCloseFileInputStream(resourceFile);
                 filename = irFileVersion.getFilename();
-                //FIXME:  not sure if this statement was necessary (it's a side-effect anyway), and it is a contributing factor to TDAR-3311 so I commented it out.  Does this break something else?
+                // FIXME: not sure if this statement was necessary (it's a side-effect anyway), and it is a contributing factor to TDAR-3311 so I commented it
+                // out. Does this break something else?
                 dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
             } catch (PdfCoverPageGenerationException cpge) {
                 logger.trace("Error occured while merging cover page onto " + irFileVersion, cpge);

@@ -47,7 +47,8 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
     }
 
     public boolean isConfigured() {
-        if (StringUtils.isNotBlank(getSecretRequestWord()) && StringUtils.isNotBlank(getSecretResponseWord()) && StringUtils.isNotBlank(getTransactionPostUrl())) {
+        if (StringUtils.isNotBlank(getSecretRequestWord()) && StringUtils.isNotBlank(getSecretResponseWord())
+                && StringUtils.isNotBlank(getTransactionPostUrl())) {
             return true;
         }
         logger.debug("a required parameter for the EzidDao was not provided. " + configIssue);

@@ -26,7 +26,6 @@ import org.tdar.core.bean.Persistable;
 @Table(name = "resource_relationship")
 public class ResourceRelationship extends Persistable.Base {
 
-
     private static final long serialVersionUID = 2240540556284744345L;
 
     @ManyToOne(optional = false)

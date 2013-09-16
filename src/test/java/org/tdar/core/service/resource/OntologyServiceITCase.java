@@ -46,7 +46,7 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         assertEquals(TdarActionSupport.INPUT, controller.save());
         Throwable e = null;
         try {
-            ontologyService.toOwlXml(-1L,ontologyText);
+            ontologyService.toOwlXml(-1L, ontologyText);
         } catch (Throwable ex) {
             ex.printStackTrace();
             e = ex;
@@ -66,10 +66,10 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     @Test
     public void testTimeFormat() {
-        String timeString = OntologyController.formatTime(1000*60*60*1 + 1000*60*2 + 1000*3 + 456);
+        String timeString = OntologyController.formatTime(1000 * 60 * 60 * 1 + 1000 * 60 * 2 + 1000 * 3 + 456);
         logger.debug("time: {}", timeString);
         assertEquals("expecting 1h 2m 3s 456ms", "01:02:03.456", timeString);
     }

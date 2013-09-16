@@ -23,7 +23,6 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.TestConfiguration;
 
-
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
@@ -62,12 +61,12 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput(DESCRIPTION_FIELDNAME, DESCRIPTION);
         setInput("image.date", "1984");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         // FIXME: need to create input
         addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, TEST_IMAGE_NAME);
-//        setInput("resourceAvailability", "Public");
+        // setInput("resourceAvailability", "Public");
         submitForm();
 
         // the logged in creator should be able to see the image
@@ -141,38 +140,36 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage(editPage);
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
-        int statusCode = login(CONFIG.getUsername(), CONFIG.getPassword(),true);
-        assertTrue(getCurrentUrlPath().contains("edit"));  // we can be on the "edit" page with an error message
+        int statusCode = login(CONFIG.getUsername(), CONFIG.getPassword(), true);
+        assertTrue(getCurrentUrlPath().contains("edit")); // we can be on the "edit" page with an error message
         logger.info(getPageText());
         assertFalse(statusCode == 200); // make sure we have a "bad" status code though
         gotoPage(viewPage);
         assertTextNotPresent("/thumbnail");
-        
+
         Long imageId = extractTdarIdFromCurrentURL();
 
         assertDeniedAccess(irFileVersionIds);
-        
-       //compile irfileversion ids in a different way and try again.
-       irFileVersionIds.clear();
-       Image image = genericService.find(Image.class, imageId);
-       for(InformationResourceFile irfile : image.getInformationResourceFiles()) {
-           for(InformationResourceFileVersion irv : irfile.getInformationResourceFileVersions()) {
-               if(irv != null) {
-                   irFileVersionIds.add(irv.getId());
-               }
-           }
-       }
-       assertDeniedAccess(irFileVersionIds);
-        
-        
+
+        // compile irfileversion ids in a different way and try again.
+        irFileVersionIds.clear();
+        Image image = genericService.find(Image.class, imageId);
+        for (InformationResourceFile irfile : image.getInformationResourceFiles()) {
+            for (InformationResourceFileVersion irv : irfile.getInformationResourceFileVersions()) {
+                if (irv != null) {
+                    irFileVersionIds.add(irv.getId());
+                }
+            }
+        }
+        assertDeniedAccess(irFileVersionIds);
 
     }
-    
+
     @Test
     public void testImageGalleryConfidentialityRules() {
-        //if user uploads confidential image:
+        // if user uploads confidential image:
         // only users with view access should be able to see image in image galery
-        
+
     }
 
     public void assertDeniedAccess(List<Long> irFileVersionIds) {

@@ -15,7 +15,6 @@ import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
@@ -56,14 +55,14 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     private String kettleInputPath = TdarConfiguration.getInstance().getKettleInputPath();
     private File controlFileOuputDir;
     private File archiveCopiesDir;
-    
+
     /**
-     * @param kettleInputPath the control file output directory: allows us to override the one read from the property file.
+     * @param kettleInputPath
+     *            the control file output directory: allows us to override the one read from the property file.
      */
     protected void setKettleInputPath(String kettleInputPath) {
         this.kettleInputPath = kettleInputPath;
     }
-
 
     private static boolean isDirectoryWritable(File file) {
         return file.exists() && file.isDirectory() && file.canWrite();
@@ -88,7 +87,8 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
     /**
      * (non-Javadoc)
-     * <p>Preconditions:
+     * <p>
+     * Preconditions:
      * <ul>
      * <li>We need to know the directory that we are writing control files to.
      * <li>That directory needs to be able to writable
@@ -96,7 +96,8 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      * <li>That original archive resource should tell us if this task is to be run, or already has been run.
      * <li>We need to be able to access the temp directory to make copies of files.
      * </ul>
-     * <p>Postconditions:
+     * <p>
+     * Postconditions:
      * <ul>
      * <li>There will be a control file written to disk for Kettle to pick up
      * <li>There will be a copy made of the archive file for Kettle to work with
@@ -151,7 +152,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         }
 
         // Preconditions have been checked, now to write the control file and set up the copy of the archive to work with.
-  
+
         // at the moment there should be only one of these files: however, that should only be an artifact of the user interface.
         for (InformationResourceFileVersion version : archiveFiles) {
             File copyOfTarball = makeCopyOfSourceFile(version);

@@ -117,7 +117,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         }
     }
 
-
     @Test
     @Rollback
     public void testComplexGeographicKeywords() {
@@ -153,7 +152,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (Person person : people) {
             names.add(person.getProperName());
             Person p = new Person();
-            // this will likely fail because skeleton people are being put into a set further down the chain... 
+            // this will likely fail because skeleton people are being put into a set further down the chain...
             p.setId(person.getId());
             ResourceCreator rc = new ResourceCreator(p, null);
             firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(rc));
@@ -610,15 +609,15 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         controller.setRecordsPerPage(1000);
         doSearch();
         List<Resource> results = controller.getResults();
-//        assertTrue(CollectionUtils.isProperSubCollection(results, res));
+        // assertTrue(CollectionUtils.isProperSubCollection(results, res));
         int i = results.indexOf(project);
-        assertEquals(i+1, results.indexOf(a));
-        assertEquals(i+2, results.indexOf(b));
-        assertEquals(i+3, results.indexOf(c));
-        assertEquals(i+4, results.indexOf(project2));
-        assertEquals(i+5, results.indexOf(aa));
-        assertEquals(i+6, results.indexOf(d));
-        assertEquals(i+7, results.indexOf(e));
+        assertEquals(i + 1, results.indexOf(a));
+        assertEquals(i + 2, results.indexOf(b));
+        assertEquals(i + 3, results.indexOf(c));
+        assertEquals(i + 4, results.indexOf(project2));
+        assertEquals(i + 5, results.indexOf(aa));
+        assertEquals(i + 6, results.indexOf(d));
+        assertEquals(i + 7, results.indexOf(e));
     }
 
     @Test

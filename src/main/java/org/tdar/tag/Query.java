@@ -1,4 +1,3 @@
-
 package org.tdar.tag;
 
 import java.math.BigDecimal;
@@ -11,11 +10,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -71,7 +71,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
 
-})
+        })
 @XmlRootElement(name = "Query")
 public class Query {
 
@@ -88,9 +88,8 @@ public class Query {
      * Gets the value of the what property.
      * 
      * @return
-     *     possible object is
-     *     {@link Query.What }
-     *     
+     *         possible object is {@link Query.What }
+     * 
      */
     public Query.What getWhat() {
         return what;
@@ -100,9 +99,8 @@ public class Query {
      * Sets the value of the what property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Query.What }
-     *     
+     *            allowed object is {@link Query.What }
+     * 
      */
     public void setWhat(Query.What value) {
         this.what = value;
@@ -112,9 +110,8 @@ public class Query {
      * Gets the value of the when property.
      * 
      * @return
-     *     possible object is
-     *     {@link Query.When }
-     *     
+     *         possible object is {@link Query.When }
+     * 
      */
     public Query.When getWhen() {
         return when;
@@ -124,9 +121,8 @@ public class Query {
      * Sets the value of the when property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Query.When }
-     *     
+     *            allowed object is {@link Query.When }
+     * 
      */
     public void setWhen(Query.When value) {
         this.when = value;
@@ -136,9 +132,8 @@ public class Query {
      * Gets the value of the where property.
      * 
      * @return
-     *     possible object is
-     *     {@link Query.Where }
-     *     
+     *         possible object is {@link Query.Where }
+     * 
      */
     public Query.Where getWhere() {
         return where;
@@ -148,9 +143,8 @@ public class Query {
      * Sets the value of the where property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Query.Where }
-     *     
+     *            allowed object is {@link Query.Where }
+     * 
      */
     public void setWhere(Query.Where value) {
         this.where = value;
@@ -160,9 +154,8 @@ public class Query {
      * Gets the value of the freetext property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is {@link String }
+     * 
      */
     public String getFreetext() {
         return freetext;
@@ -172,19 +165,19 @@ public class Query {
      * Sets the value of the freetext property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setFreetext(String value) {
         this.freetext = value;
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -202,7 +195,7 @@ public class Query {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "subjectTerm"
+            "subjectTerm"
     })
     public static class What {
 
@@ -213,21 +206,19 @@ public class Query {
          * Gets the value of the subjectTerm property.
          * 
          * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the subjectTerm property.
+         * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present
+         * inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the subjectTerm property.
          * 
          * <p>
          * For example, to add a new item, do as follows:
+         * 
          * <pre>
-         *    getSubjectTerm().add(newItem);
+         * getSubjectTerm().add(newItem);
          * </pre>
          * 
          * 
          * <p>
-         * Objects of the following type(s) are allowed in the list
-         * {@link SubjectType }
+         * Objects of the following type(s) are allowed in the list {@link SubjectType }
          * 
          * 
          */
@@ -240,11 +231,12 @@ public class Query {
 
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -263,8 +255,8 @@ public class Query {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "minDate",
-        "maxDate"
+            "minDate",
+            "maxDate"
     })
     public static class When {
 
@@ -307,11 +299,12 @@ public class Query {
 
     }
 
-
     /**
-     * <p>Java class for anonymous complex type.
+     * <p>
+     * Java class for anonymous complex type.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>
@@ -332,10 +325,10 @@ public class Query {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "minLatitude",
-        "minLongitude",
-        "maxLatitude",
-        "maxLongitude"
+            "minLatitude",
+            "minLongitude",
+            "maxLatitude",
+            "maxLongitude"
     })
     public static class Where {
 
@@ -352,9 +345,8 @@ public class Query {
          * Gets the value of the minLatitude property.
          * 
          * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
+         *         possible object is {@link BigDecimal }
+         * 
          */
         public BigDecimal getMinLatitude() {
             return minLatitude;
@@ -364,9 +356,8 @@ public class Query {
          * Sets the value of the minLatitude property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
+         *            allowed object is {@link BigDecimal }
+         * 
          */
         public void setMinLatitude(BigDecimal value) {
             this.minLatitude = value;
@@ -376,9 +367,8 @@ public class Query {
          * Gets the value of the minLongitude property.
          * 
          * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
+         *         possible object is {@link BigDecimal }
+         * 
          */
         public BigDecimal getMinLongitude() {
             return minLongitude;
@@ -388,9 +378,8 @@ public class Query {
          * Sets the value of the minLongitude property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
+         *            allowed object is {@link BigDecimal }
+         * 
          */
         public void setMinLongitude(BigDecimal value) {
             this.minLongitude = value;
@@ -400,9 +389,8 @@ public class Query {
          * Gets the value of the maxLatitude property.
          * 
          * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
+         *         possible object is {@link BigDecimal }
+         * 
          */
         public BigDecimal getMaxLatitude() {
             return maxLatitude;
@@ -412,9 +400,8 @@ public class Query {
          * Sets the value of the maxLatitude property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
+         *            allowed object is {@link BigDecimal }
+         * 
          */
         public void setMaxLatitude(BigDecimal value) {
             this.maxLatitude = value;
@@ -424,9 +411,8 @@ public class Query {
          * Gets the value of the maxLongitude property.
          * 
          * @return
-         *     possible object is
-         *     {@link BigDecimal }
-         *     
+         *         possible object is {@link BigDecimal }
+         * 
          */
         public BigDecimal getMaxLongitude() {
             return maxLongitude;
@@ -436,9 +422,8 @@ public class Query {
          * Sets the value of the maxLongitude property.
          * 
          * @param value
-         *     allowed object is
-         *     {@link BigDecimal }
-         *     
+         *            allowed object is {@link BigDecimal }
+         * 
          */
         public void setMaxLongitude(BigDecimal value) {
             this.maxLongitude = value;

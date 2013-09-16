@@ -14,28 +14,27 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-
 @Namespace("/sitemap")
 @ParentPackage("default")
 @Component
 @Scope("prototype")
 @Results({
-    @Result(name = "success", type = "stream",
-            params = {
-                    "inputName", "inputStream"
-            }
-    ),
-@Result(name = "error", type = "httpheader", params = { "error", "404" }),
-@Result(name = "forbidden", type = "httpheader", params = { "error", "403" })
+        @Result(name = "success", type = "stream",
+                params = {
+                        "inputName", "inputStream"
+                }
+        ),
+        @Result(name = "error", type = "httpheader", params = { "error", "404" }),
+        @Result(name = "forbidden", type = "httpheader", params = { "error", "403" })
 
 })
-public class SitemapController  extends AuthenticationAware.Base {
+public class SitemapController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = 3087341894996134904L;
 
     private String filename;
     private InputStream inputStream;
-    
+
     @Override
     @Action("sitemap")
     public String execute() {

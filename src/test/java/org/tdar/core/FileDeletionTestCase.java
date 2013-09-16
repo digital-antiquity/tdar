@@ -1,17 +1,18 @@
 package org.tdar.core;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
-import org.tdar.utils.DeleteOnCloseFileInputStream;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.utils.DeleteOnCloseFileInputStream;
 
 public class FileDeletionTestCase {
 

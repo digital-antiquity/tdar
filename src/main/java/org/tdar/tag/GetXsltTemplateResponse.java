@@ -1,4 +1,3 @@
-
 package org.tdar.tag;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,11 +5,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for GetXsltTemplateResponse complex type.
+ * <p>
+ * Java class for GetXsltTemplateResponse complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="GetXsltTemplateResponse">
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetXsltTemplateResponse", propOrder = {
-    "any"
+        "any"
 })
 public class GetXsltTemplateResponse {
 
@@ -39,9 +39,8 @@ public class GetXsltTemplateResponse {
      * Gets the value of the any property.
      * 
      * @return
-     *     possible object is
-     *     {@link Object }
-     *     
+     *         possible object is {@link Object }
+     * 
      */
     public Object getAny() {
         return any;
@@ -51,9 +50,8 @@ public class GetXsltTemplateResponse {
      * Sets the value of the any property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Object }
-     *     
+     *            allowed object is {@link Object }
+     * 
      */
     public void setAny(Object value) {
         this.any = value;

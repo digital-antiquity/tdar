@@ -45,7 +45,7 @@ public class ResourceController extends AuthenticationAware.Base {
      */
     @Action(value = "add",
             results = {
-                    @Result(name = BILLING, type=TYPE_REDIRECT, location = "/cart/add"),
+                    @Result(name = BILLING, type = TYPE_REDIRECT, location = "/cart/add"),
                     @Result(name = SUCCESS, location = "add.ftl")
             })
     public String execute() {
@@ -88,7 +88,7 @@ public class ResourceController extends AuthenticationAware.Base {
 
     public boolean isAllowedToCreateResource() {
         // logger.info("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
-        if (getTdarConfiguration().isPayPerIngestEnabled() == false || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), null,true)) {
+        if (getTdarConfiguration().isPayPerIngestEnabled() == false || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), null, true)) {
             return true;
         }
         return false;

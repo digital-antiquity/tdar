@@ -31,44 +31,45 @@ public class SheetProxy implements Serializable {
 
     private Iterator<Object[]> data;
 
-//    private static Callback NO_OP = new Callback() {public void apply(Workbook ignored){}};
-    
+    // private static Callback NO_OP = new Callback() {public void apply(Workbook ignored){}};
+
     private Callback preCallback = null;
     private Callback postCallback = null;
-	private int freezeRow;
-	
-	//cleanup needed after rendering a sheet?
+    private int freezeRow;
+
+    // cleanup needed after rendering a sheet?
     private boolean isCleanupNeeded = true;
-    
-    //optional work that a caller can perform before/after exporter processes its data. 
+
+    // optional work that a caller can perform before/after exporter processes its data.
     public static abstract class Callback {
-    	public abstract void apply(Workbook workbook);
+        public abstract void apply(Workbook workbook);
     }
-    
+
     public SheetProxy() {
         this(ExcelService.DEFAULT_EXCEL_VERSION);
     }
+
     public SheetProxy(SpreadsheetVersion version) {
-    	if(version == SpreadsheetVersion.EXCEL97) {
-    		workbook = new HSSFWorkbook();
-    	} else {
-    		workbook = new XSSFWorkbook();
-    	}
+        if (version == SpreadsheetVersion.EXCEL97) {
+            workbook = new HSSFWorkbook();
+        } else {
+            workbook = new XSSFWorkbook();
+        }
     }
-    
-    public  SheetProxy(String name, List<String> headerLabels, Iterator<Object[]> data) {
-    	this(SpreadsheetVersion.EXCEL97, name, headerLabels, data);
+
+    public SheetProxy(String name, List<String> headerLabels, Iterator<Object[]> data) {
+        this(SpreadsheetVersion.EXCEL97, name, headerLabels, data);
     }
-    
-    public  SheetProxy(SpreadsheetVersion version, String name, List<String> headerLabels, Iterator<Object[]> data) {
-    	this((Workbook) null, name, headerLabels, data);
-    	if(version == SpreadsheetVersion.EXCEL97) {
-    		workbook = new HSSFWorkbook();
-    	} else {
-    		workbook = new XSSFWorkbook();
-    	}
+
+    public SheetProxy(SpreadsheetVersion version, String name, List<String> headerLabels, Iterator<Object[]> data) {
+        this((Workbook) null, name, headerLabels, data);
+        if (version == SpreadsheetVersion.EXCEL97) {
+            workbook = new HSSFWorkbook();
+        } else {
+            workbook = new XSSFWorkbook();
+        }
     }
-    
+
     public SheetProxy(Workbook workbook, String name, List<String> headerLabels, Iterator<Object[]> data) {
         this.name = name;
         this.data = data;
@@ -81,7 +82,6 @@ public class SheetProxy implements Serializable {
         this.workbook = workbook;
     }
 
-    
     public String getSheetName(int sheetNum) {
         if (sheetNum == 0)
             return name;
@@ -93,8 +93,8 @@ public class SheetProxy implements Serializable {
     }
 
     public void setName(String name) {
-        if ( workbook != null && workbook.getSheet(name) != null) {
-            throw new TdarRecoverableRuntimeException("This workbook already has a sheet with the name '" + name + "'" );
+        if (workbook != null && workbook.getSheet(name) != null) {
+            throw new TdarRecoverableRuntimeException("This workbook already has a sheet with the name '" + name + "'");
         }
         this.name = name;
     }
@@ -138,60 +138,65 @@ public class SheetProxy implements Serializable {
     }
 
     public Iterator<Object[]> getData() {
-		return data;
-	}
+        return data;
+    }
 
-	public void setData(Iterator<Object[]> data) {
-		this.data = data;
-	}
+    public void setData(Iterator<Object[]> data) {
+        this.data = data;
+    }
 
-	public Callback getPreCallback() {
-		return preCallback;
-	}
+    public Callback getPreCallback() {
+        return preCallback;
+    }
 
-	public void setPreCallback(Callback preCallback) {
-		this.preCallback = preCallback;
-	}
+    public void setPreCallback(Callback preCallback) {
+        this.preCallback = preCallback;
+    }
 
-	public Callback getPostCallback() {
-		return postCallback;
-	}
+    public Callback getPostCallback() {
+        return postCallback;
+    }
 
-	public void setPostCallback(Callback postCallback) {
-		this.postCallback = postCallback;
-	}
+    public void setPostCallback(Callback postCallback) {
+        this.postCallback = postCallback;
+    }
 
-	public void setFreezeRow(int i) {
-		freezeRow = 0;
-	}
-	public int getFreezeRow() {
-		return freezeRow;
-	}
-	
-	public boolean hasFreezeRow() {
-		return freezeRow == 0;
-	}
+    public void setFreezeRow(int i) {
+        freezeRow = 0;
+    }
 
-	public void preProcess() {
-		if (preCallback != null) preCallback.apply(workbook);
-	}
-	
-	public void postProcess() {
-		if (postCallback != null) postCallback.apply(workbook);
-	}
-	
-	public String getExtension() {
-	    if (getVersion() == SpreadsheetVersion.EXCEL2007) {
-	        return "xlsx";
-	    } else {
-	        return "xls";
-	    }
-	}
+    public int getFreezeRow() {
+        return freezeRow;
+    }
+
+    public boolean hasFreezeRow() {
+        return freezeRow == 0;
+    }
+
+    public void preProcess() {
+        if (preCallback != null)
+            preCallback.apply(workbook);
+    }
+
+    public void postProcess() {
+        if (postCallback != null)
+            postCallback.apply(workbook);
+    }
+
+    public String getExtension() {
+        if (getVersion() == SpreadsheetVersion.EXCEL2007) {
+            return "xlsx";
+        } else {
+            return "xls";
+        }
+    }
+
     public boolean isCleanupNeeded() {
         return isCleanupNeeded;
     }
+
     public void setCleanupNeeded(boolean bool) {
         isCleanupNeeded = bool;
     }
-    
+
 }

@@ -23,9 +23,10 @@ public class TabConverter extends SimpleConverter {
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
-   
-    public TabConverter() {};
-    
+
+    public TabConverter() {
+    };
+
     public TabConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);

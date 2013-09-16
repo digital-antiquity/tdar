@@ -1,5 +1,7 @@
 package org.tdar.web.functional;
 
+import static org.junit.Assert.assertTrue;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Test;
@@ -11,11 +13,9 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.tdar.core.bean.resource.Project;
 
-import static org.junit.Assert.*;
-
 public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
-    //FIXME: make this more generic (it was generated from selenium IDE)
+    // FIXME: make this more generic (it was generated from selenium IDE)
     private void fillOUtProjectForm(WebDriver driver, Project project) {
         driver.findElement(By.id("resourceRegistrationTitle")).clear();
         driver.findElement(By.id("resourceRegistrationTitle")).sendKeys(project.getTitle());
@@ -166,10 +166,10 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     }
 
     @Test
-    //create a project, fill out a couple inheritable sections, then inherit
+    // create a project, fill out a couple inheritable sections, then inherit
     public void testBasicInheritance() throws InterruptedException {
-        //ignore misc javascript errors (gmaps, et. al),  our asserts will break if relevant javascript had problems
-        ignoreJavascriptErrors=true;
+        // ignore misc javascript errors (gmaps, et. al), our asserts will break if relevant javascript had problems
+        ignoreJavascriptErrors = true;
         gotoPage("/project/add");
 
         Project project = new Project();
@@ -180,22 +180,22 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         submitForm();
 
-        //now create a document and inherit everything.
+        // now create a document and inherit everything.
         gotoPage("/document/add");
         logger.debug("expecting to be on document add page: {}", getDriver().getCurrentUrl());
         find("#projectId").toSelect().selectByVisibleText(project.getTitle());
 
-        //inherit everything
-        WebDriverWait wait = new WebDriverWait(driver,5);
+        // inherit everything
+        WebDriverWait wait = new WebDriverWait(driver, 5);
         WebElement cb = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#cbSelectAllInheritance")));
         cb.click();
 
-        //okay, now inherit nothing
+        // okay, now inherit nothing
         cb.click();
 
-        //check some of the fields to see if we populated the page with project information
+        // check some of the fields to see if we populated the page with project information
         find("#viewCoordinatesCheckbox").click();
-        Thread.sleep(1000); //wait for coordinates to appear.
+        Thread.sleep(1000); // wait for coordinates to appear.
         assertTrue("geo bounds should be set", StringUtils.isNotBlank(find("#d_maxy").val()));
         takeScreenshot("before checking other keyword");
         assertTrue("other keywords should be set", StringUtils.isNotBlank(find("#metadataForm_otherKeywords_0_").val()));
@@ -205,6 +205,5 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     public void turnIgnoresOff() {
         ignoreJavascriptErrors = false;
     }
-
 
 }

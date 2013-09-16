@@ -157,13 +157,14 @@ public interface AuthenticationAware extends SessionDataAware {
 
         /**
          * return true if authenticated user has permission to assign other users as the owner of an invoice
+         * 
          * @return
          */
         @Override
         public boolean isBillingManager() {
             return getAuthenticationAndAuthorizationService().isBillingManager(getAuthenticatedUser());
         }
-        
+
     }
 
 }

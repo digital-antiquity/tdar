@@ -18,7 +18,6 @@ import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
-
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
@@ -83,7 +82,7 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         String url = internalPage.getUrl().toString();
         assertTrue("expecting to be on the view page.  actual page is: " + url, url.matches("^.*\\d+$"));
     }
-    
+
     public void assertEditPageForInputResult() {
         String url = internalPage.getUrl().toString();
         assertTrue("expecting to be on the edit page due to INPUT result.  actual page is: " + url, url.matches(".*save.action.*"));
@@ -104,7 +103,6 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         }
         setInput(prefix + ".description", "testing");
     }
-    
 
     // create a resource with only required field values. assert that we land on the view page. This will hopefully weed out silly
     // mistakes like omitting necessary form field or duplicating a form field.
@@ -147,7 +145,7 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         gotoPage("/image/add");
         fillOutRequiredfields(ResourceType.IMAGE);
         setInput("ticketId", ticketId);
-        //set the ticket id, but not necessary to add a file.
+        // set the ticket id, but not necessary to add a file.
         setInput("image.title", "");
         submitForm();
         assertEditPageForInputResult();

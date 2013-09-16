@@ -39,7 +39,7 @@ public class AggregateStatistic extends Persistable.Base {
         NUM_GIS("# of GeoSpatial Objects"),
         NUM_ARCHIVES("# of Archive Objects"),
         NUM_AUDIO("# of Audio Files"),
-        
+
         NUM_VIDEO_WITH_FILES("# of Videos with Files"),
         NUM_IMAGE_WITH_FILES("# of Images with Files"),
         NUM_DATASET_WITH_FILES("# of Data Sets with Files"),
@@ -51,7 +51,7 @@ public class AggregateStatistic extends Persistable.Base {
         NUM_ARCHIVES_WITH_FILES("# of Archive Objects with Files"),
         NUM_AUDIO_WITH_FILES("# of Audio  with Files"),
 
-        NUM_COLLECTIONS("# of Collections"), 
+        NUM_COLLECTIONS("# of Collections"),
         NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size");
 
         private String label;

@@ -45,7 +45,7 @@ public class WorkflowResult implements Serializable {
 
     private void copyContextResults(WorkflowContext context) {
         if (context != null) {
-            success  = (!success) ? false : context.isProcessedSuccessfully();
+            success = (!success) ? false : context.isProcessedSuccessfully();
             if (context.isErrorFatal()) {
                 setFatalErrors(Boolean.TRUE);
             }
@@ -56,7 +56,7 @@ public class WorkflowResult implements Serializable {
     public boolean isSuccess() {
         return success;
     }
-    
+
     public void addActionErrorsAndMessages(ActionMessageErrorSupport actionSupport) {
         for (ExceptionWrapper exception : getExceptions()) {
             if (getFatalErrors()) {

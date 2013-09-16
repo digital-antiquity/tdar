@@ -34,7 +34,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     @Action(value = "browse",
             results = { @Result(name = "success", location = "browse.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String getDataResults() {
-        if (Persistable.Base.isNullOrTransient(id)){
+        if (Persistable.Base.isNullOrTransient(id)) {
             return ERROR;
         }
         DataTable dataTable = getDataTableService().find(getId());
@@ -42,7 +42,8 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
         if (dataset.isPublicallyAccessible() || getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
             ResultMetadataWrapper selectAllFromDataTable = ResultMetadataWrapper.NULL;
             try {
-                selectAllFromDataTable = getDatasetService().selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true, isViewRowSupported());
+                selectAllFromDataTable = getDatasetService().selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true,
+                        isViewRowSupported());
             } catch (BadSqlGrammarException ex) {
                 getLogger().error("Failed to pull datatable results for '{}' (perhaps the table is missing from tdardata schema?)", dataTable.getName());
             }

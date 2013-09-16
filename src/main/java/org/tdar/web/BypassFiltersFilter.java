@@ -16,43 +16,45 @@ import org.apache.log4j.Logger;
  * $Id$
  * 
  * This servlet filter forwards all requests to their final destination
- * bypassing any other defined filters. 
+ * bypassing any other defined filters.
  * 
  * Example from web.xml:
  * 
  * <code>
  * <filter>
- *	<filter-name>bypass-filters-filter</filter-name>
+ * 	<filter-name>bypass-filters-filter</filter-name>
  *  <filter-class>org.tdar.web.BypassFiltersFilter</filter-class>
  * </filter>
  * <filter-mapping>
- *	<filter-name>bypass-filters-filter</filter-name>
- *	<url-pattern>/services/*</url-pattern>
+ * 	<filter-name>bypass-filters-filter</filter-name>
+ * 	<url-pattern>/services/*</url-pattern>
  * </filter-mapping>
  * </code>
  * 
  * The filter mapping which defines the URL patterns which will bypass other
- * filters should come first in the list of filter mappings. 
+ * filters should come first in the list of filter mappings.
  * 
  * @author <a href='mailto:matt.cordial@asu.edu'>Matt Cordial</a>
  * @version $Rev$
  */
 public class BypassFiltersFilter implements Filter {
 
-	private static final Logger log = Logger.getLogger(BypassFiltersFilter.class); 
-	
-	@Override
-	public void destroy() {}
+    private static final Logger log = Logger.getLogger(BypassFiltersFilter.class);
 
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
-	throws IOException, ServletException {
-		HttpServletRequest req = (HttpServletRequest) request;
-		log.debug("Forwarding to: " + req.getRequestURI());
-		request.getRequestDispatcher(req.getRequestURI()).forward(request, response);
-	}
+    @Override
+    public void destroy() {
+    }
 
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {}
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        HttpServletRequest req = (HttpServletRequest) request;
+        log.debug("Forwarding to: " + req.getRequestURI());
+        request.getRequestDispatcher(req.getRequestURI()).forward(request, response);
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
 
 }

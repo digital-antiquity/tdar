@@ -7,7 +7,11 @@
 package org.tdar.web.functional;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_RECORD;
@@ -176,7 +180,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", VIEW_ALL);
         submitForm();
     }
-    
 
     @Test
     public void testDupCreator() {
@@ -196,7 +199,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find("#authorshipRow_1_ .personButton").click();
         addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
 
-        
         addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[0]", ResourceCreatorRole.CONTACT);
         find("#creditRow_0_ .institutionButton").click();
         addInstitutionWithRole(new Institution("UC"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
@@ -213,8 +215,8 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         assertTrue(getText().contains(LOBLAW));
         assertTrue(StringUtils.containsIgnoreCase(getText(), UNIVERSITY_OF_TEST));
     }
-    
-@Test
+
+    @Test
     public void testCreateDocumentEditSavehasResource() {
         gotoPage("/document/add");
         WebElement form = find("#metadataForm").first();
@@ -371,7 +373,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
             }
         }
 
-        //specific checks for auth users we added earlier
+        // specific checks for auth users we added earlier
         String sectionText = find("#divAccessRights").getText().toLowerCase();
         logger.debug("\n\n------ access rights text ---- \n" + sectionText);
 

@@ -139,7 +139,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     @Override
     public List<?> getEqualityFields() {
-        //ab probably okay as not nullable fields
+        // ab probably okay as not nullable fields
         return Arrays.asList(iri);
     }
 

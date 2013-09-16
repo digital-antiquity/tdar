@@ -26,7 +26,6 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.DataIntegrationITCase;
 
-
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
     private static final String BONE_COMMON_NAME = "Bone Common name";
@@ -47,56 +46,56 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     public void testDataIntegration() {
         boolean skip = false;
         if (!skip) {
-        Long faunaId = uploadSparseResource(FAUNA_ELEMENT, "Fauna Element Description", ResourceType.ONTOLOGY, "1920", -1, new File(
-                TestConstants.TEST_DATA_INTEGRATION_DIR + FAUNA_ELEMENT_NAME));
+            Long faunaId = uploadSparseResource(FAUNA_ELEMENT, "Fauna Element Description", ResourceType.ONTOLOGY, "1920", -1, new File(
+                    TestConstants.TEST_DATA_INTEGRATION_DIR + FAUNA_ELEMENT_NAME));
 
-        Long taxonId = uploadSparseResource(FAUNA_TAXON, "Fauna Taxon Description", ResourceType.ONTOLOGY, "1920", -1, new File(
-                TestConstants.TEST_DATA_INTEGRATION_DIR + FAUNA_TAXON_NAME));
+            Long taxonId = uploadSparseResource(FAUNA_TAXON, "Fauna Taxon Description", ResourceType.ONTOLOGY, "1920", -1, new File(
+                    TestConstants.TEST_DATA_INTEGRATION_DIR + FAUNA_TAXON_NAME));
 
-        Long spitalId = uploadSparseResource(SPITALFIELDS_DATASET_NAME, "Spitalfields Description", ResourceType.DATASET, "1923", -1, new File(
-                TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME));
-        assertTrue(getCurrentUrl().contains("columns"));
-        WebElementSelection option = null;
-        for (WebElement option_ : find(By.id("table_select")).find(By.tagName("option"))) {
-            if (option_.getText().contains(MAIN_TABLE)) {
-                option = new WebElementSelection(option_, driver);
-                break;
+            Long spitalId = uploadSparseResource(SPITALFIELDS_DATASET_NAME, "Spitalfields Description", ResourceType.DATASET, "1923", -1, new File(
+                    TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME));
+            assertTrue(getCurrentUrl().contains("columns"));
+            WebElementSelection option = null;
+            for (WebElement option_ : find(By.id("table_select")).find(By.tagName("option"))) {
+                if (option_.getText().contains(MAIN_TABLE)) {
+                    option = new WebElementSelection(option_, driver);
+                    break;
+                }
+
             }
+            if (option == null) {
+                fail("Couldn't find spitalfields Main table");
+            }
+            option.click();
+            assertTrue(getCurrentUrl().contains("dataTableId"));
+            assertTrue(getText().contains("Table Main table"));
 
-        }
-        if (option == null) {
-            fail("Couldn't find spitalfields Main table");
-        }
-        option.click();
-        assertTrue(getCurrentUrl().contains("dataTableId"));
-        assertTrue(getText().contains("Table Main table"));
+            mapColumnToOntology("Species Common name", FAUNA_TAXON);
+            mapColumnToOntology(BONE_COMMON_NAME, FAUNA_ELEMENT);
+            submitForm();
+            find(By.className("bookmark-label")).click();
+            String datasetViewUrl = getCurrentUrl();
+            find(By.linkText(GENERATED + "Species Common name")).click();
+            mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
+            gotoPage(datasetViewUrl);
+            find(By.linkText(GENERATED + BONE_COMMON_NAME)).click();
+            mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
 
-        mapColumnToOntology("Species Common name", FAUNA_TAXON);
-        mapColumnToOntology(BONE_COMMON_NAME, FAUNA_ELEMENT);
-        submitForm();
-        find(By.className("bookmark-label")).click();
-        String datasetViewUrl = getCurrentUrl();
-        find(By.linkText(GENERATED + "Species Common name")).click();
-        mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
-        gotoPage(datasetViewUrl);
-        find(By.linkText(GENERATED + BONE_COMMON_NAME)).click();
-        mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
-
-        Long alexId = uploadSparseResource(ALEXANDRIA_DATASET_NAME, "Alexandria Description", ResourceType.DATASET, "1924", -1, new File(
-                TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_DB_NAME));
-        find(By.linkText("2")).click();
-        mapColumnToOntology("Taxon", FAUNA_TAXON);
-        mapColumnToOntology("BELEMENT", FAUNA_ELEMENT);
-        submitForm();
-        find(By.className("bookmark-label")).click();
-        datasetViewUrl = getCurrentUrl();
-        find(By.linkText(GENERATED + "Taxon")).click();
-        mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
-        gotoPage(datasetViewUrl);
-        find(By.linkText(GENERATED + "BELEMENT")).click();
-        mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
+            Long alexId = uploadSparseResource(ALEXANDRIA_DATASET_NAME, "Alexandria Description", ResourceType.DATASET, "1924", -1, new File(
+                    TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_DB_NAME));
+            find(By.linkText("2")).click();
+            mapColumnToOntology("Taxon", FAUNA_TAXON);
+            mapColumnToOntology("BELEMENT", FAUNA_ELEMENT);
+            submitForm();
+            find(By.className("bookmark-label")).click();
+            datasetViewUrl = getCurrentUrl();
+            find(By.linkText(GENERATED + "Taxon")).click();
+            mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
+            gotoPage(datasetViewUrl);
+            find(By.linkText(GENERATED + "BELEMENT")).click();
+            mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
         }
-        
+
         find(By.linkText("Integrate")).click();
         WebElementSelection datsets = find(By.className("datatableListItem"));
         for (WebElement dataset : datsets) {

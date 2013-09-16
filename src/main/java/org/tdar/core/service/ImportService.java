@@ -102,7 +102,7 @@ public class ImportService {
             }
 
             incomingResource.copyImmutableFieldsFrom(existing);
-            //FIXME: could be trouble:  the next line implicitly detaches the submitter we just copied to incomingResource
+            // FIXME: could be trouble: the next line implicitly detaches the submitter we just copied to incomingResource
             genericService.detachFromSession(existing);
             created = false;
         }
@@ -140,9 +140,10 @@ public class ImportService {
         }
         logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(authorizedUser));
         Person blessedAuthorizedUser = genericService.merge(authorizedUser);
-        logger.debug("comparing before/after merge:: before:{}        after:{}", System.identityHashCode(authorizedUser), System.identityHashCode(blessedAuthorizedUser));
+        logger.debug("comparing before/after merge:: before:{}        after:{}", System.identityHashCode(authorizedUser),
+                System.identityHashCode(blessedAuthorizedUser));
         incomingResource.markUpdated(blessedAuthorizedUser);
-//        genericService.detachFromSession(authorizedUser);
+        // genericService.detachFromSession(authorizedUser);
         incomingResource = genericService.merge(incomingResource);
 
         Set<String> extensionsForType = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
@@ -152,11 +153,11 @@ public class ImportService {
                 if (!extensionsForType.contains(ext))
                     throw new APIException(String.format(INVALID_FILE_TYPE, ext, StringUtils.join(extensionsForType, ", ")), StatusCode.FORBIDDEN);
             }
-            
+
             ActionMessageErrorListener listener = new ActionMessageErrorListener();
             informationResourceService.importFileProxiesAndProcessThroughWorkflow((InformationResource) incomingResource, authorizedUser, null, listener,
                     new ArrayList<FileProxy>(proxies));
-            
+
             if (listener.hasActionErrors()) {
                 throw new APIException(listener.toString(), StatusCode.UNKNOWN_ERROR);
             }

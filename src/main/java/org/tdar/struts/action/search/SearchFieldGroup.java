@@ -6,7 +6,7 @@ public enum SearchFieldGroup implements HasLabel {
 
     BASIC_FIELDS("Basic Fields"),
     CONTROLLED_KEYWORDS("Controlled Keywords"),
-    FREEFORM_KEYWORDS("Freeform Keywords"), 
+    FREEFORM_KEYWORDS("Freeform Keywords"),
     EXPLORE("Explore the site");
 
     private String label;

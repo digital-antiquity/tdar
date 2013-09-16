@@ -30,12 +30,12 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private List<String> terms;
     private boolean includeChildren = true;
-    
-    //for use when generating description
+
+    // for use when generating description
     private String descriptionLabel = "Keyword";
-    
+
     private String keywordType;
-    
+
     public KeywordQueryPart() {
         this("unknown");
     }
@@ -47,8 +47,9 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     public boolean isEmpty() {
         return CollectionUtils.isEmpty(terms);
     }
+
     public void setLimit(Keyword obj) {
-        terms = new ArrayList<String>(Arrays.asList((String)obj.getLabel()));
+        terms = new ArrayList<String>(Arrays.asList((String) obj.getLabel()));
     }
 
     public KeywordQueryPart(String keywordType) {
@@ -60,8 +61,8 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         terms = new ArrayList<String>(Arrays.asList(term));
         this.keywordType = keywordType;
     }
-    
-    //FIXME: add signature that accepts collection of keywords,   use a static Map<Class, string> to lookup keywordType
+
+    // FIXME: add signature that accepts collection of keywords, use a static Map<Class, string> to lookup keywordType
 
     @SuppressWarnings("rawtypes")
     // There's no way in the controller signature to differentiate between types of collections
@@ -89,9 +90,9 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     public void addTerm(String Term) {
         terms.add(Term);
     }
-    
+
     public void addTerms(Collection<? extends Keyword> keywords) {
-        for(Keyword keyword : keywords) {
+        for (Keyword keyword : keywords) {
             terms.add(keyword.getLabel());
         }
     }
@@ -110,15 +111,15 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
                 continue;
             if (q.length() > 1)
                 q.append(" OR ");
-            
+
             String field = "label";
             if (StringUtils.isNumeric(term)) {
                 field = "id";
             }
-            //append group of two terms with explicit OR (term1 corresponds to direct list, term2 corresponds to keyword list in children informationResources)
-            q.append(String.format("(%1$s.%2$s:(\"%3$s\")",keywordType, field, term));
+            // append group of two terms with explicit OR (term1 corresponds to direct list, term2 corresponds to keyword list in children informationResources)
+            q.append(String.format("(%1$s.%2$s:(\"%3$s\")", keywordType, field, term));
             if (includeChildren) {
-                q.append(String.format(" OR informationResources.%1$s.%2$s:(\"%3$s\"))",keywordType, field, term));
+                q.append(String.format(" OR informationResources.%1$s.%2$s:(\"%3$s\"))", keywordType, field, term));
             }
         }
         return q.toString();
@@ -131,11 +132,11 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     public String getKeywordType() {
         return keywordType;
     }
-    
+
     public String getDescriptionLabel() {
         return descriptionLabel;
     }
-    
+
     public void setDescriptionLabel(String label) {
         descriptionLabel = label;
     }
@@ -158,7 +159,7 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
 
     @Override
     public void setDescriptionVisible(boolean visible) {
-        
+
     }
 
     public boolean isIncludeChildren() {

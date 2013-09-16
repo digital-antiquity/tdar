@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.resource.Archive;
-import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -84,8 +82,8 @@ public class WorkflowContextService {
                     if (ctx.getTransientResource() == null) {
                         break;
                     }
-                    //this should be a no-op; but just in case; the resource shouldn't be on the session to begin with
-                    //FIXME: look at removing
+                    // this should be a no-op; but just in case; the resource shouldn't be on the session to begin with
+                    // FIXME: look at removing
                     genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
                     logger.info("resource: ", ctx.getTransientResource());
                     logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
@@ -106,7 +104,7 @@ public class WorkflowContextService {
                     break;
                 case ARCHIVE:
                 case AUDIO:
-                    ((InformationResource)resource).updateFromTransientResource((InformationResource)ctx.getTransientResource());
+                    ((InformationResource) resource).updateFromTransientResource((InformationResource) ctx.getTransientResource());
                     genericDao.saveOrUpdate(resource);
                     break;
                 default:
@@ -184,9 +182,10 @@ public class WorkflowContextService {
     }
 
     /**
-     * @param datasetService the datasetService to set
+     * @param datasetService
+     *            the datasetService to set
      */
-    
+
     public DatasetService getDatasetService() {
         return datasetService;
     }

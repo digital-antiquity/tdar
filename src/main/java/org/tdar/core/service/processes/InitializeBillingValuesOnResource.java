@@ -22,7 +22,6 @@ import org.tdar.core.service.resource.ResourceService;
 @Component
 public class InitializeBillingValuesOnResource extends ScheduledBatchProcess<Resource> {
 
-    
     private static final long serialVersionUID = -4223808692952181718L;
 
     @Autowired
@@ -40,7 +39,7 @@ public class InitializeBillingValuesOnResource extends ScheduledBatchProcess<Res
     public List<Long> findAllIds() {
         return resourceService.findAllResourceIdsWithFiles();
     }
-    
+
     @Override
     public Class<Resource> getPersistentClass() {
         return Resource.class;
@@ -61,7 +60,7 @@ public class InitializeBillingValuesOnResource extends ScheduledBatchProcess<Res
     public int getBatchSize() {
         return 5;
     }
-    
+
     @Override
     public boolean isEnabled() {
         return false;

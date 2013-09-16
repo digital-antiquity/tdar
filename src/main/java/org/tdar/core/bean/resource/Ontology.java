@@ -51,11 +51,11 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @OneToMany(mappedBy = "ontology", cascade = CascadeType.ALL)
     private List<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>();
-    
+
     private transient Map<Long, OntologyNode> idMap = new WeakHashMap<Long, OntologyNode>();
     private transient Map<String, OntologyNode> iriMap = new WeakHashMap<String, OntologyNode>();
     private transient Map<String, OntologyNode> nameMap = new WeakHashMap<String, OntologyNode>();
-    
+
     private final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
         @Override
         public int compare(OntologyNode o1, OntologyNode o2) {
@@ -71,7 +71,6 @@ public class Ontology extends InformationResource implements SupportsResource {
     public Ontology() {
         setResourceType(ResourceType.ONTOLOGY);
     }
-
 
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
@@ -123,7 +122,7 @@ public class Ontology extends InformationResource implements SupportsResource {
         }
         return nameMap.get(name);
     }
-    
+
     @Transient
     public OntologyNode getNodeByIri(String iri) {
         if (CollectionUtils.isEmpty(iriMap)) {
@@ -131,9 +130,9 @@ public class Ontology extends InformationResource implements SupportsResource {
         }
         return iriMap.get(iri);
     }
-    
+
     private void initializeNameAndIriMaps() {
-        for (OntologyNode node: getOntologyNodes()) {
+        for (OntologyNode node : getOntologyNodes()) {
             nameMap.put(node.getDisplayName(), node);
             iriMap.put(node.getIri(), node);
         }
@@ -153,7 +152,7 @@ public class Ontology extends InformationResource implements SupportsResource {
         // return ontology nodes by natural order.
         return getSortedOntologyNodes(null);
     }
-    
+
     public List<OntologyNode> getSortedOntologyNodesByImportOrder() {
         return getSortedOntologyNodes(IMPORT_ORDER_COMPARATOR);
     }

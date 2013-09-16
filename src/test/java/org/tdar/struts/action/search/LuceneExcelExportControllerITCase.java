@@ -1,8 +1,9 @@
 package org.tdar.struts.action.search;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,8 +12,8 @@ import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Assert;
@@ -32,16 +33,16 @@ import org.tdar.web.SessionData;
 
 @Transactional
 public class LuceneExcelExportControllerITCase extends AbstractSearchControllerITCase {
-	
-	//the first few rows of the export have stats, column names, spacing, yada yada...
-	private static final int EXCEL_EXPORT_HEADER_ROWCOUNT = 5; 
+
+    // the first few rows of the export have stats, column names, spacing, yada yada...
+    private static final int EXCEL_EXPORT_HEADER_ROWCOUNT = 5;
 
     @Autowired
     private AdvancedSearchController controller;
 
     @Autowired
     SearchIndexService searchIndexService;
-    
+
     @Autowired
     ExcelService excelService;
 
@@ -49,7 +50,8 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 
     @Test
     @Rollback(true)
-    public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException, InvalidFormatException, TdarActionException {
+    public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
+            InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = getBasicUser();
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -63,7 +65,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         File tempFile = File.createTempFile("report", ".xls");
         FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
         long copyLarge = IOUtils.copyLarge(controller.getInputStream(), fileOutputStream);
-        
+
         fileOutputStream.close();
         logger.debug("tempFile: {}", tempFile);
 
@@ -74,7 +76,8 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 
     @Test
     @Rollback(true)
-    public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException, TdarActionException {
+    public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
+            TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = null;
         controller.setSessionData(new SessionData()); // create unauthenticated session

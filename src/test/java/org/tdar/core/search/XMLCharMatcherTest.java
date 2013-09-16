@@ -17,7 +17,7 @@ public class XMLCharMatcherTest {
         Matcher matcher = RssService.INVALID_XML_CHARS.matcher(tst);
         assertTrue(matcher.matches());
     }
-    
+
     @Test
     public void testControl() {
         String tst = "\u0018";

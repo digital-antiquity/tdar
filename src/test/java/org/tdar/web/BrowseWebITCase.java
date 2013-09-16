@@ -12,16 +12,16 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
 
 public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
-boolean indexed = false;
+    boolean indexed = false;
 
     public void reindexOnce() {
         if (indexed)
             return;
-        
+
         reindexUnauthenticated();
-        indexed =true;
+        indexed = true;
     }
-    
+
     @Test
     public void testOntologyView() {
         super.testOntologyView();

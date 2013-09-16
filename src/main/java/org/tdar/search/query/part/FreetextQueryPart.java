@@ -28,7 +28,7 @@ public class FreetextQueryPart extends FieldQueryPart<String> {
         logger.info(txt);
         return txt;
     };
-    
+
     @Override
     public String getDescription() {
         return "Every Single Field: " + StringUtils.join(getFieldValues(), ", ");

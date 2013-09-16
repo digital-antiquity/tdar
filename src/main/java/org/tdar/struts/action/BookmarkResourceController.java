@@ -15,7 +15,7 @@ import org.tdar.struts.WriteableSession;
  * $Id$
  * 
  * Bookmarks resource actions
- *
+ * 
  * @author Matt Cordial
  * @version $Rev$
  */
@@ -25,94 +25,94 @@ import org.tdar.struts.WriteableSession;
 @Scope("prototype")
 @WriteableSession
 public class BookmarkResourceController extends AuthenticationAware.Base {
-	
-	private static final long serialVersionUID = -5396034976314292120L;
-	
-	private Long resourceId;
-	private Boolean success = Boolean.FALSE;
-	private String callback;
-	
-	@Action(
-		value="bookmarkAjax",
-    	results={
-    		@Result(name="success", type="freemarker", location="bookmark.ftl", params={"contentType", "application/json"})
-    	}
-    )
-	public String bookmarkResourceAjaxAction() {
-		success = bookmarkResource();
-		return SUCCESS;
-	}
-	
-	@Action(
-		value="bookmark",
-    	results={
-			@Result(name="success", type="redirect", location=URLConstants.BOOKMARKS)
-    	}
-    )
-	public String bookmarkResourceAction() {
-		success = bookmarkResource();
-		return SUCCESS;
-	}
-	
-	@Action(
-		value="removeBookmarkAjax",
-    	results={
-    		@Result(name="success", type="freemarker", location="bookmark.ftl", params={"contentType", "application/json"})
-    	}
-    )
-	public String removeBookmarkAjaxAction() {
-		success = removeBookmark();
-		return SUCCESS;
-	}
-	
-	@Action(
-		value="removeBookmark",
-    	results={
-			@Result(name="success", type="redirect", location=URLConstants.BOOKMARKS)
-    	}
-    )
-	public String removeBookmarkAction() {
-		success = removeBookmark();
-		return SUCCESS;
-	}
-	
-	private boolean bookmarkResource() {
-		Resource resource = getResourceService().find(resourceId);
-		if (resource == null) {
-			logger.trace("no resource with id: " + resourceId);
-			return false;
-		}
-		Person person = getAuthenticatedUser(); 
-		logger.debug("checking if resource is already bookmarked for resource:" + resource.getId());
-		return getBookmarkedResourceService().bookmarkResource(resource, person);
-	}
-	
-	private boolean removeBookmark() {
-		Resource resource = getResourceService().find(resourceId);
-		if (resource == null){
-			logger.warn("no resource with id: " + resourceId);
-			return false;
-		}
-		logger.trace("removing bookmark for resource: " + resource.getId());
-		Person person = getAuthenticatedUser();
-		return getBookmarkedResourceService().removeBookmark(resource, person);
-	}
-	
-	public Long getResourceId() {
-		return resourceId;
-	}
 
-	public void setResourceId(Long resourceId) {
-		this.resourceId = resourceId;
-	}
+    private static final long serialVersionUID = -5396034976314292120L;
 
-	public Boolean getSuccess() {
-		return success;
-	}
+    private Long resourceId;
+    private Boolean success = Boolean.FALSE;
+    private String callback;
 
-	public void setSuccess(Boolean success) {
-		this.success = success;
-	}
+    @Action(
+            value = "bookmarkAjax",
+            results = {
+                    @Result(name = "success", type = "freemarker", location = "bookmark.ftl", params = { "contentType", "application/json" })
+            }
+            )
+            public String bookmarkResourceAjaxAction() {
+        success = bookmarkResource();
+        return SUCCESS;
+    }
+
+    @Action(
+            value = "bookmark",
+            results = {
+                    @Result(name = "success", type = "redirect", location = URLConstants.BOOKMARKS)
+            }
+            )
+            public String bookmarkResourceAction() {
+        success = bookmarkResource();
+        return SUCCESS;
+    }
+
+    @Action(
+            value = "removeBookmarkAjax",
+            results = {
+                    @Result(name = "success", type = "freemarker", location = "bookmark.ftl", params = { "contentType", "application/json" })
+            }
+            )
+            public String removeBookmarkAjaxAction() {
+        success = removeBookmark();
+        return SUCCESS;
+    }
+
+    @Action(
+            value = "removeBookmark",
+            results = {
+                    @Result(name = "success", type = "redirect", location = URLConstants.BOOKMARKS)
+            }
+            )
+            public String removeBookmarkAction() {
+        success = removeBookmark();
+        return SUCCESS;
+    }
+
+    private boolean bookmarkResource() {
+        Resource resource = getResourceService().find(resourceId);
+        if (resource == null) {
+            logger.trace("no resource with id: " + resourceId);
+            return false;
+        }
+        Person person = getAuthenticatedUser();
+        logger.debug("checking if resource is already bookmarked for resource:" + resource.getId());
+        return getBookmarkedResourceService().bookmarkResource(resource, person);
+    }
+
+    private boolean removeBookmark() {
+        Resource resource = getResourceService().find(resourceId);
+        if (resource == null) {
+            logger.warn("no resource with id: " + resourceId);
+            return false;
+        }
+        logger.trace("removing bookmark for resource: " + resource.getId());
+        Person person = getAuthenticatedUser();
+        return getBookmarkedResourceService().removeBookmark(resource, person);
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
 
     public void setCallback(String callback) {
         this.callback = callback;
@@ -121,6 +121,5 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
     public String getCallback() {
         return callback;
     }
-	
-}
 
+}

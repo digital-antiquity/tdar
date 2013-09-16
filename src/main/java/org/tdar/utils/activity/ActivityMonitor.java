@@ -27,8 +27,8 @@ public class ActivityMonitor implements Serializable {
         getQueue().add(activity);
     }
 
-    @XmlElementWrapper(name="activities")
-    @XmlElement(name="activity")
+    @XmlElementWrapper(name = "activities")
+    @XmlElement(name = "activity")
     public ArrayBlockingQueue<Activity> getQueue() {
         return queue;
     }

@@ -38,7 +38,7 @@ public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestC
         setInput("codingSheet.date", "1937");
         setInput(CODING_SHEET_INPUT_METHOD_FIELD, CODING_SHEET_INPUT_METHOD_TEXT);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitFormWithoutErrorCheck("Save");
@@ -51,9 +51,9 @@ public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestC
         assertTrue("nothing to see here... everything works just fine.", true);
 
     }
-    
+
     @Test
-    //after creating an invalid coding sheet, we should be sent back to the INPUT page and should see an action message.  
+    // after creating an invalid coding sheet, we should be sent back to the INPUT page and should see an action message.
     public void testCreateInvalidCodingSheet() {
         gotoPage("/coding-sheet/add");
         setInput("codingSheet.title", "test invalid coding sheet");
@@ -62,15 +62,15 @@ public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestC
         setInput("projectId", TestConstants.PARENT_PROJECT_ID);
         StringBuilder sb = new StringBuilder();
         sb.append("a apple\n")
-            .append("b berries\n")
-            .append("c carrots]n");
+                .append("b berries\n")
+                .append("c carrots]n");
         setInput("fileTextInput", sb.toString());
-        
-       submitForm();
-       //we should be on the INPUT page.
-       logger.debug("\n\n\n\n {} \n\n\n", getPageBodyCode());
-       assertTrue("expecting to still be on INPUT page.  actual page is " + htmlPage.getUrl(), htmlPage.getUrl().toString().contains("save.action"));
-       assertNoErrorTextPresent();
+
+        submitForm();
+        // we should be on the INPUT page.
+        logger.debug("\n\n\n\n {} \n\n\n", getPageBodyCode());
+        assertTrue("expecting to still be on INPUT page.  actual page is " + htmlPage.getUrl(), htmlPage.getUrl().toString().contains("save.action"));
+        assertNoErrorTextPresent();
     }
 
 }

@@ -3,7 +3,7 @@ package org.tdar.core.dao.external.auth;
 import java.io.Serializable;
 
 public enum AuthenticationResult implements Serializable {
-    VALID(""), 
+    VALID(""),
     INVALID_PASSWORD("Authentication failed.  Please check that your username and password were entered correctly."),
     INACTIVE_ACCOUNT("This account is inactive."),
     ACCOUNT_DOES_NOT_EXIST("This account does not exist"),

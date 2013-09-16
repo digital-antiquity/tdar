@@ -28,11 +28,14 @@ import org.tdar.filestore.tasks.Task;
 import org.tdar.utils.ExceptionWrapper;
 
 /**
- * <p>A work in progress.
- * <p>The Workflow context is flattened to XML (hence the Serializable) and passed to the messaging service that will then reflate it and act on its contents.
- * Hence nothing that is not cleanly serializable should be added to the context (no dao's etc). Once the messaging service is finished it will flatten
- * the context back to XML and then return that structure to the application. In this way the workflow tasks are decoupled from the application, I 
- * assume with the eventual goal of allowing long running tasks to be run in the background without impacting the user.
+ * <p>
+ * A work in progress.
+ * <p>
+ * The Workflow context is flattened to XML (hence the Serializable) and passed to the messaging service that will then reflate it and act on its contents.
+ * Hence nothing that is not cleanly serializable should be added to the context (no dao's etc). Once the messaging service is finished it will flatten the
+ * context back to XML and then return that structure to the application. In this way the workflow tasks are decoupled from the application, I assume with the
+ * eventual goal of allowing long running tasks to be run in the background without impacting the user.
+ * 
  * @see MessageService#sendFileProcessingRequest(Workflow, InformationResourceFileVersion...)
  * @author Adam Brin
  */
@@ -41,7 +44,7 @@ public final class WorkflowContext implements Serializable {
 
     private static final long serialVersionUID = -1020989469518487007L;
 
-//    private Long informationResourceFileId;
+    // private Long informationResourceFileId;
     private Long informationResourceId;
     private List<InformationResourceFileVersion> versions = new ArrayList<>();
     private List<InformationResourceFileVersion> originalFiles = new ArrayList<>();
@@ -152,6 +155,7 @@ public final class WorkflowContext implements Serializable {
 
     /**
      * Do not call this! it is used by the Workflow instance when processing tasks, and any setting made by the tasks will be overwritten.
+     * 
      * @see Workflow#run(WorkflowContext)
      */
     public void setProcessedSuccessfully(boolean processed) {
@@ -193,11 +197,13 @@ public final class WorkflowContext implements Serializable {
 
     /**
      * Keeps a history of the exceptions that are thrown by the task run method if it exits abnormally.
-     * If you have an exception you want recorded during that run, that isn't thrown out of the run, then add it using this method! 
+     * If you have an exception you want recorded during that run, that isn't thrown out of the run, then add it using this method!
      * That sure beats calling getExceptions().add(...), and makes for a consistent interface.
+     * 
      * @see Workflow#run(WorkflowContext)
      * @see Task#run()
-     * @param e The exception that has brought the Task#run to an untimely demise..
+     * @param e
+     *            The exception that has brought the Task#run to an untimely demise..
      */
     public void addException(Throwable e) {
         int maxDepth = 4;
@@ -218,6 +224,7 @@ public final class WorkflowContext implements Serializable {
 
     /**
      * If you find yourself calling this to add an exception, <b>first ask: why aren't I using addException()?</b>
+     * 
      * @see #addException(Throwable)
      * @return the exceptions recorded during the executions of the tasks.
      */
@@ -264,8 +271,10 @@ public final class WorkflowContext implements Serializable {
     /**
      * A subtle one. Your task might have thrown an exception, but was it fatal? ie: was it an error or a warning? If it was an error best set this to true,
      * otherwise don't bother.
+     * 
      * @see WorkflowContextService#processContext(WorkflowContext)
-     * @param isErrorFatal If true, then there was an error that should be reported as an error, not a warning...
+     * @param isErrorFatal
+     *            If true, then there was an error that should be reported as an error, not a warning...
      */
     public void setErrorFatal(boolean isErrorFatal) {
         this.isErrorFatal = isErrorFatal;

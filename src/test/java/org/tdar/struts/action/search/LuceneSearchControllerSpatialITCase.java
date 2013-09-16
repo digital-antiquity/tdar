@@ -91,7 +91,7 @@ public class LuceneSearchControllerSpatialITCase extends AbstractControllerITCas
     @Test
     @Rollback
     public void testGeoDocNotFoundTexasAZ() {
-        Document doc = createGeoDoc("dyess", 32.388, -99.885, 32.474 , -99.796);
+        Document doc = createGeoDoc("dyess", 32.388, -99.885, 32.474, -99.796);
         performGeoSearch(31.50362930577303, -114.78515625, 33.284619968887675, -112.67578125);
         assertFalse(controller.getResults().contains(doc));
     }
@@ -99,8 +99,8 @@ public class LuceneSearchControllerSpatialITCase extends AbstractControllerITCas
     @Test
     @Rollback
     public void testGeoDocScale() {
-        Document doc = createGeoDoc("dyess1", 1.388, -120, 85.474 , -99.796); // should not be found because scale is too big
-        Document doc2 = createGeoDoc("dyess2", 31, -115, 34, -112); // should be found  b/c on similar scale
+        Document doc = createGeoDoc("dyess1", 1.388, -120, 85.474, -99.796); // should not be found because scale is too big
+        Document doc2 = createGeoDoc("dyess2", 31, -115, 34, -112); // should be found b/c on similar scale
         performGeoSearch(31.50362930577303, -114.78515625, 33.284619968887675, -112.67578125);
         logger.info("searchScale:{}", searchBox.getScale());
         logger.info("bb1Scale:{}", doc.getFirstActiveLatitudeLongitudeBox().getScale());
@@ -108,7 +108,7 @@ public class LuceneSearchControllerSpatialITCase extends AbstractControllerITCas
         assertFalse(controller.getResults().contains(doc));
         assertTrue(controller.getResults().contains(doc2));
         assertTrue(searchBox.getScale() + SpatialQueryPart.SCALE_RANGE < doc.getFirstActiveLatitudeLongitudeBox().getScale());
-        
+
     }
 
     @Test

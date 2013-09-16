@@ -29,7 +29,7 @@ public class MessageService {
     // private Queue toPersist;
 
     private WorkflowContextService workflowContextService;
-    
+
     @Autowired
     private GenericDao genericDao;
 
@@ -132,7 +132,7 @@ public class MessageService {
             success = workflow_.run(ctx);
             // Martin: the following mandates that we wait for run to complete.
             // Surely the plan is to immediately show the user a result page with "your request is being processed" and then
-            // to use AJAX to poll the server for the result via a status bar? Or an email. And the following is to be moved to 
+            // to use AJAX to poll the server for the result via a status bar? Or an email. And the following is to be moved to
             // be part of that call back process?
             workflowContextService.processContext(ctx);
         } catch (Exception e) {
@@ -145,7 +145,8 @@ public class MessageService {
     }
 
     /**
-     * @param workflowContextService the workflowContextService to set
+     * @param workflowContextService
+     *            the workflowContextService to set
      */
     @Autowired
     public void setWorkflowContextService(WorkflowContextService workflowContextService) {
