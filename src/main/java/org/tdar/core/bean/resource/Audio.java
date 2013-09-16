@@ -125,4 +125,19 @@ public final class Audio extends InformationResource {
         this.audioCodec = audioCodec;
     }
 
+    @Override
+    public Audio getTransientCopyForWorkflow() {
+        final Audio result = new Audio();
+        result.setId(this.getId());
+        return result;
+    }
+
+    public void updateFromTransientResource(final Audio transientAudio) {
+        if (transientAudio == null) {
+            // Should never be here, so perhaps we should do more than return?
+            return;
+        }
+        this.audioCodec = transientAudio.getAudioCodec();
+    }
+
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Archive;
+import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -105,6 +106,10 @@ public class WorkflowContextService {
                     break;
                 case ARCHIVE:
                     ((Archive)resource).updateFromTransientResource((Archive) ctx.getTransientResource());
+                    genericDao.saveOrUpdate(resource);
+                    break;
+                case AUDIO:
+                    ((Audio)resource).updateFromTransientResource((Audio) ctx.getTransientResource());
                     genericDao.saveOrUpdate(resource);
                     break;
                 default:
