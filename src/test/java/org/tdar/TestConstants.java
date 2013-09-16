@@ -18,6 +18,7 @@ public interface TestConstants {
     public static String TEST_SENSORY_DIR = TEST_ROOT_DIR + "sensory/";
     public static final String TEST_DOCUMENT_DIR = TEST_ROOT_DIR + "documents/";
     public static final String TEST_ARCHIVE_DIR = TEST_ROOT_DIR + "archive/";
+    public static final String TEST_AUDIO_DIR = TEST_ROOT_DIR + "audio/";
     public static final String TEST_GIS_DIR = "gis/";
     public static final String TEST_SHAPEFILE_DIR = TEST_ROOT_DIR +  TEST_GIS_DIR + "shapefiles/tijeras/";
     public static String TEST_GEOTIFF_DIR = TEST_ROOT_DIR +  TEST_GIS_DIR + "geotiff/";

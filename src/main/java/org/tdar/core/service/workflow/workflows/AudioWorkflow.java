@@ -39,7 +39,7 @@ public class AudioWorkflow extends BaseWorkflow {
             registerFileExtension(extension, ResourceType.AUDIO);
         }
         // what tasks do we want to do with audio?
-        // at the very least we should extract some of the meta data and put it into the parent resource.
+        // at the very least we should extract some of the meta data and put it into the parent resource, I'm guessing...
         addTask(ExtractAudioInfoTask.class, WorkflowPhase.PRE_PROCESS);
     }
 
