@@ -57,6 +57,7 @@ public class VideoController extends AbstractInformationResourceController<Video
         return getPersistable();
     }
 
+    @Override
     public Class<Video> getPersistableClass() {
         return Video.class;
     }
