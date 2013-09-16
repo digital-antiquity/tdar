@@ -127,8 +127,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 }
             }
         }
-
-        addExistingCompositeFilesForProcessing(resource, filesToProcess, irFiles);
+        
+        // make sure we're only doing this if we have files to process
+        if (irFiles.size() > 0) {
+            addExistingCompositeFilesForProcessing(resource, filesToProcess, irFiles);
+        }
         processFiles(resource, filesToProcess);
 
         /*

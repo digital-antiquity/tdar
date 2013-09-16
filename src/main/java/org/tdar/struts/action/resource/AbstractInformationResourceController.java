@@ -65,7 +65,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private List<CategoryVariable> allDomainCategories;
 
-    private Project project;
+    private Project project = Project.NULL;
     private List<Resource> potentialParents;
 
     // incoming data
@@ -414,15 +414,26 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public Project getProject() {
-        // if we have a project -- use it, if we have a projectId; look it up
-        if (Persistable.Base.isNullOrTransient(project) && Persistable.Base.isNotNullOrTransient(projectId)) {
-            project = getProjectService().find(projectId);
+//        // if we have a project -- use it, if we have a projectId; look it up
+//        if (Persistable.Base.isNullOrTransient(project) && Persistable.Base.isNotNullOrTransient(projectId)) {
+//            project = getProjectService().find(projectId);
+//        }
+//
+//        if (project == null) {
+//            project = Project.NULL;
+//        }
+        return project;
+    }
+    
+    
+    protected void resolveProject() {
+        if (Persistable.Base.isNotNullOrTransient(projectId)) {
+            project = getGenericService().find(Project.class, projectId);
+            return;
         }
-
-        if (project == null) {
+        if (Persistable.Base.isNullOrTransient(project)) {
             project = Project.NULL;
         }
-        return project;
     }
 
     protected void setProject(Project project) {
@@ -507,6 +518,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         // FIXME: we need to set the project at this point to avoid getProjectId() being indexed too early
         // see TDAR-2001
+        resolveProject();
         getResource().setProject(getProject());
         super.saveBasicResourceMetadata();
     }

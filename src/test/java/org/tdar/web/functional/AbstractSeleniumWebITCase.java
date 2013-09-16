@@ -8,14 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -29,17 +22,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.UnhandledAlertException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -190,11 +173,12 @@ public abstract class AbstractSeleniumWebITCase {
         takeScreenshot();
     }
 
-    // temporary hack
+
+    //temporary hack
     private void removeAffix() {
         try {
             executeJavascript("$('#subnavbar').remove()");
-        } catch (Exception ex) {
+        } catch(Exception ex) {
             logger.warn("js error", ex);
         }
     }
@@ -490,7 +474,7 @@ public abstract class AbstractSeleniumWebITCase {
     // }
 
     public WebElementSelection waitFor(String selector) {
-        return waitFor(selector, 10);
+        return waitFor(selector, 20);
     }
 
     public WebElementSelection waitFor(String cssSelector, int timeoutInSeconds) {
@@ -810,7 +794,7 @@ public abstract class AbstractSeleniumWebITCase {
             logger.error("javascript error: {}", error);
         }
         if (!ignoreJavascriptErrors) {
-            // FIXME: uncomment the next line after we upgrade selenium to 2.35 (currently at 2.34)
+            //FIXME: uncomment the next line after we upgrade selenium to 2.35 (currently at 2.34)
             fail("ENCOUNTERED JAVASCRIPT ERRORS ON PAGE: " + driver.getCurrentUrl() + "\r\n [" + errors + "]");
         }
     }
@@ -889,7 +873,7 @@ public abstract class AbstractSeleniumWebITCase {
         find("#inputMethodId").find("[value=file]").click();
         find("#fileUploadField").sendKeys(uploadFile.getAbsolutePath());
     }
-
+    
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
         clearFileInputStyles();
         find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
@@ -928,6 +912,7 @@ public abstract class AbstractSeleniumWebITCase {
         // waitFor(".ui-menu-item a").click();
     }
 
+    
     protected void addInstitutionWithRole(Institution p, String prefix, ResourceCreatorRole role) {
         setFieldByName(prefix + ".institution.name", p.getName());
         setFieldByName(prefix + ".role", role.name());
