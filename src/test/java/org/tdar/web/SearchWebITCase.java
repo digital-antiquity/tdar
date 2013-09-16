@@ -16,7 +16,6 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.search.SearchFieldType;
@@ -166,26 +165,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testFacets() throws InstantiationException,
             IllegalAccessException {
         for (ResourceType rt : ResourceType.values()) {
-            final String path = "/" + rt.getUrlNamespace() + "/add";
-            gotoPage(path);
-            setInput(String.format("%s.%s", rt.getFieldName(), "title"), "test");
-            setInput(String.format("%s.%s", rt.getFieldName(), "description"), "test");
-            if (isCopyrightMandatory() && isNotAddProject(path)) {
-                // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
-                setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
-            }
-            if (!rt.isProject()) {
-                setInput(String.format("%s.%s", rt.getFieldName(), "date"), "2134");
-            }
-            if (rt.isSupporting()) {
-                setInput("fileInputMethod", "text");
-                if (rt == ResourceType.ONTOLOGY) {
-                    setInput("fileTextInput", "text\ttext\r\n");
-                } else {
-                    setInput("fileTextInput", "text,text\r\n");
-                }
-            }
-            submitForm();
+            createResourceFromType(rt);
         }
 
         reindex();
@@ -227,14 +207,6 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             }
         }
         assertTrue("should see links on the page", sawSomething);
-    }
-
-    private boolean isCopyrightMandatory() {
-        return TdarConfiguration.getInstance().getCopyrightMandatory();
-    }
-
-    private boolean isNotAddProject(final String path) {
-        return !path.endsWith("project/add");
     }
 
     @Test
