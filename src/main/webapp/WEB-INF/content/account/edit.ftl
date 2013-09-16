@@ -81,10 +81,10 @@ label.error {display:block;}
             <span class="help-block">Check this box if you will be contributing resources and/or resource metadata to ${siteAcronym}. You may change this setting at any time.
             </span>
             <label class="checkbox">
-                <@s.checkbox theme="simple" name="requestingContributorAccess" id="contributor-id"  />
-                I accept the ${siteAcronym}
+            <@s.checkbox theme="simple" name="requestingContributorAccess" id="contributor-id"  />
+                I <!-- accept the ${siteAcronym}
                 <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
-                and wish to add ${siteAcronym} content.
+                and --> wish to add ${siteAcronym} content.
             </label>
         </div>
     </div>
