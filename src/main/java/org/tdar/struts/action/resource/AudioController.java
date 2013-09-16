@@ -58,7 +58,7 @@ public class AudioController extends AbstractInformationResourceController<Audio
 
     @Override
     public boolean isMultipleFileUploadEnabled() {
-        return true;
+        return false;
     }
 
 }

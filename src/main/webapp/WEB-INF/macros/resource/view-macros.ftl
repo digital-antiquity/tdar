@@ -173,7 +173,8 @@ View freemarker macros
                         'SENSORY_DATA':'page-white-picture',
                         'ONTOLOGY':'page-white-text',
                         'GEOSPATIAL':'page-white-picture',
-                        'ARCHIVE':'page-white-zip'
+                        'ARCHIVE':'page-white-zip',
+                        'AUDIO':'cd'
           } />
 		      <#local ext = "" >
               <#local ext = extensionMap[irfile.latestUploadedOrArchivalVersion.extension?lower_case ]!'' />
