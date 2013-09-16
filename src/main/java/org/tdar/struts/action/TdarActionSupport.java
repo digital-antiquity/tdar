@@ -82,9 +82,23 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String FORBIDDEN = "forbidden";
     public static final String SUCCESS_ASYNC = "SUCCESS_ASYNC";
     public static final String NOT_FOUND = "not_found";
+    /**
+     * The action could not execute because the action requires an authenticated user.
+     */
     public static final String UNAUTHORIZED = "unauthorized";
+
+    //TODO: jtd: struts docs imply that Action.NONE is a more appropriate result. Research further then decide.
     public static final String AUTHENTICATED = "authenticated";
+
+    /**
+     * The action could not execute because one or more resources referenced in the action are no longer
+     * available (as opposed to a resource that is simply not found)
+     */
     public static final String GONE = "gone";
+
+    /**
+     * The action could not execute because the request has invalid or insufficient information
+     */
     public static final String BAD_REQUEST = "badrequest";
     public static final String SAVE = "save";
     public static final String ADD = "add";
@@ -95,6 +109,24 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String CONFIRM = "confirm";
     public static final String DELETE = "delete";
     public static final String NEW = "new";
+
+    /**
+     * The system has authenticated the user and the user is authorized to perform the requested action, but
+     * the action could not execute because the user must explicitly acknowledge/accept certain items (e.g.
+     * updated Terms Of Service)
+     */
+    public static final String USER_AGREEMENT = "user_agreement";
+
+    private String javascriptErrorLog;
+
+    /**
+     * The view layer ftl primes the js error log with "NOSCRIPT", and the js init tries to clear the log.  This way
+     * the validate() method can roughly determine if
+     * a) (if errorlog ==  'NOSCRIPT' ) javascript was disabled on the client
+     * b) (errorlog is blank) no js errors were captured (still plenty of ways js errors could have happened though)
+     * c) (errorlog has junk in it)  You've Got JS Errors!!
+     *
+     */
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -163,8 +195,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private HttpServletRequest servletRequest;
 
     private HttpServletResponse servletResponse;
-
-    private String javascriptErrorLog;
 
     public ProjectService getProjectService() {
         return projectService;
@@ -601,7 +631,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getCulturalTermsLabel() {
         return getTdarConfiguration().getCulturalTermsLabel();
     }
-
     
     private static final String JS_ERRORLOG_NOSCRIPT = "NOSCRIPT";
 //FIXME: UTF-8 here is likely inviting encoding errors/challenges especially if it ends up in the console which is often the "ASCII" charset

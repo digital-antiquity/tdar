@@ -5,5 +5,6 @@
                         <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
                             <input type="text" name="query" placeholder="Find archaeological data..." class="searchbox input-xxlarge">
 							<a href="/search">advanced</a>
+                            <input type="hidden" name="searchType" value="simple">
                         </form>
 

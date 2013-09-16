@@ -14,10 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
@@ -50,7 +52,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public static final String USERNAME_INVALID = "Username Invalid, cannot authenticated user";
     public static final String YOU_ARE_NOT_ALLOWED_TO_SEARCH_FOR_RESOURCES_WITH_THE_SELECTED_STATUS = "You are not allowed to search for resources with the selected status";
     private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<Person, TdarGroup>();
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
+
 
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
@@ -381,7 +386,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      * </ol>
      * 
      * @param person
-     * @param resource
+     * @param irFileVersion
      * @return true if person has write permissions on resource according to the above policies, false otherwise.
      */
     // @Deprecated
@@ -573,6 +578,85 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
     public Collection<String> getGroupMembership(Person person) {
         return Arrays.asList(getAuthenticationProvider().findGroupMemberships(person));
+    }
+
+    /**
+     * @param user
+     * @return true if user has pending requirements, otherwise false
+     */
+    public boolean userHasPendingRequirements(Person user) {
+        return !getUserRequirements(user).isEmpty();
+    }
+
+    /**
+     * @param user
+     * @return List containing pending requirements for the specified user
+     */
+    public List<AuthNotice> getUserRequirements(Person user) {
+        List<AuthNotice> notifications = new ArrayList<>();
+        // not public static final because don't work in testing
+        Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
+        Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
+
+        if(user.getTosVersion() < tosLatestVersion) {
+            notifications.add(AuthNotice.TOS_AGREEMENT);
+        }
+
+        if(user.getContributor() && user.getContributorAgreementVersion() < contributorAgreementLatestVersion) {
+            notifications.add(AuthNotice.CONTRIBUTOR_AGREEMENT);
+        }
+        return notifications;
+    }
+
+    /**
+     * Update Person record to indicate  that the specified user has satisfied a required task
+     * @param user
+     * @param req
+     */
+    @Transactional(readOnly = false)
+    public void satisfyPrerequisite(Person user, AuthNotice req) {
+        // not public static final because don't work in testing
+        Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
+        Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
+        switch (req) {
+            case CONTRIBUTOR_AGREEMENT:
+                user.setContributorAgreementVersion(contributorAgreementLatestVersion);
+                break;
+            case TOS_AGREEMENT:
+                user.setTosVersion(tosLatestVersion);
+                break;
+            case GUEST_ACCOUNT:
+                break;
+        }
+    }
+
+    @Transactional(readOnly = false)
+    void satisfyPrerequisites(Person user,  Collection<AuthNotice> notices) {
+        for(AuthNotice notice : notices) {
+            satisfyPrerequisite(user, notice);
+        }
+    }
+
+    /**
+     * Indicate that the user associated with the specified session has acknowledged/accepted the specified notices
+     * (e.g. user agreements)
+     * @param sessionData
+     * @param notices
+     */
+    @Transactional(readOnly=false)
+    public void satisfyUserPrerequisites(SessionData sessionData, Collection<AuthNotice> notices) {
+        //we actually need to update two person instances:  the persisted user record, and the detached user
+        //associated with the session. We hide this detail from the caller.
+        Person detachedUser = sessionData.getPerson();
+        Person persistedUser = personDao.find(detachedUser.getId());
+        satisfyPrerequisites(detachedUser, notices);
+        satisfyPrerequisites(persistedUser, notices);
+        personDao.saveOrUpdate(persistedUser);
+        logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getTosVersion(), detachedUser.getContributorAgreementVersion());
+        logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
+
+//        personDao.update(persistedUser); //i shouldn't need to do this.
+//        personDao.synchronize();
     }
 
 }

@@ -662,4 +662,19 @@ public class TdarConfiguration {
         return assistant.getStringProperty("kettle.input.path", "");
     }
 
+    public String getContributorAgreementUrl() {
+        return assistant.getStringProperty("contributor.url", "/about/contributor-agreement");
+    }
+
+    public String getTosUrl() {
+        return assistant.getStringProperty("tos.url", "/about/terms-of-use");
+    }
+
+    public int getContributorAgreementLatestVersion() {
+        return assistant.getIntProperty("contributor.agreement.version", 0);
+    }
+
+    public int getTosLatestVersion() {
+        return assistant.getIntProperty("tos.version", 0);
+    }
 }

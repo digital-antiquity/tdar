@@ -76,26 +76,27 @@ label.error {display:block;}
     </#if>
     
     <div class="control-group">
+        <label class="control-label">Contributor status</label>
         <div class="controls">
-            <label class="checkbox">
-                <@s.checkbox theme="simple" name="requestingContributorAccess" id="contributor-id" value="true" />
-                Do you plan to contribute? <em>You can change your mind later.</em>
-                <#-- Display resource creation options in menu? -->
-            </label>
-            <#--
-            <span class="help-block">
-                Check this option if you plan on contributing resources and/or resource metadata to ${siteAcronym}. You can change this option later.
+            <span class="help-block">Check this box if you will be contributing resources and/or resource metadata to ${siteAcronym}. You may change this setting at any time.
             </span>
-            -->
+            <label class="checkbox">
+                <@s.checkbox theme="simple" name="requestingContributorAccess" id="contributor-id"  />
+                I accept the ${siteAcronym}
+                <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                and wish to add ${siteAcronym} content.
+            </label>
         </div>
     </div>
+
     <div id='contributorReasonTextArea'>
+        <label class="control-label">Contributor information</label>
         <div class="control-group">
-            <label for='contributorReasonId'  class="control-label initialism">
-                <small>Please briefly describe the geographical areas, time periods, or other
-                subjects for which you would like to contribute information</small>
-            </label>
             <div class="controls">
+                <span class="help-block">
+                    Please briefly describe the geographical areas, time periods, or other subjects for which you
+                    would like to contribute information
+                </span>
                 <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='person.contributorReason' id='contributorReasonId' />
             </div>
         </div>    
@@ -159,11 +160,9 @@ $(function() {
   
 });
 function switchContributorReasonDisplay(shouldDisplay) {
-  $('#contributorReasonTextArea').toggle(shouldDisplay);
-  $('#contributorReasonId').attr("disabled", ! shouldDisplay);
-//  if (shouldDisplay) {
-//    $('#contributorReasonId').focus();
-//  }
+    var opt = shouldDisplay ? 'show' : 'hide';
+    $('#contributorReasonTextArea').collapse(opt);
+    $('#contributorReasonId').attr("disabled", ! shouldDisplay);
 }
 </script>
 </body>

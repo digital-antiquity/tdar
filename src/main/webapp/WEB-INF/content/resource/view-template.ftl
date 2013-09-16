@@ -253,7 +253,7 @@
     <div class="citeMe">
         <p class="sml">
         ${resource.title}. <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}.</#if> 
-         <#if resource.formattedSourceInformation?has_content>${resource.formattedSourceInformation}</#if> (${siteAcronym} ID: ${resource.id?c})
+         ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c})
         <#if resource.externalId?has_content>; ${resource.externalId}
         <#elseif resource.lessThanDayOld && !resource.citationRecord>
         <br/>
@@ -327,7 +327,7 @@
 					<#if local_.sidebarDataTop?? && local_.sidebarDataTop?is_macro>
 						<@local_.sidebarDataTop />
 					</#if>
-                    <#if ((resource.publisher.name)?has_content ||  resource.publisherLocation?has_content)>
+                    <#if (((resource.publisher.name)?has_content ||  resource.publisherLocation?has_content) && !((resource.resourceType.document)!false) )>
                         <li><strong>
                         <#-- label -->
                         <#if resource.documentType?has_content>

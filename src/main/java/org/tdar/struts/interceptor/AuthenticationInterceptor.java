@@ -8,10 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.UserAgreementController;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
@@ -27,7 +30,7 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
  * while preserving the initially requested URL in the session.  
  * 
  * Performs group membership checks if the {@link RequiresTdarUserGroup} annotation is set on the Action class or method.
- * By default assumes a group membership of {@link TdarGroup.TDAR_USERS}
+ * By default assumes a group membership of {@link TdarGroup#TDAR_USERS}
  * 
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
@@ -53,6 +56,10 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         this.authenticationAndAuthorizationService = authenticationService;
     }
 
+    @Autowired
+    GenericService genericService;
+
+
     @Override
     public void destroy() {
         authenticationAndAuthorizationService = null;
@@ -61,7 +68,6 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
     @Override
     public void init() {
-        // this.cacheControlHeaders = tdarConfiguration.getCacheControlHeaders();
     }
 
     @Override
@@ -70,6 +76,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         Object action = invocation.getAction();
         ActionProxy proxy = invocation.getProxy();
         String methodName = proxy.getMethod();
+        String result;
         if (methodName == null) {
             methodName = "execute";
         }
@@ -84,15 +91,35 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             else if (classLevelRequiresGroupAnnotation != null) {
                 group = classLevelRequiresGroupAnnotation.value();
             }
-            if (getAuthenticationAndAuthorizationService().isMember(sessionData.getPerson(), group)) {
-                return invocation.invoke();
+            Person user = sessionData.getPerson();
+            if (getAuthenticationAndAuthorizationService().isMember(user, group)) {
+                // user is authenticated and authorized to perform  requested action
+                return interceptPendingNotices(invocation, user);
             }
-            logger.debug(String.format("unauthorized access to %s/%s from %s with required group %s", action.getClass().getSimpleName(), methodName, sessionData.getPerson(), group));
+            logger.debug(String.format("unauthorized access to %s/%s from %s with required group %s", action.getClass().getSimpleName(), methodName, user, group));
             return TdarActionSupport.UNAUTHORIZED;
         }
         setReturnUrl(invocation);
         return Action.LOGIN;
     }
+
+    private String  interceptPendingNotices(ActionInvocation invocation, Person user) throws Exception {
+
+        Object action = invocation.getAction();
+        // user is authenticated and authorized to perform  requested action.
+        // now we check for any outstanding notices require user attention
+        String result = null;
+        if(authenticationAndAuthorizationService.userHasPendingRequirements(user)
+                //avoid infinite redirect
+                &&  !(action instanceof UserAgreementController)) {
+            logger.info("user: {} has pending agreements", user);
+            result =  TdarActionSupport.USER_AGREEMENT;
+        } else {
+            result =  invocation.invoke();
+        }
+        return result;
+    }
+
 
     protected void setCacheControl(String cacheControlHeaders) {
         logger.debug("Setting cache control headers to {}", cacheControlHeaders);

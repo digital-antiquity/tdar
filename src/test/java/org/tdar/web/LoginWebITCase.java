@@ -4,14 +4,17 @@
 package org.tdar.web;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.struts.action.UserAccountController;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 /**
  * @author Adam Brin
  * 
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
@@ -19,6 +22,27 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresentInPage("Welcome back,");
     }
 
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
+    public void testLoginWithPrompt() {
+        logger.info(getPageBodyCode());
+        assertTextPresent("User Agreements");
+        setInput("acceptedAuthNotices", "TOS_AGREEMENT");
+        setInput("acceptedAuthNotices", "CONTRIBUTOR_AGREEMENT");
+        clickElementWithId("accept");
+        assertTextPresentInPage("Welcome back,");
+    }
+
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
+    public void testLoginDeclineWithPrompt() {
+        logger.info(getPageBodyCode());
+        assertTextPresent("User Agreements");
+        clickElementWithId("decline");
+        assertTextPresentInPage("What can you dig up");
+    }
+
+    
     @Test
     public void testSecondLogin() {
         gotoPage("/login");

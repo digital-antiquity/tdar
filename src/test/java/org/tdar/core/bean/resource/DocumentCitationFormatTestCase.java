@@ -35,7 +35,7 @@ public class DocumentCitationFormatTestCase {
     public void testJournalArticle() {
         Document doc = new Document();
         setupDocumentWithAllFields(doc, DocumentType.JOURNAL_ARTICLE);
-        assertEquals("journalName. volume journalNumber: startPage-endPage. 1234", doc.getFormattedSourceInformation());
+        assertEquals("journalName. volume (journalNumber): startPage-endPage. 1234", doc.getFormattedSourceInformation());
     }
 
     @Test

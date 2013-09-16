@@ -164,6 +164,14 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
     private Set<BookmarkedResource> bookmarkedResources;
 
+    //version of the latest TOS that the user has accepted
+    @Column(name = "tos_version", nullable = false, columnDefinition = "int default 0")
+    private Integer tosVersion = 0;
+
+    //version of the latest Creator Agreement that the user has accepted
+    @Column(name = "contributor_agreement_version", nullable = false, columnDefinition = "int default 0")
+    private Integer contributorAgreementVersion = 0;
+
     /**
      * Returns the person's name in [last name, first name] format.
      * 
@@ -517,5 +525,21 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public void setTempDisplayName(String tempName) {
         this.tempDisplayName = tempName;
+    }
+
+    public Integer getContributorAgreementVersion() {
+        return contributorAgreementVersion;
+    }
+
+    public void setContributorAgreementVersion(Integer contributorAgreementVersion) {
+        this.contributorAgreementVersion = contributorAgreementVersion;
+    }
+
+    public Integer getTosVersion() {
+        return tosVersion;
+    }
+
+    public void setTosVersion(Integer tosVersion) {
+        this.tosVersion = tosVersion;
     }
 }

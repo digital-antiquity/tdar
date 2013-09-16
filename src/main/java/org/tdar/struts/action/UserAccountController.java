@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -249,7 +250,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 getContributorRequest().setContributorReason(person.getContributorReason());
                 getContributorRequest().setTimestamp(new Date());
                 getEntityService().saveOrUpdate(getContributorRequest());
+                getAuthenticationAndAuthorizationService().satisfyPrerequisite(person, AuthNotice.CONTRIBUTOR_AGREEMENT);
             }
+            getAuthenticationAndAuthorizationService().satisfyPrerequisite(person, AuthNotice.TOS_AGREEMENT);
+
             // add user to Crowd
             person.setStatus(Status.ACTIVE);
             getEntityService().saveOrUpdate(person);
@@ -593,6 +597,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     public void setReCaptchaText(String reCaptchaText) {
         this.reCaptchaText = reCaptchaText;
+    }
+
+    public String getTosUrl() {
+        return getTdarConfiguration().getTosUrl();
+    }
+
+    public String getContributorAgreementUrl() {
+        return getTdarConfiguration().getContributorAgreementUrl();
     }
 
 }
