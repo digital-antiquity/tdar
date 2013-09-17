@@ -841,13 +841,23 @@ h3.image-mid-red::before {
 	margin-bottom: -2px;
 }
 
-h3.video-mid-red::before {
-	background: url(/images/r4/tdar-sprites.gif) -745px -487px no-repeat;
+h3.audio-mid-red::before {
+	/* Temporary placeholder image until we get a better quality one... */
+	background: url(/images/sound.gif) no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
 	content: "";
 	margin-bottom: -2px;
+}
+
+h3.video-mid-red::before {
+    background: url(/images/r4/tdar-sprites.gif) -745px -487px no-repeat;
+    display: inline-block;
+    width: 34px;
+    height: 37px;
+    content: "";
+    margin-bottom: -2px;
 }
 
 h3.sensory_data-mid-red::before {
