@@ -29,11 +29,14 @@ import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
+import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
@@ -96,6 +99,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
         fake.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000));
         // fake.getResourceCollections().clear();
+        removeInvalidFields(fake);
         String docXml = xmlService.convertToXML(fake);
         logger.info(docXml);
 
@@ -176,6 +180,10 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Document doc = genericService.findAll(Document.class, 1).get(0);
         genericService.markReadOnly(doc);
         doc.setId(null);
+        doc.getInformationResourceFiles().clear();
+        doc.setMappedDataKeyColumn(null);
+        doc.getBookmarks().clear();
+        removeInvalidFields(doc);
         String docXml = xmlService.convertToXML(doc);
         logger.info(docXml);
         APIController controller = generateNewInitializedController(APIController.class);
@@ -185,6 +193,26 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         logger.info(controller.getErrorMessage());
         assertEquals(APIController.SUCCESS, uploadStatus);
         assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
+    }
+
+    private void removeInvalidFields(Resource doc) {
+        if (doc instanceof Dataset) {
+            ((Dataset) doc).getDataTables().clear();
+        }
+        if (doc instanceof CodingSheet) {
+            ((CodingSheet) doc).getCodingRules().clear();
+            ((CodingSheet) doc).getAssociatedDataTableColumns().clear();
+            ((CodingSheet) doc).setDefaultOntology(null);
+        }
+        if (doc instanceof Ontology) {
+            ((Ontology) doc).getOntologyNodes().clear();
+        }
+        if (doc instanceof Project) {
+            ((Project)doc).getCachedInformationResources().clear();
+        }
+        if (doc instanceof InformationResource) {
+            ((InformationResource)doc).getRelatedDatasetData().clear();
+        }
     }
 
     @Test
@@ -266,6 +294,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         img.setDescription("d");
         img.setFilename("1234");
         data.getSensoryDataImages().add(img);
+        removeInvalidFields(data);
         String docXml = xmlService.convertToXML(data);
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
@@ -288,6 +317,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Document document = genericService.findAll(Document.class, 1).get(0);
         genericService.markReadOnly(document);
         document.setId(oldId);
+        removeInvalidFields(document);
         String docXml = xmlService.convertToXML(document);
         genericService.detachFromSession(document);
         controller.setRecord(docXml);
@@ -308,6 +338,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         APIController controller = generateNewInitializedController(APIController.class);
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         Dataset doc = findAResource(Dataset.class);
+        removeInvalidFields(doc);
 
         String datasetXml = xmlService.convertToXML(doc);
         controller.setRecord(datasetXml);
@@ -323,6 +354,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback(true)
     public void testInvalidUser() throws Exception {
         Document doc = generateDocumentWithUser();
+        removeInvalidFields(doc);
         String docXml = xmlService.convertToXML(doc);
 
         APIController controller = generateNewController(APIController.class);
@@ -348,6 +380,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         InvestigationType bad = new InvestigationType();
         bad.setLabel("INVAID");
         doc.getInvestigationTypes().add(bad);
+        removeInvalidFields(doc);
         String docXml = xmlService.convertToXML(doc);
         doc = null;
         controller.setRecord(docXml);
@@ -374,6 +407,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Long docid = doc.getId();
         genericService.markReadOnly(doc);
         doc.setResourceLanguage(Language.ENGLISH);
+        removeInvalidFields(doc);
         String docXml = xmlService.convertToXML(doc);
         doc = null;
         docXml = StringUtils.replace(docXml, Language.ENGLISH.name(), "FNGLISH");

@@ -666,11 +666,11 @@ public class TdarConfiguration {
     }
 
     public String getContributorAgreementUrl() {
-        return assistant.getStringProperty("contributor.url", "/about/contributor-agreement");
+        return assistant.getStringProperty("contributor.url", "http://www.tdar.org/about/policies/contributors-agreement/");
     }
 
     public String getTosUrl() {
-        return assistant.getStringProperty("tos.url", "/about/terms-of-use");
+        return assistant.getStringProperty("tos.url", "http://www.tdar.org/about/policies/terms-of-use/");
     }
 
     public int getContributorAgreementLatestVersion() {

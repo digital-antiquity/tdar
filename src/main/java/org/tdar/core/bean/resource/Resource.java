@@ -1630,6 +1630,11 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.setDateCreated(resource.getDateCreated());
         this.setStatus(resource.getStatus());
         this.setSubmitter(resource.getSubmitter());
+        // set previous, then set current
+        this.setSpaceInBytesUsed(resource.getPreviousSpaceInBytesUsed());
+        this.setFilesUsed(resource.getPreviousFilesUsed());
+        this.setSpaceInBytesUsed(resource.getSpaceInBytesUsed());
+        this.setFilesUsed(resource.getFilesUsed());
         this.getResourceCollections().addAll(resource.getResourceCollections());
 
     }

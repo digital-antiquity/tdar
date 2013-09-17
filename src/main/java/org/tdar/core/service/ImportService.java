@@ -30,8 +30,10 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.ControlledKeyword;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
@@ -112,25 +114,7 @@ public class ImportService {
             ((InformationResource) incoming_).setProject(genericService.find(Project.class, projectId));
         }
 
-        if (incomingResource instanceof Dataset) {
-            Dataset dataset = (Dataset) incomingResource;
-            if (CollectionUtils.isNotEmpty(dataset.getDataTables())) {
-                dataset.getDataTables().clear();
-                throw new APIException("dataTables are not supported by API", StatusCode.UNKNOWN_ERROR);
-            }
-        }
-
-        if (incomingResource instanceof InformationResource) {
-            InformationResource informationResource = (InformationResource) incomingResource;
-            if (CollectionUtils.isNotEmpty(informationResource.getInformationResourceFiles())) {
-                informationResource.getInformationResourceFiles().clear();
-                throw new APIException("InformationResourceFiles are not supported by API", StatusCode.UNKNOWN_ERROR);
-            }
-            if (CollectionUtils.isNotEmpty(informationResource.getRelatedDatasetData().keySet())) {
-                informationResource.getRelatedDatasetData().clear();
-                throw new APIException("Related Dataset Data are not supported by API", StatusCode.UNKNOWN_ERROR);
-            }
-        }
+        validateInvalidImportFields(incomingResource);
 
         
         
@@ -189,6 +173,56 @@ public class ImportService {
         incomingResource.setCreated(created);
         genericService.saveOrUpdate(incomingResource);
         return incomingResource;
+    }
+
+    private <R extends Resource> void validateInvalidImportFields(R incomingResource) throws APIException {
+        if (incomingResource instanceof Dataset) {
+            Dataset dataset = (Dataset) incomingResource;
+            if (CollectionUtils.isNotEmpty(dataset.getDataTables())) {
+                throw new APIException("dataTables are not supported by API", StatusCode.UNKNOWN_ERROR);
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(incomingResource.getBookmarks())) {
+            throw new APIException("bookmarks are not supported by API", StatusCode.UNKNOWN_ERROR);
+        }
+
+        if (incomingResource instanceof CodingSheet) {
+            CodingSheet codingSheet = (CodingSheet) incomingResource;
+            if (CollectionUtils.isNotEmpty(codingSheet.getMappedValues()) || 
+                    CollectionUtils.isNotEmpty(codingSheet.getAssociatedDataTableColumns()) ||
+                    CollectionUtils.isNotEmpty(codingSheet.getCodingRules()) ||
+                    Persistable.Base.isNotNullOrTransient(codingSheet.getDefaultOntology())
+                    ) {
+                throw new APIException("coding sheet mappings are not supported by API", StatusCode.UNKNOWN_ERROR);
+            }
+        }
+
+        if (incomingResource instanceof Ontology) {
+            Ontology ontology = (Ontology) incomingResource;
+            if (CollectionUtils.isNotEmpty(ontology.getOntologyNodes())) {
+                throw new APIException("ontology nodes are not supported by API", StatusCode.UNKNOWN_ERROR);
+            }
+        }
+
+        if (incomingResource instanceof Project) {
+            Project project = (Project) incomingResource;
+            if (CollectionUtils.isNotEmpty(project.getCachedInformationResources())) {
+                throw new APIException("cached information resources are not supported by API", StatusCode.UNKNOWN_ERROR);
+            }
+        }
+
+        if (incomingResource instanceof InformationResource) {
+            InformationResource informationResource = (InformationResource) incomingResource;
+
+            if (CollectionUtils.isNotEmpty(informationResource.getRelatedDatasetData().keySet())) {
+                throw new APIException("Related Dataset Data are not supported by API", StatusCode.UNKNOWN_ERROR);
+            }
+            
+            if (Persistable.Base.isNotNullOrTransient(informationResource.getMappedDataKeyColumn())) {
+                throw new APIException("Related Dataset Data are not supported by API", StatusCode.UNKNOWN_ERROR);
+            }
+        }
     }
 
     /*

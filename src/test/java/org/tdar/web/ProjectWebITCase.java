@@ -2,7 +2,6 @@ package org.tdar.web;
 
 import org.junit.Test;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 
