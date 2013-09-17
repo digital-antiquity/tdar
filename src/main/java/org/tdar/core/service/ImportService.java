@@ -30,6 +30,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.ControlledKeyword;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -109,6 +110,26 @@ public class ImportService {
 
         if (Persistable.Base.isNotNullOrTransient(projectId) && incoming_ instanceof InformationResource) {
             ((InformationResource) incoming_).setProject(genericService.find(Project.class, projectId));
+        }
+
+        if (incomingResource instanceof Dataset) {
+            Dataset dataset = (Dataset) incomingResource;
+            if (CollectionUtils.isNotEmpty(dataset.getDataTables())) {
+                dataset.getDataTables().clear();
+                throw new APIException("dataTables are not supported by API", StatusCode.UNKNOWN_ERROR);
+            }
+        }
+
+        if (incomingResource instanceof InformationResource) {
+            InformationResource informationResource = (InformationResource) incomingResource;
+            if (CollectionUtils.isNotEmpty(informationResource.getInformationResourceFiles())) {
+                informationResource.getInformationResourceFiles().clear();
+                throw new APIException("InformationResourceFiles are not supported by API", StatusCode.UNKNOWN_ERROR);
+            }
+            if (CollectionUtils.isNotEmpty(informationResource.getRelatedDatasetData().keySet())) {
+                informationResource.getRelatedDatasetData().clear();
+                throw new APIException("Related Dataset Data are not supported by API", StatusCode.UNKNOWN_ERROR);
+            }
         }
 
         // for every field that has a "persistable" or a collection of them...
