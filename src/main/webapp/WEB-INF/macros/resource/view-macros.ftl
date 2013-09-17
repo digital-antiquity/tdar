@@ -384,7 +384,7 @@ No coding rules have been entered for this coding sheet yet.
 <#macro keywords showParentProjectKeywords=true>
   <#if resource.containsActiveKeywords >
         <h2>Keywords</h2>
-        <#if resource.projectVisible?? && resource.projectVisible && resource.inheritingSomeMetadata>
+        <#if resource.projectVisible?? && !resource.projectVisible && resource.inheritingSomeMetadata>
             <em>Note: Inherited values from this project are not available because the project is not active</em>
         </#if>
         <div class="row">
