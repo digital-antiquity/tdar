@@ -48,18 +48,18 @@
                 Certain images and/or datasets fall under the heading of Sensory Data. 3-D scans, for example. 
         </div>
     </div>
-    <div class="row">
      <#if videoEnabled>
-        <div class="span4">
-            <h3 class="video-mid-red"><@link "video" "Video" /></h3>
-            A video
-        </div>
-    </#if>
-        <div class="span4">
-            <h3 class="audio-mid-red"><@link "audio" "Audio" /></h3>
-            An audio file
+        <div class="row">
+            <div class="span4">
+                <h3 class="video-mid-red"><@link "video" "Video" /></h3>
+                A video
+            </div>
+            <div class="span4">
+                <h3 class="audio-mid-red"><@link "audio" "Audio" /></h3>
+                An audio file
         </div>
     </div>
+    </#if>
     <div class="row">
         <div class="span4">
                 <h3 class="ontology-mid-red"><@link "ontology" "Ontology"/></h3>

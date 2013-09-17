@@ -112,7 +112,6 @@ public class ResourceService extends GenericService {
         return getGenericDao().find(Video.class, id) != null;
     }
 
-    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public <R extends Resource> R find(Long id) {
         if (id == null)
@@ -449,7 +448,6 @@ public class ResourceService extends GenericService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Transactional
     public <T extends HasResource<Resource>> Set<T> cloneSet(Resource resource, Set<T> targetCollection, Set<T> sourceCollection) {
         logger.debug("cloning: " + sourceCollection);
@@ -493,7 +491,6 @@ public class ResourceService extends GenericService {
         return datasetDao.getUsageStatsForResource(granularity, start, end, minCount, resourceIds);
     }
 
-    @SuppressWarnings("unchecked")
     @Transactional
     public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
         if (Persistable.Base.isNullOrTransient(resource))
@@ -507,9 +504,10 @@ public class ResourceService extends GenericService {
     }
 
     public List<ResourceType> getAllResourceTypes() {
-        ArrayList<ResourceType> arrayList = new ArrayList<ResourceType>(Arrays.asList(ResourceType.values()));
+        ArrayList<ResourceType> arrayList = new ArrayList<>(Arrays.asList(ResourceType.values()));
         if (!TdarConfiguration.getInstance().isVideoEnabled()) {
             arrayList.remove(ResourceType.VIDEO);
+            arrayList.remove(ResourceType.AUDIO);
         }
 
         if (!TdarConfiguration.getInstance().isArchiveFileEnabled()) {

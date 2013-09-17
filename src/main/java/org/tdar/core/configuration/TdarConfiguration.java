@@ -596,6 +596,9 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("archive.enabled", false);
     }
 
+    /**
+     * @return true if <b>Video</b> <i>and</i> <b>Audio</b> are enabled, false otherwise.
+     */
     public boolean isVideoEnabled() {
         return assistant.getBooleanProperty("video.enabled", false);
     }
