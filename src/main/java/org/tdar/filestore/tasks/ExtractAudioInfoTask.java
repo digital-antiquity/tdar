@@ -19,7 +19,7 @@ public class ExtractAudioInfoTask extends AbstractTask {
     private static final long serialVersionUID = -6384923066139056050L;
 
     @Override
-    public void run() throws Exception {
+    public void run() {
         final WorkflowContext ctx = getWorkflowContext();
 
         // first off, a whole raft of preconditions that we need to pass before we write the control file:
@@ -55,9 +55,15 @@ public class ExtractAudioInfoTask extends AbstractTask {
 
     }
 
-    protected void writeFileMetadataToAudioFile(Audio targetAudioResource, File originalAudioFile) throws UnsupportedAudioFileException, IOException {
-        AudioFileFormat audioFileFormat = AudioSystem.getAudioFileFormat(originalAudioFile);
-        targetAudioResource.setAudioCodec(audioFileFormat.toString());
+    protected void writeFileMetadataToAudioFile(Audio targetAudioResource, File originalAudioFile) {
+        AudioFileFormat audioFileFormat;
+        try {
+            audioFileFormat = AudioSystem.getAudioFileFormat(originalAudioFile);
+            targetAudioResource.setAudioCodec(audioFileFormat.toString());
+        } catch (UnsupportedAudioFileException | IOException e) {
+            targetAudioResource.setAudioCodec("Java Sound API needs upgrading to determine content.");
+            getLogger().error("Swallowed error", e);
+        }
     }
 
     @Override

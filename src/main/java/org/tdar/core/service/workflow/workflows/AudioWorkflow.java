@@ -25,14 +25,16 @@ public class AudioWorkflow extends BaseWorkflow {
      * From: http://guides.archaeologydataservice.ac.uk/g2gp/Audio_3
      * <p>
      * We should support wav, bwf, aif and flac. However, the AudioSystem in java only supports wav, au and aif. So we are probably going to need to add
-     * decoders to the Audio SPI. However, at the moment the request for this work makes no mention of the file types to be supported, so for the time being, we
+     * decoders to the Audio SPI. 
+     * However, at the moment the request for this work makes no mention of the file types to be supported, so for the time being, we
      * will only support the ones the AudioSystem supports out of the box. And solicit user feedback.
+     * <p>Armin has requested that we simply ignore the files that are not supported, and that we add mp3 to the list for the time being.
      * <p>
      * <code>AudioSystem.getAudioFileTypes()</code> lists the types of audio files the system supports.
      * <p>
      * jFLAC is at: http://jflac.sourceforge.net/
      */
-    public static final Collection<String> AUDIO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "wav", "aif", "aiff" });
+    public static final Collection<String> AUDIO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "wav", "aif", "aiff", "flac", "bwf", "mp3" });
 
     public AudioWorkflow() {
         for (String extension : AUDIO_EXTENSIONS_SUPPORTED) {
