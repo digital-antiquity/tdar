@@ -11,7 +11,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.TdarActionException;
 
 /**
- * Makes audio file
+ * Manages audio files
  * 
  * @author Martin Paulo
  */
@@ -58,7 +58,8 @@ public class AudioController extends AbstractInformationResourceController<Audio
 
     @Override
     public boolean isMultipleFileUploadEnabled() {
-        // explicitly set to 1: for if we have multiple files then we need to add some sort of bridging table to contain the info on each file uploaded.
+        // Explicitly set to 1: for if we have multiple files then we need to add some sort of bridging table to contain the info on each file uploaded.
+        // Also, Some of the properties like "Audio Codex" or Software may have challenges if we allow multiple files per Audio resource.
         return false;
     }
 
