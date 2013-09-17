@@ -1018,6 +1018,12 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.10</version>
+        <configuration>
+          <enableRSS>false</enableRSS>
+          <includes>org/tdar/**/*.java</includes>
+          <enableRulesSummary>true</enableRulesSummary>
+          <configLocation>src/main/resources/check_style.xml</configLocation>  
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -1032,6 +1038,7 @@
         <reportSets>
           <reportSet>
             <reports>
+              <report>index</report>
               <report>project-team</report>
               <report>mailing-list</report>
               <report>cim</report>
@@ -1530,6 +1537,7 @@
           <enableRSS>false</enableRSS>
           <includes>org/tdar/*.java</includes>
           <enableRulesSummary>true</enableRulesSummary>
+          <configLocation>src/main/resources/check_style.xml</configLocation>  
         </configuration>
       </plugin>
 		</plugins>
