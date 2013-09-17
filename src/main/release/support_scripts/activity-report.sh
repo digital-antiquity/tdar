@@ -8,10 +8,10 @@ SAVING=`zgrep -c "SAVING" ${FILE}`
 SEARCH_DOWNLOAD=`zgrep -c "begin: GET:/search/download" ${FILE}`
 DELETING=`zgrep -c "DELETING" ${FILE}`
 SEARCH=`zgrep -c "SEARCH:" ${FILE}`
-SIMPLESEARCH=`zgrep -c "searchType=simple" ${FILE}`/2
+SIMPLESEARCH=`zgrep -c "searchType=simple" ${FILE}`
 SIMPLESEARCH=`expr ${SIMPLESEARCH} / 2`
 
-ADVANCEDSEARCH=`zgrep -c "searchType=advanced" ${FILE}`/2
+ADVANCEDSEARCH=`zgrep -c "searchType=advanced" ${FILE}`
 ADVANCEDSEARCH=`expr ${ADVANCEDSEARCH} / 2`
 
 CREATOR=`zgrep -c "browseCreators:" ${FILE}`
