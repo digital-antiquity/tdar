@@ -95,7 +95,7 @@ TDAR.fileupload = function() {
                     
                     var files = $rows.map(function(){
                         var file = {};
-                        $(this).find('[type=hidden]').each(function(){
+                        $(this).find('[type="hidden"]').each(function(){
                             file[$(this).attr("class")] = $(this).val();
                         });
                         file.context = $(this);
