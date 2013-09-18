@@ -210,16 +210,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         return statusCode;
     }
 
-    public Long createResourceFromType(ResourceType rt) {
+    public Long createResourceFromType(ResourceType rt, String title) {
         final String path = "/" + rt.getUrlNamespace() + "/add";
         gotoPage(path);
-        setInput(String.format("%s.%s", rt.getFieldName(), "title"), "test");
-        setInput(String.format("%s.%s", rt.getFieldName(), "description"), "test");
-        if (TdarConfiguration.getInstance().getCopyrightMandatory() && !path.endsWith("project/add")) {
-            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
-            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
-        }
+        setInput(String.format("%s.%s", rt.getFieldName(), "title"), title);
+        setInput(String.format("%s.%s", rt.getFieldName(), "description"), title + "::description");
         if (!rt.isProject()) {
+            if (TdarConfiguration.getInstance().getCopyrightMandatory() ) {
+                // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+                setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+            }
             setInput(String.format("%s.%s", rt.getFieldName(), "date"), "2134");
         }
         if (rt.isSupporting()) {
