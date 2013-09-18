@@ -13,6 +13,14 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase{
     public void testAddingInformationResourceToProject() {
         String resourceName = "newresource";
         
+        setupDocumentWithProject(resourceName);
+        
+        gotoPage("/project/" + TestConstants.PARENT_PROJECT_ID);
+        assertTextPresent(resourceName);
+    }
+
+
+    private void setupDocumentWithProject(String resourceName) {
         gotoPage("/project/" + TestConstants.PARENT_PROJECT_ID);
         
         gotoPage("/document/add");
@@ -26,9 +34,6 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         }
         submitForm();
         //get the id of the new resource
-        
-        gotoPage("/project/" + TestConstants.PARENT_PROJECT_ID);
-        assertTextPresent(resourceName);
     }
 
 
@@ -36,18 +41,7 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase{
     public void testChangingProject() {
         String resourceName = "changing project resource";
         Long projectId = createResourceFromType(ResourceType.PROJECT,"changing project test");
-        gotoPage("/project/" + TestConstants.PARENT_PROJECT_ID);
-        
-        gotoPage("/document/add");
-        setInput("document.title", resourceName);
-        setInput("document.description",  "hi mom");
-        setInput("document.date", "1999");
-        setInput("projectId", TestConstants.PARENT_PROJECT_ID.toString());
-        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
-            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
-        }
-        submitForm();
+        setupDocumentWithProject(resourceName);
         String url = getCurrentUrlPath();
         //get the id of the new resource
         
