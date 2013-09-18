@@ -279,9 +279,6 @@ View freemarker macros
         </@fileInfoSection>
         </tbody>
         </table>
-        <#if local_.afterFileInfo?? && local_.afterFileInfo?is_macro>
-            <@local_.afterFileInfo />
-        </#if>
         <#if (hasRestrictedFiles() && contactInformationAvailable())>
         <div class="well restricted-files-contacts">
             <h4>Accessing Restricted Files</h4>

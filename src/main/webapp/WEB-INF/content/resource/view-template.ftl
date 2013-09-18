@@ -306,7 +306,9 @@
     <#if !resource.resourceType.project>
 	    <@view.extendedFileInfo />
 	</#if>    
-    
+    <#if local_.afterFileInfo?? && local_.afterFileInfo?is_macro>
+        <@local_.afterFileInfo />
+    </#if>
     <@view.infoResourceAccessRights />
 
 
