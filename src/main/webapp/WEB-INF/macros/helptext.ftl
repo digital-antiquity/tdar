@@ -230,3 +230,9 @@ the parent project.<br />
 <strong>NB:</strong> This is a process that can only be run once!
 </div>
 </#macro>
+
+<#macro audioSoftwareTip>
+<div id="divAudioSoftwareTip" class="hidden"> 
+This is the name of the application or program that created the audio file that is being uploaded.<br />
+</div>
+</#macro>
