@@ -165,7 +165,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testFacets() throws InstantiationException,
             IllegalAccessException {
         for (ResourceType rt : ResourceType.values()) {
-            createResourceFromType(rt);
+            createResourceFromType(rt,"test");
         }
 
         reindex();
