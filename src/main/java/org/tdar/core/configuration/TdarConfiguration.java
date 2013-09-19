@@ -57,8 +57,8 @@ public class TdarConfiguration {
 
     private Filestore filestore;
 
-    private Set<String> stopWords = new HashSet<String>();
-    private List<String> couponCodes = new ArrayList<String>();
+    private Set<String> stopWords = new HashSet<>();
+    private List<String> couponCodes = new ArrayList<>();
 
     private String configurationFile;
 
@@ -629,7 +629,7 @@ public class TdarConfiguration {
 
     public List<Long> getUserIdsToIgnoreInLargeTasks() {
         String users = assistant.getStringProperty("userids.to.ignore");
-        List<Long> userIds = new ArrayList<Long>();
+        List<Long> userIds = new ArrayList<>();
         for (String userid : users.split("[|,;]")) {
             try {
                 if (StringUtils.isNotBlank(userid)) {
@@ -679,5 +679,9 @@ public class TdarConfiguration {
 
     public int getTosLatestVersion() {
         return assistant.getIntProperty("tos.version", 0);
+    }
+
+    public boolean isSwitchableMapObfuscation() {
+        return assistant.getBooleanProperty("switchable.map.obfuscation");
     }
 }
