@@ -120,9 +120,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
     }
 
-    private boolean isActuallyObfuscated() {
-        return (getMinObfuscatedLongitude() != getMinimumLongitude() || getMaxObfuscatedLongitude() != getMaximumLongitude()
-                || getMinObfuscatedLatitude() != getMinimumLatitude() || getMaxObfuscatedLatitude() != getMaximumLatitude());
+    protected boolean isActuallyObfuscated() {
+        return !getMinObfuscatedLongitude().equals(getMinimumLongitude()) || !getMaxObfuscatedLongitude().equals(getMaximumLongitude())
+                || !getMinObfuscatedLatitude().equals(getMinimumLatitude()) || !getMaxObfuscatedLatitude().equals(getMaximumLatitude());
     }
 
     /* fixme ** test */
