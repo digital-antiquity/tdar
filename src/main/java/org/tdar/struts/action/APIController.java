@@ -84,6 +84,7 @@ public class APIController extends AuthenticationAware.Base {
             if (!isAdministrator() && !getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), resource)) {
                 obfuscationService.obfuscate(resource);
             }
+            logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
             String xml = xmlService.convertToXML(resource);
             setInputStream(new ByteArrayInputStream(xml.getBytes()));
             return SUCCESS;
@@ -123,15 +124,18 @@ public class APIController extends AuthenticationAware.Base {
             setImportedRecord(loadedRecord);
             setId(loadedRecord.getId());
 
-            logMessage("SAVING", loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
             message = "updated:" + loadedRecord.getId();
+            StatusCode code = StatusCode.UPDATED;
             status = StatusCode.UPDATED.getResultName();
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
                 message = "created:" + loadedRecord.getId();
+                code= StatusCode.CREATED;
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
+            
+            logMessage(" API "+ code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
             getServletResponse().setStatus(statuscode);
             getResourceService().logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
