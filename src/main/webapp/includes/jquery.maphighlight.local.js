@@ -1,4 +1,6 @@
-// locally modified to handle image scaling
+// local modifications:
+// - handling image scaling
+// - adding quotes to css attribute selectors
 (function($) {
     var has_VML, create_canvas_for, add_shape_to, clear_canvas, shape_from_area,
         canvas_style, hex_to_decimal, css3color, is_image_loaded, options_from_area;
@@ -73,7 +75,7 @@
             $(canvas).append(e);
         };
         clear_canvas = function(canvas) {
-            $(canvas).find('[name=highlighted]').remove();
+            $(canvas).find('[name="highlighted"]').remove();
         };
     }
     
