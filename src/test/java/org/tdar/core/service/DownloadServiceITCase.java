@@ -76,11 +76,11 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
             dmap.put(file.getName(), file);
         }
 
-        List<String> errs = new ArrayList<String>();
+        List<String> errs = new ArrayList<>();
         for (File expected : expectedFiles) {
-            TFile actual = (TFile) dmap.get(expected.getName());
+            TFile actual = dmap.get(expected.getName());
             if (actual == null) {
-                errs.add("expected file not in archive:" + actual.getName());
+                errs.add("expected file not in archive:" + expected.getName());
                 continue;
             }
             File temp = File.createTempFile("test123", ".tmp");
