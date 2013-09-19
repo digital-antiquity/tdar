@@ -220,7 +220,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = true)
     public Creator findAuthorityFromDuplicate(Creator dup) {
-        if (Persistable.Base.isNullOrTransient(dup)) {
+        if (Persistable.Base.isNullOrTransient(dup) || !dup.isDuplicate()) {
             return null;
         }
         if (dup instanceof Person) {
