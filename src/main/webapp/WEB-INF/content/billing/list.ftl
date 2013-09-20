@@ -34,6 +34,7 @@
 </table>
 <script type="text/javascript">
     $(function(){
+       TDAR.datatable.extendSorting();
        $("#tblAllAccounts").dataTable({"bFilter": false, "bInfo": false, "bPaginate":false})
     });
 </script>

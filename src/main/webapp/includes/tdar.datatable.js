@@ -7,7 +7,7 @@ TDAR.datatable = function() {
 
 // FIXME: selectableRows is redundant -- let rowSelectionCallback implicitly indicate that we want selectable rows.
 function _registerLookupDataTable(parms) {
-
+    _extendSorting();
     // tableSelector, sAjaxSource, sAjaxDataProp, aoColumns, requestCallback, selectableRows
     var doNothingCallback = function(){};
     var options = {
@@ -188,6 +188,7 @@ function fnRenderTitleAndDescription(oObj) {
 
 function _setupDashboardDataTable(options) {
     var _options = $.extend({}, options);
+    _extendSorting();
 
     // set the project selector to the last project viewed from this page
     // if not found, then select the first item
@@ -389,7 +390,33 @@ function _scrollOnPagination() {
     $(".dataTables_paginate a").click(function(){$(".dataTables_scrollBody").animate( {scrollTop:0 });return true;});
 }
 
+function _extendSorting() {
+    
+    jQuery.fn.dataTableExt.aTypes.unshift (
+            function ( sData )
+            {
+                if (sData.trim().match(/\$?\-?([\d,\.])*/g)) {
+                 return 'tdar-number';
+                }
+                return null;
+            }
+        );    
+
+    jQuery.fn.dataTableExt.oSort['tdar-number-asc']  = function(x_,y_) {
+        var x = parseFloat(x_.replace(/([\$|\s|\,]*)/g,""));
+        var y = parseFloat(y_.replace(/([\$|\s|\,]*)/g,""));
+        return x-y;
+    };
+     
+    jQuery.fn.dataTableExt.oSort['tdar-number-desc'] = function(x_,y_) {
+        var x = parseFloat(x_.replace(/([\$|\s|\,]*)/g,""));
+        var y = parseFloat(y_.replace(/([\$|\s|\,]*)/g,""));
+        return y-x;
+    };
+}
+
 return {
+    extendSorting:_extendSorting,
     registerLookupDataTable:_registerLookupDataTable,
     setupDashboardDataTable:_setupDashboardDataTable,
     registerResourceCollectionDataTable:_registerResourceCollectionDataTable
