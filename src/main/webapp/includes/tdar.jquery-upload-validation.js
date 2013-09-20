@@ -186,6 +186,7 @@ var FileuploadValidator;
 
                 //optionally only apply a rule if settings has a when-callback
                 var when = rule.settings.when || function() {return true;}
+                files = _trimIgnoredFiles(files, rule.settings);
                 if(when(files)) {
 
                     var method = rule.method;
@@ -193,7 +194,6 @@ var FileuploadValidator;
 
                     //if this is a group method,  execute just once
                     if($.inArray(rule.methodName, self.groupMethods) > -1) {
-                        files = _trimIgnoredFiles(files, rule.settings);
                         var valid = method(files, rule.settings);
                         //console.log("applying rule, method:%s   valid:%s", rule.methodName, valid);
                         if(!valid) {
@@ -350,10 +350,10 @@ var FileuploadValidator;
     //FIXME: move me to a component that only gets added to GIS
     TDAR.fileupload.addGisValidation = function(validator) {
         var fileinfo = {
-            shapefile: ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg","adf"],
+            shapefile: ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
             jpeg:["jpg", "jpeg", "jpw","jgw"],
             tiff:["tif", "tiff", "tfw"],
-            image: ["jpg", "jpeg", "jpw","jgw", "tfw", "aux", "ovr", "rrd", "aux.xml","mxd","adf"]
+            image: ["jpg", "jpeg", "jpw","jgw", "tfw", "aux", "ovr", "rrd", "aux.xml","mxd"]
         };
 
         var requiredFiles = {
@@ -383,20 +383,28 @@ var FileuploadValidator;
         //aux and aux.xml files can apply to either jpg or tiff
         validator.addRule("required", {
                 extension: ["tif", "tiff", "jpg", "jpeg"],
-                when: _hasFileWithExtension("aux", "aux.xml","ovr","rrd")
+                when: function(files) {
+                    //if adf present, this is not a shape file, so ignore this rule
+                    //TODO: confirm this is actually true
+                    return _hasFileWithExtension("aux", "aux.xml","ovr","rrd")(files) && !_hasFileWithExtension("adf")(files);
+                }
             },
             "an image metadata file must be paired with a JPEG or TIFF file");
 
-        //add suggestions for the image metadata files.
+        //add suggestions for the image metadata files (unless user is uploading an image raster + mxd file)
         validator.addSuggestion("required", {
                 extension: ["jpw", "aux", "aux.xml","ovr","rrd"],
-                when: _hasFileWithExtension("jpg", "jpeg")
+                when: function(files) {
+                    return ( _hasFileWithExtension("jpg", "jpeg")(files)  && !_hasFileWithExtension("mxd")(files) );
+                }
             },
             "consider including an image metadata file such as .jpw, .aux, or .aux.xml"
         );
         validator.addSuggestion("required", {
             extension: ["tfw", "aux", "aux.xml","ovr","rrd"],
-            when: _hasFileWithExtension("tiff", "tif")
+            when: function(files) {
+                return ( _hasFileWithExtension("tiff", "tif")(files) && !_hasFileWithExtension("mxd")(files) )
+            }
         }, "consider including an image metadata file such as .tfw, .aux, or .aux.xml");
 
         //require the mandatory shapefiles if any shapefiles are present
@@ -409,7 +417,8 @@ var FileuploadValidator;
                             return file;
                         }
                     }).length > 0
-                }
+                },
+                ignores: ["metadata.xml"]
             },
             "A " + ext + " file must be present when uploading shapefiles");
         });
@@ -427,8 +436,9 @@ var FileuploadValidator;
         }, "all files must have the same base filename");
 
         validator.addRule("same-basename", {
-            //adf files are excluded from the same-basename requirement
-            ignores: [function(file){return file.ext === "adf"}]
+            ignores: [
+                "metadata.xml",
+                function(file){return file.ext === "adf"}]
         });
 
         //only one image metadata file
