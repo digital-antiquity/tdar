@@ -219,11 +219,23 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
     public boolean hasDemensions() {
         switch (this) {
             case IMAGE:
-            case GEOSPATIAL: // ?
+            case GEOSPATIAL: 
             case SENSORY_DATA:
                 return true;
             default:
                 return false;
+        }
+    }
+
+    public boolean isHasLanguage() {
+        switch (this) {
+            case PROJECT:
+            case IMAGE:
+            case GEOSPATIAL: 
+            case SENSORY_DATA:
+                return false;
+            default:
+                return true;
         }
     }
 
