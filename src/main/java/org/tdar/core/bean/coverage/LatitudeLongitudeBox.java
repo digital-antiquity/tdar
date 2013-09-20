@@ -46,11 +46,11 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
     private transient boolean obfuscated = false;
+
     private transient Double minObfuscatedLatitude = null;
     private transient Double minObfuscatedLongitude = null;
     private transient Double maxObfuscatedLatitude = null;
     private transient Double maxObfuscatedLongitude = null;
-
     private static final String PSQL_POLYGON = "POLYGON((%1$s %2$s,%3$s %2$s,%3$s %4$s,%1$s %4$s,%1$s %2$s))";
 
     private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s,  180 %3$s,  180 %2$s,%1$s %2$s)), ((-180 %3$s, %4$s %3$s,%4$s %2$s,-180 %2$s,-180 %3$s)))";
@@ -111,7 +111,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return minimumLatitude;
     }
 
-    /* fixme ** test */
     public Double getCenterLatitude() {
         return (getMaxObfuscatedLatitude() + getMinObfuscatedLatitude()) / 2.0;
     }
@@ -121,11 +120,12 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     protected boolean isActuallyObfuscated() {
-        return !getMinObfuscatedLongitude().equals(getMinimumLongitude()) || !getMaxObfuscatedLongitude().equals(getMaximumLongitude())
-                || !getMinObfuscatedLatitude().equals(getMinimumLatitude()) || !getMaxObfuscatedLatitude().equals(getMaximumLatitude());
+        return !getMinObfuscatedLongitude().equals(getMinimumLongitude())
+                || !getMaxObfuscatedLongitude().equals(getMaximumLongitude())
+                || !getMinObfuscatedLatitude().equals(getMinimumLatitude())
+                || !getMaxObfuscatedLatitude().equals(getMaximumLatitude());
     }
 
-    /* fixme ** test */
     public Double getCenterLatitudeIfNotObfuscated() {
         Double centerLatitude = getCenterLatitude(); // init obfuscated properly
         @SuppressWarnings("unused")
@@ -146,7 +146,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return centerLongitude;
     }
 
-    /*
+    /**
      * This randomize function is used when displaying lat/longs on a map. It is
      * passed the max and the min lat or long and then uses a salt to randomize.
      * The salt here is approx 1 miles. If the distance between num1 and num2 is
@@ -159,7 +159,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * 
      * http://www.movable-type.co.uk/scripts/html
      */
-
     public static Double obfuscate(Double num, Double num2, int type) {
         Random r = new Random();
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
@@ -185,8 +184,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         }
 
         // NOTE: Ideally, this should do something different, but in reality, how
-        // many
-        // archaeological sites are really going to be in this area???
+        // many archaeological sites are really going to be in this area???
         if (type == LATITUDE) {
             if (Math.abs(ret) > MAX_LATITUDE)
                 ret = MAX_LATITUDE;
@@ -223,11 +221,21 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return maxObfuscatedLongitude;
     }
 
+    /**
+     * @throws TdarRuntimeException if the specified latitude falls outside the minimum and maximum latitude settings.
+     * @param minimumLatitude the new minimum latitude
+     */
     public void setMinimumLatitude(Double minimumLatitude) {
         if (minimumLatitude != null && !isValidLatitude(minimumLatitude)) {
             throw new TdarRuntimeException("specified latitude is not a valid latitude");
         }
-        this.minimumLatitude = minimumLatitude;
+        setMiny(minimumLatitude);
+    }
+
+    @Transient
+    public void setMiny(Double minY) {
+        this.minimumLatitude = minY;
+        this.minObfuscatedLatitude = null;
     }
 
     @Deprecated
@@ -238,11 +246,21 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return maximumLatitude;
     }
 
+    /**
+     * @throws TdarRuntimeException if the specified latitude falls outside the minimum and maximum latitude settings.
+     * @param maximumLatitude the new maximum latitude
+     */
     public void setMaximumLatitude(Double maximumLatitude) {
         if (maximumLatitude != null & !isValidLatitude(maximumLatitude)) {
             throw new TdarRuntimeException("specified latitude is not a valid latitude");
         }
-        this.maximumLatitude = maximumLatitude;
+        setMaxy(maximumLatitude);
+    }
+
+    @Transient
+    public void setMaxy(Double maxY) {
+        this.maximumLatitude = maxY;
+        this.maxObfuscatedLatitude = null;
     }
 
     @Deprecated
@@ -252,12 +270,27 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     public Double getMinimumLongitude() {
         return minimumLongitude;
     }
-
+    
+    /**
+     * @throws TdarRuntimeException if the specified longitude falls outside the minimum and maximum longitude settings.
+     * @param minimumLongitude the new minimum longitude
+     */
     public void setMinimumLongitude(Double minimumLongitude) {
         if (minimumLongitude != null && !isValidLongitude(minimumLongitude)) {
             throw new TdarRuntimeException("specified longitude is not a valid longitude");
         }
-        this.minimumLongitude = minimumLongitude;
+        setMinx(minimumLongitude);
+    }
+
+    /**
+     * Sets the minimum longitude, with no validation checking.
+     * 
+     * @param minX the new minimum longitude
+     */
+    @Transient
+    public void setMinx(Double minX) {
+        this.minimumLongitude = minX;
+        this.minObfuscatedLongitude = null;
     }
 
     @Deprecated
@@ -268,11 +301,25 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return maximumLongitude;
     }
 
+    /**
+     * @throws TdarRuntimeException if the specified longitude falls outside the minimum and maximum longitude settings.
+     * @param maximumLongitude the new maximum longitude
+     */
     public void setMaximumLongitude(Double maximumLongitude) {
         if (maximumLongitude != null && !isValidLongitude(maximumLongitude)) {
             throw new TdarRuntimeException("specified longitude is not a valid longitude");
         }
-        this.maximumLongitude = maximumLongitude;
+        setMaxx(maximumLongitude);
+    }
+
+    /**
+     * Sets the maximum longitude, with no validation checking.
+     * @param maxX the new maximum longitude
+     */
+    @Transient
+    public void setMaxx(Double maxX) {
+        this.maximumLongitude = maxX;
+        this.maxObfuscatedLongitude = null;
     }
 
     @Transient
@@ -402,32 +449,13 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     @Override
     public List<Obfuscatable> obfuscate() {
-        setMaximumLatitude(getMaxObfuscatedLatitude());
-        setMinimumLatitude(getMinObfuscatedLatitude());
-        setMaximumLongitude(getMaxObfuscatedLongitude());
-        setMinimumLongitude(getMinObfuscatedLongitude());
+        // set directly, as we don't want to reset the obfuscated values
+        this.maximumLatitude = getMaxObfuscatedLatitude();
+        this.minimumLatitude = getMinObfuscatedLatitude();
+        this.maximumLongitude = getMaxObfuscatedLongitude();
+        this.minimumLongitude = getMinObfuscatedLongitude();
         setObfuscated(true);
         return null;
-    }
-
-    @Transient
-    public void setMinx(Double minX) {
-        this.minimumLongitude = minX;
-    }
-
-    @Transient
-    public void setMaxx(Double maxX) {
-        this.maximumLongitude = maxX;
-    }
-
-    @Transient
-    public void setMiny(Double minY) {
-        this.minimumLatitude = minY;
-    }
-
-    @Transient
-    public void setMaxy(Double maxY) {
-        this.maximumLatitude = maxY;
     }
 
     public void addGeographicKeywords(Set<GeographicKeyword> allGeographicInfo) {
