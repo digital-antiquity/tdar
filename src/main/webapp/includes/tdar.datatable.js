@@ -395,7 +395,7 @@ function _extendSorting() {
     jQuery.fn.dataTableExt.aTypes.unshift (
             function ( sData )
             {
-                if (sData.trim().match(/\$?\-?([\d,\.])*/g)) {
+                if (typeof sData === "number" || sData.trim().match(/\$?\-?([\d,\.])*/g)) {
                  return 'tdar-number';
                 }
                 return null;
