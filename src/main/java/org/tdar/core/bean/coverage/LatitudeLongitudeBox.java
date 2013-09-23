@@ -159,23 +159,23 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * 
      * http://www.movable-type.co.uk/scripts/html
      */
-    public static Double obfuscate(Double num, Double num2, int type) {
+    protected static Double obfuscate(Double num1, Double num2, int type) {
         Random r = new Random();
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
 
-        if (Math.abs(num.doubleValue() - num2.doubleValue()) < salt) {
+        if (Math.abs(num1.doubleValue() - num2.doubleValue()) < salt) {
             add += salt / 2;
         } else {
-            return num;
+            return num1;
         }
 
-        if (num < num2) { // -5 < -3
+        if (num1 < num2) { // -5 < -3
             add *= -1;
             salt *= -1;
         }
         // -5 - .05 - .02
-        double ret = num.doubleValue() + add + salt * r.nextDouble();
+        double ret = num1.doubleValue() + add + salt * r.nextDouble();
         if (type == LONGITUDE) {
             if (ret > MAX_LONGITUDE)
                 ret -= 360;

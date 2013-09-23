@@ -1,4 +1,4 @@
-package org.tdar.core.bean.resource;
+package org.tdar.core.bean.coverage;
 
 import static org.junit.Assert.assertTrue;
 
