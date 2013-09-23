@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.dao.resource.InformationResourceFileVersionDao;
@@ -32,6 +33,11 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
             file.getInformationResource().getInformationResourceFiles().remove(file);
         }
         super.delete(file);
+    }
+    
+    @Transactional
+    public List<InformationResourceFile> findFilesWithStatus(FileStatus ... statuses) {
+        return getDao().findFilesWithStatus(statuses);
     }
 
     @Transactional(readOnly = false)

@@ -375,9 +375,10 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.FIND_INVOICE_FOR_COUPON,
             query = "from Invoice invoice where invoice.coupon.code=:code"
-    )
-
-
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.QUERY_FILE_STATUS,
+            query= "from InformationResourceFile file where status in (:statuses)")
 })
 package org.tdar.core.dao;
 
