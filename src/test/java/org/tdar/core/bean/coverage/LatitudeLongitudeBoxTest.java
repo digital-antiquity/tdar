@@ -14,7 +14,7 @@ public class LatitudeLongitudeBoxTest {
     public void isActuallyObfuscatedByDefault() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Double.valueOf(0));
         assertFalse(llb.isOkayToShowExactLocation());
-        assertTrue(llb.isActuallyObfuscated());
+        assertTrue(llb.isAnyObfuscatedValueDifferentToActual());
     }
     
     @SuppressWarnings("static-method")
@@ -23,16 +23,16 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Double.valueOf(0));
         llb.setOkayToShowExactLocation(true);
         assertTrue(llb.isOkayToShowExactLocation());
-        assertFalse(llb.isActuallyObfuscated());
+        assertFalse(llb.isAnyObfuscatedValueDifferentToActual());
     }
 
     /**
-     * This might seem like a silly test, but we do need to know that the obfuscation is stable from one call to the next.
+     * This might seem like a silly test, but is the obfuscation is stable from one call to the next?
      * This test does not ensure that that the obfuscation is stable when the lat long box is persisted and restored, though
      */
     @SuppressWarnings("static-method")
     @Test
-    public void obfuscationIsFixed() {
+    public void obfuscationIsStable() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
         Double maxObfuscatedLatitude = llb.getMaxObfuscatedLatitude();
         Double minObfuscatedLatitude = llb.getMinObfuscatedLatitude();
@@ -88,7 +88,7 @@ public class LatitudeLongitudeBoxTest {
     }
     
     /**
-     * and if an original xy coordinate is changed, the obfuscation for it should be redone (surely).
+     * and if an original xy coordinate is changed, the obfuscation for it should be redone (surely?).
      */
     @SuppressWarnings("static-method")
     @Test
@@ -123,7 +123,21 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(minObfuscatedLatitude.equals(llb.getMinimumLatitude()));
         assertTrue(maxObfuscatedLongitude.equals(llb.getMaximumLongitude()));
         assertTrue(minObfuscatedLongitude.equals(llb.getMinimumLongitude()));
-        assertFalse(llb.isActuallyObfuscated());
+        assertFalse(llb.isAnyObfuscatedValueDifferentToActual());
+        
+    }
+    
+    @SuppressWarnings({ "static-method" })
+    @Test
+    public void doesNotObfuscateAccordingToServiceIfIsOkToShowExactCoords() {
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
+        llb.setOkayToShowExactLocation(true);
+        // shouldn't be obfuscated
+        assertFalse(llb.isAnyObfuscatedValueDifferentToActual());
+        llb.obfuscate();
+        // and should be no change.
+        assertFalse(llb.isAnyObfuscatedValueDifferentToActual());
+        
     }
 
     @SuppressWarnings({ "static-method"})

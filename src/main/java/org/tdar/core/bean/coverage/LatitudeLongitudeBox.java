@@ -45,15 +45,6 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 // (name="latitudeLongitudeBox")
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
-    /** used to record whether this instance has been obfuscated by the obfuscation service or not */
-    private transient boolean obfuscated = false;
-
-    private transient boolean isOkayToShowExactLocation;
-    
-    private transient Double minObfuscatedLatitude = null;
-    private transient Double minObfuscatedLongitude = null;
-    private transient Double maxObfuscatedLatitude = null;
-    private transient Double maxObfuscatedLongitude = null;
     private static final String PSQL_POLYGON = "POLYGON((%1$s %2$s,%3$s %2$s,%3$s %4$s,%1$s %4$s,%1$s %2$s))";
 
     private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s,  180 %3$s,  180 %2$s,%1$s %2$s)), ((-180 %3$s, %4$s %3$s,%4$s %2$s,-180 %2$s,-180 %3$s)))";
@@ -63,13 +54,24 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public static final double MAX_LATITUDE = 90d;
     public static final double MIN_LATITUDE = -90d;
-
+    
     public static final double MAX_LONGITUDE = 180d;
     public static final double MIN_LONGITUDE = -180d;
     public static final int LATITUDE = 1;
     public static final int LONGITUDE = 2;
 
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
+
+    private transient Double minObfuscatedLatitude = null;
+    private transient Double minObfuscatedLongitude = null;
+    private transient Double maxObfuscatedLatitude = null;
+    private transient Double maxObfuscatedLongitude = null;
+
+    /** used to record whether this instance has been obfuscated by the obfuscation service or not */
+    private transient boolean obfuscated;
+
+    /** if true, then the location does not need to be hidden */
+    private transient boolean isOkayToShowExactLocation;
 
     // ranges from -90 (South) to +90 (North)
     @Field
@@ -125,7 +127,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
      */
-    protected boolean isActuallyObfuscated() {
+    protected boolean isAnyObfuscatedValueDifferentToActual() {
         return !getMinObfuscatedLongitude().equals(getMinimumLongitude())
                 || !getMaxObfuscatedLongitude().equals(getMaximumLongitude())
                 || !getMinObfuscatedLatitude().equals(getMinimumLatitude())
@@ -133,14 +135,14 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public Double getCenterLatitudeIfNotObfuscated() {
-        if (!isOkayToShowExactLocation && isActuallyObfuscated()) {
+        if (!isOkayToShowExactLocation && isAnyObfuscatedValueDifferentToActual()) {
             return null;
         }
         return getCenterLatitude();
     }
 
     public Double getCenterLongitudeIfNotObfuscated() {
-        if (!isOkayToShowExactLocation && isActuallyObfuscated()) {
+        if (!isOkayToShowExactLocation && isAnyObfuscatedValueDifferentToActual()) {
             return null;
         }
         return getCenterLongitude();
