@@ -16,7 +16,7 @@ public interface Obfuscatable {
 
     /**
      * mark the object as obfuscated, ideally should be transient.
-     * This does not actually obfuscate the object as implemented by implementations of this interface: it is generally called by 
+     * This does not actually obfuscate the object as implemented by instances of this interface: it is only called by 
      * the implementations of the obfuscate method. Given obfuscate() is a one way street, should this method be removed?
      */
     @Deprecated
