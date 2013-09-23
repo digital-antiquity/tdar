@@ -16,6 +16,7 @@
 		<postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
 		<!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
 		<apache.cxf.version>2.7.4</apache.cxf.version>
+		<jena.version>2.11.0</jena.version>
 		<clover.version>3.1.12</clover.version>
 		<!-- /end managed versions -->
 		<jvm.args>-Xms256m -Xmx2560m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
@@ -35,7 +36,7 @@
 		<jackson.version>2.2.3</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<truezip.version>7.7.3</truezip.version>
-		<http-components.version>4.2.2</http-components.version>
+		<http-components.version>4.3</http-components.version>
 		<display.port></display.port>
 	</properties>
 	<prerequisites>
@@ -252,7 +253,7 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.48b</version>
+			<version>1.48c</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.media.jai</groupId>
@@ -417,12 +418,12 @@
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-core</artifactId>
-			<version>2.10.1</version>
+			<version>${jena.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
-			<version>2.10.1</version>
+			<version>${jena.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
@@ -489,7 +490,7 @@
 		<dependency>
 			<groupId>xmlunit</groupId>
 			<artifactId>xmlunit</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
