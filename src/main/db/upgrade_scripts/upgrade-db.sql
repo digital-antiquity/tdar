@@ -37,3 +37,6 @@ alter table person rename column creator_agreement_level  to creator_agreement_v
 
 -- jdevos 9/11/2013
 alter table person rename column creator_agreement_version  to contributor_agreement_version;
+
+-- mpaulo 9/23/2013
+alter table latitude_longitude add column is_ok_to_show_exact_location boolean default false;

@@ -70,8 +70,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /** used to record whether this instance has been obfuscated by the obfuscation service or not */
     private transient boolean obfuscated;
 
+    @Column(nullable = false, name = "is_ok_to_show_exact_location")
     /** if true, then the location does not need to be hidden */
-    private transient boolean isOkayToShowExactLocation;
+    private boolean isOkayToShowExactLocation;
 
     // ranges from -90 (South) to +90 (North)
     @Field
