@@ -122,6 +122,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
     }
 
+    /**
+     * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
+     */
     protected boolean isActuallyObfuscated() {
         return !getMinObfuscatedLongitude().equals(getMinimumLongitude())
                 || !getMaxObfuscatedLongitude().equals(getMaximumLongitude())
@@ -130,23 +133,17 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public Double getCenterLatitudeIfNotObfuscated() {
-        Double centerLatitude = getCenterLatitude(); // init obfuscated properly
-        @SuppressWarnings("unused")
-        Double centerLongitude = getCenterLongitude(); // init obfuscated properly
-        if (isActuallyObfuscated()) {
+        if (!isOkayToShowExactLocation && isActuallyObfuscated()) {
             return null;
         }
-        return centerLatitude;
+        return getCenterLatitude();
     }
 
     public Double getCenterLongitudeIfNotObfuscated() {
-        @SuppressWarnings("unused")
-        Double centerLatitude = getCenterLatitude(); // init obfuscated properly
-        Double centerLongitude = getCenterLongitude();// init obfuscated properly
-        if (isActuallyObfuscated()) {
+        if (!isOkayToShowExactLocation && isActuallyObfuscated()) {
             return null;
         }
-        return centerLongitude;
+        return getCenterLongitude();
     }
 
     /**
@@ -200,28 +197,45 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         if (minObfuscatedLatitude == null) {
             minObfuscatedLatitude = obfuscate(minimumLatitude, maximumLatitude, LATITUDE);
         }
-        return minObfuscatedLatitude;
+        Double result = minObfuscatedLatitude;
+        if (isOkayToShowExactLocation) {
+            result = minimumLatitude;
+        }
+        return result ;
     }
 
     public Double getMaxObfuscatedLatitude() {
         if (maxObfuscatedLatitude == null) {
             maxObfuscatedLatitude = obfuscate(maximumLatitude, minimumLatitude, LATITUDE);
         }
-        return maxObfuscatedLatitude;
+        
+        Double result = maxObfuscatedLatitude;
+        if (isOkayToShowExactLocation) {
+            result = maximumLatitude;
+        }
+        return result ;
     }
 
     public Double getMinObfuscatedLongitude() {
         if (minObfuscatedLongitude == null) {
             minObfuscatedLongitude = obfuscate(minimumLongitude, maximumLongitude, LONGITUDE);
         }
-        return minObfuscatedLongitude;
+        Double result = minObfuscatedLongitude;
+        if (isOkayToShowExactLocation) {
+            result = minimumLongitude;
+        }
+        return result;
     }
 
     public Double getMaxObfuscatedLongitude() {
         if (maxObfuscatedLongitude == null) {
             maxObfuscatedLongitude = obfuscate(maximumLongitude, minimumLongitude, LONGITUDE);
         }
-        return maxObfuscatedLongitude;
+        Double result = maxObfuscatedLongitude;
+        if (isOkayToShowExactLocation) {
+            result = maximumLatitude;
+        }
+        return result ;
     }
 
     /**
