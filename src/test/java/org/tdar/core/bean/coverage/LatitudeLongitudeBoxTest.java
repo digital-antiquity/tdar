@@ -13,6 +13,7 @@ public class LatitudeLongitudeBoxTest {
     @Test
     public void isActuallyObfuscatedByDefault() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Double.valueOf(0));
+        assertFalse(llb.isOkayToShowExactLocation());
         assertTrue(llb.isActuallyObfuscated());
     }
 

@@ -45,8 +45,11 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 // (name="latitudeLongitudeBox")
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
+    /** used to record whether this instance has been obfuscated by the obfuscation service or not */
     private transient boolean obfuscated = false;
 
+    private transient boolean isOkayToShowExactLocation;
+    
     private transient Double minObfuscatedLatitude = null;
     private transient Double minObfuscatedLongitude = null;
     private transient Double maxObfuscatedLatitude = null;
@@ -526,5 +529,20 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public boolean isInitializedAndValid() {
         return isInitialized() && isValid();
+    }
+
+    /**
+     * @return the isOkayToShowExactLocation if true, then the contents of this lat/long box are not obfuscated. if false, they are obfuscated.
+     */
+    public boolean isOkayToShowExactLocation() {
+        return isOkayToShowExactLocation;
+    }
+
+    /**
+     * @param isOkayToShowExactLocation if true, then the contents of this lat/long box can be shown without obfuscation: 
+     * if false, they must be obfuscated
+     */
+    public void setOkayToShowExactLocation(boolean isOkayToShowExactLocation) {
+        this.isOkayToShowExactLocation = isOkayToShowExactLocation;
     }
 }
