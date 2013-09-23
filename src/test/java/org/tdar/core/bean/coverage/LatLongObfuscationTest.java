@@ -19,61 +19,53 @@ public class LatLongObfuscationTest {
 
     @Test
     public void testNegLatLongWithSaltedResult() {
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
-        double result = LatitudeLongitudeBox.obfuscate(smallNeg, smallNeg2, LatitudeLongitudeBox.LONGITUDE);
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallNeg2, LatitudeLongitudeBox.LONGITUDE);
         assertTrue("result:" + result + " < " + smallNeg, result < smallNeg);
     }
 
     @Test
     public void testPosLatLongWithSaltedResult() {
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
-        double result = LatitudeLongitudeBox.obfuscate(smallPos, smallPos2, LatitudeLongitudeBox.LONGITUDE);
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallPos, smallPos2, LatitudeLongitudeBox.LONGITUDE);
         assertTrue("result:" + result + " < " + smallPos, result < smallPos);
     }
 
     @Test
     public void testNegLatLongWithSaltedResult2() {
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
-        double result = LatitudeLongitudeBox.obfuscate(smallNeg2, smallNeg, LatitudeLongitudeBox.LONGITUDE);
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg2, smallNeg, LatitudeLongitudeBox.LONGITUDE);
         assertTrue("result:" + result + " < " + smallNeg2, result > smallNeg2);
     }
 
+    @SuppressWarnings("static-method")
     @Test
     public void testWrappingLong() {
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
         double two = LatitudeLongitudeBox.MAX_LONGITUDE - LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 2;
-        double result = LatitudeLongitudeBox.obfuscate(LatitudeLongitudeBox.MAX_LONGITUDE, two, LatitudeLongitudeBox.LONGITUDE);
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(LatitudeLongitudeBox.MAX_LONGITUDE, two, LatitudeLongitudeBox.LONGITUDE);
         assertTrue("result:" + result + " > " + two, result < two);
     }
 
+    @SuppressWarnings("static-method")
     @Test
     public void testWrappingLong2() {
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
         double two = LatitudeLongitudeBox.MIN_LONGITUDE + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 2;
-        double result = LatitudeLongitudeBox.obfuscate(LatitudeLongitudeBox.MIN_LONGITUDE, two, LatitudeLongitudeBox.LONGITUDE);
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(LatitudeLongitudeBox.MIN_LONGITUDE, two, LatitudeLongitudeBox.LONGITUDE);
         assertTrue("result:" + result + " < " + two, result > two);
     }
 
     @Test
     public void testPosLatLongWithSaltedResult2() {
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
-        double result = LatitudeLongitudeBox.obfuscate(smallPos2, smallPos, LatitudeLongitudeBox.LONGITUDE);
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallPos2, smallPos, LatitudeLongitudeBox.LONGITUDE);
         assertTrue("result:" + result + " < " + smallPos2, result > smallPos2);
     }
 
     @Test
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings
     public void testLatLongWithoutSaltedResult() {
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
-        double result = LatitudeLongitudeBox.obfuscate(smallNeg, smallPos, LatitudeLongitudeBox.LONGITUDE);
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallPos, LatitudeLongitudeBox.LONGITUDE);
         assertTrue("result:" + result + " = " + smallNeg, result == smallNeg);
     }
 
     @Test
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings
     public void testLatLongWithoutSaltedResult2() {
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
-        double result = LatitudeLongitudeBox.obfuscate(smallPos, smallNeg, LatitudeLongitudeBox.LONGITUDE);
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallPos, smallNeg, LatitudeLongitudeBox.LONGITUDE);
         assertTrue("result:" + result + " = " + smallPos, result == smallPos);
     }
 

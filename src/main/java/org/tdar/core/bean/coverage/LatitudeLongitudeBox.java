@@ -159,7 +159,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * 
      * http://www.movable-type.co.uk/scripts/html
      */
-    protected static Double obfuscate(Double num1, Double num2, int type) {
+    protected static Double randomizeIfNeedBe(Double num1, Double num2, int type) {
         Random r = new Random();
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
@@ -195,7 +195,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public Double getMinObfuscatedLatitude() {
         if (minObfuscatedLatitude == null) {
-            minObfuscatedLatitude = obfuscate(minimumLatitude, maximumLatitude, LATITUDE);
+            minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE);
         }
         Double result = minObfuscatedLatitude;
         if (isOkayToShowExactLocation) {
@@ -206,7 +206,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public Double getMaxObfuscatedLatitude() {
         if (maxObfuscatedLatitude == null) {
-            maxObfuscatedLatitude = obfuscate(maximumLatitude, minimumLatitude, LATITUDE);
+            maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE);
         }
         
         Double result = maxObfuscatedLatitude;
@@ -218,7 +218,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public Double getMinObfuscatedLongitude() {
         if (minObfuscatedLongitude == null) {
-            minObfuscatedLongitude = obfuscate(minimumLongitude, maximumLongitude, LONGITUDE);
+            minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE);
         }
         Double result = minObfuscatedLongitude;
         if (isOkayToShowExactLocation) {
@@ -229,7 +229,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public Double getMaxObfuscatedLongitude() {
         if (maxObfuscatedLongitude == null) {
-            maxObfuscatedLongitude = obfuscate(maximumLongitude, minimumLongitude, LONGITUDE);
+            maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE);
         }
         Double result = maxObfuscatedLongitude;
         if (isOkayToShowExactLocation) {
