@@ -2,6 +2,7 @@ package org.tdar.core.service.workflow;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -137,7 +138,7 @@ public class MessageService {
             workflowContextService.processContext(ctx);
         } catch (Exception e) {
             // trying to get a more useful debug message...
-            logger.warn("Unhandled exception while processing file: " + informationResourceFileVersions, e);
+            logger.warn("Unhandled exception while processing file: " + Arrays.toString(informationResourceFileVersions), e);
             throw new TdarRecoverableRuntimeException("There was an unexpected error when processing the file.");
         }
         // }
