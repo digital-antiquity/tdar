@@ -278,6 +278,8 @@ $(document).ready(function() {
 			});
 		}
 	});
+
+    TDAR.common.collectionTreeview();
 });
 </script>
 </#escape>

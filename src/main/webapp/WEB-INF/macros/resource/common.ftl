@@ -1089,26 +1089,27 @@ this bit of freemarker is voodoo:
 
 
 <#macro collectionListItem depth=0 collection=collection showOnlyVisible=false >
-	<#if collection.visible || collection.viewable || showOnlyVisible==false >
-	<#compress><li>
-    <a href="<@s.url value="/collection/${collection.id?c}"/>">
-    <#if collection.name?? && collection.name != ''>${collection.name!"no title"}<#t/><#else>No Title</#if> <#--(${collection.resources?size}) --></a>
-    <#if (depth < 1)><span class="expand">[expand]</span></#if>
+    <#if collection.visible || collection.viewable || showOnlyVisible==false >
+    <#local clsHidden = "", clsClosed="" >
+    <#if (depth < 1)><#local clsHidden = "hidden"></#if>
+    <#if ((depth < 1) && (collection.transientChildren?size > 0))><#local clsClosed = "closed"></#if>
+    <li class="${clsClosed}">
+    <@s.a href="/collection/${collection.id?c}">${(collection.name)!"No Title"}</@s.a>
           <#if collection.transientChildren?has_content>
-			<ul class="<#if (depth < 1)>hidden</#if>">
-		        <#list collection.transientChildren as child>
-		        	<@collectionListItem depth= (depth - 1) collection=child showOnlyVisible=showOnlyVisible  />
-				</#list>
-			</ul>          	
+                <ul class="${clsHidden}">
+                <#list collection.transientChildren as child>
+                    <@collectionListItem depth= (depth - 1) collection=child showOnlyVisible=showOnlyVisible  />
+                </#list>
+                </ul>
           </#if>
-	</li></#compress>
-    	</#if>
+    </li>
+        </#if>
 </#macro>
 
 <#macro listCollections collections=resourceCollections_ showOnlyVisible=false>
-  <ul>
+  <ul class="collection-treeview">
     <#list collections as collection>
-	    	<@collectionListItem collection=collection showOnlyVisible=showOnlyVisible depth=20000/>
+	    	<@collectionListItem collection=collection showOnlyVisible=showOnlyVisible depth=3/>
     </#list>
   <#nested>
   </ul>
