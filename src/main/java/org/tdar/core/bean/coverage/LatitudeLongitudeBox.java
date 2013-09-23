@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -551,6 +552,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return the isOkayToShowExactLocation if true, then the contents of this lat/long box are not obfuscated. if false, they are obfuscated.
      */
+    @XmlAttribute
     public boolean isOkayToShowExactLocation() {
         return isOkayToShowExactLocation;
     }
