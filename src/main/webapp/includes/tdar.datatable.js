@@ -146,7 +146,7 @@ function fnRenderIdColumn(oObj) {
     if (resourceType) {
         resourceType = resourceType.toLowerCase();
     }
-    console.log("resource type:%s", resourceType);
+    //console.log("resource type:%s", resourceType);
     return '<input type="checkbox" class="datatable-checkbox '+ resourceType + '" id="' + attrId + '" value="' + id + '" />' +
             '<label class="datatable-cell-unstyled" for="' + attrId + '">' + id + '</label>' ;
 }
