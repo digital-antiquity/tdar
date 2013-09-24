@@ -123,7 +123,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             data-tiplabel="Geographic Coordinates"
             data-tooltipcontent="#geoHelpDiv"
             ></div>
-         <#if viewRowSupported>
+         <#if switchableMapObfuscation>
             <@helptext.showExactLocationTip />
             <div class="" id="showExactLocation" data-tiplabel="Is it OK to show the exact location?" data-tooltipcontent="#showExactLocationHelpDiv" >
                 <@s.checkbox id="is_okay_to_show_exact_location" name="latitudeLongitudeBoxes[0].okayToShowExactLocation" label='Is it OK to show the exact location?' labelposition='right'  />
