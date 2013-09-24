@@ -24,7 +24,7 @@
 <td><a href="<@s.url value="/${file.informationResource.resourceType.urlNamespace}/${file.informationResource.id?c}"/>">${file.informationResource.id?c}</td>
 <td>${file.fileCreatedDate!""}</td>
 <td>${file.informationResourceFileType}</td>
-<td>${file.numberOfParts}</td>
+<td>${file.numberOfParts!1}</td>
 <td>${file.status}</td>
 <td><@common.truncate file.errorMessage 80/> <span onClick="$(this).parent().children('.hidden').removeClass('hidden');$(this).hide();">[show]</span>
 <span class="hidden">
@@ -32,7 +32,7 @@ ${file.errorMessage}
 </span>
 </td>
 <td>${file.partOfComposite?string}</td>
-<td>${file.latestVersion}</td>
+<td>${file.latestVersion!0}</td>
 <td>${file.restriction} ${file.dateMadePublic!""}</td>
 </tr>
 </#list>
