@@ -2,7 +2,7 @@ package org.tdar.web;
 
 import org.junit.Test;
 
-public class EntityEditngWebITCase extends AbstractEditorAuthenticatedWebTestCase {
+public class EntityEditingWebITCase extends AbstractEditorAuthenticatedWebTestCase {
 
     private static final String UNIVERSITY_OF_TEST = "University of TEST";
     private static final String ENTITY_VIEW = "/browse/creators/";
