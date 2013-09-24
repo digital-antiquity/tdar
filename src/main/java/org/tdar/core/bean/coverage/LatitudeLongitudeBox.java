@@ -211,6 +211,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return result ;
     }
 
+    /**
+     * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLatitude, depending on the setting of the isOkayToShowExactLocation switch
+     */
     public Double getMinObfuscatedLatitude() {
         if (minObfuscatedLatitude == null) {
             minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE);
@@ -218,6 +221,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return getProtectedResult(minObfuscatedLatitude, minimumLatitude) ;
     }
 
+    /**
+     * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLatitude, depending on the setting of the isOkayToShowExactLocation switch
+     */
     public Double getMaxObfuscatedLatitude() {
         if (maxObfuscatedLatitude == null) {
             maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE);
@@ -225,6 +231,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return getProtectedResult(maxObfuscatedLatitude, maximumLatitude);
     }
 
+    /**
+     * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLongitude, depending on the setting of the isOkayToShowExactLocation switch
+     */
     public Double getMinObfuscatedLongitude() {
         if (minObfuscatedLongitude == null) {
             minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE);
@@ -232,6 +241,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return getProtectedResult(minObfuscatedLongitude, minimumLongitude);
     }
 
+    /**
+     * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLongitude, depending on the setting of the isOkayToShowExactLocation switch
+     */
     public Double getMaxObfuscatedLongitude() {
         if (maxObfuscatedLongitude == null) {
             maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE);
