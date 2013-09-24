@@ -117,6 +117,7 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
         return String.format("[%s :: %s (%s)]", resourceAnnotationKey, value, hashCode());
     }
 
+    @Override
     public boolean isValid() {
         return resourceAnnotationKey != null
                 && StringUtils.isNotEmpty(resourceAnnotationKey.getKey())
@@ -130,7 +131,7 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
 
     @Override
     protected String[] getIncludedJsonProperties() {
-        return getIncludedJsonProperties();
+        return super.getIncludedJsonProperties();
     }
 
 }
