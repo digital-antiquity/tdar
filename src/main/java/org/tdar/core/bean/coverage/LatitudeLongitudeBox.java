@@ -197,49 +197,46 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return new Double(ret);
     }
 
+    /**
+     * Puts all the logic around the returning of obfuscated values vs actual values into one place.
+     * @param obfuscatedValue
+     * @param actualValue
+     * @return either the obfuscated value or the actual value passed in, depending on the setting of the isOkayToShowExactLocation switch
+     */
+    private Double getProtectedResult(final Double obfuscatedValue, final Double actualValue) {
+        Double result = obfuscatedValue;
+        if (isOkayToShowExactLocation) {
+            result = actualValue;
+        }
+        return result ;
+    }
+
     public Double getMinObfuscatedLatitude() {
         if (minObfuscatedLatitude == null) {
             minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE);
         }
-        Double result = minObfuscatedLatitude;
-        if (isOkayToShowExactLocation) {
-            result = minimumLatitude;
-        }
-        return result ;
+        return getProtectedResult(minObfuscatedLatitude, minimumLatitude) ;
     }
 
     public Double getMaxObfuscatedLatitude() {
         if (maxObfuscatedLatitude == null) {
             maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE);
         }
-        
-        Double result = maxObfuscatedLatitude;
-        if (isOkayToShowExactLocation) {
-            result = maximumLatitude;
-        }
-        return result ;
+        return getProtectedResult(maxObfuscatedLatitude, maximumLatitude);
     }
 
     public Double getMinObfuscatedLongitude() {
         if (minObfuscatedLongitude == null) {
             minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE);
         }
-        Double result = minObfuscatedLongitude;
-        if (isOkayToShowExactLocation) {
-            result = minimumLongitude;
-        }
-        return result;
+        return getProtectedResult(minObfuscatedLongitude, minimumLongitude);
     }
 
     public Double getMaxObfuscatedLongitude() {
         if (maxObfuscatedLongitude == null) {
             maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE);
         }
-        Double result = maxObfuscatedLongitude;
-        if (isOkayToShowExactLocation) {
-            result = maximumLatitude;
-        }
-        return result ;
+        return getProtectedResult(maxObfuscatedLongitude, maximumLongitude) ;
     }
 
     /**
