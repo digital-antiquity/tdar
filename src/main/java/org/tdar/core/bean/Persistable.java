@@ -159,10 +159,14 @@ public interface Persistable extends Serializable {
          * @return
          */
         public static boolean isEqual(Persistable a, Persistable b) {
-            Logger logger = LoggerFactory.getLogger(a.getClass());
             // null is never equal to anything
-            if (a == null || b == null) {
-                logger.trace("false b/c one is null");
+            if (a == null) {
+                LoggerFactory.getLogger(Persistable.class).trace("false b/c 'a' is null");
+                return false;
+            }
+            Logger logger = LoggerFactory.getLogger(a.getClass());
+            if (b == null) {
+                logger.trace("false b/c 'b' is null");
                 return false;
             }
 
@@ -202,7 +206,7 @@ public interface Persistable extends Serializable {
         }
 
         public static <P extends Persistable> Map<Long, P> createIdMap(Collection<P> items) {
-            Map<Long, P> map = new HashMap<Long, P>();
+            Map<Long, P> map = new HashMap<>();
             for (P item : items) {
                 if (item == null)
                     continue;
@@ -293,7 +297,7 @@ public interface Persistable extends Serializable {
         }
 
         public static <T extends Persistable> List<Long> extractIds(Collection<T> persistables) {
-            List<Long> ids = new ArrayList<Long>();
+            List<Long> ids = new ArrayList<>();
             for (T persistable : persistables) {
                 if (persistable != null) {
                     ids.add(persistable.getId());
@@ -305,7 +309,7 @@ public interface Persistable extends Serializable {
         }
 
         public static <T extends Persistable> List<Long> extractIds(Collection<T> persistables, int max) {
-            List<Long> ids = new ArrayList<Long>();
+            List<Long> ids = new ArrayList<>();
             int count = 0;
             for (T persistable : persistables) {
                 if (persistable != null) {
