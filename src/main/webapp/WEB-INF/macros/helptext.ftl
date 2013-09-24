@@ -225,14 +225,21 @@ Please enter a Spatial Reference System ID, datum and projection. e.g.:
 
 <#macro unpackArchiveTip>
 <div id="divUnpackArchiveTip" class="hidden"> 
-If checked, a process will run sometime after the saving of the archive, that will unpack the contents of the archive, and them import them as resources in
-the parent project.<br />
-<strong>NB:</strong> This is a process that can only be run once!
+    If checked, a process will run sometime after the saving of the archive, that will unpack the contents of the archive, and them import them as resources in
+    the parent project.<br />
+    <strong>NB:</strong> This is a process that can only be run once!
 </div>
 </#macro>
 
 <#macro audioSoftwareTip>
 <div id="divAudioSoftwareTip" class="hidden"> 
-This is the name of the application or program that created the audio file that is being uploaded.<br />
+    This is the name of the application or program that created the audio file that is being uploaded.<br />
+</div>
+</#macro>
+
+<#macro showExactLocationTip>
+<div id="showExactLocationHelpDiv" class="hidden">
+    <b>Beware:</b> if this box is checked, then everyone will be able to see the exact location that you enter on the map.<br />
+    <b>Leave unchecked</b> if you don't want the world to see the location. If in doubt, leave unchecked!
 </div>
 </#macro>
