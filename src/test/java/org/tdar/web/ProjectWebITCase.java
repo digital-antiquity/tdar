@@ -56,7 +56,7 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         assertTextNotPresent(resourceName);
         gotoPage("/project/" + projectId.toString());
         assertTextPresent(resourceName);
-
+        gotoPage(url);
         clickLinkWithText("edit");
         setInput("projectId", "-1");
         submitForm();

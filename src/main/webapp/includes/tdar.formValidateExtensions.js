@@ -55,6 +55,7 @@ $.validator.addMethod("float", function(value, element) {
     return value.match(/^(((\-?)(\d+)(\.?)(\d*))|)$/);
 }, "a valid lat/long in the format DEG.Min/Sec (eg. -67.892068) required");
 
+//FIXME: Does this work?
 $.validator.addMethod("validIdRequired", function(value, element) {
     console.log(value + " : " + element);
     if (parseInt(value) != undefined && parseInt(value) > 0) {
