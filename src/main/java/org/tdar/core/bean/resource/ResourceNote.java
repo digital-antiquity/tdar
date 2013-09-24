@@ -88,6 +88,7 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
         return getType().getLabel() + ":" + getNote();
     }
 
+    @Override
     public boolean isValid() {
         if (type != null && !StringUtils.isEmpty(note)) {
             return true;
@@ -102,6 +103,6 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
 
     @Override
     protected String[] getIncludedJsonProperties() {
-        return getIncludedJsonProperties();
+        return super.getIncludedJsonProperties();
     }
 }
