@@ -28,7 +28,7 @@
 		<jetty.stop.port>12919</jetty.stop.port>
 		<use.test.classpath>false</use.test.classpath>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<geotools.version>9.5</geotools.version>
+		<geotools.version>10.0</geotools.version>
 		<tika.version>1.4</tika.version>
 		<batik.version>1.7</batik.version>
 		<odata4j.version>0.7.0</odata4j.version>
@@ -36,7 +36,7 @@
 		<jackson.version>2.2.3</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<truezip.version>7.7.3</truezip.version>
-		<http-components.version>4.3</http-components.version>
+		<http-components.version>4.2.3</http-components.version>
 		<display.port></display.port>
 	</properties>
 	<prerequisites>
