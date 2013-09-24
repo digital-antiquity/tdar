@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html >
 <#import "/${themeDir}/settings.ftl" as settings>
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "admin-common.ftl" as admin>
 
 
 <title>Admin Pages</title>
@@ -18,6 +19,7 @@
         <td><a href="<@s.url value="/admin/user"/>">User Statistics</a> </td>
         <td><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a> </td>
         <td><a href="<@s.url value="/admin/contributors"/>">Contributor Requests</a></td>
+        <td><a href="<@s.url value="/admin/file-info"/>">File Information</a></td>
 		<td><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></td>
 
 		<#if billingManager || editor>

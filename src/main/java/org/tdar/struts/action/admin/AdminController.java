@@ -25,6 +25,8 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.request.ContributorRequest;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
@@ -80,6 +82,7 @@ public class AdminController extends AuthenticationAware.Base {
     private Map<Date, Map<StatisticType, Long>> historicalResourceStatsWithFiles;
     private Map<Date, Map<StatisticType, Long>> historicalCollectionStats;
     private Map<Date, Map<StatisticType, Long>> historicalUserStats;
+    private List<InformationResourceFile> files;
     private Map<Date, Map<StatisticType, Long>> historicalRepositorySizes;
     private List<Person> recentLogins;
 
@@ -102,13 +105,19 @@ public class AdminController extends AuthenticationAware.Base {
 
     @Action("resource")
     public String resourceInfo() {
+        setHistoricalResourceStats(getStatisticService().getResourceStatistics());
+        setHistoricalResourceStatsWithFiles(getStatisticService().getResourceStatisticsWithFiles());
+        setHistoricalCollectionStats(getStatisticService().getCollectionStatistics());
+        return SUCCESS;
+    }
+
+    @Action("file-info")
+    public String fileInfo() {
         setFileAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.values())));
         setFileUploadedAverageStats(getStatisticService().getFileAverageStats(
                 Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
         setExtensionStats(getInformationResourceFileService().getAdminFileExtensionStats());
-        setHistoricalResourceStats(getStatisticService().getResourceStatistics());
-        setHistoricalResourceStatsWithFiles(getStatisticService().getResourceStatisticsWithFiles());
-        setHistoricalCollectionStats(getStatisticService().getCollectionStatistics());
+        setFiles(getInformationResourceFileService().findFilesWithStatus(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING));
         return SUCCESS;
     }
 
@@ -348,6 +357,14 @@ public class AdminController extends AuthenticationAware.Base {
 
     public void setUserLoginStats(List<Pair<Long, Long>> userLoginStats) {
         this.userLoginStats = userLoginStats;
+    }
+
+    public List<InformationResourceFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<InformationResourceFile> files) {
+        this.files = files;
     }
 
 }

@@ -2,6 +2,7 @@ package org.tdar.core.dao.resource;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Criteria;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
@@ -80,5 +82,12 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
                 informationResourceFileVersionDao.delete(version);
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<InformationResourceFile> findFilesWithStatus(FileStatus[] statuses) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_FILE_STATUS);
+        query.setParameterList("statuses", Arrays.asList(statuses));
+        return query.list();
     }
 }

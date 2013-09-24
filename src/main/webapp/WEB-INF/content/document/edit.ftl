@@ -34,7 +34,6 @@
     </div>
 
 
-
     <div data-tiplabel="Language" data-tooltipcontent="Select the language in which the document is written.">
         <@s.select label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
     </div>

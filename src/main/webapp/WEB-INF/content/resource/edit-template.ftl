@@ -128,9 +128,14 @@ $(function(){
 	<@edit.resourceCreators '${resource.resourceType.label} Creators' authorshipProxies 'authorship' />
 	</#if>
 
-     <#if !resource.resourceType.codingSheet && !resource.resourceType.ontology>
 	<div id="citationInformation" class="well-alt"> 
 	    <h2>Additional Citation Information</h2>
+	
+     <#if resource.resourceType.hasLanguage && resource.resourceType != 'DOCUMENT'>
+		<@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
+     </#if>
+
+     <#if !resource.resourceType.codingSheet && !resource.resourceType.ontology>
 	
 	    <#if resource.resourceType != 'PROJECT'>
 	    <div data-tiplabel="Department / Publisher Location" data-tooltipcontent="Department name, or City,State (and Country, if relevant)">
@@ -152,8 +157,8 @@ $(function(){
 	        <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
 	    </div>
 	    
-	</div>
     </#if>
+	</div>
     
 	<#if !bulkUpload >
 		<div class="well-alt">

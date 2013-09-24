@@ -1120,6 +1120,12 @@ var _sortFilesAlphabetically= function() {
 
         $('#explicitCoordinatesDiv').toggle(elem.checked);
     }
+
+    var _collectionTreeview = function() {
+        $(".collection-treeview")
+            .find(".hidden").removeClass("hidden").end()
+            .treeview();
+    }
     
     $.extend(self, {
         "initEditPage": _initEditPage,
@@ -1155,7 +1161,9 @@ var _sortFilesAlphabetically= function() {
         "refreshInputDisplay": _refreshInputDisplay,
 
         //I don't like how  Javascript Templates from "(tmpl.min.js)" puts "tmpl" in global scope, so I'm aliasing it here.
-        "tmpl": tmpl
+        "tmpl": tmpl,
+
+        "collectionTreeview": _collectionTreeview
     });
     
     return self;

@@ -786,16 +786,22 @@ public abstract class AbstractSeleniumWebITCase {
      * <code>Window.location</code> property, or if you call {@link WebElement#submit()} rather than submitForm();
      */
     public void reportJavascriptErrors() {
+
+//        message: "errorEvent::" +  (evt.message || "(no error message)"),
+//                filename: evt.filename || "(no filename - probably script from remote host)",
+//                line: evt.lineno,
+//                tag: "(inline script)"
+
         List<String> errors = getJavascriptErrors();
-        if (CollectionUtils.isEmpty(errors))
+        if (CollectionUtils.isEmpty(errors)) {
             return;
+        }
         logger.error("javascript error report for {}", driver.getCurrentUrl());
         for (String error : errors) {
             logger.error("javascript error: {}", error);
         }
         if (!ignoreJavascriptErrors) {
-            //FIXME: uncomment the next line after we upgrade selenium to 2.35 (currently at 2.34)
-            fail("ENCOUNTERED JAVASCRIPT ERRORS ON PAGE: " + driver.getCurrentUrl() + "\r\n [" + errors + "]");
+            fail("Encountered javascript errors on page: " + driver.getCurrentUrl() + "\r\n [" + errors + "]");
         }
     }
 

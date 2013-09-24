@@ -134,7 +134,7 @@
  	               legend: { show:true, location: 's', rendererOptions: {numberColumns: 3} }
  	               };
  	            </script>
-	            <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=300 context=true config="pcconfig" graphLabel="Your Resources By Type"/>
+	            <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=280 context=true config="pcconfig" graphLabel="Your Resources By Type"/>
 	        </div>
 	    </div>
 	</div>
@@ -278,6 +278,8 @@ $(document).ready(function() {
 			});
 		}
 	});
+
+    TDAR.common.collectionTreeview();
 });
 </script>
 </#escape>

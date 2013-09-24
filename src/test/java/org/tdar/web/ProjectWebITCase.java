@@ -7,6 +7,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 
 public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
+    private static final String PROJECT_NAME = "changing project test";
     public static String REGEX_DOCUMENT_VIEW = "/document/(\\d+)$";
 
     @Test
@@ -38,7 +39,7 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testChangingProject() {
         String resourceName = "changing project resource";
-        Long projectId = createResourceFromType(ResourceType.PROJECT,"changing project test");
+        Long projectId = createResourceFromType(ResourceType.PROJECT,PROJECT_NAME);
         setupDocumentWithProject(resourceName);
         String url = getCurrentUrlPath();
         //get the id of the new resource
@@ -53,6 +54,13 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextNotPresent(resourceName);
         gotoPage("/project/" + projectId.toString());
         assertTextPresent(resourceName);
-        
+        gotoPage(url);
+        clickLinkWithText("edit");
+        setInput("projectId", "-1");
+        submitForm();
+        assertTextNotPresent(PROJECT_NAME);
+        gotoPage("/project/" + projectId.toString());
+        assertTextNotPresent(resourceName);
+
     }
 }

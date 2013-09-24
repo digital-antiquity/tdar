@@ -55,7 +55,9 @@ $.validator.addMethod("float", function(value, element) {
     return value.match(/^(((\-?)(\d+)(\.?)(\d*))|)$/);
 }, "a valid lat/long in the format DEG.Min/Sec (eg. -67.892068) required");
 
+//FIXME: Does this work?
 $.validator.addMethod("validIdRequired", function(value, element) {
+    console.log(value + " : " + element);
     if (parseInt(value) != undefined && parseInt(value) > 0) {
         return true;
     } else if (TDAR.autocomplete.evaluateAutocompleteRowAsEmpty(element, 0)) {
@@ -69,9 +71,22 @@ $.validator.addMethod("validIdRequired", function(value, element) {
             msg += " " + $(this).attr("placeholder") + ":" + $(this).val();
         }
     });
-    msg += "  is not a valid, registered user.  If you do not wish to add or specify a user, leave all fields in this section blank.";
+    msg += "  is not valid.  If you do not wish to add or specify a value, leave all fields in this section blank.";
     return msg;
 });
+
+$.validator.addMethod("notValidIfIdEmpty", function(value, element) {
+    var $id = $($(element).attr("autocompleteIdElement"));
+    if (value == undefined) {
+        return true;
+    }
+    var idval = parseInt($id.val());
+    if (idval == undefined || isNaN(idval) || idval < 1) {
+        return false;
+    }
+
+    return true;
+},"you must select a value from the autocomplete");
 
 // http://stackoverflow.com/questions/1260984/jquery-validate-less-than
 $.validator.addMethod('lessThanEqual', function(value, element, param) {

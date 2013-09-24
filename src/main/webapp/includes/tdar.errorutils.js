@@ -46,7 +46,7 @@
         }
         obj.time = ((_now() - _start) / 1000).toFixed(3) + 's';
 
-        _errors.push(obj.message);
+        _errors.push(_json(obj));
         //console.log(_json(obj));
         var ta = _errorTextarea();
         //a page might not have a textarea (e.g. a view page) or an error event happened before it was parsed
@@ -64,8 +64,9 @@
         var tgt = evt.target;
         var obj = {
             message: "errorEvent::" +  (evt.message || "(no error message)"),
-            filename: evt.filename || "(filename hidden)",
-            line: evt.lineno
+            filename: evt.filename || "(no filename - probably script from remote host)",
+            line: evt.lineno,
+            tag: "(inline script)"
         };
 
         if(tgt !== window) {

@@ -414,26 +414,16 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public Project getProject() {
-//        // if we have a project -- use it, if we have a projectId; look it up
-//        if (Persistable.Base.isNullOrTransient(project) && Persistable.Base.isNotNullOrTransient(projectId)) {
-//            project = getProjectService().find(projectId);
-//        }
-//
-//        if (project == null) {
-//            project = Project.NULL;
-//        }
         return project;
     }
     
     
     protected void resolveProject() {
+        project = Project.NULL;
         if (Persistable.Base.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
             return;
-        }
-        if (Persistable.Base.isNullOrTransient(project)) {
-            project = Project.NULL;
-        }
+        } 
     }
 
     protected void setProject(Project project) {
@@ -450,7 +440,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * Used to set the parent project for this information resource.
      */
     public void setProjectId(Long projectId_) {
-        if (Persistable.Base.isNullOrTransient(projectId_)) {
+        // remove me?
+        if (projectId_ == null) {
             logger.warn("Tried to set null project id, no-op.");
             return;
         }
