@@ -468,7 +468,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      * @return
      */
     protected List<String> toSortedStringList(Collection<?> collection) {
-        ArrayList<String> stringList = new ArrayList<String>(collection.size());
+        ArrayList<String> stringList = new ArrayList<>(collection.size());
         for (Object o : collection) {
             stringList.add(o.toString());
         }
@@ -477,7 +477,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     protected <P extends Persistable> List<Long> toIdList(Collection<P> persistables) {
-        ArrayList<Long> ids = new ArrayList<Long>();
+        ArrayList<Long> ids = new ArrayList<>();
         for (P persistable : persistables) {
             ids.add(persistable.getId());
         }
@@ -562,7 +562,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public List<CoverageType> getAllCoverageTypes() {
-        List<CoverageType> coverageTypes = new ArrayList<CoverageType>();
+        List<CoverageType> coverageTypes = new ArrayList<>();
         coverageTypes.add(CoverageType.CALENDAR_DATE);
         coverageTypes.add(CoverageType.RADIOCARBON_DATE);
         return coverageTypes;
@@ -595,9 +595,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getProtocol() {
         if (isSecure()) {
             return "https:";
-        } else {
-            return "http:";
         }
+        return "http:";
     }
 
     public boolean getShowJiraLink() {
@@ -617,7 +616,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public String getCurrentUrl() {
-        return urlService.getOriginalUrlPath(servletRequest);
+        return UrlService.getOriginalUrlPath(servletRequest);
     }
 
     public boolean isViewRowSupported() {
@@ -673,5 +672,12 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getJavascriptErrorLog() {
         return javascriptErrorLog;
     }
-
+    
+    /**
+     * @see TdarConfiguration#isSwitchableMapObfuscation()
+     * @return whatever value the tdar configuration isSwitchableMapObfuscation returns.
+     */
+    public boolean isSwitchableMapObfuscation() {
+        return getTdarConfiguration().isSwitchableMapObfuscation();
+    }
 }
