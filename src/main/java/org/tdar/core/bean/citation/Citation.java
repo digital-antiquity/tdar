@@ -53,6 +53,7 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
         return text;
     }
 
+    @Override
     public String toString() {
         return text;
     }
@@ -61,6 +62,7 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
         this.text = text;
     }
 
+    @Override
     public boolean isValid() {
         if (!StringUtils.isEmpty(text)) {
             return true;
@@ -68,12 +70,13 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
         return false;
     }
 
+    @Override
     public boolean isValidForController() {
         return true;
     }
 
     @Override
     protected String[] getIncludedJsonProperties() {
-        return getIncludedJsonProperties();
+        return super.getIncludedJsonProperties();
     }
 }
