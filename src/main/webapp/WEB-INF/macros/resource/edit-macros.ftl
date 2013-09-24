@@ -123,19 +123,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             data-tiplabel="Geographic Coordinates"
             data-tooltipcontent="#geoHelpDiv"
             ></div>
-         <#if switchableMapObfuscation>
-            <@helptext.showExactLocationTip />
-            <div class="" id="showExactLocation" data-tiplabel="Is it OK to show the exact location?" data-tooltipcontent="#showExactLocationHelpDiv" >
-                <@s.checkbox id="is_okay_to_show_exact_location" name="latitudeLongitudeBoxes[0].okayToShowExactLocation" label='Is it OK to show the exact location?' labelposition='right'  />
-            </div>
-         </#if>
         <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip">
-        <br />
-
+            <br />
             <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
-            
             <div id='explicitCoordinatesDiv' style='text-align:center;'>
-            
                 <table cellpadding="0" cellspacing="0" style="margin-left:auto;margin-right:auto;text-align:left;" >
                 <tr>                                    
                 <td></td>
@@ -170,6 +161,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </div>
             <@helptext.manualGeo />
         </div>
+        <#if switchableMapObfuscation>
+            <@helptext.showExactLocationTip />
+            <div class="" id="showExactLocation" data-tiplabel="Is it OK to show the exact location?" data-tooltipcontent="#showExactLocationHelpDiv" >
+                <@s.checkbox id="is_okay_to_show_exact_location" name="latitudeLongitudeBoxes[0].okayToShowExactLocation" label='Is it OK to show the exact location?' labelposition='right'  />
+            </div>
+        </#if>
     </div>
 </div>
 </#macro>
