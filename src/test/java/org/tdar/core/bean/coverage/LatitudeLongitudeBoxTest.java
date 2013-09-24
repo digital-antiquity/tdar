@@ -220,9 +220,9 @@ public class LatitudeLongitudeBoxTest {
     @Test
     public void doesReturnCoordsInRightPlace() {
         double minimumLongitude = 0.00001;
-        double maximumLongitude = 0.00004;
-        double minimumLatitude = 0.00002;
-        double maximumLatitude = 0.00003;
+        double maximumLongitude = 0.00002;
+        double minimumLatitude = 0.00003;
+        double maximumLatitude = 0.00004;
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
         llb.setOkayToShowExactLocation(true);
         assertTrue(Double.valueOf(minimumLongitude).equals(llb.getMinimumLongitude()));
@@ -234,4 +234,23 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(Double.valueOf(minimumLatitude).equals(llb.getMinObfuscatedLatitude()));
         assertTrue(Double.valueOf(maximumLatitude).equals(llb.getMaxObfuscatedLatitude()));
     }
+
+    @SuppressWarnings({ "static-method", "deprecation"})
+    @Test
+    public void doesReturnCoordsInRightPlaceIfBoxGreaterThanOneMile() {
+        double minimumLongitude = 0.00001;
+        double maximumLongitude = LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002;
+        double minimumLatitude = 0.00003;
+        double maximumLatitude = LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00004;
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
+        assertTrue(Double.valueOf(minimumLongitude).equals(llb.getMinimumLongitude()));
+        assertTrue(Double.valueOf(maximumLongitude).equals(llb.getMaximumLongitude()));
+        assertTrue(Double.valueOf(minimumLatitude).equals(llb.getMinimumLatitude()));
+        assertTrue(Double.valueOf(maximumLatitude).equals(llb.getMaximumLatitude()));
+        assertTrue(Double.valueOf(minimumLongitude).equals(llb.getMinObfuscatedLongitude()));
+        assertTrue(Double.valueOf(maximumLongitude).equals(llb.getMaxObfuscatedLongitude()));
+        assertTrue(Double.valueOf(minimumLatitude).equals(llb.getMinObfuscatedLatitude()));
+        assertTrue(Double.valueOf(maximumLatitude).equals(llb.getMaxObfuscatedLatitude()));
+    }
+
 }
