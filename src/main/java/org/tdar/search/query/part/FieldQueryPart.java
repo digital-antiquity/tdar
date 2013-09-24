@@ -92,7 +92,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             return true;
         }
         for (C value : fieldValues) {
-            if (value != null || StringUtils.isNotBlank(value.toString())) {
+            if (value != null) {
                 return false;
             }
         }
