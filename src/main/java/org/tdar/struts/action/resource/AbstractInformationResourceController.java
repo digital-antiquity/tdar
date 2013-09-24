@@ -584,6 +584,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (getPersistable() == null)
             return;
         setProject(getPersistable().getProject());
+        setProjectId(getPersistable().getProjectId());
     }
 
     /*
