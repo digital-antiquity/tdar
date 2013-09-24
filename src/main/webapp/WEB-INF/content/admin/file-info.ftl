@@ -26,14 +26,15 @@
 <td>${file.informationResourceFileType}</td>
 <td>${file.numberOfParts!1}</td>
 <td>${file.status}</td>
-<td><@common.truncate file.errorMessage 80/> <span onClick="$(this).parent().children('.hidden').removeClass('hidden');$(this).hide();">[show]</span>
+<td>
+<@common.truncate file.errorMessage!"" 80/> <span onClick="$(this).parent().children('.hidden').removeClass('hidden');$(this).hide();">[show]</span>
 <span class="hidden">
-${file.errorMessage}
+${file.errorMessage!""}
 </span>
 </td>
 <td>${file.partOfComposite?string}</td>
 <td>${file.latestVersion!0}</td>
-<td>${file.restriction} ${file.dateMadePublic!""}</td>
+<td>${file.restriction} <#if file.embargoed>(${file.dateMadePublic!""})</#if></td>
 </tr>
 </#list>
 </tbody>
