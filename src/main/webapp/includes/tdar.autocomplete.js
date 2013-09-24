@@ -269,8 +269,8 @@ function _applyGenericAutocomplete($elements, options) {
         minLength : options.minLength || 0,
         select : function(event, ui) {
             // 'this' is the input box element.
-            console.log(event.target);
-            console.log(ui);
+//            console.log(event.target);
+  //          console.log(ui);
             var $elem = $(event.target);
             _applyDataElements(this, ui.item);
 
