@@ -10,23 +10,25 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.ResourceCreatorRoleType;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
 
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
+    private static final String EXACT_LOCATION_CHECKBOX_TEXT = "Is it OK to show the exact location?";
     public static String PROJECT_ID_FIELDNAME = "projectId";
     public static String DOCUMENT_TITLE_FIELDNAME = "document.title";
     public static String DOCUMENT_TYPE_FIELDNAME = "document.documentType";
@@ -54,6 +56,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         super.testOntologyView();
         clickLinkWithText("edit");
         assertTextPresentInPage("Fauna Pathologies - Default Ontology Draft");
+        assertTextNotPresent(EXACT_LOCATION_CHECKBOX_TEXT);
         assertButtonPresentWithText("Save");
     }
 
@@ -87,6 +90,8 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testDatasetView() {
         super.testDatasetView();
         clickLinkWithText("edit");
+        // following should not appear on the page when run with the default TDAR property file
+        assertTextNotPresent(EXACT_LOCATION_CHECKBOX_TEXT);
         assertButtonPresentWithText("Save");
         super.testDatasetView(); // back to view page, then to citations
         // clickLinkWithText("manage citations");
@@ -99,7 +104,16 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // clickLinkWithText("link ontology");
         // assertTextPresentInPage("Match column values");
     }
-
+    
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
+    public void testFaimsDatasetView() {
+        super.testDatasetView();
+        clickLinkWithText("edit");
+        // following should appear on the page when run with the FAIMS property file
+        assertTextPresent(EXACT_LOCATION_CHECKBOX_TEXT);
+    }
+    
     // an malformed file should take you back to save.action and contain an action error
     @Test
     public void testMalformedAttachmentDisplaysError() {
