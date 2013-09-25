@@ -1366,7 +1366,7 @@ $(function() {
 <#local disabled =  isDisabled?string("disabled", "") />
 <#local readonly = isDisabled?string("readonly", "") />
 <#local lookupType="nameAutoComplete"/>
-<#if isUser><#local lookupType="userAutoComplete"/></#if>
+<#if isUser><#local lookupType="userAutoComplete notValidIfIdEmpty"/></#if>
 <#local _index=""/>
 <#if _indexNumber?string!=''><#local _index="[${_indexNumber?c}]" /></#if>
 <#local personPrefix="" />
@@ -1378,7 +1378,7 @@ $(function() {
 <#local firstnameTitle>A ${leadTitle}first name<#if required> is required</#if></#local>
 <#local surnameTitle>A ${leadTitle}last name<#if required> is required</#if></#local>
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
-        <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
+        <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()" autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
             <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
                 autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
@@ -1426,7 +1426,7 @@ $(function() {
     includeRepeatRow=false includeRights=false  hidden=false leadTitle="">
 <#local disabled =  isDisabled?string("disabled", "") />
 <#local readonly = isDisabled?string("readonly", "") />
-<#local lookupType="userAutoComplete"/>
+<#local lookupType="userAutoComplete notValidIfIdEmpty"/>
 <#local _index=""/>
 <#if _indexNumber?string!=''><#local _index="[${_indexNumber?c}]" /></#if>
 <#local personPrefix="" />
@@ -1437,13 +1437,14 @@ $(function() {
 <#local requiredClass><#if required>required</#if></#local>
 <#local nameTitle>A ${leadTitle} name<#if required> is required</#if></#local>
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
-        <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
+        <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
-            <@s.textfield theme="tdar" cssClass="span3 ${lookupType} ${requiredClass}" placeholder="Name"  readonly=isDisabled autocomplete="off"
+            <@s.textfield cssClass="span3 ${lookupType} ${requiredClass}" placeholder="Name"  readonly=isDisabled autocomplete="off"
                 name="${strutsPrefix}${personPrefix}.tempDisplayName" maxlength="255" autocompleteName="tempDisplayName"
                 autocompleteIdElement="#${idIdElement}" 
                 autocompleteParentElement="#${rowIdElement}" 
-                 title="${nameTitle}" 
+                 title="${nameTitle}"
+                dynamicAttributes={"data-msg-notValidIfIdEmpty":"Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."}
                 />
 
             <#if includeRights>
@@ -1472,7 +1473,7 @@ $(function() {
 
     <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if>">
 
-        <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
+        <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
                 <div class="controls-row">
                     <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4 ${requiredClass}" placeholder="Institution Name" autocomplete="off"
                         autocompleteIdElement="#${idIdElement}" autocompleteName="name" 

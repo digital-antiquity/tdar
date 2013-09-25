@@ -77,6 +77,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private List<Language> languages;
     private List<FileProxy> fileProxies = new ArrayList<>();
 
+
+    private Long projectId;
+
     // previously uploaded files list in json format, needed by blueimp jquery file upload
     private String filesJson = "";
 
@@ -369,6 +372,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
+        setProject(getPersistable().getProject());
+        setProjectId(getPersistable().getProjectId());
         super.loadCustomMetadata();
         loadInformationResourceProperties();
         loadResourceProviderInformation();
@@ -429,8 +434,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected void setProject(Project project) {
         this.project = project;
     }
-
-    private Long projectId;
 
     public Long getProjectId() {
         return projectId;
@@ -589,7 +592,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         super.prepare();
         if (getPersistable() == null)
             return;
-        setProject(getPersistable().getProject());
     }
 
     /*

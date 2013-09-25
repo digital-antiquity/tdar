@@ -55,29 +55,10 @@ $.validator.addMethod("float", function(value, element) {
     return value.match(/^(((\-?)(\d+)(\.?)(\d*))|)$/);
 }, "a valid lat/long in the format DEG.Min/Sec (eg. -67.892068) required");
 
-//FIXME: Does this work?
-$.validator.addMethod("validIdRequired", function(value, element) {
-    console.log(value + " : " + element);
-    if (parseInt(value) != undefined && parseInt(value) > 0) {
-        return true;
-    } else if (TDAR.autocomplete.evaluateAutocompleteRowAsEmpty(element, 0)) {
-        return true;
-    }
-    return false;
-}, function(value, element) {
-    var msg = "";
-    $("input[type=text]:visible", $($(element).attr("autocompleteParentElement"))).each(function() {
-        if ($(this).val() != '') {
-            msg += " " + $(this).attr("placeholder") + ":" + $(this).val();
-        }
-    });
-    msg += "  is not valid.  If you do not wish to add or specify a value, leave all fields in this section blank.";
-    return msg;
-});
 
 $.validator.addMethod("notValidIfIdEmpty", function(value, element) {
     var $id = $($(element).attr("autocompleteIdElement"));
-    if (value == undefined) {
+    if (value == undefined || value.trim() == "") {
         return true;
     }
     var idval = parseInt($id.val());

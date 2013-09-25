@@ -65,7 +65,8 @@ pre, td {
 <pre>
 ${sessionStatistics}
 </pre>
-
+<#assign threshold =99/>
+<p>Threshold for slow queries is: <strong>${threshold} ms</strong></p>
 <table class="tableFormat table" id="tblQueryStats">
     <thead>
         <tr>
@@ -83,7 +84,7 @@ ${sessionStatistics}
     <tbody>
         <#list sessionStatistics.queries as query>
 	        <#assign stat = sessionStatistics.getQueryStatistics(query) />
-	        <#if (stat.executionAvgTime > 30 || stat.executionMaxTime > 30) >
+	        <#if (stat.executionAvgTime > threshold || stat.executionMaxTime > threshold) >
 		        <tr><td><b>${query}</b></td>
 		        <td>${stat.executionCount}</td>
 		        <td>${stat.executionAvgTime}</td>

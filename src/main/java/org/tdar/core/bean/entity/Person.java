@@ -516,14 +516,25 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.proxyNote = proxyNote;
     }
 
-    /* convenience for struts in case of error on INPUT, better than "NULL NULL" */
+    /**
+     * convenience for struts in case of error on INPUT, better than "NULL NULL"
+     * @deprecated Do not use this method in new code.  Its behavior will change to fix legacy issues until it is removed from the API
+     * */
+    @Deprecated
     public String getTempDisplayName() {
+        if(StringUtils.isBlank(firstName)) return "";
+        if(StringUtils.isBlank(lastName)) return "";
         if (StringUtils.isBlank(tempDisplayName) && StringUtils.isNotBlank(getProperName())) {
             setTempDisplayName(getProperName());
         }
         return tempDisplayName;
     }
 
+    /**
+     * convenience for struts in case of error on INPUT, better than "NULL NULL"
+     * @deprecated Do not use this method in new code.  Its behavior will change to fix legacy issues until it is removed from the API
+     * */
+    @Deprecated
     public void setTempDisplayName(String tempName) {
         this.tempDisplayName = tempName;
     }
