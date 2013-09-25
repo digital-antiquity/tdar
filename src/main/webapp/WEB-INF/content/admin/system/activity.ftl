@@ -105,7 +105,7 @@ pre, td {
 ${sessionStatistics}
 </pre>
 <#assign threshold =99/>
-<p>Threshold for slow queries is: <strong>${threshold} ms</p>
+<p>Threshold for slow queries is: <strong>${threshold} ms</strong></p>
 <table class="tableFormat table" id="tblQueryStats">
     <thead>
         <tr>
