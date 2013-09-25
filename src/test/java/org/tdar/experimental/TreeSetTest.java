@@ -1,6 +1,5 @@
 package org.tdar.experimental;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,12 +50,14 @@ public class TreeSetTest {
         }
     }
 
+    @SuppressWarnings("static-method")
     public TreeSet<Person> createTreeset(Comparator<Person> comparator) {
         return null;
     }
 
     // consistent: uses same field to sort that is used in equals()
     Comparator<Person> compareId = new Comparator<Person>() {
+        @Override
         public int compare(Person o1, Person o2) {
             return o1.id - o2.id;
         }
@@ -64,6 +65,7 @@ public class TreeSetTest {
 
     // inconsistent, uses last name field. two equal items may not yeild compareTo value of 0 (and vice versa)
     Comparator<Person> compareLastName = new Comparator<Person>() {
+        @Override
         public int compare(Person p1, Person p2) {
             return p1.lastName.compareTo(p2.lastName);
         }
@@ -80,13 +82,12 @@ public class TreeSetTest {
     public void comparitorFlattensUnequalItems() {
         // yes, yes... it's a bad idea to use a comparitor that isn't consistent with equals... but can we use it *at all*?
 
-        Set<Person> set1 = new TreeSet<Person>(compareId);
-        Set<Person> set2 = new TreeSet<Person>(compareLastName);
+        Set<Person> set1 = new TreeSet<>(compareId);
+        Set<Person> set2 = new TreeSet<>(compareLastName);
 
         // we know how this set will be distinct off of id
-        Set<Person> set3 = new HashSet<Person>();
+        Set<Person> set3 = new HashSet<>();
 
-        ArrayList<Person> bobs = new ArrayList<Person>();
         for (int i = 25; i > 0; i--) {
             Person bob = new Person(i, "Bob", "Loblaw");
             set1.add(bob);
@@ -107,8 +108,8 @@ public class TreeSetTest {
     // going in the opposite direction, can we get treeset w/ multiple items when we know that they are equal?
     @Test
     public void comparitorConsidersEqualItemsUnique() {
-        Set<Person> set1 = new HashSet<Person>();
-        Set<Person> set2 = new TreeSet<Person>(compareLastName);
+        Set<Person> set1 = new HashSet<>();
+        Set<Person> set2 = new TreeSet<>(compareLastName);
         for (int i = 0; i < 10; i++) {
             Person bob = new Person(1, "Bob", "Loblaw" + i);
             set1.add(bob);
