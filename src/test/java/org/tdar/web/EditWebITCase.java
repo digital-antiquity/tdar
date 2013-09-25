@@ -48,6 +48,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String DESCRIPTION = "A resource description";
     public static String MALFORMED_DATASET_FILE = TestConstants.TEST_DATA_INTEGRATION_DIR + "malformed_csv_dataset.csv";
 
+    @Override
     @Test
     public void testOntologyView() {
         super.testOntologyView();
@@ -56,6 +57,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertButtonPresentWithText("Save");
     }
 
+    @Override
     @Test
     public void testCodingSheetView() {
         super.testCodingSheetView();
@@ -63,6 +65,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertButtonPresentWithText("Save");
     }
 
+    @Override
     @Test
     public void testProjectView() {
         super.testProjectView();
@@ -70,6 +73,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertButtonPresentWithText("Save");
     }
 
+    @Override
     @Test
     public void testDocumentView() {
         super.testDocumentView();
@@ -78,6 +82,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertButtonPresentWithText("Save");
     }
 
+    @Override
     @Test
     public void testDatasetView() {
         super.testDatasetView();
@@ -132,8 +137,6 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testFakeRolesShouldNotAppearInEditSelects() {
-        // FIXME: there's a more automagical way to create this list, yeah?
-        List<String> urls = new ArrayList<String>();
         for (ResourceType resourceType : ResourceType.values()) {
             String url = String.format("/%s/add", resourceType.getUrlNamespace());
             assertNoFakeRoles(url);
