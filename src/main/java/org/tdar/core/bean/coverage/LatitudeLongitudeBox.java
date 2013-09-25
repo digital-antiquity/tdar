@@ -63,17 +63,21 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
 
-    private transient Double minObfuscatedLatitude = null;
-    private transient Double minObfuscatedLongitude = null;
-    private transient Double maxObfuscatedLatitude = null;
-    private transient Double maxObfuscatedLongitude = null;
-
     /** used to record whether this instance has been obfuscated by the obfuscation service or not */
     private transient boolean obfuscated;
 
     /** if true, then the location does not need to be hidden */
     @Column(nullable = false, name = "is_ok_to_show_exact_location" , columnDefinition="boolean default false")
     private boolean isOkayToShowExactLocation;
+
+    @Column(name = "min_obfuscated_lat")
+    private Double minObfuscatedLatitude = null;
+    @Column(name = "min_obfuscated_long")
+    private Double minObfuscatedLongitude = null;
+    @Column(name = "max_obfuscated_lat")
+    private Double maxObfuscatedLatitude = null;
+    @Column(name = "max_obfuscated_long")
+    private Double maxObfuscatedLongitude = null;
 
     // ranges from -90 (South) to +90 (North)
     @Field
@@ -211,24 +215,36 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return result ;
     }
 
+    private void setMinObfuscatedLatitude() {
+        minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE);
+    }
+
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     public Double getMinObfuscatedLatitude() {
         if (minObfuscatedLatitude == null) {
-            minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE);
+            setMinObfuscatedLatitude();
         }
         return getProtectedResult(minObfuscatedLatitude, minimumLatitude) ;
     }
 
+    private void setMaxObfuscatedLatitude() {
+        maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE);
+    }
+    
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     public Double getMaxObfuscatedLatitude() {
         if (maxObfuscatedLatitude == null) {
-            maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE);
+            setMaxObfuscatedLatitude();
         }
         return getProtectedResult(maxObfuscatedLatitude, maximumLatitude);
+    }
+
+    private void setMinObfuscatedLongitude() {
+        minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE);
     }
 
     /**
@@ -236,9 +252,13 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public Double getMinObfuscatedLongitude() {
         if (minObfuscatedLongitude == null) {
-            minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE);
+            setMinObfuscatedLongitude();
         }
         return getProtectedResult(minObfuscatedLongitude, minimumLongitude);
+    }
+
+    private void setMaxObfuscatedLongitude() {
+        maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE);
     }
 
     /**
@@ -246,7 +266,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public Double getMaxObfuscatedLongitude() {
         if (maxObfuscatedLongitude == null) {
-            maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE);
+            setMaxObfuscatedLongitude();
         }
         return getProtectedResult(maxObfuscatedLongitude, maximumLongitude) ;
     }
@@ -265,7 +285,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     @Transient
     public void setMiny(Double minY) {
         this.minimumLatitude = minY;
-        this.minObfuscatedLatitude = null;
+        setMinObfuscatedLatitude();
     }
 
     @Deprecated
@@ -290,7 +310,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     @Transient
     public void setMaxy(Double maxY) {
         this.maximumLatitude = maxY;
-        this.maxObfuscatedLatitude = null;
+        setMaxObfuscatedLatitude();
     }
 
     @Deprecated
@@ -320,7 +340,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     @Transient
     public void setMinx(Double minX) {
         this.minimumLongitude = minX;
-        this.minObfuscatedLongitude = null;
+        setMinObfuscatedLongitude();
     }
 
     @Deprecated
@@ -349,7 +369,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     @Transient
     public void setMaxx(Double maxX) {
         this.maximumLongitude = maxX;
-        this.maxObfuscatedLongitude = null;
+        setMaxObfuscatedLongitude();
     }
 
     @Transient
