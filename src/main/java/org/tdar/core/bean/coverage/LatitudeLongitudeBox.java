@@ -171,14 +171,16 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         Random r = new Random();
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
-
-        if (Math.abs(num1.doubleValue() - num2.doubleValue()) < salt) {
+        
+        // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
+        Double numTwo = (num2 != null) ? num2: num1 + salt / 2;
+        if (Math.abs(num1.doubleValue() - numTwo.doubleValue()) < salt) {
             add += salt / 2;
         } else {
             return num1;
         }
 
-        if (num1 < num2) { // -5 < -3
+        if (num1 < numTwo) { // -5 < -3
             add *= -1;
             salt *= -1;
         }
