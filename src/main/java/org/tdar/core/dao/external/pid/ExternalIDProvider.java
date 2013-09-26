@@ -25,22 +25,22 @@ public interface ExternalIDProvider extends Configurable {
 
     public abstract boolean logout() throws ClientProtocolException, IOException;
 
-    /*
+    /**
      * returns a map of identifiers and values created by the system
      */
     public abstract Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException;
 
-    /*
-     * returns a map of all of the information the EZID server has on the resource
+    /**
+     * returns a map of all of the information the ID server has on the resource
      */
     public abstract Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException;
 
-    /*
+    /**
      * returns a map of identifiers and values created by the system
      */
     public abstract Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException;
 
-    /*
+    /**
      * returns a map of identifiers and values created by the system
      */
     public abstract Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException;

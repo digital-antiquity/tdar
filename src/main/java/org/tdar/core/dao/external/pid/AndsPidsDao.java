@@ -1,9 +1,3 @@
-/**
- * $Id$
- * 
- * @author $Author$
- * @version $Revision$
- */
 package org.tdar.core.dao.external.pid;
 
 import java.io.IOException;
@@ -29,7 +23,6 @@ import au.csiro.pidclient.business.AndsPidResponseProperty;
 
 /**
  * @author Nuwan Goonasekera
- * 
  */
 @Service
 public class AndsPidsDao implements ExternalIDProvider {
@@ -72,11 +65,6 @@ public class AndsPidsDao implements ExternalIDProvider {
         return false;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.dao.DaoProvider#connect(java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public boolean connect() throws ClientProtocolException, IOException {
         logger.debug("Connecting to ANDS Pids Service: {}:{}{}", new Object[] { getDOIProviderHostname(), getDOIProviderPort(), getDOIProviderServicePath() });
@@ -88,9 +76,6 @@ public class AndsPidsDao implements ExternalIDProvider {
         return true;
     }
 
-    /*
-     * @see org.tdar.core.dao.DaoProvider#logout(java.lang.String)
-     */
     @Override
     public boolean logout() throws ClientProtocolException, IOException {
         logger.info("ANDS Pids logout: {} ", getDOIProviderHostname());
@@ -98,10 +83,6 @@ public class AndsPidsDao implements ExternalIDProvider {
         return true;
     }
 
-    /**
-     * returns a map of identifiers and values created by the system
-     * @see org.tdar.core.dao.DaoProvider#create(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException {
         Map<String, String> typeMap = new HashMap<>();
@@ -119,10 +100,6 @@ public class AndsPidsDao implements ExternalIDProvider {
         return typeMap;
     }
 
-    /**
-     * returns a map of all of the information the Ands Pids server has on the resource
-     * @see org.tdar.core.dao.DaoProvider#getMetadata(java.lang.String, java.lang.String)
-     */
     @Override
     public Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException {
         Map<String, String> typeMap = new HashMap<>();
@@ -139,10 +116,6 @@ public class AndsPidsDao implements ExternalIDProvider {
         return typeMap;
     }
 
-    /**
-     * returns a map of identifiers and values created by the system
-     * @see org.tdar.core.dao.DaoProvider#modify(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
         Map<String, String> typeMap = new HashMap<>();
@@ -159,10 +132,6 @@ public class AndsPidsDao implements ExternalIDProvider {
         return typeMap;
     }
 
-    /**
-     * returns a map of identifiers and values created by the system
-     * @see org.tdar.core.dao.DaoProvider#delete(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
         Map<String, String> typeMap = new HashMap<>();
