@@ -35,6 +35,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
 
     public abstract void process(P persistable) throws Exception;
 
+    @Override
     public boolean isEnabled() {
         return true;
     }
@@ -109,6 +110,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         }
     }
 
+    @Override
     public boolean isSingleRunProcess() {
         return false;
     }
@@ -146,6 +148,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         return allIds;
     }
 
+    @Override
     public Logger getLogger() {
         return logger;
     }
@@ -155,6 +158,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
      * NOTE: Invoking ScheduledBatchProcess.cleanup() sets the batch id queue to null,
      * which will cause any subsequent invocations of this method to return false.
      */
+    @Override
     public boolean isCompleted() {
         return getBatchIdQueue().isEmpty();
     }
