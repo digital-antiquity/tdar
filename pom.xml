@@ -146,6 +146,20 @@
 			<id>Laughing Panda</id>
 			<url>http://maven.laughingpanda.org/maven2</url>
 		</repository>
+		<!-- The following means that artifacts produced by this pom will not install into other repositories as these artifacts wont be found.
+		     But its needed as we have some artifacts that currently aren't in any maven repository (they are bad maven citizens) -->
+		<!-- To install into this repository issue a command along the lines of:
+		     mvn install:install-file -DlocalRepositoryPath=repo -DcreateChecksum=true -Dpackaging=jar -Dfile=[the-jar] -DgroupId=[...] -DartifactId=[...] -Dversion=[...] -->
+		<!-- Following is an example (should all be on one line when executed otherwise...) 
+			mvn install:install-file -DlocalRepositoryPath=repo -DcreateChecksum=true 
+			-Dpackaging=jar -Dfile=~/Java/ands-pid-client/ands-pid-client-1.0.30.jar 
+			-Djavadoc=~/Java/ands-pid-client/ands-pid-client-1.0.30-javadoc.jar 
+			-Dsources=~/Java/ands-pid-client/ands-pid-client-1.0.30-sources.jar 
+			-DgroupId=net.sourceforge.andspidclient -DartifactId=ands-pid-client -Dversion=1.0.30 -->
+		<repository>
+			<id>repo</id>
+			<url>file://${project.basedir}/repo</url>
+		</repository>
 	</repositories>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.tdar</groupId>
@@ -182,13 +196,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 		</dependency>
-
 		<!-- postgres jdbc -->
 		<dependency>
 			<groupId>postgresql</groupId>
@@ -397,7 +409,7 @@
 		<dependency>
 			<groupId>net.sourceforge.andspidclient</groupId>
 			<artifactId>ands-pid-client</artifactId>
-			<version>1.0.07</version>
+			<version>1.0.30</version>
 		</dependency>
 		<!-- Junit -->
 		<dependency>
@@ -1005,56 +1017,54 @@
 			<version>1.1.0.Beta1</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-
 	</dependencies>
-<reporting>
-    <plugins>
-       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.10</version>
-        <configuration>
-          <enableRSS>false</enableRSS>
-          <includes>org/tdar/**/*.java</includes>
-          <enableRulesSummary>true</enableRulesSummary>
-          <configLocation>src/main/resources/check_style.xml</configLocation>  
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version>
-      </plugin>
-      
-          <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.7</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>index</report>
-              <report>project-team</report>
-              <report>mailing-list</report>
-              <report>cim</report>
-              <report>issue-tracking</report>
-              <report>license</report>
-              <report>scm</report>
-<!--               <report>findbugs</report>
-              <report>checkstyle</report> -->
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      
-    </plugins>
-    </reporting>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<enableRSS>false</enableRSS>
+					<includes>org/tdar/**/*.java</includes>
+					<enableRulesSummary>true</enableRulesSummary>
+					<configLocation>src/main/resources/check_style.xml</configLocation>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.5.2</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.7</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>index</report>
+							<report>project-team</report>
+							<report>mailing-list</report>
+							<report>cim</report>
+							<report>issue-tracking</report>
+							<report>license</report>
+							<report>scm</report>
+							<!-- <report>findbugs</report> 
+							<report>checkstyle</report> -->
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+
+		</plugins>
+	</reporting>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>maven.java.net</id>
@@ -1322,6 +1332,7 @@
 				<version>1.7</version>
 				<executions>
 					<execution>
+						<id>ant-run-run</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>run</goal>
@@ -1344,10 +1355,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-
-
-
 			<plugin>
 				<!-- <repository> <id>maven.org</id> <url>http://repo2.maven.org/maven2</url> 
 					</repository> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-maven-plugin</artifactId> 
@@ -1507,44 +1514,44 @@
 					</excludes>
 				</configuration>
 			</plugin>
-   <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version>
-        <configuration>
-       <failOnError>false</failOnError>
-         <findbugsXmlOutput>false</findbugsXmlOutput>
-         <onlyAnalyze>org.tdar.*</onlyAnalyze>
-         <skip>true</skip>
-        </configuration>
-      </plugin>
-        <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.3</version>
-        <dependencies>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
-        </dependencies>
-      </plugin>
-             <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.10</version>
-        <configuration>
-          <enableRSS>false</enableRSS>
-          <includes>org/tdar/*.java</includes>
-          <enableRulesSummary>true</enableRulesSummary>
-          <configLocation>src/main/resources/check_style.xml</configLocation>  
-        </configuration>
-      </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.5.2</version>
+				<configuration>
+					<failOnError>false</failOnError>
+					<findbugsXmlOutput>false</findbugsXmlOutput>
+					<onlyAnalyze>org.tdar.*</onlyAnalyze>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.3</version>
+				<dependencies>
+					<dependency>
+						<groupId>commons-lang</groupId>
+						<artifactId>commons-lang</artifactId>
+						<version>2.6</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<enableRSS>false</enableRSS>
+					<includes>org/tdar/*.java</includes>
+					<enableRulesSummary>true</enableRulesSummary>
+					<configLocation>src/main/resources/check_style.xml</configLocation>
+				</configuration>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
-			
+
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
