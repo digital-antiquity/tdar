@@ -85,13 +85,10 @@ public class AndsPidsDao implements ExternalIDProvider {
         pidsClient.setPidServicePath(getDOIProviderServicePath());
         AndsPidIdentity identity = new AndsPidIdentity(getDOIProviderAppId(), getDOIProviderIdentifier(), getDOIProviderAuthDomain());
         pidsClient.setRequestorIdentity(identity);
-
         return true;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see org.tdar.core.dao.DaoProvider#logout(java.lang.String)
      */
     @Override
@@ -101,47 +98,34 @@ public class AndsPidsDao implements ExternalIDProvider {
         return true;
     }
 
-    /*
+    /**
      * returns a map of identifiers and values created by the system
-     */
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.tdar.core.dao.DaoProvider#create(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
     public Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException {
-        Map<String, String> typeMap = new HashMap<String, String>();
-
+        Map<String, String> typeMap = new HashMap<>();
         try {
             AndsPidResponse response = pidsClient.mintHandleFormattedResponse(HandleType.URL, 0, resourceUrl);
             String handle = response.getHandle();
             typeMap.put(DOI_KEY, handle);
-
             if (r.getStatus() == Status.ACTIVE) {
                 pidsClient.addValueByIndex(handle, DATACITE_TITLE_INDEX, HandleType.DESC, r.getTitle());
             }
-
         } catch (Exception e) {
             logger.debug("could not mint handle for resource: {}", resourceUrl);
             throw new TdarRecoverableRuntimeException("the DOI Creation was not successful for: " + resourceUrl, e);
         }
-
         return typeMap;
     }
 
-    /*
+    /**
      * returns a map of all of the information the Ands Pids server has on the resource
-     */
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.tdar.core.dao.DaoProvider#getMetadata(java.lang.String, java.lang.String)
      */
     @Override
     public Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException {
-        Map<String, String> typeMap = new HashMap<String, String>();
-
+        Map<String, String> typeMap = new HashMap<>();
         try {
             typeMap.put(DOI_KEY, identifier);
             AndsPidResponse response = pidsClient.getHandleFormattedResponse(identifier);
@@ -155,22 +139,16 @@ public class AndsPidsDao implements ExternalIDProvider {
         return typeMap;
     }
 
-    /*
+    /**
      * returns a map of identifiers and values created by the system
-     */
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.tdar.core.dao.DaoProvider#modify(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
     public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
-        Map<String, String> typeMap = new HashMap<String, String>();
-
+        Map<String, String> typeMap = new HashMap<>();
         try {
             String handle = identifier;
             typeMap.put(DOI_KEY, handle);
-
             if (r.getStatus() == Status.ACTIVE) {
                 pidsClient.modifyValueByIndex(handle, DATACITE_TITLE_INDEX, r.getTitle());
             }
@@ -178,26 +156,19 @@ public class AndsPidsDao implements ExternalIDProvider {
             logger.debug("could not modify handle for resource: {}", resourceUrl);
             throw new TdarRecoverableRuntimeException("the DOI modification was not successful for: " + resourceUrl, e);
         }
-
         return typeMap;
     }
 
-    /*
+    /**
      * returns a map of identifiers and values created by the system
-     */
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.tdar.core.dao.DaoProvider#delete(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
     public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
-        Map<String, String> typeMap = new HashMap<String, String>();
-
+        Map<String, String> typeMap = new HashMap<>();
         try {
             String handle = identifier;
             typeMap.put(DOI_KEY, handle);
-
             if (r.getStatus() != Status.ACTIVE)
                 pidsClient.deleteValueByIndex(handle, 1);
         } catch (Exception e) {
@@ -210,7 +181,6 @@ public class AndsPidsDao implements ExternalIDProvider {
 
     /**
      * @return
-     * 
      */
     public String getDOIProviderAuthDomain() {
         return assistant.getStringProperty(DOI_PROVIDER_AUTHDOMAIN);
@@ -218,7 +188,6 @@ public class AndsPidsDao implements ExternalIDProvider {
 
     /**
      * @return
-     * 
      */
     public String getDOIProviderIdentifier() {
         return assistant.getStringProperty(DOI_PROVIDER_IDENTIFIER);
@@ -226,7 +195,6 @@ public class AndsPidsDao implements ExternalIDProvider {
 
     /**
      * @return
-     * 
      */
     public String getDOIProviderAppId() {
         return assistant.getStringProperty(DOI_PROVIDER_APPID);
@@ -234,7 +202,6 @@ public class AndsPidsDao implements ExternalIDProvider {
 
     /**
      * @return
-     * 
      */
     public String getDOIProviderServicePath() {
         return assistant.getStringProperty(DOI_PROVIDER_SERVICE_PATH);
@@ -242,7 +209,6 @@ public class AndsPidsDao implements ExternalIDProvider {
 
     /**
      * @return
-     * 
      */
     public int getDOIProviderPort() {
         return assistant.getIntProperty(DOI_PROVIDER_PORT);
@@ -250,7 +216,6 @@ public class AndsPidsDao implements ExternalIDProvider {
 
     /**
      * @return
-     * 
      */
     public String getDOIProviderHostname() {
         return assistant.getStringProperty(DOI_PROVIDER_HOSTNAME);
