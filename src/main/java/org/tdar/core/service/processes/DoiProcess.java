@@ -42,7 +42,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     private EmailService emailService;
 
     private List<ExternalIDProvider> allServices;
-    private Map<String, List<Pair<Long, String>>> batchResults = new HashMap<String, List<Pair<Long, String>>>();
+    private Map<String, List<Pair<Long, String>>> batchResults = new HashMap<>();
 
     public DoiProcess() {
         initializeBatchResults();
@@ -54,10 +54,12 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         batchResults.put(CREATED, new ArrayList<Pair<Long, String>>());
     }
 
+    @Override
     public String getDisplayName() {
         return "DOI Update Process";
     }
 
+    @Override
     public Class<InformationResource> getPersistentClass() {
         return InformationResource.class;
     }
@@ -88,41 +90,40 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
                 Map<String, String> createdIds = idProvider.create(resource, urlService.absoluteUrl(resource));
                 resource.setExternalId(createdIds.get(DOI_KEY));
                 datasetDao.saveOrUpdate(resource);
-                batchResults.get(CREATED).add(new Pair<Long, String>(resource.getId(), resource.getExternalId()));
+                batchResults.get(CREATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
             } else {
                 idProvider.modify(resource, urlService.absoluteUrl(resource), resource.getExternalId());
-                batchResults.get(UPDATED).add(new Pair<Long, String>(resource.getId(), resource.getExternalId()));
+                batchResults.get(UPDATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
             }
             logger.debug("setting external id {} for {} ", resource.getExternalId(), resource.getId());
         } else {
             if (StringUtils.isNotEmpty(resource.getExternalId())) {
                 idProvider.delete(resource, urlService.absoluteUrl(resource), resource.getExternalId());
-                batchResults.get(DELETED).add(new Pair<Long, String>(resource.getId(), resource.getExternalId()));
+                batchResults.get(DELETED).add(new Pair<>(resource.getId(), resource.getExternalId()));
             }
         }
     }
 
     @Override
     protected void batchCleanup() {
-        long total = 0;
-        Map<String, Object> map = new HashMap<String, Object>();
         if (batchResults != null) {
+            long total = 0;
+            Map<String, Object> map = new HashMap<>();
             map.put(DoiProcess.CREATED, batchResults.get(DoiProcess.CREATED));
             map.put(DoiProcess.UPDATED, batchResults.get(DoiProcess.UPDATED));
             map.put(DoiProcess.DELETED, batchResults.get(DoiProcess.DELETED));
             total += batchResults.get(DoiProcess.CREATED).size();
             total += batchResults.get(DoiProcess.UPDATED).size();
             total += batchResults.get(DoiProcess.DELETED).size();
+            map.put("total", total);
+            map.put("date", new Date());
+            if (total > 0) {
+                logger.info("sending email");
+                emailService.sendTemplate("doi-daily.ftl", map, emailService.getTdarConfiguration().getSiteAcronym() + SUBJECT);
+            }
+            batchResults.clear();
+            initializeBatchResults();
         }
-        map.put("total", total);
-        map.put("date", new Date());
-
-        if (total > 0) {
-            logger.info("sending email");
-            emailService.sendTemplate("doi-daily.ftl", map, emailService.getTdarConfiguration().getSiteAcronym() + SUBJECT);
-        }
-        batchResults.clear();
-        initializeBatchResults();
     }
 
     public Map<String, List<Pair<Long, String>>> getBatchResults() {
