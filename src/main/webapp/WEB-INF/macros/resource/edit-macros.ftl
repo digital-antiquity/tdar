@@ -364,8 +364,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <div class="controls">
         <#list _authorizedUsers as authorizedUser>
             <#if authorizedUser??>
-           	    <div class="controls-row repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
-               	    <div class="span6">
+                <div class="controls-row repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
+                    <div class="span6">
                         <@registeredUserRow person=authorizedUser.user isDisabled=!authorizedUser.enabled _indexNumber=authorizedUser_index  _personPrefix="user" 
                            prefix="authorizedUsers" includeRights=true includeRepeatRow=false />
                     </div>
@@ -1436,7 +1436,7 @@ $(function() {
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
-            <@s.textfield cssClass="span3 ${lookupType} ${requiredClass}" placeholder="Name"  readonly=isDisabled autocomplete="off"
+            <@s.textfield theme="simple" cssClass="span3 ${lookupType} ${requiredClass}" placeholder="Name"  readonly=isDisabled autocomplete="off"
                 name="${strutsPrefix}${personPrefix}.tempDisplayName" maxlength="255" autocompleteName="tempDisplayName"
                 autocompleteIdElement="#${idIdElement}" 
                 autocompleteParentElement="#${rowIdElement}" 
@@ -1445,7 +1445,7 @@ $(function() {
                 />
 
             <#if includeRights>
-                    <@s.select theme="tdar" cssClass="creator-rights-select span2" name="${strutsPrefix}.generalPermission" emptyOption='false' 
+                    <@s.select theme="tdar" cssClass="creator-rights-select span3" name="${strutsPrefix}.generalPermission" emptyOption='false'
                         listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                     <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
                     <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
