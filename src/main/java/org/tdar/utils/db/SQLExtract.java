@@ -66,7 +66,7 @@ public class SQLExtract {
             stream = new FileOutputStream(new File(args[1]));
         }
         pb.setup();
-        if (sql != "") {
+        if (StringUtils.isNotBlank(sql)) {
             pb.run(sql, new BufferedWriter(new OutputStreamWriter(stream)));
         }
     }
@@ -77,12 +77,9 @@ public class SQLExtract {
         File test = new File(filename);
 
         BufferedReader input = null;
-
         if (test.exists()) {
             try {
-                if (input == null) {
-                    input = new BufferedReader(new FileReader(test));
-                }
+                input = new BufferedReader(new FileReader(test));
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
             } catch (NullPointerException npe) {
@@ -315,9 +312,8 @@ public class SQLExtract {
     }
 
     public void appendAndUpdate(String s, String level) {
-
         if (!DEBUG_SQL.equals(DEBUG_LOW)) {
-            if (level == DEBUG_ERR) {
+            if (DEBUG_ERR.equals(level)) {
                 System.err.println("-- " + s);
             } else {
                 System.out.println(s);

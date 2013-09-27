@@ -500,7 +500,7 @@ public class CommandLineAPITool {
         if (entity != null) {
             String resp = StringEscapeUtils.unescapeHtml4(EntityUtils.toString(entity));
             entity.consumeContent();
-            if (resp != null && resp != "") {
+            if (StringUtils.isNotBlank(resp)) {
                 logger.info(resp);
             }
         }

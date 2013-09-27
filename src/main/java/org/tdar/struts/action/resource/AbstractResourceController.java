@@ -109,8 +109,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private KeywordNode<SiteTypeKeyword> approvedSiteTypeKeywords;
     private KeywordNode<CultureKeyword> approvedCultureKeywords;
 
-    private List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
-    private List<ResourceCollection> effectiveResourceCollections = new ArrayList<ResourceCollection>();
+    private List<ResourceCollection> resourceCollections = new ArrayList<>();
+    private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
 
@@ -159,14 +159,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<ResourceRevisionLog> resourceLogEntries;
 
-    private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<AggregateViewStatistic>();
-    private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<String, List<AggregateDownloadStatistic>>();
+    private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<>();
+    private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<>();
 
     private void initializeResourceCreatorProxyLists() {
         if (getPersistable().getResourceCreators() == null)
             return;
-        authorshipProxies = new ArrayList<ResourceCreatorProxy>();
-        creditProxies = new ArrayList<ResourceCreatorProxy>();
+        authorshipProxies = new ArrayList<>();
+        creditProxies = new ArrayList<>();
 
         for (ResourceCreator rc : getPersistable().getResourceCreators()) {
             if (rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()) {
@@ -211,7 +211,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             getAccountService().updateTransientAccountInfo(getResource());
-            setActiveAccounts(new HashSet<Account>(determineActiveAccounts()));
+            setActiveAccounts(new HashSet<>(determineActiveAccounts()));
             if (Persistable.Base.isNotNullOrTransient(getResource()) && Persistable.Base.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
@@ -224,7 +224,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
     protected List<Account> determineActiveAccounts() {
-        List<Account> accounts = new LinkedList<Account>(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        List<Account> accounts = new LinkedList<>(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
         if (getResource() != null) {
             Account resourceAccount = getResource().getAccount();
             if (resourceAccount != null && !accounts.contains(resourceAccount)) {
@@ -289,7 +289,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return SUCCESS;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public String loadViewMetadata() throws TdarActionException {
         if (getResource() == null)
@@ -313,6 +312,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return SUCCESS;
     }
 
+    @Override
     public void delete(R resource) {
         String reason = getDeletionReason();
         if (StringUtils.isNotEmpty(reason)) {
@@ -334,7 +334,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // if user has single billing account, use that (ignore the form);
         setupAccountForSaving();
 
-        if (actionMessage == SUCCESS) {
+        if (SUCCESS.equals(actionMessage)) {
             // getAccountService().getResourceEvaluator().evaluateResources(getResource());
             if (shouldSaveResource()) {
                 updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
@@ -394,6 +394,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private Boolean editable = null;
 
+    @Override
     public boolean isEditable() {
         if (isNullOrNew())
             return false;
@@ -460,7 +461,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         String delim = "||";
         Iterator<String> iter = kwds.iterator();
-        Set<String> toAdd = new HashSet<String>();
+        Set<String> toAdd = new HashSet<>();
         while (iter.hasNext()) {
             String keyword = iter.next();
             if (StringUtils.isBlank(keyword))
@@ -573,14 +574,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     protected void saveResourceCreators() {
-        List<ResourceCreatorProxy> allProxies = new ArrayList<ResourceCreatorProxy>();
+        List<ResourceCreatorProxy> allProxies = new ArrayList<>();
         if (authorshipProxies != null)
             allProxies.addAll(authorshipProxies);
         if (creditProxies != null)
             allProxies.addAll(creditProxies);
         logger.info("ResourceCreators before DB lookup: {} ", allProxies);
         int sequence = 0;
-        List<ResourceCreator> incomingResourceCreators = new ArrayList<ResourceCreator>();
+        List<ResourceCreator> incomingResourceCreators = new ArrayList<>();
         // convert the list of proxies to a list of resource creators
         for (ResourceCreatorProxy proxy : allProxies) {
             if (proxy != null && proxy.isValid()) {
@@ -637,7 +638,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private void loadEffectiveResourceCollections() {
         getResourceCollections().addAll(getResource().getSharedResourceCollections());
-        Set<ResourceCollection> tempSet = new HashSet<ResourceCollection>();
+        Set<ResourceCollection> tempSet = new HashSet<>();
         for (ResourceCollection collection : getResourceCollections()) {
             if (collection != null && CollectionUtils.isNotEmpty(collection.getAuthorizedUsers())) {
                 tempSet.addAll(collection.getHierarchicalResourceCollections());
@@ -653,35 +654,35 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<String> getSiteNameKeywords() {
         if (CollectionUtils.isEmpty(siteNameKeywords)) {
-            siteNameKeywords = new ArrayList<String>();
+            siteNameKeywords = new ArrayList<>();
         }
         return siteNameKeywords;
     }
 
     public List<String> getOtherKeywords() {
         if (CollectionUtils.isEmpty(otherKeywords)) {
-            otherKeywords = new ArrayList<String>();
+            otherKeywords = new ArrayList<>();
         }
         return otherKeywords;
     }
 
     public List<String> getTemporalKeywords() {
         if (CollectionUtils.isEmpty(temporalKeywords)) {
-            temporalKeywords = new ArrayList<String>();
+            temporalKeywords = new ArrayList<>();
         }
         return temporalKeywords;
     }
 
     public List<String> getGeographicKeywords() {
         if (CollectionUtils.isEmpty(geographicKeywords)) {
-            geographicKeywords = new ArrayList<String>();
+            geographicKeywords = new ArrayList<>();
         }
         return geographicKeywords;
     }
 
     public List<LatitudeLongitudeBox> getLatitudeLongitudeBoxes() {
         if (latitudeLongitudeBoxes == null) {
-            latitudeLongitudeBoxes = new ArrayList<LatitudeLongitudeBox>();
+            latitudeLongitudeBoxes = new ArrayList<>();
         }
         return latitudeLongitudeBoxes;
     }
@@ -692,7 +693,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<Long> getMaterialKeywordIds() {
         if (CollectionUtils.isEmpty(materialKeywordIds)) {
-            materialKeywordIds = new ArrayList<Long>();
+            materialKeywordIds = new ArrayList<>();
         }
         return materialKeywordIds;
     }
@@ -716,7 +717,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<CoverageDate> getCoverageDates() {
         if (CollectionUtils.isEmpty(coverageDates)) {
-            coverageDates = new ArrayList<CoverageDate>();
+            coverageDates = new ArrayList<>();
         }
         return coverageDates;
     }
@@ -727,14 +728,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<SourceCollection> getSourceCollections() {
         if (sourceCollections == null) {
-            sourceCollections = new ArrayList<SourceCollection>();
+            sourceCollections = new ArrayList<>();
         }
         return sourceCollections;
     }
 
     public List<RelatedComparativeCollection> getRelatedComparativeCollections() {
         if (relatedComparativeCollections == null) {
-            relatedComparativeCollections = new ArrayList<RelatedComparativeCollection>();
+            relatedComparativeCollections = new ArrayList<>();
         }
         return relatedComparativeCollections;
     }
@@ -841,7 +842,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<ResourceNote> getResourceNotes() {
         if (resourceNotes == null) {
-            resourceNotes = new ArrayList<ResourceNote>();
+            resourceNotes = new ArrayList<>();
         }
         return resourceNotes;
     }
@@ -916,7 +917,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<ResourceCreatorProxy> getAuthorshipProxies() {
         if (CollectionUtils.isEmpty(authorshipProxies)) {
-            authorshipProxies = new ArrayList<ResourceCreatorProxy>();
+            authorshipProxies = new ArrayList<>();
         }
         return authorshipProxies;
     }
@@ -942,7 +943,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<ResourceCreatorProxy> getCreditProxies() {
         if (CollectionUtils.isEmpty(creditProxies)) {
-            creditProxies = new ArrayList<ResourceCreatorProxy>();
+            creditProxies = new ArrayList<>();
         }
         return creditProxies;
     }
@@ -969,7 +970,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<ResourceAnnotation> getResourceAnnotations() {
         if (resourceAnnotations == null)
-            resourceAnnotations = new ArrayList<ResourceAnnotation>();
+            resourceAnnotations = new ArrayList<>();
         return resourceAnnotations;
     }
 
@@ -1035,7 +1036,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
 
         // if nobody logged in, just get the shared+visible collections
-        Set<ResourceCollection> collections = new HashSet<ResourceCollection>(getResource().getSharedVisibleResourceCollections());
+        Set<ResourceCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
 
         // if authenticated, also add the collections that the user can modify
         if (isAuthenticated()) {
@@ -1046,7 +1047,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             }
         }
 
-        viewableResourceCollections = new ArrayList<ResourceCollection>(collections);
+        viewableResourceCollections = new ArrayList<>(collections);
         return viewableResourceCollections;
     }
 
@@ -1128,7 +1129,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public Set<Account> getActiveAccounts() {
         if (activeAccounts == null) {
-            activeAccounts = new HashSet<Account>(determineActiveAccounts());
+            activeAccounts = new HashSet<>(determineActiveAccounts());
         }
         return activeAccounts;
     }

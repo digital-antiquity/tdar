@@ -146,7 +146,7 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
             }
             if (source.getDate() != null) {
                 String dateCreated = source.getDate().toString();
-                if (dateCreated != null && dateCreated != "") {
+                if (StringUtils.isNotBlank(dateCreated)) {
                     dc.getDate().add(dateCreated);
                 }
             }
