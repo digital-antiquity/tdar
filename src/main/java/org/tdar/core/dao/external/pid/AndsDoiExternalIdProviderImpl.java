@@ -38,8 +38,8 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     private ConfigurationAssistant assistant = new ConfigurationAssistant();
     private boolean isEnabled = true; // the happy case
     private String configIssue;
-    private AndsDoiClient doiClient = new AndsDoiClient();
     private AndsDoiIdentity ourId;
+    private AndsDoiClient doiClient = new AndsDoiClient();
     private AndsDoiIdentity nullId = new AndsDoiIdentity();
 
     private boolean debug;
