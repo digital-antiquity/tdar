@@ -40,23 +40,25 @@ public class AndsPidsDao implements ExternalIDProvider {
     public static final String DATACITE_TITLE = DATACITE_PROFILE_NAME + ".title";
     public static final int DATACITE_TITLE_INDEX = 1;
 
-    public final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     AndsPidClient pidsClient = new AndsPidClient();
     private ConfigurationAssistant assistant = new ConfigurationAssistant();
     private String configIssue = "";
+    private boolean isEnabled = true; // the happy case
 
     public AndsPidsDao() {
         try {
             assistant.loadProperties("andspids.properties");
         } catch (Throwable t) {
+            isEnabled = false;
             configIssue = t.getMessage();
         }
     }
 
     @Override
     public boolean isConfigured() {
-        if (StringUtils.isNotBlank(getDOIProviderHostname()) && (getDOIProviderPort() > 0) &&
+        if (isEnabled && StringUtils.isNotBlank(getDOIProviderHostname()) && (getDOIProviderPort() > 0) &&
                 StringUtils.isNotBlank(getDOIProviderServicePath()) && StringUtils.isNotBlank(getDOIProviderAppId()) &&
                 StringUtils.isNotBlank(getDOIProviderIdentifier()) && StringUtils.isNotBlank(getDOIProviderAuthDomain())) {
             return true;
@@ -192,7 +194,7 @@ public class AndsPidsDao implements ExternalIDProvider {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
 
 }
