@@ -238,8 +238,8 @@ public class SearchIndexService {
     }
 
     public <C extends Indexable> void indexCollection(Collection<C> indexable) {
-        log.debug("manual indexing ... " + indexable.size());
         if (indexable != null) {
+            log.debug("manual indexing ... " + indexable.size());
             FullTextSession fullTextSession = getFullTextSession();
 
             for (C toIndex : indexable) {
@@ -251,7 +251,7 @@ public class SearchIndexService {
                     index(fullTextSession, genericService.merge(toIndex));
                 } catch (Exception e) {
                     log.error("exception in indexing", e);
-                    log.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e)),
+                    log.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
                             ExceptionUtils.getRootCause(e));
                 }
             }
