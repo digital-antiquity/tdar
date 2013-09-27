@@ -14,6 +14,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.processes.DoiProcess;
 
 import au.csiro.pidclient.AndsPidClient;
 import au.csiro.pidclient.AndsPidClient.HandleType;
@@ -35,7 +36,6 @@ public class AndsPidsDao implements ExternalIDProvider {
     private static final String DOI_PROVIDER_IDENTIFIER = "doi.provider.identifier";
     private static final String DOI_PROVIDER_AUTHDOMAIN = "doi.provider.authdomain";
 
-    public static final String DOI_KEY = "DOI";
     public static final String DATACITE_PROFILE_NAME = "datacite";
     public static final String DATACITE_TITLE = DATACITE_PROFILE_NAME + ".title";
     public static final int DATACITE_TITLE_INDEX = 1;
@@ -91,7 +91,7 @@ public class AndsPidsDao implements ExternalIDProvider {
         try {
             AndsPidResponse response = pidsClient.mintHandleFormattedResponse(HandleType.URL, 0, resourceUrl);
             String handle = response.getHandle();
-            typeMap.put(DOI_KEY, handle);
+            typeMap.put(DoiProcess.DOI_KEY, handle);
             if (r.getStatus() == Status.ACTIVE) {
                 pidsClient.addValueByIndex(handle, DATACITE_TITLE_INDEX, HandleType.DESC, r.getTitle());
             }
@@ -106,7 +106,7 @@ public class AndsPidsDao implements ExternalIDProvider {
     public Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException {
         Map<String, String> typeMap = new HashMap<>();
         try {
-            typeMap.put(DOI_KEY, identifier);
+            typeMap.put(DoiProcess.DOI_KEY, identifier);
             AndsPidResponse response = pidsClient.getHandleFormattedResponse(identifier);
             List<AndsPidResponseProperty> properties = response.getProperties();
             typeMap.put(DATACITE_TITLE, properties.get(DATACITE_TITLE_INDEX - 1).getValue());
@@ -123,7 +123,7 @@ public class AndsPidsDao implements ExternalIDProvider {
         Map<String, String> typeMap = new HashMap<>();
         try {
             String handle = identifier;
-            typeMap.put(DOI_KEY, handle);
+            typeMap.put(DoiProcess.DOI_KEY, handle);
             if (r.getStatus() == Status.ACTIVE) {
                 pidsClient.modifyValueByIndex(handle, DATACITE_TITLE_INDEX, r.getTitle());
             }
@@ -139,7 +139,7 @@ public class AndsPidsDao implements ExternalIDProvider {
         Map<String, String> typeMap = new HashMap<>();
         try {
             String handle = identifier;
-            typeMap.put(DOI_KEY, handle);
+            typeMap.put(DoiProcess.DOI_KEY, handle);
             if (r.getStatus() != Status.ACTIVE)
                 pidsClient.deleteValueByIndex(handle, 1);
         } catch (Exception e) {
