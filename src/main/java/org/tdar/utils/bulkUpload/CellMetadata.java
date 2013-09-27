@@ -26,18 +26,22 @@ import org.tdar.core.bean.BulkImportField;
 public class CellMetadata {
 
     public static final CellMetadata FILENAME = new CellMetadata() {
+        @Override
         public boolean isRequired() {
             return true;
         };
 
+        @Override
         public String getName() {
             return BulkUploadTemplate.FILENAME;
         };
 
+        @Override
         public String getComment() {
             return BulkImportField.FILENAME_DESCRIPTION;
         };
 
+        @Override
         public int getOrder() {
             return -1000;
         };
@@ -53,6 +57,7 @@ public class CellMetadata {
     public CellMetadata() {
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(name).append(" display:").append(displayName).append(" rqrd:").append(required).append(" -- ").append(mappedClass);
@@ -128,11 +133,12 @@ public class CellMetadata {
 
     @Override
     public boolean equals(Object cm) {
-        if (cm.getClass().isAssignableFrom(CellMetadata.class)) {
+        if (cm == null) { // all equals() should return false if passed a null value...
+            return false;
+        } else if (cm.getClass().isAssignableFrom(CellMetadata.class)) {
             return getName().equals(((CellMetadata) cm).getName());
-        } else {
-            return getName().equals((String) cm);
         }
+        return getName().equals(cm.toString()); // if a string, then 'this object (which is already a string!) is itself returned'
     }
 
     @Override
