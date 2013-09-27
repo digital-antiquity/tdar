@@ -36,9 +36,9 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
 
     public Map<String, List<Pair<Long, String>>> processDois() throws Exception {
         // using mock DAO instead of real service
-        List<ExternalIDProvider> providers = new ArrayList<ExternalIDProvider>();
+        List<ExternalIDProvider> providers = new ArrayList<>();
         providers.add(new MockIdentifierDao());
-        doiProcess.setAllServices(providers);
+        ((AbstractConfigurableService<ExternalIDProvider>) doiProcess.getProviders()).setAllServices(providers);
         // run it once, make sure all are "create", no deletes or updates
         doiProcess.execute();
         return doiProcess.getBatchResults();

@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +16,8 @@ import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.core.service.AbstractConfigurableService;
+import org.tdar.core.service.ConfigurableService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.Pair;
@@ -41,7 +41,22 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     @Autowired
     private EmailService emailService;
 
-    private List<ExternalIDProvider> allServices;
+    private ConfigurableService<ExternalIDProvider> providers = new AbstractConfigurableService<ExternalIDProvider>() {
+        @Override
+        public boolean isServiceRequired() {
+            // no need to check that the provider used is null, because this service will not be enabled if no provider is found.
+            return false;
+        }
+    };
+    
+    /**
+     * Used in testing
+     * @return the providers
+     */
+    public ConfigurableService<ExternalIDProvider> getProviders() {
+        return providers;
+    }
+
     private Map<String, List<Pair<Long, String>>> batchResults = new HashMap<>();
 
     public DoiProcess() {
@@ -71,7 +86,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
     @Override
     public void execute() {
-        ExternalIDProvider idProvider = getProvider();
+        ExternalIDProvider idProvider = providers.getProvider();
         try {
             idProvider.connect();
             processBatch(getNextBatch());
@@ -84,7 +99,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
     @Override
     public void process(InformationResource resource) throws Exception {
-        ExternalIDProvider idProvider = getProvider();
+        ExternalIDProvider idProvider = providers.getProvider();
         if (resource.getStatus() == Status.ACTIVE) {
             if (StringUtils.isEmpty(resource.getExternalId())) {
                 Map<String, String> createdIds = idProvider.create(resource, urlService.absoluteUrl(resource));
@@ -130,36 +145,14 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         return batchResults;
     }
 
-    public List<ExternalIDProvider> getAllServices() {
-        return allServices;
-    }
-
     @Autowired
     public void setAllServices(List<ExternalIDProvider> providers) {
-        allServices = providers;
-        Iterator<ExternalIDProvider> iterator = allServices.iterator();
-        while (iterator.hasNext()) {
-            ExternalIDProvider provider = iterator.next();
-            if (provider.isConfigured()) {
-                logger.debug("enabling {} provider: {} will use first", getClass().getSimpleName(), provider.getClass().getSimpleName());
-            } else {
-                logger.debug("disabling unconfigured {} provider: {}", getClass().getSimpleName(), provider.getClass().getSimpleName());
-                iterator.remove();
-            }
-        }
-    }
-
-    public ExternalIDProvider getProvider() {
-        if (CollectionUtils.isEmpty(allServices)) {
-            logger.warn("no available provider found for DoiProcess");
-            return null;
-        }
-        return allServices.get(0);
+        ((AbstractConfigurableService<ExternalIDProvider>) this.providers).setAllServices(providers);
     }
 
     @Override
     public boolean isEnabled() {
-        ExternalIDProvider idProvider = getProvider();
+        ExternalIDProvider idProvider = providers.getProvider();
         return idProvider != null && idProvider.isConfigured();
     }
 }
