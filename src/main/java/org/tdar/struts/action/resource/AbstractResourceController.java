@@ -299,9 +299,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // loadBasicMetadata();
         initializeResourceCreatorProxyLists();
         loadCustomMetadata();
+        getResourceService().updateTransientAccessCount(getResource());
         getResourceService().incrementAccessCounter(getPersistable());
         loadEffectiveResourceCollections();
-        getResourceService().updateTransientAccessCount(getResource());
         getAccountService().updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
 
         if (isEditor()) {
