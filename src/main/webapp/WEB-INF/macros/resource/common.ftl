@@ -222,19 +222,19 @@ TDAR.uri = function(path) {
     <table class="tableFormat table">
     <thead>
     <tr>
-	    <th>Collection</th><th>User</th>
-	    <#list availablePermissions as permission>
-		    <th>${permission.label}</th>
-	    </#list>
+        <th>Collection</th><th>User</th>
+        <#list availablePermissions as permission>
+            <th>${permission.label}</th>
+        </#list>
     </tr>
     <#if owner?has_content>
-	    <tr>
-		     <td>Local Resource</td>
-		     <td>${owner.properName} (Submitter)</td>
-		     <td><i class="icon-ok"></i></td>
-		     <td><i class="icon-ok"></i></td>
-		     <td><i class="icon-ok"></i></td>
-	    </tr>
+        <tr>
+             <td>Local Resource</td>
+             <td>${owner.properName} (Submitter)</td>
+             <td><i class="icon-ok"></i></td>
+             <td><i class="icon-ok"></i></td>
+             <td><i class="icon-ok"></i></td>
+        </tr>
     </#if>
     <#list collections as collection_ >
       <#if collection_.authorizedUsers?has_content >
@@ -253,12 +253,12 @@ TDAR.uri = function(path) {
            <#list availablePermissions as permission>
           <td>
            <#if (user.generalPermission.effectivePermissions >= permission.effectivePermissions )>
-           	<i class="icon-ok"></i>
+               <i class="icon-ok"></i>
            <#else>
             <i class="icon-remove"></i>
            </#if>
            </td>
-	       </#list>
+           </#list>
          </tr>
         </#list>
       </#if>
@@ -270,30 +270,30 @@ TDAR.uri = function(path) {
 <#macro generatePieJson ilist name>
 <script>
     <#assign ikeys=ilist?keys />
-	<#noescape>
-	    var ${name} = [
-	    <#assign first = true/>
-	    <#assign legend = true>
-	    <#list ikeys as ikey>
-	      <#assign val = ilist.get(ikey) />
-	      <#assign label = ikey />
-	      <#if ikey.label??><#assign label=ikey.label ></#if>
-	      <#if (val?? && val > 0)>
-	        <#if !first>,</#if>["${label?replace(":",":<br/>")}", ${(val!0)?c},"${ikey}", ${(val!0)?c}]
-	        
-	        <#assign first=false/>
-	      </#if>
-	      <#if (ikey_index > settings.barColors?size)>
-	        <#assign legend = true>
-	      </#if>
-	    </#list>
-	    ];
-	</#noescape>
+    <#noescape>
+        var ${name} = [
+        <#assign first = true/>
+        <#assign legend = true>
+        <#list ikeys as ikey>
+          <#assign val = ilist.get(ikey) />
+          <#assign label = ikey />
+          <#if ikey.label??><#assign label=ikey.label ></#if>
+          <#if (val?? && val > 0)>
+            <#if !first>,</#if>["${label?replace(":",":<br/>")}", ${(val!0)?c},"${ikey}", ${(val!0)?c}]
+
+            <#assign first=false/>
+          </#if>
+          <#if (ikey_index > settings.barColors?size)>
+            <#assign legend = true>
+          </#if>
+        </#list>
+        ];
+    </#noescape>
 </script>
 </#macro>
 
 <#macro pieChart data="data" searchKey="" graphWidth=300 graphHeight=150 context=false config="" graphLabel="">
-	<#local id= "${data}Id">
+    <#local id= "${data}Id">
     <div id="graph${id}"  style="width:${graphWidth}px;height:${graphHeight}px;"></div>
     
     <script>
@@ -301,7 +301,7 @@ $(document).ready(function(){
 
   var defaults_ = {
       fontSize:10,
-  	  seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+        seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
       title:"${graphLabel?js_string}",
       seriesDefaults: {
         renderer: jQuery.jqplot.PieRenderer, 
@@ -313,43 +313,43 @@ $(document).ready(function(){
           sliceMargin: 4, 
           // stroke the slices with a little thicker line.
           lineWidth: 5,
-			padding:5,
- 	      dataLabels: 'value'
+            padding:5,
+           dataLabels: 'value'
          }
-		},
+        },
         grid: {
-			background: 'rgba(0,0,0,0)',
+            background: 'rgba(0,0,0,0)',
             drawBorder: false,
-	        shadow: false,
-	        gridLineColor: 'none',
-	        borderWidth:0,
-    	    gridLineWidth: 0,
-    	    drawGridlines:false
+            shadow: false,
+            gridLineColor: 'none',
+            borderWidth:0,
+            gridLineWidth: 0,
+            drawGridlines:false
         },
       legend: { 
-				renderer:$.jqplot.EnhancedLegendRenderer,
-      			show:true, 
-      			location: 'e', 
-		        fontSize:10,
-      			showSwatch:true
+                renderer:$.jqplot.EnhancedLegendRenderer,
+                  show:true,
+                  location: 'e',
+                fontSize:10,
+                  showSwatch:true
       },
       cursor: {
           style:"pointer",
-       	  showTooltip: false,
+             showTooltip: false,
           useAxesFormatters: false
       },
       highlighter: {
-		  show: true,
-		  formatString:'%s (%s)', 
-		  tooltipLocation:'ne', 
+          show: true,
+          formatString:'%s (%s)',
+          tooltipLocation:'ne',
           useAxesFormatters: false
       }
     };
 
 
- 	<#if config?has_content>
- 	$.extend(true, defaults_,${config});
- 	</#if>
+     <#if config?has_content>
+     $.extend(true, defaults_,${config});
+     </#if>
 
     if (${data}.length > 1) {
         var plot${data} = jQuery.jqplot ('graph${id}', [${data}],defaults_);
@@ -386,75 +386,75 @@ $(document).ready(function(){
 </#macro>
 
 <#macro resourceBarGraph>
-	<script>
-	    var resourceGraphData = []; 
-	    <#local seen=false />
-	    <#list homepageResourceCountCache as cache>
-	    	<#if (cache.count > 0)>
-	    	<#local seen=true />
-	    	<#noescape>
-		        resourceGraphData.push(["${cache.resourceType.plural?replace("(?<=[\\w\\:]) (?=[\\w])","<br>","r")?js_string}",${(cache.count!0)?c},"${cache.resourceType?js_string}",${(cache.count!0)?c}]);
-	    	</#noescape>
-	        </#if>
-	    </#list>
+    <script>
+        var resourceGraphData = [];
+        <#local seen=false />
+        <#list homepageResourceCountCache as cache>
+            <#if (cache.count > 0)>
+            <#local seen=true />
+            <#noescape>
+                resourceGraphData.push(["${cache.resourceType.plural?replace("(?<=[\\w\\:]) (?=[\\w])","<br>","r")?js_string}",${(cache.count!0)?c},"${cache.resourceType?js_string}",${(cache.count!0)?c}]);
+            </#noescape>
+            </#if>
+        </#list>
    </script> 
-	<#if seen>
+    <#if seen>
     <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354  config="resourceConfig">
-  		var resourceConfig = {
-	        axes: {
-		        yaxis: {
-		        	renderer: $.jqplot.LogAxisRenderer
-		        }
-	        }
-  		};  	
+          var resourceConfig = {
+            axes: {
+                yaxis: {
+                    renderer: $.jqplot.LogAxisRenderer
+                }
+            }
+          };
     </@barGraph>
-	</#if>
+    </#if>
 </#macro>
 
 
 <#macro lineChart data="data" graphWidth=360 graphHeight=800 graphLabel="" searchKey="resourceTypes" id="" config="" context=false>
 <#noescape>
 <#if id == "">
-	<#local id=data+"id" />
+    <#local id=data+"id" />
 </#if>
 <script>
-	$(document).ready(function(){
+    $(document).ready(function(){
         $.jqplot.config.enablePlugins = true;
-		var labels_ = [];
-			try {
-        	labels_ = eval('labels');
-			} catch(e) {
-			labels_ = [];
-			}
-		var _defaults =  {
+        var labels_ = [];
+            try {
+            labels_ = eval('labels');
+            } catch(e) {
+            labels_ = [];
+            }
+        var _defaults =  {
             // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
- 			title: "${graphLabel?js_string}",
+             title: "${graphLabel?js_string}",
             animate: !$.jqplot.use_excanvas,
             seriesDefaults:{
                 pointLabels: { 
-                	show: true, 
-                	location: 'n', 
-                	edgeTolerance: -25
+                    show: true,
+                    location: 'n',
+                    edgeTolerance: -25
                 },
-	            rendererOptions: {
-	                // Set varyBarColor to tru to use the custom colors on the bars.
-	                varyBarColor: true
-	            }
+                rendererOptions: {
+                    // Set varyBarColor to tru to use the custom colors on the bars.
+                    varyBarColor: true
+                }
             },
-			seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
             grid: {
-				background: 'rgba(0,0,0,0)',
-	            drawBorder: false,
-    	        shadow: false,
-    	        gridLineColor: 'none',
-    	        borderWidth:0,
-        	    gridLineWidth: 0,
-        	    drawGridlines:false
+                background: 'rgba(0,0,0,0)',
+                drawBorder: false,
+                shadow: false,
+                gridLineColor: 'none',
+                borderWidth:0,
+                gridLineWidth: 0,
+                drawGridlines:false
           },
             axes: {
                 xaxis: {
-  	               renderer:$.jqplot.DateAxisRenderer,
-			       tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                     renderer:$.jqplot.DateAxisRenderer,
+                   tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                    tickOptions: {
                         fontFamily: 'Georgia',
                         fontSize: '8pt',
@@ -462,14 +462,14 @@ $(document).ready(function(){
                     }
                 },
                 yaxis: {
-			        showTicks: false,
-			        show:false,
+                    showTicks: false,
+                    show:false,
                     showGridline: false
                 }
             },
         highlighter: {
             show: true,
-    	    sizeAdjust: 7.5
+            sizeAdjust: 7.5
         },
         legend: {
             show: true,
@@ -480,9 +480,9 @@ $(document).ready(function(){
         }
         };
 
-     	<#if config?has_content>
-     	$.extend(true, _defaults,${config});
-     	</#if>
+         <#if config?has_content>
+         $.extend(true, _defaults,${config});
+         </#if>
          
         var plot${id} = $.jqplot('graph${id}', ${data}, _defaults);
 
@@ -494,48 +494,48 @@ $(document).ready(function(){
 </#macro>
 <#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="" context=false rotate=0 xaxis="" yaxis="">
 <#if id == "">
-	<#local id=data+"id" />
+    <#local id=data+"id" />
 </#if>
 <div class="barGraph nogrid" id="graph${id}" style="height:${graphHeight?c}px;" > </div>
 
 <script>
-	$(document).ready(function(){
+    $(document).ready(function(){
         $.jqplot.config.enablePlugins = true;
 
-		var _defaults =  {
+        var _defaults =  {
             // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
- 			title: "${graphLabel?js_string}",
+             title: "${graphLabel?js_string}",
             animate: !$.jqplot.use_excanvas,
             seriesDefaults:{
                 renderer:$.jqplot.BarRenderer,
                 pointLabels: { 
-                	show: true, 
-                	location: 'n', 
-                	edgeTolerance: -35
+                    show: true,
+                    location: 'n',
+                    edgeTolerance: -35
                 },
-	            rendererOptions: {
-	                // Set varyBarColor to tru to use the custom colors on the bars.
-	                varyBarColor: true
-	            }
+                rendererOptions: {
+                    // Set varyBarColor to tru to use the custom colors on the bars.
+                    varyBarColor: true
+                }
             },
-			seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
             grid: {
-				background: 'rgba(0,0,0,0)',
-	            drawBorder: false,
-    	        shadow: false,
-    	        gridLineColor: 'none',
-    	        borderWidth:0,
-        	    gridLineWidth: 0,
-        	    drawGridlines:false
+                background: 'rgba(0,0,0,0)',
+                drawBorder: false,
+                shadow: false,
+                gridLineColor: 'none',
+                borderWidth:0,
+                gridLineWidth: 0,
+                drawGridlines:false
           },
             axes: {
                 xaxis: {
-		           labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-		 			renderer: $.jqplot.CategoryAxisRenderer,
-                	<#if xaxis == "log">renderer:$.jqplot.LogAxisRenderer,</#if>
-                	<#if xaxis == "date">renderer:$.jqplot.DateAxisRenderer,</#if>
+                   labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                     renderer: $.jqplot.CategoryAxisRenderer,
+                    <#if xaxis == "log">renderer:$.jqplot.LogAxisRenderer,</#if>
+                    <#if xaxis == "date">renderer:$.jqplot.DateAxisRenderer,</#if>
 
-			       <#if rotate !=0>tickRenderer: $.jqplot.CanvasAxisTickRenderer,</#if>
+                   <#if rotate !=0>tickRenderer: $.jqplot.CanvasAxisTickRenderer,</#if>
                    tickOptions: {
                         fontFamily: 'Georgia',
                         fontSize: '8pt',
@@ -544,27 +544,27 @@ $(document).ready(function(){
                     }
                 },
                 yaxis: {
-                	<#if yaxis== "log">renderer:$.jqplot.LogAxisRenderer,</#if>
-                	<#if yaxis== "date">renderer:$.jqplot.DateAxisRenderer,</#if>
-                	
-			        showTicks: false,
-			        show:false,
+                    <#if yaxis== "log">renderer:$.jqplot.LogAxisRenderer,</#if>
+                    <#if yaxis== "date">renderer:$.jqplot.DateAxisRenderer,</#if>
+
+                    showTicks: false,
+                    show:false,
                     showGridline: false
                 }
             },
             highlighter: { show: false },
-		      cursor: {
-		          style:"pointer",
-		       	  showTooltip: false,
-		          useAxesFormatters: false
-		      }
+              cursor: {
+                  style:"pointer",
+                     showTooltip: false,
+                  useAxesFormatters: false
+              }
 
         };
-		<#nested/>
+        <#nested/>
 
-     	<#if config?has_content>
-     	$.extend(true, _defaults,${config});
-     	</#if>
+         <#if config?has_content>
+         $.extend(true, _defaults,${config});
+         </#if>
          
      
      if (${data}.length > 1) {
@@ -575,7 +575,7 @@ $(document).ready(function(){
           console.log("hiding ${id} bar graph");
      }
     });
-	</script>
+    </script>
 </#macro>
 
      <#macro clickPlot id searchKey context>
@@ -896,28 +896,28 @@ this bit of freemarker is voodoo:
 <#macro listAddresses entity=person entityType="person" choiceField="" addressId=-1>
 
 <div class="row">
-	<#list entity.addresses  as address>
-	    <div class="span3">
-	    <#local label = ""/>
-	    <#if address.type?has_content>
-	    <#local label = address.type.label>
-	    </#if>
-	    	<#if choiceField?has_content>
+    <#list entity.addresses  as address>
+        <div class="span3">
+        <#local label = ""/>
+        <#if address.type?has_content>
+        <#local label = address.type.label>
+        </#if>
+            <#if choiceField?has_content>
         <label class="radio inline">
         <input type="radio" name="invoice.address.id" label="${label}" 
         value="${address.id}"  <#if address.id==addressId || (!addressId?has_content || addressId == -1) && address_index==0>checked=checked</#if>/>
-	
-	</#if>
-	    
-	    <@printAddress  address=address creatorId=entity.id modifiable=true showLabel=false >
-	        <b><#if address.type?has_content>${address.type.label!""}</#if></b>
-	        </label><br/>
-	    </@printAddress>
-	    </div>
-	</#list>
+
+    </#if>
+
+        <@printAddress  address=address creatorId=entity.id modifiable=true showLabel=false >
+            <b><#if address.type?has_content>${address.type.label!""}</#if></b>
+            </label><br/>
+        </@printAddress>
+        </div>
+    </#list>
     <div class="span3">
     <#local retUrl><@s.url includeParams="all"/></#local>
-	    <a class="button btn btn-primary submitButton" href="/entity/${entityType}/${entity.id?c}/address?returnUrl=${retUrl?url}">Add Address</a>
+        <a class="button btn btn-primary submitButton" href="/entity/${entityType}/${entity.id?c}/address?returnUrl=${retUrl?url}">Add Address</a>
     </div>
 </div>
 </#macro>
@@ -1061,7 +1061,7 @@ this bit of freemarker is voodoo:
     </li>
 </#list>
 <#if billingManager>
-	<li><a href="<@s.url value="/billing/list" />">All Accounts</a></li>
+    <li><a href="<@s.url value="/billing/list" />">All Accounts</a></li>
 </#if>
 <li><a href="/cart/add">Create a new account or add more to an existing one </a></li>
 </ul>
@@ -1070,9 +1070,9 @@ this bit of freemarker is voodoo:
 
 <#macro reindexingNote>
  <#if reindexing!false >
-	<div class=" alert">
-	    <p>Please note: ${siteAcronym} is currently being updated and not all searches will return the complete results. </p>
-	</div>
+    <div class=" alert">
+        <p>Please note: ${siteAcronym} is currently being updated and not all searches will return the complete results. </p>
+    </div>
  </#if>
 </#macro>
 
@@ -1109,7 +1109,7 @@ this bit of freemarker is voodoo:
 <#macro listCollections collections=resourceCollections_ showOnlyVisible=false>
   <ul class="collection-treeview">
     <#list collections as collection>
-	    	<@collectionListItem collection=collection showOnlyVisible=showOnlyVisible depth=3/>
+            <@collectionListItem collection=collection showOnlyVisible=showOnlyVisible depth=3/>
     </#list>
   <#nested>
   </ul>

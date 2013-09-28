@@ -115,8 +115,13 @@ $(function(){
         <div class="control-group" id="divSubmitter">
             <label class="control-label">Submitter</label>
             <div class="controls controls-row">
-		    <@edit.registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber='' 
-		       prefix="submitter" includeRights=false includeRepeatRow=false />
+            <#if submitter?has_content>
+                <@edit.registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber='' 
+                    prefix="submitter" includeRights=false includeRepeatRow=false />
+ 	        <#else>
+                <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber='' 
+                    prefix="submitter" includeRights=false includeRepeatRow=false />
+            </#if>
 	       </div>
        </div>
      </#if>

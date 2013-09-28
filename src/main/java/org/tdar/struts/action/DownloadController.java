@@ -87,6 +87,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             return FORBIDDEN;
         }
         setInformationResourceId(irFileVersion.getInformationResourceId());
+        logger.info("user {} downloaded {}",getSessionData().getPerson(), irFileVersion);
         getDownloadService().handleDownload(getAuthenticatedUser(), this, irFileVersion);
         return SUCCESS;
     }
