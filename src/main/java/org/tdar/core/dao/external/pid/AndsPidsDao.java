@@ -68,7 +68,7 @@ public class AndsPidsDao implements ExternalIDProvider {
     }
 
     @Override
-    public boolean connect() throws ClientProtocolException, IOException {
+    public boolean connect() {
         logger.debug("Connecting to ANDS Pids Service: {}:{}{}", new Object[] { getDOIProviderHostname(), getDOIProviderPort(), getDOIProviderServicePath() });
         pidsClient.setPidServiceHost(getDOIProviderHostname());
         pidsClient.setPidServicePort(getDOIProviderPort());
@@ -79,14 +79,14 @@ public class AndsPidsDao implements ExternalIDProvider {
     }
 
     @Override
-    public boolean logout() throws ClientProtocolException, IOException {
+    public boolean logout() {
         logger.info("ANDS Pids logout: {} ", getDOIProviderHostname());
         // do nothing
         return true;
     }
 
     @Override
-    public Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException {
+    public Map<String, String> create(Resource r, String resourceUrl) throws IOException {
         Map<String, String> typeMap = new HashMap<>();
         try {
             AndsPidResponse response = pidsClient.mintHandleFormattedResponse(HandleType.URL, 0, resourceUrl);
@@ -103,7 +103,7 @@ public class AndsPidsDao implements ExternalIDProvider {
     }
 
     @Override
-    public Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> getMetadata(String identifier) throws IOException {
         Map<String, String> typeMap = new HashMap<>();
         try {
             typeMap.put(DoiProcess.DOI_KEY, identifier);
@@ -119,7 +119,7 @@ public class AndsPidsDao implements ExternalIDProvider {
     }
 
     @Override
-    public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws IOException {
         Map<String, String> typeMap = new HashMap<>();
         try {
             String handle = identifier;
@@ -135,7 +135,7 @@ public class AndsPidsDao implements ExternalIDProvider {
     }
 
     @Override
-    public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws IOException {
         Map<String, String> typeMap = new HashMap<>();
         try {
             String handle = identifier;

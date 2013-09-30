@@ -8,12 +8,13 @@ package org.tdar.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.ClientProtocolException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.Resource;
@@ -26,6 +27,7 @@ import org.tdar.struts.action.search.AbstractSearchControllerITCase;
  * @author Adam Brin
  * 
  */
+@Ignore("The ANDS pid test service seems to have stopped working a while back. I've filed a question about it, and will reenable this once I have an answer")
 public class AndsPidsITCase extends AbstractSearchControllerITCase {
 
     @Autowired
@@ -36,25 +38,13 @@ public class AndsPidsITCase extends AbstractSearchControllerITCase {
 
     @Test
     public void testLogin() {
-        try {
-            assertTrue(pidsDao.connect());
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertTrue(pidsDao.connect());
     }
 
     @Test
     public void testLogout() {
-        try {
-            assertTrue(pidsDao.connect());
-            assertTrue(pidsDao.logout());
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertTrue(pidsDao.connect());
+        assertTrue(pidsDao.logout());
     }
 
     @Test
@@ -83,8 +73,8 @@ public class AndsPidsITCase extends AbstractSearchControllerITCase {
             metadata = pidsDao.getMetadata(doi);
             // should no longer exist
             // assertFalse(metadata.containsKey(AndsPidsDao.DATACITE_TITLE));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            fail(e.getMessage());
         }
     }
 }

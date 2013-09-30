@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -131,21 +130,21 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     }
 
     @Override
-    public boolean connect() throws ClientProtocolException, IOException {
+    public boolean connect() {
         logger.debug("Connecting to ANDS Doi Service");
         doiClient.setRequestorIdentity(identityFactory.getAppId());
         return true;
     }
 
     @Override
-    public boolean logout() throws ClientProtocolException, IOException {
+    public boolean logout() {
         logger.debug("Disconnecting from ANDS Doi Service");
         doiClient.setRequestorIdentity(identityFactory.getNullAppId());
         return true;
     }
 
     @Override
-    public Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException {
+    public Map<String, String> create(Resource r, String resourceUrl) throws IOException {
         Map<String, String> result = new HashMap<>();
         AndsDoiResponse response = doiClient.mintDOI(resourceUrl, populateDTO(r), debug);
         validateResponse("create", response);
@@ -154,19 +153,19 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     }
 
     @Override
-    public Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> getMetadata(String identifier) {
         throw new TdarRecoverableRuntimeException("This method has yet to be writted.");
     }
 
     @Override
-    public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws IOException {
         AndsDoiResponse response = doiClient.updateDOI(identifier, resourceUrl, populateDTO(r), debug);
         validateResponse("modify", response);
         return new HashMap<>();
     }
 
     @Override
-    public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws IOException {
         AndsDoiResponse response = doiClient.deActivateDOI(identifier, debug);
         validateResponse("deactive", response);
         return new HashMap<>();
