@@ -28,34 +28,91 @@ import au.csiro.doiclient.business.DoiDTO;
  * Technical documentation: http://ands.org.au/resource/r9-cite-my-data-v1.1-tech-doco.pdf
  * Client source code: http://andspidclient.sourceforge.net/
  * 
+ * ANDS use the same server for test and production. Hence we have had to go to quite a bit of extra work to make sure that the default is, should anything 
+ * go wrong, "TEST" !!!
+ * 
  * @author Martin Paulo
  */
 @Service
 public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
+    
+    protected static final String IS_PRODUCTION_SERVER_KEY = "is.production.server";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ConfigurationAssistant assistant = new ConfigurationAssistant();
+    
     private boolean isEnabled = true; // the happy case
     private String configIssue;
-    private AndsDoiIdentity ourId;
-    private AndsDoiClient doiClient = new AndsDoiClient();
-    private AndsDoiIdentity nullId = new AndsDoiIdentity();
-
     private boolean debug;
+    private AndsDoiClient doiClient = new AndsDoiClient();
+    
+    /**
+     * The ANDS documentation has the following clear requirement:
+     * If in test mode, *you* have to remember to prefix the words "TEST" to your application key to let the world know that this isn't a proper DOI, if 
+     * testing. Hence this factory class to make this a testable proposition.
+     */
+    protected static class IdentityFactory {
+        public static final String TEST_PREFIX = "TEST";
+        private String appId;
+        private boolean productionServer;
+        private String authDomain;
+        private AndsDoiIdentity nullId = new AndsDoiIdentity();
+        private AndsDoiIdentity applicationId;
+
+        IdentityFactory(String appId, String authDomain, boolean productionServer) {
+            this.appId = appId;
+            this.authDomain = authDomain;
+            this.productionServer = productionServer;
+        }
+        
+        public AndsDoiIdentity getAppId() {
+            if (applicationId == null) {
+                applicationId = new AndsDoiIdentity((productionServer ? "" : TEST_PREFIX) + appId, authDomain);
+            }
+            return applicationId;
+        }
+        
+        public AndsDoiIdentity getNullAppId() {
+            return nullId;
+        }
+    }
+
+    private IdentityFactory identityFactory;
+    
 
     public AndsDoiExternalIdProviderImpl() {
+        this("andsdoi.properties");
+    }
+    
+    protected AndsDoiExternalIdProviderImpl(String propertyFileName) {
         try {
-            assistant.loadProperties("andsdoi.properties");
-            debug = assistant.getBooleanProperty("debug", false);
-            ourId = new AndsDoiIdentity(assistant.getProperty("app.id"), assistant.getProperty("auth.domain"));
-            doiClient.setDoiServiceHost(assistant.getProperty("service.host"));
-            doiClient.setDoiServicePath(assistant.getProperty("service.path"));
-            doiClient.setDoiServicePort(assistant.getIntProperty("service.port"));
+            assistant.loadProperties(propertyFileName);
+            debug = assistant.getBooleanProperty("is.debug", false);
+            boolean productionServer = assistant.getBooleanProperty(IS_PRODUCTION_SERVER_KEY, false);
+            identityFactory = new IdentityFactory(getStringProperty("app.id"), getStringProperty("auth.domain"), productionServer);
+            doiClient.setDoiServiceHost(getStringProperty("service.host"));
+            doiClient.setDoiServicePath(getStringProperty("service.path"));
+            doiClient.setDoiServicePort(assistant.getIntProperty("service.port", 80));
+            isEnabled = assistant.getBooleanProperty("is.enabled", true);
         } catch (Throwable t) {
             isEnabled = false;
             configIssue = t.getMessage();
         }
+    }
+
+    /**
+     * @param property The name of the property in the property file
+     * @return The value of the property
+     * @throws IllegalStateException the property was not found
+     */
+    private String getStringProperty(String property) {
+        String result = assistant.getProperty(property, null);
+        if (result == null) {
+            throw new IllegalStateException("AndsDoi required property not set: " + property);
+        }
+        return result;
     }
 
     @Override
@@ -75,14 +132,14 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     @Override
     public boolean connect() throws ClientProtocolException, IOException {
         logger.debug("Connecting to ANDS Doi Service");
-        doiClient.setRequestorIdentity(ourId);
+        doiClient.setRequestorIdentity(identityFactory.getAppId());
         return true;
     }
 
     @Override
     public boolean logout() throws ClientProtocolException, IOException {
         logger.debug("Disconnecting from ANDS Doi Service");
-        doiClient.setRequestorIdentity(nullId);
+        doiClient.setRequestorIdentity(identityFactory.getNullAppId());
         return true;
     }
 
@@ -142,5 +199,11 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         return doiDTO;
     }
 
+    /**
+     * @return the string value of the app ID. Used for testing.
+     */
+    protected String getAppId() {
+        return identityFactory.getAppId().getAppId();
+    }
 
 }
