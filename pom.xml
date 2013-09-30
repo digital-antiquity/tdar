@@ -15,7 +15,7 @@
 		<spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
 		<postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
 		<!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
-		<apache.cxf.version>2.7.4</apache.cxf.version>
+		<apache.cxf.version>2.7.7</apache.cxf.version>
 		<jena.version>2.11.0</jena.version>
 		<clover.version>3.1.12</clover.version>
 		<!-- /end managed versions -->
@@ -35,7 +35,7 @@
 		<jersey.version>1.17.1</jersey.version>
 		<jackson.version>2.2.3</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
-		<truezip.version>7.7.3</truezip.version>
+		<truezip.version>7.7.4</truezip.version>
 		<http-components.version>4.2.3</http-components.version>
 		<display.port></display.port>
 	</properties>

@@ -209,6 +209,23 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
+    public void testValidUsers() {
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
+
+        List<String> emails = Arrays.asList("Charlie-brown@tdar.org");
+        for (String email : emails) {
+            logger.info("TRYING =======> {}", email);
+            controller.setTimeCheck(System.currentTimeMillis() - 10000);
+            String execute = setupValidUserInController(controller, email);
+            // assertFalse("user " + email + " succeeded??", TdarActionSupport.SUCCESS.equals(execute));
+            logger.info("errors:{}", controller.getActionErrors());
+            assertTrue(controller.getActionErrors().size() > 0);
+        }
+        setIgnoreActionErrors(true);
+    }
+
+    @Test
+    @Rollback
     public void testRegistrationEmailSent() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
