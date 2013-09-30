@@ -494,8 +494,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     }
 
     public static final String USERNAME_REGEX = "^[a-zA-Z0-9+@\\.\\-_]";
-    public static final String USERNAME_VALID_REGEX = USERNAME_REGEX + "{5,40}$";
-    public static final String EMAIL_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{4,40}$";
+    public static final String USERNAME_VALID_REGEX = USERNAME_REGEX + "{5,255}$";
+    public static final String EMAIL_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{4,255}$";
 
     public boolean isValidUsername(String username) {
         if (StringUtils.isBlank(username))
@@ -511,7 +511,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         if (StringUtils.isBlank(username))
             return false;
 
-        return username.matches(USERNAME_REGEX+"{2,40}$");
+        return username.matches(USERNAME_REGEX+"{2,255}$");
     }
 
     public boolean isValidEmail(String email) {

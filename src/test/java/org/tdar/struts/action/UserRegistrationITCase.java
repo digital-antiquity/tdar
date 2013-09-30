@@ -209,6 +209,25 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
+    public void testValidUsers() {
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
+
+        List<String> emails = Arrays.asList("aaaa-bbbbbb.ccccccc-ddddd@eeeeeee.ffff.hh");
+        
+        for (String email : emails) {
+            assertTrue(authenticationAndAuthorizationService.isValidEmail(email));
+            assertTrue(authenticationAndAuthorizationService.isValidUsername(email));
+            logger.info("TRYING =======> {}", email);
+            controller.setTimeCheck(System.currentTimeMillis() - 10000);
+            String execute = setupValidUserInController(controller, email);
+            // assertFalse("user " + email + " succeeded??", TdarActionSupport.SUCCESS.equals(execute));
+            logger.info("errors:{}", controller.getActionErrors());
+            assertFalse(controller.getActionErrors().size() > 0);
+        }
+    }
+
+    @Test
+    @Rollback
     public void testRegistrationEmailSent() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
@@ -220,11 +239,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertTrue("Registration email was not sent.", messages.size() == 1);
         String messageText = messages.get(0).getText();
         assertTrue(StringUtils.isNotBlank(messageText));
-        // the following isn't exact: if we have duplicate values, for example, it may fail
-        // however, I don't know an easy way of getting the interpolations short of parsing the template directly...
-        // for (Map.Entry<String, Object> entry : welcomeEmailValues.entrySet()) {
-        // assertTrue("Interpololation ${" + entry.getKey() + "} is not set.", messageText.contains(entry.getValue()));
-        // }
     }
 
     @Test
