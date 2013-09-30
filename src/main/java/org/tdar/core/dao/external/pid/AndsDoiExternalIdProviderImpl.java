@@ -90,6 +90,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         try {
             assistant.loadProperties(propertyFileName);
             debug = assistant.getBooleanProperty("is.debug", false);
+            // you have to have the key, and it has to be set to true for this to be considered a production server.
             boolean productionServer = assistant.getBooleanProperty(IS_PRODUCTION_SERVER_KEY, false);
             identityFactory = new IdentityFactory(getStringProperty("app.id"), getStringProperty("auth.domain"), productionServer);
             doiClient.setDoiServiceHost(getStringProperty("service.host"));
