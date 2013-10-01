@@ -57,7 +57,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
     }
 
     @Autowired
-    GenericService genericService;
+    transient GenericService genericService;
 
     @Override
     public void destroy() {
@@ -67,6 +67,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
     @Override
     public void init() {
+        // we don't do anything here, yet...
     }
 
     @Override
@@ -75,7 +76,6 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         Object action = invocation.getAction();
         ActionProxy proxy = invocation.getProxy();
         String methodName = proxy.getMethod();
-        String result;
         if (methodName == null) {
             methodName = "execute";
         }
