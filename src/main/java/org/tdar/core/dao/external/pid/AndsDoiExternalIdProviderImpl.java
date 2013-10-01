@@ -28,7 +28,7 @@ import au.csiro.doiclient.business.DoiDTO;
  * Client source code: http://andspidclient.sourceforge.net/
  * 
  * ANDS use the same server for test and production. Hence we have had to go to quite a bit of extra work to make sure that the default is, should anything 
- * go wrong, "TEST" !!!
+ * go wrong, "TEST" !!! See: <a href="https://jira.ands.org.au/browse/SD-4420">SD-4420</a>
  * 
  * @author Martin Paulo
  */
