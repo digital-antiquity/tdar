@@ -25,9 +25,8 @@ import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 
 /**
  * @author Adam Brin
- * 
  */
-@Ignore("The ANDS pid test service seems to have stopped working a while back. we now have a ticket: https://jira.ands.org.au/browse/SD-4419")
+//@Ignore("This test will only work when run from IP addresses registered with ANDS. For more see: https://jira.ands.org.au/browse/SD-4419")
 public class AndsPidsITCase extends AbstractSearchControllerITCase {
 
     @Autowired
@@ -47,6 +46,9 @@ public class AndsPidsITCase extends AbstractSearchControllerITCase {
         assertTrue(pidsDao.logout());
     }
 
+    /**
+     * WARNING: This test will only work when run from IP addresses registered with ANDS. See test wide @Ignore above...
+     */
     @Test
     public void testCreateAndDelete() {
         try {
