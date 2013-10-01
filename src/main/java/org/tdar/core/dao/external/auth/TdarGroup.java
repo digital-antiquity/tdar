@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.ObjectUtils;
 import org.tdar.core.bean.HasLabel;
 
-public enum TdarGroup implements Comparable<TdarGroup>, HasLabel {
+public enum TdarGroup implements HasLabel {
 
     TDAR_ADMIN("tdar-admins", 1000),
     TDAR_BILLING_MANAGER("tdar-billing", 600),
@@ -35,6 +35,7 @@ public enum TdarGroup implements Comparable<TdarGroup>, HasLabel {
         return groupName;
     }
 
+    @Override
     public String toString() {
         return groupName;
     }
@@ -52,6 +53,7 @@ public enum TdarGroup implements Comparable<TdarGroup>, HasLabel {
         return Arrays.asList(TDAR_USERS, JIRA_USERS, CONFLUENCE_USERS);
     }
 
+    @Override
     public String getLabel() {
         return groupName;
     }
