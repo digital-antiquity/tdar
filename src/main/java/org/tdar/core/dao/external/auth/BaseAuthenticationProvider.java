@@ -11,6 +11,7 @@ public abstract class BaseAuthenticationProvider implements AuthenticationProvid
     /**
      * @return the enabled
      */
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
