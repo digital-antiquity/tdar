@@ -4,6 +4,7 @@ TDAR.datatable = function() {
 
     var self = {};
 
+    var $dataTable = {};
 
 // FIXME: selectableRows is redundant -- let rowSelectionCallback implicitly indicate that we want selectable rows.
 function _registerLookupDataTable(parms) {
@@ -302,7 +303,7 @@ function _setupDashboardDataTable(options) {
 
 function _registerResourceCollectionDataTable(dataTable) {
     // if user is editing existing collection, gather the hidden elements and put them in the 'seleted rows' object
-    var $dataTable = $(dataTable);
+    $dataTable = $(dataTable);
     var selectedRows = {};
     $.each($('input', '#divSelectedResources'), function(ignored, item){
         var elem = this;
@@ -419,6 +420,7 @@ return {
     extendSorting:_extendSorting,
     registerLookupDataTable:_registerLookupDataTable,
     setupDashboardDataTable:_setupDashboardDataTable,
+    removeResourceClicked:_removeResourceClicked,
     registerResourceCollectionDataTable:_registerResourceCollectionDataTable
 };
 }();

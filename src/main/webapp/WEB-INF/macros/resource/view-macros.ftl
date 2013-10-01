@@ -818,7 +818,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
                     <td>
                     <button class="btn btn-mini repeat-row-delete" 
                                 type="button" tabindex="-1" 
-                                onclick='TDAR.datatable._removeResourceClicked(${resource.id?c}, this);false;'><i class="icon-trash"></i></button></td>
+                                onclick='TDAR.datatable.removeResourceClicked(${resource.id?c}, this);false;'><i class="icon-trash"></i></button></td>
                     </#if>
                 </tr>
             </#list>
