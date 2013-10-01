@@ -196,12 +196,13 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Action(value = "register",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", type = "redirect", location = "welcome"),
-            @Result(name = "input", location = "edit.ftl") })
+            @Result(name = ADD, type = "redirect", location = "/account/add"),
+            @Result(name = INPUT, location = "edit.ftl") })
     @HttpsOnly
     @WriteableSession
     public String create() {
         if (person == null || !isPostRequest()) {
-            return INPUT;
+            return ADD;
         }
 
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
