@@ -74,7 +74,8 @@ public class AndsPidsITCase extends AbstractSearchControllerITCase {
             // should no longer exist
             // assertFalse(metadata.containsKey(AndsPidsDao.DATACITE_TITLE));
         } catch (IOException e) {
-            fail(e.getMessage());
+            e.printStackTrace(); // the stack trace is quite useful in this case.
+            fail("Error: " + e.getMessage());
         }
     }
 }

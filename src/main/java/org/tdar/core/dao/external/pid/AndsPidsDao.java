@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
@@ -15,6 +18,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.DoiProcess;
+import org.xml.sax.SAXException;
 
 import au.csiro.pidclient.AndsPidClient;
 import au.csiro.pidclient.AndsPidClient.HandleType;
@@ -88,15 +92,21 @@ public class AndsPidsDao implements ExternalIDProvider {
     @Override
     public Map<String, String> create(Resource r, String resourceUrl) throws IOException {
         Map<String, String> typeMap = new HashMap<>();
-        try {
-            AndsPidResponse response = pidsClient.mintHandleFormattedResponse(HandleType.URL, 0, resourceUrl);
+        AndsPidResponse response;
+       try {
+            response = pidsClient.mintHandleFormattedResponse(HandleType.URL, 0, resourceUrl);
             String handle = response.getHandle();
-            typeMap.put(DoiProcess.DOI_KEY, handle);
-            if (r.getStatus() == Status.ACTIVE) {
-                pidsClient.addValueByIndex(handle, DATACITE_TITLE_INDEX, HandleType.DESC, r.getTitle());
+            if (response.isSuccess()) {
+                typeMap.put(DoiProcess.DOI_KEY, handle);
+                if (r.getStatus() == Status.ACTIVE) {
+                    pidsClient.addValueByIndex(handle, DATACITE_TITLE_INDEX, HandleType.DESC, r.getTitle());
+                }
+            } else {
+                String message = "The PID Creation was not successful for: " + resourceUrl + " [ " + response.getMessage() + " ]";
+                logger.debug(message);
+                throw new TdarRecoverableRuntimeException(message);
             }
-        } catch (Exception e) {
-            logger.debug("could not mint handle for resource: {}", resourceUrl);
+        } catch (IllegalStateException | IllegalArgumentException | XPathExpressionException | ParserConfigurationException | SAXException e) {
             throw new TdarRecoverableRuntimeException("the DOI Creation was not successful for: " + resourceUrl, e);
         }
         return typeMap;
