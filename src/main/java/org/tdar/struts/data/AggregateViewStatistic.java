@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+//I don't know that the propOrder here is necessary, and it may complicate things in the future
 @XmlType(propOrder={"id", "date", "count"})
 public class AggregateViewStatistic implements Serializable {
 

@@ -73,6 +73,7 @@ import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.data.UsageStats;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.HttpsOnly;
 import org.tdar.transform.DcTransformer;
@@ -167,17 +168,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<ResourceRevisionLog> resourceLogEntries;
 
-    private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<AggregateViewStatistic>();
-    private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<String, List<AggregateDownloadStatistic>>();
-
-    class UsageStats  {
-        public UsageStats(List<AggregateViewStatistic> view, Map<String, List<AggregateDownloadStatistic>> download ) {
-            this.view = view;
-            this.download = download;
-        }
-        public List<AggregateViewStatistic> view;
-        public Map<String, List<AggregateDownloadStatistic>> download;
-    }
+    private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<>();
+    private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<>();
 
     private void initializeResourceCreatorProxyLists() {
         if (getPersistable().getResourceCreators() == null)
@@ -1186,7 +1178,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public String getJsonStats() {
         String json = "null";
-        if(usageStatsForResources == null || downloadStats == null ) return json;
+        //FIXME: what is the goal of this null check; shouldn't the UsageStats object handle this?  Also, why bail if only one is null?
+        if(usageStatsForResources == null || downloadStats == null) return json;
 
         try {
             json = xmlService.convertToJson(new UsageStats(usageStatsForResources, downloadStats));

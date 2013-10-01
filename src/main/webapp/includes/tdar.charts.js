@@ -61,16 +61,34 @@
                         renderer: $.jqplot.DateAxisRenderer
                     }
                 },
-                seriesDefaults: {
-                    renderer: $.jqplot.BarRenderer,
+
+                animate: !$.jqplot.use_excanvas,
+                seriesDefaults:{
+                    renderer:$.jqplot.BarRenderer,
+                    pointLabels: { 
+                        show: true,
+                        location: 'n',
+                        edgeTolerance: -35
+                    },
                     rendererOptions: {
                         //barDirection: 'horizontal'  //jtd: horiz bars look better with several series, but note you also have to flip x/y as well.
-                        fillToZero: true,
                         barWidth: 4,
-                        shadowDepth: 2
+//                        shadowDepth: 2,
+                        // Set varyBarColor to tru to use the custom colors on the bars.
+                        fillToZero: true,
+                        varyBarColor: true
                     }
-                }
-                //,series:[]
+                },
+                grid: {
+                    background: 'rgba(0,0,0,0)',
+                    drawBorder: false,
+                    shadow: false,
+                    gridLineColor: 'none',
+                    borderWidth:0,
+                    gridLineWidth: 0,
+                    drawGridlines:false
+              }
+                
             });
         }
     }
