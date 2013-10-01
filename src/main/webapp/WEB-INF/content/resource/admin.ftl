@@ -2,33 +2,31 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/${themeDir}/settings.ftl" as settings>
+<head>
+    <script type="text/javascript" src="/includes/tdar.charts.js"></script>
+</head>
 
 <h1>Administrative info for <span>${resource.title}</span></h1>
 
 <h2>Usage Stats</h2>
+<div class="row">
+    <div class="span9">
+        <div id="chart1" style="width:100%; height:400px" title="Views & Downloads"></div>
+    </div>
+</div>
 <#noescape>
 <script>
-var results = [];
-var data = [];
-        <#list usageStatsForResources as stats>
-            data.push([new Date("${stats.aggregateDate?string("yyyy-MM-dd")}"), ${stats.count?c}]);
-        </#list>
-        results.push(data);
-        //{label: "Views", data: data ,color: "#000000" });
-        
-        <#list downloadStats?keys as key>
-            <#if downloadStats.get(key)?has_content>
-            var row${key_index} = [];
-            <#list (downloadStats.get(key)) as stats>
-                row${key_index}.push([new Date("${stats.aggregateDate?string("yyyy-MM-dd")}"), ${stats.count?c}]);
-            </#list>
-            results.push(row${key_index});
-            </#if>
-        </#list>
+    $(function() {
+        var usageStats = (${jsonStats});
+        TDAR.charts.adminUsageStats({
+            rawData:usageStats,
+            label: "Views & Downloads"
+        });
+    });
 </script>
 </#noescape>
     <#-- The '&' is being escaped, hence no need for '&amp;' -->
-    <@common.barGraph data="data" graphLabel="views & downloads" xaxis="date" graphHeight=200/>
+    <#--<@common.barGraph data="data" graphLabel="views & downloads" xaxis="date" graphHeight=200/>-->
 <table class="tableFormat table">
     <tr>
         <th>views</th>

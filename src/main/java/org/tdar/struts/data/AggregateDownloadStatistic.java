@@ -5,6 +5,11 @@ import java.util.Date;
 
 import org.tdar.core.bean.resource.InformationResource;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(propOrder = {"name", "date", "count", "fid", "rid"})
 public class AggregateDownloadStatistic implements Serializable {
 
     private static final long serialVersionUID = 1698960536676588440L;
@@ -34,6 +39,7 @@ public class AggregateDownloadStatistic implements Serializable {
         this.informationResourceId = irId;
     }
 
+    @XmlElement(name = "date")
     public Date getAggregateDate() {
         return aggregateDate;
     }
@@ -42,6 +48,7 @@ public class AggregateDownloadStatistic implements Serializable {
         this.aggregateDate = aggregateDate;
     }
 
+    @XmlElement(name="count")
     public Number getCount() {
         return count;
     }
@@ -50,6 +57,7 @@ public class AggregateDownloadStatistic implements Serializable {
         this.count = count;
     }
 
+    @XmlElement(name="name")
     public String getFilename() {
         return filename;
     }
@@ -58,6 +66,7 @@ public class AggregateDownloadStatistic implements Serializable {
         this.filename = filename;
     }
 
+    @XmlElement(name="fid")
     public Long getInformationResourceFileId() {
         return informationResourceFileId;
     }
@@ -66,6 +75,7 @@ public class AggregateDownloadStatistic implements Serializable {
         this.informationResourceFileId = informationResourceFileId;
     }
 
+    @XmlElement(name="rid")
     public Long getInformationResourceId() {
         return informationResourceId;
     }
@@ -79,6 +89,7 @@ public class AggregateDownloadStatistic implements Serializable {
         this.informationResourceId = informationResource.getId();
     }
 
+    @XmlTransient
     public InformationResource getInformationResource() {
         return this.informationResource;
     }

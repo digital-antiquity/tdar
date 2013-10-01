@@ -128,7 +128,12 @@ public class XmlService implements Serializable {
     public void convertToJson(Object object, Writer writer) throws JsonProcessingException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JaxbAnnotationModule());
-        ObjectWriter objectWriter = mapper.writerWithDefaultPrettyPrinter();
+        ObjectWriter objectWriter = null;
+        if(logger.isTraceEnabled()) {
+            objectWriter = mapper.writerWithDefaultPrettyPrinter();
+        } else {
+            objectWriter = mapper.writer();
+        }
         objectWriter.writeValue(writer, object);
     }
 

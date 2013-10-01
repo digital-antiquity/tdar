@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -61,6 +63,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.AbstractPersistableController;
@@ -91,6 +94,9 @@ import edu.asu.lib.mods.ModsDocument;
  * @version $Revision$
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
+
+    @Autowired
+    XmlService xmlService;
 
     private static final String REPROCESS = "reprocess";
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
@@ -163,6 +169,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<AggregateViewStatistic>();
     private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<String, List<AggregateDownloadStatistic>>();
+
+    class UsageStats  {
+        public UsageStats(List<AggregateViewStatistic> view, Map<String, List<AggregateDownloadStatistic>> download ) {
+            this.view = view;
+            this.download = download;
+        }
+        public List<AggregateViewStatistic> view;
+        public Map<String, List<AggregateDownloadStatistic>> download;
+    }
 
     private void initializeResourceCreatorProxyLists() {
         if (getPersistable().getResourceCreators() == null)
@@ -1167,6 +1182,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setResourceRelationships(List<ResourceRelationship> resourceRelationships) {
         this.resourceRelationships = resourceRelationships;
+    }
+
+    public String getJsonStats() {
+        String json = "null";
+        if(usageStatsForResources == null || downloadStats == null ) return json;
+
+        try {
+            json = xmlService.convertToJson(new UsageStats(usageStatsForResources, downloadStats));
+        } catch (IOException e) {
+            logger.error("failed to convert stats to json", e);
+            json =  String.format("{'error': '%s'}", StringEscapeUtils.escapeEcmaScript(e.getMessage()));
+        }
+        return json;
     }
 
 }
