@@ -51,7 +51,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
     public static final String USERNAME_INVALID = "Username Invalid, cannot authenticated user";
     public static final String YOU_ARE_NOT_ALLOWED_TO_SEARCH_FOR_RESOURCES_WITH_THE_SELECTED_STATUS = "You are not allowed to search for resources with the selected status";
-    private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<Person, TdarGroup>();
+    private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
@@ -101,7 +101,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
 
         String[] groupNames = getProvider().findGroupMemberships(person);
-        List<TdarGroup> groups = new ArrayList<TdarGroup>();
+        List<TdarGroup> groups = new ArrayList<>();
         for (String groupName : groupNames) {
             groups.add(TdarGroup.valueOf(groupName));
         }
@@ -120,13 +120,13 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     }
 
     public synchronized List<Person> getCurrentlyActiveUsers() {
-        return new ArrayList<Person>(groupMembershipCache.keySet());
+        return new ArrayList<>(groupMembershipCache.keySet());
     }
 
     // return all of the resource statuses that a user is allowed to view in a search.
     public Set<Status> getAllowedSearchStatuses(Person person) {
         // assumption: ACTIVE always allowed.
-        Set<Status> allowed = new HashSet<Status>(Arrays.asList(Status.ACTIVE));
+        Set<Status> allowed = new HashSet<>(Arrays.asList(Status.ACTIVE));
         if (person == null)
             return allowed;
 
@@ -153,7 +153,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         Set<Status> allowedSearchStatuses = getAllowedSearchStatuses(user);
 
         if (CollectionUtils.isEmpty(reservedSearchParameters.getStatuses())) {
-            reservedSearchParameters.setStatuses(new ArrayList<Status>(Arrays.asList(Status.ACTIVE, Status.DRAFT)));
+            reservedSearchParameters.setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 
         reservedSearchParameters.getStatuses().retainAll(allowedSearchStatuses);
@@ -411,9 +411,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
         if (!irFile.isPublic() && !canViewConfidentialInformation(person, irFile.getInformationResource())) {
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
     public boolean canViewCollection(ResourceCollection collection, Person person) {
