@@ -528,35 +528,39 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
 
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
-        if (result.isValid()) {
-            Person person = personDao.findByUsername(loginUsername);
-            if (person == null) {
-                // FIXME: person exists in Crowd but not in tDAR..
-                logger.debug("Person successfully authenticated by authentication service but not present in site database: " + loginUsername);
-                person = new Person();
-                person.setUsername(loginUsername);
-                // how to pass along authentication information..?
-                // username was in Crowd but not in tDAR? Redirect them to the account creation page
-                return AuthenticationStatus.NEW;
-            }
-
-            if (!person.isActive()) {
-                throw new TdarRecoverableRuntimeException("Cannot authenticate deleted user");
-            }
-
-            // enable us to force group cache to be cleared
-            clearPermissionsCache(person);
-
-            logger.debug(String.format("%s (%s) logged in from %s using: %s", loginUsername, person.getEmail(), request.getRemoteAddr(),
-                    request.getHeader("User-Agent")));
-            createAuthenticationToken(person, sessionData);
-            personDao.registerLogin(person);
-            return AuthenticationStatus.AUTHENTICATED;
-        } else {
+        if (!result.isValid()) {
             logger.debug(String.format("Couldn't authenticate %s - (reason: %s)", loginUsername, result));
             throw new TdarRecoverableRuntimeException(result.getMessage());
         }
-        // return AuthenticationStatus.ERROR;
+        
+        Person person = personDao.findByUsername(loginUsername);
+        if (person == null) {
+            // FIXME: person exists in Crowd but not in tDAR..
+            logger.debug("Person successfully authenticated by authentication service but not present in site database: " + loginUsername);
+            person = new Person();
+            person.setUsername(loginUsername);
+            // how to pass along authentication information..?
+            // username was in Crowd but not in tDAR? Redirect them to the account creation page
+            return AuthenticationStatus.NEW;
+        }
+        
+
+        if (!person.isActive()) {
+            throw new TdarRecoverableRuntimeException("Cannot authenticate deleted user");
+        }
+        
+        // enable us to force group cache to be cleared
+        clearPermissionsCache(person);
+        
+        if (!isMember(person, TdarGroup.TDAR_USERS)) {
+            throw new TdarRecoverableRuntimeException("Access rights have been removed for this user!");
+        }
+        
+        logger.debug(String.format("%s (%s) logged in from %s using: %s", loginUsername, person.getEmail(), request.getRemoteAddr(),
+                request.getHeader("User-Agent")));
+        createAuthenticationToken(person, sessionData);
+        personDao.registerLogin(person);
+        return AuthenticationStatus.AUTHENTICATED;
     }
 
     public void createAuthenticationToken(Person person, SessionData session) {
