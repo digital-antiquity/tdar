@@ -6,6 +6,7 @@ import java.util.Map;
 
 import net.tanesha.recaptcha.ReCaptcha;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.struts2.convention.annotation.Action;
@@ -32,6 +33,7 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService.Auth
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.interceptor.HttpsOnly;
+import org.tdar.struts.interceptor.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -195,16 +197,21 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     @Action(value = "register",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", type = "redirect", location = "welcome"),
+            results = { @Result(name = SUCCESS, type = "redirect", location = "welcome"),
             @Result(name = ADD, type = "redirect", location = "/account/add"),
             @Result(name = INPUT, location = "edit.ftl") })
     @HttpsOnly
     @WriteableSession
+    @SkipValidation
     public String create() {
         if (person == null || !isPostRequest()) {
             return ADD;
         }
-
+        // we skipValidation so we can properly return "add" above
+        validate();
+        if (hasActionErrors()) {
+            return INPUT;
+        }
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
             boolean reCaptchaResponse = reCaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
             if (reCaptchaResponse == false) {
