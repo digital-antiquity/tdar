@@ -49,14 +49,14 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
     
     protected List<Person> getSomeUsers() {
         //let's only get authorized users
-        List<Person> allRegisteredUsers = entityService.findAllRegisteredUsers(null);
+        List<Person> allRegisteredUsers = entityService.findAllRegisteredUsers();
         List<Person> someRegisteredUsers = allRegisteredUsers.subList(0, Math.min(10,  allRegisteredUsers.size()));
         return someRegisteredUsers;
     }
     
     protected List<Person> getSomePeople() {
         List<Person> allNonUsers = entityService.findAll();
-        allNonUsers.removeAll(entityService.findAllRegisteredUsers(null));
+        allNonUsers.removeAll(entityService.findAllRegisteredUsers());
         List<Person> someNonUsers = allNonUsers.subList(0, Math.min(10,  allNonUsers.size()));
         return someNonUsers;
     }

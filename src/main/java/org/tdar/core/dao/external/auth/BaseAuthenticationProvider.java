@@ -1,10 +1,11 @@
 package org.tdar.core.dao.external.auth;
 
 import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class BaseAuthenticationProvider implements AuthenticationProvider {
 
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
     
     private boolean enabled;
 

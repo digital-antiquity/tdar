@@ -40,6 +40,7 @@ public enum TdarGroup implements Comparable<TdarGroup>, HasLabel {
     }
 
     public static TdarGroup fromString(String groupName) {
+        if(groupName == null) return UNAUTHORIZED;
         for (TdarGroup group : values()) {
             if (group.getGroupName().equalsIgnoreCase(groupName.trim())) {
                 return group;

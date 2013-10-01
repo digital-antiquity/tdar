@@ -48,8 +48,12 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return find(id);
     }
 
-    public List<Person> findAllRegisteredUsers(Integer num) {
-        return getDao().findAllRegisteredUsers(num);
+    public List<Person> findAllRegisteredUsers(int maxResults) {
+        return getDao().findAllRegisteredUsers(maxResults);
+    }
+
+    public List<Person> findAllRegisteredUsers() {
+        return getDao().findAllRegisteredUsers(null);
     }
 
     public List<Institution> findAllInstitutions() {
