@@ -167,11 +167,11 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         String currentObjectAsString = currentObject.toString();
                         if (currentColumn.getColumnDataType() == DataTableColumnType.BLOB) {
 
-                            logger.info(currentObject.getClass().getCanonicalName());
+                            //logger.info(currentObject.getClass().getCanonicalName());
                             byte[] data = (byte[]) currentObject;
                             // InflaterInputStream iis = new InflaterInputStream(new ByteArrayInputStream(data));
                             // byte[] uncompressed = IOUtils.toByteArray(iis);
-                            logger.info("{}", Hex.encodeHexString(data));
+                            //logger.info("{}", Hex.encodeHexString(data));
                             // logger.info("{}", uncompressed);
                             // DATA here is paired with the data in the GDBGeomColumns table to describe the feature type, etc
                             GeometryFactory factory = new GeometryFactory();
@@ -189,7 +189,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                             try {
                                 g = new WKBReader(factory).read(Hex.encodeHexString(data).getBytes());
                             } catch (Exception e) {
-                                logger.error("{}", e);
+//                                logger.error("{}", e);
                             }
                             // logger.info("data: {} ", data);
                         }
