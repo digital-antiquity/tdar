@@ -13,13 +13,12 @@
     </div>
 </#macro>
 
-
 <#macro divImageInfo>
-<div id="divImageInfo" data-tooltipcontent='#imageInfoTooltip'>
-    <#assign _images=sensoryDataImages />
-    <#if _images.isEmpty()>
-    <#assign _images=blankSensoryDataImage />
-    </#if>  
+<#local _images=sensoryDataImages, divclass="" />
+<#if _images.isEmpty()>
+<#local _images=blankSensoryDataImage, divclass="hidden" />
+</#if>
+<div id="divImageInfo" data-tooltipcontent='#imageInfoTooltip' class="${divclass}">
     <h2>Image Information</h2>
     <div id="sensoryDataImagesDiv" class="repeatLastRow" addAnother="add another image">
         <#list _images as _image>
