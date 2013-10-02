@@ -141,7 +141,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     @Transient
     public OntologyNode getNodeByNameIgnoreCase(String name) {
         for (OntologyNode node : getOntologyNodes()) {
-            if (node.getDisplayName().equalsIgnoreCase(name)) {
+            if (StringUtils.equalsIgnoreCase(node.getDisplayName(),name)) {
                 return node;
             }
         }

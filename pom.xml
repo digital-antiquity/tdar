@@ -15,7 +15,7 @@
 		<spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
 		<postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
 		<!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
-		<apache.cxf.version>2.7.7</apache.cxf.version>
+		<apache.cxf.version>2.7.4</apache.cxf.version>
 		<jena.version>2.11.0</jena.version>
 		<clover.version>3.1.12</clover.version>
 		<!-- /end managed versions -->
@@ -784,8 +784,13 @@
 		<!-- OWL API access -->
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi</artifactId>
-			<version>3.1.0</version>
+			<artifactId>owlapi-apibinding</artifactId>
+			<version>3.4.5</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-api</artifactId>
+			<version>3.4.5</version>
 		</dependency>
 		<!-- CXF for web-services endpoint -->
 		<dependency>
