@@ -195,6 +195,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(latestUploadedVersion);
                 latestUploadedVersion.setTransientFile(transientFile);
             }
+
             analyzer.processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
         } catch (Exception e) {
             throw new TdarRecoverableRuntimeException(e);

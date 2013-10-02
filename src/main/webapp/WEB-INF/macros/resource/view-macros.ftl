@@ -357,6 +357,9 @@ No coding rules have been entered for this coding sheet yet.
                   max long: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}; max lat: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude} ;
                   <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
                   <!-- ${resource.managedGeographicKeywords } -->
+                  <#if editor>
+	                  <#if resource.firstActiveLatitudeLongitudeBox.actuallyObfuscated> [obfuscated]</#if>
+                  </#if>
                 </p>
             </div>
 

@@ -762,12 +762,12 @@ public class Resource extends JsonModel.Base implements Persistable,
     public boolean isLatLongVisible() {
         LatitudeLongitudeBox latLongBox = getFirstActiveLatitudeLongitudeBox();
         if (hasConfidentialFiles() || latLongBox == null) {
-            logger.debug("latLong for {} is confidential or null", getId());
+            logger.trace("latLong for {} is confidential or null", getId());
             return Boolean.FALSE;
         }
         
         if (latLongBox.isInitializedAndValid()) {
-            logger.debug("latLong for {} is initialized", getId());
+            logger.trace("latLong for {} is initialized", getId());
             if (latLongBox.getCenterLatitudeIfNotObfuscated() != null && latLongBox.getCenterLongitudeIfNotObfuscated() != null) {
                 return Boolean.TRUE;
             }
