@@ -2,16 +2,12 @@ TDAR.namespace("datatable");
 TDAR.datatable = function() {
     "use strict";
 
-    var self = {};
-
-    var $dataTable = {};
-
-// FIXME: selectableRows is redundant -- let rowSelectionCallback implicitly indicate that we want selectable rows.
-function _registerLookupDataTable(parms) {
-    _extendSorting();
-    // tableSelector, sAjaxSource, sAjaxDataProp, aoColumns, requestCallback, selectableRows
-    var doNothingCallback = function(){};
-    var options = {
+    // FIXME: selectableRows is redundant -- let rowSelectionCallback implicitly indicate that we want selectable rows.
+    function _registerLookupDataTable(parms) {
+        _extendSorting();
+        // tableSelector, sAjaxSource, sAjaxDataProp, aoColumns, requestCallback, selectableRows
+        var doNothingCallback = function(){};
+        var options = {
             tableSelector: '#dataTable',
             requestCallback: doNothingCallback,
             selectableRows: false,
@@ -300,23 +296,32 @@ function _setupDashboardDataTable(options) {
     _scrollOnPagination();
 }
 
-
-function _registerResourceCollectionDataTable(dataTable) {
+//populate the dataTable.data('selectedRows') from the hidden inputs in #divSelectedResources (e.g. when rendering 'edit' or 'input' form)
+//FIXME: this name sucks. It doesn't register a datatable.  It just wires up the selectedRows data when rendering edit page
+function _registerResourceCollectionDataTable(dataTable, resourcesTable) {
     // if user is editing existing collection, gather the hidden elements and put them in the 'seleted rows' object
-    $dataTable = $(dataTable);
+    var $dataTable = $(dataTable);
+    var $resourcesTable = $(resourcesTable);
     var selectedRows = {};
-    $.each($('input', '#divSelectedResources'), function(ignored, item){
+
+    $.each($('input', '#divSelectedResources'), function(){
         var elem = this;
         selectedRows[elem.value] = {id:elem.value, title:'n/a', description:'n/a'};
-        console.debug('adding id to preselected rows:' + elem.value);  
+        //console.debug('adding id to preselected rows:' + elem.value);
     });
     $dataTable.data('selectedRows', selectedRows);
     
     // hide the selected items table if server hasn't prepopulated it
-    if($dataTable.find('tr').length==1) {
-        $dataTable.hide();
+    if($resourcesTable.find('tr').length==1) {
+        $resourcesTable.hide();
     }
-    _scrollOnPagination();
+
+    //bind row delete button
+    $resourcesTable.on('click', 'button.remove-row', function() {
+        var button = this,
+            resourceid = $(button).data("resourceid");
+        _removeResourceClicked(resourceid, button, dataTable);
+    } );
 }
 
 
@@ -328,6 +333,7 @@ function _rowSelected(obj) {
     $('#divSelectedResources').append(tag);
 
     // next, add a new row to the 'selected items' table.
+    //FIXME: Really, Jim?  All this to render a button?
     var $table = $('#tblCollectionResources');
     var $tbody = $('tbody', $table);
     var resourceTag = '';
@@ -338,7 +344,7 @@ function _rowSelected(obj) {
         resourceTag += '            :title        ';
         resourceTag += '        </a>                                                                                  ';
         resourceTag += '    </td>                                                                                     ';
-        resourceTag += '    <td><button class="btn btn-mini"  type="button" tabindex="-1" onclick="_removeResourceClicked(:id, this);false;"><i class="icon-trash"></i></button></td>';
+        resourceTag += '    <td><button class="btn btn-mini remove-row" data-resourceid=":id" type="button" tabindex="-1"><i class="icon-trash"></i></button></td>';
         resourceTag += '</tr>                                                                                         ';
 
        resourceTag = resourceTag.replace(/:id/g, obj.id);
@@ -348,7 +354,6 @@ function _rowSelected(obj) {
        resourceTag = resourceTag.replace(/:status/g, obj.status);
        
        $tbody.append(resourceTag);
-       // $table.closest('div').show();
        $table.show();
 }
 
@@ -364,7 +369,8 @@ function _rowUnselected(obj) {
 
 }
 
-function _removeResourceClicked(id, elem) {
+function _removeResourceClicked(id, elem, dataTable) {
+    var $dataTable = $(dataTable);
     // delete the element from the selectedrows structure and remove the hidden input tag
     delete $dataTable.data('selectedRows')[id];
     $('#hdnResourceId' + id).remove();
@@ -385,7 +391,6 @@ function _removeResourceClicked(id, elem) {
     $('#cbEntityId_' + id, $dataTable).prop('checked', false);
     
 }
-
 
 function _scrollOnPagination() {
     $(".dataTables_paginate a").click(function(){$(".dataTables_scrollBody").animate( {scrollTop:0 });return true;});
