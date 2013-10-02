@@ -303,10 +303,8 @@ $(function(){
     </#if>
     </#if>
 
-
-  	$(".singleFileUpload .date").datepicker({dateFormat: "mm/dd/yy"});
-  	$(".existing-file .date").datepicker({dateFormat: "mm/dd/yy"});
-
+    //wire up jquery-ui datepicker to our date fields
+    $(".singleFileUpload .date, .existing-file .date, .date.datepicker").datepicker({dateFormat: "mm/dd/yy"});
 
     TDAR.common.initEditPage(form);
     
