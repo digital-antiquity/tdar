@@ -20,6 +20,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.OntologyService;
 
 /**
@@ -152,7 +153,8 @@ public class OwlApiHierarchyParser implements OntologyParser {
         } else {
             node.setDisplayName(iri.getFragment());
         }
-        node.setUri(iri.toURI().toString());
+        String uri_string = iri.toURI().toString();
+        node.setUri(uri_string);
         node.setIntervalStart(Integer.valueOf(index));
         String indexString = String.valueOf(index);
         for (OWLClassExpression owlClassExpression : owlClass.getSuperClasses(owlOntology)) {
@@ -176,6 +178,13 @@ public class OwlApiHierarchyParser implements OntologyParser {
             firstSibling = false;
         }
         logger.trace(node);
+        if (StringUtils.isBlank(node.getIri()) && StringUtils.isNotBlank(uri_string)) {
+            node.setIri(StringUtils.substring(uri_string, uri_string.indexOf("#")+1));
+        }
+        
+        if (StringUtils.isBlank(node.getIri())) {
+            throw new TdarRecoverableRuntimeException(String.format("node: %s, has a blank IRI on imports", node));
+        }
         node.setIntervalEnd(Integer.valueOf(index));
         return index + 1;
     }
