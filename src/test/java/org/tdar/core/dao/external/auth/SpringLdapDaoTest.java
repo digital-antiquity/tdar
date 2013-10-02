@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapOperations;
@@ -17,6 +18,7 @@ import org.tdar.core.bean.entity.Person;
  * 
  * @author Martin Paulo
  */
+@Ignore
 public class SpringLdapDaoTest {
 
     Mockery context;
