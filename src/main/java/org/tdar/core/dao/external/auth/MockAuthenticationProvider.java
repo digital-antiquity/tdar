@@ -49,6 +49,11 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     public AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name,
                                              String password) {
         if(!isEnabled() || !isConfigured()) return REMOTE_EXCEPTION;
+        if(TdarConfiguration.getInstance().isProductionEnvironment()) {
+            logger.error("Mock Authentication is not allowed in production.");
+            return REMOTE_EXCEPTION;
+        }
+
         AuthenticationResult result = ACCOUNT_DOES_NOT_EXIST;
         logger.debug("trying to authenticate:: user: {}  groupname:{}", name, password);
         if(users.containsKey(name)) {
@@ -131,7 +136,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     @Autowired
     public void setEntityService(EntityService entityService) {
         if(TdarConfiguration.getInstance().isProductionEnvironment()) {
-            logger.error("Mock Authentication is not allowed in production. System will not load mock user db");
+            logger.info("Mock Authentication is not allowed in production. System will not load mock user db");
             return;
         }
         List<Person> registeredUsers = entityService.findAllRegisteredUsers();
