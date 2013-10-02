@@ -19,7 +19,7 @@ import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.DistinguishedName;
-import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.LdapOperations;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
@@ -42,7 +42,7 @@ import org.tdar.core.bean.entity.Person;
 @Service
 public class SpringLdapDao extends BaseAuthenticationProvider {
 
-    private final LdapTemplate ldapTemplate;
+    protected final LdapOperations ldapTemplate;
     private String passwordResetURL;
     private String baseDN;
     private String userRDN;
@@ -53,18 +53,19 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
     }
 
     @Autowired(required = false)
-    public SpringLdapDao(LdapTemplate ldapTemplate) {
+    public SpringLdapDao(LdapOperations ldapTemplate) {
         this.ldapTemplate = ldapTemplate;
     }
 
+    @Override
     public boolean isConfigured() {
-        if (getLdapTemplate() == null) {
+        if (ldapTemplate == null) {
             logger.debug("ldaptemplate is null");
             return false;
         }
 
         try {
-            getLdapTemplate().lookup("");
+            ldapTemplate.lookup("");
         } catch (Exception e) {
             logger.debug("Could not connect to ldap service", e);
             return false;
@@ -142,8 +143,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             Person temp = ldapDAO.findByPrimaryKey(username);
             // if this succeeds, then this principal already exists.
             // FIXME: if they already exist in the system, we should let them
-            // know
-            // that they already have an account in the system and that they can
+            // know that they already have an account in the system and that they can
             // just authenticate to edit their account / profile.
             logger.warn("XXX: Trying to add an LDAP user that already exists: ["
                     + person.toString()
@@ -213,68 +213,57 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
     }
 
     @Override
-    public String getPasswordResetURL()
-    {
+    public String getPasswordResetURL() {
         return passwordResetURL;
     }
 
     @Value("${ldap.passwordResetURL}")
-    public void setPasswordResetURL(String url)
-    {
+    public void setPasswordResetURL(String url) {
         this.passwordResetURL = url;
     }
 
     /*
      * Get LDAP base DN
      */
-    public String getBaseDN()
-    {
+    public String getBaseDN() {
         return baseDN;
     }
 
     @Value("${ldap.baseDn}")
-    public void setBaseDN(String baseDN)
-    {
+    public void setBaseDN(String baseDN) {
         this.baseDN = baseDN;
     }
 
     /*
      * Get Relative Distinguished Name (RDN) for users. Will be appended with Base DN during searches.
      */
-    public String getUserRDN()
-    {
+    public String getUserRDN() {
         return userRDN;
     }
 
     @Value("${ldap.userRdn}")
-    public void setUserRDN(String userRDN)
-    {
+    public void setUserRDN(String userRDN) {
         this.userRDN = userRDN;
     }
 
     /*
      * Get RDN for groups. Will be appended with Base DN during searches.
      */
-    public String getGroupRDN()
-    {
+    public String getGroupRDN() {
         return groupDN;
     }
 
     @Value("${ldap.groupRdn}")
-    public void setGroupRDN(String groupDN)
-    {
+    public void setGroupRDN(String groupDN) {
         this.groupDN = groupDN;
-    }
-
-    public LdapTemplate getLdapTemplate() {
-        return ldapTemplate;
     }
 
     /*
      * This internal class encapsulates the actual DAO logic for Person info stored on an LDAP server.
-     * Ideally, this should be a standalone class with most, if not all, data stored on the LDAP server.
+     * Ideally, this should be a stand alone class with most, if not all, data stored on the LDAP server.
      */
     public class PersonLdapDao {
+        
         private static final String CLASS_PERSON = "inetOrgPerson";
         private static final String CLASS_GROUP = "posixgroup";
         private static final String ATTR_MEMBER = "memberuid";
@@ -286,8 +275,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
         private static final String ATTR_SURNAME = "sn";
         private static final String ATTR_PASSWORD = "userPassword";
 
-        public boolean authenticate(String username, String password)
-        {
+        public boolean authenticate(String username, String password) {
             AndFilter filter = new AndFilter();
             filter.and(new EqualsFilter(ATTR_OBJECT_CLASS, CLASS_PERSON)).and(
                     new EqualsFilter(ATTR_USER_ID, username));
@@ -300,7 +288,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             DirContextAdapter context = new DirContextAdapter(userdn);
             mapToContext(person, context);
             setPassword(context, password);
-            getLdapTemplate().bind(context);
+            ldapTemplate.bind(context);
 
             // Update Groups
             if (ArrayUtils.isEmpty(groups)) {
@@ -326,33 +314,33 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
 
         public void update(Person person, String password) {
             Name dn = buildPersonRDN(person);
-            DirContextOperations context = getLdapTemplate().lookupContext(dn);
+            DirContextOperations context = ldapTemplate.lookupContext(dn);
             mapToContext(person, context);
             setPassword(context, password);
-            getLdapTemplate().modifyAttributes(context);
+            ldapTemplate.modifyAttributes(context);
         }
 
         public void delete(Person person) {
-            getLdapTemplate().unbind(buildPersonRDN(person));
+            ldapTemplate.unbind(buildPersonRDN(person));
         }
 
         public Person findByPrimaryKey(String uid) {
             Name dn = buildPersonRDN(uid);
-            return (Person) getLdapTemplate().lookup(dn, getContextMapper());
+            return (Person) ldapTemplate.lookup(dn, getContextMapper());
         }
 
         public List<?> findByName(String name) {
             AndFilter filter = new AndFilter();
             filter.and(new EqualsFilter(ATTR_OBJECT_CLASS, CLASS_PERSON)).and(
                     new WhitespaceWildcardsFilter(ATTR_COMMON_NAME, name));
-            return getLdapTemplate().search(DistinguishedName.EMPTY_PATH,
+            return ldapTemplate.search(DistinguishedName.EMPTY_PATH,
                     filter.encode(), getContextMapper());
         }
 
         public List<?> findAll() {
             EqualsFilter filter = new EqualsFilter(ATTR_OBJECT_CLASS,
                     CLASS_PERSON);
-            return getLdapTemplate().search(DistinguishedName.EMPTY_PATH,
+            return ldapTemplate.search(DistinguishedName.EMPTY_PATH,
                     filter.encode(), getContextMapper());
         }
 
@@ -362,7 +350,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
                 filter.and(new EqualsFilter(ATTR_OBJECT_CLASS, CLASS_GROUP)).and(
                         new EqualsFilter(ATTR_MEMBER, uid));
 
-                List<?> groups = getLdapTemplate().search(DistinguishedName.EMPTY_PATH,
+                List<?> groups = ldapTemplate.search(DistinguishedName.EMPTY_PATH,
                         filter.encode(), new AttributesMapper() {
                             @Override
                             public Object mapFromAttributes(Attributes attrs) throws NamingException {
@@ -429,6 +417,12 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
         }
 
         private class PersonContextMapper extends AbstractContextMapper {
+
+            public PersonContextMapper() {
+                // TODO Auto-generated constructor stub
+            }
+
+            @Override
             public Object doMapFromContext(DirContextOperations context) {
                 Person person = new Person();
                 person.setEmail(context.getStringAttribute(ATTR_USER_ID));
