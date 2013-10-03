@@ -254,7 +254,7 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_RECENT_USERS_ADDED,
-            query = "select p from Person p where registered=TRUE order by id desc"
+            query = "select p from Person p where registered=TRUE and status='ACTIVE' order by id desc"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_USAGE_STATS,
