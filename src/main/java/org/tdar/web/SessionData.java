@@ -57,6 +57,7 @@ public class SessionData implements Serializable {
         return authenticationToken != null && authenticationToken.isValid();
     }
 
+    @Override
     public String toString() {
         return String.format("Auth token: %s [object id: %s]", authenticationToken, super.toString());
     }
@@ -75,7 +76,7 @@ public class SessionData implements Serializable {
     public void setParameters(Map<String, Object> parameters) {
         this.parameters = new String[parameters.size() * 2];
         int index = 0;
-        ArrayList<String> queryParams = new ArrayList<String>();
+        ArrayList<String> queryParams = new ArrayList<>();
         for (Map.Entry<String, Object> entry : parameters.entrySet()) {
             String paramName = entry.getKey();
             String paramValue = ((String[]) entry.getValue())[0];
