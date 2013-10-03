@@ -205,8 +205,18 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
             equivalenceSet.add(synonym.toLowerCase());
         }
         equivalenceSet.add(displayName.toLowerCase());
-        equivalenceSet.add(iri.toLowerCase());
+        equivalenceSet.add(StringUtils.lowerCase(getNormalizedIri()));
         return equivalenceSet;
+    }
+
+    public String getNormalizedIri() {
+        String iri_ = StringUtils.trim(iri);
+        //backwards compatibility to help with mappings which start with digests
+        if (iri_ != null && iri_.matches("^\\_\\d.*")) {
+            return StringUtils.substring(iri_, 1);
+        } else {
+            return iri_;
+        }
     }
 
     @Transient

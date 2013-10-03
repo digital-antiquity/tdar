@@ -132,9 +132,9 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     private void initializeNameAndIriMaps() {
-        for (OntologyNode node : getOntologyNodes()) {
+        for (OntologyNode node: getOntologyNodes()) {
             nameMap.put(node.getDisplayName(), node);
-            iriMap.put(node.getIri(), node);
+            iriMap.put(node.getNormalizedIri(), node);
         }
     }
 

@@ -380,10 +380,14 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     }
 
-    public String labelToFragmentId(String label) {
-        if (StringUtils.isBlank(label))
+    public String labelToFragmentId(String label_) {
+        if (StringUtils.isBlank(label_))
             return "";
-        return label.trim().replaceAll(IRI_INVALID_CHARACTERS_REGEX, "_");
+        String label = label_.trim().replaceAll(IRI_INVALID_CHARACTERS_REGEX, "_");
+        if (label.matches("^(\\d).*")) {
+            label = "_" + label;
+        }
+        return label;
     }
 
     /**
