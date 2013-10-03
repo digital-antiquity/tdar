@@ -98,7 +98,7 @@ public class SensoryData extends Dataset {
     
     
     public enum RgbCapture {
-        NA("Not Specified"),
+        NA("None"),
         INTERNAL("Internal"),
         EXTERNAL("External");
         String label;

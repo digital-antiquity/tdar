@@ -105,7 +105,8 @@
     </tbody>
 </table>
 </#if>
-
+<#-- FIXME: should we show this section for legacy records,  or scrub this information from legacy records? -->
+<#--
 
 <h3>Registration Information</h3>
 <table>
@@ -151,5 +152,6 @@
 <@fieldvalbool      _val=resource.rgbPreservedFromOriginal            _show=resource.rgbPreservedFromOriginal??            _label="RGB Color" />
 </table>
 <hr/>
+-->
 </#macro>
 </#escape>
