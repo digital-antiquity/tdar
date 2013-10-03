@@ -202,11 +202,13 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public final void announceTestOver() {
 
         int errorCount = 0;
+        List<String> errors = new ArrayList<>();
         if (!isIgnoreActionErrors()) {
             for (ActionSupport controller : getControllers()) {
                 if (controller != null && !controller.getActionErrors().isEmpty()) {
                     logger.error("action errors {}", controller.getActionErrors());
                     errorCount += controller.getActionErrors().size();
+                    errors.addAll(controller.getActionErrors());
                 }
             }
         }
@@ -214,7 +216,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
 
         if (errorCount > 0) {
-            Assert.fail(String.format("There were %d action errors", errorCount));
+            Assert.fail(String.format("There were %d action errors: \n {} ", errorCount,StringUtils.join(errors.toArray(new String[0]))));
         }
     }
 

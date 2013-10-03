@@ -136,11 +136,14 @@ public class OwlApiHierarchyParser implements OntologyParser {
         //FIXME: the OWL API does not appear to support IRIs that start with numbers... 
         // https://github.com/owlcs/owlapi/wiki/Documentation
         // this is a workaround
-//        if(iri.toString().contains("www.tdar.org/ontologies/")) {
-//            node.setIri(StringUtils.substring(uri_string, uri_string.indexOf("#")+1));
-//        }
-        // FIXME: skipping synonym relationships until we have an infrastructure
-        // to suport them
+
+        // this is a backup for parsing older ontologies that have degenerate IRIs eg. those with  () in them
+        if (StringUtils.isBlank(node.getIri()) && StringUtils.indexOf(uri_string, "#")> 0){
+//            logger.info(iri);
+//            logger.info(owlClass);
+          node.setIri(StringUtils.substring(uri_string, uri_string.indexOf("#")+1));
+        logger.info(uri_string);
+        }
         String displayName = extractNodeLabel(owlClass);
         if (allSynonymLabels.contains(displayName))
             return index;
