@@ -48,28 +48,6 @@
 	</organization>
 	<repositories>
 		<repository>
-			<id>build.tdar.org.snapshot</id>
-			<name>tDAR Maven2 snapshots repository</name>
-			<url>http://build.tdar.org/archiva/repository/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>build.tdar.org</id>
-			<name>tDAR Maven2 repository</name>
-			<url>http://build.tdar.org/archiva/repository/internal</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
 			<id>maven.lib.asu.edu</id>
 			<name>ASU Libraries Maven2 repository</name>
 			<url>http://maven.lib.asu.edu/maven</url>
@@ -134,8 +112,11 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>
-		<!-- <repository> <id>maven2-repository.dev.java.net</id> <name>Java.net 
-			repository</name> <url>http://download.java.net/maven/2</url> </repository> -->
+		<!-- <repository> 
+		    <id>maven2-repository.dev.java.net</id>
+		    <name>Java.net repository</name>
+		    <url>http://download.java.net/maven/2</url>
+		</repository> -->
 		<repository>
 			<id>osgeo</id>
 			<name>Open Source Geospatial Foundation Repository</name>
@@ -145,20 +126,6 @@
 		<repository>
 			<id>Laughing Panda</id>
 			<url>http://maven.laughingpanda.org/maven2</url>
-		</repository>
-		<!-- The following means that artifacts produced by this pom will not install into other repositories as these artifacts wont be found.
-		     But its needed as we have some artifacts that currently aren't in any maven repository (they are bad maven citizens) -->
-		<!-- To install into this repository issue a command along the lines of:
-		     mvn install:install-file -DlocalRepositoryPath=repo -DcreateChecksum=true -Dpackaging=jar -Dfile=[the-jar] -DgroupId=[...] -DartifactId=[...] -Dversion=[...] -->
-		<!-- Following is an example (should all be on one line when executed otherwise...) 
-			mvn install:install-file -DlocalRepositoryPath=repo -DcreateChecksum=true 
-			-Dpackaging=jar -Dfile=~/Java/ands-pid-client/ands-pid-client-1.0.30.jar 
-			-Djavadoc=~/Java/ands-pid-client/ands-pid-client-1.0.30-javadoc.jar 
-			-Dsources=~/Java/ands-pid-client/ands-pid-client-1.0.30-sources.jar 
-			-DgroupId=net.sourceforge.andspidclient -DartifactId=ands-pid-client -Dversion=1.0.30 -->
-		<repository>
-			<id>repo</id>
-			<url>file://${project.basedir}/repo</url>
 		</repository>
 	</repositories>
 	<modelVersion>4.0.0</modelVersion>
