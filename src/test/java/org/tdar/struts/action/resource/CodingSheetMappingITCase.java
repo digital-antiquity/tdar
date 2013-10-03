@@ -627,6 +627,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             if (iri != null) {
                 OntologyNode nodeByIri = ontology.getNodeByIri(iri);
                 rule.setOntologyNode(nodeByIri);
+                logger.info(iri);
                 iriMap.put(iri, nodeByIri.getId());
             }
             logger.info("coding rule: {} ", rule);
@@ -637,6 +638,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         genericService.synchronize();
         genericService.refresh(ontology);
         Set<OntologyNode> nodes = new HashSet<>(ontology.getOntologyNodes());
+        logger.info("what's the difference: {}", CollectionUtils.disjunction(nodes, ontology.getOntologyNodes()));
         assertEquals(nodes.size(), ontology.getOntologyNodes().size());
         for (String iri : iriMap.keySet()) {
             assertEquals(iriMap.get(iri), ontology.getNodeByIri(iri).getId());

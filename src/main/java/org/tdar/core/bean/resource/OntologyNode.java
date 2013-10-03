@@ -134,7 +134,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     public String toString() {
-        return String.format("label: %s url:%s id:%s", uri, iri, getId());
+        return String.format("label: %s url:%s id:%s", getDisplayName(), iri, getId());
     }
 
     @Override
