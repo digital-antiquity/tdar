@@ -105,8 +105,7 @@
     </tbody>
 </table>
 </#if>
-<#-- FIXME: should we show this section for legacy records,  or scrub this information from legacy records? -->
-<#--
+<#if resource.sensoryDataScans?has_content >
 
 <h3>Registration Information</h3>
 <table>
@@ -137,8 +136,8 @@
 <@fieldval          _val=resource.meshProcessingNotes!""             _show=resource.meshProcessingNotes??                    _label="Additional Processing Notes"   />
 <@fieldvalbool      _val=resource.meshHolesFilled                 _show=resource.meshHolesFilled??                        _label="Holes Filled"  />
 <@fieldvalbool      _val=resource.meshSmoothing                   _show=resource.meshSmoothing??                          _label="Smoothing"  />
-<@fieldvalbool      _val=resource.meshColorEditions               _show=resource.meshColorEditions??                      _label="Color Editions"  /> 
-<@fieldvalbool      _val=resource.meshHealingDespiking            _show=resource.meshHealingDespiking??                   _label="Healing/Despiking"  /> 
+<@fieldvalbool      _val=resource.meshColorEditions               _show=resource.meshColorEditions??                      _label="Color Editions"  />
+<@fieldvalbool      _val=resource.meshHealingDespiking            _show=resource.meshHealingDespiking??                   _label="Healing/Despiking"  />
 <@fieldvalbool      _val=resource.meshRgbIncluded                 _show=resource.meshRgbIncluded??                        _label="RGB Color Included"  />
 <@fieldvalbool      _val=resource.meshdataReduction               _show=resource.meshdataReduction??                      _label="Data Reduction"  />
 <@fieldval          _val=resource.meshAdjustmentMatrix!""            _show=resource.meshAdjustmentMatrix??                   _label="Adjustment Matrix"  />
@@ -152,6 +151,6 @@
 <@fieldvalbool      _val=resource.rgbPreservedFromOriginal            _show=resource.rgbPreservedFromOriginal??            _label="RGB Color" />
 </table>
 <hr/>
--->
+</#if>
 </#macro>
 </#escape>
