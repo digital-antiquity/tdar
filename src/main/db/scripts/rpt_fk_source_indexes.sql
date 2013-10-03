@@ -84,13 +84,18 @@ create temporary table tmp_rpt as
 --2nd report:  list all unique constraints and emit sample annotation code (note that this breaks down for tables that
 -- have multiple unique constraints,  but if you're familiar with the syntax you should be able to copy the relevant
 -- portions into single @Table annotation.
-create table tmp_rpt2 as
+create temporary table tmp_rpt2 as
   select
     tc.constraint_type,
     tc.constraint_name,
     tc.table_name,
     string_agg('"' || kcu.column_name || '"', ', ') cols,
-    format('@Table(name = "%s",  uniqueConstraints = { @UniqueConstraint(name = "%s", columnNames = {%s})})',tc.table_name, tc.constraint_name, string_agg('"' || kcu.column_name || '"', ', '))
+    case
+      when count(kcu.column_name) > 1
+        then format('@Table(name = "%s",  uniqueConstraints = { @UniqueConstraint(name = "%s", columnNames = {%s})})',tc.table_name, tc.constraint_name, string_agg('"' || kcu.column_name || '"', ', '))
+      else
+        format('@Column(name = "%s", nullable = false, unique = true)', string_agg(kcu.column_name, ','))
+    end format
   from
       information_schema.table_constraints tc
       join information_schema.key_column_usage kcu on (tc.constraint_name = kcu.constraint_name)
