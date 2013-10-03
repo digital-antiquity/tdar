@@ -1,6 +1,5 @@
 package org.tdar.core.parser;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,17 +13,11 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -53,8 +46,6 @@ public class OwlApiHierarchyParser implements OntologyParser {
     private final HashMap<OWLClass, Set<OWLClass>> owlHierarchyMap = new HashMap<OWLClass, Set<OWLClass>>();
     private final HashMap<OWLClass, OntologyNode> classNodeMap = new HashMap<OWLClass, OntologyNode>();
     private Set<String> allSynonymLabels = new HashSet<String>();
-    OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-    OWLDataFactory df = null;
     private Ontology ontology;
 
     public OwlApiHierarchyParser(Ontology ontology, OWLOntology owlOntology) {
@@ -204,7 +195,6 @@ public class OwlApiHierarchyParser implements OntologyParser {
         String txt = "";
 
         for (OWLAnnotation ann : owlClass.getAnnotations(owlOntology)) {
-//            if (StringUtils.equalsIgnoreCase("rdfs:label", ann.getProperty().toString())) {
             if (ann.getProperty().isLabel()) {
                 String annTxt = ann.getValue().toString();
                 annTxt = annTxt.replaceAll("^\"", "");
