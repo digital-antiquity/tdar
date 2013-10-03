@@ -318,20 +318,11 @@
 		</dependency>
 		<!-- crowd integration -->
 		<dependency>
-			<groupId>com.atlassian.crowd</groupId>
-			<artifactId>crowd-integration-client</artifactId>
-			<version>2.0.3</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.ws.commons</groupId>
-					<artifactId>XmlSchema</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>activation</artifactId>
-					<groupId>javax.activation</groupId>
-				</exclusion>
-			</exclusions>
+		    <groupId>com.atlassian.crowd</groupId>
+		    <artifactId>crowd-integration-client-rest</artifactId>
+			<version>2.6.5</version>
 		</dependency>
+<!-- 
 		<dependency>
 			<groupId>com.atlassian.crowd</groupId>
 			<artifactId>crowd-api</artifactId>
@@ -343,7 +334,8 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+
+ -->		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
 			<version>2.0.1</version>

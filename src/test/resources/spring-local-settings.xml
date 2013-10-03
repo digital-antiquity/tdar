@@ -19,8 +19,9 @@ vim:sts=2:sw=2:
 	<!-- Typically to activated them they must be injected with the external providers as defined below. -->
 	<!-- If we want the MockAuthentication Service activated set the property "enableMockAuth" via JVM command line for the test like so: -DenableMockAuth=true -->	
 	
-	<!-- If we want an actual Atlassian Crowd provider to be used during tests we uncomment this line -->
+	<!-- If we want an actual Atlassian Crowd provider to be used during tests we uncomment this line 
 	<import resource='spring-crowd.xml' />
+	-->
 	
 	<!-- If we want an actual LDAP provider to be used during tests we uncomment this line -->
     <!-- <import resource='spring-ldap.xml' /> -->
