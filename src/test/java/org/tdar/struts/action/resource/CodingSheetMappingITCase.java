@@ -627,7 +627,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             if (iri != null) {
                 OntologyNode nodeByIri = ontology.getNodeByIri(iri);
                 rule.setOntologyNode(nodeByIri);
-                logger.info(iri);
+//                logger.info(iri);
                 iriMap.put(iri, nodeByIri.getId());
             }
             logger.info("coding rule: {} ", rule);

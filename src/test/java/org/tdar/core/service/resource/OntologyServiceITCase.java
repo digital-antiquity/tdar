@@ -6,8 +6,7 @@
  */
 package org.tdar.core.service.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -80,6 +79,7 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         logger.info("{}", ontology);
         OwlApiHierarchyParser parser = new OwlApiHierarchyParser(ontology);
         parser.generate();
+        fail("I need a test");
     }
 
     /*

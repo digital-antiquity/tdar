@@ -18,6 +18,7 @@ import org.tdar.core.bean.entity.Person;
  * 
  * @author Martin Paulo
  */
+@Ignore
 public class SpringLdapDaoTest {
 
     Mockery context;
