@@ -28,6 +28,7 @@
     //sort a series by date,  assuming array in the format [[date1, num1], [date2, num2], ...]
     var _datesort = function(a,b) {return a[0] - b[0]};
 
+
     TDAR.charts = {
         adminUsageStats: function(options) {
             var opts = $.extend({}, _defaults, options);
@@ -38,22 +39,30 @@
             };
             $.extend(opts, chartOpts);
             var seriesList = [];
+            var seriesLabels = [];
             var getxval = function(val) {
                 return new Date(val["date"]);
             };
 
+            //first series is the view count of the resource view page
             var viewseries = _toSeries(opts.rawData["view"], getxval, "count");
             viewseries.sort(_datesort);
+            seriesLabels.push({label: "Page Views"});
+
             seriesList.push(viewseries);
             for (var key in opts.rawData.download) {
-                var dldata = opts.rawData.download[key];
-                var dlseries = _toSeries(dldata, getxval, "count");
+                var dldata = opts.rawData.download[key],
+                    filename = key,
+                    dlseries = _toSeries(dldata, getxval, "count");
+
                 dlseries.sort(_datesort);
                 seriesList.push(dlseries);
-                //console.log("adding dl stats for: %s", key);
-                //console.dir(seriesList);
+                seriesLabels.push({label: TDAR.ellipsify(filename, 20)});
             }
+
             var plot1 = $.jqplot(opts.id, seriesList, {
+                //FIXME: TDAR.colors should be driven by tdar theme file.
+                seriesColors: TDAR.colors || ["#EBD790","#4B514D","#2C4D56","#C3AA72","#DC7612","#BD3200","#A09D5B","#F6D86B","#660000","#909D5B"],
                 title: opts.title,
                 //stackSeries: true,  //jtd: i think stacked looks better, especially when several files involved
                 axes: {
@@ -61,7 +70,12 @@
                         renderer: $.jqplot.DateAxisRenderer
                     }
                 },
-
+                legend: {
+                    show: true,
+                    location: 'e',
+                    placement: 'outsideGrid'
+                },
+                series: seriesLabels,
                 animate: !$.jqplot.use_excanvas,
                 seriesDefaults:{
                     renderer:$.jqplot.BarRenderer,
@@ -76,7 +90,10 @@
 //                        shadowDepth: 2,
                         // Set varyBarColor to tru to use the custom colors on the bars.
                         fillToZero: true,
-                        varyBarColor: true
+                        varyBarColor: false,
+                        animation: {
+                            speed: 1500
+                        }
                     }
                 },
                 grid: {
@@ -90,6 +107,10 @@
               }
                 
             });
+        },
+
+        generateSeriesColors: function(size, hexBackground) {
+
         }
     }
 
