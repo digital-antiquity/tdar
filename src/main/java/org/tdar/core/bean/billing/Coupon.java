@@ -24,7 +24,7 @@ public class Coupon extends Base {
     @Column(name = "number_of_files")
     private Long numberOfFiles = 0L;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String code;
 
     @Column(name = "date_created")
