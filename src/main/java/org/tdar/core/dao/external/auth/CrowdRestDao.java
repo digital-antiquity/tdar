@@ -1,19 +1,17 @@
 package org.tdar.core.dao.external.auth;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
@@ -32,7 +30,6 @@ import com.atlassian.crowd.exception.OperationFailedException;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticator;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticatorImpl;
 import com.atlassian.crowd.integration.http.util.CrowdHttpTokenHelperImpl;
-import com.atlassian.crowd.integration.http.util.CrowdHttpValidationFactorExtractor;
 import com.atlassian.crowd.integration.http.util.CrowdHttpValidationFactorExtractorImpl;
 import com.atlassian.crowd.integration.rest.entity.PasswordEntity;
 import com.atlassian.crowd.integration.rest.entity.UserEntity;
@@ -60,17 +57,16 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     private CrowdClient securityServerClient;
     private CrowdHttpAuthenticator httpAuthenticator; 
 
+
+    private Properties crowdProperties;
     private String passwordResetURL;
 
-//    crowdHttpAuthenticator= new CrowdHttpAuthenticatorImpl(crowdClient, clientProperties, CrowdHttpTokenHelperImpl.getInstance());
-//    final ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(properties);
-//    securityServerClient = com.atlassian.crowd.integration.rest.service.factory.RestCrowdClientFactory.newInstance(clientProperties);
-    public CrowdRestDao() {
-        logger.info("initializing crowd rest dao");
+    @Autowired
+    public CrowdRestDao(@Qualifier("crowdProperties") Properties crowdProperties) {
+        logger.info("initializing crowd rest dao: {}", crowdProperties);
+        this.crowdProperties = crowdProperties;
         try {
-            Properties properties = new Properties();
-            properties.load(new FileInputStream(new File("src/test/resources/crowd.properties")));
-            ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(properties);
+            ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(crowdProperties);
             RestCrowdClientFactory factory = new RestCrowdClientFactory();
             securityServerClient = factory.newInstance(clientProperties);
             httpAuthenticator = new CrowdHttpAuthenticatorImpl(securityServerClient, clientProperties, CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
@@ -329,6 +325,10 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     
     @Override
     public boolean isEnabled() {
+        if (crowdProperties == null || crowdProperties.getProperty("crowd.server.url") == null) {
+            return false;
+        }
         return true;
     }
+
 }
