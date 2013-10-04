@@ -351,7 +351,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     public void validate() {
         logger.trace("calling validate");
 
-        if (person != null && person.getUsername() != null) {
+        if (person.getUsername() != null) {
             String normalizedUsername = getAuthenticationAndAuthorizationService().normalizeUsername(person.getUsername());
             if (!normalizedUsername.equals(person.getUsername())) {
                 logger.info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
@@ -367,7 +367,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 addActionError(EMAIL_INVALID);
                 return;
             }
-
         }
 
         if (StringUtils.length(person.getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
