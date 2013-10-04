@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -63,6 +62,8 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
 
     @Autowired
     public CrowdRestDao(@Qualifier("crowdProperties") Properties crowdProperties) {
+        // leveraging factory method over spring autowiring
+        // https://developer.atlassian.com/display/CROWDDEV/Java+Integration+Libraries
         logger.info("initializing crowd rest dao: {}", crowdProperties);
         this.crowdProperties = crowdProperties;
         try {
