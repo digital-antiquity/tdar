@@ -6,17 +6,11 @@
  */
 package org.tdar.core.bean.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Index;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -27,6 +21,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  *         This is the representation of a user and a permission combined and an association with a resource collection.
  */
 @Table(name = "authorized_user")
+@org.hibernate.annotations.Table( appliesTo="authorized_user", indexes = {
+        @Index(name="authorized_user_cid", columnNames={"id", "resource_collection_id"}),
+        @Index(name="authorized_user_cid2", columnNames={"user_id", "resource_collection_id"}),
+        @Index(name="authorized_user_perm", columnNames={"resource_collection_id", "general_permission_int", "user_id"})
+})
 @Entity
 public class AuthorizedUser extends Base implements Persistable {
 

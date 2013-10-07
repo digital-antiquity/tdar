@@ -48,13 +48,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.search.Explanation;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.FetchProfile.FetchOverride;
-import org.hibernate.annotations.FetchProfiles;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
@@ -130,6 +125,17 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  */
 @Entity
 @Table(name = "resource")
+@org.hibernate.annotations.Table( appliesTo = "resource", indexes = {
+        @Index(name="resource_active", columnNames={"id", "submitter_id", "status"}),
+        @Index(name="resource_active_draft", columnNames={"submitter_id", "status", "id"}),
+        @Index(name="resource_status", columnNames={"id", "status"}),
+        @Index(name="resource_status2", columnNames={"status", "id"}),
+
+        //can't use @IndexColumn on entity fields - they have to go here
+        @Index(name = "res_submitterid", columnNames = {"submitter_id"}),
+        @Index(name = "res_updaterid", columnNames = {"updater_id"})
+
+})
 @Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -212,6 +218,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
     @NotNull
     @Column(length = 512)
+
+
+    //FIXME: I don't think this index helps us.  Can we get rid of it?
+    @IndexColumn(name = "resource_title_index")
     @Length(max = 512)
     private String title;
 
@@ -233,6 +243,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_type", length = 255)
+    @IndexColumn(name = "resource_type_index")
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private ResourceType resourceType;

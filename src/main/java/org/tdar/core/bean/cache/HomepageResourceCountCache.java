@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.hibernate.annotations.IndexColumn;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.ResourceType;
 

@@ -11,6 +11,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.Field;
@@ -40,6 +41,7 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 
 @Entity
 @Table(name = "latitude_longitude")
+@org.hibernate.annotations.Table( appliesTo="latitude_longitude", indexes = { @Index(name="resource_latlong", columnNames={"resource_id", "id"})})
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 // (name="latitudeLongitudeBox")

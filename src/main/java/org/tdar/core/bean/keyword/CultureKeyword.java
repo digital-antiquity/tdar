@@ -3,17 +3,12 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -27,11 +22,14 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @Table(name = "culture_keyword")
+@org.hibernate.annotations.Table( appliesTo="culture_keyword", indexes = {
+        @Index(name="cltkwd_appr", columnNames={"approved", "id"})
+})
 @Indexed(index = "Keyword")
 public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = -7196238088495993840L;
-    
+
     public static final String INHERITANCE_TOGGLE = "inheriting_cultural_information";
     private boolean approved;
 
