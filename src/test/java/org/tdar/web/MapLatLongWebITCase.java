@@ -17,6 +17,7 @@ import com.gargoylesoftware.htmlunit.html.DomNode;
 
 public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
 
+    private static final String LAT_LONG_SECURITY_TEST = "latLongSecurityTest";
     private static final String RESOURCE_WITH_NORMAL = "resource with normal";
     private static final String RESOURCE_WITH_DRAFT = "resource with draft";
     private static final String RESOURCE_WITH_OBFUSCATED_LAT_LONG = "resource with obfuscated latLong";
@@ -63,6 +64,9 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         assertTextPresent(RESOURCE_WITH_NORMAL_LAT_LONG_AND_CONFIDENTIAL_FILE);
         assertNodeDoesNotLatLongAttributes(confidentialFile);
 
+        // should do the same thing with urls:
+        gotoPage("/search/results?query="+LAT_LONG_SECURITY_TEST+"&orientation=MAP");
+        
         logout();
         gotoPage(url);
         // anonymous user
@@ -126,6 +130,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
+        setInput("uncontrolledSiteTypeKeywords[0]", LAT_LONG_SECURITY_TEST);
         if (latLong != null) {
             setInput("latitudeLongitudeBoxes[0].maximumLatitude", latLong.getMaximumLatitude());
             setInput("latitudeLongitudeBoxes[0].maximumLongitude", latLong.getMaximumLongitude());
