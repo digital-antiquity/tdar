@@ -11,6 +11,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
@@ -123,8 +124,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public boolean isActuallyObfuscated() {
-        return (getMinObfuscatedLongitude() != getMinimumLongitude() || getMaxObfuscatedLongitude() != getMaximumLongitude()
-                || getMinObfuscatedLatitude() != getMinimumLatitude() || getMaxObfuscatedLatitude() != getMaximumLatitude());
+        if (actualDidSomething == null) {
+            throw new TdarRuntimeException("must call obfuscate before testing obfuscation");
+        }
+        return actualDidSomething;
     }
 
     /* fixme ** test */
@@ -402,12 +405,32 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         this.obfuscated = obfuscated;
     }
 
+    private transient Boolean actualDidSomething;
+
     @Override
     public List<Obfuscatable> obfuscate() {
-        setMaximumLatitude(getMaxObfuscatedLatitude());
-        setMinimumLatitude(getMinObfuscatedLatitude());
-        setMaximumLongitude(getMaxObfuscatedLongitude());
-        setMinimumLongitude(getMinObfuscatedLongitude());
+        actualDidSomething = false;
+        Double val = getMaxObfuscatedLatitude();
+        if (ObjectUtils.notEqual(val, getMaximumLatitude())) {
+            setMaximumLatitude(val);
+            actualDidSomething = true;
+        }
+        val = getMinObfuscatedLatitude();
+        if (ObjectUtils.notEqual(val, getMinimumLatitude())) {
+            setMinimumLatitude(val);
+            actualDidSomething = true;
+        }
+
+        val = getMaxObfuscatedLongitude();
+        if (ObjectUtils.notEqual(val, getMaximumLongitude())) {
+            setMaximumLongitude(val);
+            actualDidSomething = true;
+        }
+        val = getMinObfuscatedLongitude();
+        if (ObjectUtils.notEqual(val, getMinimumLongitude())) {
+            setMinimumLongitude(val);
+            actualDidSomething = true;
+        }
         setObfuscated(true);
         return null;
     }
