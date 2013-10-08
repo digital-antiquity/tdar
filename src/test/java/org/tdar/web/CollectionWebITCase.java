@@ -26,14 +26,6 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Autowired
     EntityService entityService;
 
-    // formats for form element names
-    public static final String FMT_AUTHUSERS_ID = "authorizedUsers[%s].user.id";
-    public static final String FMT_AUTHUSERS_LASTNAME = "authorizedUsers[%s].user.lastName";
-    public static final String FMT_AUTHUSERS_FIRSTNAME = "authorizedUsers[%s].user.firstName";
-    public static final String FMT_AUTHUSERS_EMAIL = "authorizedUsers[%s].user.email";
-    public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
-    public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
-
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testCreateThenEditCollection() {
@@ -59,12 +51,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         for (Person user : registeredUsers) {
             if (StringUtils.containsIgnoreCase(user.getProperName(), "user"))
                 continue;
-            createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), user.getId());
-            createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), user.getLastName());
-            createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());
-            createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), user.getEmail());
-            createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), user.getInstitutionName());
-            createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), GeneralPermissions.VIEW_ALL.toString());
+            createUserWithPermissions(i, user,GeneralPermissions.VIEW_ALL);
             i++;
         }
 
