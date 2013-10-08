@@ -38,8 +38,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testCreateThenEditCollection() {
         assertNotNull(genericService);
-        String name = "my fancy collection";
-        String desc = "description goes here";
+        String name = "my fancy collection: " + System.currentTimeMillis();
+        String desc = "description goes here: "+ System.currentTimeMillis();
         List<? extends Resource> someResources = getSomeResources();
         createTestCollection(name, desc, someResources);
         assertTextPresent(name);
