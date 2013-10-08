@@ -131,7 +131,6 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_ONTOLOGYNODE_ALL_CHILDREN,
-            //FIXME: I don't think this query is optimize (though I don't know the algorithm very well).   I think we want to leverage the sorted index on the 'index' field.
             query = "from OntologyNode o " +
                     "where o.ontology.id=:ontologyId and o.intervalStart > :intervalStart and o.intervalEnd < :intervalEnd"),
     @org.hibernate.annotations.NamedQuery(

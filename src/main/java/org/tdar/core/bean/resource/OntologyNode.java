@@ -51,14 +51,14 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @ManyToOne(optional = false)
     private Ontology ontology;
 
-    //FIXME: jtd: i think this index may be unnecessary - see fixme for QUERY_ONTOLOGYNODE_ALL_CHILDREN
+    //FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_start")
     @IndexColumn(name = "ontology_node_interval_start_index")
     private Integer intervalStart;
 
-    //FIXME: jtd: i think this index may be unnecessary - see fixme for QUERY_ONTOLOGYNODE_ALL_CHILDREN
+    //FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_end")
-    @IndexColumn(name = "unique_other_keyword")
+    @IndexColumn(name = "ontology_node_interval_end_index")
     private Integer intervalEnd;
 
     @Column(name = "display_name")
