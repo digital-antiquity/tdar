@@ -126,6 +126,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         setInput("document.title", resourceName);
         setInput("document.description",  "hi mom");
         setInput("document.date", "1999");
+        setInput("document.documentType", "OTHER");
         setInput("projectId", TestConstants.PARENT_PROJECT_ID.toString());
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");

@@ -71,6 +71,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace("page contents: {}", getPageText());
         // assert all the added names are on the view page
         for (Person user : registeredUsers) {
+            if (StringUtils.containsIgnoreCase(user.getProperName(), "user"))
+                continue;
             assertTextPresent(user.getProperName()); // let's assume the view page uses tostring to format the user names.
         }
 
