@@ -57,6 +57,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         clickLinkWithText("edit");
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {
+            if (StringUtils.containsIgnoreCase(user.getProperName(), "user"))
+                continue;
             createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), user.getId());
             createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), user.getLastName());
             createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());
