@@ -173,6 +173,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         List<Person> nonUsers = getSomePeople();
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person person : nonUsers) {
+            if (StringUtils.containsIgnoreCase(person.getProperName(), "user"))
+                continue;
             createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), person.getId());
             createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), person.getLastName());
             createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), person.getFirstName());
@@ -198,6 +200,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTextPresent("my fancy collection");
         for (Person person : nonUsers) {
+            if (StringUtils.containsIgnoreCase(person.getProperName(), "user"))
+                continue;
             assertTextNotPresent(person.getLastName());
         }
 

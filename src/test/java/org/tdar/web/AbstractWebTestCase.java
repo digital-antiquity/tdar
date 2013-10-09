@@ -1283,6 +1283,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void createUserWithPermissions(int i, Person user, GeneralPermissions viewAll) {
+        logger.info("setiting user [{}] to {} {}", i, user, viewAll);
         createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), user.getId());
         createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), user.getLastName());
         createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());

@@ -150,6 +150,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return IGNORE_PROPERTIES_FOR_UNIQUENESS;
     }
 
+    @Override
     public List<Obfuscatable> obfuscate() {
         return null;
     }

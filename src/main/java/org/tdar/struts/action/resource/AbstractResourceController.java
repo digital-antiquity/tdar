@@ -51,7 +51,6 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.WriteableSession;
@@ -150,9 +149,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceAnnotation> resourceAnnotations;
     private Long activeResourceCount;
 
-    @Autowired
-    private ObfuscationService obfuscationService;
-
     private List<ResourceCollection> viewableResourceCollections;
 
     private List<ResourceRevisionLog> resourceLogEntries;
@@ -166,9 +162,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         authorshipProxies = new ArrayList<ResourceCreatorProxy>();
         creditProxies = new ArrayList<ResourceCreatorProxy>();
 
+        // this may be duplicative... check
         for (ResourceCreator rc : getPersistable().getResourceCreators()) {
             if (rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()) {
-                obfuscationService.obfuscate(rc.getCreator());
+                getObfuscationService().obfuscate(rc.getCreator());
             }
             ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
             if (ResourceCreatorRole.getAuthorshipRoles().contains(rc.getRole())) {

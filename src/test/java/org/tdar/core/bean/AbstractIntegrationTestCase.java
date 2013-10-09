@@ -520,7 +520,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected Person getUser(Long id) {
         Person p = entityService.find(id);
-        if (p == null) {
+        if (Persistable.Base.isNullOrTransient(p)) {
             fail("failed to load user:" + id);
         }
         return p;

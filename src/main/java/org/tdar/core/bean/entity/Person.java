@@ -426,6 +426,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return IGNORE_PROPERTIES_FOR_UNIQUENESS;
     }
 
+    @Override
     public List<Obfuscatable> obfuscate() {
         setObfuscated(true);
         // check if email and phone are actually confidential

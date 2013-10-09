@@ -124,10 +124,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public boolean isActuallyObfuscated() {
-        if (actualDidSomething == null) {
+        if (obfuscationModifiedLatLong == null) {
             throw new TdarRuntimeException("must call obfuscate before testing obfuscation");
         }
-        return actualDidSomething;
+        return obfuscationModifiedLatLong;
     }
 
     /* fixme ** test */
@@ -405,31 +405,31 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         this.obfuscated = obfuscated;
     }
 
-    private transient Boolean actualDidSomething;
+    private transient Boolean obfuscationModifiedLatLong;
 
     @Override
     public List<Obfuscatable> obfuscate() {
-        actualDidSomething = false;
+        obfuscationModifiedLatLong = false;
         Double val = getMaxObfuscatedLatitude();
         if (ObjectUtils.notEqual(val, getMaximumLatitude())) {
             setMaximumLatitude(val);
-            actualDidSomething = true;
+            obfuscationModifiedLatLong = true;
         }
         val = getMinObfuscatedLatitude();
         if (ObjectUtils.notEqual(val, getMinimumLatitude())) {
             setMinimumLatitude(val);
-            actualDidSomething = true;
+            obfuscationModifiedLatLong = true;
         }
 
         val = getMaxObfuscatedLongitude();
         if (ObjectUtils.notEqual(val, getMaximumLongitude())) {
             setMaximumLongitude(val);
-            actualDidSomething = true;
+            obfuscationModifiedLatLong = true;
         }
         val = getMinObfuscatedLongitude();
         if (ObjectUtils.notEqual(val, getMinimumLongitude())) {
             setMinimumLongitude(val);
-            actualDidSomething = true;
+            obfuscationModifiedLatLong = true;
         }
         setObfuscated(true);
         return null;

@@ -897,8 +897,10 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @JSONTransient
+    @Override
     public List<Obfuscatable> obfuscate() {
         // don't claim to inherit data from Projects which are inactive
+        List<Obfuscatable> toObfuscate = super.obfuscate();
         if (!isProjectVisible()) {
             setProject(Project.NULL);
             // setting the project to null should be enough...
@@ -911,8 +913,11 @@ public abstract class InformationResource extends Resource {
             setInheritingTemporalInformation(false);
             setInheritingIdentifierInformation(false);
             setInheritingNoteInformation(false);
+        } else {
+            toObfuscate.add(getProject());
         }
-        List<Obfuscatable> toObfuscate = super.obfuscate();
+        toObfuscate.add(resourceProviderInstitution);
+        toObfuscate.add(publisher);
         return toObfuscate;
     }
 
