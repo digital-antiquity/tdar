@@ -7,12 +7,13 @@ public interface Obfuscatable {
     /**
      * check whether the object is obfuscated or not
      */
-    public boolean isObfuscated();
+    boolean isObfuscated();
 
+    
     /**
      * obfuscates the current object and returns a list of potential objects for further obfuscation
      */
-    public List<Obfuscatable> obfuscate();
+    List<Obfuscatable> obfuscate();
 
     /**
      * mark the object as obfuscated, ideally should be transient.
@@ -20,5 +21,11 @@ public interface Obfuscatable {
      * the implementations of the obfuscate method. Given obfuscate() is a one way street, should this method be removed?
      */
     @Deprecated
-    public void setObfuscated(boolean obfuscated);
+    void setObfuscated(boolean obfuscated);
+
+
+    Boolean getObfuscatedObjectDifferent();
+
+    void setObfuscatedObjectDifferent( Boolean value);
+
 }

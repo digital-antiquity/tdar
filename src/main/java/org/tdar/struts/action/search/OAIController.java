@@ -395,7 +395,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // from the Hibernate session, which will prevent loading lazily-initialized properties.
         // xmlService.convertToXML((Persistable) object);
         if (object instanceof Obfuscatable) {
-            obfuscationService.obfuscate((Obfuscatable) object);
+            obfuscationService.obfuscate((Obfuscatable) object,getAuthenticatedUser());
         }
 
         // if the desired metadata format is "tdar", then simply marshal the Person

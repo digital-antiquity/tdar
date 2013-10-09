@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.geosearch.GeoSearchDao.SpatialTables;
 import org.tdar.struts.data.SvgMapWrapper;
 
@@ -28,10 +29,9 @@ import org.tdar.struts.data.SvgMapWrapper;
 @Service
 public class GeoSearchService {
 
-    private final Logger logger = Logger.getLogger(getClass());
-
     @Autowired
     GeoSearchDao geoSearchDao;
+    private final Logger logger = Logger.getLogger(getClass());
 
     // continent
     private static final String COL_CONTINENT_NAME = "continent";

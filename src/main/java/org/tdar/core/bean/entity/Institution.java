@@ -190,4 +190,5 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     public Date getDateUpdated() {
         return super.getDateUpdated();
     }
+
 }

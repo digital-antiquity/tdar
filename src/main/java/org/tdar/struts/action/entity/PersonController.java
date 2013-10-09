@@ -175,7 +175,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     public Person getPerson() {
         Person p = getPersistable();
         if (!isEditable()) {
-            obfuscationService.obfuscate(p);
+            obfuscationService.obfuscate(p, getAuthenticatedUser());
         }
         return p;
     }

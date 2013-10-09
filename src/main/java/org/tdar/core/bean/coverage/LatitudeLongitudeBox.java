@@ -49,11 +49,6 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 // (name="latitudeLongitudeBox")
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
-    private static final String PSQL_POLYGON = "POLYGON((%1$s %2$s,%3$s %2$s,%3$s %4$s,%1$s %4$s,%1$s %2$s))";
-
-    private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s,  180 %3$s,  180 %2$s,%1$s %2$s)), ((-180 %3$s, %4$s %3$s,%4$s %2$s,-180 %2$s,-180 %3$s)))";
-    // private static final String PSQL_MULTIPOLYGON_DATELINE =
-    // "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s, -180 %3$s, -180 %2$s,%1$s %2$s)), (( 180 %3$s, %4$s %3$s,%4$s %2$s, 180 %2$s, 180 %3$s)))";
     private static final long serialVersionUID = 2605563277326422859L;
 
     public static final double MAX_LATITUDE = 90d;
@@ -136,22 +131,23 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
      */
-    public boolean isActuallyObfuscated() {
-        if (obfuscationModifiedLatLong == null) {
+    public boolean isObfuscatedObjectDifferent() {
+        if (obfuscatedObjectDifferent == null) {
             logger.debug("should call obfuscate before testing obfuscation");
+            return false;
         }
-        return obfuscationModifiedLatLong;
+        return obfuscatedObjectDifferent;
     }
 
     public Double getCenterLatitudeIfNotObfuscated() {
-        if (!isOkayToShowExactLocation && isActuallyObfuscated()) {
+        if (!isOkayToShowExactLocation && isObfuscatedObjectDifferent()) {
             return null;
         }
         return getCenterLatitude();
     }
 
     public Double getCenterLongitudeIfNotObfuscated() {
-        if (!isOkayToShowExactLocation && isActuallyObfuscated()) {
+        if (!isOkayToShowExactLocation && isObfuscatedObjectDifferent()) {
             return null;
         }
         return getCenterLongitude();
@@ -425,21 +421,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         setMaximumLongitude(otherBox.maximumLongitude);
     }
 
-    public String convertToPolygonBox() {
-        // if we've got something that goes over the dateline, then we need to split
-        // into a multipolygon instead of a standard one. The multipolygon is two polygons
-        // each one being on either side of the dateline
-        if (!isValid()) {
-            throw new TdarRuntimeException("the specified latLong box is not valid");
-        }
-        if (crossesDateline()) {
-            return String.format(PSQL_MULTIPOLYGON_DATELINE, getMinObfuscatedLongitude(), getMinObfuscatedLatitude(),
-                    getMaxObfuscatedLatitude(), getMaxObfuscatedLongitude()).toString();
-        }
-        return String.format(PSQL_POLYGON, getMaxObfuscatedLongitude(), getMaxObfuscatedLatitude(),
-                getMinObfuscatedLongitude(), getMinObfuscatedLatitude()).toString();
-    }
-
     public double getArea() {
         return getAbsoluteLatLength() * getAbsoluteLongLength();
     }
@@ -502,36 +483,40 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         this.obfuscated = obfuscated;
     }
 
-    private transient Boolean obfuscationModifiedLatLong;
+    private transient Boolean obfuscatedObjectDifferent;
+
+    public Boolean getObfuscatedObjectDifferent() {
+        return obfuscatedObjectDifferent;
+    }
+
+    public void setObfuscatedObjectDifferent(Boolean obfuscatedObjectDifferent) {
+        this.obfuscatedObjectDifferent = obfuscatedObjectDifferent;
+    }
 
     @Override
     public List<Obfuscatable> obfuscate() {
         // set directly, as we don't want to reset the obfuscated values
-        this.maximumLatitude = getMaxObfuscatedLatitude();
-        this.minimumLatitude = getMinObfuscatedLatitude();
-        this.maximumLongitude = getMaxObfuscatedLongitude();
-        this.minimumLongitude = getMinObfuscatedLongitude();
-        obfuscationModifiedLatLong = false;
+        obfuscatedObjectDifferent = false;
         Double val = getMaxObfuscatedLatitude();
         if (ObjectUtils.notEqual(val, getMaximumLatitude())) {
             setMaximumLatitude(val);
-            obfuscationModifiedLatLong = true;
+            obfuscatedObjectDifferent = true;
         }
         val = getMinObfuscatedLatitude();
         if (ObjectUtils.notEqual(val, getMinimumLatitude())) {
             setMinimumLatitude(val);
-            obfuscationModifiedLatLong = true;
+            obfuscatedObjectDifferent = true;
         }
 
         val = getMaxObfuscatedLongitude();
         if (ObjectUtils.notEqual(val, getMaximumLongitude())) {
             setMaximumLongitude(val);
-            obfuscationModifiedLatLong = true;
+            obfuscatedObjectDifferent = true;
         }
         val = getMinObfuscatedLongitude();
         if (ObjectUtils.notEqual(val, getMinimumLongitude())) {
             setMinimumLongitude(val);
-            obfuscationModifiedLatLong = true;
+            obfuscatedObjectDifferent = true;
         }
         setObfuscated(true);
         return null;

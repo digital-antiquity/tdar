@@ -54,7 +54,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
             authorizedUserIds.add(user.getId());
         }
 
-        obfuscationService.obfuscate(project);
+        obfuscationService.obfuscate(project,null);
         logger.debug("submitter: {} ", project.getSubmitter());
         // test that the obfuscation is correct
         assertIsObfuscated(project);

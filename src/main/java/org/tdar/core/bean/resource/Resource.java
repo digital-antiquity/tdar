@@ -159,6 +159,8 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Transient
     private transient boolean obfuscated;
+    @Transient
+    private transient Boolean obfuscatedObjectDifferent;
 
     @Transient
     private transient boolean viewable;
@@ -1492,6 +1494,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Override
     public List<Obfuscatable> obfuscate() {
+        setObfuscatedObjectDifferent(false);
         List<Obfuscatable> toObfuscate = new ArrayList<>();
         toObfuscate.addAll(getLatitudeLongitudeBoxes());
         toObfuscate.add(getSubmitter());
@@ -1821,5 +1824,15 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Transient
     public boolean isHasBrowsableImages() {
         return false;
+    }
+
+    @Override
+    public Boolean getObfuscatedObjectDifferent() {
+        return obfuscatedObjectDifferent;
+    }
+
+    @Override
+    public void setObfuscatedObjectDifferent(Boolean value) {
+        this.obfuscatedObjectDifferent = value;
     }
 }

@@ -422,8 +422,8 @@ public class SearchService {
                 p.setExplanation(ex);
             }
             // logger.info("user:{}", user);
-            if (Persistable.Base.isNullOrTransient(user) && p instanceof Obfuscatable) {
-                obfuscationService.obfuscate((Obfuscatable) p);
+            if (p instanceof Obfuscatable) {
+                obfuscationService.obfuscate((Obfuscatable) p, user);
             }
             authenticationAndAuthorizationService.applyTransientViewableFlag(p, user);
 

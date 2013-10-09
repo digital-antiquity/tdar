@@ -83,6 +83,15 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
+    private transient Boolean obfuscatedObjectDifferent;
+
+    public Boolean getObfuscatedObjectDifferent() {
+        return obfuscatedObjectDifferent;
+    }
+
+    public void setObfuscatedObjectDifferent(Boolean obfuscatedObjectDifferent) {
+        this.obfuscatedObjectDifferent = obfuscatedObjectDifferent;
+    }
 
     private static final long serialVersionUID = 2296217124845743224L;
 

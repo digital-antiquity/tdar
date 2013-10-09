@@ -433,11 +433,14 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Override
     public List<Obfuscatable> obfuscate() {
         setObfuscated(true);
+        setObfuscatedObjectDifferent(false);
         // check if email and phone are actually confidential
         if (!getEmailPublic()) {
             setEmail(null);
+            setObfuscatedObjectDifferent(true);
         }
         if (!getPhonePublic()) {
+            setObfuscatedObjectDifferent(true);
             setPhone(null);
         }
         setRegistered(false);
@@ -557,4 +560,5 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     public void setTosVersion(Integer tosVersion) {
         this.tosVersion = tosVersion;
     }
+
 }

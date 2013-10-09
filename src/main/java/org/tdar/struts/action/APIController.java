@@ -82,7 +82,7 @@ public class APIController extends AuthenticationAware.Base {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             Resource resource = getResourceService().find(getId());
             if (!isAdministrator() && !getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), resource)) {
-                obfuscationService.obfuscate(resource);
+                obfuscationService.obfuscate(resource,getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
             String xml = xmlService.convertToXML(resource);

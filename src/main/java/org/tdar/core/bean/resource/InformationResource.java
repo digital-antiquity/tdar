@@ -895,32 +895,6 @@ public abstract class InformationResource extends Resource {
                 inheritingSiteInformation || inheritingSpatialInformation || inheritingTemporalInformation || inheritingIdentifierInformation || inheritingNoteInformation);
     }
 
-    @Transient
-    @JSONTransient
-    @Override
-    public List<Obfuscatable> obfuscate() {
-        // don't claim to inherit data from Projects which are inactive
-        List<Obfuscatable> toObfuscate = super.obfuscate();
-        if (!isProjectVisible()) {
-            setProject(Project.NULL);
-            // setting the project to null should be enough...
-            setInheritingCulturalInformation(false);
-            setInheritingInvestigationInformation(false);
-            setInheritingMaterialInformation(false);
-            setInheritingOtherInformation(false);
-            setInheritingSiteInformation(false);
-            setInheritingSpatialInformation(false);
-            setInheritingTemporalInformation(false);
-            setInheritingIdentifierInformation(false);
-            setInheritingNoteInformation(false);
-        } else {
-            toObfuscate.add(getProject());
-        }
-        toObfuscate.add(resourceProviderInstitution);
-        toObfuscate.add(publisher);
-        return toObfuscate;
-    }
-
     @Override
     @JSONTransient
     @XmlTransient

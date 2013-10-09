@@ -160,7 +160,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // this may be duplicative... check
         for (ResourceCreator rc : getPersistable().getResourceCreators()) {
             if (rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()) {
-                getObfuscationService().obfuscate(rc.getCreator());
+                getObfuscationService().obfuscate(rc.getCreator(),getAuthenticatedUser());
             }
             ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
             if (ResourceCreatorRole.getAuthorshipRoles().contains(rc.getRole())) {
@@ -793,7 +793,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public ModsDocument getModsDocument() {
         if (modsDocument == null) {
-            getObfuscationService().obfuscate(getResource());
+            getObfuscationService().obfuscate(getResource(),getAuthenticatedUser());
             modsDocument = ModsTransformer.transformAny(getResource());
         }
         return modsDocument;
@@ -811,7 +811,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public DublinCoreDocument getDcDocument() {
         if (dcDocument == null) {
-            getObfuscationService().obfuscate(getResource());
+            getObfuscationService().obfuscate(getResource(),getAuthenticatedUser());
             dcDocument = DcTransformer.transformAny(getResource());
         }
         return dcDocument;

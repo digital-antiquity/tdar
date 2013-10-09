@@ -26,6 +26,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.struts.data.SvgMapWrapper;
 
 /**
@@ -41,6 +42,26 @@ public class GeoSearchDao {
     private JdbcTemplate jdbcTemplate;
     private final Logger logger = Logger.getLogger(getClass());
     public static final Integer DEFAULT_PROJECTION = 4326;
+
+    private static final String PSQL_POLYGON = "POLYGON((%1$s %2$s,%3$s %2$s,%3$s %4$s,%1$s %4$s,%1$s %2$s))";
+
+    private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s,  180 %3$s,  180 %2$s,%1$s %2$s)), ((-180 %3$s, %4$s %3$s,%4$s %2$s,-180 %2$s,-180 %3$s)))";
+    // private static final String PSQL_MULTIPOLYGON_DATELINE =
+    // "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s, -180 %3$s, -180 %2$s,%1$s %2$s)), (( 180 %3$s, %4$s %3$s,%4$s %2$s, 180 %2$s, 180 %3$s)))";
+    public String convertToPolygonBox(LatitudeLongitudeBox latLong) {
+        // if we've got something that goes over the dateline, then we need to split
+        // into a multipolygon instead of a standard one. The multipolygon is two polygons
+        // each one being on either side of the dateline
+        if (!latLong.isValid()) {
+            throw new TdarRuntimeException("the specified latLong box is not valid");
+        }
+        if (latLong.crossesDateline()) {
+            return String.format(PSQL_MULTIPOLYGON_DATELINE, latLong.getMinObfuscatedLongitude(), latLong.getMinObfuscatedLatitude(),
+                    latLong.getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()).toString();
+        }
+        return String.format(PSQL_POLYGON, latLong.getMaxObfuscatedLongitude(), latLong.getMaxObfuscatedLatitude(),
+                latLong.getMinObfuscatedLongitude(), latLong.getMinObfuscatedLatitude()).toString();
+    }
 
     /*
      * useful for visualizing WKTs
@@ -227,19 +248,19 @@ public class GeoSearchDao {
     }
 
     public List<Map<String, Object>> findAllAdminMatching(LatitudeLongitudeBox latLong) {
-        String sql = constructGeomQuery(SpatialTables.ADMIN, latLong.convertToPolygonBox());
+        String sql = constructGeomQuery(SpatialTables.ADMIN, convertToPolygonBox(latLong));
         logger.trace(sql);
         return findAll(sql);
     }
 
     public List<Map<String, Object>> findAllContinentsMatching(LatitudeLongitudeBox latLong) {
-        String sql = constructGeomQuery(SpatialTables.CONTINENT, latLong.convertToPolygonBox());
+        String sql = constructGeomQuery(SpatialTables.CONTINENT, convertToPolygonBox(latLong));
         logger.trace(sql);
         return findAll(sql);
     }
 
     public List<Map<String, Object>> findAllCountiesMatching(LatitudeLongitudeBox latLong) {
-        String sql = constructGeomQuery(SpatialTables.COUNTY, latLong.convertToPolygonBox());
+        String sql = constructGeomQuery(SpatialTables.COUNTY, convertToPolygonBox(latLong));
         logger.trace(sql);
         return findAll(sql);
     }
@@ -249,7 +270,7 @@ public class GeoSearchDao {
      * @return
      */
     public List<Map<String, Object>> findAllCountriesMatching(LatitudeLongitudeBox latLong) {
-        String sql = constructGeomQuery(SpatialTables.COUNTRY, latLong.convertToPolygonBox());
+        String sql = constructGeomQuery(SpatialTables.COUNTRY, convertToPolygonBox(latLong));
         logger.trace(sql);
         return findAll(sql);
     }
