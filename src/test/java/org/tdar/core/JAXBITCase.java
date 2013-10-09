@@ -61,11 +61,10 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     public void testJsonExport() throws Exception {
         Document document = genericService.find(Document.class, 4232l);
         StringWriter sw = new StringWriter();
-        obfuscationService.obfuscate(document);
         xmlService.convertToJson(document, sw);
         logger.info(sw.toString());
         Project project = genericService.find(Project.class, 3805l);
-        obfuscationService.obfuscate(project);
+
         String json = xmlService.convertToJson(project);
         logger.info(json);
     }

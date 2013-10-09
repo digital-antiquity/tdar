@@ -152,10 +152,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     /*
      * override this to load extra metadata for the "view"
      */
-    protected void loadExtraViewMetadata() {
-        if (getPersistable() instanceof Obfuscatable) {
-            getObfuscationService().obfuscate((Obfuscatable) getPersistable());
-        }
+    public void loadExtraViewMetadata() {
+
     }
 
     @SkipValidation

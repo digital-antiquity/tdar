@@ -477,7 +477,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected void init(TdarActionSupport controller) {
-        logger.info("controller: {} session user: {}", controller, getSessionUser());
         init(controller, getSessionUser());
     }
 
@@ -499,7 +498,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected Person getUser() {
-        logger.info("get user called with:" + getUserId());
         return getUser(getUserId());
     }
 
