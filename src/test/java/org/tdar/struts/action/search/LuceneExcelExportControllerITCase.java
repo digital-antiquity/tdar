@@ -1,8 +1,9 @@
 package org.tdar.struts.action.search;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,8 +12,8 @@ import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Assert;
@@ -37,9 +38,6 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 	private static final int EXCEL_EXPORT_HEADER_ROWCOUNT = 5; 
 
     @Autowired
-    private AdvancedSearchController controller;
-
-    @Autowired
     SearchIndexService searchIndexService;
     
     @Autowired
@@ -51,10 +49,8 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Rollback(true)
     public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException, InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
-        currentUser = getBasicUser();
-        controller.setSessionData(new SessionData()); // create unauthenticated session
-        getServletRequest().setAttribute("RequestURI", "http://www.test.com");
-        controller = generateNewInitializedController(AdvancedSearchController.class);
+//        currentUser = getBasicUser();
+        controller = generateNewInitializedController(AdvancedSearchController.class, genericService.find(Person.class, getBasicUserId()));
 
         controller.setServletRequest(getServletRequest());
         doSearch("");
