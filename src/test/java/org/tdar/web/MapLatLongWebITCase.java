@@ -110,10 +110,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
 
 
     private DomNode getPageContentsWithId(Long confidentialFile) {
-        for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("#resource-"+confidentialFile)) {
-            return element_;
-        }
-        return null;
+        return htmlPage.getDocumentElement().getElementById("resource-"+confidentialFile);
     }
 
 

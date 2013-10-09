@@ -30,7 +30,6 @@ public class ObfuscationService {
     
     @Transactional(readOnly = true)
     public void obfuscate(Obfuscatable target) {
-        logger.info("obfuscating: {}", target);
         /*
          * we're going to manipulate the record, so, we detach the items from the session before
          * we muck with them... then we'll pass it on. If we don't detach, then hibernate may try
