@@ -38,9 +38,6 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     private static final int EXCEL_EXPORT_HEADER_ROWCOUNT = 5;
 
     @Autowired
-    private AdvancedSearchController controller;
-
-    @Autowired
     SearchIndexService searchIndexService;
 
     @Autowired
@@ -53,10 +50,8 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
-        currentUser = getBasicUser();
-        controller.setSessionData(new SessionData()); // create unauthenticated session
-        getServletRequest().setAttribute("RequestURI", "http://www.test.com");
-        controller = generateNewInitializedController(AdvancedSearchController.class);
+//        currentUser = getBasicUser();
+        controller = generateNewInitializedController(AdvancedSearchController.class, genericService.find(Person.class, getBasicUserId()));
 
         controller.setServletRequest(getServletRequest());
         doSearch("");

@@ -1,4 +1,4 @@
-<#-- 
+k<#--
 $Id$ 
 Edit freemarker macros.  Getting large, should consider splitting this file up.
 -->
@@ -1499,5 +1499,14 @@ $(function() {
     <input type="file" name="uploadFile" id="${id}" class="${cssClass}">
 </span>
 </#macro>
+
+<#macro datefield date name="" id=name cssClass="" label="" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" >
+    <#local val = "">
+    <#if date?has_content>
+    <#local val = date?string(format)>
+    </#if>
+    <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" />
+</#macro>
+
 
 </#escape>

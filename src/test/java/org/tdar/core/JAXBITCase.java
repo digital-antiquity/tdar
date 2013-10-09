@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ImportService;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
@@ -42,6 +43,9 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
 
     @Autowired
     ImportService importService;
+
+    @Autowired
+    ObfuscationService obfuscationService;
 
     @Autowired
     GenericKeywordService genericKeywordService;

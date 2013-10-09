@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -27,6 +28,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @Table(name = "site_type_keyword")
+@org.hibernate.annotations.Table( appliesTo="site_type_keyword", indexes = {
+        @Index(name="sitetype_appr", columnNames={"approved", "id"})})
 @Indexed(index = "Keyword")
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 

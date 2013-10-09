@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 
+import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.BulkImportField;
@@ -33,6 +34,11 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
  */
 @Entity
 @Table(name = "resource_creator")
+@org.hibernate.annotations.Table( appliesTo ="resource_creator", indexes = {
+        @Index(name="creator_sequence", columnNames={"resource_id", "sequence_number", "creator_id"}),
+        @Index(name = "creatorid", columnNames = {"creator_id"}),
+        @Index(name = "rescreator_resid", columnNames = {"resource_id"})
+})
 public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource> {
 
     private static final long serialVersionUID = 7641781600023145104L;

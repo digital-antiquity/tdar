@@ -198,7 +198,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         Number ontologies = resourceService.countActiveResources(ResourceType.ONTOLOGY);
         Number sensory = resourceService.countActiveResources(ResourceType.SENSORY_DATA);
         Number gis = resourceService.countActiveResources(ResourceType.GEOSPATIAL);
-        Number people = entityService.findAllRegisteredUsers(null).size();
+        Number people = entityService.findAllRegisteredUsers().size();
         createAndSaveNewInformationResource(Document.class);
         createAndSaveNewInformationResource(Dataset.class);
         createAndSaveNewInformationResource(Image.class);

@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.springframework.util.CollectionUtils;
@@ -40,6 +41,7 @@ import org.tdar.core.bean.SupportsResource;
 @Indexed
 @Table(name = "ontology")
 @XmlRootElement(name = "ontology")
+@org.hibernate.annotations.Table(appliesTo = "ontology", indexes = {@Index(name="ontology_catvar_id", columnNames={"category_variable_id"})})
 public class Ontology extends InformationResource implements SupportsResource {
 
     private static final long serialVersionUID = -5871337600253105652L;

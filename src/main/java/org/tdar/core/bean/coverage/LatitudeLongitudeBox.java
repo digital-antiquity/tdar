@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.Field;
@@ -41,6 +43,7 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 
 @Entity
 @Table(name = "latitude_longitude")
+@org.hibernate.annotations.Table( appliesTo="latitude_longitude", indexes = { @Index(name="resource_latlong", columnNames={"resource_id", "id"})})
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 // (name="latitudeLongitudeBox")
@@ -133,22 +136,22 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
      */
-    protected boolean isAnyObfuscatedValueDifferentToActual() {
-        return !getMinObfuscatedLongitude().equals(getMinimumLongitude())
-                || !getMaxObfuscatedLongitude().equals(getMaximumLongitude())
-                || !getMinObfuscatedLatitude().equals(getMinimumLatitude())
-                || !getMaxObfuscatedLatitude().equals(getMaximumLatitude());
+    public boolean isActuallyObfuscated() {
+        if (obfuscationModifiedLatLong == null) {
+            logger.debug("should call obfuscate before testing obfuscation");
+        }
+        return obfuscationModifiedLatLong;
     }
 
     public Double getCenterLatitudeIfNotObfuscated() {
-        if (!isOkayToShowExactLocation && isAnyObfuscatedValueDifferentToActual()) {
+        if (!isOkayToShowExactLocation && isActuallyObfuscated()) {
             return null;
         }
         return getCenterLatitude();
     }
 
     public Double getCenterLongitudeIfNotObfuscated() {
-        if (!isOkayToShowExactLocation && isAnyObfuscatedValueDifferentToActual()) {
+        if (!isOkayToShowExactLocation && isActuallyObfuscated()) {
             return null;
         }
         return getCenterLongitude();
@@ -499,6 +502,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         this.obfuscated = obfuscated;
     }
 
+    private transient Boolean obfuscationModifiedLatLong;
+
     @Override
     public List<Obfuscatable> obfuscate() {
         // set directly, as we don't want to reset the obfuscated values
@@ -506,6 +511,28 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         this.minimumLatitude = getMinObfuscatedLatitude();
         this.maximumLongitude = getMaxObfuscatedLongitude();
         this.minimumLongitude = getMinObfuscatedLongitude();
+        obfuscationModifiedLatLong = false;
+        Double val = getMaxObfuscatedLatitude();
+        if (ObjectUtils.notEqual(val, getMaximumLatitude())) {
+            setMaximumLatitude(val);
+            obfuscationModifiedLatLong = true;
+        }
+        val = getMinObfuscatedLatitude();
+        if (ObjectUtils.notEqual(val, getMinimumLatitude())) {
+            setMinimumLatitude(val);
+            obfuscationModifiedLatLong = true;
+        }
+
+        val = getMaxObfuscatedLongitude();
+        if (ObjectUtils.notEqual(val, getMaximumLongitude())) {
+            setMaximumLongitude(val);
+            obfuscationModifiedLatLong = true;
+        }
+        val = getMinObfuscatedLongitude();
+        if (ObjectUtils.notEqual(val, getMinimumLongitude())) {
+            setMinimumLongitude(val);
+            obfuscationModifiedLatLong = true;
+        }
         setObfuscated(true);
         return null;
     }

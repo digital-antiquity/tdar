@@ -14,7 +14,7 @@ public class LatitudeLongitudeBoxTest {
     public void isActuallyObfuscatedByDefault() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Double.valueOf(0));
         assertFalse(llb.isOkayToShowExactLocation());
-        assertTrue(llb.isAnyObfuscatedValueDifferentToActual());
+        assertTrue(llb.isActuallyObfuscated());
     }
     
     @SuppressWarnings("static-method")
@@ -23,7 +23,7 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Double.valueOf(0));
         llb.setOkayToShowExactLocation(true);
         assertTrue(llb.isOkayToShowExactLocation());
-        assertFalse(llb.isAnyObfuscatedValueDifferentToActual());
+        assertFalse(llb.isActuallyObfuscated());
     }
 
     /**
@@ -123,7 +123,7 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(minObfuscatedLatitude.equals(llb.getMinimumLatitude()));
         assertTrue(maxObfuscatedLongitude.equals(llb.getMaximumLongitude()));
         assertTrue(minObfuscatedLongitude.equals(llb.getMinimumLongitude()));
-        assertFalse(llb.isAnyObfuscatedValueDifferentToActual());
+        assertFalse(llb.isActuallyObfuscated());
         
     }
     
@@ -133,10 +133,10 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
         llb.setOkayToShowExactLocation(true);
         // shouldn't be obfuscated
-        assertFalse(llb.isAnyObfuscatedValueDifferentToActual());
+        assertFalse(llb.isActuallyObfuscated());
         llb.obfuscate();
         // and should be no change.
-        assertFalse(llb.isAnyObfuscatedValueDifferentToActual());
+        assertFalse(llb.isActuallyObfuscated());
         
     }
 

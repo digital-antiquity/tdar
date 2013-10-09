@@ -41,6 +41,7 @@ public enum TdarGroup implements HasLabel {
     }
 
     public static TdarGroup fromString(String groupName) {
+        if(groupName == null) return UNAUTHORIZED;
         for (TdarGroup group : values()) {
             if (group.getGroupName().equalsIgnoreCase(groupName.trim())) {
                 return group;

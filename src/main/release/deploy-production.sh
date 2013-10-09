@@ -8,6 +8,14 @@ if [  $(id -u) -eq 0  ]
    exit 1
 fi
 
+while true; do
+    read -p "Is the build clean (GREEN) and are there NO ACTIVE users?" yn
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
 
 export PARAM=" -C "
 while getopts Dr: opt; do

@@ -81,13 +81,100 @@ create temporary table tmp_rpt as
         k.column_name
 ;
 
+--2nd report:  list all unique constraints and emit sample annotation code (note that this breaks down for tables that
+-- have multiple unique constraints,  but if you're familiar with the syntax you should be able to copy the relevant
+-- portions into single @Table annotation.
+create temporary table tmp_rpt2 as
+  select
+    tc.constraint_type,
+    tc.constraint_name,
+    tc.table_name,
+    string_agg('"' || kcu.column_name || '"', ', ') cols,
+    case
+      when count(kcu.column_name) > 1
+        then format('@Table(name = "%s",  uniqueConstraints = { @UniqueConstraint(name = "%s", columnNames = {%s})})',tc.table_name, tc.constraint_name, string_agg('"' || kcu.column_name || '"', ', '))
+      else
+        format('@Column(name = "%s", nullable = false, unique = true)', string_agg(kcu.column_name, ','))
+    end format
+  from
+      information_schema.table_constraints tc
+      join information_schema.key_column_usage kcu on (tc.constraint_name = kcu.constraint_name)
+  where
+    tc.constraint_type = 'UNIQUE'
+  group by
+    tc.constraint_type,
+    tc.constraint_name,
+    tc.table_name
+  order by
+    tc.table_name
+;
+
+-- 3rd report:  list of index names and sample java annotation source
+create temporary table tmp_idxcols as
+  select
+    t.relname as table_name,
+    i.relname as index_name,
+    ix.indisunique as isunique,
+    count(a.attname) as colcount,
+    string_agg('"' || a.attname || '"', ', ') as cols
+
+  from
+      pg_class t,
+      pg_class i,
+      pg_index ix,
+      pg_attribute a,
+      pg_namespace ns
+  where
+    t.oid = ix.indrelid
+    and i.oid = ix.indexrelid
+    and a.attrelid = t.oid
+    and a.attnum = ANY(ix.indkey)
+    and t.relkind = 'r'
+    and t.relnamespace = ns.oid
+    and ns.nspname = 'public'
+    and not ix.indisprimary
+  group by
+    t.relname,
+    i.relname,
+    ix.indisunique
+  order by
+    t.relname, --table_name
+    i.relname; --index_name
+;
+
+create temporary table tmp_rpt3 as
+  select
+    table_name,
+    index_name,
+    colcount,
+    cols,
+    case
+    when colcount = 1 then format('@IndexColumn(name = "%s")', index_name, cols)
+    when colcount > 1 then format('@Table( name="%s", indexes = { @Index(name="%s", columnNames={%s})', table_name,  index_name, cols)
+    end fmt
+
+  from
+    tmp_idxcols
+  order by
+    table_name,
+    colcount desc,
+    index_name
+;
+
+
+
+
 -- pgsql syntax below to output tmp_rpt to html  (the .xls extension makes it easy to open in excel)
 /*
 
 \H
 \pset footer off
-\o rpt.xls
+\o rpt.html
 select * from tmp_rpt;
+\o rpt2.html
+select * from tmp_rpt2;
+\o rpt3.html
+select * from tmp_rpt3;
 \o
 \H
 \pset footer on

@@ -72,8 +72,8 @@ public class SensoryData extends Dataset {
     @Type(type = "org.hibernate.type.StringClobType")
     private String rgbDataCaptureInfo;
 
-    @Column(name = "estimated_data_resolution")
-    private Double estimatedDataResolution;
+    @Column(name = "estimated_data_resolution", length = 254)
+    private String estimatedDataResolution;
 
     @Column(name = "total_scans_in_project")
     private Long totalScansInProject;
@@ -96,7 +96,7 @@ public class SensoryData extends Dataset {
     private String controlDataFilename;
 
     public enum RgbCapture {
-        NA("Not Specified"),
+        NA("None"),
         INTERNAL("Internal"),
         EXTERNAL("External");
         String label;
@@ -287,11 +287,11 @@ public class SensoryData extends Dataset {
         this.rgbDataCaptureInfo = rgbDataCaptureInfo;
     }
 
-    public Double getEstimatedDataResolution() {
+    public String getEstimatedDataResolution() {
         return estimatedDataResolution;
     }
 
-    public void setEstimatedDataResolution(Double estimatedDataResolution) {
+    public void setEstimatedDataResolution(String estimatedDataResolution) {
         this.estimatedDataResolution = estimatedDataResolution;
     }
 

@@ -47,6 +47,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.ResourceType;
@@ -97,6 +98,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
     public static final String RESTRICTED_ACCESS_TEXT = "This resource is restricted from general view";
+
+    // formats for form element names
+    public static final String FMT_AUTHUSERS_ID = "authorizedUsers[%s].user.id";
+    public static final String FMT_AUTHUSERS_LASTNAME = "authorizedUsers[%s].user.lastName";
+    public static final String FMT_AUTHUSERS_FIRSTNAME = "authorizedUsers[%s].user.firstName";
+    public static final String FMT_AUTHUSERS_EMAIL = "authorizedUsers[%s].user.email";
+    public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
+    public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
@@ -1270,6 +1279,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             }
             count++;
         }
+    }
+
+    public void createUserWithPermissions(int i, Person user, GeneralPermissions viewAll) {
+        logger.info("setiting user [{}] to {} {}", i, user, viewAll);
+        createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), user.getId());
+        createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), user.getLastName());
+        createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());
+        createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), user.getEmail());
+        createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), user.getInstitutionName());
+        createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), viewAll.toString());
     }
 
 }

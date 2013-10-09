@@ -1001,12 +1001,10 @@ var _sortFilesAlphabetically= function() {
     var _gaevent = function() {
         if(!_gaq || arguments.length < 1) {return true;}
         var args = Array.prototype.slice.call(arguments, 0);
-        var command = ['_trackEvent'];
-        command.push(args);
-        var errcount = _gaq.push(command);
-        //console.trace("_trackEvent:%s", args[0]);
+        args.unshift('_trackEvent');
+        var errcount = _gaq.push(args);
         if(errcount) {
-            console.warn("_trackEvent failed:%s", args[0]);
+            console.warn("_trackEvent failed:%s", args[1]);
         }
         return true;
     }

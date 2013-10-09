@@ -13,13 +13,12 @@
     </div>
 </#macro>
 
-
 <#macro divImageInfo>
-<div id="divImageInfo" data-tooltipcontent='#imageInfoTooltip'>
-    <#assign _images=sensoryDataImages />
-    <#if _images.isEmpty()>
-    <#assign _images=blankSensoryDataImage />
-    </#if>  
+<#local _images=sensoryDataImages, divclass="" />
+<#if _images.isEmpty()>
+<#local _images=blankSensoryDataImage, divclass="hidden" />
+</#if>
+<div id="divImageInfo" data-tooltipcontent='#imageInfoTooltip' class="${divclass}">
     <h2>Image Information</h2>
     <div id="sensoryDataImagesDiv" class="repeatLastRow" addAnother="add another image">
         <#list _images as _image>
@@ -258,8 +257,8 @@
 
     <div class="conditional-scantype phase_based time_of_flight triangulation">
         <div data-tiplabel="Survey Date(s)" data-tooltipcontent="Date of survey, or date range of survey.">
-            <@s.textfield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" cssClass="shortfield date formatUS" placeholder="mm/dd/yyyy" />
-            <@s.textfield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" cssClass="right-shortfield date formatUS" placeholder="mm/dd/yyyy" />
+            <@edit.datefield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" date=sensoryData.surveyDateBegin!'' cssClass="shortfield date datepicker" placeholder="mm/dd/yyyy" format="MM/dd/yyyy" />
+            <@edit.datefield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" date=sensoryData.surveyDateEnd!'' cssClass="right-shortfield date datepicker" placeholder="mm/dd/yyyy" />
         </div>
         <span data-tiplabel="Survey Conditions" data-tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)"> 
         <@s.textfield maxLength="255" name="sensoryData.surveyConditions"
@@ -312,13 +311,7 @@
                 template that is appropriate to your scan project.  Complete the metadata for the original scan
                 files in your project and any additional products that will be archived (only registered point clouds
                 and polygonal mesh datasets can be accepted at this time).  Include the completed template in your zip
-                file upload (See instructions below for suggested upload file structure). Metadata collected for 3D
-                scan data will vary based on differences in scan technology and instrumentation.  Individualized
-                templates are provided below, please select and download the template that is appropriate to your
-                scan project.  Complete the metadata for the original scan files in your project and any additional
-                products that will be archived (only registered point clouds and polygonal mesh datasets can be
-                accepted at this time).  Include the completed template in your zip file upload (See
-                instructions below for suggested upload file structure).
+                file upload (See instructions below for suggested upload file structure).
             </p>
             <h5>Available Templates</h5>
             <div class="well">
@@ -350,8 +343,8 @@
     <h5>Upload Structure</h5>
     <p>
         All 3D data and the associated metadata template should be zipped into a single zip file prior to upload.
-        Additional images or videos of the data should be uploaded individually and image metadata should be
-        completed for each image in the Image Information section below.  The suggested folder structure for your zip
+        Additional images should be uploaded individually and image metadata should be
+        completed for each image.  The suggested folder structure for your zip
         file is as follows:
     </p>
     <div class="well">

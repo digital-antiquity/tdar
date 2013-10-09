@@ -1,20 +1,11 @@
 package org.tdar.struts.action.resource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -70,6 +61,7 @@ import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.data.UsageStats;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.HttpsOnly;
 import org.tdar.transform.DcTransformer;
@@ -152,9 +144,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceAnnotation> resourceAnnotations;
     private Long activeResourceCount;
 
-    @Autowired
-    private ObfuscationService obfuscationService;
-
     private List<ResourceCollection> viewableResourceCollections;
 
     private List<ResourceRevisionLog> resourceLogEntries;
@@ -168,9 +157,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         authorshipProxies = new ArrayList<>();
         creditProxies = new ArrayList<>();
 
+        // this may be duplicative... check
         for (ResourceCreator rc : getPersistable().getResourceCreators()) {
             if (rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()) {
-                obfuscationService.obfuscate(rc.getCreator());
+                getObfuscationService().obfuscate(rc.getCreator());
             }
             ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
             if (ResourceCreatorRole.getAuthorshipRoles().contains(rc.getRole())) {
@@ -803,6 +793,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public ModsDocument getModsDocument() {
         if (modsDocument == null) {
+            getObfuscationService().obfuscate(getResource());
             modsDocument = ModsTransformer.transformAny(getResource());
         }
         return modsDocument;
@@ -820,6 +811,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public DublinCoreDocument getDcDocument() {
         if (dcDocument == null) {
+            getObfuscationService().obfuscate(getResource());
             dcDocument = DcTransformer.transformAny(getResource());
         }
         return dcDocument;
@@ -1164,6 +1156,20 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setResourceRelationships(List<ResourceRelationship> resourceRelationships) {
         this.resourceRelationships = resourceRelationships;
+    }
+
+    public String getJsonStats() {
+        String json = "null";
+        //FIXME: what is the goal of this null check; shouldn't the UsageStats object handle this?  Also, why bail if only one is null?
+        if(usageStatsForResources == null || downloadStats == null) return json;
+
+        try {
+            json = getXmlService().convertToJson(new UsageStats(usageStatsForResources, downloadStats));
+        } catch (IOException e) {
+            logger.error("failed to convert stats to json", e);
+            json =  String.format("{'error': '%s'}", StringEscapeUtils.escapeEcmaScript(e.getMessage()));
+        }
+        return json;
     }
 
 }

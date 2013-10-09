@@ -41,6 +41,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -189,6 +190,12 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         if (CollectionUtils.isEmpty(dataset.getInformationResourceFiles()))
             return;
         try {
+            for (InformationResourceFile file : dataset.getActiveInformationResourceFiles()) {
+                InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
+                File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(latestUploadedVersion);
+                latestUploadedVersion.setTransientFile(transientFile);
+            }
+
             analyzer.processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
         } catch (Exception e) {
             throw new TdarRecoverableRuntimeException(e);

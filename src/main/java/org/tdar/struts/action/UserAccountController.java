@@ -32,6 +32,7 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService.Auth
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.interceptor.HttpsOnly;
+import org.tdar.struts.interceptor.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -195,12 +196,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Action(value = "register",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", type = "redirect", location = "welcome"),
-                    @Result(name = "input", location = "edit.ftl") })
+            @Result(name = ADD, type = "redirect", location = "/account/add"),
+            @Result(name = INPUT, location = "edit.ftl") })
     @HttpsOnly
+    @PostOnly
     @WriteableSession
     public String create() {
         if (person == null || !isPostRequest()) {
-            return INPUT;
+            return ADD;
         }
 
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {

@@ -358,6 +358,9 @@ No coding rules have been entered for this coding sheet yet.
                   max long: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}; max lat: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude} ;
                   <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
                   <!-- ${resource.managedGeographicKeywords } -->
+                  <#if editor>
+	                  <#if resource.firstActiveLatitudeLongitudeBox.actuallyObfuscated> [obfuscated]</#if>
+                  </#if>
                 </p>
             </div>
 
@@ -817,9 +820,9 @@ ${_date?string('MM/dd/yyyy')}<#t>
                     </td>
                     <#if removeable>
                     <td>
-                    <button class="btn btn-mini repeat-row-delete" 
+                    <button class="btn btn-mini remove-row"
                                 type="button" tabindex="-1" 
-                                onclick='TDAR.datatable._removeResourceClicked(${resource.id?c}, this);false;'><i class="icon-trash"></i></button></td>
+                                data-resourceid="${resource.id?c}"><i class="icon-trash"></i></button></td>
                     </#if>
                 </tr>
             </#list>

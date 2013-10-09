@@ -26,20 +26,12 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Autowired
     EntityService entityService;
 
-    // formats for form element names
-    public static final String FMT_AUTHUSERS_ID = "authorizedUsers[%s].user.id";
-    public static final String FMT_AUTHUSERS_LASTNAME = "authorizedUsers[%s].user.lastName";
-    public static final String FMT_AUTHUSERS_FIRSTNAME = "authorizedUsers[%s].user.firstName";
-    public static final String FMT_AUTHUSERS_EMAIL = "authorizedUsers[%s].user.email";
-    public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
-    public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
-
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testCreateThenEditCollection() {
         assertNotNull(genericService);
-        String name = "my fancy collection";
-        String desc = "description goes here";
+        String name = "my fancy collection: " + System.currentTimeMillis();
+        String desc = "description goes here: "+ System.currentTimeMillis();
         List<? extends Resource> someResources = getSomeResources();
         createTestCollection(name, desc, someResources);
         assertTextPresent(name);
@@ -57,12 +49,9 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         clickLinkWithText("edit");
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {
-            createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), user.getId());
-            createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), user.getLastName());
-            createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());
-            createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), user.getEmail());
-            createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), user.getInstitutionName());
-            createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), GeneralPermissions.VIEW_ALL.toString());
+            if (StringUtils.containsIgnoreCase(user.getProperName(), "user"))
+                continue;
+            createUserWithPermissions(i, user,GeneralPermissions.VIEW_ALL);
             i++;
         }
 
@@ -82,6 +71,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace("page contents: {}", getPageText());
         // assert all the added names are on the view page
         for (Person user : registeredUsers) {
+            if (StringUtils.containsIgnoreCase(user.getProperName(), "user"))
+                continue;
             assertTextPresent(user.getProperName()); // let's assume the view page uses tostring to format the user names.
         }
 
@@ -182,6 +173,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         List<Person> nonUsers = getSomePeople();
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person person : nonUsers) {
+            if (StringUtils.containsIgnoreCase(person.getProperName(), "user"))
+                continue;
             createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), person.getId());
             createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), person.getLastName());
             createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), person.getFirstName());
@@ -207,6 +200,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTextPresent("my fancy collection");
         for (Person person : nonUsers) {
+            if (StringUtils.containsIgnoreCase(person.getProperName(), "user"))
+                continue;
             assertTextNotPresent(person.getLastName());
         }
 

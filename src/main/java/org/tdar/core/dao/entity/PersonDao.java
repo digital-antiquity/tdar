@@ -142,7 +142,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     public Long findNumberOfActualContributors() {
         Criteria criteria = getCriteria(Resource.class);
-        criteria.setProjection(Projections.projectionList().add(Projections.countDistinct("submitter.id")));
+        criteria.setProjection(Projections.projectionList().add(Projections.countDistinct("uploader.id")));
         return (Long) ((criteria.list()).get(0));
     }
 

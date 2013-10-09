@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -95,6 +96,15 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  */
 @Entity
 @Table(name = "information_resource")
+@org.hibernate.annotations.Table( appliesTo="information_resource", indexes = {
+        @Index(name = "infores_projid", columnNames={"project_id", "id"}),
+        @Index(name = "infores_provid", columnNames={"provider_institution_id"}),
+        @Index(name = "ires_copyright", columnNames={"copyright_holder_id"}),
+        //FIXME: prod database has two indexes on these fields with different names.  Remove if they are redundant(as well as the @Index annotation)
+        //@Index(name = "ires_provicer",  columnNames={"provider_institution_id"}),
+        //@Index(name = "infores_provid", columnNames={"provider_institution_id"}),
+        @Index(name = "ires_publisher", columnNames={"publisher_id"})
+})
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class InformationResource extends Resource {
@@ -887,8 +897,10 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @JSONTransient
+    @Override
     public List<Obfuscatable> obfuscate() {
         // don't claim to inherit data from Projects which are inactive
+        List<Obfuscatable> toObfuscate = super.obfuscate();
         if (!isProjectVisible()) {
             setProject(Project.NULL);
             // setting the project to null should be enough...
@@ -901,8 +913,11 @@ public abstract class InformationResource extends Resource {
             setInheritingTemporalInformation(false);
             setInheritingIdentifierInformation(false);
             setInheritingNoteInformation(false);
+        } else {
+            toObfuscate.add(getProject());
         }
-        List<Obfuscatable> toObfuscate = super.obfuscate();
+        toObfuscate.add(resourceProviderInstitution);
+        toObfuscate.add(publisher);
         return toObfuscate;
     }
 

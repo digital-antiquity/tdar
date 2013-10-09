@@ -5,6 +5,12 @@ import java.util.Date;
 
 import org.tdar.core.bean.resource.Resource;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+//I don't know that the propOrder here is necessary, and it may complicate things in the future
+@XmlType(propOrder={"id", "date", "count"})
 public class AggregateViewStatistic implements Serializable {
 
     private static final long serialVersionUID = 1698960536676588440L;
@@ -29,6 +35,7 @@ public class AggregateViewStatistic implements Serializable {
         this.resourceId = resourceId;
     }
 
+    @XmlElement(name="date")
     public Date getAggregateDate() {
         return aggregateDate;
     }
@@ -37,6 +44,7 @@ public class AggregateViewStatistic implements Serializable {
         this.aggregateDate = aggregateDate;
     }
 
+    @XmlElement(name="count")
     public Number getCount() {
         return count;
     }
@@ -45,6 +53,7 @@ public class AggregateViewStatistic implements Serializable {
         this.count = count;
     }
 
+    @XmlTransient
     public Resource getResource() {
         return resource;
     }
@@ -53,6 +62,7 @@ public class AggregateViewStatistic implements Serializable {
         this.resource = resource;
     }
 
+    @XmlElement(name="id")
     public Long getResourceId() {
         return resourceId;
     }

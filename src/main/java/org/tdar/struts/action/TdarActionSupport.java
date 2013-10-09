@@ -34,11 +34,13 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.CategoryVariableService;
@@ -133,9 +135,13 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     @Autowired
     private transient DownloadService downloadService;
     @Autowired
+    private transient ObfuscationService obfuscationService;
+    @Autowired
     private transient ProjectService projectService;
     @Autowired
     private transient EmailService emailService;
+    @Autowired
+    private transient XmlService xmlService;
     @Autowired
     private transient AccountService accountService;
     @Autowired
@@ -202,6 +208,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public DatasetService getDatasetService() {
         return datasetService;
+    }
+
+    public ObfuscationService getObfuscationService() {
+        return obfuscationService;
     }
 
     public CodingSheetService getCodingSheetService() {
@@ -427,6 +437,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public EmailService getEmailService() {
         return emailService;
+    }
+
+    public XmlService getXmlService() {
+        return xmlService;
     }
 
     public DataIntegrationService getDataIntegrationService() {

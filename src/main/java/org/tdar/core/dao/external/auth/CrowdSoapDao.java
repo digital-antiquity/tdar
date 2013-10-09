@@ -68,7 +68,7 @@ public class CrowdSoapDao extends BaseAuthenticationProvider {
         try {
             securityServerClient.authenticate();
         } catch (Exception e) {
-            logger.info(e);
+            logger.info("{}", e);
             return false;
         }
         return true;
