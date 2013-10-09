@@ -132,6 +132,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
                 getLogger().trace("Trying to convert blank or null project to json: " + project);
                 return json;
             }
+            getObfuscationService().obfuscate(project);
             json = project.toJSON().toString();
         } catch (Exception ex) {
             addActionErrorWithException("There was an error retreiving project-level information for this resource.  Please reload the page " +

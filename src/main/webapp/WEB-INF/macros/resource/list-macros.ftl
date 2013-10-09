@@ -102,7 +102,7 @@
         <#-- printing item tag start / -->
         <@printTag itemTag_ "listItem ${itemClass!''}" false>
 			<@addLatLongDataAttributes orientation resource />
-			id="resource-${resource.id!-1?c}"
+			id="resource-${resource.id?c}"
         </@printTag>
 
 		<#-- if we're at a new row; close the above tag and re-open it (bug) -->

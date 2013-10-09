@@ -13,6 +13,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.TestConfiguration;
 
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 
 public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
@@ -55,7 +56,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         Long normal = setupDocumentWithProject(RESOURCE_WITH_NORMAL,latLong, Status.ACTIVE,null, null);
 
         gotoPage(url);
-        
+        logger.info(getPageBodyCode());
         assertTextPresent(RESOURCE_WITH_DRAFT);
         assertNodeHasLatLongAttributes(draft);
         assertTextPresent(RESOURCE_WITH_NORMAL);
@@ -72,7 +73,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         gotoPage(url);
         // anonymous user
         assertTextNotPresent(RESOURCE_WITH_DRAFT);
-        assertNodeHasLatLongAttributes(draft);
+        assertNodeDoesNotLatLongAttributes(draft);
         assertTextPresent(RESOURCE_WITH_NORMAL);
         assertNodeHasLatLongAttributes(normal);
         assertTextPresent(RESOURCE_WITH_OBFUSCATED_LAT_LONG);
@@ -83,7 +84,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         login(config.getUsername(), config.getPassword());
         gotoPage(url);
         
-        assertTextNotPresent(RESOURCE_WITH_DRAFT);
+        assertTextPresent(RESOURCE_WITH_DRAFT);
         assertNodeHasLatLongAttributes(draft);
         assertTextPresent(RESOURCE_WITH_NORMAL);
         assertNodeHasLatLongAttributes(normal);
@@ -103,9 +104,16 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
     }
 
     private void assertNodeDoesNotLatLongAttributes(Long confidentialFile) {
-        DomNode node = getPageContentsWithId(confidentialFile);
-        Assert.assertNull("should not have lat-long", node.getAttributes().getNamedItem("data-lat"));
-        Assert.assertNull("should not have lat-long", node.getAttributes().getNamedItem("data-long"));
+        DomNode node = null;
+        try {
+            node = getPageContentsWithId(confidentialFile);
+        } catch (ElementNotFoundException ene) {
+            node = null;
+        }
+        if (node != null) {
+            Assert.assertNull("should not have lat-long", node.getAttributes().getNamedItem("data-lat"));
+            Assert.assertNull("should not have lat-long", node.getAttributes().getNamedItem("data-long"));
+        }
     }
 
 
