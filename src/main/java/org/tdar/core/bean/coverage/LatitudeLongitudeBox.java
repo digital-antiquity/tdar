@@ -125,7 +125,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public boolean isActuallyObfuscated() {
         if (obfuscationModifiedLatLong == null) {
-            throw new TdarRuntimeException("must call obfuscate before testing obfuscation");
+            logger.debug("should call obfuscate before testing obfuscation");
         }
         return obfuscationModifiedLatLong;
     }
