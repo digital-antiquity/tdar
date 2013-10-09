@@ -525,7 +525,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (Persistable.Base.isNullOrTransient(p)) {
             fail("failed to load user:" + id);
         }
-//        genericService.markWritable(p);
+        genericService.markWritable(p);
+        p = genericService.merge(p);
         return p;
     }
 

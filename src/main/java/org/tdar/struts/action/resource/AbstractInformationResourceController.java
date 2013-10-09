@@ -543,7 +543,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public String getProjectAsJson() {
-        getObfuscationService().obfuscate(getProject());
         return getProject().toJSON().toString();
     }
 
