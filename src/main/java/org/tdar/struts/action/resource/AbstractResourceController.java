@@ -797,6 +797,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public ModsDocument getModsDocument() {
         if (modsDocument == null) {
+            getObfuscationService().obfuscate(getResource());
             modsDocument = ModsTransformer.transformAny(getResource());
         }
         return modsDocument;
@@ -814,6 +815,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public DublinCoreDocument getDcDocument() {
         if (dcDocument == null) {
+            getObfuscationService().obfuscate(getResource());
             dcDocument = DcTransformer.transformAny(getResource());
         }
         return dcDocument;
