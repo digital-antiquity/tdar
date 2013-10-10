@@ -1,12 +1,20 @@
 package org.tdar.struts.interceptor;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.NDC;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ReflectionService;
@@ -74,7 +82,18 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
             NDC.push(Activity.formatRequest(ServletActionContext.getRequest()));
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
-            return invocation.invoke();
+            String invoke = invocation.invoke();
+//            logger.info("{}", invocation.getProxy().getAction().getClass());
+//            for(PropertyDescriptor propertyDescriptor : PropertyUtils.getPropertyDescriptors(invocation.getProxy().getAction().getClass())) {
+//                Method readMethod = propertyDescriptor.getReadMethod();
+//                readMethod.getName();
+//                logger.info("{} {}",readMethod.getName() ,readMethod.getGenericReturnType());
+//                if (Obfuscatable.class.isAssignableFrom(readMethod.getReturnType()) || Obfuscatable.class.isAssignableFrom(readMethod.getGenericReturnType().getClass())) {
+//                    logger.info("{}",readMethod);
+//                }
+//            }
+//            logger.info("{}", invocation.getStack().);
+            return invoke;
         } catch (TdarActionException exception) {
             logger.warn("caught TdarActionException", exception);
             HttpServletResponse response = ServletActionContext.getResponse();
