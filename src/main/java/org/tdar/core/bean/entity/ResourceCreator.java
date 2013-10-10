@@ -62,9 +62,10 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @Column(length = 255)
     private ResourceCreatorRole role;
 
-    private Boolean obfuscatedObjectDifferent = false;
 
-    private boolean obfuscated;
+    private transient Boolean obfuscatedObjectDifferent = false;
+
+    private transient boolean obfuscated;
 
     public ResourceCreator(Creator creator, ResourceCreatorRole role) {
         setCreator(creator);
