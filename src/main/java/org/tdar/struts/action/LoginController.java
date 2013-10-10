@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
+import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.interceptor.HttpsOnly;
 

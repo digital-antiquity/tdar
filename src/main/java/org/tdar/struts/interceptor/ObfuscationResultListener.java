@@ -63,7 +63,6 @@ public class ObfuscationResultListener implements PreResultListener {
     }
 
     private void obfuscateObject(Object obj) {
-        logger.info("{}", obj);
         if (Iterable.class.isAssignableFrom(obj.getClass())) {
             for (Object obj_ : (Iterable<?>) obj) {
                 obfuscationService.obfuscate((Obfuscatable) obj_, user);

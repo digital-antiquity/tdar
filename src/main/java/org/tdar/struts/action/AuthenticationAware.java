@@ -16,6 +16,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.web.SessionDataAware;
 
@@ -38,6 +39,7 @@ public interface AuthenticationAware extends SessionDataAware {
 
     public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
 
+    @DoNotObfuscate
     Person getAuthenticatedUser();
 
     boolean isAuthenticated();
@@ -52,6 +54,7 @@ public interface AuthenticationAware extends SessionDataAware {
         private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
         @Override
+        @DoNotObfuscate
         public Person getAuthenticatedUser() {
             if (getSessionData() == null)
                 return null;

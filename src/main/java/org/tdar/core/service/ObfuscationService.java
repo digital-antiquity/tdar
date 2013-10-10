@@ -60,6 +60,7 @@ public class ObfuscationService {
         
         // don't obfuscate someone for themself
         if (target instanceof Person && ObjectUtils.equals(user, (Person)target)) {
+            logger.info("not obfuscating person: {}", user);
             return;
         }
 
