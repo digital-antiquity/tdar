@@ -1,18 +1,7 @@
 package org.tdar.struts.action.resource;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -62,7 +51,6 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.WriteableSession;
@@ -161,15 +149,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceAnnotation> resourceAnnotations;
     private Long activeResourceCount;
 
-    @Autowired
-    private ObfuscationService obfuscationService;
-
     private List<ResourceCollection> viewableResourceCollections;
 
     private List<ResourceRevisionLog> resourceLogEntries;
 
     private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<>();
-    private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<>();
+    private Map<String, List<AggregateDownloadStatistic>> downloadStats = new LinkedHashMap<>();
 
     private void initializeResourceCreatorProxyLists() {
         if (getPersistable().getResourceCreators() == null)
@@ -177,9 +162,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         authorshipProxies = new ArrayList<ResourceCreatorProxy>();
         creditProxies = new ArrayList<ResourceCreatorProxy>();
 
+        // this may be duplicative... check
         for (ResourceCreator rc : getPersistable().getResourceCreators()) {
             if (rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()) {
-                obfuscationService.obfuscate(rc.getCreator());
+                getObfuscationService().obfuscate(rc.getCreator());
             }
             ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
             if (ResourceCreatorRole.getAuthorshipRoles().contains(rc.getRole())) {
@@ -811,6 +797,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public ModsDocument getModsDocument() {
         if (modsDocument == null) {
+            getObfuscationService().obfuscate(getResource());
             modsDocument = ModsTransformer.transformAny(getResource());
         }
         return modsDocument;
@@ -828,6 +815,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public DublinCoreDocument getDcDocument() {
         if (dcDocument == null) {
+            getObfuscationService().obfuscate(getResource());
             dcDocument = DcTransformer.transformAny(getResource());
         }
         return dcDocument;
@@ -1098,7 +1086,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             int i = 0;
             for (InformationResourceFile file : ((InformationResource) getPersistable()).getInformationResourceFiles()) {
                 i++;
-                getDownloadStats().put(String.format("%s. %s", i, file.getFileName()),
+                getDownloadStats().put(file.getFileName(),
                         getResourceService().getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
             }
         }

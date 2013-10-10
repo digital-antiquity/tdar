@@ -1,14 +1,13 @@
 package org.tdar.struts.action;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.struts.action.entity.InstitutionController;
 
 public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
@@ -32,7 +31,15 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void testSavingInstitution() throws Exception {
-        Institution inst = entityService.findAllInstitutions().iterator().next();
+        Institution inst = null;
+        for (Institution inst_ : entityService.findAllInstitutions()) {
+            // the Test fixtures will "refresh" and this is a guard against it (unfortunately)
+            if (ObjectUtils.equals(inst_, getAdminUser().getInstitution())) {
+                continue;
+            }
+            inst = inst_;
+            break;
+        }
         String oldName = inst.getName();
         String newName = oldName.concat(" updated");
         controller.setId(inst.getId());

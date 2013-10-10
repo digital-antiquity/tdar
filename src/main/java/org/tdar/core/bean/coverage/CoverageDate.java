@@ -8,6 +8,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.Range;
+import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
@@ -31,6 +32,7 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
  */
 @Entity
 @Table(name = "coverage_date")
+@org.hibernate.annotations.Table( appliesTo="coverage_date", indexes = { @Index(name="coverage_resid", columnNames={"resource_id", "id"})})
 public class CoverageDate extends Persistable.Base implements HasResource<Resource>, Validatable {
 
     private static final long serialVersionUID = -5878760394443928287L;

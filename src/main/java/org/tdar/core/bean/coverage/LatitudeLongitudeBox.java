@@ -11,6 +11,8 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.Field;
@@ -40,6 +42,7 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 
 @Entity
 @Table(name = "latitude_longitude")
+@org.hibernate.annotations.Table( appliesTo="latitude_longitude", indexes = { @Index(name="resource_latlong", columnNames={"resource_id", "id"})})
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 // (name="latitudeLongitudeBox")
@@ -121,8 +124,11 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public boolean isActuallyObfuscated() {
-        return (getMinObfuscatedLongitude() != getMinimumLongitude() || getMaxObfuscatedLongitude() != getMaximumLongitude()
-                || getMinObfuscatedLatitude() != getMinimumLatitude() || getMaxObfuscatedLatitude() != getMaximumLatitude());
+        if (obfuscationModifiedLatLong == null) {
+            logger.debug("should call obfuscate before testing obfuscation");
+            return false;
+        }
+        return obfuscationModifiedLatLong;
     }
 
     /* fixme ** test */
@@ -400,12 +406,32 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         this.obfuscated = obfuscated;
     }
 
+    private transient Boolean obfuscationModifiedLatLong;
+
     @Override
     public List<Obfuscatable> obfuscate() {
-        setMaximumLatitude(getMaxObfuscatedLatitude());
-        setMinimumLatitude(getMinObfuscatedLatitude());
-        setMaximumLongitude(getMaxObfuscatedLongitude());
-        setMinimumLongitude(getMinObfuscatedLongitude());
+        obfuscationModifiedLatLong = false;
+        Double val = getMaxObfuscatedLatitude();
+        if (ObjectUtils.notEqual(val, getMaximumLatitude())) {
+            setMaximumLatitude(val);
+            obfuscationModifiedLatLong = true;
+        }
+        val = getMinObfuscatedLatitude();
+        if (ObjectUtils.notEqual(val, getMinimumLatitude())) {
+            setMinimumLatitude(val);
+            obfuscationModifiedLatLong = true;
+        }
+
+        val = getMaxObfuscatedLongitude();
+        if (ObjectUtils.notEqual(val, getMaximumLongitude())) {
+            setMaximumLongitude(val);
+            obfuscationModifiedLatLong = true;
+        }
+        val = getMinObfuscatedLongitude();
+        if (ObjectUtils.notEqual(val, getMinimumLongitude())) {
+            setMinimumLongitude(val);
+            obfuscationModifiedLatLong = true;
+        }
         setObfuscated(true);
         return null;
     }

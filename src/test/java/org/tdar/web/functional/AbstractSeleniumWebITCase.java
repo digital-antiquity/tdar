@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -56,11 +57,18 @@ public abstract class AbstractSeleniumWebITCase {
     // private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
     public static String PATH_OUTPUT_ROOT = "target/selenium";
 
+
+    //regex pattern for js error that typically occurs when rendering google maps in test
+    public static final String IGNOREPATTERN_GOOGLE_QUOTA_SERVICE_RECORD_EVENT = Pattern.quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent");
+
+
+
     private String pageText = null;
 
     // package privates
     boolean screenshotsAllowed = true;
     boolean ignoreJavascriptErrors = false;
+    List<Pattern> jserrorIgnorePatterns = new ArrayList<>();
     private boolean ignoreModals = false;
     WebDriver driver;
 
@@ -771,36 +779,42 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public List<String> getJavascriptErrors() {
-        return executeJavascript("return window.__errorMessages;");
+        List<String> errors =  executeJavascript("return window.__errorMessages;");
+        if(errors == null) {
+            errors = Collections.emptyList();
+        }
+        return errors;
     }
 
     public void setIgnoreJavascriptErrors(boolean ignoreJavascriptErrors) {
         this.ignoreJavascriptErrors = ignoreJavascriptErrors;
     }
 
+    //        message: "errorEvent::" +  (evt.message || "(no error message)"),
+    //                filename: evt.filename || "(no filename - probably script from remote host)",
+    //                line: evt.lineno,
+    //                tag: "(inline script)"
     /**
      * If any javascript errors have occured since last pageload, log them and (if ignoreJavascriptErrors==false) fail the test.
-     * 
+     *
      * Note: most actions that cause page navigation will implicitly callreportJavascriptErrors() anyway, such as formSubmit(), gotoPage(), and click events on
      * links & buttons. An example of when you might wish to explicitly call this method is when you expect a javascript function to modify the
      * <code>Window.location</code> property, or if you call {@link WebElement#submit()} rather than submitForm();
      */
     public void reportJavascriptErrors() {
-
-//        message: "errorEvent::" +  (evt.message || "(no error message)"),
-//                filename: evt.filename || "(no filename - probably script from remote host)",
-//                line: evt.lineno,
-//                tag: "(inline script)"
-
         List<String> errors = getJavascriptErrors();
-        if (CollectionUtils.isEmpty(errors)) {
-            return;
-        }
-        logger.error("javascript error report for {}", driver.getCurrentUrl());
+        List<String> legitErrors = new ArrayList<>();
+        logger.trace("javascript error report for {}", driver.getCurrentUrl());
+
         for (String error : errors) {
-            logger.error("javascript error: {}", error);
+            if(isLegitJavascriptError(error)) {
+                logger.error("javascript error: {}", error);
+                legitErrors.add(error);
+            } else {
+                logger.info("javascript error(ignored): {}", error);
+            }
         }
-        if (!ignoreJavascriptErrors) {
+        if (!ignoreJavascriptErrors && !legitErrors.isEmpty()) {
             fail("Encountered javascript errors on page: " + driver.getCurrentUrl() + "\r\n [" + errors + "]");
         }
     }
@@ -984,6 +998,27 @@ public abstract class AbstractSeleniumWebITCase {
             waitFor(2);
         }
         return wasFound;
+    }
+
+    //set a list of regex strings that correspond to error messages that we should ignore (e.g.  google map quota errors)
+    public void setJavascriptIgnorePatterns(String ... patterns) {
+        for(String str : patterns) {
+            Pattern pattern = Pattern.compile(str);
+            jserrorIgnorePatterns.add(pattern);
+        }
+    }
+
+    //return true if this is a legit error (i.e something we aren't ignoring)
+    public boolean isLegitJavascriptError(String error) {
+        for(Pattern pattern : jserrorIgnorePatterns) {
+            if(pattern.matcher(error).find()) return false;
+        }
+        return true;
+    }
+
+    //return true if this is an ignorable error
+    public boolean isIgnoreableJavascriptError(String error) {
+        return !isLegitJavascriptError(error);
     }
 
 }

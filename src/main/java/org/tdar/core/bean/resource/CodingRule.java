@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.IndexColumn;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
@@ -45,6 +46,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     @Column(nullable = false)
     @Field
     @Length(max = 255)
+    @IndexColumn(name = "coding_rule_term_index")
     private String term;
 
     @Column(length = 2000)

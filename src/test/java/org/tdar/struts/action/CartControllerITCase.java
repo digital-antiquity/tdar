@@ -25,6 +25,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
@@ -394,9 +395,11 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     private Long setupAndTestBillingAddress(CartController controller) throws TdarActionException {
         Address address = new Address(AddressType.BILLING, "street", "Tempe", "arizona", "q234", "united states");
         Address address2 = new Address(AddressType.MAILING, "2street", "notsurewhere", "california", "q234", "united states");
-        getUser().getAddresses().add(address);
-        getUser().getAddresses().add(address2);
-        genericService.save(getUser());
+        Person user = getUser();
+        user.getAddresses().add(address);
+        user.getAddresses().add(address2);
+        genericService.saveOrUpdate(user);
+        genericService.synchronize();
         Long invoiceId = createAndTestInvoiceQuantity(controller, 10L, null);
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);

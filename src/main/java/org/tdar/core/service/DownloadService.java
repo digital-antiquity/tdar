@@ -83,6 +83,8 @@ public class DownloadService {
         Collection<File> files = new LinkedList<File>();
 
         for (InformationResourceFileVersion version : resource.getLatestVersions()) {
+            if (version.getInformationResourceFile().isDeleted())
+                continue;
             files.add(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
         }
     }

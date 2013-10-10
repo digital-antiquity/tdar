@@ -34,6 +34,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
@@ -133,6 +134,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     @Autowired
     private transient DownloadService downloadService;
     @Autowired
+    private transient ObfuscationService obfuscationService;
+    @Autowired
     private transient ProjectService projectService;
     @Autowired
     private transient EmailService emailService;
@@ -202,6 +205,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public DatasetService getDatasetService() {
         return datasetService;
+    }
+
+    public ObfuscationService getObfuscationService() {
+        return obfuscationService;
     }
 
     public CodingSheetService getCodingSheetService() {
