@@ -66,7 +66,7 @@ public class GenericDao {
         logger.trace("object: {}", obj);
         return obj;
     }
-
+    
     public <E> List<E> findAllWithProfile(Class<E> class1, List<Long> ids, String profileName) {
         getCurrentSession().enableFetchProfile(profileName);
         List<E> ret = findAll(class1, ids);
@@ -493,6 +493,13 @@ public class GenericDao {
         getCurrentSession().setDefaultReadOnly(false);
     }
 
+    public <O> O markWritableOnExistingSession(O obj) {
+        if (getCurrentSession().contains(obj)) {
+            getCurrentSession().setReadOnly(obj, false);
+        }
+        return obj;
+    }
+    
     public <O> O markWritable(O obj) {
         if (getCurrentSession().contains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet

@@ -36,9 +36,17 @@ public class SchemaGenerator {
     private static final String DIALECT = "org.hibernate.dialect.PostgreSQLDialect";
     private Configuration cfg;
     private Logger log = Logger.getLogger(getClass());
+    public static final String HBM_FILENAME = "hibernate.hbm.xml";
 
     public SchemaGenerator() throws Exception {
         cfg = new Configuration();
+
+        //allow for xml-based mappings, if present.
+        if(getClass().getClassLoader().getResource(HBM_FILENAME) != null) {
+            cfg.addResource("hibernate.hbm.xml");
+        }
+
+        //now add annotated class mappings
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
         scanner.addIncludeFilter(new AnnotationTypeFilter(NamedQuery.class));
@@ -48,17 +56,18 @@ public class SchemaGenerator {
         }
 
         cfg.setProperty("hibernate.hbm2ddl.auto", "create");
+        cfg.setProperty("hibernate.dialect", DIALECT);
 
     }
 
+
     /**
      * Method that actually creates the file.
-     * 
+     *
      * @param dbDialect
      *            to use
      */
     private void generate(String filename) {
-        cfg.setProperty("hibernate.dialect", DIALECT);
         log.info("exporting schema to: " + filename);
         SchemaExport export = new SchemaExport(cfg);
         export.setDelimiter(";");
