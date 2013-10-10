@@ -107,7 +107,6 @@ public class IndexAction extends AuthenticationAware.Base {
                 if (key instanceof InformationResource) {
                     getAuthenticationAndAuthorizationService().applyTransientViewableFlag((InformationResource) key, null);
                 }
-                getObfuscationService().obfuscate(key,getAuthenticatedUser());
                 getFeaturedResources().add(key);
             }
         } catch (IndexOutOfBoundsException ioe) {

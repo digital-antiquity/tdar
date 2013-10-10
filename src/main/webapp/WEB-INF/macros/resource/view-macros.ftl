@@ -350,6 +350,9 @@ No coding rules have been entered for this coding sheet yet.
 
 
 <#macro spatialCoverage>
+                  ${resource.firstActiveLatitudeLongitudeBox.obfuscated?string}
+${resource.obfuscated?string}
+
   <#if (resource.activeLatitudeLongitudeBoxes?has_content )>
         <h2>Spatial Coverage</h2>
             <div class="title-data">

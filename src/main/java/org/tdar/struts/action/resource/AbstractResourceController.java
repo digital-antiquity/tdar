@@ -159,9 +159,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         // this may be duplicative... check
         for (ResourceCreator rc : getPersistable().getResourceCreators()) {
-            if (rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()) {
-                getObfuscationService().obfuscate(rc.getCreator(),getAuthenticatedUser());
-            }
             ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
             if (ResourceCreatorRole.getAuthorshipRoles().contains(rc.getRole())) {
                 authorshipProxies.add(proxy);

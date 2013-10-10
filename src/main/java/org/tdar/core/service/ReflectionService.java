@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,6 +47,7 @@ import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -70,7 +72,7 @@ public class ReflectionService {
      * e.g. GeographicKeyword. This would return [geographicKeywords,managedGeographicKeywords]
      */
     public Set<Field> findFieldsReferencingClass(Class<?> classToInspect, Class<?> classToFind) {
-        Set<Field> matchingFields = new HashSet<Field>();
+        Set<Field> matchingFields = new HashSet<>();
         for (Field field : classToInspect.getDeclaredFields()) {
             if (getFieldReturnType(field).equals(classToFind)) {
                 matchingFields.add(field);
@@ -82,7 +84,7 @@ public class ReflectionService {
 
     // todo: do we really need an extra function for this?
     public Set<Field> findAssignableFieldsRefererencingClass(Class<?> classToInspect, Class<?> ancestorToFind) {
-        Set<Field> matchingFields = new HashSet<Field>();
+        Set<Field> matchingFields = new HashSet<>();
         for (Field field : classToInspect.getDeclaredFields()) {
             if (getFieldReturnType(field).isAssignableFrom(ancestorToFind)) {
                 matchingFields.add(field);
@@ -93,7 +95,7 @@ public class ReflectionService {
     }
 
     public Set<Field> findFieldsWithAnnotation(Class<?> targetClass, List<Class<? extends Annotation>> list, boolean recursive) {
-        Set<Field> set = new HashSet<Field>();
+        Set<Field> set = new HashSet<>();
         for (Field field : targetClass.getDeclaredFields()) {
             for (Class<? extends Annotation> ann : list) {
                 if (field.isAnnotationPresent(ann)) {
@@ -172,7 +174,7 @@ public class ReflectionService {
             try {
                 return (T) method.invoke(obj);
             } catch (Exception e) {
-                logger.debug("cannot call field getter:", e);
+                logger.debug("cannot call field getter for field: {}", field, e);
             }
         return null;
     }
@@ -218,6 +220,10 @@ public class ReflectionService {
     }
 
     private static Class<?> getType(Type type) {
+        if (WildcardType.class.isAssignableFrom(type.getClass())) {
+            return ((WildcardType)type).getUpperBounds().getClass();
+        }
+
         if (type instanceof ParameterizedType) {
             ParameterizedType collectionType = (ParameterizedType) type;
             return (Class<?>) collectionType.getActualTypeArguments()[0];
@@ -242,7 +248,7 @@ public class ReflectionService {
             return;
 
         Set<BeanDefinition> findCandidateComponents = findClassesThatImplement(Persistable.class);
-        persistableLookup = new HashMap<String, Class<Persistable>>();
+        persistableLookup = new HashMap<>();
         for (BeanDefinition bd : findCandidateComponents) {
             String beanClassName = bd.getBeanClassName();
             Class cls = Class.forName(beanClassName);
@@ -297,7 +303,7 @@ public class ReflectionService {
 
     @SafeVarargs
     public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws NoSuchBeanDefinitionException, ClassNotFoundException {
-        List<Class<?>> toReturn = new ArrayList<Class<?>>();
+        List<Class<?>> toReturn = new ArrayList<>();
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         for (Class<? extends Annotation> annot : annots) {
             scanner.addIncludeFilter(new AnnotationTypeFilter(annot));
@@ -313,8 +319,8 @@ public class ReflectionService {
 
     @SuppressWarnings("unchecked")
     public List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields(Class<?> cls) {
-        List<Field> declaredFields = new ArrayList<Field>();
-        List<Pair<Field, Class<? extends Persistable>>> result = new ArrayList<Pair<Field, Class<? extends Persistable>>>();
+        List<Field> declaredFields = new ArrayList<>();
+        List<Pair<Field, Class<? extends Persistable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
         while (cls.getPackage().getName().startsWith("org.tdar.")) {
             CollectionUtils.addAll(declaredFields, cls.getDeclaredFields());
@@ -350,13 +356,13 @@ public class ReflectionService {
     }
 
     public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2) {
-        Stack<List<Class<?>>> classStack = new Stack<List<Class<?>>>();
+        Stack<List<Class<?>>> classStack = new Stack<>();
         return findBulkAnnotationsOnClass(class2, classStack, "");
     }
 
     public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2, Stack<List<Class<?>>> stack, String prefix) {
         Class<BulkImportField> annotationToFind = BulkImportField.class;
-        LinkedHashSet<CellMetadata> set = new LinkedHashSet<CellMetadata>();
+        LinkedHashSet<CellMetadata> set = new LinkedHashSet<>();
         if (class2.getSuperclass() != Object.class) {
             set.addAll(findBulkAnnotationsOnClass(class2.getSuperclass(), stack, prefix));
         }
@@ -389,7 +395,7 @@ public class ReflectionService {
 
     private LinkedHashSet<CellMetadata> handleClassAnnotations(Class<?> class2, Stack<List<Class<?>>> stack, Class<BulkImportField> annotationToFind,
             Class<?> runAs, Field runAsField, String prefix) {
-        LinkedHashSet<CellMetadata> set = new LinkedHashSet<CellMetadata>();
+        LinkedHashSet<CellMetadata> set = new LinkedHashSet<>();
         for (Field field : class2.getDeclaredFields()) {
             BulkImportField annotation = field.getAnnotation(annotationToFind);
             if (prefix == null) {
@@ -490,6 +496,54 @@ public class ReflectionService {
             logger.debug("error processing bulk upload: {}", e1);
             throw new TdarRecoverableRuntimeException("an error occured when setting " + name + " to " + value, e1);
         }
+    }
+
+    /*
+     * FIXME: make more generic
+     */
+    public List<Pair<Method, Class<? extends Obfuscatable>>> findAllObfuscatableGetters(Class<?> cls) {
+        List<Method> declaredFields = new ArrayList<>();
+        List<Pair<Method, Class<? extends Obfuscatable>>> result = new ArrayList<>();
+        // iterate up the package hierarchy
+        while (cls.getPackage().getName().startsWith("org.tdar.")) {
+            for (Method method : cls.getDeclaredMethods()) {
+                if (method.getName().startsWith("get")) {
+                    declaredFields.add(method);
+                }
+            }
+            cls = cls.getSuperclass();
+        }
+
+        for (Method method : declaredFields) {
+            Class<? extends Obfuscatable> type = null;
+            // generic collections
+            try {
+            if (java.lang.reflect.Modifier.isStatic(method.getModifiers()) || java.lang.reflect.Modifier.isTransient(method.getModifiers())
+                    || java.lang.reflect.Modifier.isFinal(method.getModifiers()))
+                continue;
+
+            if (Collection.class.isAssignableFrom(method.getReturnType())) {
+                Class<?> type2 = getType(method.getGenericReturnType());
+                if (Obfuscatable.class.isAssignableFrom((Class<? extends Obfuscatable>) type2)) {
+                    type = (Class<? extends Obfuscatable>) type2;
+                    logger.trace("\t -> {}", type); // class java.lang.String.
+                }
+            }
+            // singletons
+            if (Obfuscatable.class.isAssignableFrom(method.getReturnType())) {
+                type = (Class<? extends Obfuscatable>) method.getReturnType();
+                logger.trace("\t -> {}", type); // class java.lang.String.
+            }
+
+            // things to add
+            if (type != null) {
+                result.add(new Pair<Method, Class<? extends Obfuscatable>>(method, type));
+            }
+            } catch (Exception e) {
+                logger.error("{} ; {}",method, e);
+            }
+        }
+        return result;
     }
 
 }

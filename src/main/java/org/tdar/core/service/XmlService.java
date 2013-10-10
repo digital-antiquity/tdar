@@ -76,6 +76,9 @@ public class XmlService implements Serializable {
     @Autowired
     JaxbPersistableConverter persistableConverter;
 
+    @Autowired
+    ObfuscationService obfuscationService;
+
     @Transactional(readOnly = true)
     public String convertToXML(Object object) throws Exception {
         StringWriter sw = new StringWriter();

@@ -9,6 +9,7 @@ public interface Obfuscatable {
      */
     boolean isObfuscated();
 
+    Long getId();
     
     /**
      * obfuscates the current object and returns a list of potential objects for further obfuscation

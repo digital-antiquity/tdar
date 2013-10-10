@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 
@@ -51,9 +50,9 @@ public class ObfuscationService {
             return;
         }
 
-        if (target instanceof Resource && authService.canViewConfidentialInformation(user, (Resource)target)) {
-            return;
-        }
+//        if (target instanceof Resource && authService.canViewConfidentialInformation(user, (Resource)target)) {
+//            return;
+//        }
 
         if (authService.isEditor(user)) {
             return;
@@ -74,8 +73,9 @@ public class ObfuscationService {
     }
 
     private List<Obfuscatable> handleObfuscation(Obfuscatable target) {
-        // TODO Auto-generated method stub
-        return null;
+        logger.trace("obfuscating: {} [{}]", target.getClass(), target.getId());
+        target.setObfuscated(true);
+        return target.obfuscate();
     }
     
 

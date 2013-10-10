@@ -49,7 +49,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -97,9 +96,6 @@ public class SearchService {
 
     @Autowired
     private GenericService genericService;
-
-    @Autowired
-    private ObfuscationService obfuscationService;
 
     protected static final transient Logger logger = LoggerFactory.getLogger(SearchService.class);
     private static final String[] LUCENE_RESERVED_WORDS = new String[] { "AND", "OR", "NOT" };
@@ -420,10 +416,6 @@ public class SearchService {
             if (resultHandler.isDebug()) {
                 Explanation ex = (Explanation) obj[projections.indexOf(FullTextQuery.EXPLANATION)];
                 p.setExplanation(ex);
-            }
-            // logger.info("user:{}", user);
-            if (p instanceof Obfuscatable) {
-                obfuscationService.obfuscate((Obfuscatable) p, user);
             }
             authenticationAndAuthorizationService.applyTransientViewableFlag(p, user);
 

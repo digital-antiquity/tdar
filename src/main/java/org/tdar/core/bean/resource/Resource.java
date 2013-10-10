@@ -1495,6 +1495,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Override
     public List<Obfuscatable> obfuscate() {
         setObfuscatedObjectDifferent(false);
+        setObfuscated(true);
         List<Obfuscatable> toObfuscate = new ArrayList<>();
         toObfuscate.addAll(getLatitudeLongitudeBoxes());
         toObfuscate.add(getSubmitter());

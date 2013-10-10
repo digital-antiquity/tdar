@@ -1,5 +1,8 @@
 package org.tdar.core.bean.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,10 +21,13 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.HasResource;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * $Id$
@@ -39,7 +45,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
         @Index(name = "creatorid", columnNames = {"creator_id"}),
         @Index(name = "rescreator_resid", columnNames = {"resource_id"})
 })
-public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource> {
+public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>,Obfuscatable {
 
     private static final long serialVersionUID = 7641781600023145104L;
 
@@ -55,6 +61,10 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
     @Column(length = 255)
     private ResourceCreatorRole role;
+
+    private Boolean obfuscatedObjectDifferent = false;
+
+    private boolean obfuscated;
 
     public ResourceCreator(Creator creator, ResourceCreatorRole role) {
         setCreator(creator);
@@ -146,5 +156,33 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
             toReturn = String.format("%s_%s_%s", code, creatorToFormat.getId(), role).toLowerCase();
         }
         return toReturn;
+    }
+
+    @Override
+    public boolean isObfuscated() {
+        return obfuscated;
+    }
+
+    @Override
+    public List<Obfuscatable> obfuscate() {
+        List<Obfuscatable> toObfuscate = new ArrayList<>();
+        toObfuscate.add(getCreator());
+        setObfuscated(true);
+        return toObfuscate;
+    }
+
+    @Override
+    public void setObfuscated(boolean obfuscated) {
+        this.obfuscated = obfuscated;
+    }
+
+    @Override
+    public Boolean getObfuscatedObjectDifferent() {
+        return obfuscatedObjectDifferent;
+    }
+
+    @Override
+    public void setObfuscatedObjectDifferent(Boolean value) {
+        this.obfuscatedObjectDifferent = value;
     }
 }

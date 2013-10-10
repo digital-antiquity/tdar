@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
@@ -82,6 +83,9 @@ public class RssService implements Serializable {
     private UrlService urlService;
 
     @Autowired
+    private ObfuscationService obfuscationService;
+
+    @Autowired
     private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
     public static String cleanStringForXML(String input) {
@@ -122,7 +126,9 @@ public class RssService implements Serializable {
         for (I resource_ : handler.getResults()) {
             if (resource_ instanceof Viewable && !((Viewable) resource_).isViewable())
                 continue;
-
+            if (resource_ instanceof Obfuscatable) {
+                obfuscationService.obfuscate((Obfuscatable)resource_,handler.getAuthenticatedUser());
+            }
             SyndEntry entry = new SyndEntryImpl();
             if (resource_ instanceof OaiDcProvider) {
                 OaiDcProvider oaiResource = (OaiDcProvider) resource_;

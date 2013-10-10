@@ -86,7 +86,7 @@ public class TdarConfiguration {
         if (ImageUtilities.isMediaLibAvailable()) {
             logger.info("JAI ImageIO available and configured");
         } else {
-            logger.error("JAI-ImageIO is not properly installed with Native Libraries\n\nInstructions for Installation: http://docs.geoserver.org/latest/en/user/production/java.html");
+            logger.error("\n\n\t *** JAI-ImageIO is not properly installed with Native Libraries *** \n\t *** Instructions for Installation: http://docs.geoserver.org/latest/en/user/production/java.html *** \n\n");
             if (isProductionEnvironment()) {
                 throw new IllegalStateException("cannot start up in production without JAI");
             }
