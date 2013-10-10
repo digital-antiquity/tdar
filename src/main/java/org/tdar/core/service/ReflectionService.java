@@ -10,6 +10,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -507,7 +508,8 @@ public class ReflectionService {
         // iterate up the package hierarchy
         while (cls.getPackage().getName().startsWith("org.tdar.")) {
             for (Method method : cls.getDeclaredMethods()) {
-                if (method.getName().startsWith("get")) {
+                
+                if (Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")) {
                     declaredFields.add(method);
                 }
             }

@@ -47,6 +47,7 @@ public class ObfuscationService {
          */
 
         if (target == null || target.isObfuscated()) {
+            logger.debug("target is already obfuscated or null: {} ({}}", target, user);
             return;
         }
 
@@ -55,6 +56,7 @@ public class ObfuscationService {
 //        }
 
         if (authService.isEditor(user)) {
+            logger.debug("user is editor: {} ({}}", target, user);
             return;
         }
         

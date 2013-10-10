@@ -360,7 +360,7 @@ No coding rules have been entered for this coding sheet yet.
                   <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
                   <!-- ${resource.managedGeographicKeywords } -->
                   <#if editor>
-	                  <#if resource.firstActiveLatitudeLongitudeBox.actuallyObfuscated> [obfuscated]</#if>
+	                  <#if resource.firstActiveLatitudeLongitudeBox.actuallyObfuscated!false> [obfuscated]</#if>
                   </#if>
                 </p>
             </div>
