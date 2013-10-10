@@ -71,6 +71,7 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.KeywordNode;
@@ -453,6 +454,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         return advancedSearch();
     }
 
+    @DoNotObfuscate
     public LatitudeLongitudeBox getMap() {
         if (CollectionUtils.isNotEmpty(getReservedSearchParameters()
                 .getLatitudeLongitudeBoxes())) {
