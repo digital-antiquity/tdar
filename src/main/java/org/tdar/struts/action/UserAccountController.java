@@ -30,6 +30,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.interceptor.HttpsOnly;
 import org.tdar.struts.interceptor.PostOnly;
@@ -201,6 +202,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @HttpsOnly
     @PostOnly
     @WriteableSession
+    @DoNotObfuscate
     public String create() {
         if (person == null || !isPostRequest()) {
             return ADD;

@@ -31,6 +31,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
+import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.interceptor.PostOnly;
 
@@ -261,6 +262,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return new Person();
     }
 
+    @DoNotObfuscate
     public List<Person> getAuthorizedMembers() {
         return authorizedMembers;
     }
