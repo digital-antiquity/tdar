@@ -496,7 +496,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     @Override
-    @XmlTransient
+//    @XmlTransient
     @JSONTransient
     public List<Obfuscatable> obfuscate() {
         // set directly, as we don't want to reset the obfuscated values
