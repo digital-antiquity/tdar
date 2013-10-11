@@ -13,6 +13,7 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.DoNotObfuscate;
 import org.tdar.utils.Pair;
 
+import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.PreResultListener;
 
@@ -29,6 +30,30 @@ public class ObfuscationResultListener implements PreResultListener {
         this.obfuscationService = obfuscationService;
         this.reflectionService =reflectionService;
         this.user = user;
+    }
+    
+    public void prepareResult(Action action) {
+        Class<? extends Object> controllerClass = action.getClass();
+        logger.info("{}", controllerClass);
+        List<Pair<Method, Class<? extends Obfuscatable>>> testReflection = reflectionService.findAllObfuscatableGetters(controllerClass);
+
+        for (Pair<Method, Class<? extends Obfuscatable>> pair : testReflection) {
+            Method method = pair.getFirst();
+            Class<? extends Obfuscatable> cls = pair.getSecond();
+            if (method.isAnnotationPresent(DoNotObfuscate.class)) {
+                continue;
+            }
+            logger.info("{} <==> {}", method, cls);
+            try {
+                Object obj = method.invoke(action);
+                if (obj == null) {
+                    continue;
+                }
+                obfuscateObject(obj);
+            } catch (Exception e) {
+                logger.debug("{}", e);
+            }
+        }
     }
 
     @Override

@@ -36,9 +36,12 @@ import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.ReflectionService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.ProjectController;
+import org.tdar.struts.interceptor.ObfuscationResultListener;
 
 public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
@@ -555,6 +558,12 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
     }
 
+    @Autowired
+    ObfuscationService obfuscationService;
+
+    @Autowired
+    ReflectionService reflectionService;
+
     @Test
     @Rollback
     public void testSanitizedPersonRecords() {
@@ -569,6 +578,8 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.setMinLookupLength(0);
         controller.lookupPerson();
+        ObfuscationResultListener listener = new ObfuscationResultListener(obfuscationService, reflectionService, null);
+        listener.prepareResult(controller);
         assertTrue(controller.getResults().size() > 0);
         for (Indexable result : controller.getResults()) {
             assertNull(((Person) result).getEmail());
