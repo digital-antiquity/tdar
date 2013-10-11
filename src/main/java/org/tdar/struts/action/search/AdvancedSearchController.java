@@ -454,7 +454,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         return advancedSearch();
     }
 
-    @DoNotObfuscate
+    @DoNotObfuscate(reason="user submitted map")
     public LatitudeLongitudeBox getMap() {
         if (CollectionUtils.isNotEmpty(getReservedSearchParameters()
                 .getLatitudeLongitudeBoxes())) {

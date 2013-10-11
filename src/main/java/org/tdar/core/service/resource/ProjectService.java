@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.client.solrj.request.CoreAdminRequest.Persist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -19,6 +21,8 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.ServiceInterface;
+
+import com.google.common.collect.Lists;
 
 /**
  * $Id$
@@ -96,6 +100,9 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     @Transactional(readOnly = true)
     public List<Resource> findSparseTitleIdProjectListByPerson(Person person, boolean isAdmin) {
+        if (Persistable.Base.isNullOrTransient(person)) {
+            return Collections.EMPTY_LIST;
+        }
         return authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true);
     }
 

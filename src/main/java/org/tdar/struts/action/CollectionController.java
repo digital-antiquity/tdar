@@ -346,7 +346,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         return allSubmittedProjects;
     }
 
-    @DoNotObfuscate
+//    @DoNotObfuscate
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {
             boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());

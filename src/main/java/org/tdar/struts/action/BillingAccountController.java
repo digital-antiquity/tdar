@@ -262,7 +262,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return new Person();
     }
 
-    @DoNotObfuscate
+    @DoNotObfuscate(reason="needs access to Email Address on view page")
     public List<Person> getAuthorizedMembers() {
         return authorizedMembers;
     }

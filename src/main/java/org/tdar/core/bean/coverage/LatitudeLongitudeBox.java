@@ -485,6 +485,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     private transient Boolean obfuscatedObjectDifferent;
 
+    @XmlTransient
+    @JSONTransient
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }
@@ -494,6 +496,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     @Override
+    @XmlTransient
+    @JSONTransient
     public List<Obfuscatable> obfuscate() {
         // set directly, as we don't want to reset the obfuscated values
         obfuscatedObjectDifferent = false;

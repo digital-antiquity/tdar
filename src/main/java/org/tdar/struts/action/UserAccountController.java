@@ -202,7 +202,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @HttpsOnly
     @PostOnly
     @WriteableSession
-    @DoNotObfuscate
+    @DoNotObfuscate(reason="person may have not been set on the session before sent to obfuscator, so don't want to wipe email")
     public String create() {
         if (person == null || !isPostRequest()) {
             return ADD;

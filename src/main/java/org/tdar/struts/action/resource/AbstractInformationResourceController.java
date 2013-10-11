@@ -460,7 +460,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * The return list is mostly sorted, with the exception of Project.NULL
      * which is always the first item in the list
      */
-    @DoNotObfuscate
+    @DoNotObfuscate(reason="always called by edit pages, so it shouldn't matter, also bad if called when user is anonymous")
     public List<Resource> getPotentialParents() {
         logger.info("get potential parents");
         if (potentialParents == null) {

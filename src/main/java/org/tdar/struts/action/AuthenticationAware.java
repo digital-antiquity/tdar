@@ -35,16 +35,16 @@ import org.tdar.web.SessionDataAware;
 })
 public interface AuthenticationAware extends SessionDataAware {
 
-    public static final String TYPE_REDIRECT = "redirect";
+    static final String TYPE_REDIRECT = "redirect";
 
-    public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
+    AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
 
-    @DoNotObfuscate
+    @DoNotObfuscate(reason="never obfuscate the session user")
     Person getAuthenticatedUser();
 
     boolean isAuthenticated();
 
-    public abstract boolean isBillingManager();
+    abstract boolean isBillingManager();
 
     public abstract static class Base extends TdarActionSupport implements AuthenticationAware {
 
@@ -54,7 +54,7 @@ public interface AuthenticationAware extends SessionDataAware {
         private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
         @Override
-        @DoNotObfuscate
+        @DoNotObfuscate(reason="never obfuscate the session user")
         public Person getAuthenticatedUser() {
             if (getSessionData() == null)
                 return null;
