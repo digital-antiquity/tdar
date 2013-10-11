@@ -6,6 +6,6 @@ import org.tdar.core.bean.resource.OntologyNode;
 
 public interface OntologyParser {
 
-    public List<OntologyNode> generate();
+    List<OntologyNode> generate();
 
 }

@@ -11,8 +11,8 @@ package org.tdar.core.bean;
 
 public interface Sequenceable<E extends Sequenceable<E>> extends Comparable<E> {
 
-    public void setSequenceNumber(Integer sequenceNumber);
+    void setSequenceNumber(Integer sequenceNumber);
 
-    public Integer getSequenceNumber();
+    Integer getSequenceNumber();
 
 }

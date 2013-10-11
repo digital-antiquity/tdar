@@ -17,28 +17,28 @@ public interface Indexable extends Persistable {
      * 
      * @param score
      */
-    public void setScore(Float score);
+    void setScore(Float score);
 
     @Transient
     @XmlTransient
-    public Float getScore();
+    Float getScore();
 
     @Transient
     @XmlTransient
-    public Explanation getExplanation();
+    Explanation getExplanation();
 
     @Override
-    public Long getId();
+    Long getId();
 
     /**
      * The Lucene Explanation for why the item was found
      * 
      * @param explanation
      */
-    public void setExplanation(Explanation ex);
+    void setExplanation(Explanation ex);
 
-    public boolean isReadyToIndex();
+    boolean isReadyToIndex();
 
-    public void setReadyToIndex(boolean ready);
+    void setReadyToIndex(boolean ready);
 
 }

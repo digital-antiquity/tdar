@@ -72,7 +72,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    public abstract String store(InputStream content, InformationResourceFileVersion version) throws IOException;
+    abstract String store(InputStream content, InformationResourceFileVersion version) throws IOException;
 
     long getSizeInBytes();
 
@@ -89,7 +89,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    public abstract String storeAndRotate(InputStream content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
+    abstract String storeAndRotate(InputStream content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
 
     /**
      * Write a file to the filestore.
@@ -98,11 +98,11 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    public abstract String store(File content, InformationResourceFileVersion version) throws IOException;
+    abstract String store(File content, InformationResourceFileVersion version) throws IOException;
 
-    public abstract String storeAndRotate(File content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
+    abstract String storeAndRotate(File content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
 
-    public abstract void storeLog(LogType type, String filename, String message);
+    abstract void storeLog(LogType type, String filename, String message);
 
     /**
      * Retrieve the file with the given ID from the store.
@@ -112,7 +112,7 @@ public interface Filestore {
      * @return {@link File} associated with the given ID.
      * @throws {@link FileNotFoundException }
      */
-    public abstract File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException;
+    abstract File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException;
 
     /**
      * Delete the file with the given fileId.
@@ -121,13 +121,13 @@ public interface Filestore {
      *            file identifier
      * @throws {@link IOException }
      */
-    public abstract void purge(InformationResourceFileVersion version) throws IOException;
+    abstract void purge(InformationResourceFileVersion version) throws IOException;
 
-    public abstract String getFilestoreLocation();
+    abstract String getFilestoreLocation();
 
-    public abstract MessageDigest createDigest(File f);
+    abstract MessageDigest createDigest(File f);
 
-    public abstract boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException, TaintedFileException;
+    abstract boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException, TaintedFileException;
 
     public abstract static class BaseFilestore implements Filestore {
         private static final String LOG_DIR = "logs";

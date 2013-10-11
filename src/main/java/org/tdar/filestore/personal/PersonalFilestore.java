@@ -16,19 +16,19 @@ import org.tdar.core.bean.entity.Person;
  */
 public interface PersonalFilestore {
 
-    public String getStoreLocation(Person person);
+    String getStoreLocation(Person person);
 
-    public File store(PersonalFilestoreTicket ticket, File originalFile, String newFileName) throws IOException;
+    File store(PersonalFilestoreTicket ticket, File originalFile, String newFileName) throws IOException;
 
-    public void store(PersonalFilestoreTicket ticket, List<File> files, List<String> newfileNames) throws IOException;
+    void store(PersonalFilestoreTicket ticket, List<File> files, List<String> newfileNames) throws IOException;
 
-    public List<PersonalFilestoreFile> retrieveAll(PersonalFilestoreTicket ticket);
+    List<PersonalFilestoreFile> retrieveAll(PersonalFilestoreTicket ticket);
 
-    public void purge(PersonalFilestoreTicket ticket);
+    void purge(PersonalFilestoreTicket ticket);
 
-    public void purge(Person person, PersonalFileType personalFileType);
+    void purge(Person person, PersonalFileType personalFileType);
 
-    public void purgeQuietly(PersonalFilestoreTicket ticket);
+    void purgeQuietly(PersonalFilestoreTicket ticket);
 
-    public PersonalFilestoreFile retrieve(PersonalFilestoreTicket ticket, String filename);
+    PersonalFilestoreFile retrieve(PersonalFilestoreTicket ticket, String filename);
 }

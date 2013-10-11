@@ -26,9 +26,9 @@ public interface Task extends Serializable {
     /*
      * Pass in the generic context
      */
-    public void setWorkflowContext(WorkflowContext ctx);
+    void setWorkflowContext(WorkflowContext ctx);
 
-    public WorkflowContext getWorkflowContext();
+    WorkflowContext getWorkflowContext();
 
     /**
      * Run method called by the task work flow process. The implicit contract is that if the task exits abnormally, it will throw an exception during
@@ -39,22 +39,22 @@ public interface Task extends Serializable {
      * @see WorkflowContext#setErrorFatal(boolean)
      * @see Workflow#run(WorkflowContext)
      */
-    public void run() throws Exception;
+    void run() throws Exception;
 
     /*
      * setup method
      */
-    public void prepare();
+    void prepare();
 
     /*
      * shutdown method
      */
-    public void cleanup();
+    void cleanup();
 
     /*
      * get the Name of the task (used for logging) etc.
      */
-    public String getName();
+    String getName();
 
     public abstract static class AbstractTask implements Task {
 

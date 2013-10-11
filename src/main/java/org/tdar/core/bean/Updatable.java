@@ -16,7 +16,7 @@ import org.tdar.core.bean.entity.Person;
  */
 public interface Updatable {
 
-    public void markUpdated(Person p);
+    void markUpdated(Person p);
 
-    public Date getDateUpdated();
+    Date getDateUpdated();
 }

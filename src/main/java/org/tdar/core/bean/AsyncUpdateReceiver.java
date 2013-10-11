@@ -12,29 +12,29 @@ import org.tdar.utils.Pair;
  */
 public interface AsyncUpdateReceiver {
 
-    public final static AsyncUpdateReceiver DEFAULT_RECEIVER = new DefaultReceiver();
+    final static AsyncUpdateReceiver DEFAULT_RECEIVER = new DefaultReceiver();
 
-    public void setPercentComplete(float complete);
+    void setPercentComplete(float complete);
 
-    public void setStatus(String status);
+    void setStatus(String status);
 
-    public void setDetails(List<Pair<Long, String>> details);
+    void setDetails(List<Pair<Long, String>> details);
 
-    public void addDetail(Pair<Long, String> detail);
+    void addDetail(Pair<Long, String> detail);
 
-    public String getAsyncErrors();
+    String getAsyncErrors();
 
-    public String getHtmlAsyncErrors();
+    String getHtmlAsyncErrors();
 
-    public List<Pair<Long, String>> getDetails();
+    List<Pair<Long, String>> getDetails();
 
-    public float getPercentComplete();
+    float getPercentComplete();
 
-    public String getStatus();
+    String getStatus();
 
-    public void addError(Throwable t);
+    void addError(Throwable t);
 
-    public void setCompleted();
+    void setCompleted();
 
     public class DefaultReceiver implements AsyncUpdateReceiver {
         private float percentComplete;

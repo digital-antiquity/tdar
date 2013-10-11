@@ -4,14 +4,14 @@ import org.tdar.core.bean.Validatable;
 
 public interface Range<T> extends Validatable {
 
-    public T getStart();
+    T getStart();
 
-    public void setStart(T start);
+    void setStart(T start);
 
-    public T getEnd();
+    T getEnd();
 
-    public void setEnd(T end);
+    void setEnd(T end);
 
-    public boolean isInitialized();
+    boolean isInitialized();
 
 }

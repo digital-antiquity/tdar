@@ -27,14 +27,14 @@ public interface SimpleSearch {
         }
     }
 
-    public static final String TITLE_SORT_REGEX = "^([\\s\\W]|The |A |An )+";
+    static final String TITLE_SORT_REGEX = "^([\\s\\W]|The |A |An )+";
 
-    public String getTitleSort();
+    String getTitleSort();
 
-    public String getTitle();
+    String getTitle();
 
-    public String getDescription();
+    String getDescription();
 
-    public String getUrlNamespace();
+    String getUrlNamespace();
 
 }

@@ -33,37 +33,37 @@ import org.tdar.core.dao.Dao;
 
 public interface ServiceInterface<T, S extends Dao<T>> {
 
-    public T find(Long id);
+    T find(Long id);
 
-    public List<T> findAll();
+    List<T> findAll();
 
-    public List<T> findAll(int start, int numberOfRecords);
+    List<T> findAll(int start, int numberOfRecords);
 
-    public List<T> findAll(List<Long> ids);
+    List<T> findAll(List<Long> ids);
 
-    public List<T> findAllSorted();
+    List<T> findAllSorted();
 
-    public List<T> findAllSorted(String orderingClause);
+    List<T> findAllSorted(String orderingClause);
 
-    public void save(List<?> persistentCollection);
+    void save(List<?> persistentCollection);
 
-    public void save(Object entity);
+    void save(Object entity);
 
-    public void saveOrUpdate(Object entity);
+    void saveOrUpdate(Object entity);
 
-    public void update(Object entity);
+    void update(Object entity);
 
-    public void delete(Object entity);
+    void delete(Object entity);
 
-    public <C> void delete(Object parent, Collection<C> persistentCollection);
+    <C> void delete(Object parent, Collection<C> persistentCollection);
 
-    public void delete(Collection<?> persistentCollection);
+    void delete(Collection<?> persistentCollection);
 
-    public S getDao();
+    S getDao();
 
-    public void setDao(S dao);
+    void setDao(S dao);
 
-    public Number count();
+    Number count();
 
     public static abstract class TypedDaoBase<E, D extends Dao<E>> implements ServiceInterface<E, D> {
 

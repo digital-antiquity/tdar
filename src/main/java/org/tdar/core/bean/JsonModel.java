@@ -16,7 +16,7 @@ import org.tdar.utils.json.WhitelistFilter;
  * JACKSON JSON Conversion through JAXB
  */
 public interface JsonModel extends Serializable {
-    public JSONObject toJSON();
+    JSONObject toJSON();
 
     @XmlTransient
     @XmlType(name = "json")

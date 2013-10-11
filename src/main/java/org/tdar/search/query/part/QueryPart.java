@@ -12,18 +12,18 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
  */
 public interface QueryPart<T> {
 
-    public abstract String generateQueryString();
+    abstract String generateQueryString();
 
-    public abstract boolean isDescriptionVisible();
+    abstract boolean isDescriptionVisible();
 
-    public abstract void setDescriptionVisible(boolean visible);
+    abstract void setDescriptionVisible(boolean visible);
 
-    public abstract String getDescription();
+    abstract String getDescription();
 
-    public abstract String getDescriptionHtml();
+    abstract String getDescriptionHtml();
 
-    public abstract boolean isEmpty();
+    abstract boolean isEmpty();
 
-    public abstract Operator getOperator();
+    abstract Operator getOperator();
 
 }

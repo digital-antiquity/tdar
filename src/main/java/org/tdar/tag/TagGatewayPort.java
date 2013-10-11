@@ -34,7 +34,7 @@ public interface TagGatewayPort {
     @RequestWrapper(localName = "GetTopRecords", targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema", className = "org.tdar.tag.GetTopRecords")
     @ResponseWrapper(localName = "GetTopRecordsResponse", targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema",
             className = "org.tdar.tag.GetTopRecordsResponse")
-    public SearchResults getTopRecords(
+    SearchResults getTopRecords(
             @WebParam(name = "sessionId", targetNamespace = "") String sessionId,
             @WebParam(name = "Query", targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema") Query query,
             @WebParam(name = "numberOfRecords", targetNamespace = "") int numberOfRecords);
@@ -48,7 +48,7 @@ public interface TagGatewayPort {
     @WebMethod(operationName = "GetXsltTemplate", action = "http://archaeologydataservice.ac.uk/tag/schema/GetXsltTemplate")
     @WebResult(name = "GetXsltTemplateResponse", targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema", partName = "parameters")
     @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
-    public GetXsltTemplateResponse getXsltTemplate(
+    GetXsltTemplateResponse getXsltTemplate(
             @WebParam(name = "GetXsltTemplate", targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema", partName = "parameters") GetXsltTemplate parameters);
 
     /**
@@ -61,6 +61,6 @@ public interface TagGatewayPort {
     @RequestWrapper(localName = "GetVersion", targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema", className = "org.tdar.tag.GetVersion")
     @ResponseWrapper(localName = "GetVersionResponse", targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema",
             className = "org.tdar.tag.GetVersionResponse")
-    public String getVersion();
+    String getVersion();
 
 }

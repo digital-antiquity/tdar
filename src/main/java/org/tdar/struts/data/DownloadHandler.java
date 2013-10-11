@@ -6,15 +6,15 @@ import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 
 public interface DownloadHandler extends ActionMessageErrorSupport {
 
-    public void setFileName(String filename);
+    void setFileName(String filename);
 
-    public void setInputStream(InputStream inputStream);
+    void setInputStream(InputStream inputStream);
 
-    public InputStream getInputStream();
+    InputStream getInputStream();
 
-    public void setContentType(String mimeType);
+    void setContentType(String mimeType);
 
-    public void setContentLength(long length);
+    void setContentLength(long length);
 
-    public void setDispositionPrefix(String string);
+    void setDispositionPrefix(String string);
 }

@@ -21,8 +21,8 @@ import org.tdar.struts.data.FacetGroup;
  */
 public interface SearchResultHandler<I extends Indexable> {
 
-    public static final int DEFAULT_START = 0;
-    public static final int DEFAULT_RESULT_SIZE = 25;
+    static final int DEFAULT_START = 0;
+    static final int DEFAULT_RESULT_SIZE = 25;
 
     SortOption getSortField();
 
@@ -74,22 +74,22 @@ public interface SearchResultHandler<I extends Indexable> {
 
     void setMode(String mode);
 
-    public boolean isReindexing();
+    boolean isReindexing();
 
     /*
      * Used for debug statements to print the mode
      */
     String getMode();
 
-    public Person getAuthenticatedUser();
+    Person getAuthenticatedUser();
 
-    public abstract String getSearchTitle();
+    abstract String getSearchTitle();
 
-    public String getSearchDescription();
+    String getSearchDescription();
 
-    public int getNextPageStartRecord();
+    int getNextPageStartRecord();
 
-    public int getPrevPageStartRecord();
+    int getPrevPageStartRecord();
 
     List<String> getProjections();
 

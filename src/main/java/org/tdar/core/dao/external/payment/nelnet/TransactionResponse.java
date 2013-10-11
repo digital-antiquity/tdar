@@ -7,19 +7,19 @@ import org.tdar.core.bean.entity.Address;
 
 public interface TransactionResponse {
 
-    public Map<String, String[]> getValues();
+    Map<String, String[]> getValues();
 
-    public void setValues(Map<String, String[]> values);
+    void setValues(Map<String, String[]> values);
 
-    public Long getInvoiceId();
+    Long getInvoiceId();
 
-    public Address getAddress();
+    Address getAddress();
 
-    public void updateInvoiceFromResponse(Invoice invoice);
+    void updateInvoiceFromResponse(Invoice invoice);
 
-    public boolean validate();
+    boolean validate();
 
-    public String getTransactionId();
+    String getTransactionId();
 
     String getValuesFor(String key);
 

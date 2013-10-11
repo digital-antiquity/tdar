@@ -2,8 +2,8 @@ package org.tdar.core.bean;
 
 public interface Viewable {
 
-    public boolean isViewable();
+    boolean isViewable();
 
-    public void setViewable(boolean viewable);
+    void setViewable(boolean viewable);
 
 }

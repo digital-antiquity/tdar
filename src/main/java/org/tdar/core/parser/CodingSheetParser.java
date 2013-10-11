@@ -17,10 +17,10 @@ import org.tdar.core.bean.resource.CodingSheet;
  */
 public interface CodingSheetParser {
 
-    public final static int CODE_INDEX = 0;
-    public final static int TERM_INDEX = 1;
-    public final static int DESCRIPTION_INDEX = 2;
+    final static int CODE_INDEX = 0;
+    final static int TERM_INDEX = 1;
+    final static int DESCRIPTION_INDEX = 2;
 
-    public List<CodingRule> parse(CodingSheet codingSheet, InputStream stream) throws CodingSheetParserException;
+    List<CodingRule> parse(CodingSheet codingSheet, InputStream stream) throws CodingSheetParserException;
 
 }

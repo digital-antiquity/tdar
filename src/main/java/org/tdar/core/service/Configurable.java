@@ -2,7 +2,7 @@ package org.tdar.core.service;
 
 public interface Configurable {
 
-    public boolean isConfigured();
+    boolean isConfigured();
 
-    public boolean isEnabled();
+    boolean isEnabled();
 }

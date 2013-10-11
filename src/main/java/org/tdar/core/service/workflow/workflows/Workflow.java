@@ -30,21 +30,30 @@ import org.tdar.struts.data.FileProxy;
  */
 public interface Workflow {
 
-    public boolean run(WorkflowContext workflowContext) throws Exception;
+    boolean run(WorkflowContext workflowContext) throws Exception;
 
-    public Set<String> getValidExtensions();
+    Set<String> getValidExtensions();
 
-    public void addTask(Class<? extends Task> task, WorkflowPhase phase);
+    void addTask(Class<? extends Task> task, WorkflowPhase phase);
 
-    public boolean canProcess(String ext);
+    boolean canProcess(String ext);
 
-    public FileType getInformationResourceFileType();
+    FileType getInformationResourceFileType();
 
-    public boolean isEnabled();
+    boolean isEnabled();
 
-    public void registerFileExtension(String ext, ResourceType... types);
+    void registerFileExtension(String ext, ResourceType... types);
 
-    public Set<String> getValidExtensionsForResourceType(ResourceType type);
+    Set<String> getValidExtensionsForResourceType(ResourceType type);
+
+
+    Map<String, List<String>> getRequiredExtensions();
+
+    Map<String, List<String>> getSuggestedExtensions();
+
+    void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] versions);
+
+    boolean validateProxyCollection(FileProxy primary);
 
     public abstract static class BaseWorkflow implements Workflow {
 
@@ -200,13 +209,5 @@ public interface Workflow {
         }
 
     }
-
-    public Map<String, List<String>> getRequiredExtensions();
-
-    public Map<String, List<String>> getSuggestedExtensions();
-
-    public void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] versions);
-
-    public boolean validateProxyCollection(FileProxy primary);
 
 }

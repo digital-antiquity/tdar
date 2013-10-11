@@ -44,17 +44,17 @@ import org.tdar.search.query.QueryFieldNames;
  */
 public interface Persistable extends Serializable {
 
-    public Long getId();
+    Long getId();
 
-    public static final long ONE_MB = 1048576L;
+    static final long ONE_MB = 1048576L;
 
-    public void setId(Long number);
+    void setId(Long number);
 
     /**
      * Returns the list of property objects used for equality comparison and
      * hashCode generation.
      */
-    public List<?> getEqualityFields();
+    List<?> getEqualityFields();
 
     /**
      * Convenience base class for Persistable entities providing JPA annotated

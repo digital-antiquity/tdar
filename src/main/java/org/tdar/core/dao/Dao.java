@@ -33,16 +33,16 @@ public interface Dao<T> {
      * @param id
      * @return persistent entity T with the given id, or null if none exists.
      */
-    public T find(Long id);
+    T find(Long id);
 
     /**
      * Returns all persistent T entities in the database.
      * 
      * @return a List<T> of all persistent T entities in the database.
      */
-    public List<T> findAll();
+    List<T> findAll();
 
-    public List<T> findAll(int start, int numberOfRecords);
+    List<T> findAll(int start, int numberOfRecords);
 
     /**
      * Returns a list of entities that match the set of ids passed in, i.e.,
@@ -51,7 +51,7 @@ public interface Dao<T> {
      * @param ids
      * @return
      */
-    public List<T> findAll(List<Long> ids);
+    List<T> findAll(List<Long> ids);
 
     /**
      * Returns all persistent T entities in the database, sorted according to
@@ -59,9 +59,9 @@ public interface Dao<T> {
      * 
      * @return
      */
-    public List<T> findAllSorted();
+    List<T> findAllSorted();
 
-    public List<T> findAllSorted(String orderByClause);
+    List<T> findAllSorted(String orderByClause);
 
     /**
      * Returns the total number of T entities in the database. Equivalent to
@@ -69,7 +69,7 @@ public interface Dao<T> {
      * 
      * @return
      */
-    public Number count();
+    Number count();
 
     /**
      * Persists each entity in the collection to the database. Assumes that all
@@ -77,7 +77,7 @@ public interface Dao<T> {
      * 
      * @param persistentCollection
      */
-    public void save(Collection<?> persistentCollection);
+    void save(Collection<?> persistentCollection);
 
     /**
      * Saves a fresh entity to the database. Not recommended for updating
@@ -85,52 +85,52 @@ public interface Dao<T> {
      * 
      * @param o
      */
-    public void save(Object o);
+    void save(Object o);
 
-    public void persist(Object o);
+    void persist(Object o);
 
     /**
      * Saves a fresh entity or updates an existing entity to the database.
      * 
      * @param o
      */
-    public void saveOrUpdate(Object o);
+    void saveOrUpdate(Object o);
 
     /**
      * Merges a detached entity (see
      * http://docs.jboss.org/hibernate/stable/entitymanager
      * /reference/en/html/objectstate.html#d0e1318 for more details).
      */
-    public <E> E merge(E entity);
+    <E> E merge(E entity);
 
     /**
      * Updates an existing entity.
      * 
      * @param o
      */
-    public void update(Object o);
+    void update(Object o);
 
     /**
      * Deletes the given entity.
      * 
      * @param o
      */
-    public void delete(Object o);
+    void delete(Object o);
 
     /**
      * Deletes each entity in persistentCollection.
      * 
      * @param persistentCollection
      */
-    public void delete(Collection<?> persistentCollection);
+    void delete(Collection<?> persistentCollection);
 
-    public List<T> findByEqCriteria(Map<String, ?> criteria);
+    List<T> findByEqCriteria(Map<String, ?> criteria);
 
-    public List<T> findAllByProperty(String propertyName, Object propertyValue);
+    List<T> findAllByProperty(String propertyName, Object propertyValue);
 
-    public List<T> findAllFromList(String propertyName, List<?> propertyValues);
+    List<T> findAllFromList(String propertyName, List<?> propertyValues);
 
-    public T findOrCreateById(T entity);
+    T findOrCreateById(T entity);
 
     /**
      * Subclasses receive boilerplate save/delete/find functionality for free.

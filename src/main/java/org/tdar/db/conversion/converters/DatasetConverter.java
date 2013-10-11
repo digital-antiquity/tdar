@@ -31,13 +31,13 @@ public interface DatasetConverter {
      * 
      * @return
      */
-    public List<String> getTableNames();
+    List<String> getTableNames();
 
     void setIndexedContentsFile(File indexedContentsFile);
 
     File getIndexedContentsFile();
 
-    public void setTargetDatabase(TargetDatabase targetDatabase);
+    void setTargetDatabase(TargetDatabase targetDatabase);
 
     /**
      * Imports the given sourceDatabase into the target database.
@@ -46,29 +46,29 @@ public interface DatasetConverter {
      * @param targetDatabase
      * @return
      */
-    public Set<DataTable> execute();
+    Set<DataTable> execute();
 
-    public String getInternalTableName(String originalTableName);
+    String getInternalTableName(String originalTableName);
 
-    public Set<DataTable> getDataTables();
+    Set<DataTable> getDataTables();
 
-    public Set<DataTableRelationship> getKeys();
+    Set<DataTableRelationship> getKeys();
 
-    public DataTable getDataTableByName(String name);
+    DataTable getDataTableByName(String name);
 
-    public Set<DataTableRelationship> getRelationships();
+    Set<DataTableRelationship> getRelationships();
 
-    public void setRelationships(Set<DataTableRelationship> relationships);
+    void setRelationships(Set<DataTableRelationship> relationships);
 
-    public void setInformationResourceFileVersion(InformationResourceFileVersion version);
+    void setInformationResourceFileVersion(InformationResourceFileVersion version);
 
-    public void setFilename(String filename);
+    void setFilename(String filename);
 
-    public String getFilename();
+    String getFilename();
 
-    public List<DataTableRelationship> getRelationshipsWithTable(String tableName);
+    List<DataTableRelationship> getRelationshipsWithTable(String tableName);
 
-    public static final String ERROR_UNABLE_TO_PROCESS = "The system is unable to process this dataset file";
+    static final String ERROR_UNABLE_TO_PROCESS = "The system is unable to process this dataset file";
 
     /**
      * Abstract base class for DatasetConverterS, uses template pattern to ease implementation of execute().

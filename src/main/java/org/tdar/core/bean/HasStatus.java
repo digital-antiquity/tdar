@@ -8,18 +8,18 @@ import org.tdar.core.bean.resource.Status;
  */
 public interface HasStatus {
 
-    public Status getStatus();
+    Status getStatus();
 
-    public void setStatus(Status status);
+    void setStatus(Status status);
 
-    public boolean isDeleted();
+    boolean isDeleted();
 
-    public boolean isActive();
+    boolean isActive();
 
-    public boolean isDraft();
+    boolean isDraft();
 
-    public boolean isFlagged();
+    boolean isFlagged();
 
-    public boolean isDuplicate();
+    boolean isDuplicate();
 
 }

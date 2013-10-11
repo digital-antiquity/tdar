@@ -11,7 +11,7 @@ package org.tdar.web;
  * @version $Rev$
  */
 public interface SessionDataAware {
-    public SessionData getSessionData();
+    SessionData getSessionData();
 
-    public void setSessionData(SessionData sessionData);
+    void setSessionData(SessionData sessionData);
 }

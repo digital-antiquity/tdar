@@ -25,13 +25,13 @@ public interface Validatable {
      */
     @JSONTransient
     @XmlTransient
-    public boolean isValidForController();
+    boolean isValidForController();
 
     /*
      * This is a low-level validation method... it should check for nulls and things hibernate won't like
      */
     @JSONTransient
     @XmlTransient
-    public boolean isValid();
+    boolean isValid();
 
 }
