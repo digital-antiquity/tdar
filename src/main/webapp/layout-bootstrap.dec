@@ -68,7 +68,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>">
-
     <#if qunit>
     <div id="qunit"></div>
     <div id="qunit-fixture">
@@ -80,7 +79,7 @@
                 <#if (authenticatedUser??) > 
 
                     <p id="welcome-menu" class="welcome  screen ">
-                        Welcome back, <a href="">${authenticatedUser.properName}
+                        <@s.text name="menu.welcome_back"/> <a href="">${authenticatedUser.properName}
                         <i class="caret drop-down"></i>
                         </a>
                     </p>
@@ -90,26 +89,25 @@
                         <p>${authenticatedUser.properName}</p>
     
                         <ul>
-                            <li><a href="<@s.url value="/resource/add"/>">Upload a resource</a></li>
-                            <li><a href="<@s.url value="/project/add"/>">Create a project</a></li>
-                            <li><a href="<@s.url value="/collection/add"/>">Create a collection</a></li>
-                            <li><a href="<@s.url value="/dashboard"/>">View my dashboard</a></li>
-                            <li><a href="<@s.url value="/dashboard#bookmarks"/>">Bookmarks</a></li>
+                            <li><a href="<@s.url value="/resource/add"/>"><@s.text name="menu.create_a_resource"/></a></li>
+                            <li><a href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a></li>
+                            <li><a href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a></li>
+                            <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
+                            <li><a href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a></li>
                         </ul>
     
                         <ul>
-                            <li><a href="<@s.url value='/entity/person/myprofile'/>">My Profile</a></li>
-                            <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">Contact Us</a></li>
-                            <li><a href="<@s.url value="/logout"/>">Sign Out</a></li>
+                            <li><a href="<@s.url value='/entity/person/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
+                            <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
+                            <li><a href="<@s.url value="/logout"/>"><@s.text name="menu.logout"/></a></li>
                         </ul>
                         
                         <#if administrator>
                         <ul>
-                            <li>Administrator Options</li>
-                            <li><a href="<@s.url value='/admin'/>">Admin main</a></li>
-                            <li><a href="<@s.url value='/admin/system/activity'/>">System activity</a></li>
-                            <li><a href="<@s.url value='/admin/searchindex/build'/>">reindex</a></li>
-                        </ul>
+                            <li><@s.text name="menu.admin_header"/></li>
+                            <li><a href="<@s.url value='/admin'/>"><@s.text name="menu.admin_main"/></a></li>
+                            <li><a href="<@s.url value='/admin/system/activity'/>"><@s.text name="menu.admin_activity"/></a></li>
+                            <li><a href="<@s.url value='/admin/searchindex/build'/>"><@s.text name="menu.admin_reindex"/></a></li>                        </ul>
                         </#if>
                         
                     </div>
