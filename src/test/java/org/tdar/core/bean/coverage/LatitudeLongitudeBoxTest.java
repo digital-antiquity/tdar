@@ -32,6 +32,16 @@ public class LatitudeLongitudeBoxTest {
         assertFalse(llb.isObfuscatedObjectDifferent());
     }
 
+    @Test
+    public void testInvalid() {
+        LatitudeLongitudeBox llb  = new LatitudeLongitudeBox();
+        try {
+            llb.setMaximumLatitude(1000.0);
+        } catch (Exception e) {
+            logger.error("{}", e);
+        }
+    }
+    
     /**
      * This might seem like a silly test, but is the obfuscation is stable from one call to the next?
      * This test does not ensure that that the obfuscation is stable when the lat long box is persisted and restored, though
