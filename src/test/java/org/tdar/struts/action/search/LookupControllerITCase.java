@@ -566,7 +566,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testSanitizedPersonRecords() {
+    public void testSanitizedPersonRecords() throws Exception {
 
         // important! normally the SessionSecurityInterceptor would mark the session as readonly, but we need to do it manually in a test
         genericService.markReadOnly();

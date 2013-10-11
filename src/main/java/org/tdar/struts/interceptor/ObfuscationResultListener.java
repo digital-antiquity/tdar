@@ -23,18 +23,17 @@ public class ObfuscationResultListener implements PreResultListener {
 
     ObfuscationService obfuscationService;
     ReflectionService reflectionService;
-    
+
     Person user;
-    
+
     public ObfuscationResultListener(ObfuscationService obfuscationService, ReflectionService reflectionService, Person user) {
         this.obfuscationService = obfuscationService;
-        this.reflectionService =reflectionService;
+        this.reflectionService = reflectionService;
         this.user = user;
     }
-    
-    public void prepareResult(Action action) {
+
+    public void prepareResult(Action action) throws Exception {
         Class<? extends Object> controllerClass = action.getClass();
-        logger.info("{}", controllerClass);
         List<Pair<Method, Class<? extends Obfuscatable>>> testReflection = reflectionService.findAllObfuscatableGetters(controllerClass);
 
         for (Pair<Method, Class<? extends Obfuscatable>> pair : testReflection) {
@@ -43,44 +42,23 @@ public class ObfuscationResultListener implements PreResultListener {
             if (method.isAnnotationPresent(DoNotObfuscate.class)) {
                 continue;
             }
-            logger.info("{} <==> {}", method, cls);
-            try {
-                Object obj = method.invoke(action);
-                if (obj == null) {
-                    continue;
-                }
-                obfuscateObject(obj);
-            } catch (Exception e) {
-                logger.debug("{}", e);
+            logger.trace("{} <==> {}", method, cls);
+            // try {
+            Object obj = method.invoke(action);
+            if (obj == null) {
+                continue;
             }
+            obfuscateObject(obj);
+            // } catch (Exception e) {
+            // logger.error("{}", e);
+            // }
         }
     }
 
     @Override
     public void beforeResult(ActionInvocation invocation, String resultCode) {
         try {
-            Class<? extends Object> controllerClass = invocation.getProxy().getAction().getClass();
-            logger.info("{}", controllerClass);
-            List<Pair<Method, Class<? extends Obfuscatable>>> testReflection = reflectionService.findAllObfuscatableGetters(controllerClass);
-
-            for (Pair<Method, Class<? extends Obfuscatable>> pair : testReflection) {
-                Method method = pair.getFirst();
-                Class<? extends Obfuscatable> cls = pair.getSecond();
-                if (method.isAnnotationPresent(DoNotObfuscate.class)) {
-                    continue;
-                }
-                logger.info("{} <==> {}", method, cls);
-                try {
-                    Object obj = method.invoke(invocation.getProxy().getAction());
-                    if (obj == null) {
-                        continue;
-                    }
-                    obfuscateObject(obj);
-                } catch (Exception e) {
-                    logger.debug("{}", e);
-                }
-            }
-
+            prepareResult((Action) invocation.getProxy().getAction());
         } catch (Exception e) {
             logger.debug("{}", e);
             invocation.setResultCode("error");
@@ -88,12 +66,22 @@ public class ObfuscationResultListener implements PreResultListener {
     }
 
     private void obfuscateObject(Object obj) {
+        //because of generic type arguments, the following (duplicate) instance-of checks are necessary in cases where system
+        // returns type of List<I> but we can't figure out what
         if (Iterable.class.isAssignableFrom(obj.getClass())) {
             for (Object obj_ : (Iterable<?>) obj) {
-                obfuscationService.obfuscate((Obfuscatable) obj_, user);
+                if (obj_ instanceof Obfuscatable) {
+                    obfuscationService.obfuscate((Obfuscatable) obj_, user);
+                } else {
+                    logger.error("trying to obfsucate something we shouldn't {}", obj.getClass());
+                }
             }
         } else {
-            obfuscationService.obfuscate((Obfuscatable) obj, user);
+            if (obj instanceof Obfuscatable) {
+                obfuscationService.obfuscate((Obfuscatable) obj, user);
+            } else {
+                logger.error("trying to obfsucate something we shouldn't {}", obj.getClass());
+            }
         }
     }
 

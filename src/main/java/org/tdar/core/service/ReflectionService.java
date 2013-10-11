@@ -221,13 +221,24 @@ public class ReflectionService {
     }
 
     private static Class<?> getType(Type type) {
+        Logger logger = LoggerFactory.getLogger(ReflectionService.class);
+
         if (WildcardType.class.isAssignableFrom(type.getClass())) {
-            return ((WildcardType)type).getUpperBounds().getClass();
+            WildcardType subType = (WildcardType)type;
+            logger.trace(" wildcard type: {} [{}]", type, type.getClass() );
+            logger.trace(" lower: {} upper: {}", subType.getLowerBounds(), subType.getUpperBounds());
+            return subType.getUpperBounds().getClass();
         }
 
         if (type instanceof ParameterizedType) {
             ParameterizedType collectionType = (ParameterizedType) type;
-            return (Class<?>) collectionType.getActualTypeArguments()[0];
+            logger.trace(" parameterized type: {} [{} - {}]", type, type.getClass(), collectionType.getActualTypeArguments());
+            Type subtype = collectionType.getActualTypeArguments()[0];
+            logger.trace(" type: {} subtype: {} ", type, subtype);
+            if (subtype instanceof Type) {
+                return getType(subtype);
+            }
+            return (Class<?>) subtype;
         }
 
         if (type instanceof Class<?>) {
@@ -506,7 +517,12 @@ public class ReflectionService {
         List<Method> declaredFields = new ArrayList<>();
         List<Pair<Method, Class<? extends Obfuscatable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
+        Class<?> actualClass = null; 
         while (cls.getPackage().getName().startsWith("org.tdar.")) {
+            // find first implemented tDAR class (actual class);
+            if (actualClass == null) {
+                actualClass = cls;
+            }
             for (Method method : cls.getDeclaredMethods()) {
                 
                 if (Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")) {
@@ -519,14 +535,21 @@ public class ReflectionService {
         for (Method method : declaredFields) {
             Class<? extends Obfuscatable> type = null;
             // generic collections
-            try {
             if (java.lang.reflect.Modifier.isStatic(method.getModifiers()) || java.lang.reflect.Modifier.isTransient(method.getModifiers())
                     || java.lang.reflect.Modifier.isFinal(method.getModifiers()))
                 continue;
 
+            
+            Class<?> dcl = actualClass;
+//            logger.info("TYPE: {} {} ", method.getGenericReturnType(), method.getName());
+//            logger.info("{} ==> {}", actualClass, method.getDeclaringClass());
+//            logger.info(" {} {} {} ", dcl.getTypeParameters(), dcl.getGenericInterfaces(), dcl.getGenericSuperclass());
+            boolean force = false;
             if (Collection.class.isAssignableFrom(method.getReturnType())) {
                 Class<?> type2 = getType(method.getGenericReturnType());
-                if (Obfuscatable.class.isAssignableFrom((Class<? extends Obfuscatable>) type2)) {
+                if (type2 == null) {
+                    force = true;
+                } else if (Obfuscatable.class.isAssignableFrom((Class<? extends Obfuscatable>) type2)) {
                     type = (Class<? extends Obfuscatable>) type2;
                     logger.trace("\t -> {}", type); // class java.lang.String.
                 }
@@ -538,11 +561,11 @@ public class ReflectionService {
             }
 
             // things to add
-            if (type != null) {
+            if (type != null || force) {
+                if (force) {
+                logger.debug("forcing method to be obfuscated because cannot figure out gneric type {} (good luck)", method);
+                }
                 result.add(new Pair<Method, Class<? extends Obfuscatable>>(method, type));
-            }
-            } catch (Exception e) {
-                logger.error("{} ; {}",method, e);
             }
         }
         return result;

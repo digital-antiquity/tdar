@@ -47,7 +47,7 @@ public class ObfuscationService {
          */
 
         if (target == null || target.isObfuscated()) {
-            logger.debug("target is already obfuscated or null: {} ({}}", target, user);
+            logger.trace("target is already obfuscated or null: {} ({}}", target, user);
             return;
         }
 

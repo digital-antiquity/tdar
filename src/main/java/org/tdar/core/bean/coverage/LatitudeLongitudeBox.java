@@ -131,6 +131,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
      */
+    @JSONTransient
     public boolean isObfuscatedObjectDifferent() {
         if (obfuscatedObjectDifferent == null) {
             logger.debug("should call obfuscate before testing obfuscation");
@@ -167,6 +168,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * http://www.movable-type.co.uk/scripts/html
      */
     protected static Double randomizeIfNeedBe(Double num1, Double num2, int type) {
+        if (num1 == null && num2 == null) {
+            return null;
+        }
         Random r = new Random();
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
