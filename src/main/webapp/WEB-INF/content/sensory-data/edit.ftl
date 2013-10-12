@@ -506,9 +506,6 @@
             $conditionalElems.filter(cssClass).show()
         }
     }
-  
-    //HACK: remove this
-    $(form).FormNavigate("clean");
 </#macro>
  
 </body>
