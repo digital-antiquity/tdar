@@ -364,6 +364,10 @@ public class GenericService {
         genericDao.markWritable();
     }
 
+    public boolean isSessionOpen() {
+        return genericDao.isSessionOpen();
+    }
+
     @Transactional(readOnly = true)
     public Statistics getSessionStatistics() {
         return genericDao.getSessionStatistics();

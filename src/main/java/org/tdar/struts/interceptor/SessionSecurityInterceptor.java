@@ -51,6 +51,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
     @Autowired
     private transient ReflectionService reflectionService;
     private SessionData sessionData;
+    private boolean sessionClosed = false;
 
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
@@ -86,7 +87,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             NDC.push(Activity.formatRequest(ServletActionContext.getRequest()));
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
             if (SessionType.READ_ONLY.equals(mark) || !ReflectionService.methodOrActionContainsAnnotation(invocation, DoNotObfuscate.class)) {
-                invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, sessionData.getPerson()));
+                invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, sessionData.getPerson()));
             }
             String invoke = invocation.invoke();
             return invoke;
@@ -96,6 +97,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             response.setStatus(exception.getStatusCode());
             logger.debug("clearing session due to {} -- returning to {}", exception.getResponseStatusCode(), exception.getResultName());
             genericService.clearCurrentSession();
+            setSessionClosed(true);
             return exception.getResultName();
         } finally {
             try {
@@ -128,6 +130,14 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
     @Override
     public void setSessionData(SessionData sessionData) {
         this.sessionData = sessionData;
+    }
+
+    public boolean isSessionClosed() {
+        return sessionClosed;
+    }
+
+    public void setSessionClosed(boolean sessionClosed) {
+        this.sessionClosed = sessionClosed;
     }
 
 }

@@ -517,4 +517,8 @@ public class GenericDao {
         return getCurrentSession().getSessionFactory().getStatistics();
     }
 
+    public boolean isSessionOpen() {
+        return getCurrentSession().isOpen();
+    }
+
 }

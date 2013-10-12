@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Obfuscatable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
@@ -21,14 +20,16 @@ public class ObfuscationResultListener implements PreResultListener {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    ObfuscationService obfuscationService;
-    ReflectionService reflectionService;
-
+    private ObfuscationService obfuscationService;
+    private ReflectionService reflectionService;
+    private SessionSecurityInterceptor sessionSecurityInterceptor;
     Person user;
 
-    public ObfuscationResultListener(ObfuscationService obfuscationService, ReflectionService reflectionService, Person user) {
+
+    public ObfuscationResultListener(ObfuscationService obfuscationService, ReflectionService reflectionService, SessionSecurityInterceptor sessionSecurityInterceptor, Person user) {
         this.obfuscationService = obfuscationService;
         this.reflectionService = reflectionService;
+        this.sessionSecurityInterceptor = sessionSecurityInterceptor;
         this.user = user;
     }
 
@@ -60,8 +61,12 @@ public class ObfuscationResultListener implements PreResultListener {
         try {
             prepareResult((Action) invocation.getProxy().getAction());
         } catch (Exception e) {
-            logger.debug("{}", e);
-            invocation.setResultCode("error");
+            // if the session is already closed, then we don't want to actually worry about session closed errors
+            // if the session is not closed, then we probably have a real error here
+            logger.error("error durring obfuscation",e);
+            if (sessionSecurityInterceptor != null && !sessionSecurityInterceptor.isSessionClosed()) {
+                invocation.setResultCode("error");
+            } 
         }
     }
 
