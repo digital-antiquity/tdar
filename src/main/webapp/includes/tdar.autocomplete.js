@@ -15,10 +15,11 @@ TDAR.autocomplete = (function() {
     // 'editor', and 'contact'.
     var _caches = {};
     function ObjectCache(acOptions) {
-        this.cache = [];
         this.acOptions = acOptions;
         this.namespace = acOptions.url || "root";
-        this.parentMap = {}
+        this.parentMap = {};
+        this.objectMapper = acOptions.objectMapper || _objectFromAutocompleteParent;
+
         //_caches[this.namespace] = this;
     };
 
@@ -31,7 +32,14 @@ TDAR.autocomplete = (function() {
         //register the fields inside this parent as an 'extra record'. When caller invokes getValues(), this class
         //will generate records based for all the registeredRecords
         register: function(parentElem) {
-            this.parentMap[parentElem.id] = parentElem;
+            var self = this,
+                parentId = parentElem.id;
+            this.parentMap[parentId] = parentElem;
+
+            //if user removes the row then unregister the associated record
+            $(parentElem).bind("remove", function() {
+                self.unregister(parentId);
+            });
         },
 
         unregister: function(parentId) {
@@ -43,7 +51,7 @@ TDAR.autocomplete = (function() {
             var values = [];
             for(var parentId in this.parentMap) {
                 var elem = this.parentMap[parentId];
-                values.push(_objectFromAutocompleteParent(elem));
+                values.push(this.objectMapper(elem));
             }
             return values;
         },
@@ -55,11 +63,11 @@ TDAR.autocomplete = (function() {
     };
 
     //grab cache for specified url or create one
-    function _getCache(url) {
-        if(!_caches[url]) {
-            _caches[url] = new ObjectCache(url);
+    function _getCache(options) {
+        if(!_caches[options.url]) {
+            _caches[options.url] = new ObjectCache(options);
         }
-        return _caches[url];
+        return _caches[options.url];
     }
 
 function _buildRequestData(element) {
@@ -75,6 +83,12 @@ function _buildRequestData(element) {
     return data;
 }
 
+    /**
+     * translate item property values to form fiends contained in a autocompleteParentElement
+     * @param element any .ui-autocomplete-input field contained by the autocompleteParent element
+     * @param item the source object. the function copies the item property values to the input fields under the parent
+     * @private
+     */
 function _applyDataElements(element, item) {
     var $element = $(element);
     if ($element.attr("autocompleteParentElement") != undefined) {
@@ -117,43 +131,60 @@ function _applyDataElements(element, item) {
 
 }
 
-function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
-    var options = {};
-    options.url = "lookup/person";
-    options.dataPath = "people";
-    options.retainInputValueOnSelect = true;
-    options.sortField = 'CREATOR_NAME';
-    options.showCreate = showCreate;
-    options.minLength = 3;
+function _renderPerson(ul, item) {
+    var htmlDoubleEncode = TDAR.common.htmlDoubleEncode,
+        encProperName = htmlDoubleEncode(item.properName),
+        encEmail = htmlDoubleEncode(item.email),
+        institution = item.institution ? item.institution.name || "" : "";
 
-    //unlike insitu we keep the 'term' property because we need it for the new user autocomplete control
-    options.enhanceRequestData = function(requestData) {
-        if (usersOnly) {
-            requestData.registered = true;
+    //double-encode on custom render
+    //FIXME: use tmpl maybe?
+    var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
+        "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + encProperName + "</span><span class='email'>(" +
+        encEmail + ")</span><br/><span class='institution'>" + htmlDoubleEncode(institution) + "</span></p>";
+    if (item.id == -1 && item.showCreate) {
+        htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
+            "<span class='name'><em>Create a new person record</em></span> </p>";
+    }
+    return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);
+};
+
+
+//todo: i'm guessing that the user control may end up using a different objectMapper & customRender
+function _applyUserAutoComplete($elements) {
+    _applyGenericAutocomplete($elements, {
+        url: "lookup/person",
+        dataPath: "people",
+        retainInputValueOnSelect: true,
+        showCreate: false,
+        minLength: 3,
+        customRender: _renderPerson,
+        requestData:  {
+            registered: true
         }
-    };
-
-    options.customRender = function(ul, item) {
-        var htmlDoubleEncode = TDAR.common.htmlDoubleEncode,
-            encProperName = htmlDoubleEncode(item.properName),
-            encEmail = htmlDoubleEncode(item.email),
-            institution = item.institution ? item.institution.name || "" : "";
-
-        //double-encode on custom render
-        //FIXME: use tmpl maybe?
-        var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
-                "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + encProperName + "</span><span class='email'>(" +
-                encEmail + ")</span><br/><span class='institution'>" + htmlDoubleEncode(institution) + "</span></p>";
-        if (item.id == -1 && options.showCreate) {
-            htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
-                    "<span class='name'><em>Create a new person record</em></span> </p>";
-        }
-        return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);
-    };
-    _applyGenericAutocomplete($elements, options);
+    });
 }
 
-function _evaluateAutocompleteRowAsEmpty(element, minCount) {
+function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
+    _applyGenericAutocomplete($elements, {
+        url: "lookup/person",
+        dataPath: "people",
+        retainInputValueOnSelect: true,
+        showCreate: showCreate,
+        minLength: 3,
+        customRender: _renderPerson,
+        requestData:  {
+            registered: usersOnly
+        },
+        objectMapper: function(parentElem) {
+            var obj = _objectFromAutocompleteParent(parentElem)
+            obj.properName = obj.firstName + " " + obj.lastName;
+            return obj;
+        }
+    });
+}
+
+    function _evaluateAutocompleteRowAsEmpty(element, minCount) {
     var req = _buildRequestData($(element));
     var total = 0;
     //FIXME:  I think 'ignored' is irrelevant as defined here.  Can we remove this?
@@ -197,7 +228,7 @@ function _applyGenericAutocomplete($elements, opts) {
         }
     }, opts);
 
-    var cache = _getCache(options.url);
+    var cache = _getCache(options);
 
 
     // if there's a change in the autocomplete, reset the ID to ""
@@ -318,6 +349,7 @@ function _applyGenericAutocomplete($elements, opts) {
                         }
                         createRow.id = -1;
                         createRow.isNewItem = true;
+                        createRow.showCreate = true;
                         values.push(createRow);
                     }
                     responseHolder.callback(values);
