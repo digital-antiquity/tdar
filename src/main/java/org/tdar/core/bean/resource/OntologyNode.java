@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
@@ -53,12 +54,12 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     //FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_start")
-    @IndexColumn(name = "ontology_node_interval_start_index")
+    @Index(name = "ontology_node_interval_start_index")
     private Integer intervalStart;
 
     //FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_end")
-    @IndexColumn(name = "ontology_node_interval_end_index")
+    @Index(name = "ontology_node_interval_end_index")
     private Integer intervalEnd;
 
     @Column(name = "display_name")
@@ -72,7 +73,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @JoinTable(name = "ontology_node_synonym")
     private Set<String> synonyms;
 
-    @IndexColumn(name = "ontology_node_index")
+    @Index(name = "ontology_node_index")
     private String index;
 
     private String iri;

@@ -149,7 +149,7 @@ create temporary table tmp_rpt3 as
     colcount,
     cols,
     case
-    when colcount = 1 then format('@IndexColumn(name = "%s")', index_name, cols)
+    when colcount = 1 then format('@Index(name = "%s")', index_name, cols)
     when colcount > 1 then format('@Table( name="%s", indexes = { @Index(name="%s", columnNames={%s})', table_name,  index_name, cols)
     end fmt
 
