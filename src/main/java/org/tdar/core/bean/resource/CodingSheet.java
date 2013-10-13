@@ -69,6 +69,7 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @ManyToOne
     @JoinColumn(name = "default_ontology_id")
+    @Index(name = "coding_sheet_default_ontology_id_idx")
     private Ontology defaultOntology;
 
     @Field

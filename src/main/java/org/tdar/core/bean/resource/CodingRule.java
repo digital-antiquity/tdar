@@ -37,6 +37,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
+    @Index(name = "coding_rule_coding_sheet_id_idx")
     @ContainedIn
     private CodingSheet codingSheet;
 
@@ -56,6 +57,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ontology_node_id")
+    @Index(name = "coding_rule_ontology_node_id_idx")
     private OntologyNode ontologyNode;
 
     private transient long count = -1L;

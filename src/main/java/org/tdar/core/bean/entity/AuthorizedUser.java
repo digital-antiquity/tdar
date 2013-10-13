@@ -24,7 +24,9 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @org.hibernate.annotations.Table( appliesTo="authorized_user", indexes = {
         @Index(name="authorized_user_cid", columnNames={"id", "resource_collection_id"}),
         @Index(name="authorized_user_cid2", columnNames={"user_id", "resource_collection_id"}),
-        @Index(name="authorized_user_perm", columnNames={"resource_collection_id", "general_permission_int", "user_id"})
+        @Index(name="authorized_user_perm", columnNames={"resource_collection_id", "general_permission_int", "user_id"}),
+        @Index(name = "authorized_user_resource_collection_id_idx", columnNames = {"resource_collection_id"})
+
 })
 @Entity
 public class AuthorizedUser extends Base implements Persistable {
@@ -51,6 +53,7 @@ public class AuthorizedUser extends Base implements Persistable {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "user_id")
+    @Index(name = "authorized_user_user_id_idx")
     private Person user;
 
     private transient boolean enabled = false;
