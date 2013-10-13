@@ -172,8 +172,7 @@ public class TdarConfiguration {
      * @return
      */
     private Filestore loadFilestore() {
-        String filestoreClassName = assistant.getStringProperty("file.store.class",
-                PairtreeFilestore.class.getCanonicalName());
+        String filestoreClassName = assistant.getStringProperty("file.store.class", PairtreeFilestore.class.getCanonicalName());
         Filestore filestore = null;
 
         File filestoreLoc = new File(getFileStoreLocation());
@@ -269,8 +268,7 @@ public class TdarConfiguration {
     }
 
     public String getFileStoreLocation() {
-        return assistant.getStringProperty("file.store.location",
-                "/home/tdar/filestore");
+        return assistant.getStringProperty("file.store.location", "/home/tdar/filestore");
     }
 
     public String getPersonalFileStoreLocation() {
@@ -684,6 +682,7 @@ public class TdarConfiguration {
 
     /**
      * Introduced by TDAR-1978
+     * 
      * @return true if tdar.properties has the property "switchable.map.obfuscation" set to true, false in all other cases.
      */
     public boolean isSwitchableMapObfuscation() {

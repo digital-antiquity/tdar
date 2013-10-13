@@ -147,14 +147,14 @@
 <div class="row">
     <div class="span12 subnav">
         <ul class="subnav-lft">
-            <li><a href="<@s.url value="/search"/>">Search</a></li>
-            <li><a href="<@s.url value="/search/results"/>">Browse</a></li>
-            <li><a href="<@s.url value="/browse/explore"/>">Explore</a></li>
+            <li><a href="<@s.url value="/search"/>"><@s.text name="menu.search"/></a></li>
+            <li><a href="<@s.url value="/search/results"/>"><@s.text name="menu.browse"/></a></li>
+            <li><a href="<@s.url value="/browse/explore"/>"><@s.text name="menu.explore"/></a></li>
               <#if sessionData?? && sessionData.authenticated>
-	              <li><a href="<@s.url value="/dashboard"/>">Dashboard</a></li>
-                  <li><a href="<@s.url value="/workspace/select-tables"/>">Integrate</a></li>
+	              <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
+                  <li><a href="<@s.url value="/workspace/select-tables"/>"><@s.text name="menu.integrate"/></a></li>
                 <#if editor>
-                    <li><a href="<@s.url value="/admin"/>">Admin</a></li>
+                    <li><a href="<@s.url value="/admin"/>"><@s.text name="menu.admin"/></a></li>
                 </#if>
             </#if>
         </ul>
@@ -182,7 +182,7 @@
             </#if>
             <@common.actionmessage />
             <#if ((actionErrors![])?size > 0)>
-            <h3>${siteAcronym} encountered the following problems with your submission</h3>
+            <h3>${siteAcronym} <@s.text name="error.action_error_header"/></h3>
 				<#-- fixme -- @s.actionerrors need to be here, but in some cases, it duplicates errors -->
             	<@s.actionerror cssClass="action-errors" />
             <#if ((stackTraces![])?size > 0)>
@@ -191,7 +191,7 @@
                 <#list stackTraces as _stacktrace>
 <#--don't indent this pre section  -->
 <pre class="pre-scrollable">
-<em>Stacktrace ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
+<em><@s.text name="error.stacktrace"/> ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
 ${_stacktrace?html}
 </pre>
                 </#list>
@@ -248,9 +248,9 @@ ${_stacktrace?html}
             <#include "${themeDir}/footer.dec" />
             <div>
                 <p><small>
-                    build #: ${common.tdarBuildId}
+                    <@s.text name="footer.build_num"/>: ${common.tdarBuildId}
                     <#if authenticatedUser??>
-                       - logged in as: <a href="<@s.url value="/browse/creators/${sessionData.person.id?c}"/>">${sessionData.person.email}</a>
+                       - <@s.text name="footer.logged_in_as"/>: <a href="<@s.url value="/browse/creators/${sessionData.person.id?c}"/>">${sessionData.person.email}</a>
                     </#if>
                 </small></p>
             </div>
