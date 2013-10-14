@@ -2,10 +2,10 @@
 
 	<#macro sidebarDataTop>
         <#if resource.seriesName?has_content>
-            <li><strong>Series name</strong><br>${resource.seriesName}</li>
+            <li><strong>Series Name</strong><br>${resource.seriesName}</li>
         </#if>
         <#if resource.seriesNumber?has_content>
-            <li><strong>Series number</strong><br>${resource.seriesNumber}</li>
+            <li><strong>Series Number</strong><br>${resource.seriesNumber}</li>
         </#if>
         <#if resource.journalName?has_content>
             <li><strong>Journal</strong><br>${resource.journalName}</li>
@@ -17,11 +17,11 @@
 	        <li><strong>Issue</strong><br>${resource.journalNumber}</li>
         </#if>
 
-      <#if resource.bookTitle?has_content>
+      <#if resource.bookTitle?has_content && resource.documentType.bookTitleDisplayed>
           <li><strong>Book Title</strong><br>${resource.bookTitle}</li>
       </#if>
         <#if resource.numberOfVolumes??>
-            <li><strong>Number of volumes</strong><br>${resource.numberOfVolumes}</li>
+            <li><strong>Number of Volumes</strong><br>${resource.numberOfVolumes}</li>
         </#if>
         <#if resource.edition?has_content>
         <li><strong>Edition</strong><br><span itemprop="bookEdition">${resource.edition}</span></li>

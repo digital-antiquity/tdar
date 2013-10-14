@@ -131,7 +131,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name="resource_status", columnNames={"id", "status"}),
         @Index(name="resource_status2", columnNames={"status", "id"}),
 
-        //can't use @IndexColumn on entity fields - they have to go here
+        //can't use @Index on entity fields - they have to go here
         @Index(name = "res_submitterid", columnNames = {"submitter_id"}),
         @Index(name = "res_updaterid", columnNames = {"updater_id"})
 
@@ -221,7 +221,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
 
     //FIXME: I don't think this index helps us.  Can we get rid of it?
-    @IndexColumn(name = "resource_title_index")
+    @Index(name = "resource_title_index")
     @Length(max = 512)
     private String title;
 
@@ -243,7 +243,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_type", length = 255)
-    @IndexColumn(name = "resource_type_index")
+    @Index(name = "resource_type_index")
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private ResourceType resourceType;
