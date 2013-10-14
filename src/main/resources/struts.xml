@@ -44,8 +44,7 @@
                 <interceptor-ref name="store">
                     <param name="operationMode">AUTOMATIC</param>
                 </interceptor-ref>
-                <!-- FIXME: add this back if/when we need localization -->
-                <!-- <interceptor-ref name="i18n"/> -->
+                 <interceptor-ref name="i18n"/> 
                 <interceptor-ref name="checkbox"/>
                 <interceptor-ref name="multiselect"/>
                 <interceptor-ref name="params">
