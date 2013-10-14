@@ -303,6 +303,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             // retain internal collections, but remove any existing shared collections that don't exist in the incoming list of shared collections
             if (!incoming_.contains(resourceCollection) && resourceCollection.isShared()) {
                 toRemove.add(resourceCollection);
+                logger.trace("removing unmatched: {}", resourceCollection);
             }
         }
 
@@ -333,15 +334,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
 
             if (collectionToAdd != null && collectionToAdd.isValid()) {
-                if (Persistable.Base.isNotNullOrTransient(collectionToAdd)
+                if (Persistable.Base.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
                         && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
                     throw new TdarRecoverableRuntimeException(RESOURCE_COLLECTION_RIGHTS_ERROR + collectionToAdd.getTitle());
                 }
                 if (collectionToAdd.isTransient() && shouldSave) {
                     save(collectionToAdd);
                 }
-                // I think something in the next two lines is duplicitive
-                // current.add(collectionToAdd);
 
                 // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
                 collectionToAdd.getResources().add(resource);
