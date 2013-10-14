@@ -810,8 +810,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
             @Override
             public void error(CSSParseException exception) throws CSSException {
-                if (exception.getURI().contains(getBaseUrl())) {
-                    logger.debug("CSS Error: {} ; message: {} line: {} ", exception.getURI(), exception.getMessage(), exception.getLineNumber());
+                String uri = exception.getURI();
+                if (uri.contains(getBaseUrl()) && uri.contains("tdar")) {
+                    logger.error("CSS Error: {} ; message: {} line: {} ", exception.getURI(), exception.getMessage(), exception.getLineNumber());
                 }
             }
         });
