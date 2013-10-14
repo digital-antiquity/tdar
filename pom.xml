@@ -36,7 +36,7 @@
 		<jackson.version>2.2.3</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<truezip.version>7.7.4</truezip.version>
-		<http-components.version>4.2.3</http-components.version>
+		<http-components.version>4.3.1</http-components.version>
 		<display.port></display.port>
 	</properties>
 	<prerequisites>
@@ -341,6 +341,10 @@
 					<artifactId>commons-exec</artifactId>
 					<groupId>org.apache.commons</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>httpclient</artifactId>
+					<groupId>org.apache.httpcomponents</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<!-- <dependency> <groupId>javax.measure</groupId> <artifactId>jsr-275</artifactId> 
@@ -403,6 +407,12 @@
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
 			<version>${jena.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>httpclient</artifactId>
+					<groupId>org.apache.httpcomponents</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
@@ -476,21 +486,13 @@
 			<artifactId>htmlunit</artifactId>
 			<version>2.13</version>
 			<exclusions>
+			<exclusion>
+				<artifactId>httpclient</artifactId>
+				<groupId>org.apache.httpcomponents</groupId>
+			</exclusion>
 			</exclusions>
 		</dependency>
 		<!-- these are required for htmlunit 2.10 -->
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>${http-components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>${http-components.version}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
@@ -984,6 +986,12 @@
 			<artifactId>selenium-java</artifactId>
 			<version>2.35.0</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>httpclient</artifactId>
+					<groupId>org.apache.httpcomponents</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.arquillian.extension</groupId>
