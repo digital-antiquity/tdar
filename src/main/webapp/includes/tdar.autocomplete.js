@@ -374,10 +374,12 @@ function _applyGenericAutocomplete($elements, opts) {
                 };
             }
 
-            //if user selects 'create new' option, add it to the new item cache
+            //if user selects 'create new' option, add it to the new item cache and stop trying to find matches.
             if(ui.item.isNewItem) {
-                cache.register($($elem.attr("autocompleteparentelement")).get());
-                //TODO:  what if user makes changes to autocomplete field after selecting this option?  need to update cached object properties!
+                var $parent = $($elem.attr("autocompleteparentelement"));
+                cache.register($parent.get());
+                $parent.find(".ui-autocomplete-input").autocomplete("disable");
+                $parent.addClass("autocomplete-new-record");
             }
         },
         open : function() {
