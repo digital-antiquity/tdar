@@ -688,4 +688,8 @@ public class TdarConfiguration {
     public boolean isSwitchableMapObfuscation() {
         return assistant.getBooleanProperty("switchable.map.obfuscation");
     }
+
+    public boolean obfuscationInterceptorDisabled() {
+        return assistant.getBooleanProperty("obfuscation.interceptor.disabled",false);
+    }
 }

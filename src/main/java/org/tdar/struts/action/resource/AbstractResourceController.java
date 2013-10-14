@@ -47,6 +47,7 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
@@ -159,6 +160,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         // this may be duplicative... check
         for (ResourceCreator rc : getPersistable().getResourceCreators()) {
+            if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
+                if (rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()) {
+                    getObfuscationService().obfuscate(rc.getCreator(),getAuthenticatedUser());
+                }
+            }
+
             ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
             if (ResourceCreatorRole.getAuthorshipRoles().contains(rc.getRole())) {
                 authorshipProxies.add(proxy);

@@ -49,6 +49,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -59,6 +60,7 @@ import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -92,8 +94,8 @@ public class SearchService {
     private SessionFactory sessionFactory;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
-
+    ObfuscationService obfuscationService;
+    
     @Autowired
     private GenericService genericService;
 
@@ -417,7 +419,10 @@ public class SearchService {
                 Explanation ex = (Explanation) obj[projections.indexOf(FullTextQuery.EXPLANATION)];
                 p.setExplanation(ex);
             }
-            authenticationAndAuthorizationService.applyTransientViewableFlag(p, user);
+            if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
+                obfuscationService.obfuscate((Obfuscatable) p, user);
+            }
+            obfuscationService.getAuthenticationAndAuthorizationService().applyTransientViewableFlag(p, user);
 
             if (p == null) {
                 logger.trace("persistable is null: {}", p);
@@ -542,7 +547,7 @@ public class SearchService {
     public <P extends Persistable> ResourceQueryBuilder buildResourceContainedInSearch(String fieldName, P indexable, Person user) {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-        authenticationAndAuthorizationService.initializeReservedSearchParameters(reservedSearchParameters, user);
+        obfuscationService.getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, user);
         qb.append(reservedSearchParameters);
         qb.setOperator(Operator.AND);
         qb.append(new FieldQueryPart<Long>(fieldName, indexable.getId()));
@@ -626,9 +631,9 @@ public class SearchService {
 
     // remove unauthorized statuses from list. it's up to caller to handle implications of empty list
     public void filterStatusList(List<Status> statusList, Person user) {
-        authenticationAndAuthorizationService.removeIfNotAllowed(statusList, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user);
-        authenticationAndAuthorizationService.removeIfNotAllowed(statusList, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user);
-        authenticationAndAuthorizationService.removeIfNotAllowed(statusList, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user);
+        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user);
+        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user);
+        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user);
     }
 
     /*
@@ -731,7 +736,7 @@ public class SearchService {
         }
         queryBuilder.append(params);
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-        authenticationAndAuthorizationService.initializeReservedSearchParameters(reservedSearchParameters, user);
+        obfuscationService.getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, user);
         queryBuilder.append(reservedSearchParameters);
         return queryBuilder;
     }

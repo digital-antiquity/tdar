@@ -33,6 +33,10 @@ public class ObfuscationService {
             obfuscate(target, user);
         }
     }
+    
+    public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
+        return authService;
+    }
 
     @Transactional(readOnly = true)
     public void obfuscate(Obfuscatable target, Person user) {

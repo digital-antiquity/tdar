@@ -15,6 +15,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
@@ -106,6 +107,9 @@ public class IndexAction extends AuthenticationAware.Base {
                 Resource key = cache.getKey();
                 if (key instanceof InformationResource) {
                     getAuthenticationAndAuthorizationService().applyTransientViewableFlag((InformationResource) key, null);
+                }
+                if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
+                    getObfuscationService().obfuscate(key, getAuthenticatedUser());
                 }
                 getFeaturedResources().add(key);
             }
