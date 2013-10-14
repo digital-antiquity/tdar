@@ -140,7 +140,7 @@
 		<dependency>
 			<groupId>com.joestelmach</groupId>
 			<artifactId>natty</artifactId>
-			<version>0.7</version>
+			<version>0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
@@ -192,7 +192,7 @@
 		<dependency>
 			<groupId>com.ibm.icu</groupId>
 			<artifactId>icu4j</artifactId>
-			<version>51.2</version>
+			<version>52.1</version>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
@@ -232,7 +232,7 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.48c</version>
+			<version>1.48d</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.media.jai</groupId>
@@ -474,7 +474,7 @@
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>
-			<version>2.12</version>
+			<version>2.13</version>
 			<exclusions>
 			</exclusions>
 		</dependency>
@@ -704,7 +704,7 @@
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>2.0.0</version>
+			<version>2.0.1</version>
 		</dependency>
 		<!-- OpenCSV -->
 		<dependency>
@@ -776,12 +776,14 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+<!-- 
 		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>jena</artifactId>
 			<version>2.6.4</version>
 		</dependency>
-		<dependency>
+
+ -->		<dependency>
 			<groupId>edu.asu.lib</groupId>
 			<artifactId>jaxb-document-api</artifactId>
 			<version>1.0.2</version>
@@ -992,7 +994,7 @@
 		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
-			<version>3.1.0</version>
+			<version>3.2.0</version>
 		</dependency>
 	</dependencies>
 	<reporting>

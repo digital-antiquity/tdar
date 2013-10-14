@@ -298,10 +298,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      * @return http return code
      */
     public int gotoPageWithoutErrorCheck(String path) {
-        webClient.setThrowExceptionOnFailingStatusCode(false);
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
         changePage(getPage(path));
         assertNoEscapeIssues();
-        webClient.setThrowExceptionOnFailingStatusCode(true);
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(true);
         return internalPage.getWebResponse().getStatusCode();
     }
 
@@ -1184,9 +1184,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput("loginUsername", user);
         setInput("loginPassword", pass);
         if (expectingErrors) {
-            webClient.setThrowExceptionOnFailingStatusCode(false);
+            webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
             submitFormWithoutErrorCheck("_tdar.Login");
-            webClient.setThrowExceptionOnFailingStatusCode(true);
+            webClient.getOptions().setThrowExceptionOnFailingStatusCode(true);
         } else {
             clickElementWithId("btnLogin");
         }
@@ -1194,7 +1194,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void logout() {
-        webClient.setJavaScriptEnabled(false);
+        webClient.getOptions().setJavaScriptEnabled(false);
         gotoPage("/logout");
     }
 
