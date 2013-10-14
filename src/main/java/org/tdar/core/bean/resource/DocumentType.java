@@ -61,6 +61,16 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         return label;
     }
 
+    public boolean isBookTitleDisplayed() {
+        switch (this) {
+            case BOOK_SECTION:
+                return true;
+            default:
+                return false;
+        }
+        
+    }
+    
     /**
      * Returns the ResourceType corresponding to the String given or null if none exists. Used in place of valueOf since
      * valueOf throws RuntimeExceptions.

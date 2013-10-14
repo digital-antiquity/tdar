@@ -45,6 +45,7 @@ import org.tdar.struts.action.CollectionController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.BrowseController;
+import com.opensymphony.xwork2.Action;
 
 //import static org.hamcrest.MatcherAssert.assertThat;
 public class ResourceCollectionITCase extends AbstractResourceControllerITCase
@@ -240,6 +241,40 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         // });
     }
 
+
+    @Test
+    @Rollback(true)
+    public void testLimitedCollectionPermissions() throws Exception
+    {
+        String email = "a243@basda.com";
+        entityService.delete(entityService.findByEmail(email));
+
+        final Person testPerson = createAndSaveNewPerson(email, "1234");
+        String name = "test collection";
+        String description = "test description";
+
+        InformationResource normal = generateDocumentWithFileAndUser();
+        final Long normalId = normal.getId();
+        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getAdminUser(), GeneralPermissions.ADMINISTER_GROUP),
+                new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_METADATA)));
+        List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal));
+        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, false, users, resources, null);
+
+        final Long id = collection.getId();
+        collection = null;
+
+        DocumentController dcontroller = generateNewInitializedController(DocumentController.class, testPerson);
+        dcontroller.setId(normalId);
+        dcontroller.prepare();
+        dcontroller.getDocument().setTitle("TEST 123");
+        dcontroller.edit();
+        dcontroller.setServletRequest(getServletPostRequest());
+        dcontroller.setAsync(false);
+        String save = dcontroller.save();
+        assertEquals(Action.SUCCESS, save);
+    }
+
+    
     @Test
     @Rollback
     public void testResourceCollectionPermissionsWithDepthController() throws Exception
