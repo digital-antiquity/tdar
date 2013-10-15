@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.hibernate.stat.Statistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -51,6 +53,21 @@ public class AdminActivityController extends AuthenticationAware.Base {
     private HashMap<String, Integer> counters;
     private List<Person> activePeople;
 
+    @Action(value = "active-users",
+    interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+    results = {
+            @Result(name = SUCCESS, location = "list-users.ftl",
+                    params = { "contentType", "application/json" },
+                    type = "freemarker"
+                    ) 
+            })
+    public String listActiveUsers() {
+        // FIXME: filter for localhost before enabling
+//        setActivePeople(getAuthenticationAndAuthorizationService().getCurrentlyActiveUsers());
+        return SUCCESS;
+    }
+
+    
     @Action(value = "activity")
     public String execute() {
         setScheduledProcessesEnabled(TdarConfiguration.getInstance().shouldRunPeriodicEvents());
