@@ -1,0 +1,36 @@
+syntax:glob
+.project
+.settings
+.classpath
+indexes
+target
+bin
+src/main/resources/*.properties
+src/main/resources/*-local-settings.xml
+googlemaps-api-key.js
+logs
+*.jpage
+*.class
+*~
+tags
+*.orig
+*.rej
+.idea/*
+*.iml
+nb-configuration.xml
+nbactions*
+glassfish-web.xml
+.DS_Store
+libpeerconnection.log
+
+.externalToolBuilders\org.eclipse.wst.jsdt.core.javascriptValidator.launch
+syntax: regexp
+^src/main/webapp/robots\.txt$
+
+syntax: regexp
+^src/main/db/log\.txt$
+
+syntax: regexp
+^src/main/resources/jetty-ssl\.keystore$
+syntax: regexp
+^src/test/resources/jetty-ssl\.keystore$
