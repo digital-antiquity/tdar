@@ -23,6 +23,7 @@ glassfish-web.xml
 .DS_Store
 libpeerconnection.log
 
+.externalToolBuilders\org.eclipse.wst.jsdt.core.javascriptValidator.launch
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 

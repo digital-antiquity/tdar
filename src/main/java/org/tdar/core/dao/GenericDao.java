@@ -432,6 +432,10 @@ public class GenericDao {
         return "id";
     }
 
+    public Integer getCurrentSessionHashCode() {
+        return getCurrentSession().hashCode();
+    }
+
     protected Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }

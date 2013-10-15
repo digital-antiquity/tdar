@@ -75,6 +75,10 @@ public class GenericService {
         return Persistable.Base.extractIds(persistables);
     }
 
+    public Integer getCurrentSessionHashCode() {
+        return genericDao.getCurrentSessionHashCode();
+    }
+
     @Transactional(readOnly = false)
     public <T> List<T> findByExample(Class<T> persistentClass, T entity, FindOptions options) {
         return findByExample(persistentClass, entity, null, options);
