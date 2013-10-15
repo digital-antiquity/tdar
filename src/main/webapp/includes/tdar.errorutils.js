@@ -66,7 +66,8 @@
             message: "errorEvent::" +  (evt.message || "(no error message)"),
             filename: evt.filename || "(no filename - probably script from remote host)",
             line: evt.lineno,
-            tag: "(inline script)"
+            tag: "(inline script)",
+            foo: 'bar'
         };
 
         if(tgt !== window) {

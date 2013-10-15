@@ -9,7 +9,7 @@
     <#local srcs = [
                      "/includes/jquery.cookie.js",
                      "/includes/jquery.metadata.2.1/jquery.metadata.js",
-                     "/includes/jquery.maphighlight.local.js",
+                     "/includes/jquery.maphilight-1.2.2.js",
                      "/includes/jquery.textarearesizer.js",
                      "/includes${fakeDirectory}/jquery.FormNavigate.js",
                      "/includes/jquery.watermark-3.1.3.min.js",
