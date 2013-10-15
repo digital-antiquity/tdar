@@ -64,7 +64,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
@@ -419,7 +418,7 @@ public class SearchService {
                 Explanation ex = (Explanation) obj[projections.indexOf(FullTextQuery.EXPLANATION)];
                 p.setExplanation(ex);
             }
-            if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
+            if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() && Persistable.Base.isNullOrTransient(user)) {
                 obfuscationService.obfuscate((Obfuscatable) p, user);
             }
             obfuscationService.getAuthenticationAndAuthorizationService().applyTransientViewableFlag(p, user);
