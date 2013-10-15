@@ -375,7 +375,8 @@ function _applyGenericAutocomplete($elements, opts) {
             }
 
             //if user selects 'create new' option, add it to the new item cache and stop trying to find matches.
-            if(ui.item.isNewItem) {
+            //FIXME: disabling autocomplete 'cache' in default,  will continue in feature branch and merge back when complete
+            if(false && ui.item.isNewItem) {
                 var $parent = $($elem.attr("autocompleteparentelement"));
                 cache.register($parent.get());
                 $parent.find(".ui-autocomplete-input").autocomplete("disable");
