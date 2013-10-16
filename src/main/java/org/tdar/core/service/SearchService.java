@@ -421,7 +421,7 @@ public class SearchService {
                     Explanation ex = (Explanation) obj[projections.indexOf(FullTextQuery.EXPLANATION)];
                     p.setExplanation(ex);
                 }
-                if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
+                if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() && Persistable.Base.isNullOrTransient(user)) {
                     obfuscationService.obfuscate((Obfuscatable) p, user);
                 }
                 obfuscationService.getAuthenticationAndAuthorizationService().applyTransientViewableFlag(p, user);
@@ -629,12 +629,9 @@ public class SearchService {
 
     // remove unauthorized statuses from list. it's up to caller to handle implications of empty list
     public void filterStatusList(List<Status> statusList, Person user) {
-        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DELETED,
-                InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user);
-        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.FLAGGED,
-                InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user);
-        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS,
-                user);
+        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user);
+        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user);
+        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user);
     }
 
     /*
