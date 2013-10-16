@@ -279,22 +279,19 @@ public class Invoice extends Base implements Updatable {
                 Long space = coalesce(activity.getNumberOfMb(), 0L);
                 Long numberOfResources = coalesce(activity.getNumberOfResources(), 0L);
 
-                if (numberOfFiles > 0 && discountedFiles > 0) {
+                if (numberOfFiles > 0L && discountedFiles > 0L) {
                     couponValue += activity.getPrice() * discountedFiles;
                     discountedFiles = 0L;
                 }
 
-                if (space > 0 && discountedSpace > 0) {
+                if (space > 0L && discountedSpace > 0L) {
                     couponValue += activity.getPrice() * discountedSpace;
                     discountedSpace = 0L;
                 }
                 long quantity = item.getQuantity().longValue();
-                if (numberOfFiles != null) {
-                    totalFiles += numberOfFiles * quantity;
-                }
-                if (space != null) {
-                    totalSpaceInMb += space * quantity;
-                }
+                totalFiles += numberOfFiles * quantity;
+                totalSpaceInMb += space * quantity;
+
                 if (numberOfResources != null) {
                     totalResources += numberOfResources * quantity;
                 }
