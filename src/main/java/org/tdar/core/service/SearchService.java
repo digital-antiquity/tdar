@@ -64,6 +64,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
@@ -94,7 +95,7 @@ public class SearchService {
 
     @Autowired
     ObfuscationService obfuscationService;
-    
+
     @Autowired
     private GenericService genericService;
 
@@ -402,11 +403,11 @@ public class SearchService {
      * Taking the projected List<Object[]> and converting them back into something we can use; if using projection, we hydrate those field
      */
     private List<Indexable> convertProjectedResultIntoObjects(SearchResultHandler<?> resultHandler, List<String> projections, List<Object[]> list, Person user) {
-        List<Indexable> toReturn = new ArrayList<Indexable>();
+        List<Indexable> toReturn = new ArrayList<>();
         // we use "projection" to add the score and possibly the explanation in... but we also use it to get back simpler results
         // so we can control things like the JSON lookups to make them superfast because we just need "certain" fields, most of these
         // will just have an "ID" that we hydrate later on
-        for (Object[] obj : (List<Object[]>) list) {
+        for (Object[] obj : list) {
             Indexable p = null;
             Float score = (Float) obj[projections.indexOf(FullTextQuery.SCORE)];
             if (CollectionUtils.isEmpty(resultHandler.getProjections())) { // if we have no projection, do raw cast, we should have inflated object already
@@ -414,21 +415,20 @@ public class SearchService {
             } else {
                 p = createSpareObjectFromProjection(resultHandler, projections, obj, p);
             }
-            if (resultHandler.isDebug()) {
-                Explanation ex = (Explanation) obj[projections.indexOf(FullTextQuery.EXPLANATION)];
-                p.setExplanation(ex);
-            }
-            if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() && Persistable.Base.isNullOrTransient(user)) {
-                obfuscationService.obfuscate((Obfuscatable) p, user);
-            }
-            obfuscationService.getAuthenticationAndAuthorizationService().applyTransientViewableFlag(p, user);
-
             if (p == null) {
-                logger.trace("persistable is null: {}", p);
+                logger.error("Indexable persistable is null!");
             } else {
+                if (resultHandler.isDebug()) {
+                    Explanation ex = (Explanation) obj[projections.indexOf(FullTextQuery.EXPLANATION)];
+                    p.setExplanation(ex);
+                }
+                if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
+                    obfuscationService.obfuscate((Obfuscatable) p, user);
+                }
+                obfuscationService.getAuthenticationAndAuthorizationService().applyTransientViewableFlag(p, user);
                 p.setScore(score);
+                toReturn.add(p);
             }
-            toReturn.add(p);
         }
 
         return toReturn;
@@ -442,7 +442,7 @@ public class SearchService {
         Class<? extends Indexable> cast = (Class<? extends Indexable>) obj[projections.indexOf(FullTextQuery.OBJECT_CLASS)];
         try {
             p = cast.newInstance();
-            Collection<String> fields = (Collection<String>) resultHandler.getProjections();
+            Collection<String> fields = resultHandler.getProjections();
             for (String field : fields) {
                 BeanUtils.setProperty(p, field, obj[projections.indexOf(field)]);
             }
@@ -630,9 +630,12 @@ public class SearchService {
 
     // remove unauthorized statuses from list. it's up to caller to handle implications of empty list
     public void filterStatusList(List<Status> statusList, Person user) {
-        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user);
-        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user);
-        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user);
+        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DELETED,
+                InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user);
+        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.FLAGGED,
+                InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user);
+        obfuscationService.getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS,
+                user);
     }
 
     /*
