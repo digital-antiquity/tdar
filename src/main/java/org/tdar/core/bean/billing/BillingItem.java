@@ -16,7 +16,7 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 
 /*
- * an Activity + quanitty
+ * an Activity + quantity
  */
 @Entity
 @Table(name = "pos_item")

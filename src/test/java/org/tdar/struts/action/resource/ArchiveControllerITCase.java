@@ -4,13 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Archive;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -19,6 +25,7 @@ import org.tdar.struts.action.TdarActionSupport;
  * 
  * @author Martin Paulo
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
 
     private static final Collection<String> ARCHIVE_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "zip", "tar", "bz2", "tgz" });
@@ -58,6 +65,8 @@ public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
         assertTrue(archiveIn.equals(archiveOut));
     }
 
+    // still being worked on
+    @Ignore
     @Test
     @Rollback
     public void doesSave() throws TdarActionException {
@@ -65,8 +74,25 @@ public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
         resource.setTitle("Test");
         resource.setDescription("A JUnit test");
         controller.setServletRequest(getServletPostRequest());
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
+        llb.setMinimumLongitude(0.0003);
+        llb.setMinimumLatitude(0.0001);
+        llb.setMaximumLongitude(0.0002);
+        llb.setMaximumLatitude(0.0004);
+        controller.setLatitudeLongitudeBoxes(Arrays.asList(llb));
+        assertFalse(controller.isSwitchableMapObfuscation());
         String saveResult = controller.save();
+        llb = controller.getResource().getFirstActiveLatitudeLongitudeBox();
+        assertFalse(llb.getMaxObfuscatedLatitude().equals(Double.valueOf(0.0001)));
         assertTrue("Unexpected Action Exceptions were found", controller.getActionErrors().size() == 0);
         assertEquals("Result was expected to be \"SUCCESS\", not " + saveResult, TdarActionSupport.SUCCESS, saveResult);
     }
+    
+    
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
+    public void testIsSwitchableMapObfuscationOnForFaims() {
+        assertTrue(controller.isSwitchableMapObfuscation());
+    }
+
 }

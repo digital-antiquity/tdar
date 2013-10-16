@@ -287,14 +287,14 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
         // now actually build the queries and execute them
         resourceQueryBuilder = new ResourceQueryBuilder();
-        resourceQueryBuilder.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+        resourceQueryBuilder.append(new FieldQueryPart<>("status", Status.ACTIVE));
 
         personQueryBuilder = new PersonQueryBuilder();
-        personQueryBuilder.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+        personQueryBuilder.append(new FieldQueryPart<>("status", Status.ACTIVE));
         institutionQueryBuilder = new InstitutionQueryBuilder();
-        institutionQueryBuilder.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+        institutionQueryBuilder.append(new FieldQueryPart<>("status", Status.ACTIVE));
 
-        records = new ArrayList<OAIRecordProxy>();
+        records = new ArrayList<>();
         int totalPersons = 0;
         int totalInstitutions = 0;
         int totalResources = 0;

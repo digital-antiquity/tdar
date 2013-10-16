@@ -38,6 +38,10 @@
 		<truezip.version>7.7.4</truezip.version>
 		<http-components.version>4.3.1</http-components.version>
 		<display.port></display.port>
+		<!-- following points to the profile directory to use for filtering resources -->
+		<!-- override by redefining in a profile. don't forget to 'clean' when redefining -->
+		<!-- Be warned: Eclipse may have a different active profile in play to the command line -->
+		<build.profile.id>default</build.profile.id>
 	</properties>
 	<prerequisites>
 		<maven>2.2.0</maven>
@@ -46,6 +50,7 @@
 		<name>The Digital Archaeological Record</name>
 		<url>http://www.tdar.org</url>
 	</organization>
+
 	<repositories>
 		<repository>
 			<id>maven.lib.asu.edu</id>
@@ -112,7 +117,7 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>
-		<!-- <repository> 
+		<!-- <repository>
 		    <id>maven2-repository.dev.java.net</id>
 		    <name>Java.net repository</name>
 		    <url>http://download.java.net/maven/2</url>
@@ -128,6 +133,7 @@
 			<url>http://maven.laughingpanda.org/maven2</url>
 		</repository>
 	</repositories>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.tdar</groupId>
 	<artifactId>tdar</artifactId>
@@ -135,6 +141,7 @@
 	<name>The Digital Archaeological Record</name>
 	<url>http://www.tdar.org</url>
 	<description>Preservation of the digital archaeological record for research, analysis, and dissemination</description>
+
 	<!-- 3rd party dependencies and libraries -->
 	<dependencies>
 		<dependency>
@@ -339,8 +346,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- <dependency> <groupId>javax.measure</groupId> <artifactId>jsr-275</artifactId> 
-			<version>1.0.0</version> </dependency> -->
+		<!-- <dependency>
+		    <groupId>javax.measure</groupId>
+		    <artifactId>jsr-275</artifactId> 
+			<version>1.0.0</version>
+		</dependency> -->
 		<dependency>
 			<groupId>rome</groupId>
 			<artifactId>rome</artifactId>
@@ -356,8 +366,12 @@
 			<artifactId>georss-rome</artifactId>
 			<version>0.9.8</version>
 		</dependency>
-		<!-- <dependency> <groupId>com.thoughtworks.xstream</groupId> <artifactId>xstream</artifactId> 
-			<version>1.4.3</version> </dependency> -->		<!-- Spring LDAP -->
+		<!-- <dependency>
+		    <groupId>com.thoughtworks.xstream</groupId>
+		    <artifactId>xstream</artifactId> 
+			<version>1.4.3</version>
+			</dependency> -->      
+		<!-- Spring LDAP -->
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core</artifactId>
@@ -441,8 +455,11 @@
 			<artifactId>gt-epsg-hsql</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.geotools</groupId> <artifactId>gt-epsg-wkt</artifactId> 
-			<version>${geotools.version}</version> </dependency> -->
+		<!-- <dependency>
+		    <groupId>org.geotools</groupId>
+		    <artifactId>gt-epsg-wkt</artifactId> 
+			<version>${geotools.version}</version>
+		</dependency> -->
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-geotiff</artifactId>
@@ -884,15 +901,12 @@
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-dbutils</groupId>
 			<artifactId>commons-dbutils</artifactId>
 			<version>1.5</version>
 		</dependency>
-
 		<!-- OData (odata4j) Stuff: Begin -->
-
 		<dependency>
 			<groupId>org.odata4j</groupId>
 			<artifactId>odata4j-core</artifactId>
@@ -908,7 +922,6 @@
 			<artifactId>odata4j-fit</artifactId>
 			<version>${odata4j.version}</version>
 		</dependency>
-
 		<!-- OData REST Infrastructure -->
 		<dependency>
 			<groupId>com.sun.net.httpserver</groupId>
@@ -961,7 +974,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- OData Integration Testing Support -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -969,9 +981,7 @@
 			<version>${jetty.version}</version>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- OData (odata4j) Stuff: End -->
-
 		<!-- Selenium tests -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
@@ -997,6 +1007,7 @@
 			<version>3.2.0</version>
 		</dependency>
 	</dependencies>
+
 	<reporting>
 		<plugins>
 			<plugin>
@@ -1030,15 +1041,15 @@
 							<report>issue-tracking</report>
 							<report>license</report>
 							<report>scm</report>
-							<!-- <report>findbugs</report> 
+							<!-- <report>findbugs</report>
 							<report>checkstyle</report> -->
 						</reports>
 					</reportSet>
 				</reportSets>
 			</plugin>
-
 		</plugins>
 	</reporting>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>maven.java.net</id>
@@ -1051,8 +1062,41 @@
 			<url>http://oss.sonatype.org/content/repositories/github-releases</url>
 		</pluginRepository>
 	</pluginRepositories>
+
 	<build>
 		<finalName>ROOT</finalName>
+		<resources>
+			<!-- We only want a small set of files to be filtered. -->
+			<resource>
+				<!-- So we switch filerting off for all but the set -->
+				<filtering>false</filtering>
+				<directory>${basedir}/src/main/resources</directory>
+				<excludes>
+					<exclude>tdar.properties</exclude>
+					<exclude>crowd.properties</exclude>
+					<exclude>hibernate.properties</exclude>
+					<exclude>log4j.properties</exclude>
+					<exclude>common.json</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<!-- And on for the set of files -->
+				<!-- Having to do it as mutally excluse seems brain dead, but that's how Maven works -->
+				<!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+				<filtering>true</filtering>
+				<directory>${basedir}/src/main/resources</directory>
+				<includes>
+					<include>tdar.properties</include>
+					<include>crowd.properties</include>
+					<include>hibernate.properties</include>
+					<include>log4j.properties</include>
+					<include>common.json</include>
+				</includes>
+			</resource>
+		</resources>
+		<filters>
+			<filter>${basedir}/src/main/release/profiles/${build.profile.id}/config.properties</filter>
+		</filters>
 		<testResources>
 			<testResource>
 				<directory>src/main/webapp</directory>
@@ -1062,8 +1106,10 @@
 					<include>WEB-INF/*.xml</include>
 				</includes>
 			</testResource>
-			<!-- <testResource> <directory>src/main/resources</directory> <filtering>true</filtering> 
-				</testResource> -->
+			<!-- <testResource> 
+			    <directory>src/main/resources</directory>
+			    <filtering>true</filtering> 
+			</testResource> -->
 			<testResource>
 				<directory>src/test/resources</directory>
 			</testResource>
@@ -1111,11 +1157,11 @@
 				<version>${clover.version}</version>
 				<configuration>
 					<license><![CDATA[PrONwMWvXwTFNoOAnUHndHXkQQsReQtxxAircrptPwNRAO
-									mi2K40jqdhAtiGeu1Ay<awpH2Ka70mvufpBxuELnxRWCCi
-									PQROuvNMMOooOnnqRRMwtpQnrQopmQnPRmxwXsxQXSssvU
-									XRuVtVSVsXXUSXxtQVwwWwVxTqrmnmqmUUnpqsvqmmmmmm
-									mUUnpqsvqmmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
-									bZloaUUnmm]]></license>
+                                    mi2K40jqdhAtiGeu1Ay<awpH2Ka70mvufpBxuELnxRWCCi
+                                    PQROuvNMMOooOnnqRRMwtpQnrQopmQnPRmxwXsxQXSssvU
+                                    XRuVtVSVsXXUSXxtQVwwWwVxTqrmnmqmUUnpqsvqmmmmmm
+                                    mUUnpqsvqmmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+                                    bZloaUUnmm]]></license>
 					<includes>
 						<include>**/*.java</include>
 					</includes>
@@ -1327,20 +1373,54 @@
 							</tasks>
 						</configuration>
 					</execution>
+					<execution>
+					    <!-- when doing a tomcat redeploy these directories need to be created -->
+						<id>ant-run-tomcat-redeploy</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<mkdir dir="target" />
+								<mkdir dir="target/generated" />
+								<mkdir dir="target/generated/db" />
+								<mkdir dir="target/generated/webapp" />
+								<mkdir dir="target/generated/webapp-test" />
+							</tasks>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
-				<!-- <repository> <id>maven.org</id> <url>http://repo2.maven.org/maven2</url> 
-					</repository> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-maven-plugin</artifactId> 
-					<version>9.0.0.RC0</version> <configuration> <testClassesDirectory>src/test/resources/</testClassesDirectory> 
-					<useTestScope>${use.test.classpath}</useTestScope> <connectors> <connector 
-					implementation="org.eclipse.jetty.server.ServerConnector"> <port>${jetty.port}</port> 
-					<maxIdleTime>60000</maxIdleTime> </connector> <connector implementation="org.eclipse.jetty.server.ServerConnector"> 
-					<port>${jetty.ssl.port}</port> <maxIdleTime>60000</maxIdleTime> <keystore>${project.build.directory}/jetty-ssl.keystore</keystore> 
-					<password>jetty6</password> <keyPassword>jetty6</keyPassword> </connector> 
-					</connectors> <contextPath>/</contextPath> <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml> 
-					<scanIntervalSeconds>0</scanIntervalSeconds> <stopKey>tdar</stopKey> <stopPort>${jetty.stop.port}</stopPort> 
-					</configuration> -->
+				<!-- <repository>
+				    <id>maven.org</id>
+				    <url>http://repo2.maven.org/maven2</url>
+				</repository>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId> 
+				<version>9.0.0.RC0</version>
+				<configuration> 
+				    <testClassesDirectory>src/test/resources/</testClassesDirectory> 
+					<useTestScope>${use.test.classpath}</useTestScope> 
+					<connectors> 
+					    <connector implementation="org.eclipse.jetty.server.ServerConnector">
+					        <port>${jetty.port}</port> 
+					        <maxIdleTime>60000</maxIdleTime>
+					    </connector>
+					    <connector implementation="org.eclipse.jetty.server.ServerConnector"> 
+					        <port>${jetty.ssl.port}</port> 
+					        <maxIdleTime>60000</maxIdleTime>
+					        <keystore>${project.build.directory}/jetty-ssl.keystore</keystore> 
+					        <password>jetty6</password> <keyPassword>jetty6</keyPassword>
+					    </connector> 
+					</connectors> 
+					<contextPath>/</contextPath>
+					<webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml> 
+					<scanIntervalSeconds>0</scanIntervalSeconds>
+					<stopKey>tdar</stopKey>
+					<stopPort>${jetty.stop.port}</stopPort> 
+				</configuration> -->
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jetty.version}</version>
@@ -1352,7 +1432,6 @@
 						<scanTarget>src/main/webapp/WEB-INF/web.xml</scanTarget>
 					</scanTargets>
 					<contextXml>src/main/resources/jetty-context.xml</contextXml>
-
 					<connectors>
 						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
 							<port>${jetty.port}</port>
@@ -1522,10 +1601,27 @@
 					<configLocation>src/main/resources/check_style.xml</configLocation>
 				</configuration>
 			</plugin>
+			<plugin>
+			    <!-- with this plugin we can do the following to push our war file out to the test server -->
+			    <!-- mvn clean package tomcat7:redeploy -P faims_test,default -Dserver="FAIMS Test Server" -->
+			    <!-- note we are using the appropropriate properties declared in the property file in the profile dir: -->
+			    <!--     /src/main/release/profiles/ -->
+			    <!-- there is a nice write up here: http://www.javathinking.com/2013/05/deploying-to-tomcat-7-with-maven.html -->
+			    <!-- a point to remember is that the latest version of tomcat doesn't allow a role to use both manager gui and manager scripts -->
+			    <!-- so we are reduced to a manger scripts role for this deployment -->
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<server>${tomcat.server.id}</server>
+					<url>${tomcat.server.url}</url>
+					<path>/</path>
+				</configuration>
+			</plugin>
 		</plugins>
+
 		<pluginManagement>
 			<plugins>
-
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
@@ -1581,6 +1677,7 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
 	<profiles>
 		<profile>
 			<id>apitool</id>
@@ -1617,7 +1714,6 @@
 					<filter>src/test/resources/hibernate.properties</filter>
 				</filters>
 				<plugins>
-
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
@@ -1638,7 +1734,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
 				</plugins>
 			</build>
 			<properties>
@@ -1655,6 +1750,12 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
+				<!-- These are the default passwords for running locally when developing -->
+				<!-- For more secret passwords, place them in settings.xml in the ~.m2 directory -->
+				<!-- as per: http://maven.apache.org/settings.html -->
+				<!-- For even more secret passwords, encrypt them: http://maven.apache.org/guides/mini/guide-encryption.html -->
+				<application.password>tdardev.crowdpw</application.password>
+				<the.jdbc.password>tdar</the.jdbc.password>
 				<webapp.deploy.dir>/opt/webapps/tdar</webapp.deploy.dir>
 			</properties>
 		</profile>
@@ -1981,10 +2082,10 @@
 			</build>
 		</profile>
 	</profiles>
+
 	<scm>
 		<url>https://bitbucket.org/tdar/tdar.dev</url>
 		<connection>scm:hg:file://${basedir}</connection>
 		<developerConnection>scm:hg:file://${basedir}</developerConnection>
-
 	</scm>
 </project>
