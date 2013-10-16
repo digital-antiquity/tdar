@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
@@ -64,6 +65,8 @@ public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
         assertTrue(archiveIn.equals(archiveOut));
     }
 
+    // still being worked on
+    @Ignore
     @Test
     @Rollback
     public void doesSave() throws TdarActionException {
