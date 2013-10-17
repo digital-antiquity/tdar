@@ -75,10 +75,14 @@
 							</tbody>
 							</table>
 					</div>
-					<@s.textfield name="code" label="Redeem Code" />
-				    <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" span="span4" />
 				</div>
 		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span8 offset4">
+				<@s.textfield name="code" label="Redeem Code" />
+			    <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" span="span4" />
 	</div>
 </div>
 
@@ -120,7 +124,7 @@
         <label class="control-label">Invoice Owner</label>
         <div class="controls">
         
-                <@edit.registeredUserRow person=blankAuthorizedUser.user _indexNumber="" includeRepeatRow=false/>
+                <@edit.registeredUserRow prefix="owner" person=blankAuthorizedUser.user _indexNumber="" includeRepeatRow=false/>
 
             <@nav.clearDeleteButton id="clearAssignedOwner" />
         </div>
