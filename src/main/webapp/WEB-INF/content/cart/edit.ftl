@@ -9,6 +9,11 @@
 #convert {
 	margin-left:10px;
 }
+
+#editFormActions {
+	border: none;
+	background: none;
+}
 </style>
 </head>
 <#macro pricingOption label files storage cost id=label?lower_case>
