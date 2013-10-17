@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -264,6 +265,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
     }
 
+    @Ignore
     @Test
     @Rollback
     public void testDatasetWithMappings() throws Exception {

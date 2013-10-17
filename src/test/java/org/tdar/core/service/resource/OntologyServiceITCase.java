@@ -15,6 +15,7 @@ import java.io.FileReader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.StringInputStream;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -67,6 +68,7 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
     }
 
+    @Ignore
     @Test
     @Rollback
     public void testProperParsing() throws Exception {
