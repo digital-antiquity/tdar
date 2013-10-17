@@ -6,6 +6,9 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Workbook;
 
+/*
+ * An enum "helper" to simplify dealing with formatting Excel/POI Objects
+ */
 public enum CellFormat {
     NORMAL(HSSFFont.BOLDWEIGHT_NORMAL),
     BOLD(HSSFFont.BOLDWEIGHT_BOLD);

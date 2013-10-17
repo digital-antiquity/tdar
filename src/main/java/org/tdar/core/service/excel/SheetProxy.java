@@ -13,7 +13,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 
 /**
- * A sheet proxy holds context needed to construct one or more sheets
+ * A sheet proxy holds context needed to construct one or more sheets; it's goal is to attempt to hide Excel / POI from whatever is writing to it
  * 
  * @author jimdevos
  * @param <T>

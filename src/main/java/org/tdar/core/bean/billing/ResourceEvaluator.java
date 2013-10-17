@@ -21,14 +21,15 @@ import org.tdar.core.exception.TdarValidationException;
  * This class is designed to help figure out what resources (files, resources, space) that a tDAR Resource is taking up.
  * Some resources, like Ontologies, CodingSheets, etc. you get for free.
  * 
- * A Resource Evaluator is initialized with a BillingModel which tells it some of how to evaluate things ... as we decide, wa may need to port more of the decisions into that boolean logic
+ * A Resource Evaluator is initialized with a BillingModel which tells it some of how to evaluate things ... as we decide, we
+ * may need to port more of the decisions into that boolean logic
  * 
- * 
- * This class is not designed to be reused
  */
 public class ResourceEvaluator implements Serializable {
 
     private static final long serialVersionUID = 3621509880429873050L;
+    
+    
     private boolean includeDeletedFilesInCounts = false;
     private boolean includeAllVersionsInCounts = false;
     private List<ResourceType> uncountedResourceTypes = Arrays.asList(ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.PROJECT);
@@ -40,17 +41,29 @@ public class ResourceEvaluator implements Serializable {
     private Set<Long> resourceIds = new HashSet<Long>();
     private BillingActivityModel model;
 
+    /*
+     * Creates a Resource Evaluator passing in a @link BillingActivityModel to specify what charges get charged
+     * @param BillingActivityModel model the billing model to use
+     */
     public ResourceEvaluator(BillingActivityModel model) {
         this.model = model;
     }
 
+    /*
+     * Creates a Resource Evaluator passing in a @link BillingActivityModel to specify what charges get charged, and a set of @link Resource(s) to evaluate
+     * 
+     * @param BillingActivityModel model the billing model to use
+     * 
+     * @param Resource[] resources to evaluate
+     */
     public ResourceEvaluator(BillingActivityModel model, Resource... resources) {
         this.model = model;
         evaluateResources(resources);
     }
 
     /*
-     * IOC putting all of the logic in one place
+     * Checks that a the account has enough for one resource based on the account balance and the type of resource based on the settings of the
+     * ResourceEvaluator, and the ResourceType.
      */
     public boolean accountHasMinimumForNewResource(Account account, ResourceType resourceType) {
         logger.info("f: {} s: {} r: {}", new Object[] { account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb(), account.getAvailableResources() });
@@ -66,26 +79,36 @@ public class ResourceEvaluator implements Serializable {
         return true;
     }
 
+    /*
+     * Convenience method
+     */
     public void evaluateResources(Collection<Resource> resources) {
         evaluateResources(resources.toArray(new Resource[0]));
     }
 
     /*
-     * Evaluate whether a resource can be added and how it counts when added to an account
+     * Evaluate what a resource "counts" as and set the transient flags on the resource to track usage. Resource has a set of Longs which track current file and
+     * MB usage. The evaluator sets additional flags to track the difference between what was "before" the transaction and what is currently being used.
      */
     public void evaluateResources(Resource... resources) {
 
         for (Resource resource : resources) {
-            if (resource == null)
+            if (resource == null) {
                 continue;
+            }
+
+            // evaluate Resource count
             Status status = Status.ACTIVE;
             if (resource.isTransient()) {
                 logger.warn("Resource {} is transient, it may not be updated properly", resource);
             }
+            // add them to a list of internally tracked resources for future use
             getResourceIds().add(resource.getId());
             if (resource.getStatus() != null) {
                 status = resource.getStatus();
             }
+
+            // esacape if we're dealing with an uncounted status or resource type
             if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(status)) {
                 logger.trace("skipping because of status {} or type: {}", status, resource.getResourceType());
                 resource.setCountedInBillingEvaluation(false);
@@ -93,6 +116,7 @@ public class ResourceEvaluator implements Serializable {
             }
 
             resourcesUsed++;
+            // evaluate file count, then space
             long filesUsed_ = 0;
             long spaceUsed_ = 0;
             if (resource instanceof InformationResource) {
@@ -101,12 +125,15 @@ public class ResourceEvaluator implements Serializable {
                     if (file.isDeleted() && !includeDeletedFilesInCounts) {
                         continue;
                     }
+                    
+                    // composite files, like GIS or datasets are counted differently, one file per composite in total, regardless of actual files
                     if (informationResource.getResourceType().isCompositeFilesEnabled()) {
                         filesUsed = 1;
                     } else {
                         filesUsed_++;
                     }
 
+                    // count space
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         // we use version 1 because it's the original uploaded version
                         if (!includeAllVersionsInCounts && !version.getVersion().equals(1) || !version.isUploaded()) {
@@ -118,6 +145,8 @@ public class ResourceEvaluator implements Serializable {
                     }
                 }
             }
+            
+            // set the transient values
             resource.setSpaceInBytesUsed(spaceUsed_);
             resource.setFilesUsed(filesUsed_);
             spaceUsedInBytes += spaceUsed_;
@@ -194,6 +223,9 @@ public class ResourceEvaluator implements Serializable {
         return model;
     }
 
+    /*
+     * Used to compare two different resource evaluators -- at the beginning of an operation and at the end, for example to see what the effective difference for the account would or should be
+     */
     public void subtract(ResourceEvaluator initialEvaluation) {
         if (!initialEvaluation.getModel().equals(getModel())) {
             throw new TdarValidationException("using two different models ");
