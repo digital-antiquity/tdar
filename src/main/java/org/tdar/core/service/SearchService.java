@@ -695,7 +695,7 @@ public class SearchService {
                     q.append(new FieldQueryPart<>("status", Status.ACTIVE));
                     List<Creator> list = null;
                     logger.trace(q.generateQueryString());
-                    FullTextQuery search = search(q, ((SortOption) null));
+                    FullTextQuery search = search(q, ((SortOption[]) null));
                     search.setMaxResults(maxToResolve);
                     list = search.list();
                     if (CollectionUtils.isNotEmpty(list)) {

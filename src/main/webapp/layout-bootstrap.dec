@@ -5,7 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 
 <#global jquery_version="1.10.2">
-<#global jquery_ui_version="1.9.2">
+<#global jquery_ui_version="1.8.23">
 
 <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
 <#import "/WEB-INF/macros/header.ftl" as header>
@@ -36,7 +36,7 @@
 
 		<link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
 		<#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
-		<link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet" media="print">
+		<link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
 
         <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'>
         <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet">
