@@ -165,6 +165,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         prepIndexedFields(docUnorderdValMap.keySet());
     }
 
+    @Ignore
     @Test
     public void testAuthUser() {
         gotoPage("/document/add");
