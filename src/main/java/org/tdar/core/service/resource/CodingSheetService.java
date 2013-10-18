@@ -23,7 +23,6 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -33,11 +32,10 @@ import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.utils.ExceptionWrapper;
+import org.tdar.utils.MessageHelper;
 
 /**
  * Provides coding sheet upload, parsing/import, and persistence functionality.
- * 
- * FIXME: should translation of table columns exist here? Move to standalone DatasetTranslationService?
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -47,14 +45,10 @@ import org.tdar.utils.ExceptionWrapper;
 @Transactional
 public class CodingSheetService extends AbstractInformationResourceService<CodingSheet, CodingSheetDao> {
 
-    public static final String COULD_NOT_PARSE_FILE = "Couldn't parse %s.  We can only process CSV or Excel files (make sure the file extension is .csv or .xls)";
-    private static final String ERROR_PARSE_UNKNOWN = "The system was unable to parse your coding sheet. Please review your submission try again.";
-    public static final String ERROR_PARSE_DUPLICATE_CODES = "Codes in your coding sheet must be unique.  We detected the following duplicate codes: ";
 
-    public List<CodingSheet> findSparseCodingSheetList() {
-        return getDao().findSparseResourceBySubmitterType(null, ResourceType.CODING_SHEET);
-    }
-
+    /*
+     * Once the @link WorkflowService has processed and parsed the coding sheet, it must be ingested into the database.
+     */
     public void ingestCodingSheet(CodingSheet codingSheet, WorkflowContext ctx) {
         // 1. save metadata for coding sheet file
         // 1.1 Create CodingSheet object, and save the metadata
@@ -93,7 +87,10 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
 
     }
 
-    @Transactional
+    /*
+     * Parses a coding sheet file and adds it to the coding sheet. Part of the Post-Workflow process, and @see ingestCodingSheet; exposed for testing
+     */
+   @Transactional
     protected void parseUpload(CodingSheet codingSheet, InformationResourceFileVersion version)
             throws IOException, CodingSheetParserException {
         // FIXME: ensure that this is all in one transaction boundary so if an exception occurs
@@ -115,14 +112,14 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
                 }
             }
         } catch (Exception e) {
-            throw new CodingSheetParserException(ERROR_PARSE_UNKNOWN);
+            throw new CodingSheetParserException(MessageHelper.getMessage("codingSheet.could_not_parse_unknown"));
         } finally {
             if (stream != null)
                 IOUtils.closeQuietly(stream);
         }
 
         if (CollectionUtils.isNotEmpty(duplicates)) {
-            throw new CodingSheetParserException(ERROR_PARSE_DUPLICATE_CODES, duplicates);
+            throw new CodingSheetParserException("codingSheet.duplicate_keys", duplicates);
         }
 
         Map<String, CodingRule> codeToRuleMap = codingSheet.getCodeToRuleMap();
@@ -137,14 +134,22 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         getDao().saveOrUpdate(codingSheet);
     }
 
+   /*
+    * Factory wrapper to identify a coding sheet parser for a given coding sheet return it
+    * @return CodingSheetParser parser
+    * @throws CodingSheetParserException when a parser cannot be found
+    */
     private CodingSheetParser getCodingSheetParser(String filename) throws CodingSheetParserException {
         CodingSheetParser parser = CodingSheetParserFactory.getInstance().getParser(filename);
         if (parser == null) {
-            throw new CodingSheetParserException(String.format(COULD_NOT_PARSE_FILE, filename));
+            throw new CodingSheetParserException(MessageHelper.getMessage("codingSheet.coul_not_parse", filename));
         }
         return parser;
     }
 
+    /*
+     * Singleton CodingSheetFactory to return the appropriate parser for a @link CodingSheet
+     */
     public static class CodingSheetParserFactory {
         public final static CodingSheetParserFactory INSTANCE = new CodingSheetParserFactory();
 
@@ -168,6 +173,10 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
 
     }
 
+    /*
+     * Each @link CodingRule on the @link CodingSheet can be mapped to an @link OntologyNode ; when saving, we may need to reconcile
+     * these nodes and relationships when re-parsing or modifying a @link CodingSheet because the CodingRules may have changed
+     */
     @Transactional
     public void reconcileOntologyReferencesOnRulesAndDataTableColumns(CodingSheet codingSheet, Ontology ontology) {
         if (ontology == null && codingSheet.getDefaultOntology() == null)
@@ -208,6 +217,9 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         }
     }
 
+    /*
+     * @return List<CodingSheet> associated with the ontology
+     */
     @Transactional(readOnly = true)
     public List<CodingSheet> findAllUsingOntology(Ontology ontology) {
         return getDao().findAllUsingOntology(ontology, Arrays.asList(Status.ACTIVE));
