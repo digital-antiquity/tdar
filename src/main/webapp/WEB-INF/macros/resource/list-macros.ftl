@@ -345,9 +345,11 @@
 <#macro table data cols id="tbl${data.hashCode()?string?url}" cssClass="table tableFormat datatableSortable"  colLabels=cols>
     <table id="${id}" class="${cssClass}">
         <thead>
-            <#list colLabels as colLabel>
-            <th>${colLabel}</th>
-            </#list>
+            <tr>
+                <#list colLabels as colLabel>
+                <th>${colLabel}</th>
+                </#list>
+            </tr>
         </thead>
         <tbody>
             <#list data as dataRow>
@@ -362,7 +364,7 @@
 <#macro easytable data cols id="tblEasyTable" cssClass="table tableFormat datatableSortable" cols=data?keys >
 <@table data cols id cssClass colLabels; rowdata>
     <#list cols as key>
-        <#local val = rowdata[key]>
+        <#local val = rowdata[key]!"">
         <#if val?is_date><#local val = val?datetime></#if>
         <td>${val}</td>
     </#list>
