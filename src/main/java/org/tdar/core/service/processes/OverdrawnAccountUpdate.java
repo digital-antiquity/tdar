@@ -52,7 +52,7 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
         List<Account> accounts = genericDao.findAll(getPersistentClass(), getNextBatch());
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("accounts", accounts);
-        emailService.sendTemplate("overdrawn-admin.ftl", map, SUBJECT);
+        emailService.sendWithFreemarkerTemplate("overdrawn-admin.ftl", map, SUBJECT);
     }
 
     @Override

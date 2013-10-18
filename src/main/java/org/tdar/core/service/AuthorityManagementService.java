@@ -324,7 +324,7 @@ public class AuthorityManagementService {
 
         map.put("referrers", logData.getUpdatedReferrers().entrySet());
         try {
-            emailService.sendTemplate("auth-report.ftl", map, subject);
+            emailService.sendWithFreemarkerTemplate("auth-report.ftl", map, subject);
         } catch (Exception e) {
             logger.warn("could not send email: {} ", e);
         }

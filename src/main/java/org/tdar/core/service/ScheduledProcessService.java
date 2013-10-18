@@ -57,6 +57,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     private static final long ONE_MIN_MS = 60000;
     private static final long FIVE_MIN_MS = ONE_MIN_MS * 5;
     private static final long TWO_MIN_MS = ONE_MIN_MS * 2;
+    
     @Autowired
     private SearchIndexService searchIndexService;
     @Autowired

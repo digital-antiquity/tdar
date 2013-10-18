@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
@@ -165,7 +166,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         prepIndexedFields(docUnorderdValMap.keySet());
     }
 
-    @Ignore
     @Test
     public void testAuthUser() {
         gotoPage("/document/add");
