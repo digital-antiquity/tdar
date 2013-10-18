@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
@@ -49,7 +50,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     private static final String ROBERT = "robert";
     private static final String BOBLOBLAW_BLANK_COM = "bobloblaw@blank.com";
     private static final String UNIVERSITY_OF_TEST = "university of TEST";
-    public static HashMap<String, String> docValMap;
+    public static HashMap<String, String> docValMap = new LinkedHashMap<>();
     public static HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();
     // we will assert the presence of these values, but we don't care what order they appear
@@ -61,7 +62,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
 
     public CompleteDocumentSeleniumWebITCase() {
-        docValMap = new LinkedHashMap<String, String>();
         // removing inline implementation of HashMap to remove serialization warning
         alternateTextLookup.add(AbstractWebTestCase.RESTRICTED_ACCESS_TEXT);
 
@@ -165,6 +165,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         prepIndexedFields(docUnorderdValMap.keySet());
     }
 
+    @Ignore
     @Test
     public void testAuthUser() {
         gotoPage("/document/add");
@@ -263,6 +264,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         logger.trace(find("body").getText());
     }
 
+    @Ignore
     @Test
     public void testCreateDocument() {
         gotoPage("/document/add");
