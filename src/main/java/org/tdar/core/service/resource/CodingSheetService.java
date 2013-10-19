@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -45,6 +46,10 @@ import org.tdar.utils.MessageHelper;
 @Transactional
 public class CodingSheetService extends AbstractInformationResourceService<CodingSheet, CodingSheetDao> {
 
+
+    public List<CodingSheet> findSparseCodingSheetList() {
+        return getDao().findSparseResourceBySubmitterType(null, ResourceType.CODING_SHEET);
+    }
 
     /*
      * Once the @link WorkflowService has processed and parsed the coding sheet, it must be ingested into the database.
