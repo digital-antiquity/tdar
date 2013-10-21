@@ -1,11 +1,7 @@
 package org.tdar.struts.action;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -201,6 +197,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private HttpServletRequest servletRequest;
 
     private HttpServletResponse servletResponse;
+
+    private List<String> javascriptValidationErrors = new LinkedList<>();
 
     public ProjectService getProjectService() {
         return projectService;
@@ -658,24 +656,27 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     /**
-     * Check the js error log for any client-side errors that preceeded to the current request. If we detect any
-     * errors, log them at ERROR.
+     * Check the js error log and js validation error log.  If we detect any js  errors, log them at ERROR.  Validation
+     * errors are an expected part of the workflow and are only logged at INFO.
      */
     public void reportAnyJavascriptErrors() {
         if (StringUtils.isBlank(javascriptErrorLog)) {
             logger.trace("No javascript errors reported by the client");
-            return;
+        } else {
+            if (StringUtils.equals(getJavascriptErrorLogDefault(), javascriptErrorLog)) {
+                logger.error("JS error log contains {}, an indication that javascript was disabled on the client prior to the request",
+                        getJavascriptErrorLogDefault());
+            } else {
+                String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
+                logger.error("the client {} reported {} javascript errors", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length);
+                for (String error : errors) {
+                    logger.error(error);
+                }
+            }
         }
 
-        if (StringUtils.equals(getJavascriptErrorLogDefault(), javascriptErrorLog)) {
-            logger.error("JS error log contains {}, an indication that javascript was disabled on the client prior to the request",
-                    getJavascriptErrorLogDefault());
-        } else {
-            String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
-            logger.error("the client {} reported {} javascript errors", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length);
-            for (String error : errors) {
-                logger.error(error);
-            }
+        for(String error : getJavascriptValidationErrors()) {
+            logger.info("jsvalidation error:: " + error);
         }
     }
 
@@ -693,5 +694,21 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     public boolean isSwitchableMapObfuscation() {
         return getTdarConfiguration().isSwitchableMapObfuscation();
+    }
+
+    public List<String> getJavascriptValidationErrors() {
+        return javascriptValidationErrors;
+    }
+
+    /**
+     * alias for getJavascriptValidationErrors (so that form variable has a shorter name)
+     * @return
+     */
+    public List<String> getJsvalErrors() {
+        return getJavascriptValidationErrors();
+    }
+
+    public void setJavascriptValidationErrors(List<String> javascriptValidationErrors) {
+        this.javascriptValidationErrors = javascriptValidationErrors;
     }
 }

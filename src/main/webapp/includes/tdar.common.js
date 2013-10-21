@@ -110,7 +110,24 @@ TDAR.common = function() {
          },
         showErrors: function(errorMap, errorList) {
             this.defaultShowErrors();
+        },
+        //send validation errors to the server  TODO: cap the total number of errors
+        invalidHandler: function(event, validator) {
+            var form = event.target,
+                errors = validator.errorList;
+//            if(!!validator.__totalErrorCount) {
+//                validator.__totalErrorCount = 0;
+//            }
+//            validator.__totalErrorCount += errors.length;
+
+            $.each(errors, function(idx, error){
+                var msg = "" + error.element.id + ": " + error.message;
+                var $input = $('<input type="hidden" name="javascriptValidationErrors" value="">');
+                $input.val(msg);
+                $(form).append($input);
+            });
         }
+
                  
     };
     
