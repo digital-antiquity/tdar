@@ -32,9 +32,15 @@ TDAR.autocomplete = (function() {
         //register the fields inside this parent as an 'extra record'. When caller invokes getValues(), this class
         //will generate records based for all the registeredRecords
         register: function(parentElem) {
+            //prevent dupe registration
+            if($(parentElem).hasClass("autocomplete-new-record")) {
+                return;
+            }
             var self = this,
                 parentId = parentElem.id;
             this.parentMap[parentId] = parentElem;
+
+            $(parentElem).addClass("autocomplete-new-record");
 
             //if user removes the row then unregister the associated record
             $(parentElem).bind("remove", function() {
@@ -149,42 +155,7 @@ function _renderPerson(ul, item) {
     return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);
 };
 
-
-//todo: i'm guessing that the user control may end up using a different objectMapper & customRender
-function _applyUserAutoComplete($elements) {
-    _applyGenericAutocomplete($elements, {
-        url: "lookup/person",
-        dataPath: "people",
-        retainInputValueOnSelect: true,
-        showCreate: false,
-        minLength: 3,
-        customRender: _renderPerson,
-        requestData:  {
-            registered: true
-        }
-    });
-}
-
-function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
-    _applyGenericAutocomplete($elements, {
-        url: "lookup/person",
-        dataPath: "people",
-        retainInputValueOnSelect: true,
-        showCreate: showCreate,
-        minLength: 3,
-        customRender: _renderPerson,
-        requestData:  {
-            registered: usersOnly
-        },
-        objectMapper: function(parentElem) {
-            var obj = _objectFromAutocompleteParent(parentElem)
-            obj.properName = obj.firstName + " " + obj.lastName;
-            return obj;
-        }
-    });
-}
-
-    function _evaluateAutocompleteRowAsEmpty(element, minCount) {
+function _evaluateAutocompleteRowAsEmpty(element, minCount) {
     var req = _buildRequestData($(element));
     var total = 0;
     //FIXME:  I think 'ignored' is irrelevant as defined here.  Can we remove this?
@@ -219,6 +190,20 @@ function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
     return false;
 }
 
+//if user tabs away from autocomplete field instead of selecting valid menu item,  register as new record
+function _registerOnBlur(objectCache, elem) {
+    var parentid = $(elem).attr("autocompleteparentelement");
+    var $parentElem = $(parentid);
+    var $hidden = $parentElem.find("input[type=hidden]").first();
+
+    $parentElem.find(".ui-autocomplete-input").bind("blur", function() {
+        var hiddenVal = $hidden.val();
+        if((hiddenVal === "" || hiddenVal === "-1") && this.value !== "") {
+            objectCache.register($parentElem.get());
+        }
+    });
+}
+
 function _applyGenericAutocomplete($elements, opts) {
     var options = $.extend({
 
@@ -229,7 +214,6 @@ function _applyGenericAutocomplete($elements, opts) {
     }, opts);
 
     var cache = _getCache(options);
-
 
     // if there's a change in the autocomplete, reset the ID to ""
     $elements.change(function() {
@@ -244,7 +228,7 @@ function _applyGenericAutocomplete($elements, opts) {
                 $idElement.val("");
 
             } else {
-                //TODO:  confirm  $element.closest('.autocomplete-id-element') will work for all use cases. 
+                //TODO:  confirm  $element.closest('.autocomplete-id-element') will work for all use cases.
             }
         }
         return true;
@@ -379,7 +363,6 @@ function _applyGenericAutocomplete($elements, opts) {
                 var $parent = $($elem.attr("autocompleteparentelement"));
                 cache.register($parent.get());
                 $parent.find(".ui-autocomplete-input").autocomplete("disable");
-                $parent.addClass("autocomplete-new-record");
             }
         },
         open : function() {
@@ -403,6 +386,11 @@ function _applyGenericAutocomplete($elements, opts) {
             $(elem).data("autocomplete")._renderItem = options.customRender;
         });
     }
+
+    $elements.filter("[autocompleteparentelement]").each(function(){
+        _registerOnBlur(cache, this);
+    });
+
 };
 
 function _applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
@@ -419,6 +407,41 @@ function _applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
     options.minLength = 2;
     _applyGenericAutocomplete($(selector), options);
 }
+
+//todo: i'm guessing that the user control may end up using a different objectMapper & customRender
+function _applyUserAutoComplete($elements) {
+    _applyGenericAutocomplete($elements, {
+        url: "lookup/person",
+        dataPath: "people",
+        retainInputValueOnSelect: true,
+        showCreate: false,
+        minLength: 3,
+        customRender: _renderPerson,
+        requestData:  {
+            registered: true
+        }
+    });
+}
+
+function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
+    _applyGenericAutocomplete($elements, {
+        url: "lookup/person",
+        dataPath: "people",
+        retainInputValueOnSelect: true,
+        showCreate: showCreate,
+        minLength: 3,
+        customRender: _renderPerson,
+        requestData:  {
+            registered: usersOnly
+        },
+        objectMapper: function(parentElem) {
+            var obj = _objectFromAutocompleteParent(parentElem)
+            obj.properName = obj.firstName + " " + obj.lastName;
+            return obj;
+        }
+    });
+}
+
 
 function _applyCollectionAutocomplete($elements, options, extraData) {
     //FIXME: HACK: this is a bandaid.  need better way to not bind multiple autocompletes
