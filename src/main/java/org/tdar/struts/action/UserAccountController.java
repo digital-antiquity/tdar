@@ -303,7 +303,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private void sendWelcomeEmail() {
         try {
             String subject = String.format("Welcome to %s", TdarConfiguration.getInstance().getSiteAcronym());
-            getEmailService().sendTemplate(EMAIL_WELCOME_TEMPLATE, getWelcomeEmailValues(), subject, person);
+            getEmailService().sendWithFreemarkerTemplate(EMAIL_WELCOME_TEMPLATE, getWelcomeEmailValues(), subject, person);
         } catch (Exception e) {
             // we don't want to ruin the new user's experience with a nasty error message...
             logger.error("Suppressed error that occured when trying to send welcome email", e);

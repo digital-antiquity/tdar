@@ -30,15 +30,16 @@ public class EmailService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final static String FROM_EMAIL_NAME = "info@";
-
     @Autowired
     private MailSender mailSender;
 
     @Autowired
     FreemarkerService freemarkerService;
 
-    public void sendTemplate(String templateName, Object dataModel, String subject, Person... recipients) {
+    /*
+     * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
+     */
+    public void sendWithFreemarkerTemplate(String templateName, Object dataModel, String subject, Person... recipients) {
         try {
             send(freemarkerService.render(templateName, dataModel), subject, recipients);
         } catch (IOException fnf) {
@@ -81,7 +82,7 @@ public class EmailService {
     }
 
     public String getFromEmail() {
-        return FROM_EMAIL_NAME + getTdarConfiguration().getEmailHostName();
+        return getTdarConfiguration().getDefaultFromEmail();
     }
 
     public TdarConfiguration getTdarConfiguration() {
@@ -89,6 +90,7 @@ public class EmailService {
     }
 
     /**
+     * The mailSender allows us to plug in our own SMTP server to test
      * @return the mailSender
      */
     public MailSender getMailSender() {

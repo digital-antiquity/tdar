@@ -401,7 +401,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                             getGenericService().markReadOnly(person);
                             people.add(person);
                         }
-                        getEmailService().sendTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + SUBJECT, people.toArray(new Person[0]));
+                        getEmailService().sendWithFreemarkerTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + SUBJECT, people.toArray(new Person[0]));
                     } catch (Exception e) {
                         logger.error("could not send email: {} ", e);
                     }

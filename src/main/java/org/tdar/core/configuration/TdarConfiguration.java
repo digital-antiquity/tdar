@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -42,9 +41,12 @@ public class TdarConfiguration {
     public static final int DEFAULT_SCHEDULED_PROCESS_START_ID = 0;
     public static final int DEFAULT_SCHEDULED_PROCESS_END_ID = 400000;
 
+
+
     public static final String DEFAULT_HOSTNAME = "core.tdar.org";
     public static final int DEFAULT_PORT = 80; // we use this in test
     public static final String DEFAULT_SMTP_HOST = "localhost";
+    private final static String FROM_EMAIL_NAME = "info@";
     private static final String SYSTEM_ADMIN_EMAIL = "tdar-svn@lists.asu.edu";
 
     public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 10;
@@ -691,5 +693,9 @@ public class TdarConfiguration {
 
     public boolean obfuscationInterceptorDisabled() {
         return assistant.getBooleanProperty("obfuscation.interceptor.disabled",false);
+    }
+
+    public String getDefaultFromEmail() {
+        return assistant.getStringProperty("email.default.from", FROM_EMAIL_NAME + getEmailHostName());
     }
 }

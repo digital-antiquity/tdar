@@ -37,7 +37,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("foo", "Hieronymous");
         map.put("bar", "Basho");
-        emailService.sendTemplate("test-email.ftl", map, "test", new Person(null, null, "toguy@mailinator.com"));
+        emailService.sendWithFreemarkerTemplate("test-email.ftl", map, "test", new Person(null, null, "toguy@mailinator.com"));
         assertTrue("expecting a mail in in the inbox", mockMailSender.getMessages().size() > 0);
 
     }

@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.tdar.core.configuration.TdarConfiguration;
 
+/*
+ * Enables us to use ReCaptcha if needed to help manage SPAM
+ */
 @Service
 public class RecaptchaService {
 
