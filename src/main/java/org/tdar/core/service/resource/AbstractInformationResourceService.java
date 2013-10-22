@@ -69,7 +69,10 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     // Martin: according to the Spring documentation all these private methods marked as @Transactional totally ignored.
     // They must be public to have the annotation recognised?
     // See: http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/transaction.html#transaction-declarative-annotations
-    @Transactional(readOnly = false)
+    /*
+     * Adds a @link InformationResourceFile to a resource given a file proxy. This method handles the full process of creating the metadata and
+     * InformationResourceFileVersions to a file when processing it
+     */
     private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
         incrementVersionNumber(irFile);
@@ -87,7 +90,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         logger.debug("all versions for {}", irFile);
     }
 
-    @Transactional(readOnly = true)
+    /*
+     * Finds an @link InformationResourceFile based on the file id information associated with the @link FileProxy
+     */
     private InformationResourceFile findInformationResourceFile(FileProxy proxy) {
         InformationResourceFile irFile = getDao().find(InformationResourceFile.class, proxy.getFileId());
         if (irFile == null) {
@@ -97,6 +102,10 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         return irFile;
     }
 
+    /*
+     * Given a @link Resource and list of @link FileProxy objects, process the files and report any errors to the @link ActionMessageErrorSupport listener,
+     * which is likely a controller.
+     */
     @Transactional
     public void importFileProxiesAndProcessThroughWorkflow(T resource, Person user, Long ticketId, ActionMessageErrorSupport listener,
             List<FileProxy> fileProxiesToProcess) throws IOException {
@@ -105,26 +114,32 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             return;
         }
 
+        // prepare the metadata
         processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
         List<InformationResourceFileVersion> filesToProcess = new ArrayList<>();
         List<InformationResourceFile> irFiles = new ArrayList<>();
 
+        /*
+         * For each file Proxy, if it needs to be run through a workflow (eg. it's not just a MODIFY_METADATA call), then do it, otherwise, skip it
+         */
         for (FileProxy proxy : fileProxiesToProcess) {
-            if (proxy.getAction().requiresWorkflowProcessing()) {
-                InformationResourceFile irFile = proxy.getInformationResourceFile();
-                irFiles.add(irFile);
-                InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
-                logger.trace("version: {} proxy: {} ", version, proxy);
-                getDao().saveOrUpdate(irFile);
-                switch (version.getFileVersionType()) {
-                    case UPLOADED:
-                    case UPLOADED_ARCHIVAL:
-                        irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
-                        filesToProcess.add(version);
-                        break;
-                    default:
-                        logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
-                }
+            if (!proxy.getAction().requiresWorkflowProcessing()) {
+                continue;
+            }
+
+            InformationResourceFile irFile = proxy.getInformationResourceFile();
+            irFiles.add(irFile);
+            InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
+            logger.trace("version: {} proxy: {} ", version, proxy);
+            getDao().saveOrUpdate(irFile);
+            switch (version.getFileVersionType()) {
+                case UPLOADED:
+                case UPLOADED_ARCHIVAL:
+                    irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
+                    filesToProcess.add(version);
+                    break;
+                default:
+                    logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
             }
         }
         

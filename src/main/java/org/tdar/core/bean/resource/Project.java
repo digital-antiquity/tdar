@@ -13,6 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.search.annotations.Analyze;
@@ -149,7 +150,8 @@ public class Project extends Resource implements Sortable {
     }
 
     @IndexedEmbedded(prefix = "informationResources.")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @XmlTransient
+//    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Set<InformationResource> getCachedInformationResources() {
         return cachedInformationResources;
     }

@@ -15,6 +15,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Field;
@@ -25,7 +26,10 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 
@@ -160,6 +164,8 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     }
 
     @Override
+    @XmlTransient
+    @JSONTransient
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -178,6 +184,8 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     }
 
     @Override
+    @XmlTransient
+    @JSONTransient
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }
