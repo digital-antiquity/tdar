@@ -3,6 +3,9 @@ package org.tdar.struts.action.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.Validations;
+import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -12,6 +15,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -58,6 +62,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     }
 
     @Override
+    @Validations(emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "person.email", message= "Please enter a valid email address")})
     protected String save(Person person) {
         validateAndProcessPasswordChange();
         if (validateAndProcessUsernameChange()) {

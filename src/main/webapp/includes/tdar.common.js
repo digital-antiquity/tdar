@@ -1124,6 +1124,18 @@ var _sortFilesAlphabetically= function() {
             .find(".hidden").removeClass("hidden").end()
             .treeview();
     }
+
+    function humanFileSize(bytes, si) {
+        var thresh = si ? 1000 : 1024;
+        if(bytes < thresh) return bytes + ' B';
+        var units = si ? ['kB','MB','GB','TB','PB','EB','ZB','YB'] : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+        var u = -1;
+        do {
+            bytes /= thresh;
+            ++u;
+        } while(bytes >= thresh);
+        return bytes.toFixed(1)+' '+units[u];
+    };
     
     $.extend(self, {
         "initEditPage": _initEditPage,
@@ -1161,7 +1173,8 @@ var _sortFilesAlphabetically= function() {
         //I don't like how  Javascript Templates from "(tmpl.min.js)" puts "tmpl" in global scope, so I'm aliasing it here.
         "tmpl": tmpl,
 
-        "collectionTreeview": _collectionTreeview
+        "collectionTreeview": _collectionTreeview,
+        "humanFileSize": humanFileSize
     });
     
     return self;
