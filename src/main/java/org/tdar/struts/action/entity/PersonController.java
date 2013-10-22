@@ -47,8 +47,20 @@ public class PersonController extends AbstractCreatorController<Person> {
     private List<Account> accounts;
     private List<String> groups = new ArrayList<String>();
 
+    private String email;
+
+    //TODO: add email change validator
+    //private String confirmEmail;
+
     @Autowired
     ObfuscationService obfuscationService;
+
+
+    @Override
+    public void prepare() {
+        super.prepare();
+        email = getPersistable().getEmail();
+    }
 
     @Action(value = MYPROFILE, results = {
             @Result(name = SUCCESS, location = "edit.ftl")
@@ -61,10 +73,36 @@ public class PersonController extends AbstractCreatorController<Person> {
         return edit();
     }
 
+    public void validateEmailRequiredForActiveUsers() {
+        if(getPersistable().isActive() && getPersistable().isRegistered() && StringUtils.isBlank(email)) {
+            addFieldError("email", "Please enter a valid email address");
+        }
+    }
+
+    public void validateUniqueEmail() {
+        if(StringUtils.isBlank(getPersistable().getEmail())) return;
+
+        //person2 should be null or same person being edited.  Anything else means email address is not unique.
+        Person person2 = getEntityService().findByEmail(email);
+        if(person2 != null) {
+            if(!person2.equals(getPersistable())) {
+                addFieldError("email", "This email address is not available");
+            }
+        }
+
+    }
+    public void validate() {
+        validateEmailRequiredForActiveUsers();
+        validateUniqueEmail();
+    }
+
     @Override
-    @Validations(emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "person.email", message= "Please enter a valid email address")})
+    @Validations(emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "email", message= "Please enter a valid email address")})
     protected String save(Person person) {
-        validateAndProcessPasswordChange();
+        if(!StringUtils.equals(email, getPersistable().getEmail())) {
+            getPersistable().setEmail(email);
+        }
+        validateAndProcessPasswordChange();     //TODO: this should just be in validate()
         if (validateAndProcessUsernameChange()) {
             // FIXME: logout?
         }
@@ -267,4 +305,11 @@ public class PersonController extends AbstractCreatorController<Person> {
         this.proxyInstitutionName = proxyInstitutionName;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String personEmail) {
+        this.email = personEmail;
+    }
 }
