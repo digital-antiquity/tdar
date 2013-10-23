@@ -1,9 +1,5 @@
 package org.tdar.struts.action;
 
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.CombinableMatcher.either;
-import static org.junit.Assert.*;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +11,11 @@ import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.entity.PersonController;
+
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasKey;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class PersonControllerITCase extends AbstractAdminControllerITCase {
 

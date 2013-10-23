@@ -1,8 +1,5 @@
 package org.tdar.struts.action.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
@@ -15,7 +12,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -27,6 +23,9 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.UserAccountController;
 import org.tdar.struts.interceptor.HttpsOnly;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @Scope("prototype")
@@ -57,9 +56,10 @@ public class PersonController extends AbstractCreatorController<Person> {
 
 
     @Override
-    public void prepare() {
-        super.prepare();
+    public String loadEditMetadata() throws TdarActionException {
+        String ret = super.loadEditMetadata();
         email = getPersistable().getEmail();
+        return ret;
     }
 
     @Action(value = MYPROFILE, results = {
