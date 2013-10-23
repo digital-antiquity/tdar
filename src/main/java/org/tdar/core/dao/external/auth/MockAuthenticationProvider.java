@@ -1,5 +1,10 @@
 package org.tdar.core.dao.external.auth;
 
+import static org.tdar.core.dao.external.auth.AuthenticationResult.ACCOUNT_DOES_NOT_EXIST;
+import static org.tdar.core.dao.external.auth.AuthenticationResult.INVALID_PASSWORD;
+import static org.tdar.core.dao.external.auth.AuthenticationResult.REMOTE_EXCEPTION;
+import static org.tdar.core.dao.external.auth.AuthenticationResult.VALID;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
-
-import static org.tdar.core.dao.external.auth.AuthenticationResult.*;
 
 /*
  * This provider is designed specifically for testing where no valid connection to an external service

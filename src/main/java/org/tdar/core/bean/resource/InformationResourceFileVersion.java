@@ -17,8 +17,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.search.annotations.Index;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;

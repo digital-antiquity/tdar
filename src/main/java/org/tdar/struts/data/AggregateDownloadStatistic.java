@@ -3,11 +3,11 @@ package org.tdar.struts.data;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.tdar.core.bean.resource.InformationResource;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import org.tdar.core.bean.resource.InformationResource;
 
 //I don't know that the propOrder here is necessary, and it may complicate things in the future
 @XmlType(propOrder = {"name", "date", "count", "fid", "rid"})

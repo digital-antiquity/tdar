@@ -29,10 +29,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
-
 /**
  * $Id$
  * 
