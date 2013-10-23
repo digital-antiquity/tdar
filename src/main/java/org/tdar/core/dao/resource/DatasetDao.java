@@ -38,7 +38,7 @@ import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.core.service.resource.DatasetService;
+import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
 /**
@@ -76,7 +76,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             @Override
             public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 while (rs.next()) {
-                    Map<DataTableColumn, String> results = DatasetService.convertResultSetRowToDataTableColumnMap(table, rs);
+                    Map<DataTableColumn, String> results = DatasetUtils.convertResultSetRowToDataTableColumnMap(table, rs, false);
                     return results;
                 }
                 return null;

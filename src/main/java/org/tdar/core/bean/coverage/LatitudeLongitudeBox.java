@@ -286,7 +286,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public void setMinimumLatitude(Double minimumLatitude) {
         if (minimumLatitude != null && !isValidLatitude(minimumLatitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("lat.invalid"));
+            throw new TdarRuntimeException(MessageHelper.getMessage("latLong.lat_invalid"));
         }
         setMiny(minimumLatitude);
     }
@@ -311,7 +311,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public void setMaximumLatitude(Double maximumLatitude) {
         if (maximumLatitude != null & !isValidLatitude(maximumLatitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("lat.invalid"));
+            throw new TdarRuntimeException(MessageHelper.getMessage("latLong.lat_invalid"));
         }
         setMaxy(maximumLatitude);
     }
@@ -336,7 +336,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public void setMinimumLongitude(Double minimumLongitude) {
         if (minimumLongitude != null && !isValidLongitude(minimumLongitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("long.invalid"));
+            throw new TdarRuntimeException(MessageHelper.getMessage("latLong.long_invalid"));
         }
         setMinx(minimumLongitude);
     }
@@ -366,7 +366,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public void setMaximumLongitude(Double maximumLongitude) {
         if (maximumLongitude != null && !isValidLongitude(maximumLongitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("long.invalid"));
+            throw new TdarRuntimeException(MessageHelper.getMessage("latLong.long_invalid"));
         }
         setMaxx(maximumLongitude);
     }

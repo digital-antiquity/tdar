@@ -98,7 +98,7 @@ public class AdminController extends AuthenticationAware.Base {
     public String execute() {
         setCurrentResourceStats(getStatisticService().getCurrentResourceStats());
         setHistoricalRepositorySizes(getStatisticService().getRepositorySizes());
-        setRecentlyUpdatedResources(getDatasetService().findRecentlyUpdatedItemsInLastXDays(7));
+        setRecentlyUpdatedResources(getResourceService().findRecentlyUpdatedItemsInLastXDays(7));
         setRecentLogins(getEntityService().showRecentLogins());
         return SUCCESS;
     }

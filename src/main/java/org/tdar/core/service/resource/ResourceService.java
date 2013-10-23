@@ -140,6 +140,14 @@ public class ResourceService extends GenericService {
         return datasetDao.findAllSparseActiveResources();
     }
 
+    /*
+     * Finds @link Resource entries that have been modified recently.
+     */
+    public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
+        return datasetDao.findRecentlyUpdatedItemsInLastXDays(days);
+    }
+
+
     /**
      * @param <T>
      * @param modifiedResource
