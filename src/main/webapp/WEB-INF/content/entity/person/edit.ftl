@@ -110,6 +110,13 @@ label.error {display:block;}
 
 <@edit.submit "Save" false />    
 
+<div class="callout">
+    <p>
+        <#assign commentEmail = commentUrl?replace("mailto:", "")>
+        <em><strong>Account cancellation:</strong>
+        If you would like to cancel your ${siteAcronym} account please send an email request to <@s.a href="${commentUrl}">${commentEmail}</@s.a></em>
+    </p>
+</div>
 </@s.form>
 <div id="error"></div>
     <script type="text/javascript">
