@@ -55,7 +55,7 @@ public class InformationResourceFileVersionService extends ServiceInterface.Type
     }
 
     /**
-     * Delete only the derivatives related to the @link InformationResourceFile that's refrenced by the @link InformationResourceFileVersion
+     * Delete only the derivatives related to the @link InformationResourceFile that's referenced by the @link InformationResourceFileVersion
      */
     @Transactional
     public int deleteDerivatives(InformationResourceFileVersion version) {
