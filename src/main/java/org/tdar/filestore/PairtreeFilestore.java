@@ -104,6 +104,11 @@ public class PairtreeFilestore extends BaseFilestore {
                 logger.error(errorMessage);
                 throw new TdarRuntimeException(errorMessage + "Can't write to: " + outFile.getAbsolutePath());
             }
+            
+            if (version.isUploaded()) {
+                outFile.setWritable(false);
+            }
+            
             updateVersionInfo(outFile, version);
             MessageDigest digest = digestInputStream.getMessageDigest();
             if (StringUtils.isEmpty(version.getChecksum())) {
