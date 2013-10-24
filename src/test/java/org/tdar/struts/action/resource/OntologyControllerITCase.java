@@ -182,7 +182,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
 
                 for (InformationResourceFile file : ont.getInformationResourceFiles()) {
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
-                        genericService.delete(version);
+                        genericService.forceDelete(version);
                     }
                     genericService.delete(file);
                 }
