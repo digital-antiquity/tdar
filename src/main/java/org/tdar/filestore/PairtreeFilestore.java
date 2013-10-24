@@ -272,12 +272,15 @@ public class PairtreeFilestore extends BaseFilestore {
         if (!version.isDerivative() && !version.isTranslated()) {
             try {
                 // if archival, need to go up one more
-                if (version.isArchival())
+                if (version.isArchival()) {
                     file = file.getParentFile();
-                logger.debug("renaming: {} -> {}",
-                        file.getParentFile().getAbsolutePath(),
-                        new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX).getAbsoluteFile());
-                FileUtils.moveDirectory(file.getParentFile(), new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX));
+                }
+                File parentFile = file.getParentFile();
+                String canonicalPath = parentFile.getCanonicalPath();
+                File deletedFile = new File(canonicalPath + DELETED_SUFFIX);
+                
+                logger.debug("renaming: {} ==> {}", parentFile.getAbsolutePath(), deletedFile.getAbsoluteFile());
+                FileUtils.moveDirectory(parentFile, deletedFile);
             } catch (Exception e) {
                 logger.warn("cannot purge file", e);
             }
