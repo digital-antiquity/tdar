@@ -26,6 +26,10 @@ public class InformationResourceFileVersionDao extends HibernateBase<Information
         return query.executeUpdate();
     }
 
+    public void delete(InformationResourceFileVersion file) {
+        delete(file, false);
+    }
+    
     public void delete(InformationResourceFileVersion file, boolean purge) {
         if (purge) {
             purgeFromFilestore(file);
