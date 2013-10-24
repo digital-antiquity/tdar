@@ -27,10 +27,6 @@ console.trace = function() {
 // or simply turn off the mundane console messages
 // console.debug = function(){};
 //
-if (!window.JSON)
-    JSON = {};
-JSON.stringify = JSON.stringify || function() {
-};
 
 TDAR.ellipsify = function(str, maxlength) {
     if (!str)
@@ -91,6 +87,11 @@ TDAR.common = function() {
     "use strict";
     
     var self = {};
+
+    //sanitize a
+    function _jsEncode(str) {
+        return JSON.stringify(str);
+    }
     
     var _defaultValidateOptions = {
         errorLabelContainer : $("#error ul"),
@@ -114,18 +115,34 @@ TDAR.common = function() {
         //send validation errors to the server  TODO: cap the total number of errors
         invalidHandler: function(event, validator) {
             var form = event.target,
-                errors = validator.errorList;
-//            if(!!validator.__totalErrorCount) {
-//                validator.__totalErrorCount = 0;
-//            }
-//            validator.__totalErrorCount += errors.length;
+                errors = validator.errorList,
+                submitCount = $(form).data("submitCount") || 0,
+                totalErrors = $(form).data("totalErrors") || 0;
+
+            submitCount++;
+            //cap the included errors, but show the correct total number of errors
+            totalErrors += errors.length;
+            $(form).data("submitCount", submitCount).data("totalErrors", totalErrors);
+            errors = errors.slice(0 - TDAR.common.maxJavascriptValidationMessages);
+
+            //todo: we really only need to build the dom when the submit is finally successful
+            $(form).find("#divClientValidationInfo").remove();
+            var $clientInfo = $('<div id="divClientValidationInfo"></div>');
+
+            var template = $.validator.format('<input type="hidden" name="clientValidationInfo[{0}]" value="{1}">');
 
             $.each(errors, function(idx, error){
-                var msg = "" + error.element.id + ": " + error.message;
-                var $input = $('<input type="hidden" name="javascriptValidationErrors" value="">');
+                var key = "error_" + idx;
+                var msg = _htmlEncode("" + error.element.id + ": " + error.message);
+                var $input = $(template(key, msg));
                 $input.val(msg);
-                $(form).append($input);
+                $clientInfo.append($input);
             });
+
+            //now tack on the total errors and submission attempts
+            $clientInfo.append($(template("totalErrors", totalErrors)));
+            $clientInfo.append($(template("submitCount", submitCount)));
+            $(form).append($clientInfo);
         }
 
                  
@@ -1117,9 +1134,6 @@ var _sortFilesAlphabetically= function() {
         }
     }
 
-
-
-
     /*
     function showTooltip(x, y, contents) {
         $('<div id="flottooltip">' + contents + '</div>').css({
@@ -1174,6 +1188,7 @@ var _sortFilesAlphabetically= function() {
         "delayJiraButton": _delayJiraButton,
         "coordinatesCheckboxClicked": _coordinatesCheckboxClicked,
         "refreshInputDisplay": _refreshInputDisplay,
+        "maxJavascriptValidationMessages": 25,
 
         //I don't like how  Javascript Templates from "(tmpl.min.js)" puts "tmpl" in global scope, so I'm aliasing it here.
         "tmpl": tmpl,

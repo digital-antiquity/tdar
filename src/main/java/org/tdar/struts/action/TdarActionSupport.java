@@ -1,12 +1,7 @@
 package org.tdar.struts.action;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -203,7 +198,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     private HttpServletResponse servletResponse;
 
-    private List<String> javascriptValidationErrors = new LinkedList<>();
+    private Map<String, String> clientValidationInfo = new LinkedHashMap<>();
 
     public ProjectService getProjectService() {
         return projectService;
@@ -680,8 +675,14 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             }
         }
 
-        for(String error : getJavascriptValidationErrors()) {
-            logger.info("jsvalidation error:: " + error);
+
+        List<String> lines = new ArrayList<>(clientValidationInfo.size());
+        for(Map.Entry<String, String> entry : getClientValidationInfo().entrySet()) {
+            String line = String.format("%s\t %s", entry.getKey(),  entry.getValue());
+            lines.add(line);
+        }
+        if(!lines.isEmpty()) {
+            logger.info("the client reported validation errors: \n {}", StringUtils.join(lines, "\n\t"));
         }
     }
 
@@ -701,19 +702,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().isSwitchableMapObfuscation();
     }
 
-    public List<String> getJavascriptValidationErrors() {
-        return javascriptValidationErrors;
+    public Map<String, String> getClientValidationInfo() {
+        return clientValidationInfo;
     }
 
-    /**
-     * alias for getJavascriptValidationErrors (so that form variable has a shorter name)
-     * @return
-     */
-    public List<String> getJsvalErrors() {
-        return getJavascriptValidationErrors();
-    }
-
-    public void setJavascriptValidationErrors(List<String> javascriptValidationErrors) {
-        this.javascriptValidationErrors = javascriptValidationErrors;
+    public void setClientValidationInfo(LinkedHashMap<String, String> clientValidationInfo) {
+        this.clientValidationInfo = clientValidationInfo;
     }
 }
