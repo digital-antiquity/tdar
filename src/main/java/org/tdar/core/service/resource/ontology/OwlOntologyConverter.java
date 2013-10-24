@@ -36,7 +36,11 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
-
+/**
+ * Converts a text formatted Ontology into an OWL XML ontology
+ * 
+ * FIXME: convert to use FREEMARKER
+ */
 public class OwlOntologyConverter {
 
     private OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();

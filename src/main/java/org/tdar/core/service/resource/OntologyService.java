@@ -43,7 +43,6 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     private OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
 
-
     /**
      * Find all ontologies, but return them with sparse objects (Title, Description only)
      * @return
@@ -57,6 +56,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
      * 
      * @param ontology
      */
+    @Transactional(readOnly=false)
     public void shred(Ontology ontology) {
         InformationResourceFileVersion latestUploadedFile = ontology.getLatestUploadedVersion();
         // Collection<InformationResourceFileVersion> latestVersions = ontology.getLatestVersions(VersionType.UPLOADED);
@@ -187,10 +187,12 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return null;
     }
 
-
-
-
-
+    /**
+     * Filters a List of @link OntologyNode entries to to just the direct children of the @link OntologyNode.
+     * @param allNodes
+     * @param parent
+     * @return
+     */
     public List<OntologyNode> getChildren(List<OntologyNode> allNodes, OntologyNode parent) {
         List<OntologyNode> toReturn = new ArrayList<>();
         for (OntologyNode currentNode : allNodes) {
@@ -201,6 +203,11 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return toReturn;
     }
 
+    /**
+     * Returns @link OntologyNode entries that are at the root of their trees (i.e. first Branches; their parent is the root).
+     * @param allNodes
+     * @return
+     */
     public List<OntologyNode> getRootElements(List<OntologyNode> allNodes) {
         List<OntologyNode> toReturn = new ArrayList<>();
         for (OntologyNode currentNode : allNodes) {
@@ -212,14 +219,32 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return toReturn;
     }
 
+    /**
+     * Find the number of @link CodingRule entries that refer to the @link DataTableColumn
+     * @param dataTableColumn
+     * @return
+     */
+    @Transactional
     public int getNumberOfMappedDataValues(DataTableColumn dataTableColumn) {
         return getDao().getNumberOfMappedDataValues(dataTableColumn);
     }
 
+    /**
+     * Check if the @link DataTableColumn has any associations with an @link Ontology
+     * @param dataTableColumn
+     * @return
+     */
+    @Transactional
     public boolean isOntologyMapped(DataTableColumn dataTableColumn) {
         return getDao().getNumberOfMappedDataValues(dataTableColumn) > 0;
     }
 
+    /**
+     * Converts a Text representation of an @link Ontology using TABs to an RDF/XML/OWL Ontology
+     * @param id
+     * @param fileTextInput
+     * @return
+     */
     public String toOwlXml(Long id, String fileTextInput) {
         OwlOntologyConverter converter = new OwlOntologyConverter();
         return converter.toOwlXml(id, fileTextInput);
