@@ -9,6 +9,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.Dao.HibernateBase;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.Filestore;
 
 @Component
@@ -31,6 +32,9 @@ public class InformationResourceFileVersionDao extends HibernateBase<Information
     }
     
     public void delete(InformationResourceFileVersion file, boolean purge) {
+        if (file.isUploadedOrArchival()) {
+            throw new TdarRecoverableRuntimeException("Should not delete Uploaded or Archival Version");
+        }
         if (purge) {
             purgeFromFilestore(file);
         }

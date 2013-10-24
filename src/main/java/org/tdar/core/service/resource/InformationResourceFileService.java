@@ -61,7 +61,7 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
     public void purgeFromFilestore(InformationResourceFile file) {
         List<InformationResourceFileVersion> versions = new ArrayList<InformationResourceFileVersion>(file.getInformationResourceFileVersions());
         for (InformationResourceFileVersion version : versions) {
-            informationResourceFileVersionDao.delete(version);
+            informationResourceFileVersionDao.delete(version, true);
         }
     }
 
