@@ -134,6 +134,7 @@ public class FilestoreTest {
         cleanup();
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
+        version.setFileVersionType(VersionType.LOG);
         File f = new File(TEST_DOCUMENT);
         StorageMethod rotate = StorageMethod.ROTATE;
         rotate.setRotations(5);
