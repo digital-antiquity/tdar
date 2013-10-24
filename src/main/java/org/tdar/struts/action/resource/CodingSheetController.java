@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -108,7 +109,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         setCodingRules(new ArrayList<CodingRule>(getCodingSheet().getSortedCodingRules()));
 
         // generate suggestions for all distinct column values or only those columns that aren't already mapped?
-        suggestions = getOntologyService().applySuggestions(getCodingSheet().getCodingRules(), getOntologyNodes());
+        OntologyNodeSuggestionGenerator generator  = new OntologyNodeSuggestionGenerator();
+        suggestions = generator.applySuggestions(getCodingSheet().getCodingRules(), getOntologyNodes());
         // load existing ontology mappings
 
         return SUCCESS;

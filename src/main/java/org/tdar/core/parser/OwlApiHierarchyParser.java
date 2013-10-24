@@ -12,16 +12,17 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.resource.OntologyService;
+import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 
 /**
  * $Id$
@@ -41,7 +42,8 @@ import org.tdar.core.service.resource.OntologyService;
 public class OwlApiHierarchyParser implements OntologyParser {
 
     private final OWLOntology owlOntology;
-    Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    
     private final List<OWLClass> rootClasses = new ArrayList<OWLClass>();
     private final HashMap<OWLClass, Set<OWLClass>> owlHierarchyMap = new HashMap<OWLClass, Set<OWLClass>>();
     private final HashMap<OWLClass, OntologyNode> classNodeMap = new HashMap<OWLClass, OntologyNode>();
@@ -185,7 +187,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
             index = generateIntervalLabels(childClass, (firstSibling) ? index + 1 : index);
             firstSibling = false;
         }
-        logger.trace(node);
+        logger.trace("{}", node);
         
         if (StringUtils.isBlank(node.getIri())) {
             throw new TdarRecoverableRuntimeException(String.format("node: %s, has a blank IRI on imports", node));
@@ -211,13 +213,13 @@ public class OwlApiHierarchyParser implements OntologyParser {
         String txt = "";
         for (OWLAnnotation ann : owlClass.getAnnotations(owlOntology)) {
             if (ann.getProperty().isComment()) {
-                logger.trace(ann.getValue());
+                logger.trace("{}", ann.getValue());
                 String annTxt = ann.getValue().toString();
                 annTxt = StringUtils.replace(annTxt, "\"", ""); // owl parser
                                                                 // adds quotes
 
-                if (annTxt.startsWith(OntologyService.TDAR_ORDER_PREFIX)) {
-                    txt = annTxt.substring(OntologyService.TDAR_ORDER_PREFIX.length());
+                if (annTxt.startsWith(OwlOntologyConverter.TDAR_ORDER_PREFIX)) {
+                    txt = annTxt.substring(OwlOntologyConverter.TDAR_ORDER_PREFIX.length());
                 }
             }
         }

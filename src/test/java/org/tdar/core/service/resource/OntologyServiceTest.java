@@ -11,6 +11,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
+import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 
 /**
  * Test case for OntologyService.
@@ -35,6 +37,7 @@ public class OntologyServiceTest {
 
     @Test
     public void testSuggestions() {
+        OntologyNodeSuggestionGenerator generator = new OntologyNodeSuggestionGenerator();
         String target = "eel";
         String[] badMatches = { "meal", "AVES", "Alaudidae", "Corvidae_(Corvid)", "Corvus_corax_(Raven)", "large_corvid", "small_corvid", "Motacillidae",
                 "Turdidae", "Goose_(Goose)", "Ardeidae", "Columbidae_(Columbid)", "Cuculidae", "Gaviidae", "Gruidae", "Laridae_(Gull)",
@@ -43,19 +46,19 @@ public class OntologyServiceTest {
                 "Alcidae", "Alle_alle_(Little_auk)", "Sulidae", "MAMMALIA", "Carnivora", "Mustela_(Mustelid)", "Meles_meles_(Badger)", "Cetacea",
                 "Equidae_(Equid)", "Insectivora", "Medium_mammal_(vertebra_and_ribs)_(pig_and_fallow_deer-sized)", "Murinae_(small)" };
         for (String badMatch : badMatches) {
-            assertFalse(badMatch + " should not be similar enough to " + target, ontologyService.isSimilarEnough(target, ontologyService.normalize(badMatch)));
+            assertFalse(badMatch + " should not be similar enough to " + target, generator.isSimilarEnough(target, generator.normalize(badMatch)));
         }
         String[] goodMatches = { "eel", "peel", "wheel", "Happy meel", "electric eel", "unhappy meel", "even keeled", "well heeled",
                 "eelectric light orchestra" };
         for (String goodMatch : goodMatches) {
-            assertTrue(goodMatch + " should be similar enough to " + target, ontologyService.isSimilarEnough(target, ontologyService.normalize(goodMatch)));
+            assertTrue(goodMatch + " should be similar enough to " + target, generator.isSimilarEnough(target, generator.normalize(goodMatch)));
         }
 
         // added from TDAR-626 and TDAR-642
-        assertFalse(ontologyService.isSimilarEnough(ontologyService.normalize("Ilium"), ontologyService.normalize("Distal")));
-        assertFalse(ontologyService.isSimilarEnough(ontologyService.normalize("Ischium"), ontologyService.normalize("Shaft")));
-        assertFalse(ontologyService.isSimilarEnough(ontologyService.normalize("Ischium"), ontologyService.normalize("Distal")));
-        assertTrue(ontologyService.isSimilarEnough("cattle", ontologyService.normalize("Cattle")));
+        assertFalse(generator.isSimilarEnough(generator.normalize("Ilium"), generator.normalize("Distal")));
+        assertFalse(generator.isSimilarEnough(generator.normalize("Ischium"), generator.normalize("Shaft")));
+        assertFalse(generator.isSimilarEnough(generator.normalize("Ischium"), generator.normalize("Distal")));
+        assertTrue(generator.isSimilarEnough("cattle", generator.normalize("Cattle")));
     }
 
     @Test
@@ -64,7 +67,7 @@ public class OntologyServiceTest {
         String[] hasInvalidCharacters = { "@!@#", "!!", "^^\t", "*", "&", "^", "$$", "(ab)", "this is a % test" };
         for (String invalidCharacterString : hasInvalidCharacters) {
             Assert.assertNotSame(invalidCharacterString + " has invalid characters", invalidCharacterString,
-                    ontologyService.labelToFragmentId(invalidCharacterString));
+                    OwlOntologyConverter.labelToFragmentId(invalidCharacterString));
         }
     }
 
@@ -72,9 +75,9 @@ public class OntologyServiceTest {
     public void testSanitizeOntologyLabel() {
         String[] ontologyLabels = { "   \t\t  Some string wit~h-.%A90F (parentheses in the mix)", "\tAnother (string (with (parentheses)))\t" };
         for (String label : ontologyLabels) {
-            String sanitizedLabel = ontologyService.labelToFragmentId(label);
+            String sanitizedLabel = OwlOntologyConverter.labelToFragmentId(label);
             logger.info("sanitized label: " + sanitizedLabel);
-            Assert.assertFalse(sanitizedLabel.matches(OntologyService.IRI_INVALID_CHARACTERS_REGEX));
+            Assert.assertFalse(sanitizedLabel.matches(OwlOntologyConverter.IRI_INVALID_CHARACTERS_REGEX));
         }
     }
 
@@ -89,7 +92,7 @@ public class OntologyServiceTest {
         for (int i = 0; i < 64; i++) {
             String repeatedTabs = StringUtils.repeat("\t", i);
             String tabInput = repeatedTabs + " test \t input" + repeatedTabs + " decrescendo boogers\t";
-            Assert.assertEquals(i, ontologyService.getNumberOfPrefixTabs(tabInput));
+            Assert.assertEquals(i, OwlOntologyConverter.getNumberOfPrefixTabs(tabInput));
         }
     }
 
