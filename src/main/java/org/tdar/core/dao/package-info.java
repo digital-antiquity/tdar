@@ -1,5 +1,3 @@
-
-
 /* FIXME: still unsupported
 @org.hibernate.annotations.NamedNativeQueries({
 	@org.hibernate.annotations.NamedNativeQuery(

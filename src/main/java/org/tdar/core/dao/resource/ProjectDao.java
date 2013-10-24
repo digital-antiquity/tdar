@@ -36,18 +36,6 @@ public class ProjectDao extends ResourceDao<Project> {
         return query.list();
     }
 
-    public List<Project> findAllOtherProjects(final Person person) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_PROJECT_ALL_OTHER);
-        query.setLong("personId", person.getId());
-        return query.list();
-    }
-
-    // @SuppressWarnings("unchecked")
-    // public List<Project> findViewableProjects(Person person) {
-    // Query query = getCurrentSession().getNamedQuery(QUERY_PROJECT_VIEWABLE);
-    // query.setLong("personId", person.getId());
-    // return (List<Project>) query.list();
-    // }
 
     public Boolean containsIntegratableDatasets(Project project) {
         Query query = getCurrentSession().getNamedQuery(QUERY_PROJECT_COUNT_INTEGRATABLE_DATASETS);

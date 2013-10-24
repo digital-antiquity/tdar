@@ -43,6 +43,10 @@ import org.tdar.utils.MessageHelper;
  */
 public class OwlOntologyConverter {
 
+    private static final String CLASS = "class";
+
+    private static final String COMMENT = "comment";
+
     private OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -51,6 +55,7 @@ public class OwlOntologyConverter {
     public final static Pattern TAB_PREFIX_PATTERN = Pattern.compile("^(\\t+).*$");
     public static final String SYNONYM_SPLIT_REGEX = ";";
     public final static Pattern SYNONYM_PATTERN = Pattern.compile("^(.+)[\\(\\[](.+)[\\)\\]](.*)$");
+    private static final Namespace tdarNamespace = new Namespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 
     public final static String ONTOLOGY_START_STRING_FORMAT = "<?xml version=\"1.0\"?>\n" + "<rdf:RDF\n"
             + "xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n" + "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\"\n"
@@ -69,7 +74,12 @@ public class OwlOntologyConverter {
 
     public static final String TDAR_ORDER_PREFIX = "TDAROrder-";
     
-    protected OWLOntology loadFromIRI(IRI iri) {
+    /**
+     * Load an OWLOntology from an IRI
+     * @param iri
+     * @return
+     */
+    private OWLOntology loadFromIRI(IRI iri) {
         try {
             return owlOntologyManager.loadOntologyFromOntologyDocument(iri);
         } catch (UnparsableOntologyException exception) {
@@ -82,6 +92,11 @@ public class OwlOntologyConverter {
 
     }
 
+    /**
+     * Convert a String label to an IRI 
+     * @param label_
+     * @return
+     */
     public static String labelToFragmentId(String label_) {
         if (StringUtils.isBlank(label_))
             return "";
@@ -91,7 +106,13 @@ public class OwlOntologyConverter {
         }
         return label;
     }
-
+    
+    /**
+     * Convert an @link InformationResourceFileVersion (to an OWLOntology)
+     * @param file
+     * @return
+     * @throws FileNotFoundException
+     */
     public OWLOntology toOwlOntology(InformationResourceFileVersion file) throws FileNotFoundException {
         File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(file);
         if (file != null && transientFile.exists()) {
@@ -111,6 +132,7 @@ public class OwlOntologyConverter {
     }
 
     /**
+     * Iterate through an OWLOntology and append the TDARImportOrder- prefixed rdfs:comment for each entry, this is used to properly render the @link Ontology later on
      * @param file
      * @return
      */
@@ -159,8 +181,8 @@ public class OwlOntologyConverter {
     }
 
     /**
-     * Returns an OWL XML String, given a tab-separated FIXME: continue to
-     * refactor this.
+     * Returns an OWL XML String, given a tab-separated 
+     * FIXME: continue to refactor this.
      * 
      * @author qyan
      * @param inputString
@@ -212,18 +234,14 @@ public class OwlOntologyConverter {
                 line = labelToFragmentId(line);
                 nodeList.add(line);
                 if (currentDepth == 0) {
-                    // root node
-                    // format style
+                    // root node format style
                     builder.append(String.format(OWL_CLASS_FORMAT, line, displayLabel, synonymProperty, ""));
-                    // builder.append(OWL_CLASS_START_TAG).append(line).append(OWL_CLASS_START_TAG_CLOSE).append(OWL_CLASS_CLOSE);
-                    // clear out parent list since we are processing a new root
-                    // node.
+                    // clear out parent list since we are processing a new root node.
                     parentList.clear();
                 } else {
                     // child node
                     int numberOfAvailableParents = parentList.size();
-                    // current depth may be degenerate (i.e., current depth of 4 but
-                    // most immediate parent is of depth 2).
+                    // current depth may be degenerate (i.e., current depth of 4 but most immediate parent is of depth 2).
                     int parentIndex = ((currentDepth > numberOfAvailableParents)
                             // degenerate depth, pick closest parent.
                             ? numberOfAvailableParents
@@ -248,7 +266,7 @@ public class OwlOntologyConverter {
                 parentList.add(currentDepth, line);
             }
         } catch (IOException e) {
-            throw new TdarRecoverableRuntimeException("there was an error processing your ontology");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("owlOntologyConverter.error_parsing"));
         } finally {
             IOUtils.closeQuietly(reader);
         }
@@ -266,7 +284,7 @@ public class OwlOntologyConverter {
 
         logger.debug("unique: {} incoming: {}", uniqueSet.size(), nodeList.size());
         if (nodeList.size() != uniqueSet.size()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("ontologyService.node_names_unique",nodeList.size(), uniqueSet.size()));
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("owlOntologyConverter.node_names_unique",nodeList.size(), uniqueSet.size()));
         }
     }
 
@@ -278,7 +296,6 @@ public class OwlOntologyConverter {
      * @return
      */
     public static int getNumberOfPrefixTabs(String line) {
-        // regex solution
         Matcher matcher = TAB_PREFIX_PATTERN.matcher(line);
         if (matcher.matches()) {
             return matcher.group(1).length();
@@ -292,16 +309,13 @@ public class OwlOntologyConverter {
      * @param order
      */
     public void walkOntologyTree(Element element, int order) {
-        // FIXME: when we start dealing with more complex ontologies, we may need to introduce our own parsing technique beyond just getting the 1st annotation
-
-        Namespace tdarNamespace = new Namespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
         for (int i = 0, size = element.nodeCount(); i < size; i++) {
             Node node = element.node(i);
 
             if (node instanceof Element) {
                 Element nodeElement = (Element) node;
-                if (nodeElement.getName().equalsIgnoreCase("class")) {
-                    Element orderNode = DocumentHelper.createElement(new QName("comment", tdarNamespace));
+                if (nodeElement.getName().equalsIgnoreCase(CLASS)) {
+                    Element orderNode = DocumentHelper.createElement(new QName(COMMENT, tdarNamespace));
                     orderNode.setText(TDAR_ORDER_PREFIX + String.valueOf(order));
                     order++;
                     nodeElement.add(orderNode);

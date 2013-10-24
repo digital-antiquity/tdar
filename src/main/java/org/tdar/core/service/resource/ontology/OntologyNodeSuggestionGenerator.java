@@ -15,6 +15,9 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.utils.Pair;
 
+/*
+ * Given a set of @link CodingRule entries and @link OntologyNode entries, provide suggestions for an autocomplete about likely matches of CodingRule values and OntologyNode labels
+ */
 public class OntologyNodeSuggestionGenerator {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -29,10 +32,17 @@ public class OntologyNodeSuggestionGenerator {
         return defaultAcceptableEditDistance;
     }
 
-    
+
+    /**
+     * Setup a Map of @link CodingRule values and @link OntologyNode entries based upon the likely matching OntologyNode entries for each unique value. This
+     * uses a Levenshtein similarity calculation to assist in more brute force (exact / contains) matching.
+     * 
+     * @param codingRules
+     * @param ontologyNodes
+     * @return
+     */
     public SortedMap<String, List<OntologyNode>> applySuggestions(Collection<CodingRule> codingRules, List<OntologyNode> ontologyNodes) {
-        // FIXME: need to figure out if we are going to place the suggestions on the coding rules only or populate the returned Map as well.
-        TreeMap<String, List<OntologyNode>> suggestions = new TreeMap<String, List<OntologyNode>>(new Comparator<String>() {
+        TreeMap<String, List<OntologyNode>> suggestions = new TreeMap<>(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 if (o1.equalsIgnoreCase(o2)) {
@@ -113,7 +123,12 @@ public class OntologyNodeSuggestionGenerator {
         // return ret.trim();
     }
 
-    // FIXME: if needed elsewhere, extract or lift to appropriate parent or utility service class.
+    /**
+     * Calculate the actual similarity of the @link CodingRule value and the @link OntologyNode label.
+     * @param columnValue
+     * @param ontologyLabel
+     * @return
+     */
     protected int calculateSimilarity(String columnValue, String ontologyLabel) {
         if (ontologyLabel.contains(columnValue) || columnValue.contains(ontologyLabel)) {
             return 1;
@@ -135,6 +150,12 @@ public class OntologyNodeSuggestionGenerator {
         }
     }
 
+    /**
+     * Calculate the actual similarity of the @link CodingRule value and the @link OntologyNode label. Returns true if there's any similarity (not -1)
+     * @param columnValue
+     * @param ontologyLabel
+     * @return
+     */
     public boolean isSimilarEnough(String columnValue, String ontologyLabel) {
         return calculateSimilarity(columnValue, ontologyLabel) != -1;
     }
