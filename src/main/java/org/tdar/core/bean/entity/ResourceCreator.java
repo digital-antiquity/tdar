@@ -28,6 +28,7 @@ import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -152,7 +153,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
                 role = creatorRole.name();
             }
             if (isNullOrTransient(creatorToFormat)) {
-                throw new TdarRecoverableRuntimeException("creator id should never be -1 in search query");
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCreator.undefined_creator_id"));
             }
             toReturn = String.format("%s_%s_%s", code, creatorToFormat.getId(), role).toLowerCase();
         }

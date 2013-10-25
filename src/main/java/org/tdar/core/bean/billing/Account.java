@@ -34,6 +34,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarQuotaException;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -48,7 +49,6 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "pos_account")
 public class Account extends Persistable.Base implements Updatable, HasStatus, Addressable {
 
-    public static final String ACCOUNT_IS_OVERDRAWN = "We're sorry, your account does not have enough to add this resource";
     private static final long serialVersionUID = -1728904030701477101L;
 
     public Account() {
@@ -388,7 +388,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
         setSpaceUsedInBytes(getSpaceUsedInBytes() + endingEvaluator.getSpaceUsedInBytes());
         if (status != AccountAdditionStatus.CAN_ADD_RESOURCE) {
-            throw new TdarQuotaException(ACCOUNT_IS_OVERDRAWN, status);
+            throw new TdarQuotaException(MessageHelper.getMessage("account.overdrawn"), status);
         }
     }
 

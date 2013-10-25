@@ -37,6 +37,7 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -52,8 +53,6 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "data_table_column")
 @XmlRootElement
 public class DataTableColumn extends Persistable.Sequence<DataTableColumn> implements Validatable {
-
-    private static final String COLUMN_S_IS_NOT_VALID_BECAUSE = "Column %s is not valid because %s";
 
     private static final long serialVersionUID = 430090539610139732L;
 
@@ -339,28 +338,27 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @JSONTransient
     public boolean isValid() {
         if (columnEncodingType == null) {
-            throw new TdarRecoverableRuntimeException(String.format(COLUMN_S_IS_NOT_VALID_BECAUSE, getName(), "no encoding type is specified"));
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("dataTableColumn.invalid_encoding_type", getName()));
         }
         switch (columnEncodingType) {
             case CODED_VALUE:
                 if (getDefaultCodingSheet() == null) {
-                    throw new TdarRecoverableRuntimeException(String.format(COLUMN_S_IS_NOT_VALID_BECAUSE, getName(),
-                            "no coding sheet was specified for 'coded value'"));
+                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("dataTableColumn.invalid_coded_value", getName()));
                 }
                 break;
             case MEASUREMENT:
                 if (measurementUnit == null) {
-                    throw new TdarRecoverableRuntimeException(String.format(COLUMN_S_IS_NOT_VALID_BECAUSE, getName(), "no measurement unit was specified"));
+                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("dataTableColumn.invalid_measurement", getName()));
                 }
                 // FIXME: Not 100% sure this is correct with the NUMERIC check
                 if (columnDataType == null || !columnDataType.isNumeric()) {
-                    throw new TdarRecoverableRuntimeException(String.format(COLUMN_S_IS_NOT_VALID_BECAUSE, getName(), "measurement unit was not numeric"));
+                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("dataTableColumn.invalid_measurement_numeric", getName()));
                 }
                 break;
             case COUNT:
                 // FIXME: Not 100% sure this is correct with the NUMERIC check
                 if (columnDataType == null || !columnDataType.isNumeric()) {
-                    throw new TdarRecoverableRuntimeException(String.format(COLUMN_S_IS_NOT_VALID_BECAUSE, getName(), "count was not numeric"));
+                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("dataTableColumn.invalid", getName(), "count was not numeric"));
                 }
             case UNCODED_VALUE:
         }

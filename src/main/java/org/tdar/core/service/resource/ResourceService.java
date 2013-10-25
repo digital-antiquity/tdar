@@ -112,6 +112,7 @@ public class ResourceService extends GenericService {
         return getGenericDao().find(Video.class, id) != null;
     }
 
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public <R extends Resource> R find(Long id) {
         if (id == null)
@@ -259,7 +260,6 @@ public class ResourceService extends GenericService {
             return;
         }
 
-        // FIXME: the last parameter should be able to be determined via generics/reflection instead of passing in
         if (incoming_ == null) {
             incoming_ = new ArrayList<H>();
         }
@@ -462,6 +462,7 @@ public class ResourceService extends GenericService {
         for (T t : sourceCollection) {
             getDao().detachFromSessionAndWarn(t);
             try {
+                @SuppressWarnings("unchecked")
                 T clone = (T) BeanUtils.cloneBean(t);
                 targetCollection.add(clone);
             } catch (Exception e) {
@@ -502,7 +503,7 @@ public class ResourceService extends GenericService {
     @Transactional
     public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
         if (Persistable.Base.isNullOrTransient(resource))
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         return datasetDao.getLogEntriesForResource(resource);
     }
 

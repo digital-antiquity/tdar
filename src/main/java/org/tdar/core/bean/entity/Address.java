@@ -16,17 +16,11 @@ import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.utils.MessageHelper;
 
 @Entity
 @Table(name = "creator_address")
 public class Address extends Base implements Persistable, Validatable {
-
-    public static final String ADDRESS_TYPE_IS_REQUIRED = "an address type is required";
-    public static final String POSTAL_CODE_IS_REQUIRED = "a postal code is required";
-    public static final String COUNTRY_IS_REQUIRED = "a country is required";
-    public static final String STATE_IS_REQUIRED = "a state is required";
-    public static final String CITY_IS_REQUIRED = "a city is required";
-    public static final String STREET_ADDRESS_IS_REQUIRED = "a street address is required";
 
     private static final long serialVersionUID = 3179122792715811371L;
 
@@ -138,22 +132,22 @@ public class Address extends Base implements Persistable, Validatable {
     @XmlTransient
     public boolean isValid() {
         if (StringUtils.isBlank(street1)) {
-            throw new TdarValidationException(STREET_ADDRESS_IS_REQUIRED);
+            throw new TdarValidationException(MessageHelper.getMessage("address_street_required"));
         }
         if (StringUtils.isBlank(city)) {
-            throw new TdarValidationException(CITY_IS_REQUIRED);
+            throw new TdarValidationException(MessageHelper.getMessage("address.city_required"));
         }
         if (StringUtils.isBlank(state)) {
-            throw new TdarValidationException(STATE_IS_REQUIRED);
+            throw new TdarValidationException(MessageHelper.getMessage("address.state_required"));
         }
         if (StringUtils.isBlank(country)) {
-            throw new TdarValidationException(COUNTRY_IS_REQUIRED);
+            throw new TdarValidationException(MessageHelper.getMessage("address.country_required"));
         }
         if (StringUtils.isBlank(postal)) {
-            throw new TdarValidationException(POSTAL_CODE_IS_REQUIRED);
+            throw new TdarValidationException(MessageHelper.getMessage("address.postal_required"));
         }
         if (type == null) {
-            throw new TdarValidationException(ADDRESS_TYPE_IS_REQUIRED);
+            throw new TdarValidationException(MessageHelper.getMessage("address.type_required"));
         }
         return true;
     }

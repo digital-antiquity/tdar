@@ -11,6 +11,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.tdar.core.bean.Persistable;
+import org.tdar.utils.MessageHelper;
 
 @Entity
 @Table(name = "user_session")
@@ -33,7 +34,7 @@ public class AuthenticationToken extends Persistable.Base {
 
     public static AuthenticationToken create(Person person) {
         if (person == null) {
-            throw new NullPointerException("Cannot create an authentication token with null person.");
+            throw new NullPointerException(MessageHelper.getMessage("authenticationToken.undefined_person"));
         }
         AuthenticationToken token = new AuthenticationToken();
         token.setPerson(person);

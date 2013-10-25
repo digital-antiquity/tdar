@@ -189,8 +189,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
         // predefined password reset url,
         // depending on the specific ldap implementation. Till then, just throw
         // an exception
-        throw new UnsupportedOperationException(
-                "Password reset not supported by Ldap Authentication Provider");
+        throw new UnsupportedOperationException("Password reset not supported by Ldap Authentication Provider");
     }
 
     /*

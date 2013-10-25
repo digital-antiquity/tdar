@@ -117,6 +117,7 @@ import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -1406,13 +1407,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     public boolean isValid() {
         if (isValidForController() == true) {
             if (getSubmitter() == null) {
-                throw new TdarValidationException(
-                        "A submitter is required for this " + getResourceType());
+                throw new TdarValidationException(MessageHelper.getMessage("resource.submitter_required", getResourceType()));
             }
             if (getDateCreated() == null) {
-                throw new TdarValidationException(
-                        "The registered date is required for this "
-                                + getResourceType());
+                throw new TdarValidationException(MessageHelper.getMessage("resource.date_required", getResourceType()));
             }
             return true;
         }
@@ -1423,10 +1421,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
-            throw new TdarValidationException("A title is required for this " + getResourceType());
+            throw new TdarValidationException(MessageHelper.getMessage("resource.title", getResourceType()));
         }
         if (StringUtils.isEmpty(getDescription())) {
-            throw new TdarValidationException("A description is required for this " + getResourceType());
+            throw new TdarValidationException(MessageHelper.getMessage("resource.description", getResourceType()));
         }
         return true;
     }
