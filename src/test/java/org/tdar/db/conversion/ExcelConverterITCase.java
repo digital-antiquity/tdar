@@ -28,13 +28,6 @@ import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
 
-    @Override
-    public String[] getDataImportDatabaseTables() {
-        String[] databases = { "e_500_sheet1", "e_501_sheet1", "e_502_sheet1", "e_503_englands_woods_catalog", "e_503_roster",
-                "e_509_about", "e_509_ifti_context_codes", "e_509_pfraa_ifti_data", "e_509_pfraa_inveontory_data", "d_1124_pgm_tdr_test_docs_mdb_spec_test",
-                "e_529_appendix_8__2_" };
-        return databases;
-    };
 
     @Test
     @Rollback

@@ -48,7 +48,7 @@ import org.tdar.struts.data.IntegrationDataResult;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
-    public static final long SPITAL_IR_ID = 503l;
+//    public static final long SPITAL_IR_ID = 503l;
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
     protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
 
@@ -117,7 +117,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     }
 
     protected InformationResourceFileVersion makeFileVersion(String name, long id) throws IOException {
-        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name, 1, 1234L, 123L);
+        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name, 1, 1234L, id);
         version.setId(id);
         File file = new File(getTestFilePath() + "/" + name);
         filestore.store(file, version);
@@ -125,17 +125,6 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return version;
     }
 
-    // public Dataset setupAndConvertDataset(String filename, Long irFileId) throws IOException {
-    // DatasetConverter converter = convertDatabase(filename, irFileId);
-    // Dataset dataset = new Dataset();
-    // dataset.setDataTables(converter.getDataTables());
-    // dataset.setTitle(filename);
-    // dataset.setDescription(filename);
-    // dataset.markUpdated(getUser());
-    // datasetService.saveOrUpdate(dataset);
-    // datasetService.saveOrUpdateAll(dataset.getDataTables());
-    // return dataset;
-    // }
 
     public DatasetConverter convertDatabase(String filename, Long irFileId) throws IOException, FileNotFoundException {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(filename, irFileId);
@@ -143,11 +132,14 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();
+        setDataImportTables((String[]) ArrayUtils.addAll(getDataImportTables(),converter.getTableNames().toArray(new String[0])));
         return converter;
     }
 
+    static Long spitalIrId = (long)(Math.random()* 10000);
     public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
-        DatasetConverter converter = convertDatabase(SPITAL_DB_NAME, SPITAL_IR_ID);
+        spitalIrId++;
+        DatasetConverter converter = convertDatabase(SPITAL_DB_NAME, spitalIrId);
         return converter;
     }
 
@@ -157,13 +149,19 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         tdarDataImportDatabase.setDataSource(dataSource);
     }
 
-    public String[] getDataImportDatabaseTables() {
-        return new String[0];
+    String[] dataImportTables = new String[0];
+    
+    public String[] getDataImportTables() {
+        return dataImportTables;
+    }
+    
+    public void setDataImportTables(String[] dataImportTables ) {
+        this.dataImportTables = dataImportTables;
     }
 
     @Before
     public void dropDataImportDatabaseTables() throws Exception {
-        for (String table : getDataImportDatabaseTables()) {
+        for (String table : getDataImportTables()) {
             try {
                 tdarDataImportDatabase.dropTable(table);
             } catch (Exception ignored) {

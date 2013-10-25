@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,8 @@ public interface DatasetConverter {
     Set<DataTableRelationship> getKeys();
 
     DataTable getDataTableByName(String name);
+    
+    DataTable getDataTableByOriginalName(String name);
 
     Set<DataTableRelationship> getRelationships();
 
@@ -196,6 +199,15 @@ public interface DatasetConverter {
             for (DataTable table : dataTables) {
                 if (name.equals(table.getName()))
                     return table;
+            }
+            return null;
+        }
+
+        public DataTable getDataTableByOriginalName(String name) {
+            for (DataTable table : dataTables) {
+                if (ObjectUtils.equals(getInternalTableName(name),getInternalTableName(table.getName()))) {
+                    return table;
+                }
             }
             return null;
         }

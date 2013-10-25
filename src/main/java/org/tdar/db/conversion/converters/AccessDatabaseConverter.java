@@ -95,7 +95,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             List<? extends Column> columnList = currentTable.getColumns();
             for (Column currentColumn : columnList) {
                 DataTableColumnType dataType = DataTableColumnType.VARCHAR;
-                logger.info("Incoming column \t name:{}  type:{}", currentColumn.getName(), currentColumn.getType());
+                logger.info("INCOMING COLUMN: '{}'  ({})", currentColumn.getName(), currentColumn.getType());
                 // NOTE: switch passthrough is intentional here (e.g. big, long, int types should all convert to BIGINT)
                 switch (currentColumn.getType()) {
                     case BOOLEAN:
@@ -137,13 +137,13 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                 if (description_ != null && !StringUtils.isEmpty(description_.toString())) {
                     dataTableColumn.setDescription(description_.toString());
                 }
-                logger.info("Converted column\t obj:{}\t description:{}\t length:{}", new Object[] { dataTableColumn, dataTableColumn.getDescription(),
-                        dataTableColumn.getLength() });
                 if (dataType == DataTableColumnType.VARCHAR) {
                     dataTableColumn.setLength(Short.valueOf(currentColumn.getLengthInUnits()).intValue());
                     logger.trace("currentColumn:{}\t length:{}\t length in units:{}", new Object[] { currentColumn, currentColumn.getLength(),
                             currentColumn.getLengthInUnits() });
                 }
+                logger.info("  \t create column {} {} ({}) -- {}", dataTableColumn.getName(), dataTableColumn.getColumnDataType(), dataTableColumn.getLength(),
+                        dataTableColumn.getDescription());
             }
 
             targetDatabase.createTable(dataTable);
