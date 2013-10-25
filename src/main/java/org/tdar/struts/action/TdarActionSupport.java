@@ -663,15 +663,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         if (StringUtils.isBlank(javascriptErrorLog)) {
             logger.trace("No javascript errors reported by the client");
         } else {
-            if (StringUtils.equals(getJavascriptErrorLogDefault(), javascriptErrorLog)) {
-                logger.error("JS error log contains {}, an indication that javascript was disabled on the client prior to the request",
-                        getJavascriptErrorLogDefault());
-            } else {
-                String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
-                logger.error("the client {} reported {} javascript errors", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length);
-                for (String error : errors) {
-                    logger.error(error);
-                }
+            String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
+            if(logger.isErrorEnabled()) {
+                logger.error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length, StringUtils.join(errors, "\n\t - "));
             }
         }
 
