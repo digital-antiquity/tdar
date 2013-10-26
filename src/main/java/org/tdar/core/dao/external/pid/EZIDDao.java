@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -21,12 +22,16 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,13 +79,28 @@ public class EZIDDao implements ExternalIDProvider {
     private static final String _STATUS_AVAILABLE = "public";
     public final Logger logger = LoggerFactory.getLogger(getClass());
 
-    DefaultHttpClient httpclient = new DefaultHttpClient();
+    CloseableHttpClient httpclient;
+
     private ConfigurationAssistant assistant = new ConfigurationAssistant();
     private String configIssue = "";
 
     public EZIDDao() {
         try {
             assistant.loadProperties("ezid.properties");
+            
+            URL url = new URL(getDOIProviderHostname());
+            int port = 80;
+            if (url.getPort() == -1) {
+                if (getDOIProviderHostname().toLowerCase().startsWith(HTTPS)) {
+                    port = 443;
+                }
+            }
+            AuthScope scope = new AuthScope(url.getHost(), port);
+            logger.trace("using port: {}", port);
+            org.apache.http.client.CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            credsProvider.setCredentials(scope, new UsernamePasswordCredentials(getDOIProviderUsername(), getDOIProviderPassword()));
+            httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+
         } catch (Throwable t) {
             configIssue = t.getMessage();
         }
@@ -103,18 +123,6 @@ public class EZIDDao implements ExternalIDProvider {
      */
     @Override
     public boolean connect() throws ClientProtocolException, IOException {
-        URL url = new URL(getDOIProviderHostname());
-        int port = 80;
-        if (url.getPort() == -1) {
-            if (getDOIProviderHostname().toLowerCase().startsWith(HTTPS)) {
-                port = 443;
-            }
-        }
-        AuthScope scope = new AuthScope(url.getHost(), port);
-        logger.trace("using port: {}", port);
-        UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(getDOIProviderUsername(), getDOIProviderPassword());
-        httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
-
         logger.debug("creating challenge/response authentication request for: {} ({} / *****)", getDOIProviderHostname(), getDOIProviderUsername());
         HttpGet authenticationRequest = new HttpGet(getDOIProviderHostname() + "/login");
         processHttpRequest(authenticationRequest);
