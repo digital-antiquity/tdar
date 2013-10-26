@@ -141,6 +141,7 @@ public class SensoryDataController extends AbstractInformationResourceController
         setPersistable(sensoryData);
     }
 
+    @Override
     public Class<SensoryData> getPersistableClass() {
         return SensoryData.class;
     }

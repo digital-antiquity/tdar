@@ -76,6 +76,7 @@ public class OwlApiHierarchyParserTest {
         Map<OWLClass, OntologyNode> classNodeMap = parser.getOwlClassNodeMap();
         assertFalse(nodes.isEmpty());
         Collections.sort(nodes, new Comparator<OntologyNode>() {
+            @Override
             public int compare(OntologyNode a, OntologyNode b) {
                 return a.getIri().compareTo(b.getIri());
             }

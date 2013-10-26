@@ -47,6 +47,7 @@ public class ExcelConverter extends DatasetConverter.Base {
     private Workbook workbook;
     private DataFormatter formatter = new HSSFDataFormatter();
 
+    @Override
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
@@ -60,6 +61,7 @@ public class ExcelConverter extends DatasetConverter.Base {
         this.setFilename(version[0].getFilename());
     }
 
+    @Override
     protected void openInputDatabase() throws IOException {
         if (informationResourceFileVersion == null) {
             logger.warn("Received null information resource file.");
@@ -105,6 +107,7 @@ public class ExcelConverter extends DatasetConverter.Base {
      * 
      * @param targetDatabase
      */
+    @Override
     public void dumpData() throws Exception {
         int numberOfSheets = workbook.getNumberOfSheets();
 

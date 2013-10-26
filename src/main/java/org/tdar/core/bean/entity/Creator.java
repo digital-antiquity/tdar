@@ -85,10 +85,12 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     private transient boolean obfuscated;
     private transient Boolean obfuscatedObjectDifferent;
 
+    @Override
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }
 
+    @Override
     public void setObfuscatedObjectDifferent(Boolean obfuscatedObjectDifferent) {
         this.obfuscatedObjectDifferent = obfuscatedObjectDifferent;
     }

@@ -44,6 +44,7 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         this.keywordType = field;
     }
 
+    @Override
     public boolean isEmpty() {
         return CollectionUtils.isEmpty(terms);
     }
@@ -170,6 +171,7 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         this.includeChildren = includeChildren;
     }
 
+    @Override
     public Operator getOperator() {
         return Operator.OR;
     }

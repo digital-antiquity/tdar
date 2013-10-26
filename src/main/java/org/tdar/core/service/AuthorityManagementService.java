@@ -72,6 +72,7 @@ public class AuthorityManagementService {
             this.label = label;
         }
 
+        @Override
         public String getLabel() {
             return label;
         }
@@ -356,6 +357,7 @@ public class AuthorityManagementService {
             return fieldToDupeIds;
         }
 
+        @Override
         public String toString() {
             return fieldToDupeIds.toString();
         }
@@ -430,6 +432,7 @@ public class AuthorityManagementService {
             return updatedReferrers;
         }
 
+        @Override
         public String toString() {
             return String.format("Authority: %s, dupes: %s, referrers: %s", authority, dupes, updatedReferrers.values());
         }

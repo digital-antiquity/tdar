@@ -31,6 +31,7 @@ public class InvestigationType extends Keyword.Base<InvestigationType> implement
     @JoinColumn(name = "merge_keyword_id")
     private Set<InvestigationType> synonyms = new HashSet<InvestigationType>();
 
+    @Override
     public Set<InvestigationType> getSynonyms() {
         return synonyms;
     }

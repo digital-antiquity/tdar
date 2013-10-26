@@ -165,6 +165,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         additionalVersion.setFileId(fileId);
     }
 
+    @Override
     public String toString() {
         return String.format("%s %s (confidential: %s, size: %d, fileId: %d, InputStream: %s, sequence number: %d)", action, filename, restriction, size,
                 fileId, file, sequenceNumber);
@@ -182,10 +183,12 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         return action != FileAction.NONE;
     }
 
+    @Override
     public Integer getSequenceNumber() {
         return sequenceNumber;
     }
 
+    @Override
     public void setSequenceNumber(Integer sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
     }

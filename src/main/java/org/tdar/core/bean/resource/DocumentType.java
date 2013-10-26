@@ -57,6 +57,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         this.schema = schema;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -103,10 +104,12 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         return openUrlGenre;
     }
 
+    @Override
     public Integer getCount() {
         return count;
     }
 
+    @Override
     public void setCount(Integer count) {
         this.count = count;
     }
@@ -115,6 +118,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         return plural;
     }
 
+    @Override
     public String getLuceneFieldName() {
         return QueryFieldNames.DOCUMENT_TYPE;
     }

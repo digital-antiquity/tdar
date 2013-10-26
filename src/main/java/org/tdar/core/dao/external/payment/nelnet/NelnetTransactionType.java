@@ -27,6 +27,7 @@ public enum NelnetTransactionType implements HasLabel {
         this.ordinalValue = ordinalValue;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

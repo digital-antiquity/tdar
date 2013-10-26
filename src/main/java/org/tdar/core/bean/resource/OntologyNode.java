@@ -140,6 +140,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.index = index;
     }
 
+    @Override
     public String toString() {
         return String.format("label: %s url:%s id:%s", getDisplayName(), iri, getId());
     }
@@ -157,6 +158,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         return StringUtils.split(index, '.').length;
     }
 
+    @Override
     public int compareTo(OntologyNode other) {
         return ObjectUtils.compare(index, other.getIndex());
     }

@@ -105,6 +105,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
         return ontology;
     }
 
+    @Override
     public List<OntologyNode> generate() {
         int startIndex = 1;
 

@@ -46,6 +46,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
     private QueryBuilders queryBuilder;
 
     @Action(value = "search")
+    @Override
     public String execute() {
         return SUCCESS;
     }

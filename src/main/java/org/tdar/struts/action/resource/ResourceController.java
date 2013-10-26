@@ -48,6 +48,7 @@ public class ResourceController extends AuthenticationAware.Base {
                     @Result(name = BILLING, type = TYPE_REDIRECT, location = "/cart/add"),
                     @Result(name = SUCCESS, location = "add.ftl")
             })
+    @Override
     public String execute() {
         if (!getTdarConfiguration().isPayPerIngestEnabled() || getAuthenticatedUser().getContributor() == true
                 && isAllowedToCreateResource()) {

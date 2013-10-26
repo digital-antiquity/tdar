@@ -15,6 +15,8 @@ import org.tdar.search.index.TdarIndexNumberFormatter;
  * 
  */
 public class TdarPaddedNumberBridge implements StringBridge {
+
+    @Override
     public String objectToString(Object object) {
         if (object == null)
             return "";

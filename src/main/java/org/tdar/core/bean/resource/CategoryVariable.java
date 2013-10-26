@@ -116,6 +116,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.parent = parent;
     }
 
+    @Override
     public String toString() {
         return name;
     }
@@ -137,6 +138,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.children = children;
     }
 
+    @Override
     public int compareTo(CategoryVariable candidate) {
         return name.compareTo(candidate.name);
     }

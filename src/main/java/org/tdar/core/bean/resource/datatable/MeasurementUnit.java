@@ -28,6 +28,7 @@ public enum MeasurementUnit implements HasLabel {
         this.setShortName(simple);
     }
 
+    @Override
     public String getLabel() {
         return getFullName();
     }

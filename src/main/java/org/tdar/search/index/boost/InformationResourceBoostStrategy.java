@@ -18,6 +18,7 @@ public class InformationResourceBoostStrategy implements BoostStrategy {
     public static final float BOOST_DEFAULT = -1.0f;
     public static final float BOOST_WITH_FILE = 2.0f;
 
+    @Override
     public float defineBoost(Object value) {
         if (value instanceof InformationResource) {
             InformationResource resource = (InformationResource) value;

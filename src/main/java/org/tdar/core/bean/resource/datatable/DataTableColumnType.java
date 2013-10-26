@@ -129,6 +129,7 @@ public enum DataTableColumnType implements HasLabel {
         return false;
     }
 
+    @Override
     public String getLabel() {
         return name();
     }

@@ -93,22 +93,27 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.minLookupLength = minLookupLength;
     }
 
+    @Override
     public int getRecordsPerPage() {
         return recordsPerPage;
     }
 
+    @Override
     public void setRecordsPerPage(int recordsPerPage) {
         this.recordsPerPage = recordsPerPage;
     }
 
+    @Override
     public int getStartRecord() {
         return startRecord;
     }
 
+    @Override
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }
 
+    @Override
     public SortOption getSortField() {
         if (sortField == null) {
             sortField = getDefaultSort();
@@ -116,6 +121,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return sortField;
     }
 
+    @Override
     public void setSortField(SortOption sortField) {
         this.sortField = sortField;
     }
@@ -124,6 +130,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      * @param totalRecords
      *            the totalRecords to set
      */
+    @Override
     public void setTotalRecords(int totalRecords) {
         this.totalRecords = totalRecords;
     }
@@ -131,6 +138,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /**
      * @return the totalRecords
      */
+    @Override
     public int getTotalRecords() {
         return totalRecords;
     }
@@ -193,10 +201,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return getReservedSearchParameters().toQueryPartGroup();
     }
 
+    @Override
     public int getNextPageStartRecord() {
         return startRecord + recordsPerPage;
     }
 
+    @Override
     public int getPrevPageStartRecord() {
         return startRecord - recordsPerPage;
     }
@@ -205,6 +215,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      * @param results
      *            the results to set
      */
+    @Override
     public void setResults(List<I> results) {
         this.results = results;
     }
@@ -212,6 +223,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /**
      * @return the results
      */
+    @Override
     public List<I> getResults() {
         return results;
     }
@@ -227,6 +239,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /**
      * @return the debug
      */
+    @Override
     public boolean isDebug() {
         return debug;
     }
@@ -239,6 +252,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.debug = debug;
     }
 
+    @Override
     public boolean isShowAll() {
         return showAll;
     }
@@ -265,6 +279,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /**
      * @return the secondarySortField
      */
+    @Override
     public SortOption getSecondarySortField() {
         return secondarySortField;
     }
@@ -295,6 +310,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /**
      * @return the mode
      */
+    @Override
     public String getMode() {
         return mode;
     }
@@ -304,10 +320,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      *            the mode to set
      */
     // TODO: method needs better name... this is just metadata used to describe the caller of handleSearch()
+    @Override
     public void setMode(String mode) {
         this.mode = mode;
     }
 
+    @Override
     public String getSearchDescription() {
         return searchDescription;
     }
@@ -316,6 +334,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.searchDescription = searchDescription;
     }
 
+    @Override
     public String getSearchTitle() {
         return searchTitle;
     }

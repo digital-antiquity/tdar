@@ -72,31 +72,37 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         private D dao;
 
         @Transactional(readOnly = true)
+        @Override
         public E find(Long id) {
             return dao.find(id);
         }
 
         @Transactional(readOnly = true)
+        @Override
         public List<E> findAll() {
             return dao.findAll();
         }
 
         @Transactional(readOnly = true)
+        @Override
         public List<E> findAll(List<Long> ids) {
             return dao.findAll(ids);
         }
 
         @Transactional(readOnly = true)
+        @Override
         public List<E> findAll(int start, int numberOfrecords) {
             return dao.findAll(start, numberOfrecords);
         }
 
         @Transactional(readOnly = true)
+        @Override
         public List<E> findAllSorted() {
             return dao.findAllSorted();
         }
 
         @Transactional(readOnly = true)
+        @Override
         public List<E> findAllSorted(String orderByClause) {
             return dao.findAllSorted(orderByClause);
         }
@@ -107,6 +113,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         }
 
         @Transactional(readOnly = false)
+        @Override
         public void save(List<?> persistentCollection) {
             if (persistentCollection == null)
                 return;
@@ -114,6 +121,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         }
 
         @Transactional(readOnly = false)
+        @Override
         public void save(Object entity) {
             if (entity == null)
                 return;
@@ -121,6 +129,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         }
 
         @Transactional(readOnly = false)
+        @Override
         public void saveOrUpdate(Object entity) {
             if (entity == null)
                 return;
@@ -128,6 +137,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         }
 
         @Transactional(readOnly = false)
+        @Override
         public void update(Object entity) {
             if (entity == null)
                 return;
@@ -142,6 +152,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         }
 
         @Transactional(readOnly = false)
+        @Override
         public void delete(Object entity) {
             if (entity == null)
                 return;
@@ -181,6 +192,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
          * Removes collection from the parent and deletes the orphans.
          */
         @Transactional(readOnly = false)
+        @Override
         public <C> void delete(Object parent, Collection<C> persistentCollection) {
             // no-op if we try to delete a null collection.
             if (CollectionUtils.isEmpty(persistentCollection))
@@ -191,6 +203,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         }
 
         @Transactional(readOnly = false)
+        @Override
         public void delete(Collection<?> persistentCollection) {
             if (CollectionUtils.isEmpty(persistentCollection))
                 return;
@@ -198,15 +211,18 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         }
 
         @Transactional(readOnly = true)
+        @Override
         public Number count() {
             return dao.count();
         }
 
+        @Override
         public D getDao() {
             return dao;
         }
 
         @Autowired
+        @Override
         public void setDao(D dao) {
             this.dao = dao;
         }

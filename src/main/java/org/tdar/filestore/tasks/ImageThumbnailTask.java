@@ -72,12 +72,6 @@ public class ImageThumbnailTask extends AbstractTask {
         processImage(version, version.getTransientFile());
     }
 
-    public void prepare() {
-        // deleteFile(generateFilename(getWorkflowContext().getOutputDirectory(), getWorkflowContext().getOriginalFile().getFilename() , SMALL));
-        // deleteFile(generateFilename(getWorkflowContext().getOutputDirectory(), getWorkflowContext().getOriginalFile().getFilename() , MEDIUM));
-        // deleteFile(generateFilename(getWorkflowContext().getOutputDirectory(), getWorkflowContext().getOriginalFile().getFilename() , LARGE));
-    }
-
     public void processImage(InformationResourceFileVersion version, File sourceFile) {
         String filename = sourceFile.getName();
         getLogger().debug("sourceFile: " + sourceFile);

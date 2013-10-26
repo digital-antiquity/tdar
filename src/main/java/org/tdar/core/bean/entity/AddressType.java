@@ -13,6 +13,7 @@ public enum AddressType implements HasLabel {
         this.setLabel(label);
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

@@ -37,10 +37,12 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
     @Autowired
     private SessionData sessionData;
 
+    @Override
     public SessionData getSessionData() {
         return sessionData;
     }
 
+    @Override
     public void setSessionData(SessionData sessionData) {
         this.sessionData = sessionData;
     }

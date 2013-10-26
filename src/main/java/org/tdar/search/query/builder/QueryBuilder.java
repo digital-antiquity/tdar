@@ -106,10 +106,12 @@ public abstract class QueryBuilder extends QueryPartGroup {
         return createPartialLabelOverrides();
     }
 
+    @Override
     public Operator getOperator() {
         return operator;
     }
 
+    @Override
     public void setOperator(Operator or) {
         this.operator = or;
     }

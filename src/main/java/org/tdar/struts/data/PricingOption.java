@@ -23,6 +23,7 @@ public class PricingOption implements Serializable {
             this.label = label;
         }
 
+        @Override
         public String getLabel() {
             return label;
         }

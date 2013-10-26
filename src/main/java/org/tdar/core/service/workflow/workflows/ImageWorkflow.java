@@ -29,6 +29,7 @@ public class ImageWorkflow extends BaseWorkflow {
         return FileType.IMAGE;
     }
 
+    @Override
     public boolean isEnabled() {
         return true;
     }

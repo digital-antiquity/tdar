@@ -21,6 +21,7 @@ public enum WorkflowPhase implements HasLabel {
         this.label = label;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

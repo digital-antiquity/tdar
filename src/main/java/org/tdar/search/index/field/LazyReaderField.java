@@ -49,6 +49,7 @@ public class LazyReaderField extends AbstractField implements Fieldable {
         return null;
     }
 
+    @Override
     public Reader readerValue() {
         logger.trace("getting reader for: {}", name);
 
@@ -67,10 +68,12 @@ public class LazyReaderField extends AbstractField implements Fieldable {
         return reader;
     }
 
+    @Override
     public TokenStream tokenStreamValue() {
         return null;
     }
 
+    @Override
     public String stringValue() {
         return null;
     }

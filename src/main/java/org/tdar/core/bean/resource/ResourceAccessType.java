@@ -27,6 +27,7 @@ public enum ResourceAccessType implements HasLabel, Facetable {
         this.setLabel(label);
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -35,14 +36,17 @@ public enum ResourceAccessType implements HasLabel, Facetable {
         this.label = label;
     }
 
+    @Override
     public Integer getCount() {
         return count;
     }
 
+    @Override
     public void setCount(Integer count) {
         this.count = count;
     }
 
+    @Override
     public String getLuceneFieldName() {
         return QueryFieldNames.RESOURCE_ACCESS_TYPE;
     }

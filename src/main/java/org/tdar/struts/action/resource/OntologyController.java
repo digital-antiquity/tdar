@@ -129,6 +129,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         setPersistable(ontology);
     }
 
+    @Override
     public Class<Ontology> getPersistableClass() {
         return Ontology.class;
     }

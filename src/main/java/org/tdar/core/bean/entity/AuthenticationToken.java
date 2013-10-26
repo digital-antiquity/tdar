@@ -76,6 +76,7 @@ public class AuthenticationToken extends Persistable.Base {
         this.sessionEnd = sessionEnd;
     }
 
+    @Override
     public String toString() {
         return "auth token for " + person + " with id: " + getId();
     }

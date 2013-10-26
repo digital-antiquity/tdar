@@ -285,6 +285,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return StringEscapeUtils.escapeHtml4(getDescription());
     }
 
+    @Override
     public Operator getOperator() {
         return operator;
     }
@@ -362,10 +363,12 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.displayName = displayName;
     }
 
+    @Override
     public boolean isDescriptionVisible() {
         return descriptionVisible;
     }
 
+    @Override
     public void setDescriptionVisible(boolean descriptionVisible) {
         this.descriptionVisible = descriptionVisible;
     }

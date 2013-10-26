@@ -69,6 +69,7 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
     
     @Action(value = "activity")
+    @Override
     public String execute() {
         setScheduledProcessesEnabled(TdarConfiguration.getInstance().shouldRunPeriodicEvents());
         setSessionStatistics(getGenericService().getSessionStatistics());

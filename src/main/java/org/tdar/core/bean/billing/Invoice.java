@@ -81,6 +81,7 @@ public class Invoice extends Base implements Updatable {
             }
         }
 
+        @Override
         public String getLabel() {
             return this.label;
         }
@@ -450,6 +451,7 @@ public class Invoice extends Base implements Updatable {
         return ObjectUtils.notEqual(owner, transactedBy);
     }
 
+    @Override
     public Date getDateUpdated() {
         return dateCreated;
     }
@@ -470,6 +472,7 @@ public class Invoice extends Base implements Updatable {
         this.couponValue = couponValue;
     }
 
+    @Override
     public String toString() {
         return String.format("%s files, %s mb, %s resources [$%s] %s", totalFiles, totalSpaceInMb, totalResources, calculatedCost, coupon);
     }

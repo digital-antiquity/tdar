@@ -65,6 +65,7 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
         return getPersistable();
     }
 
+    @Override
     public Class<Dataset> getPersistableClass() {
         return Dataset.class;
     }

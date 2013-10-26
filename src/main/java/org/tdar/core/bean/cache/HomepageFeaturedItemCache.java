@@ -24,6 +24,7 @@ public class HomepageFeaturedItemCache extends Persistable.Base implements Compa
         this.resource = resource;
     }
 
+    @Override
     public Double getLogCount() {
         return Math.log(getCount());
     }
@@ -33,6 +34,7 @@ public class HomepageFeaturedItemCache extends Persistable.Base implements Compa
         return 1;
     }
 
+    @Override
     public String getCssId() {
         return this.getKey().getResourceTypeLabel();
     }

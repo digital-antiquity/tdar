@@ -54,6 +54,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
     protected Logger logger = LoggerFactory.getLogger(getClass());
     private File databaseFile;
 
+    @Override
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
@@ -69,6 +70,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         this.versions = Arrays.asList(versions);
     }
 
+    @Override
     protected void openInputDatabase() throws IOException {
         setDatabaseFile(getInformationResourceFileVersion().getTransientFile());
 
@@ -89,6 +91,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
      * 
      * @param targetDatabase
      */
+    @Override
     public void dumpData() throws Exception {
         // start dumping ...
         // Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();

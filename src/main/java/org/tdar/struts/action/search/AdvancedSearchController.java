@@ -474,6 +474,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             @Action(value = "person", results = { @Result(name = SUCCESS, location = "advanced.ftl") }),
             @Action(value = "institution", results = { @Result(name = SUCCESS, location = "advanced.ftl") })
     })
+    @Override
     public String execute() {
         return SUCCESS;
     }

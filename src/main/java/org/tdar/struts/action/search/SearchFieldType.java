@@ -92,6 +92,7 @@ public enum SearchFieldType implements HasLabel {
         return types;
     }
 
+    @Override
     public String getLabel() {
         return this.label;
     }

@@ -152,6 +152,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         setPersistable(rc);
     }
 
+    @Override
     public Class<ResourceCollection> getPersistableClass() {
         return ResourceCollection.class;
     }
@@ -246,6 +247,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         return retainedResources;
     }
 
+    @Override
     public void loadExtraViewMetadata() {
         if (Persistable.Base.isNullOrTransient(getId()))
             return;
@@ -254,19 +256,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (isAuthenticated()) {
             getResourceCollectionService().findAllChildCollections(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
             findAllChildCollections = getPersistable().getTransientChildren();
-            // FIXME: not needed?
-            // boolean granularPermissions = false;
-            // if (granularPermissions) {
-            // Iterator<ResourceCollection> iterator = findAllChildCollections.iterator();
-            // while (iterator.hasNext()) {
-            // ResourceCollection nextcollection = iterator.next();
-            // if (!nextcollection.getAuthorizedUsers().contains(new AuthorizedUser(getAuthenticatedUser(), GeneralPermissions.VIEW_ALL)) &&
-            // !nextcollection.getOwner().equals(getAuthenticatedUser()) &&
-            // getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
-            // iterator.remove();
-            // }
-            // }
-            // }
+
             if (isEditor()) {
                 List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollections(getPersistable(),
                         getAuthenticatedUser(), CollectionType.SHARED));
@@ -355,6 +345,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         return fullUserProjects;
     }
 
+    @Override
     public List<Status> getStatuses() {
         return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
     }
@@ -398,10 +389,12 @@ public class CollectionController extends AbstractPersistableController<Resource
         return false;
     }
 
+    @Override
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }
 
+    @Override
     public void setRecordsPerPage(int recordsPerPage) {
         this.recordsPerPage = recordsPerPage;
     }
@@ -435,6 +428,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.secondarySortField = secondarySortField;
     }
 
+    @Override
     public void setSortField(SortOption sortField) {
         this.sortField = sortField;
     }
@@ -459,10 +453,12 @@ public class CollectionController extends AbstractPersistableController<Resource
         return mode;
     }
 
+    @Override
     public int getNextPageStartRecord() {
         return startRecord + recordsPerPage;
     }
 
+    @Override
     public int getPrevPageStartRecord() {
         return startRecord - recordsPerPage;
     }

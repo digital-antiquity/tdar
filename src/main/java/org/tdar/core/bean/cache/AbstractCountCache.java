@@ -10,10 +10,12 @@ public abstract class AbstractCountCache<C extends AbstractCountCache, D extends
 
     private static final long serialVersionUID = -1407077845657074783L;
 
-    public String getLabel() {
+    @Override
+   public String getLabel() {
         return GenericService.extractStringValue(getKey());
     }
 
+    @Override
     public Double getLogCount() {
         return Math.log(getCount());
     }
@@ -24,6 +26,7 @@ public abstract class AbstractCountCache<C extends AbstractCountCache, D extends
         return ObjectUtils.compare(getKey(), (D) (o.getKey()));
     }
 
+    @Override
     public abstract D getKey();
 
     public abstract void setKey(D key);

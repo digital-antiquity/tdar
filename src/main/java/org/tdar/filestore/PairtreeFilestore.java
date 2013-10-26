@@ -66,6 +66,7 @@ public class PairtreeFilestore extends BaseFilestore {
         }
     }
 
+    @Override
     public String store(InputStream content, InformationResourceFileVersion version) throws IOException {
         StorageMethod rotate = StorageMethod.NO_ROTATION;
         return storeAndRotate(content, version, rotate);
@@ -74,6 +75,7 @@ public class PairtreeFilestore extends BaseFilestore {
     /**
      * @see org.tdar.filestore.Filestore#store(java.io.InputStream)
      */
+    @Override
     public String storeAndRotate(InputStream content, InformationResourceFileVersion version, StorageMethod rotate) throws IOException {
         OutputStream outputStream = null;
         String path = getAbsoluteFilePath(version);
@@ -150,6 +152,7 @@ public class PairtreeFilestore extends BaseFilestore {
     /**
      * @see org.tdar.filestore.Filestore#store(File)
      */
+    @Override
     public String store(File content, InformationResourceFileVersion version) throws IOException {
         return storeAndRotate(content, version, StorageMethod.NO_ROTATION);
     }
@@ -157,6 +160,7 @@ public class PairtreeFilestore extends BaseFilestore {
     /**
      * @see org.tdar.filestore.Filestore#store(File)
      */
+    @Override
     public String storeAndRotate(File content, InformationResourceFileVersion version, StorageMethod rotations) throws IOException {
         if (content == null || !content.isFile()) {
             logger.warn("Trying to store null or non-file content: {}", content);
@@ -168,6 +172,7 @@ public class PairtreeFilestore extends BaseFilestore {
     /**
      * @see org.tdar.filestore.Filestore#retrieveFile(java.lang.String)
      */
+    @Override
     public File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException {
         File file = new File(getAbsoluteFilePath(version));
         logger.trace("file requested: {}", file);
@@ -260,6 +265,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @return Canonical path to the base filestore directory on the filesystem
      *         as a string.
      */
+    @Override
     public String getFilestoreLocation() {
         return fileStoreLocation;
     }
@@ -267,6 +273,7 @@ public class PairtreeFilestore extends BaseFilestore {
     /**
      * @see org.tdar.filestore.Filestore#purge(java.lang.String)
      */
+    @Override
     public void purge(InformationResourceFileVersion version) throws IOException {
         File file = new File(getAbsoluteFilePath(version));
         if (!version.isDerivative() && !version.isTranslated()) {

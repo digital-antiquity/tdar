@@ -128,10 +128,12 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         }
     }
 
+    @Override
     public String getTransactionId() {
         return this.getValuesFor(NelnetTransactionItemResponse.TRANSACTION_ID);
     }
 
+    @Override
     public boolean validate() {
         String hashkey = generateHashKey();
         String actual = getValuesFor(NelnetTransactionItemResponse.HASH);
@@ -165,6 +167,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         return hashkey;
     }
 
+    @Override
     public void updateInvoiceFromResponse(Invoice invoice) {
         populateInvoiceFromResponse(invoice);
     }
@@ -312,6 +315,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         this.values = values;
     }
 
+    @Override
     public String getValuesFor(String key) {
         if (!values.containsKey(key)) {
             return null;
@@ -326,6 +330,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         return StringUtils.join(values.get(key.getKey()));
     }
 
+    @Override
     public Address getAddress() {
         Address toReturn = new Address();
         toReturn.setType(AddressType.BILLING);

@@ -13,6 +13,7 @@ import com.opensymphony.module.sitemesh.parser.HTMLPageParser;
 
 public class TdarSitemeshPageParser extends HTMLPageParser {
 
+    @Override
     protected void addUserDefinedRules(State html, final PageBuilder page) {
         super.addUserDefinedRules(html, page);
         html.addRule(new TopLevelDivExtractingRule(page));
@@ -28,6 +29,7 @@ public class TdarSitemeshPageParser extends HTMLPageParser {
             this.page = page;
         }
 
+        @Override
         public void process(Tag tag) {
             if (tag.getType() == Tag.OPEN) {
                 String id = tag.getAttributeValue("id", false);

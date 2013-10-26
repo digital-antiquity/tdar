@@ -495,10 +495,12 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     @XmlTransient
     @JSONTransient
+    @Override
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }
 
+    @Override
     public void setObfuscatedObjectDifferent(Boolean obfuscatedObjectDifferent) {
         this.obfuscatedObjectDifferent = obfuscatedObjectDifferent;
     }

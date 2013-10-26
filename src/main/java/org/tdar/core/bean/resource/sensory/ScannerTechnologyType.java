@@ -34,6 +34,7 @@ public enum ScannerTechnologyType implements HasLabel {
         this.active = active;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

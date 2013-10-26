@@ -67,6 +67,7 @@ public class ODataServiceRequestIntegrationITCase extends AbstractLightFitTest {
         repositoryService.saveOwnedDataTables(new ArrayList<DataTable>());
     }
 
+    @Override
     protected Logger getLogger() {
         return logger;
     }

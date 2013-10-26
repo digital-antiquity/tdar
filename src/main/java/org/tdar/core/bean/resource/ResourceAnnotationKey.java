@@ -70,10 +70,12 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
 
     @Transient
     @XmlTransient
+    @Override
     public boolean isReadyToIndex() {
         return readyToIndex;
     }
 
+    @Override
     public void setReadyToIndex(boolean readyToIndex) {
         this.readyToIndex = readyToIndex;
     }
@@ -135,25 +137,30 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
 
     @Transient
     @XmlTransient
+    @Override
     public Float getScore() {
         return score;
     }
 
+    @Override
     public void setScore(Float score) {
         this.score = score;
     }
 
     @Transient
     @XmlTransient
+    @Override
     public Explanation getExplanation() {
         return explanation;
     }
 
+    @Override
     public void setExplanation(Explanation explanation) {
         this.explanation = explanation;
     }
 
     @Transient
+    @Override
     public String getLabel() {
         return this.key;
     }

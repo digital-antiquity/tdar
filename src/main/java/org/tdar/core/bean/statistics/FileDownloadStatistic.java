@@ -31,10 +31,12 @@ public class FileDownloadStatistic extends AbstractResourceStatistic<Information
         setReference(r);
     }
 
+    @Override
     public InformationResourceFile getReference() {
         return reference;
     }
 
+    @Override
     public void setReference(InformationResourceFile reference) {
         this.reference = reference;
     }

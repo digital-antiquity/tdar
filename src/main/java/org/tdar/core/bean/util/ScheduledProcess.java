@@ -60,6 +60,7 @@ public interface ScheduledProcess<P extends Persistable> extends Serializable {
         /**
          * @return the lastId
          */
+        @Override
         public Long getLastId() {
             return lastId;
         }
@@ -68,6 +69,7 @@ public interface ScheduledProcess<P extends Persistable> extends Serializable {
          * @param lastId
          *            the lastId to set
          */
+        @Override
         public void setLastId(Long lastId) {
             this.lastId = lastId;
         }
@@ -93,6 +95,7 @@ public interface ScheduledProcess<P extends Persistable> extends Serializable {
             return getDisplayName();
         }
 
+        @Override
         public boolean shouldRunAtStartup() {
             return false;
         }

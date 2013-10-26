@@ -48,6 +48,7 @@ public enum GeneralPermissions implements HasLabel {
     /**
      * @return the label
      */
+    @Override
     public String getLabel() {
         return label;
     }

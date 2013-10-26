@@ -86,10 +86,12 @@ public class CodingSheet extends InformationResource implements SupportsResource
         this.codingRules = codingRules;
     }
 
+    @Override
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
 
+    @Override
     public void setCategoryVariable(CategoryVariable categoryVariable) {
         this.categoryVariable = categoryVariable;
     }

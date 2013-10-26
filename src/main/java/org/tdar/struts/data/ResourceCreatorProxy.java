@@ -175,6 +175,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
         return false;
     }
 
+    @Override
     public String toString() {
         return String.format("[ResourceCreatorProxy@%s  role:%s rc:%s  p:%s  i:%s]", this.hashCode(), role, resourceCreator, person, institution);
     }

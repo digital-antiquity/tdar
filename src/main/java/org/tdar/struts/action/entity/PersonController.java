@@ -3,6 +3,7 @@ package org.tdar.struts.action.entity;
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -91,6 +92,8 @@ public class PersonController extends AbstractCreatorController<Person> {
         }
 
     }
+
+    @Override
     public void validate() {
         validateEmailRequiredForActiveUsers();
         validateUniqueEmail();

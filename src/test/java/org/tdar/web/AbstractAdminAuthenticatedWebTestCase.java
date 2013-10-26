@@ -19,6 +19,7 @@ import org.tdar.core.bean.resource.Resource;
 public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuthenticatedWebTestCase {
 
     @Before
+    @Override
     public void setUp() {
         loginAdmin();
     }

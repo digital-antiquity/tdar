@@ -352,6 +352,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     /**
      * @return the status
      */
+    @Override
     public Status getStatus() {
         return status;
     }
@@ -360,6 +361,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
      * @param status
      *            the status to set
      */
+    @Override
     public void setStatus(Status status) {
         this.status = status;
     }
@@ -448,6 +450,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         return canAddResource(re) != AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
 
+    @Override
     public Date getDateUpdated() {
         return lastModified;
     }

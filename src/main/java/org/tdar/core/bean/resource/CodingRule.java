@@ -146,6 +146,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
         this.codingSheet = codingSheet;
     }
 
+    @Override
     public String toString() {
         return String.format("{%s, %s, %s, %s}", code, term, description, getOntologyNode());
     }
@@ -153,6 +154,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     /**
      * Default implementation of compareTo using the code.
      */
+    @Override
     public int compareTo(CodingRule other) {
         try {
             // try to use integer comparison instead of String lexicographic comparison

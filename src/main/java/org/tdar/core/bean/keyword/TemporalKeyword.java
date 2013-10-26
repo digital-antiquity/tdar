@@ -33,6 +33,7 @@ public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
     @JoinColumn(name = "merge_keyword_id")
     private Set<TemporalKeyword> synonyms = new HashSet<TemporalKeyword>();
 
+    @Override
     public Set<TemporalKeyword> getSynonyms() {
         return synonyms;
     }

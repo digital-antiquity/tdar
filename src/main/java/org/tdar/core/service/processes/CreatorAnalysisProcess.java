@@ -79,6 +79,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
 
+    @Override
     public String getDisplayName() {
         return "Creator Analytics Process";
     }
@@ -88,6 +89,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
         return 100;
     }
 
+    @Override
     public Class<Creator> getPersistentClass() {
         return Creator.class;
     }

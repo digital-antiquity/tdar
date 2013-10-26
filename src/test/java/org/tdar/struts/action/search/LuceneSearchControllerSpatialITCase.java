@@ -41,6 +41,7 @@ public class LuceneSearchControllerSpatialITCase extends AbstractControllerITCas
     private LatitudeLongitudeBox searchBox;
 
     @Autowired
+    @Override
     public TdarActionSupport getController() {
         return controller;
     }

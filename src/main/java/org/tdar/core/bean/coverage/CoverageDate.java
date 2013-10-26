@@ -99,11 +99,13 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     }
 
     @Transient
+    @Override
     public boolean isValid() {
         return validate(startDate, endDate);
     }
 
     @Transient
+    @Override
     public boolean isValidForController() {
         if (dateType == null || startDate == null || endDate == null) {
             return false;
@@ -127,6 +129,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
         return dateType;
     }
 
+    @Override
     public String toString() {
         return String.format("%s: %s - %s", getDateType().getLabel(), getStartDate(), getEndDate());
     }

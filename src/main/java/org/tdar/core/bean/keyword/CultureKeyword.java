@@ -47,6 +47,7 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
     private CultureKeyword parent;
 
     @XmlAttribute
+    @Override
     public boolean isApproved() {
         return approved;
     }
@@ -59,6 +60,7 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
      * @param parent
      *            the parent to set
      */
+    @Override
     public void setParent(CultureKeyword parent) {
         this.parent = parent;
     }
@@ -68,10 +70,12 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
      */
     @XmlElement(name = "parentRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @Override
     public CultureKeyword getParent() {
         return parent;
     }
 
+    @Override
     public Set<CultureKeyword> getSynonyms() {
         return synonyms;
     }

@@ -93,14 +93,17 @@ public interface DatasetConverter {
 
         protected abstract void dumpData() throws IOException, Exception;
 
+        @Override
         public void setRelationships(Set<DataTableRelationship> relationships) {
             this.dataTableRelationships = relationships;
         }
 
+        @Override
         public Set<DataTableRelationship> getRelationships() {
             return dataTableRelationships;
         }
 
+        @Override
         public List<DataTableRelationship> getRelationshipsWithTable(String tableName) {
             List<DataTableRelationship> rels = new ArrayList<DataTableRelationship>();
             for (DataTableRelationship rel : dataTableRelationships) {
@@ -111,6 +114,7 @@ public interface DatasetConverter {
             return rels;
         }
 
+        @Override
         public Set<DataTable> getDataTables() {
             return dataTables;
         }
@@ -187,6 +191,7 @@ public interface DatasetConverter {
             }
         }
 
+        @Override
         public List<String> getTableNames() {
             ArrayList<String> tables = new ArrayList<String>();
             for (DataTable table : dataTables) {
@@ -195,6 +200,7 @@ public interface DatasetConverter {
             return tables;
         }
 
+        @Override
         public DataTable getDataTableByName(String name) {
             for (DataTable table : dataTables) {
                 if (name.equals(table.getName()))
@@ -203,6 +209,7 @@ public interface DatasetConverter {
             return null;
         }
 
+        @Override
         public DataTable getDataTableByOriginalName(String name) {
             for (DataTable table : dataTables) {
                 if (ObjectUtils.equals(getInternalTableName(name),getInternalTableName(table.getName()))) {
@@ -226,14 +233,17 @@ public interface DatasetConverter {
             }
         }
 
+        @Override
         public void setTargetDatabase(TargetDatabase targetDatabase) {
             this.targetDatabase = targetDatabase;
         }
 
+        @Override
         public void setFilename(String filename) {
             this.filename = filename;
         }
 
+        @Override
         public String getFilename() {
             return filename;
         }
@@ -265,10 +275,12 @@ public interface DatasetConverter {
             return targetDatabase.normalizeTableOrColumnNames(sb.toString());
         }
 
+        @Override
         public String getInternalTableName(String originalTableName) {
             return originalTableName.replaceAll("^(" + getDatabasePrefix() + "_)(\\d+)(_?)", "");
         }
 
+        @Override
         public Set<DataTableRelationship> getKeys() {
             return dataTableRelationships;
         }
@@ -277,6 +289,7 @@ public interface DatasetConverter {
          * @param informationResourceFileVersion
          *            the informationResourceFileVersion to set
          */
+        @Override
         public void setInformationResourceFileVersion(InformationResourceFileVersion informationResourceFileVersion) {
             this.informationResourceFileVersion = informationResourceFileVersion;
         }
@@ -288,10 +301,12 @@ public interface DatasetConverter {
             return informationResourceFileVersion;
         }
 
+        @Override
         public File getIndexedContentsFile() {
             return indexedContentsFile;
         }
 
+        @Override
         public void setIndexedContentsFile(File indexedContentsFile) {
             this.indexedContentsFile = indexedContentsFile;
         }

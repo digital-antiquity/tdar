@@ -226,6 +226,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         getResources().add(resource);
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -236,6 +237,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     // @Boost(1.2f)
     @Field
+    @Override
     public String getDescription() {
         return description;
     }
@@ -380,6 +382,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     /**
      * @return the sortBy
      */
+    @Override
     public SortOption getSortBy() {
         return sortBy;
     }
@@ -565,6 +568,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    @Override
     public String getTitleSort() {
         if (getTitle() == null)
             return "";
@@ -573,19 +577,23 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field
     // @Boost(1.5f)
+    @Override
     public String getTitle() {
         return getName();
     }
 
+    @Override
     public String getUrlNamespace() {
         return "collection";
     }
 
     @XmlTransient
+    @Override
     public boolean isViewable() {
         return viewable;
     }
 
+    @Override
     public void setViewable(boolean viewable) {
         this.viewable = viewable;
     }
@@ -619,6 +627,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     }
 
+    @Override
     public Date getDateUpdated() {
         return dateUpdated;
     }

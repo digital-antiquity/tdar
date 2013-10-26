@@ -20,6 +20,7 @@ public enum DataTableColumnEncodingType implements HasLabel {
         setSupportsOntology(supportsOntology);
     }
 
+    @Override
     public String getLabel() {
         return this.label;
     }

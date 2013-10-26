@@ -96,6 +96,7 @@ public class ContributorRequest extends Persistable.Base implements Comparable<C
         this.contributorReason = contributorReason;
     }
 
+    @Override
     public int compareTo(ContributorRequest contributorRequest) {
         return timestamp.compareTo(contributorRequest.timestamp);
     }

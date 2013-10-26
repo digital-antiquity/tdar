@@ -158,6 +158,7 @@ public class Project extends Resource implements Sortable {
         this.cachedInformationResources = cachedInformationResources;
     }
 
+    @Override
     public SortOption getSortBy() {
         return sortBy;
     }

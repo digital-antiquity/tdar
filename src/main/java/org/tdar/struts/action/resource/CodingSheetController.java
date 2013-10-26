@@ -179,6 +179,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         return analyzer.getExtensionsForType(ResourceType.CODING_SHEET);
     }
 
+    @Override
     public Class<CodingSheet> getPersistableClass() {
         return CodingSheet.class;
     }

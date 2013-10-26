@@ -54,6 +54,7 @@ public class GenericServiceITCase extends AbstractIntegrationTestCase {
         List<InvestigationType> investigationTypes = genericService.findAll(InvestigationType.class, ids);
         assertEquals(20, investigationTypes.size());
         Collections.sort(investigationTypes, new Comparator<InvestigationType>() {
+            @Override
             public int compare(InvestigationType a, InvestigationType b) {
                 return a.getId().compareTo(b.getId());
             }

@@ -101,6 +101,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return getProjectService().findAllResourcesInProject(getProject(), Status.ACTIVE, Status.DRAFT);
     }
 
+    @Override
     protected void loadCustomMetadata() throws TdarActionException {
         if (getPersistable() != null) {
             ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser());
@@ -157,6 +158,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         setPersistable(project);
     }
 
+    @Override
     public Class<Project> getPersistableClass() {
         return Project.class;
     }
@@ -196,10 +198,12 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return false;
     }
 
+    @Override
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }
 
+    @Override
     public void setRecordsPerPage(int recordsPerPage) {
         this.recordsPerPage = recordsPerPage;
     }
@@ -224,6 +228,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         this.secondarySortField = secondarySortField;
     }
 
+    @Override
     public void setSortField(SortOption sortField) {
         this.sortField = sortField;
     }
@@ -248,10 +253,12 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return mode;
     }
 
+    @Override
     public int getNextPageStartRecord() {
         return startRecord + recordsPerPage;
     }
 
+    @Override
     public int getPrevPageStartRecord() {
         return startRecord - recordsPerPage;
     }

@@ -68,6 +68,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             this.setOntologyLabel(ontologyLabel);
         }
 
+        @Override
         public String getLabel() {
             return label;
         }

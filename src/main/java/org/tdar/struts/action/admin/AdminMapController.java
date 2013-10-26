@@ -43,6 +43,7 @@ public class AdminMapController extends AuthenticationAware.Base {
 
     @Action(value = "map", results = {
             @Result(name = "success", location = "svg.ftl", type = "freemarker", params = { "contentType", "image/svg+xml" }) })
+    @Override
     public String execute() {
         List<HomepageGeographicKeywordCache> caches = getGenericService().findAll(HomepageGeographicKeywordCache.class);
         setSvgWrapper(geoSearchService.toSvg(.05, "/search/results?geographicKeywords=", " (ISO%20Country%20Code)", table, limit));

@@ -51,6 +51,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
     private static final String ERROR_CORRUPT_DB = "The system was unable to read portions of this Access database. It is possible this issue may be resolved By using the \"Compact and Repair \" feature in Microsoft Access.";
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Override
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
@@ -63,8 +64,8 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
         setInformationResourceFileVersion(versions[0]);
     }
 
-    protected void openInputDatabase()
-            throws IOException {
+    @Override
+    protected void openInputDatabase() throws IOException {
         File databaseFile = getInformationResourceFileVersion().getTransientFile();
         // if we use ReadOnly Mode here we have the ability to open older files... http://jira.pentaho.com/browse/PDI-5111
         setDatabase(DatabaseBuilder.open(databaseFile));
@@ -78,6 +79,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
      * 
      * @param targetDatabase
      */
+    @Override
     public void dumpData() throws Exception {
         // start dumping ...
         Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();

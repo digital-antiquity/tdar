@@ -126,6 +126,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
         this.linkType = linkType;
     }
 
+    @Override
     public Set<String> getValidFileExtensions() {
         return analyzer.getExtensionsForType(ResourceType.DOCUMENT);
     }
@@ -138,6 +139,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
         return getPersistable();
     }
 
+    @Override
     public Class<Document> getPersistableClass() {
         return Document.class;
     }

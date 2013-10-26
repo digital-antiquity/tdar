@@ -95,6 +95,7 @@ public class AdminController extends AuthenticationAware.Base {
             @Action("internal"),
             @Action("activity")
     })
+    @Override
     public String execute() {
         setCurrentResourceStats(getStatisticService().getCurrentResourceStats());
         setHistoricalRepositorySizes(getStatisticService().getRepositorySizes());

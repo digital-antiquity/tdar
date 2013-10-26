@@ -737,10 +737,12 @@ public abstract class InformationResource extends Resource {
         return isProjectVisible() && isInheritingCulturalInformation() ? project.getApprovedCultureKeywords() : getApprovedCultureKeywords();
     }
 
+    @Override
     public Set<ResourceNote> getActiveResourceNotes() {
         return isProjectVisible() && isInheritingNoteInformation() ? project.getResourceNotes() : getResourceNotes();
     }
 
+    @Override
     public Set<ResourceAnnotation> getActiveResourceAnnotations() {
         return isProjectVisible() && isInheritingIdentifierInformation() ? project.getResourceAnnotations() : getResourceAnnotations();
     }

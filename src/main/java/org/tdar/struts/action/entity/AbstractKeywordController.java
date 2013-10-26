@@ -27,6 +27,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Action(value = VIEW, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
             @Result(name = SUCCESS, location = "/WEB-INF/content/entity/keyword/view.ftl")
     })
+    @Override
     public String view() throws TdarActionException {
         return super.view();
     }
@@ -35,6 +36,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = "/WEB-INF/content/entity/keyword/edit.ftl")
     })
+    @Override
     public String edit() throws TdarActionException {
         return super.edit();
     }

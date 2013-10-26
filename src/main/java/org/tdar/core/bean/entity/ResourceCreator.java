@@ -112,6 +112,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
      * 
      * @see org.tdar.core.bean.Validatable#isValid()
      */
+    @Override
     public boolean isValid() {
         if (role == null || creator == null) {
             logger.trace(String.format("role:%s creator:%s ", role, creator));
@@ -134,6 +135,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
         return false;
     }
 
+    @Override
     public boolean isValidForController() {
         return true;
     }
