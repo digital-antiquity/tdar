@@ -1,5 +1,6 @@
 package org.tdar.core.service.resource;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.dao.resource.InformationResourceFileVersionDao;
 import org.tdar.core.service.ServiceInterface;
@@ -50,11 +52,10 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
      * @throws NotImplementedException -- need to work through what should really happen here
      */
     public void purgeFromFilestore(InformationResourceFile file) {
-        throw new NotImplementedException(MessageHelper.getMessage("error.not_implemented"));
-//        List<InformationResourceFileVersion> versions = new ArrayList<InformationResourceFileVersion>(file.getInformationResourceFileVersions());
-//        for (InformationResourceFileVersion version : versions) {
-//            informationResourceFileVersionDao.delete(version);
-//        }
+        List<InformationResourceFileVersion> versions = new ArrayList<>(file.getInformationResourceFileVersions());
+        for (InformationResourceFileVersion version : versions) {
+            informationResourceFileVersionDao.delete(version, true);
+        }
     }
 
     
