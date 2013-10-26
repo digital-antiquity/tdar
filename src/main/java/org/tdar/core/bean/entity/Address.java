@@ -132,7 +132,7 @@ public class Address extends Base implements Persistable, Validatable {
     @XmlTransient
     public boolean isValid() {
         if (StringUtils.isBlank(street1)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address_street_required"));
+            throw new TdarValidationException(MessageHelper.getMessage("address.street_required"));
         }
         if (StringUtils.isBlank(city)) {
             throw new TdarValidationException(MessageHelper.getMessage("address.city_required"));

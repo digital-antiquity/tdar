@@ -11,6 +11,7 @@ import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.entity.PersonController;
+import org.tdar.utils.MessageHelper;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasKey;
@@ -127,7 +128,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.setServletRequest(getServletPostRequest());
 
         assertEquals(PersonController.INPUT, controller.saveAddress());
-        assertEquals(Address.STREET_ADDRESS_IS_REQUIRED, controller.getActionErrors().iterator().next());
+        assertEquals(MessageHelper.getMessage("address.street_required"), controller.getActionErrors().iterator().next());
         setIgnoreActionErrors(true);
 
     }
