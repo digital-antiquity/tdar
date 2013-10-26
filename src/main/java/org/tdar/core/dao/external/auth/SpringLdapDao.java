@@ -26,6 +26,7 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -189,7 +190,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
         // predefined password reset url,
         // depending on the specific ldap implementation. Till then, just throw
         // an exception
-        throw new UnsupportedOperationException("Password reset not supported by Ldap Authentication Provider");
+        throw new UnsupportedOperationException(MessageHelper.getMessage("ldap.password_reset_disabled"));
     }
 
     /*

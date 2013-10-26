@@ -127,7 +127,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      */
     public void updateUsername(Person person, String newUsername, String password) {
         if (personDao.findByUsername(newUsername.toLowerCase()) != null) {
-            throw new TdarRecoverableRuntimeException(String.format("Username %s already exists", newUsername));
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("auth.username_exists", newUsername));
         }
 
         String[] groupNames = getProvider().findGroupMemberships(person);
@@ -643,7 +643,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
         if (!result.isValid()) {
             logger.debug(String.format("Couldn't authenticate %s - (reason: %s)", loginUsername, result));
-            throw new TdarRecoverableRuntimeException(result.getMessage());
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("auth.couldnt_authenticate",result.getMessage()));
         }
         
         Person person = personDao.findByUsername(loginUsername);
@@ -666,7 +666,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         clearPermissionsCache(person);
         
         if (!isMember(person, TdarGroup.TDAR_USERS)) {
-            throw new TdarRecoverableRuntimeException("auth.cannot.notmember");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("auth.cannot.notmember"));
         }
         
         logger.debug(String.format("%s (%s) logged in from %s using: %s", loginUsername, person.getEmail(), request.getRemoteAddr(),

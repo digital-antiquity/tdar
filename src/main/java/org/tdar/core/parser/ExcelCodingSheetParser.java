@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -71,20 +72,13 @@ public class ExcelCodingSheetParser implements CodingSheetParser {
             }
         } catch (IllegalStateException e) {
             logger.error("Couldn't parse excel file", e);
-            // FIXME: error message should be externalized
-            throw new CodingSheetParserException(
-                    "The coding sheet did not get parsed properly.  "
-                            +
-                            "We expect coding sheets to contain three columns, a code, term, and optional description column, in that order."
-                            +
-                            "Coding sheets should be the first sheet in your Excel workbook.  Please check your file and make sure it conforms to this template.",
-                    e);
+            throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_missing_fields",e);
         } catch (IOException e) {
             logger.error("Couldn't construct POI Workbook from input stream", e);
-            throw new CodingSheetParserException("Couldn't construct POI Workbook from input stream", e);
+            throw new CodingSheetParserException(MessageHelper.getMessage("excelCodingSheetParser.could_not_parse_poi"), e);
         } catch (InvalidFormatException exception) {
             logger.error("Couldn't create POI Workbook from input stream", exception);
-            throw new CodingSheetParserException("Couldn't construct POI Workbook from input stream", exception);
+            throw new CodingSheetParserException(MessageHelper.getMessage("excelCodingSheetParser.could_not_parse_poi"), exception);
         }
         return codingRules;
     }

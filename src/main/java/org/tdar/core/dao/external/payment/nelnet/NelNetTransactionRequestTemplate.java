@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 public class NelNetTransactionRequestTemplate implements Serializable {
 
@@ -178,13 +179,13 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                     break;
                 case USER_CHOICE_2:
                     if (!NelnetTransactionItem.getUserIdKey().equals(item.getKey())) {
-                        throw new TdarRecoverableRuntimeException("user id key has been changed");
+                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("nelNetTransactionRequestTemplate.user_id_key_changed"));
                     }
                     value = invoice.getOwner().getId().toString();
                     break;
                 case USER_CHOICE_3:
                     if (!NelnetTransactionItem.getInvoiceIdKey().equals(item.getKey())) {
-                        throw new TdarRecoverableRuntimeException("invoice id key has been changed");
+                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("nelNetTransactionRequestTemplate.invoice_id_key_changed"));
                     }
                     value = invoice.getId().toString();
                     break;

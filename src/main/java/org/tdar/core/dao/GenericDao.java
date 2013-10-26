@@ -34,6 +34,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -385,7 +386,7 @@ public class GenericDao {
             saveOrUpdate(entity);
         } else if (entity  instanceof InformationResourceFileVersion) {
             if (((InformationResourceFileVersion) entity).isUploadedOrArchival()) {
-                throw new TdarRecoverableRuntimeException("Should not delete Uploaded or Archival Version");
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.cannot_delete_archival"));
             }
         } else {
             forceDelete(entity);

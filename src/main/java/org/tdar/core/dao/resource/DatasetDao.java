@@ -40,6 +40,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -126,8 +127,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         // return createCriteria.list();
         //
         // }
-        throw new TdarRecoverableRuntimeException("passed a class we didn't know what to do with");
-
+        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetDao.cannot_find_linked_class"));
     }
 
     /**

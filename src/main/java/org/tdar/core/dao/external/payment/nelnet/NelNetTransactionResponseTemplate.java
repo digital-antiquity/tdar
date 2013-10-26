@@ -23,6 +23,7 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 public class NelNetTransactionResponseTemplate implements Serializable, TransactionResponse {
 
@@ -135,7 +136,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         String hashkey = generateHashKey();
         String actual = getValuesFor(NelnetTransactionItemResponse.HASH);
         if (!actual.equals(hashkey)) {
-            throw new TdarRecoverableRuntimeException(String.format("hash keys do not match actual: %s computed: %s ", actual, hashkey));
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("nelNetTransactionResponseTemplate.hash_keys_do_not_match", actual, hashkey));
         }
         return true;
     }

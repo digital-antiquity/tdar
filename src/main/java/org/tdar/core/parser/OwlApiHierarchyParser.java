@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -190,7 +191,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
         logger.trace("{}", node);
         
         if (StringUtils.isBlank(node.getIri())) {
-            throw new TdarRecoverableRuntimeException(String.format("node: %s, has a blank IRI on imports", node));
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("owlApiHierarchyParser.blank_iri", node));
         }
         node.setIntervalEnd(Integer.valueOf(index));
         return index + 1;

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
+import org.tdar.utils.MessageHelper;
 
 /*
  * The goal of this class is to evaluate the beginning of a worksheet and try and figure out where the
@@ -101,9 +102,7 @@ public class SheetEvaluator {
     }
 
     private void throwTdarRecoverableRuntimeException(int rowNumber, short offendingColumnIndex, int columnNameBound, String sheetName) {
-        throw new TdarRecoverableRuntimeException("row #" + rowNumber + " has more columns (" + offendingColumnIndex
-                + ") than this sheet has column names (" + columnNameBound
-                + ") - " + sheetName);
+        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("sheetEvaluator.row_has_more_columns",rowNumber, offendingColumnIndex, columnNameBound, sheetName));
     }
 
     private int evaluateForBlankCells(Row row, int endAt, int cellCount) {
@@ -129,8 +128,7 @@ public class SheetEvaluator {
                 case Cell.CELL_TYPE_BOOLEAN:
                     return Boolean.toString(cell.getBooleanCellValue());
                 default:
-                    throw new TdarRecoverableRuntimeException(String.format("there was a problem processing your dataset at row: %s column %s",
-                            cell.getRowIndex(), cell.getColumnIndex()));
+                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("sheetEvaluator.parse_error", cell.getRowIndex(), cell.getColumnIndex()));
             }
         }
     }
