@@ -9,5 +9,6 @@
     "ddclient::ddclientconnectserver" : "${dynamic.dns.service}",
     "ddclient::ddclientlogin" : "${username.dns.service}",
     "ddclient::ddclientpassword" : "${password.dns.service}",
-    "ddclient::ddclienthostname" : "${app.hostname}"
+    "ddclient::ddclienthostname" : "${app.hostname}",
+    "tomcat7::keystore_password" : "${password.keystore}"
 }
