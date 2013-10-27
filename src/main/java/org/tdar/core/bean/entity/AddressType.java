@@ -1,11 +1,12 @@
 package org.tdar.core.bean.entity;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.utils.MessageHelper;
 
 public enum AddressType implements HasLabel {
-    MAILING("Mailing Address"),
-    BILLING("Billing Address"),
-    OTHER("Other");
+    MAILING(MessageHelper.getMessage("addressType.mailing")),
+    BILLING(MessageHelper.getMessage("addressType.billing")),
+    OTHER(MessageHelper.getMessage("addressType.other"));
 
     private String label;
 

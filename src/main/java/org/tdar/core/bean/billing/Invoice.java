@@ -29,6 +29,7 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -48,13 +49,12 @@ public class Invoice extends Base implements Updatable {
     @Transient
     private final static String[] JSON_PROPERTIES = { "id", "paymentMethod", "transactionStatus", "totalFiles", "totalResources", "totalSpace",
             "calculatedCost", "total" };
-
     public enum TransactionStatus implements HasLabel {
-        PREPARED("Prepared"),
-        PENDING_TRANSACTION("Pending Transaction"),
-        TRANSACTION_SUCCESSFUL("Transaction Successful"),
-        TRANSACTION_FAILED("Transaction Failed"),
-        TRANSACTION_CANCELLED("Transaction Cancelled");
+        PREPARED(MessageHelper.getMessage("transactionStatus.prepared")),
+        PENDING_TRANSACTION(MessageHelper.getMessage("transactionStatus.pending")),
+        TRANSACTION_SUCCESSFUL(MessageHelper.getMessage("transactionStatus.successful")),
+        TRANSACTION_FAILED(MessageHelper.getMessage("transactionStatus.failed")),
+        TRANSACTION_CANCELLED(MessageHelper.getMessage("transactionStatus.cancelled"));
 
         private String label;
 

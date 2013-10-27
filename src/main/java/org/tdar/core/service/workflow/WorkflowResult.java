@@ -35,7 +35,9 @@ public class WorkflowResult implements Serializable {
                     copyContextResults(file.getWorkflowContext());
                 }
             }
-            logger.warn("EXCEPTIONS: {}", getExceptions());
+            if (CollectionUtils.isNotEmpty(getExceptions())) {
+                logger.warn("EXCEPTIONS: {}", getExceptions());
+            }
         }
     }
 

@@ -75,6 +75,7 @@ import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -107,11 +108,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient boolean viewable;
 
     // private transient boolean readyToIndex = true;
-
     public enum CollectionType {
-        INTERNAL("Internal"),
-        SHARED("Shared"),
-        PUBLIC("Public");
+        INTERNAL(MessageHelper.getMessage("collectionType.internal")),
+        SHARED(MessageHelper.getMessage("collectionType.internal")),
+        PUBLIC(MessageHelper.getMessage("collectionType.public"));
 
         private String label;
 

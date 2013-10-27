@@ -2,14 +2,15 @@ package org.tdar.core.bean.resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.utils.MessageHelper;
 
 public enum Status implements HasLabel {
-    DRAFT("Draft"),
-    ACTIVE("Active"),
-    FLAGGED("Flagged"),
-    FLAGGED_ACCOUNT_BALANCE("Flagged: Overage"),
-    DUPLICATE("Duplicate"),
-    DELETED("Deleted");
+    DRAFT(MessageHelper.getMessage("status.draft")),
+    ACTIVE(MessageHelper.getMessage("status.active")),
+    FLAGGED(MessageHelper.getMessage("status.flagged")),
+    FLAGGED_ACCOUNT_BALANCE(MessageHelper.getMessage("status.flagged_account")),
+    DUPLICATE(MessageHelper.getMessage("status.duplicate")),
+    DELETED(MessageHelper.getMessage("status.deleted"));
 
     private final String label;
 

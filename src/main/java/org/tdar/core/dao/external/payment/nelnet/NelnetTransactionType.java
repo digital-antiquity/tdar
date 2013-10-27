@@ -2,12 +2,12 @@ package org.tdar.core.dao.external.payment.nelnet;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.utils.MessageHelper;
 
 public enum NelnetTransactionType implements HasLabel {
-
-    CREDIT_CARD("Credit Card", 1, true),
-    CREDIT_CARD_REFUND("Credit Card Refund", 2, false),
-    CHECK("eCheck Payment", 3, true);
+    CREDIT_CARD(MessageHelper.getMessage("nelnetTransactionType.credit_card"), 1, true),
+    CREDIT_CARD_REFUND(MessageHelper.getMessage("nelnetTransactionType.credit_card"), 2, false),
+    CHECK(MessageHelper.getMessage("nelnetTransactionType.echeck"), 3, true);
 
     private String label;
     private int ordinalValue;

@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource.datatable;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.utils.MessageHelper;
 
 public enum DataTableColumnRelationshipType implements HasLabel {
 
@@ -9,10 +10,9 @@ public enum DataTableColumnRelationshipType implements HasLabel {
      * FOREIGN_KEY("Foreign Key"),
      * PRIMARY_KEY("Primary Key");
      */
-
-    ONE_TO_MANY("One-to-Many"),
-    MANY_TO_ONE("Many-to-One"),
-    ONE_TO_ONE("One-to-One");
+    ONE_TO_MANY(MessageHelper.getMessage("dataTableColumnRelationshipType.one_to_many")),
+    MANY_TO_ONE(MessageHelper.getMessage("dataTableColumnRelationshipType.many_to_many")),
+    ONE_TO_ONE(MessageHelper.getMessage("dataTableColumnRelationshipType.one_to_one"));
 
     private String label;
 

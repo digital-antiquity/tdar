@@ -1,12 +1,13 @@
 package org.tdar.core.dao.external.payment;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.utils.MessageHelper;
 
 public enum PaymentMethod implements HasLabel {
-    CREDIT_CARD("Credit Card"),
-    CHECK("Check"),
-    INVOICE("Invoice"),
-    MANUAL("Manual");
+    CREDIT_CARD(MessageHelper.getMessage("paymentMethod.credit_card")),
+    CHECK(MessageHelper.getMessage("paymentMethod.check")),
+    INVOICE(MessageHelper.getMessage("paymentMethod.invoice")),
+    MANUAL(MessageHelper.getMessage("paymentMethod.manual"));
 
     private String label;
 

@@ -1,12 +1,13 @@
 package org.tdar.core.bean.resource.datatable;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.utils.MessageHelper;
 
 public enum DataTableColumnEncodingType implements HasLabel {
-    UNCODED_VALUE("Uncoded Value", false, true, false),
-    CODED_VALUE("Coded Value", true, true, false),
-    MEASUREMENT("Measurement", false, false, true),
-    COUNT("Count", false, false, false);
+    UNCODED_VALUE(MessageHelper.getMessage("dataTableColumnEncodingType.uncoded"), false, true, false),
+    CODED_VALUE(MessageHelper.getMessage("dataTableColumnEncodingType.coded"), true, true, false),
+    MEASUREMENT(MessageHelper.getMessage("dataTableColumnEncodingType.measurement"), false, false, true),
+    COUNT(MessageHelper.getMessage("dataTableColumnEncodingType.count"), false, false, false);
 
     private final String label;
     private boolean supportsOntology;
