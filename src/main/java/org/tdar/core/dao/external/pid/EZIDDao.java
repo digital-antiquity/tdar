@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -22,7 +21,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -30,7 +29,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
@@ -97,7 +95,7 @@ public class EZIDDao implements ExternalIDProvider {
             }
             AuthScope scope = new AuthScope(url.getHost(), port);
             logger.trace("using port: {}", port);
-            org.apache.http.client.CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            CredentialsProvider credsProvider = new BasicCredentialsProvider();
             credsProvider.setCredentials(scope, new UsernamePasswordCredentials(getDOIProviderUsername(), getDOIProviderPassword()));
             httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
 
