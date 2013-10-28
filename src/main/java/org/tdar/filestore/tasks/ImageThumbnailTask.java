@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import net.sf.ij.jaiio.JAIReader;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -72,11 +74,6 @@ public class ImageThumbnailTask extends AbstractTask {
         processImage(version, version.getTransientFile());
     }
 
-    public void prepare() {
-        // deleteFile(generateFilename(getWorkflowContext().getOutputDirectory(), getWorkflowContext().getOriginalFile().getFilename() , SMALL));
-        // deleteFile(generateFilename(getWorkflowContext().getOutputDirectory(), getWorkflowContext().getOriginalFile().getFilename() , MEDIUM));
-        // deleteFile(generateFilename(getWorkflowContext().getOutputDirectory(), getWorkflowContext().getOriginalFile().getFilename() , LARGE));
-    }
 
     public void processImage(InformationResourceFileVersion version, File sourceFile) {
         String filename = sourceFile.getName();
@@ -103,6 +100,16 @@ public class ImageThumbnailTask extends AbstractTask {
         String msg = IJ.getErrorMessage();
         if (StringUtils.isNotBlank(msg)) {
             getLogger().error(msg);
+        }
+        if (ijSource == null) {
+            getLogger().debug("Unable to load source image with ImageJ: " + sourceFile);
+            try {
+                // http://sourceforge.net/projects/ij-plugins/files/ij-imageio/v.1.2.4/
+                ImagePlus[] read = JAIReader.read(sourceFile);
+                ijSource = read[0];
+            } catch (Exception e) {
+                getLogger().error("could not open image with ImageJ-ImageIO" + sourceFile, e);
+            }
         }
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
