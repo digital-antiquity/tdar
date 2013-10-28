@@ -440,8 +440,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         writable.add(getOwner());
         writable.addAll(getUsersWhoCan(permission, true));
         for (Person p : writable) {
-            if (Persistable.Base.isTransient(p))
+            if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
+            }
             users.add(p.getId());
         }
         return users;
