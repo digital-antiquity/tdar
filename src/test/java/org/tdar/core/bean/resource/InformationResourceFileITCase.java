@@ -41,7 +41,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     public void testXMLSave() {
         for (Document resource : resourceService.findAll(Document.class)) {
             logger.info(resource.getId() + " -- saving");
-            resourceService.saveRecordToFilestore(resource);
+            resourceService.logRecordXmlToFilestore(resource);
         }
     }
 

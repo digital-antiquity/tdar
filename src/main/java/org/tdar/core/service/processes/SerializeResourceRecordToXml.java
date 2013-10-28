@@ -43,7 +43,7 @@ public class SerializeResourceRecordToXml extends ScheduledBatchProcess<Resource
 
     @Override
     public void process(Resource resource) {
-        resourceService.saveRecordToFilestore(resource);
+        resourceService.logRecordXmlToFilestore(resource);
     }
 
     @Override

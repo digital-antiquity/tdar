@@ -110,26 +110,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return (Long) query.iterate().next();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Resource> findResourceLinkedValues(Class<?> cls) {
-        String name = ReflectionService.cleanupMethodName(cls.getSimpleName() + "s");
-        if (Keyword.class.isAssignableFrom(cls)) {
-            String prop = "label";
-            Criteria createCriteria = getCriteria(Resource.class).setProjection(Projections.distinct(Projections.property("kwd." + prop)))
-                    .add(Restrictions.eq("status", Status.ACTIVE)).createAlias(name, "kwd", Criteria.INNER_JOIN).addOrder(Order.asc("kwd." + prop));
-            return createCriteria.list();
-        }
-        // if (Creator.class.isAssignableFrom(cls)) {
-        // String prop = "properName";
-        // Criteria createCriteria = getCriteria(ResourceCreator.class).setProjection(Projections.distinct(Projections.property("rc." + prop)))
-        // .createAlias("creator", "rc")
-        // .createCriteria("resource").add(Restrictions.eq("status", Status.ACTIVE)).addOrder(Order.asc("rc." + prop));
-        // return createCriteria.list();
-        //
-        // }
-        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetDao.cannot_find_linked_class"));
-    }
-
     /**
      * Finds all resource modified in the last X days
      * 

@@ -222,7 +222,7 @@ public class BulkUploadService {
                     resource.getId(), StringUtils.left(resource.getTitle(), 100));
 
             try {
-                resourceService.saveRecordToFilestore(resource);
+                resourceService.logRecordXmlToFilestore(resource);
                 genericDao.refresh(submitter);
                 resourceService.logResourceModification(resource, submitter, logMessage);
                 // FIXME: saveRecordToFilestore doesn't distinguish 'recoverable' from 'disastrous' exceptions. Until it does we just have to assume the worst.

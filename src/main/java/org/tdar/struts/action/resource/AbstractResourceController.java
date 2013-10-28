@@ -151,7 +151,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceCreatorProxy> contactProxies;
 
     private List<ResourceAnnotation> resourceAnnotations;
-    private Long activeResourceCount;
 
     private List<ResourceCollection> viewableResourceCollections;
 
@@ -189,19 +188,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected void loadCustomMetadata() throws TdarActionException {
     };
-
-    @Override
-    protected void loadListData() {
-        setActiveResourceCount(getResourceService().countResourcesForUserAccess(getAuthenticatedUser()));
-    }
-
-    public void setActiveResourceCount(Long countResourcesForUserAccess) {
-        this.activeResourceCount = countResourcesForUserAccess;
-    }
-
-    public Long getActiveResourceCount() {
-        return activeResourceCount;
-    }
 
     @Override
     public String loadAddMetadata() {
@@ -291,6 +277,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return SUCCESS;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String loadViewMetadata() throws TdarActionException {
         if (getResource() == null)
@@ -324,7 +311,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         } else {
             reason = "reason not specified";
         }
-        getResourceService().saveRecordToFilestore(resource);
+        getResourceService().logRecordXmlToFilestore(resource);
         String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().getLabel(), resource.getId(),
                 getAuthenticatedUser(), reason);
 
@@ -346,7 +333,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
 
         if (shouldSaveResource() && getResource() != null) {
-            getResourceService().saveRecordToFilestore(getPersistable());
+            getResourceService().logRecordXmlToFilestore(getPersistable());
         }
 
         if (getResource() != null) { // this will happen with the bulk uploader
