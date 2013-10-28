@@ -676,4 +676,8 @@ public class TdarConfiguration {
     public int getTosLatestVersion() {
         return assistant.getIntProperty("tos.version", 0);
     }
+
+    public boolean isJaiImageJenabled() {
+        return assistant.getBooleanProperty("jai.imagej.enabled", true);
+    }
 }

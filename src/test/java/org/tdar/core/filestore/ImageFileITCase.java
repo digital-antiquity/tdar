@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -24,18 +25,15 @@ import org.tdar.core.service.workflow.workflows.ImageWorkflow;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 /**
  * @author Adam Brin
  * 
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class ImageFileITCase extends AbstractIntegrationTestCase {
-
-    public static final Long INFORMATION_RESOURCE_ID = 12345l;
-    public static final Long INFORMATION_RESOURCE_FILE_ID = 1234l;
-    public static final Long INFORMATION_RESOURCE_FILE_VERSION_ID = 1112l;
-    public static String baseIrPath = File.separator + "12" + File.separator + "34" + File.separator + "5" + File.separator + PairtreeFilestore.CONTAINER_NAME
-            + File.separator;
 
     @Autowired
     private FileAnalyzer fileAnalyzer;
@@ -47,10 +45,19 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.JAI_DISABLED })
     public void testMissingImageStatus() throws Exception {
         String filename = "grandcanyon_32_bit_color.tif";
         InformationResourceFile informationResourceFile = testFileProcessing(filename, false);
         assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
+    }
+
+    @Test
+    @Rollback
+    public void testMissingImageStatusWithJAI() throws Exception {
+        String filename = "grandcanyon_32_bit_color.tif";
+        InformationResourceFile informationResourceFile = testFileProcessing(filename, true);
+        assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
     }
 
     @Test
