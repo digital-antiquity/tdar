@@ -15,9 +15,6 @@
     <constant name="struts.ui.theme" value="bootstrap"/>
     <constant name="struts.url.includeParams" value="none"/>
     <constant name="struts.action.excludePattern" value="/services/.*"/>
-    <!-- set it to 50 MB to start with, using the ISI standard for megabyte,
-          i.e., 1,000,000 bytes -->
-    <constant name="struts.multipart.maxSize" value="5368709120"/>
     <!-- constant name="struts.enable.SlashesInActionNames" value="true"/> <constant
           name="struts.mapper.alwaysSelectFullNamespace" value="false"/ -->
     <constant name="struts.patternMatcher" value="com.opensymphony.xwork2.util.NamedVariablePatternMatcher"/>
