@@ -605,6 +605,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Override
+    @XmlTransient
+    @Transient
+    @JSONTransient
     public boolean isReadyToIndex() {
         // TODO Auto-generated method stub
         return false;

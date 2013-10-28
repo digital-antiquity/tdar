@@ -415,18 +415,22 @@ public class CommandLineAPITool {
         List<File> records = new ArrayList<>();
 
         int errorCount = 0;
-        for (File file : parentDir.listFiles()) {
-            if (file.isHidden())
-                continue;
-            String fileName = file.getName();
-            if (file.isDirectory()) {
-                directories.add(file);
-            } else if (FilenameUtils.getExtension(fileName).equalsIgnoreCase("xml")) {
-                records.add(file);
-            } else {
-                attachments.add(file);
+        if (parentDir.isDirectory()) {
+            for (File file : parentDir.listFiles()) {
+                if (file.isHidden())
+                    continue;
+                String fileName = file.getName();
+                if (file.isDirectory()) {
+                    directories.add(file);
+                } else if (FilenameUtils.getExtension(fileName).equalsIgnoreCase("xml")) {
+                    records.add(file);
+                } else {
+                    attachments.add(file);
+                }
             }
-        }
+        } else if (FilenameUtils.getExtension(parentDir.getName()).equalsIgnoreCase("xml")) {
+            records.add(parentDir);
+        } 
 
         // if there is more than one record in a directory after scanning of the directory is
         // complete, then ignore all files that are not xml records
