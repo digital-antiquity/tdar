@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 public @interface RunWithTdarConfiguration {
 
     public String TDAR = "src/test/resources/tdar.properties";
+    public String JAI_DISABLED = "src/test/resources/tdar.nojai.properties";
     public String FAIMS = "src/test/resources/tdar.faims.properties";
     public String CREDIT_CARD = "src/test/resources/tdar.cc.properties";
     public String TOS_CHANGE = "src/test/resources/tdar.tos.properties";
