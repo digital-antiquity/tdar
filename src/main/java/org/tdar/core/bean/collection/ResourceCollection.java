@@ -669,6 +669,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     }
 
+    @XmlTransient
+    @Transient
+    @JSONTransient
     public Set<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }

@@ -267,7 +267,7 @@ public class ImportService {
             if (property instanceof ResourceCollection) {
                 ResourceCollection collection = (ResourceCollection) property;
                 resourceCollectionService.addResourceCollectionToResource(resource, resource.getResourceCollections(), authenticatedUser, true, ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);;
-                throw new APIException("new resource collections are not supported", StatusCode.FORBIDDEN);
+            //    throw new APIException("new resource collections are not supported", StatusCode.FORBIDDEN);
             }
 
             if (property instanceof ResourceAnnotation) {
