@@ -1,5 +1,6 @@
 {
-    "_comment" : "The secrets that puppet needs to run. See http://docs.puppetlabs.com/hiera/1/puppet.html",
+    "_comment1" : "The secrets that puppet needs to run. See http://docs.puppetlabs.com/hiera/1/puppet.html",
+    "_comment2" : "Placed in the /WEB-INF/classes directory so every run of puppet can read it",
     
     "tdar-database::tdarmetadata_password": "${the.jdbc.password}",
     "tdar-database::tdardata_password": "${the.jdbc.password}",
@@ -10,5 +11,9 @@
     "ddclient::ddclientlogin" : "${username.dns.service}",
     "ddclient::ddclientpassword" : "${password.dns.service}",
     "ddclient::ddclienthostname" : "${app.hostname}",
-    "tomcat7::keystore_password" : "${password.keystore}"
+    
+    "tomcat7::keystore_password" : "${password.keystore}",
+    "tomcat7::manager_password" : "${password.tomcat.manager}",
+    
+    "kettle::cli_user_password" : "${password.cli.user}"
 }
