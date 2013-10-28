@@ -20,11 +20,12 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.ImageWorkflow;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.filestore.Filestore;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
@@ -47,15 +48,15 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     @Rollback
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.JAI_DISABLED })
     public void testMissingImageStatus() throws Exception {
-        String filename = "grandcanyon_32_bit_color.tif";
+        String filename = "grandcanyon_cmyk.jpg";
         InformationResourceFile informationResourceFile = testFileProcessing(filename, false);
-        assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
+        assertEquals(FileStatus.PROCESSING_WARNING, informationResourceFile.getStatus());
     }
 
     @Test
     @Rollback
     public void testMissingImageStatusWithJAI() throws Exception {
-        String filename = "grandcanyon_32_bit_color.tif";
+        String filename = "grandcanyon_cmyk.jpg";
         InformationResourceFile informationResourceFile = testFileProcessing(filename, true);
         assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
     }
@@ -95,7 +96,7 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     private InformationResourceFile testFileProcessing(String filename, boolean successful) throws InstantiationException, IllegalAccessException, IOException,
             Exception {
         File f = new File(TestConstants.TEST_IMAGE_DIR + "/sample_image_formats/", filename);
-        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        Filestore store = TdarConfiguration.getInstance().getFilestore();
 
         InformationResourceFileVersion originalVersion = generateAndStoreVersion(SensoryData.class, filename, f, store);
         FileType fileType = fileAnalyzer.analyzeFile(originalVersion);

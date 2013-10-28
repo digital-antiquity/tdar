@@ -317,7 +317,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             final WorkflowContext workflowContext = irFile.getWorkflowContext();
-            if (!workflowContext.isProcessedSuccessfully()) {
+            // may be null for "skipped" or composite file
+            if (workflowContext != null && !workflowContext.isProcessedSuccessfully()) {
                 new WorkflowResult(workflowContext).addActionErrorsAndMessages(listener);
             }
         }
