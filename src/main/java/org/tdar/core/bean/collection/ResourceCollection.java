@@ -446,8 +446,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         writable.add(getOwner());
         writable.addAll(getUsersWhoCan(permission, true));
         for (Person p : writable) {
-            if (Persistable.Base.isTransient(p))
+            if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
+            }
             users.add(p.getId());
         }
         return users;
@@ -616,6 +617,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Override
+    @XmlTransient
+    @Transient
+    @JSONTransient
     public boolean isReadyToIndex() {
         // TODO Auto-generated method stub
         return false;
@@ -678,6 +682,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     }
 
+    @XmlTransient
+    @Transient
+    @JSONTransient
     public Set<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }

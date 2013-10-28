@@ -453,7 +453,7 @@ public class CommandLineAPITool {
             }
         } else if (FilenameUtils.getExtension(parentDir.getName()).equalsIgnoreCase("xml")) {
             records.add(parentDir);
-        }
+        } 
 
         // if there is more than one record in a directory after scanning of the directory is
         // complete, then ignore all files that are not xml records

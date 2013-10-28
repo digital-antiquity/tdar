@@ -45,6 +45,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.FileProxy;
@@ -69,6 +70,8 @@ public class ImportService {
     private GenericKeywordService genericKeywordService;
     @Autowired
     private EntityService entityService;
+    @Autowired
+    private ResourceCollectionService resourceCollectionService;
     @Autowired
     private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
     @Autowired
@@ -134,7 +137,7 @@ public class ImportService {
                 Iterator<Persistable> iterator = contents.iterator();
                 while (iterator.hasNext()) {
                     Persistable p = iterator.next();
-                    toAdd.add(processIncoming(p, incomingResource));
+                    toAdd.add(processIncoming(p, incomingResource, authorizedUser));
                 }
                 contents.clear();
                 if (toAdd.size() > 0) {
@@ -142,7 +145,7 @@ public class ImportService {
                 }
                 contents.addAll(toAdd);
             } else if (Persistable.class.isAssignableFrom(content.getClass())) {
-                reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource));
+                reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource, authorizedUser));
             }
         }
         logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(authorizedUser));
@@ -230,7 +233,7 @@ public class ImportService {
      * special casing and validation as needed.
      */
     @SuppressWarnings("unchecked")
-    private <P extends Persistable, R extends Resource> P processIncoming(P property, R resource) throws APIException {
+    private <P extends Persistable, R extends Resource> P processIncoming(P property, R resource, Person authenticatedUser) throws APIException {
         P toReturn = property;
 
         // if we're not transient, find by id...
@@ -265,7 +268,9 @@ public class ImportService {
             }
 
             if (property instanceof ResourceCollection) {
-                throw new APIException("new resource collections are not supported", StatusCode.FORBIDDEN);
+                ResourceCollection collection = (ResourceCollection) property;
+                resourceCollectionService.addResourceCollectionToResource(resource, resource.getResourceCollections(), authenticatedUser, true, ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);;
+            //    throw new APIException("new resource collections are not supported", StatusCode.FORBIDDEN);
             }
 
             if (property instanceof ResourceAnnotation) {
