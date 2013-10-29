@@ -52,7 +52,9 @@
                 </interceptor-ref>
                 <interceptor-ref name="servletConfig"/>
                 <interceptor-ref name="prepare"/>
-                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="fileUpload">
+                	<param name="maximumSize">8589934592</param>
+                </interceptor-ref>
                 <interceptor-ref name="staticParams"/>
                 <interceptor-ref name="actionMappingParams"/>
                 <interceptor-ref name="params">
