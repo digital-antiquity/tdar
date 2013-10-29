@@ -110,7 +110,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     // private transient boolean readyToIndex = true;
     public enum CollectionType {
         INTERNAL(MessageHelper.getMessage("collectionType.internal")),
-        SHARED(MessageHelper.getMessage("collectionType.internal")),
+        SHARED(MessageHelper.getMessage("collectionType.shared")),
         PUBLIC(MessageHelper.getMessage("collectionType.public"));
 
         private String label;
