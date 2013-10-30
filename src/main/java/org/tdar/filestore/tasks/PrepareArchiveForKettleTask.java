@@ -108,7 +108,9 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     @Override
     public void run() throws Exception {
         final WorkflowContext ctx = getWorkflowContext();
-
+        // it's quite hard to pick a start of this run out of the log files, so we'll log a title for the time being
+        getLogger().warn("<============= Starting run of task to extract tarball =============>");
+        
         // first off, a whole raft of preconditions that we need to pass before we write the control file:
         // reality check: do we have an archive?
         final Class<? extends Resource> resourceClass = ctx.getResourceType().getResourceClass();
@@ -182,7 +184,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         do {
             result = generateControlFileName(i++);
         } while (result.exists());
-        getLogger().debug("writing control file to: " + result.getAbsolutePath());
+        getLogger().warn("=> writing control file to: " + result.getAbsolutePath());
         return result;
     }
 
@@ -193,7 +195,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     private File makeCopyOfSourceFile(InformationResourceFileVersion version) throws IOException {
         File originalFile = version.getTransientFile();
         File workingDir = new File(archiveCopiesDir, "kettle_input");
-        getLogger().debug("about to extract the contents of: " + originalFile.getName() + " to: " + workingDir.getAbsolutePath());
+        getLogger().warn("=> about to extract the contents of: " + originalFile.getName() + " to: " + workingDir.getAbsolutePath());
         FileUtils.copyFileToDirectory(originalFile, workingDir);
         return new File(workingDir, originalFile.getName());
     }
