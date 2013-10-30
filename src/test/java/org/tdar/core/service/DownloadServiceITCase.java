@@ -6,8 +6,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,8 +30,6 @@ import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-
-import de.schlichtherle.truezip.file.TVFS;
 
 public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
@@ -146,7 +142,6 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         IOUtils.closeQuietly(controller.getInputStream());
         assertTrue("file should have been created", file.exists());
         assertTrue("file should be non-empty", file.length() > 0);
-        TVFS.umount();
 
         // don't do strict test since the downloaded pdf's will have a cover page
         assertArchiveContents(files, file, false);
