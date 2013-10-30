@@ -114,7 +114,13 @@ public class AuthorizedUser extends Base implements Persistable {
 
     @Override
     public String toString() {
-        return String.format("%s[%s] ( %s)", getUser().getProperName(), getUser().getId(), generalPermission);
+        Long userid = null;
+        String properName = null;
+        if(user != null) {
+            userid = user.getId();
+            properName = user.getProperName();
+        }
+        return String.format("%s[%s] ( %s)", properName, userid, generalPermission);
     }
 
     /**

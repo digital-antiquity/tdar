@@ -128,7 +128,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     }
 
     public String toString() {
-        return String.format("%s: %s - %s", getDateType().getLabel(), getStartDate(), getEndDate());
+        return String.format("%s: %s - %s", getDateType(), getStartDate(), getEndDate());
     }
 
     /**
