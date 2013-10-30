@@ -71,6 +71,7 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.JAI_DISABLED })
     public void testImageFormatMissingStatus() throws Exception {
         String filename = "grandcanyon_cmyk.jpg";
         InformationResourceFile informationResourceFile = testFileProcessing(filename, false);
