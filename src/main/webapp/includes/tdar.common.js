@@ -129,7 +129,7 @@ TDAR.common = function() {
             $(form).find("#divClientValidationInfo").remove();
             var $clientInfo = $('<div id="divClientValidationInfo"></div>');
 
-            var template = $.validator.format('<input type="hidden" name="clientValidationInfo[{0}]" value="{1}">');
+            var template = $.validator.format('<input type="hidden" name="clientValidationInfo[\'{0}\']" value="{1}">');
 
             $.each(errors, function(idx, error){
                 var key = "error_" + idx;
