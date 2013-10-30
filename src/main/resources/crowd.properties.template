@@ -1,0 +1,11 @@
+application.name                        tdar.dev
+application.password                    tdardev.crowdpw
+application.login.url                   https://auth.tdar.org/crowd/console/
+
+crowd.server.url                        https://auth.tdar.org/crowd/services/
+crowd.passwordreseturl					https\://auth.tdar.org/crowd/console/forgottenlogindetails\!default.action
+
+session.isauthenticated                 session.isauthenticated
+session.tokenkey                        session.tokenkey
+session.validationinterval              37
+session.lastvalidation                  session.lastvalidation

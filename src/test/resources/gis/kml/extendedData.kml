@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+    <Document>
+      <name>Switzerland 1837</name>
+      <description></description>
+      <Style>
+        <ListStyle id="hideChildren">
+          <listItemType>checkHideChildren</listItemType>
+        </ListStyle>
+      </Style>
+
+	<Placemark>
+				<name>Aung San TB</name>
+				<visibility>0</visibility>
+				<Snippet maxLines="0"></Snippet>
+				<styleUrl>#adv</styleUrl>
+				<ExtendedData>
+					<Data name="level">
+						<value>1</value>
+					</Data>
+					<Data name="num">
+						<value>300</value>
+					</Data>
+					<Data name="UnitID">
+						<value>MMH00752</value>
+					</Data>
+					<Data name="LvlID">
+						<value>MMP013001004000000000</value>
+					</Data>
+				</ExtendedData>
+				<Point>
+					<coordinates>96.10939999999999,16.9165,0</coordinates>
+				</Point>
+			
+	</Placemark>
+<!--      <Folder>
+        <name>Placemarks</name>
+        <description>These are just some of the different kinds of placemarks with
+          which you can mark your favorite places</description>
+        <LookAt>
+          <longitude>-122.0839597145766</longitude>
+          <latitude>37.42222904525232</latitude>
+          <altitude>0</altitude>
+          <heading>-148.4122922628044</heading>
+          <tilt>40.5575073395506</tilt>
+          <range>500.6566641072245</range>
+        </LookAt>
+
+</Folder> -->
+</Document>
+</kml>

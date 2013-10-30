@@ -1,0 +1,21 @@
+Dataset/Table,BELEMENT,Artifact Type,BAGE,BAGEID,BCLASS,BCLASSID,BCONDBURN,BCONDCUT,BCONDGNAW,BCONDITION,BCUT,BDIET,BELEMENT,BELEMENTID,BFUNCGRP,BNAME,BNAMEID,BOXNO,BPATHOL,BPORTION,BSIDE,CATNO,CN,COMMENTS,FEATURE,LOCATION,MNV,REFERENCE,SITENO22,SITENO,Taxon,Mapped ontology value for BELEMENT
+Alexandria fauna dataset,Cranium Parietal,Bone,Young Adult,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Cranium Parietal,Definite,,Cat,Definite,0,,,Right,129A,226,"129A, 130A and 131A are the same skull.",B (7),,0,,1,1,cat,Parietal
+Alexandria fauna dataset,Metatarsal II,Bone,Mature,Probable,Large Mammal,Definite,FALSE,FALSE,FALSE,,,,Metatarsal II,Definite,,Pig,Definite,0,,,Right,120A,226,,B (7),,0,,1,1,pig,2nd_metatarsal
+Alexandria fauna dataset,Radius,Bone,Young Adult,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Radius,Definite,,Cat,Definite,0,,,Left,137A,226,,B (7),,0,,1,1,cat,Radius
+Alexandria fauna dataset,Radius,Bone,Young Adult,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Radius,Definite,,Cat,Definite,0,,,Right,136A,226,,B (7),,0,,1,1,cat,Radius
+Alexandria fauna dataset,Scapula,Bone,Mature,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Scapula,Definite,,Cat,Definite,0,,,Left,134A,226,,B (7),,0,,1,1,cat,Scapula
+Alexandria fauna dataset,Metapodial,Bone,Immature,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Metapodial,Definite,,Cat,Definite,522,,,,118A,227,,B (7),,0,,1,1,cat,Metapodial
+Alexandria fauna dataset,Cranium Mandible,Bone,Mature,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Cranium Mandible,Definite,,Cat,Definite,0,,,Left,133A,226,,B (7),,0,,1,1,cat,Mandible
+Alexandria fauna dataset,Cranium Mandible,Bone,Mature,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Cranium Mandible,Definite,,Cat,Definite,0,,,Right,132A,226,,B (7),,0,,1,1,cat,Mandible
+Alexandria fauna dataset,Ulna,Bone,Young Adult,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Ulna,Definite,,Cat,Definite,0,,,Left,139A,226,,B (7),,0,,1,1,cat,Ulna
+Alexandria fauna dataset,Cranium Parietal,Bone,Young Adult,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Cranium Parietal,Definite,,Cat,Definite,0,,,Left,130A,226,"129A, 130A and 131A are the same skull.",B (7),,0,,1,1,cat,Parietal
+Alexandria fauna dataset,Astragalus,Bone,Mature,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Astragalus,Definite,,Cat,Definite,0,,,Right,140A,226,,B (7),,0,,1,1,cat,Astragalus
+Alexandria fauna dataset,2nd Phalange,Bone,Immature,Probable,Large Mammal,Definite,FALSE,FALSE,FALSE,,,,2nd Phalange,Definite,,Pig,Definite,0,,,,128A,226,,B (7),,0,,1,1,pig,2nd_phalanx
+Alexandria fauna dataset,2nd Phalange,Bone,Immature,Probable,Large Mammal,Definite,FALSE,FALSE,FALSE,,,,2nd Phalange,Definite,,Pig,Definite,0,,,,127A,226,,B (7),,0,,1,1,pig,2nd_phalanx
+Alexandria fauna dataset,Phalange-Unknown,Bone,Immature,Probable,Large Mammal,Definite,FALSE,FALSE,FALSE,,,,Phalange-Unknown,Definite,,Pig,Definite,0,,,,126A,226,,B (7),,0,,1,1,pig,Phalanx
+Alexandria fauna dataset,3rd Phalange,Bone,Mature,Probable,Large Mammal,Definite,FALSE,FALSE,FALSE,,,,3rd Phalange,Definite,,Pig,Definite,0,,,,125A,226,,B (7),,0,,1,1,pig,3rd_phalanx
+Alexandria fauna dataset,1st Phalange,Bone,Young Adult,Probable,Large Mammal,Definite,FALSE,FALSE,FALSE,,,,1st Phalange,Definite,,Pig,Definite,0,,,,124A,226,,B (7),,0,,1,1,pig,1st_phalanx
+Alexandria fauna dataset,1st Phalange,Bone,Mature,Probable,Large Mammal,Definite,FALSE,FALSE,FALSE,,,,1st Phalange,Definite,,Pig,Definite,0,,,,123A,226,,B (7),,0,,1,1,pig,1st_phalanx
+Alexandria fauna dataset,Metapodial,Bone,Young Adult,Probable,Large Mammal,Definite,FALSE,FALSE,FALSE,,,,Metapodial,Definite,,Pig,Definite,0,,,,122A,226,,B (7),,0,,1,1,pig,Metapodial
+Alexandria fauna dataset,Caudal Vertebra,Bone,Mature,Probable,Large Mammal,Definite,FALSE,FALSE,FALSE,,,,Caudal Vertebra,Definite,,Pig,Definite,0,,,Medial,121A,226,,B (7),,0,,1,1,pig,Caudal_vertebra
+Alexandria fauna dataset,Cranium Occipital,Bone,Young Adult,Probable,Small Mammal,Definite,FALSE,FALSE,FALSE,,,,Cranium Occipital,Definite,,Cat,Definite,0,,,Medial,131A,226,"129A, 130A and 131A are the same skull.",B (7),,0,,1,1,cat,Occipital

@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd 
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+    http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd"
+	xmlns:task="http://www.springframework.org/schema/task">
+
+	<task:annotation-driven />
+	<!-- scan all subpackages of org.tdar for spring stereotype annotations 
+		eligible for autowiring -->
+	<context:component-scan base-package="org.tdar" />
+	<context:property-placeholder
+		location="classpath:hibernate.properties,classpath:crowd.properties,classpath:tdar.properties"
+		ignore-unresolvable="true" />
+	<!-- tDAR data sources -->
+	<import resource='spring-data-sources.xml' />
+	<!-- local settings, connection pooling and crowd or ldap auth providers -->
+	<import resource="spring-local-settings.xml" />
+	<!-- hibernate session factory configuration -->
+	<import resource='spring-hibernate.xml' />
+	<!-- Spring transaction interceptors and managers -->
+	<!-- 
+		<cache:annotation-driven cache-manager="cacheManager" />
+     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/>
+     <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" 
+             p:config-location="classpath:ehcache.xml"/>
+     -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<!-- spring JavaMailSenderImpl configuration to be autowired into the EmailService -->
+	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${mail.smtp.host:localhost}" />
+	</bean>
+	<bean id="freemarkerMailConfiguration"
+		class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+		<property name="templateLoaderPaths">
+			<list>
+				<value>classpath:/freemarker-templates</value>
+				<value>classpath:/freemarker-templates-test</value>
+				<value>file:/WEB-INF/freemarker-templates</value>
+			</list>
+		</property>
+	</bean>
+	<!-- tells spring to proxy our concrete classes (using cglib) instead of 
+		using JDK dynamic proxies (requires interfaces) -->
+	<tx:annotation-driven proxy-target-class='true' />
+	<!-- TAG Service -->
+	<!-- Tasks <import resource='spring-tasks.xml' /> -->
+	<!-- session scoped session data bean -->
+	<bean id='sessionData' class='org.tdar.web.SessionData' scope='session'>
+		<aop:scoped-proxy />
+	</bean>
+</beans>
