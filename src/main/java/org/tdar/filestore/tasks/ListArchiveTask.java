@@ -10,23 +10,20 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.tasks.Task.AbstractTask;
-
-
-import de.schlichtherle.truezip.file.TArchiveDetector;
-import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.fs.archive.tar.TarBZip2Driver;
-import de.schlichtherle.truezip.socket.sl.IOPoolLocator;
 
 /**
  * @author Adam Brin
@@ -38,19 +35,6 @@ public class ListArchiveTask extends AbstractTask {
 
     private long effectiveSize = 0l;
 
-    /**
-     * @return The extensions that the wrapped instance of TrueZip is able understand.
-     */
-    public static String[] getUnderstoodExtensions() {
-        return getArchiveDetector().toString().split("\\|");
-    }
-
-    /**
-     * @return ALL + .bz2, because bizarrely, out of the box, only 'tar.bz2' is supported: <i>not</i> '.bz2'
-     */
-    private static TArchiveDetector getArchiveDetector() {
-        return new TArchiveDetector(TArchiveDetector.ALL, "bz2", new TarBZip2Driver(IOPoolLocator.SINGLETON));
-    }
 
     /*
      * (non-Javadoc)
@@ -71,7 +55,17 @@ public class ListArchiveTask extends AbstractTask {
             boolean successful = false;
             try {
                 ArchiveStreamFactory factory = new ArchiveStreamFactory();
-                ais = factory.createArchiveInputStream(new BufferedInputStream(new FileInputStream(f_)));
+                InputStream stream = null;
+                String filename = f_.getName().toLowerCase();
+                if (filename.endsWith(".tgz") || filename.endsWith("tar.gz")) {
+                    stream = new GzipCompressorInputStream(new FileInputStream(f_));
+                } else if (filename.endsWith(".bz2") ) {
+                    stream = new BZip2CompressorInputStream(new FileInputStream(f_));
+                } else {
+                    stream = new FileInputStream(f_);
+                }
+                
+                ais = factory.createArchiveInputStream(new BufferedInputStream(stream));
                 ArchiveEntry entry = ais.getNextEntry();
                 while (entry != null) {
                     writeToFile(archiveContents, entry.getName());
@@ -79,24 +73,13 @@ public class ListArchiveTask extends AbstractTask {
                 }
                 successful = true;
             } catch (ArchiveException e) {
-                getLogger().warn("could not read archive file",e);
+              throw new TdarRecoverableRuntimeException("Could find files within the archive:" + f_.getName());
             } finally {
                 if (ais != null) {
                     IOUtils.closeQuietly(ais);
                 }
             }
             
-            if (!successful) {
-                // list all of the contents
-                // http://blog.msbbc.co.uk/2011/09/java-getting-started-with-truezip-api.html
-                TFile archiveFile = new TFile(f_, getArchiveDetector());
-                if (!archiveFile.isDirectory()) {
-                    // logging an error means that this error is most likely never seen
-                    throw new TdarRecoverableRuntimeException("Could find files within the archive:" + archiveFile.getName());
-                }
-    
-                listFiles(archiveContents, archiveFile, archiveFile);
-            }
             // write that to a file with a known format (one file per line)
             FileUtils.writeStringToFile(f, archiveContents.toString());
             InformationResourceFileVersion version_ = generateInformationResourceFileVersionFromOriginal(version, f, VersionType.TRANSLATED);
@@ -105,18 +88,6 @@ public class ListArchiveTask extends AbstractTask {
             version.setUncompressedSizeOnDisk(getEffectiveSize());
             getWorkflowContext().addVersion(version_);
             getWorkflowContext().addVersion(version2_);
-        }
-    }
-
-    private void listFiles(StringBuilder archiveContents, File archiveFile, File originalFile) {
-        for (File file : archiveFile.listFiles()) {
-            getLogger().trace(file.getPath());
-            setEffectiveSize(getEffectiveSize() + file.length());
-            String uri = originalFile.toURI().relativize(file.toURI()).toString();
-            writeToFile(archiveContents, uri);
-            if (file.isDirectory()) {
-                listFiles(archiveContents, file, originalFile);
-            }
         }
     }
 
