@@ -81,7 +81,7 @@ public class BookmarkedResource extends Persistable.Base {
     @Override
     public String toString() {
         if (StringUtils.isEmpty(name)) {
-            return String.format("(%d, %s, %s)", getId(), getPerson().getEmail(), getResource());
+            return String.format("(%d, %s, %s)", getId(), getPerson(), getResource());
         } else {
             return name;
         }
