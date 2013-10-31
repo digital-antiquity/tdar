@@ -33,8 +33,15 @@ import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
+/**
+ * Proxy class to handle the generation of the Excel Workbook at the end of the DataIntegration
+ * 
+ * @author abrin
+ *
+ */
 public class DataIntegrationWorkbook  implements Serializable {
 
     private static final long serialVersionUID = -2452046179173301666L;
@@ -53,9 +60,14 @@ public class DataIntegrationWorkbook  implements Serializable {
         this.person = person;
         this.setGeneratedIntegrationResults(generatedIntegrationData);
         setWorkbook(new HSSFWorkbook());
-
         names = new ArrayList<String>();
 
+    }
+
+    /**
+     * Generate the Excel File
+     */
+    public void generate() {
         // HSSFCellStyle headerStyle = excelService.createHeaderStyle(workbook);
         CellStyle dataTableNameStyle = CellFormat.NORMAL.setColor(new HSSFColor.GREY_25_PERCENT()).createStyle(getWorkbook());
         CellStyle summaryStyle = excelService.createSummaryStyle(getWorkbook());
@@ -63,16 +75,18 @@ public class DataIntegrationWorkbook  implements Serializable {
         int rowIndex = 0;
         // int columnIndex = 0;
 
-        setDescription(new StringBuilder("Data integration between dataset "));
+        setDescription(new StringBuilder(MessageHelper.getMessage("dataIntegrationWorkbook.descr", " ")));
 
         List<DataTable> tableList = new ArrayList<DataTable>();
         List<String> columnNames = new ArrayList<String>();
         List<String> datasetNames = new ArrayList<String>();
         createDataSheet(names, dataTableNameStyle, rowIndex, tableList, columnNames, datasetNames);
 
-        getDescription().append(" with datasets: ").append(StringUtils.join(datasetNames, ", "));
-        getDescription().append("\n\t using tables: ").append(StringUtils.join(names, ", "));
-        getDescription().append("\n\t using columns:").append(StringUtils.join(columnNames, ", "));
+        getDescription().append(MessageHelper.getMessage("dataIntegrationWorkbook.descr_with_datasets")).append(" ")
+                .append(StringUtils.join(datasetNames, ", ")).append("\n\t ").append(MessageHelper.getMessage("dataIntegrationWorkbook.descr_using_tables"))
+                .append(": ").append(StringUtils.join(names, ", ")).append("\n\t ")
+                .append(MessageHelper.getMessage("dataIntegrationWorkbook.descr_using_columns"))
+                .append(":").append(StringUtils.join(columnNames, ", "));
 
         // headerRow.setRowStyle(headerStyle);
 
@@ -81,12 +95,15 @@ public class DataIntegrationWorkbook  implements Serializable {
         // FIXME: in poi 3.7 turning this on causes a warning notice in Excel that the file is corrupted, disabling
         // sheet.setAutoFilter(new CellRangeAddress(0, 0, 0, columnIndex - 1));
 
-        Map<List<OntologyNode>, Map<DataTable, Integer>> pivot = generatedIntegrationData.getSecond();
+        Map<List<OntologyNode>, Map<DataTable, Integer>> pivot = getGeneratedIntegrationResults().getSecond();
         createSummarySheet(getWorkbook(), tableList, columnNames, pivot);
         createDescriptionSheet(getIntegrationColumns(), person, getWorkbook(), summaryStyle, tableList);
 
     }
-    
+
+    /**
+     * Generate a @link PersonalFilestoreTicket for the excel file
+     */
     private void generateTicket() {
         PersonalFilestoreTicket ticket = new PersonalFilestoreTicket();
         ticket.setDateGenerated(new Date());
@@ -97,6 +114,7 @@ public class DataIntegrationWorkbook  implements Serializable {
     }
     
     /**
+     * Create the workbook for the actual data 
      * 
      * @param integrationColumns
      * @param integrationDataResults
@@ -111,16 +129,15 @@ public class DataIntegrationWorkbook  implements Serializable {
     @SuppressWarnings("unchecked")
     public void createDataSheet(List<String> names, CellStyle dataTableNameStyle, int rowIndex, List<DataTable> tableList,
             List<String> columnNames, List<String> datasetNames) {
-
         // Create header
         List<String> headerLabels = new ArrayList<String>();
-        headerLabels.add("Dataset/Table Name");
+        headerLabels.add(MessageHelper.getMessage("dataIntegrationWorkbook.data_table"));
         for (IntegrationColumn integrationColumn : integrationColumns) {
             columnNames.add(integrationColumn.getName());
             headerLabels.add(integrationColumn.getName());
 
             if (integrationColumn.isIntegrationColumn()) {
-                headerLabels.add("Mapped ontology value for " + integrationColumn.getName());
+                headerLabels.add(MessageHelper.getMessage("dataIntegrationWorkbook.data_mapped_value", integrationColumn.getName()));
             }
         }
 
@@ -134,7 +151,7 @@ public class DataIntegrationWorkbook  implements Serializable {
         }
 
         // FIXME: support for cell style data table name (C1)
-        SheetProxy sheetProxy = new SheetProxy(workbook, "Integration Results");
+        SheetProxy sheetProxy = new SheetProxy(workbook, MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
 
         sheetProxy.setData(IteratorUtils.chainedIterator(iterators));
         sheetProxy.setHeaderLabels(headerLabels);
@@ -144,14 +161,23 @@ public class DataIntegrationWorkbook  implements Serializable {
 
     }
 
+    /**
+     * Create the Description worksheet
+     * 
+     * @param integrationColumns
+     * @param person
+     * @param workbook
+     * @param summaryStyle
+     * @param tableList
+     */
     private void createDescriptionSheet(List<IntegrationColumn> integrationColumns, Person person, Workbook workbook,
             CellStyle summaryStyle,
             List<DataTable> tableList) {
-        Sheet summarySheet = workbook.createSheet("Description");
+        Sheet summarySheet = workbook.createSheet(MessageHelper.getMessage("dataIntegrationWorkbook.description_worksheet"));
         Row summaryRow = summarySheet.createRow(0);
         // FIXME: Should I have the ontology mappings too??
         excelService.createHeaderCell(summaryStyle, summaryRow, 0,
-                "Summary of Integration Results by:" + person.getProperName() + " on " + new SimpleDateFormat().format(new Date()));
+                MessageHelper.getMessage("dataIntegrationWorkbook.description_header", person.getProperName() , new SimpleDateFormat().format(new Date())));
         summarySheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
 
         int currentRow = 3;
@@ -171,11 +197,10 @@ public class DataIntegrationWorkbook  implements Serializable {
             List<String> labels = new ArrayList<String>();
             List<String> descriptions = new ArrayList<String>();
             List<String> mappings = new ArrayList<String>();
-
-            descriptions.add("    Description:");
+            descriptions.add(MessageHelper.getMessage("dataIntegrationWorkbook.description_description_column","    "));
             if (integrationColumn.isIntegrationColumn()) {
-                labels.add(" Integration Column:");
-                mappings.add("    Mapped Ontology:");
+                labels.add(MessageHelper.getMessage("dataIntegrationWorkbook.description_integration_column", " "));
+                mappings.add(MessageHelper.getMessage("dataIntegrationWorkbook.description_mapped_column", "    "));
             } else {
                 labels.add(" Display Column:");
             }
@@ -207,10 +232,17 @@ public class DataIntegrationWorkbook  implements Serializable {
         }
     }
 
+    /**
+     * Create the "pivot" table worksheet ("summmary")
+     * @param workbook
+     * @param tableList
+     * @param columnNames
+     * @param pivot
+     */
     private void createSummarySheet(Workbook workbook, List<DataTable> tableList, List<String> columnNames,
             Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
         int rowIndex;
-        Sheet pivotSheet = workbook.createSheet("Summary");
+        Sheet pivotSheet = workbook.createSheet(MessageHelper.getMessage("dataIntegrationWorkbook.summary_worksheet"));
 
         rowIndex = 2;
         List<String> rowHeaders = new ArrayList<String>(columnNames);
@@ -309,11 +341,17 @@ public class DataIntegrationWorkbook  implements Serializable {
     }
 
     public String getFileName() {
-        String fileName = "tdar-integration-" + StringUtils.join(names, "_") + ".xls";
+        String fileName = MessageHelper.getMessage("dataIntegrationWorkbook.file_name",  StringUtils.join(names, "_"));
         return fileName;
     }
     
-    public File writeToFile() throws IOException {
+    /**
+     *  write to temp file
+     * 
+     * @return
+     * @throws IOException
+     */
+    public File writeToTempFile() throws IOException {
         File resultFile = File.createTempFile(getFileName(), ".xls", TdarConfiguration.getInstance().getTempDirectory());
         resultFile.deleteOnExit();
         getWorkbook().write(new FileOutputStream(resultFile));
