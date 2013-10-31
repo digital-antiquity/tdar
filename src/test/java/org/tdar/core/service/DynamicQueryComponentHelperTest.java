@@ -10,18 +10,19 @@ import org.junit.Test;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.DynamicQueryComponent;
+import org.tdar.search.query.builder.DynamicQueryComponentHelper;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 
-public class SearchServiceTest {
+public class DynamicQueryComponentHelperTest {
 
     public Logger logger = Logger.getLogger(getClass());
     HashSet<DynamicQueryComponent> createFields = new HashSet<DynamicQueryComponent>();
 
-    public SearchServiceTest() {
+    public DynamicQueryComponentHelperTest() {
         QueryBuilder qb = new ResourceQueryBuilder();
         for (Class<?> cls : qb.getClasses()) {
-            createFields.addAll(SearchService.createFields(cls, ""));
+            createFields.addAll(DynamicQueryComponentHelper.createFields(cls, ""));
         }
     }
 
@@ -86,7 +87,7 @@ public class SearchServiceTest {
     @Test
     public void testEmbeddedPrefixedChildAnnotation() {
         boolean found = false;
-        HashSet<DynamicQueryComponent> createFields2 = SearchService.createFields(Project.class, "");
+        HashSet<DynamicQueryComponent> createFields2 = DynamicQueryComponentHelper.createFields(Project.class, "");
         for (DynamicQueryComponent dqc : createFields2) {
             logger.info(dqc.getLabel() + "{}" + dqc.getParent());
             if (dqc.getLabel().contains("informationResources.activeOtherKeywords.label"))
