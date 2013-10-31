@@ -28,6 +28,7 @@ import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericKeywordDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 /*
@@ -42,12 +43,24 @@ public class GenericKeywordService extends GenericService {
     @Qualifier("genericKeywordDao")
     GenericKeywordDao genericKeywordDao;
 
+    /**
+     * Find all approved keywords without the cache
+     * 
+     * @param cls
+     * @return
+     */
+    @Transactional
     public <W extends SuggestedKeyword> List<W> findAllApproved(Class<W> cls) {
         return getDao().findAllByProperty(cls, "approved", true);
     }
 
     private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
 
+    /**
+     * Find all Approved keywords (controlled) from the keyword cache
+     * @param cls
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public synchronized <W extends SuggestedKeyword> List<W> findAllApprovedWithCache(Class<W> cls) {
         if (!cache.containsKey(cls)) {
@@ -56,10 +69,25 @@ public class GenericKeywordService extends GenericService {
         return (List<W>) cache.get(cls);
     }
 
+    /**
+     * Find all @link HierarchicalKeyword entries that are children of the specified class
+     * @param cls
+     * @param keyword
+     * @return
+     */
+    @Transactional
     public <H extends HierarchicalKeyword<H>> List<H> findAllDescendants(Class<H> cls, H keyword) {
         return genericKeywordDao.findAllDescendants(cls, keyword);
     }
 
+    /**
+     * Find or create a set of keywords by label
+     * @see #findOrCreateByLabel(Class, String)
+     * 
+     * @param cls
+     * @param labels
+     * @return
+     */
     @Transactional(readOnly = false)
     public <K extends Keyword> Set<K> findOrCreateByLabels(Class<K> cls, List<String> labels) {
         if (CollectionUtils.isEmpty(labels)) {
@@ -68,7 +96,7 @@ public class GenericKeywordService extends GenericService {
         Set<K> set = new HashSet<K>();
         for (String label : labels) {
             if (StringUtils.isBlank(label)) {
-                getLogger().trace("Skipping empty keyword label: " + label);
+                logger.trace("Skipping empty keyword label: " + label);
                 continue;
             }
             logger.trace("find or create keyword:" + label);
@@ -77,17 +105,26 @@ public class GenericKeywordService extends GenericService {
         return set;
     }
 
-    private Logger getLogger() {
-        return logger;
-    }
-
+    /**
+     * Find a keyword of class by label
+     * 
+     * @param cls
+     * @param label
+     * @return
+     */
     @Transactional(readOnly = true)
     public <K extends Keyword> K findByLabel(Class<K> cls, String label) {
         if (label == null)
             return null;
         return genericKeywordDao.findByLabel(cls, label);
     }
-
+    
+    /**
+     * Find or Create a keyword of specified class by Label
+     * @param cls
+     * @param label
+     * @return
+     */
     @Transactional(readOnly = false)
     public <K extends Keyword> K findOrCreateByLabel(Class<K> cls, String label) {
         if (label == null)
@@ -97,7 +134,7 @@ public class GenericKeywordService extends GenericService {
             try {
                 keyword = cls.newInstance();
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException("could not create keyword class");
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.could_not_create_class", cls));
             }
             keyword.setLabel(label);
             getDao().save(keyword);
@@ -107,52 +144,112 @@ public class GenericKeywordService extends GenericService {
         return keyword;
     }
 
+    /**
+     * Get uncontrolled Culture keyword occurrence stats
+     * @return
+     */
+    @Transactional
     public List<Pair<CultureKeyword, Integer>> getUncontrolledCultureKeywordStats() {
         return genericKeywordDao.getUncontrolledCultureKeywordStats();
     }
 
+    /**
+     * Get controlled Culture keyword occurrence stats
+     * @return
+     */
+    @Transactional
     public List<Pair<CultureKeyword, Integer>> getControlledCultureKeywordStats() {
         return genericKeywordDao.getControlledCultureKeywordStats();
     }
 
+    /**
+     * Get Geographic keyword occurrence stats
+     * @return
+     */
+    @Transactional
     public List<Pair<GeographicKeyword, Integer>> getGeographicKeywordStats() {
         return genericKeywordDao.getGeographicKeywordStats();
     }
 
+    /**
+     * Get InvestigationType keyword occurrence stats
+     * @return
+     */
+    @Transactional
     public List<Pair<InvestigationType, Integer>> getInvestigationTypeStats() {
         return genericKeywordDao.getInvestigationTypeStats();
     }
 
+    /**
+     * Get Material keyword occurrence stats
+     * @return
+     */
+    @Transactional
     public List<Pair<MaterialKeyword, Integer>> getMaterialKeywordStats() {
         return genericKeywordDao.getMaterialKeywordStats();
     }
 
+    /**
+     * Get Other keyword occurrence stats
+     * @return
+     */
+    @Transactional
     public List<Pair<OtherKeyword, Integer>> getOtherKeywordStats() {
         return genericKeywordDao.getOtherKeywordStats();
     }
 
+    /**
+     * Get SiteName keyword occurrence stats
+     * @return
+     */
+    @Transactional
     public List<Pair<SiteNameKeyword, Integer>> getSiteNameKeywordStats() {
         return genericKeywordDao.getSiteNameKeywordStats();
     }
 
+    /**
+     * Get controlled SiteType Keyword occurrence stats
+     * @return
+     */
+    @Transactional
     public List<Pair<SiteTypeKeyword, Integer>> getControlledSiteTypeKeywordStats() {
         return genericKeywordDao.getControlledSiteTypeKeywordStats();
     }
 
+    /**
+     * Get Uncontrolled siteType keyword occurrence stats
+     * 
+     * @return
+     */
+    @Transactional
     public List<Pair<SiteTypeKeyword, Integer>> getUncontrolledSiteTypeKeywordStats() {
         return genericKeywordDao.getUncontrolledSiteTypeKeywordStats();
     }
 
+    /**
+     * Get temporal keyword occurrence stats
+     * 
+     * @return
+     */
+    @Transactional
     public List<Pair<TemporalKeyword, Integer>> getTemporalKeywordStats() {
         return genericKeywordDao.getTemporalKeywordStats();
     }
 
+    /**
+     * Update the occurrence values for all @link Keyword entries. Clear the cache so these numbers are updated too
+     */
     @Transactional
     public void updateOccurranceValues() {
         genericKeywordDao.updateOccuranceValues();
         cache.clear();
     }
 
+    /**
+     * Find the Authority version of a @link Keyword based on the duplicate
+     * @param kwd
+     * @return
+     */
     @Transactional
     public Keyword findAuthority(Keyword kwd) {
         return genericKeywordDao.findAuthority(kwd);

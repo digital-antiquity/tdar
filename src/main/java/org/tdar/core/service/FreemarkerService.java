@@ -12,6 +12,12 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import freemarker.template.Configuration;
 
+/**
+ * Enables the use of Freemarker for non-ftl files, such as emails
+ * 
+ * @author jtdevos
+ *
+ */
 @Service
 public class FreemarkerService {
 
@@ -23,6 +29,14 @@ public class FreemarkerService {
     @Autowired
     private FileSystemResourceDao fileDao;
 
+    /**
+     * Given a template name and an object model, render the FTL to the string. 
+     * 
+     * @param templateName
+     * @param dataModel
+     * @return
+     * @throws IOException
+     */
     public String render(String templateName, Object dataModel) throws IOException {
         try {
             return FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerConfiguration.getTemplate(templateName), dataModel);

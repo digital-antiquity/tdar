@@ -44,46 +44,99 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @Autowired
     private ContributorRequestDao contributorRequestDao;
 
+    /**
+     * Find a @link Person by ID
+     * 
+     * @param id
+     * @return
+     */
     public Person findPerson(Long id) {
         return find(id);
     }
 
+    /**
+     * Find all registered users (limited by most recent x)
+     * 
+     * @param maxResults
+     * @return
+     */
     public List<Person> findAllRegisteredUsers(int maxResults) {
         return getDao().findAllRegisteredUsers(maxResults);
     }
 
+    /**
+     * Find all registered users
+     * @return
+     */
     public List<Person> findAllRegisteredUsers() {
         return getDao().findAllRegisteredUsers(null);
     }
 
+    /**
+     * Find all @link Institution entities.
+     * @return
+     */
     public List<Institution> findAllInstitutions() {
         return institutionDao.findAll();
     }
 
+    /**
+     * Find an @link Institution by exact name
+     * @param name
+     * @return
+     */
     public Institution findInstitutionByName(String name) {
         return institutionDao.findByName(name);
     }
 
+    /**
+     * Find a @link Institution by ID
+     * @param id
+     * @return
+     */
     public Institution findInstitution(long id) {
         return institutionDao.find(id);
     }
 
+    /**
+     * Find an @link Institution based on name bounded by wildcards %name% 
+     * @param name
+     * @return
+     */
     public List<Institution> findInstitutionLike(String name) {
         return institutionDao.withNameLike(name);
     }
 
+    /**
+     * List all @link ContributorRequest entries
+     * @return
+     */
     public List<ContributorRequest> findAllContributorRequests() {
         return contributorRequestDao.findAll();
     }
 
+    /**
+     * Find a @link ContributorRequest for a specific @link PErson
+     * @param p
+     * @return
+     */
     public ContributorRequest findContributorRequest(Person p) {
         return contributorRequestDao.findByPerson(p);
     }
 
+    /**
+     * List all Pending @link ContributorRequest entries
+     * @return
+     */
     public List<ContributorRequest> findAllPendingContributorRequests() {
         return contributorRequestDao.findAllPending();
     }
 
+    /**
+     * Find a @link Person by their email
+     * @param email
+     * @return
+     */
     public Person findByEmail(String email) {
         if (email == null || email.isEmpty()) {
             return null;
@@ -91,6 +144,11 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return getDao().findByEmail(email);
     }
 
+    /**
+     * Find a @link Person by their Username
+     * @param username
+     * @return
+     */
     public Person findByUsername(String username) {
         if (username == null || username.isEmpty()) {
             return null;
@@ -98,10 +156,21 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return getDao().findByUsername(username);
     }
 
+    /**
+     * Find a Person by their full name (guessing about how to split the name into parts)
+     * 
+     * @param fullName
+     * @return
+     */
     public Set<Person> findByFullName(String fullName) {
         return getDao().findByFullName(fullName);
     }
 
+    /**
+     * Find the @link AuthenticationToken by Id
+     * @param id
+     * @return
+     */
     public AuthenticationToken findAuthenticationToken(Long id) {
         return getDao().find(AuthenticationToken.class, id);
     }
@@ -116,6 +185,14 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return authorizedUserDao.findEditableResources(person, isAdmin);
     }
 
+    /**
+     * Find or saveCreator based on type 
+     * @see #findOrSaveInstitution(Institution)
+     * @see #findOrSavePerson(Person)
+     * 
+     * @param transientCreator
+     * @return
+     */
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false)
     public <C extends Creator> C findOrSaveCreator(C transientCreator) {
@@ -134,6 +211,12 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return creatorToReturn;
     }
 
+    /**
+     * Find a @link Person by id, email or save a new one if one is not found
+     * 
+     * @param transientPerson
+     * @return
+     */
     @Transactional(readOnly = false)
     private Person findOrSavePerson(Person transientPerson) {
         // now find or save the person (if the person was found the institution field is ignored
@@ -177,6 +260,12 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return blessedPerson;
     }
 
+    /**
+     * Find the @link Institution by name, or save a new one if it does not exist.
+     * 
+     * @param transientInstitution
+     * @return
+     */
     @Transactional(readOnly = false)
     private Institution findOrSaveInstitution(Institution transientInstitution) {
         if (transientInstitution == null || StringUtils.isBlank(transientInstitution.getName()))
@@ -187,8 +276,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
 
         Institution blessedInstitution = getDao().findByExample(Institution.class, transientInstitution,
-                Arrays.asList(Institution.getIgnorePropertiesForUniqueness()),
-                FindOptions.FIND_FIRST_OR_CREATE).get(0);
+                Arrays.asList(Institution.getIgnorePropertiesForUniqueness()), FindOptions.FIND_FIRST_OR_CREATE).get(0);
         if (!blessedInstitution.isDeleted()) {
             blessedInstitution.setStatus(Status.ACTIVE);
         }
@@ -196,6 +284,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     }
 
     /**
+     * Finds the matching @link ResourceCreator (based on name, id, unique value) or save a new one.
+     * 
      * @param resourceCreator
      */
     @Transactional(readOnly = false)
@@ -203,25 +293,52 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         resourceCreator.setCreator(findOrSaveCreator(resourceCreator.getCreator()));
     }
 
+    /**
+     * List @link ResourceCollection entries that a @link Person (user) has access to
+     * @param user
+     * @return
+     */
     @Transactional
     public List<ResourceCollection> findAccessibleResourceCollections(Person user) {
         return authorizedUserDao.findAccessibleResourceCollections(user);
     }
 
+    /**
+     * List recent logins to the system
+     * 
+     * @return
+     */
+    @Transactional
     public List<Person> showRecentLogins() {
         return getDao().findRecentLogins();
     }
 
+    /**
+     * Increment the login counter for a given user
+     * 
+     * @param authenticatedUser
+     */
     @Transactional(readOnly = false)
     public void registerLogin(Person authenticatedUser) {
         getDao().registerLogin(authenticatedUser);
     }
 
+    /**
+     * Find the number of actual contributors to tDAR based on resource.submitter
+     * 
+     * @return
+     */
     @Transactional(readOnly = true)
     public Long findNumberOfActualContributors() {
         return getDao().findNumberOfActualContributors();
     }
 
+    /**
+     * Given a @link Creator with a @link Status of Duplicate, return the Authority.
+     * 
+     * @param dup
+     * @return
+     */
     @Transactional(readOnly = true)
     public Creator findAuthorityFromDuplicate(Creator dup) {
         if (Persistable.Base.isNullOrTransient(dup) || !dup.isDuplicate()) {
@@ -234,13 +351,21 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
     }
 
+    /**
+     * Find all Ids of (actual) contributors within the system based on "submitter" id
+     * @return
+     */
     @Transactional(readOnly = true)
     public Set<Long> findAllContributorIds() {
         return getDao().findAllContributorIds();
     }
 
+    /**
+     * Update the Person occurrance count for each Person -- effectively how often they're used or referenced in the Database. This can be used for relevancy
+     * ranking and visualization
+     */
     @Transactional
-    public void updateOcurrances() {
+    public void updatePersonOcurrances() {
         getDao().updateOccuranceValues();
     }
 }

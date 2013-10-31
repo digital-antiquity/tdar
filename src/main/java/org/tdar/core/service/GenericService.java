@@ -57,15 +57,19 @@ public class GenericService {
     public static final int MINIMUM_VALID_ID = 0;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
+
     @Transactional
     public <T> List<T> findRandom(Class<T> persistentClass, int maxResults) {
         return genericDao.findRandom(persistentClass, maxResults);
     }
 
+    @Transactional
     public <T extends Persistable> List<Long> findRandomIds(Class<T> persistentClass, int maxResults) {
         return extractIds(findRandom(persistentClass, maxResults));
     }
 
+    @Transactional
     public <T extends Persistable> List<T> findIdRange(Class<T> persistentClass, long firstId, long lastId, int maxResults) {
         return genericDao.findIdRange(persistentClass, firstId, lastId, maxResults);
     }
@@ -74,6 +78,7 @@ public class GenericService {
         return Persistable.Base.extractIds(persistables);
     }
 
+    @Transactional
     public Integer getCurrentSessionHashCode() {
         return genericDao.getCurrentSessionHashCode();
     }
@@ -156,8 +161,6 @@ public class GenericService {
         return genericDao.findAll(persistentClass);
     }
 
-    private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
-
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public <T> List<T> findAllWithCache(Class<T> persistentClass) {
@@ -174,7 +177,7 @@ public class GenericService {
 
     @Transactional(readOnly = true)
     public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status... statuses) {
-        return getDao().findAllWithStatus(persistentClass, statuses);
+        return genericDao.findAllWithStatus(persistentClass, statuses);
     }
 
     @Transactional(readOnly = true)
@@ -306,10 +309,7 @@ public class GenericService {
         genericDao.delete(persistentEntities);
     }
 
-    protected GenericDao getGenericDao() {
-        return genericDao;
-    }
-
+    @Transactional(readOnly = false)
     public void refresh(Object object) {
         genericDao.refresh(object);
     }
@@ -389,14 +389,12 @@ public class GenericService {
      * @return the number of deleted entities
      * @see org.tdar.core.dao.GenericDao#deleteAll(java.lang.Class)
      */
+    @Transactional(readOnly=false)
     public <E extends Persistable> int deleteAll(Class<E> persistentClass) {
         return genericDao.deleteAll(persistentClass);
     }
 
-    protected GenericDao getDao() {
-        return genericDao;
-    }
-
+    @Transactional(readOnly=false)
     public void forceDelete(Object entity) {
         genericDao.forceDelete(entity);
     }
@@ -417,8 +415,9 @@ public class GenericService {
         return genericDao.findActiveIds(class1);
     }
 
+    @Transactional
     public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
-        return getDao().findAllWithProfile(class1, ids, profileName);
+        return genericDao.findAllWithProfile(class1, ids, profileName);
     }
 
 }

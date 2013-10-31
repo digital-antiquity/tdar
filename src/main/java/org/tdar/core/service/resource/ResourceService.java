@@ -32,19 +32,14 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.bean.resource.Video;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -103,7 +98,7 @@ public class ResourceService extends GenericService {
         if (rt == null) {
             return null;
         }
-        return (R) getGenericDao().find(rt.getResourceClass(), id);
+        return (R)datasetDao.find(rt.getResourceClass(), id);
     }
 
     /**
@@ -195,7 +190,7 @@ public class ResourceService extends GenericService {
     @Transactional(readOnly = false)
     public void incrementAccessCounter(Resource r) {
         ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r);
-        getDao().markWritable(rac);
+        datasetDao.markWritable(rac);
         save(rac);
     }
 
@@ -259,7 +254,7 @@ public class ResourceService extends GenericService {
             Set<GeographicKeyword> managedKeywords = geoSearchService.extractAllGeographicInfo(latLong);
             logger.debug(resource.getId() + " :  " + managedKeywords + " " + managedKeywords.size());
             kwds.addAll(
-                    getGenericDao().findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
+                    datasetDao.findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
                             FindOptions.FIND_FIRST_OR_CREATE));
         }
         Persistable.Base.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
@@ -416,7 +411,7 @@ public class ResourceService extends GenericService {
             resource.setDateCreated(proxy.getDateCreated());
             resource.markUpdated(proxy.getSubmitter());
             resource.setStatus(proxy.getStatus());
-            getDao().save(resource);
+            datasetDao.save(resource);
             resource.getMaterialKeywords().addAll(proxy.getMaterialKeywords());
             resource.getTemporalKeywords().addAll(proxy.getTemporalKeywords());
             resource.getInvestigationTypes().addAll(proxy.getInvestigationTypes());
@@ -436,7 +431,7 @@ public class ResourceService extends GenericService {
                     Person owner = collection.getOwner();
                     refresh(owner);
                     newInternal.markUpdated(owner);
-                    getDao().save(newInternal);
+                    datasetDao.save(newInternal);
 
                     for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
                         AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
@@ -492,9 +487,9 @@ public class ResourceService extends GenericService {
                 informationResource.setInheritingNoteInformation(proxyInformationResource.isInheritingNoteInformation());
                 informationResource.setInheritingCollectionInformation(proxyInformationResource.isInheritingCollectionInformation());
             }
-            getDao().saveOrUpdate(resource);
+            datasetDao.saveOrUpdate(resource);
             // NOTE: THIS SHOULD BE THE LAST THING DONE AS IT BRINGS EVERYTHING BACK ONTO THE SESSION PROPERLY
-            return getDao().merge(resource);
+            return datasetDao.merge(resource);
         } catch (Exception exception) {
             throw new TdarRuntimeException(exception);
         }
@@ -511,7 +506,7 @@ public class ResourceService extends GenericService {
     public <T extends HasResource<Resource>> Set<T> cloneSet(Resource resource, Set<T> targetCollection, Set<T> sourceCollection) {
         logger.debug("cloning: " + sourceCollection);
         for (T t : sourceCollection) {
-            getDao().detachFromSessionAndWarn(t);
+            datasetDao.detachFromSessionAndWarn(t);
             try {
                 @SuppressWarnings("unchecked")
                 T clone = (T) BeanUtils.cloneBean(t);

@@ -39,17 +39,18 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.excel.CellFormat;
 import org.tdar.core.service.excel.SheetProxy;
+import org.tdar.utils.MessageHelper;
 
-/*
+/**
  * This is a service specific to trying to centralize all of the specific issues with writing 
  * excel files. It could handle helper functions for reading in the future too.
+ * 
+ * @author abrin
+ *
  */
 @Service
 public class ExcelService {
 
-    // Office 2003 row/sheet max
-    // public static final int MAX_ROWS_PER_SHEET = 65536;
-    // public static final int MAX_COLUMNS_PER_SHEET = 256;
 
     private static final String TRUNCATED = "[TRUNCATED]";
 
@@ -63,8 +64,13 @@ public class ExcelService {
     public static final SpreadsheetVersion DEFAULT_EXCEL_VERSION = SpreadsheetVersion.EXCEL97;
     public static final int MAX_ROWS_PER_WORKBOOK = DEFAULT_EXCEL_VERSION.getMaxRows() * MAX_SHEETS_PER_WORKBOOK;
 
-    /*
+    /**
      * Add validation to a given column
+     * 
+     * @param sheet
+     * @param i
+     * @param validationHelper
+     * @param enums
      */
     public <T extends Enum<?>> void addColumnValidation(HSSFSheet sheet, int i, HSSFDataValidationHelper validationHelper, T[] enums) {
         DataValidationConstraint validationConstraint = validationHelper.createExplicitListConstraint(getEnumNames(enums).toArray(new String[] {}));
@@ -72,6 +78,14 @@ public class ExcelService {
         dataValidation.setSuppressDropDownArrow(false);
     }
 
+    /**
+     * Sets up validation for the entire worksheet
+     * 
+     * @param sheet
+     * @param i
+     * @param validationConstraint
+     * @return
+     */
     private HSSFDataValidation setupSheetValidation(HSSFSheet sheet, int i, DataValidationConstraint validationConstraint) {
         CellRangeAddressList addressList = new CellRangeAddressList();
         HSSFDataValidation dataValidation = new HSSFDataValidation(addressList, validationConstraint);
@@ -82,21 +96,44 @@ public class ExcelService {
         return dataValidation;
     }
 
+    /**
+     * Adds Numeric validation for a column of a Worksheet
+     * 
+     * @param sheet
+     * @param i
+     * @param validationHelper
+     * @param formula1
+     * @param formula2
+     * @return
+     */
     public HSSFDataValidation addNumericColumnValidation(HSSFSheet sheet, int i, HSSFDataValidationHelper validationHelper, String formula1, String formula2) {
         DataValidationConstraint validationConstraint = validationHelper.createDecimalConstraint(DVConstraint.OperatorType.IGNORED, formula1, formula2);
         HSSFDataValidation dataValidation = setupSheetValidation(sheet, i, validationConstraint);
         return dataValidation;
     }
 
+    /**
+     * Adds Integer validation for a column of a Worksheet
+     * @param sheet
+     * @param i
+     * @param validationHelper
+     * @param formula1
+     * @param formula2
+     * @return
+     */
     public HSSFDataValidation addIntegerColumnValidation(HSSFSheet sheet, int i, HSSFDataValidationHelper validationHelper, String formula1, String formula2) {
         DataValidationConstraint validationConstraint = validationHelper.createDecimalConstraint(DVConstraint.OperatorType.IGNORED, formula1, formula2);
         HSSFDataValidation dataValidation = setupSheetValidation(sheet, i, validationConstraint);
         return dataValidation;
     }
 
-    /*
-     * get all of the names of enums passed in a list
+    /**
+     * Produces a list of all enum Names for a given enum array.
+     * 
+     * @param enums
+     * @return
      */
+
     private <T extends Enum<?>> List<String> getEnumNames(T[] enums) {
         List<String> toReturn = new ArrayList<String>();
         for (T value : enums) {
@@ -105,34 +142,68 @@ public class ExcelService {
         return toReturn;
     }
 
+    /**
+     * Adds a the tDAR red to the color palate
+     * @param wb
+     * @return
+     */
     public HSSFColor getTdarRed(HSSFWorkbook wb) {
         return addColorToPalatte(wb, 122, 21, 1);
     }
 
+    /**
+     * Adds a the tDAR beige to the color palate
+     * @param wb
+     * @return
+     */
     public HSSFColor getTdarBeige(HSSFWorkbook wb) {
         return addColorToPalatte(wb, 233, 224, 205);
     }
 
+    /**
+     * Adds a the tDAR dark beige to the color palate
+     * @param wb
+     * @return
+     */
     public HSSFColor getTdarDkBeige(HSSFWorkbook wb) {
         return addColorToPalatte(wb, 219, 208, 188);
     }
 
+    /**
+     * Adds a the tDAR dark green to the color palate
+     * @param wb
+     * @return
+     */
     public HSSFColor getTdarDkGreen(HSSFWorkbook wb) {
         return addColorToPalatte(wb, 160, 157, 91);
     }
 
+    /**
+     * Adds a the tDAR light yellow to the color palate
+     * @param wb
+     * @return
+     */
     public HSSFColor getTdarLtYellow(HSSFWorkbook wb) {
         return addColorToPalatte(wb, 252, 248, 228);
     }
 
+    /**
+     * Adds a generic color to the color palate
+     * @param wb
+     * @return
+     */
     private HSSFColor addColorToPalatte(HSSFWorkbook wb, int i, int j, int k) {
         // creating a custom palette for the workbook
         HSSFPalette palette = wb.getCustomPalette();
         return palette.addColor((byte) i, (byte) j, (byte) k);
     }
 
-    /*
+    /**
      * simple helper to create a row (needed before writing to that row)
+     * 
+     * @param wb
+     * @param rowNum
+     * @return
      */
     public Row createRow(Sheet wb, int rowNum) {
         Row row = wb.getRow(rowNum);
@@ -142,8 +213,11 @@ public class ExcelService {
         return row;
     }
 
-    /*
+    /**
      * Create a style that's bold and wraps
+     * 
+     * @param workbook
+     * @return
      */
     public CellStyle createSummaryStyle(Workbook workbook) {
         CellStyle summaryStyle = workbook.createCellStyle();
@@ -154,18 +228,31 @@ public class ExcelService {
         return summaryStyle;
     }
 
-    /*
-     * Create a style that's bold and wraps
+    /**
+     * Create a style that's bold
+     * 
+     * @param workbook
+     * @return
      */
     public CellStyle createBasicSummaryStyle(Workbook workbook) {
         return CellFormat.BOLD.createStyle(workbook);
     }
 
-    // helper for creating a workbook
+    /**
+     * Helper to create a workbook
+     * 
+     * @return
+     */
     public Workbook createWorkbook() {
         return createWorkbook(DEFAULT_EXCEL_VERSION);
     }
 
+    /**
+     * Create a workbook with a specific Excel Version
+     * 
+     * @param version
+     * @return
+     */
     public Workbook createWorkbook(SpreadsheetVersion version) {
         if (version == DEFAULT_EXCEL_VERSION)
             return new HSSFWorkbook();
@@ -174,33 +261,63 @@ public class ExcelService {
 
     }
 
-    // create a workbook, but with a name
+    /**
+     * create a workbook, but with a specific name
+     * 
+     * @param name
+     * @return
+     */
     public Sheet createWorkbook(String name) {
         Workbook createWorkbook = createWorkbook();
         return createWorkbook.createSheet(name);
     }
 
-    /*
+    /**
      * Create a cell and set the value
+     * 
+     * @param row
+     * @param position
+     * @param value
+     * @return
      */
     public Cell createCell(Row row, int position, String value) {
         return createCell(row, position, value, null);
     }
 
-    /*
-     * specify the style for a cell
+    /**
+     * Set the Style of a cell
+     * 
+     * @param sheet
+     * @param rowNum
+     * @param colNum
+     * @param style
      */
     public void setCellStyle(Sheet sheet, int rowNum, int colNum, CellStyle style) {
         sheet.getRow(rowNum).getCell(colNum).setCellStyle(style);
     }
 
+    /**
+     * Get the value of a cell
+     * 
+     * @param formatter
+     * @param evaluator
+     * @param columnNamesRow
+     * @param columnIndex
+     * @return
+     */
     public String getCellValue(DataFormatter formatter, FormulaEvaluator evaluator, Row columnNamesRow, int columnIndex) {
         return formatter.formatCellValue(columnNamesRow.getCell(columnIndex), evaluator);
     }
 
-    /*
+    /**
      * Create a cell and be smart about it. If there's a link, make it a link, if numeric, set the type
      * to say, numeric.
+     * 
+     * @param row
+     * @param position
+     * @param value
+     * @param style
+     * @return
      */
     public Cell createCell(Row row, int position, String value, CellStyle style) {
         Cell cell = row.createCell(position);
@@ -234,8 +351,13 @@ public class ExcelService {
         return cell;
     }
 
-    /*
+    /**
      * Create a header cell with text
+     * 
+     * @param summaryStyle
+     * @param row
+     * @param position
+     * @param text
      */
     public void createHeaderCell(CellStyle summaryStyle, Row row, int position, String text) {
         Cell headerCell = row.createCell(position);
@@ -243,8 +365,13 @@ public class ExcelService {
         headerCell.setCellStyle(summaryStyle);
     }
 
-    /*
-     * add a comment
+    /**
+     * add an excel comment
+     * 
+     * @param factory
+     * @param drawing
+     * @param cell
+     * @param commentText
      */
     public void addComment(CreationHelper factory, Drawing drawing, Cell cell, String commentText) {
         if (StringUtils.isEmpty(commentText))
@@ -289,12 +416,19 @@ public class ExcelService {
         return headerStyle;
     }
 
-    /*
-     * add a row with the following fields
+    /**
+     * add a comment
+     * 
+     * @param sheet
+     * @param rowNum
+     * @param startCol
+     * @param fields
+     * @param headerStyle
+     * @return
      */
     public CellStyle addRow(Sheet sheet, int rowNum, int startCol, List<? extends Object> fields, CellStyle headerStyle) {
         if (rowNum > DEFAULT_EXCEL_VERSION.getMaxRows()) {
-            throw new TdarRecoverableRuntimeException("could not write row -- too many rows for excel");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("excelService.too_many_rows"));
         }
         Row row = sheet.getRow(rowNum);
         if (row == null) {
@@ -309,6 +443,8 @@ public class ExcelService {
     }
 
     /**
+     * Add a full data row based on the list of Objects
+     * 
      * @param rowNum
      * @param i
      */
@@ -317,6 +453,8 @@ public class ExcelService {
     }
 
     /**
+     * Create and define a default header sty;e
+     * 
      * @param workbook
      * @return
      */
@@ -329,9 +467,14 @@ public class ExcelService {
                 .createStyle(workbook);
     }
 
-    /*
+    /**
      * helper method to try and simplify the process of just getting all of the data out of a result-set and
      * directly into excel
+     * 
+     * @param sheet
+     * @param rowIndex
+     * @param startCol
+     * @param resultSet
      */
     public void addDataRow(Sheet sheet, int rowIndex, int startCol, ResultSet resultSet) {
         List<Object> row = new ArrayList<Object>();
@@ -340,7 +483,7 @@ public class ExcelService {
                 row.add(resultSet.getObject(columnIndex + 1));
             }
         } catch (Exception e) {
-            throw new TdarRecoverableRuntimeException("SQL Exception");
+            throw new TdarRecoverableRuntimeException("excelService.sql_exception");
         }
         addDataRow(sheet, rowIndex, startCol, row);
     }
@@ -374,7 +517,7 @@ public class ExcelService {
             addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
             if (rowNum >= maxRows - 1) {
                 if (proxy.isCleanupNeeded()) {
-                    cleanupSheet(sheet);
+                    autoSizeColumnsOnSheet(sheet);
                 }
                 sheetIndex++;
                 sheet = workbook.createSheet(proxy.getSheetName(sheetIndex));
@@ -385,12 +528,12 @@ public class ExcelService {
         proxy.postProcess();
     }
 
-    // private void prepareSheet(Sheet sheet) {
-    // // FIXME: maybe this should be configurable?
-    // sheet.createFreezePane(ExcelService.FIRST_COLUMN, 1, 0, 1);
-    // }
 
-    private void cleanupSheet(Sheet sheet) {
+    /**
+     * try to auto-size each column
+     * @param sheet
+     */
+    private void autoSizeColumnsOnSheet(Sheet sheet) {
         // auto-sizing columns
         // FIXME user start row may not be 0
         int lastCol = sheet.getRow(0).getLastCellNum();
@@ -399,12 +542,29 @@ public class ExcelService {
         }
     }
 
+    /**
+     * Add a key-value pair column eg: 
+     *      KEY: value
+     *      KEY: value
+     *      ..
+     * @param sheet
+     * @param rowNum
+     * @param i
+     * @param asList
+     */
     public void addPairedHeaderRow(Sheet sheet, int rowNum, int i, List<String> asList) {
         addRow(sheet, rowNum, i, asList, CellFormat.NORMAL.createStyle(sheet.getWorkbook()));
         sheet.getRow(rowNum).getCell(i)
                 .setCellStyle(CellFormat.BOLD.setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).createStyle(sheet.getWorkbook()));
     }
 
+    /**
+     * Set the width of a column
+     * 
+     * @param sheet
+     * @param i
+     * @param size
+     */
     public void setColumnWidth(Sheet sheet, int i, int size) {
         sheet.setColumnWidth(i, size);
     }
