@@ -15,6 +15,7 @@ import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.DoiProcess;
 
+
 import au.csiro.doiclient.AndsDoiClient;
 import au.csiro.doiclient.AndsDoiResponse;
 import au.csiro.doiclient.business.AndsDoiIdentity;
@@ -194,8 +195,9 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         doiDTO.setCreators(creatorNames);
         // Ands mandate that we must list a publisher and a publication year. I suspect that Ands thus can only deal with documents...
         if (r instanceof Document) {
-            doiDTO.setPublisher(((Document) r).getPublisherName());
-            doiDTO.setPublicationYear(String.valueOf(r.getDateCreated().getYear()));
+            Document document = (Document)r;
+            doiDTO.setPublisher(document.getPublisherName());
+            doiDTO.setPublicationYear(String.valueOf(document.getDate()));
         }
         doiDTO.setTitle(r.getTitle());
         return doiDTO;
