@@ -192,8 +192,10 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
             creatorNames.add(creator.getCreator().getName());
         }
         doiDTO.setCreators(creatorNames);
+        // Ands mandate that we must list a publisher and a publication year. I suspect that Ands thus can only deal with documents...
         if (r instanceof Document) {
             doiDTO.setPublisher(((Document) r).getPublisherName());
+            doiDTO.setPublicationYear(String.valueOf(r.getDateCreated().getYear()));
         }
         doiDTO.setTitle(r.getTitle());
         return doiDTO;
