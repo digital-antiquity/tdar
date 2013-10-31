@@ -59,9 +59,9 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testFileAnalyzer() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-//        testArchiveFormat(store, "ark_hm_headpot_scans.tar");
-//        testArchiveFormat(store, "ark_hm_headpot_scans.zip");
-//        testArchiveFormat(store, "ark_hm_headpot_scans.tgz");
+        testArchiveFormat(store, "ark_hm_headpot_scans.tar");
+        testArchiveFormat(store, "ark_hm_headpot_scans.zip");
+        testArchiveFormat(store, "ark_hm_headpot_scans.tgz");
         testArchiveFormat(store, "ark_hm_headpot_scans.tar.bz2");
     }
 
