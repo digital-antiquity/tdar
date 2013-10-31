@@ -45,6 +45,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -67,6 +68,18 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 @Service
 public class XmlService implements Serializable {
 
+    private static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
+    private static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
+    private static final String RDF_XML_ABBREV = "RDF/XML-ABBREV";
+    private static final String FOAF_XML = ".foaf.xml";
+    private static final String RDF_CREATOR_MEDIAN = "/rdf/creatorMedian";
+    private static final String RDF_CREATOR_MEAN = "/rdf/creatorMean";
+    private static final String RDF_COUNT = "/rdf/count";
+    private static final String INSTITUTION = "Institution";
+    private static final String XSD = ".xsd";
+    private static final String TDAR_SCHEMA = "tdar-schema";
+    private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
+
     private static final long serialVersionUID = -7304234425123193412L;
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -88,7 +101,7 @@ public class XmlService implements Serializable {
 
     // FIXME: I should cache this file and use it!!!
     public File generateSchema() throws IOException, JAXBException, NoSuchBeanDefinitionException {
-        final File tempFile = File.createTempFile("tdar-schema", ".xsd", TdarConfiguration.getInstance().getTempDirectory());
+        final File tempFile = File.createTempFile(TDAR_SCHEMA, XSD, TdarConfiguration.getInstance().getTempDirectory());
         JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
 
         // WRITE OUT SCHEMA
@@ -187,7 +200,7 @@ public class XmlService implements Serializable {
         Object toReturn = unmarshaller.unmarshal(new StringReader(StringUtils.join(lines, "\r\n")));// , new DefaultHandler());
 
         if (errors.size() > 0) {
-            throw new JaxbParsingException("could not parse xml: {} ", errors);
+            throw new JaxbParsingException(MessageHelper.getMessage("xmlService.could_not_parse"), errors);
         }
 
         return toReturn;
@@ -207,33 +220,33 @@ public class XmlService implements Serializable {
         }
         for (LogPart part : log.getCollaboratorLogPart()) {
             com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
-            if (part.getSimpleClassName().equals("Institution")) {
+            if (part.getSimpleClassName().equals(INSTITUTION)) {
                 res.addProperty(RDF.type, FOAF.Organization);
             } else {
                 res.addProperty(RDF.type, FOAF.Person);
             }
             res.addLiteral(FOAF.name, part.getName());
-            res.addProperty(RDFS.seeAlso, String.format("%s/browse/creators/%s/rdf", baseUrl, part.getId()));
-            res.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/count"), part.getCount().toString());
+            res.addProperty(RDFS.seeAlso, String.format(S_BROWSE_CREATORS_S_RDF, baseUrl, part.getId()));
+            res.addProperty(ResourceFactory.createProperty(baseUrl + RDF_COUNT), part.getCount().toString());
             rdf.addProperty(FOAF.knows, res);
         }
-        rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/creatorMedian"), log.getCreatorMedian().toString());
-        rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/creatorMean"), log.getCreatorMean().toString());
+        rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_CREATOR_MEDIAN), log.getCreatorMedian().toString());
+        rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_CREATOR_MEAN), log.getCreatorMean().toString());
         for (LogPart part : log.getKeywordLogPart()) {
             com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
             res.addProperty(RDF.type, part.getSimpleClassName());
             res.addLiteral(FOAF.name, part.getName());
             // res.addProperty(RDFS.seeAlso,String.format("%s/browse/creators/%s/rdf", baseUrl, part.getId()));
-            res.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/count"), part.getCount().toString());
+            res.addProperty(ResourceFactory.createProperty(baseUrl + RDF_COUNT), part.getCount().toString());
             rdf.addProperty(FOAF.topic_interest, res);
         }
-        rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/keywordMean"), log.getKeywordMean().toString());
-        rdf.addProperty(ResourceFactory.createProperty(baseUrl + "/rdf/keywordMedian"), log.getKeywordMedian().toString());
+        rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_KEYWORD_MEAN), log.getKeywordMean().toString());
+        rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_KEYWORD_MEDIAN), log.getKeywordMedian().toString());
         File dir = new File(TdarConfiguration.getInstance().getCreatorFOAFDir());
         dir.mkdir();
-        File file = new File(dir, creator.getId() + ".foaf.xml");
+        File file = new File(dir, creator.getId() + FOAF_XML);
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
-        model.write(writer, "RDF/XML-ABBREV");
+        model.write(writer, RDF_XML_ABBREV);
         IOUtils.closeQuietly(writer);
 
     }
@@ -242,7 +255,7 @@ public class XmlService implements Serializable {
         com.hp.hpl.jena.rdf.model.Resource institution_ = model.createResource();
         institution_.addProperty(RDF.type, FOAF.Organization);
         institution_.addLiteral(FOAF.name, institution.getName());
-        institution_.addProperty(RDFS.seeAlso, String.format("%s/browse/creators/%s/rdf", baseUrl, institution.getId()));
+        institution_.addProperty(RDFS.seeAlso, String.format(S_BROWSE_CREATORS_S_RDF, baseUrl, institution.getId()));
         return institution_;
     }
 
@@ -251,7 +264,7 @@ public class XmlService implements Serializable {
         person_.addProperty(RDF.type, FOAF.Person);
         person_.addProperty(FOAF.firstName, person.getFirstName());
         person_.addProperty(FOAF.family_name, person.getLastName());
-        person_.addProperty(RDFS.seeAlso, String.format("%s/browse/creators/%s/rdf", baseUrl, person.getId()));
+        person_.addProperty(RDFS.seeAlso, String.format(S_BROWSE_CREATORS_S_RDF, baseUrl, person.getId()));
         Institution institution = person.getInstitution();
         if (Persistable.Base.isNotNullOrTransient(institution)) {
             person_.addProperty(FOAF.member, addInstitution(model, baseUrl, institution));
