@@ -1,34 +1,22 @@
 package org.tdar.core.service;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,12 +37,10 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.excel.CellFormat;
-import org.tdar.core.service.excel.SheetProxy;
+import org.tdar.core.service.integration.DataIntegrationWorkbook;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.IntegrationColumn;
@@ -266,56 +252,17 @@ public class DataIntegrationService {
             return null;
         }
 
-        Workbook workbook = new HSSFWorkbook();
-
-        List<String> names = new ArrayList<String>();
-        // setting up styles using references from:
-        // http://poi.apache.org/spreadsheet/quick-guide.html#FillsAndFrills //NOTE: some values like colors and borders do not match current excel
-
-        // HSSFCellStyle headerStyle = excelService.createHeaderStyle(workbook);
-        CellStyle dataTableNameStyle = CellFormat.NORMAL.setColor(new HSSFColor.GREY_25_PERCENT()).createStyle(workbook);
-        CellStyle summaryStyle = excelService.createSummaryStyle(workbook);
-        // first column is the table where the
-        int rowIndex = 0;
-        // int columnIndex = 0;
-
-        StringBuilder description = new StringBuilder("Data integration between dataset ");
-
-        List<DataTable> tableList = new ArrayList<DataTable>();
-        List<String> columnNames = new ArrayList<String>();
-        List<String> datasetNames = new ArrayList<String>();
-        createDataSheet(integrationColumns, integrationDataResults, workbook, names, dataTableNameStyle, rowIndex, tableList,
-                columnNames, datasetNames);
-
-        description.append(" with datasets: ").append(StringUtils.join(datasetNames, ", "));
-        description.append("\n\t using tables: ").append(StringUtils.join(names, ", "));
-        description.append("\n\t using columns:").append(StringUtils.join(columnNames, ", "));
-
-        // headerRow.setRowStyle(headerStyle);
-
-        // check that this works in excel on windows:
-        // https://issues.apache.org/bugzilla/show_bug.cgi?id=50315
-        // FIXME: in poi 3.7 turning this on causes a warning notice in Excel that the file is corrupted, disabling
-        // sheet.setAutoFilter(new CellRangeAddress(0, 0, 0, columnIndex - 1));
-
-        Map<List<OntologyNode>, Map<DataTable, Integer>> pivot = generatedIntegrationData.getSecond();
-        createSummarySheet(workbook, tableList, columnNames, pivot);
-        createDescriptionSheet(integrationColumns, person, workbook, summaryStyle, tableList);
-
-        String fileName = "tdar-integration-" + StringUtils.join(names, "_");
-        PersonalFilestoreTicket ticket = new PersonalFilestoreTicket();
-        ticket.setDateGenerated(new Date());
-        ticket.setPersonalFileType(PersonalFileType.INTEGRATION);
-        ticket.setSubmitter(person);
-        ticket.setDescription(description.toString());
+        DataIntegrationWorkbook integrationProxy = new DataIntegrationWorkbook(excelService, person, generatedIntegrationData);
+        integrationProxy.setIntegrationColumns(integrationColumns);
+        integrationProxy.setIntegrationDataResults(integrationDataResults);
+        
+        PersonalFilestoreTicket ticket = integrationProxy.getTicket();
         genericDao.save(ticket);
 
         try {
-            File resultFile = File.createTempFile(fileName, ".xls", TdarConfiguration.getInstance().getTempDirectory());
-            resultFile.deleteOnExit();
-            workbook.write(new FileOutputStream(resultFile));
+            File resultFile = integrationProxy.writeToFile();
             PersonalFilestore filestore = filestoreService.getPersonalFilestore(person);
-            filestore.store(ticket, resultFile, fileName + ".xls");
+            filestore.store(ticket, resultFile, integrationProxy.getFileName());
         } catch (Exception iox) {
             logger.error("an error occured when producing the integration excel file: {}", iox);
             throw new TdarRecoverableRuntimeException("could not save file");
@@ -324,156 +271,54 @@ public class DataIntegrationService {
         return ticket;
     }
 
-    private void createDescriptionSheet(List<IntegrationColumn> integrationColumns, Person person, Workbook workbook,
-            CellStyle summaryStyle,
-            List<DataTable> tableList) {
-        Sheet summarySheet = workbook.createSheet("Description");
-        Row summaryRow = summarySheet.createRow(0);
-        // FIXME: Should I have the ontology mappings too??
-        excelService.createHeaderCell(summaryStyle, summaryRow, 0,
-                "Summary of Integration Results by:" + person.getProperName() + " on " + new SimpleDateFormat().format(new Date()));
-        summarySheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
 
-        int currentRow = 3;
-
-        List<String> summaryLabels = new ArrayList<String>();
-        summaryLabels.add("Table:");
-        for (int i = 0; i < tableList.size(); i++) {
-            DataTable table = tableList.get(i);
-            StringBuilder builder = new StringBuilder(table.getDisplayName());
-            builder.append(table.getDataset().getTitle());
-            builder.append(" (").append(table.getDataset().getId()).append(")");
-            summaryLabels.add(builder.toString());
-        }
-        excelService.addHeaderRow(summarySheet, 1, 0, summaryLabels);
-
-        for (IntegrationColumn integrationColumn : integrationColumns) {
-            List<String> labels = new ArrayList<String>();
-            List<String> descriptions = new ArrayList<String>();
-            List<String> mappings = new ArrayList<String>();
-
-            descriptions.add("    Description:");
-            if (integrationColumn.isIntegrationColumn()) {
-                labels.add(" Integration Column:");
-                mappings.add("    Mapped Ontology:");
-            } else {
-                labels.add(" Display Column:");
-            }
-
-            for (int i = 0; i < tableList.size(); i++) {
-                DataTable table = tableList.get(i);
-                DataTableColumn column = integrationColumn.getColumnForTable(table);
-                if (column == null) {
-                    continue;
-                }
-                labels.add(column.getDisplayName());
-                descriptions.add(column.getDescription());
-                if (integrationColumn.isIntegrationColumn()) {
-                    Ontology ontology = column.getDefaultOntology();
-                    StringBuilder builder = new StringBuilder(ontology.getTitle()).append(" (").append(ontology.getId()).append(")");
-                    mappings.add(builder.toString());
-                }
-            }
-            excelService.addDataRow(summarySheet, currentRow++, 0, labels);
-            excelService.addDataRow(summarySheet, currentRow++, 0, descriptions);
-            if (!mappings.isEmpty()) {
-                excelService.addDataRow(summarySheet, currentRow++, 0, mappings);
-            }
-        }
-
-        // auto-sizing columns
-        for (int i = 0; i < summaryLabels.size(); i++) {
-            summarySheet.autoSizeColumn(i);
-        }
-    }
-
-    private void createSummarySheet(Workbook workbook, List<DataTable> tableList, List<String> columnNames,
-            Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
-        int rowIndex;
-        Sheet pivotSheet = workbook.createSheet("Summary");
-
-        rowIndex = 2;
-        List<String> rowHeaders = new ArrayList<String>(columnNames);
-        for (DataTable table : tableList) {
-            rowHeaders.add(table.getDisplayName());
-        }
-
-        excelService.addHeaderRow(pivotSheet, ExcelService.FIRST_ROW, ExcelService.FIRST_COLUMN, rowHeaders);
-
-        for (List<OntologyNode> key : pivot.keySet()) {
-            List<String> rowData = new ArrayList<String>();
-            for (OntologyNode col : key) {
-                if (col != null) {
-                    rowData.add(col.getDisplayName());
-                }
-            }
-            Map<DataTable, Integer> vals = pivot.get(key);
-            for (DataTable table : tableList) {
-                Integer integer = vals.get(table);
-                if (integer == null) {
-                    rowData.add("0");
-                } else {
-                    rowData.add(integer.toString());
-                }
-            }
-            excelService.addDataRow(pivotSheet, rowIndex++, 0, rowData);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void createDataSheet(List<IntegrationColumn> integrationColumns, List<IntegrationDataResult> integrationDataResults,
-            Workbook workbook, List<String> names, CellStyle dataTableNameStyle, int rowIndex, List<DataTable> tableList,
-            List<String> columnNames, List<String> datasetNames) {
-
-        // Create header
-        List<String> headerLabels = new ArrayList<String>();
-        headerLabels.add("Dataset/Table Name");
-        for (IntegrationColumn integrationColumn : integrationColumns) {
-            columnNames.add(integrationColumn.getName());
-            headerLabels.add(integrationColumn.getName());
-
-            if (integrationColumn.isIntegrationColumn()) {
-                headerLabels.add("Mapped ontology value for " + integrationColumn.getName());
-            }
-        }
-
-        List<Iterator<String[]>> iterators = new ArrayList<Iterator<String[]>>();
-        // compile the rowdata
-        for (IntegrationDataResult integrationDataResult : integrationDataResults) {
-            DataTable table = integrationDataResult.getDataTable();
-            names.add(table.getName());
-            tableList.add(table);
-            iterators.add(integrationDataResult.getRowData().iterator());
-        }
-
-        // FIXME: support for cell style data table name (C1)
-        SheetProxy sheetProxy = new SheetProxy(workbook, "Integration Results");
-
-        sheetProxy.setData(IteratorUtils.chainedIterator(iterators));
-        sheetProxy.setHeaderLabels(headerLabels);
-        sheetProxy.setFreezeRow(1);
-        sheetProxy.setStartRow(rowIndex);
-        excelService.addSheets(sheetProxy);
-
-    }
-
+    /**
+     * Convert the integration context to XML for persistance in the @link PersonalFilestore and logging
+     * 
+     * @param integrationColumns
+     * @param creator
+     * @return
+     * @throws Exception
+     */
     public String serializeIntegrationContext(List<IntegrationColumn> integrationColumns, Person creator) throws Exception {
         StringWriter sw = new StringWriter();
         xmlService.convertToXML(new IntegrationContext(creator, integrationColumns), sw);
         return sw.toString();
     }
 
+    /**
+     * For a specified @link DataTableColumn, find @link CodingRule entires mapped to the @link CodingSheet and Column that actually have data in the tdardata
+     * database.
+     * 
+     * @param column
+     * @return
+     */
     @Transactional
     public List<CodingRule> findMappedCodingRules(DataTableColumn column) {
         List<String> distinctColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);
         return dataTableColumnDao.findMappedCodingRules(column, distinctColumnValues);
     }
 
+    /**
+     * @see #createGeneratedCodingSheet(DataTableColumn, Person, Ontology)
+     * 
+     * @param column
+     * @param submitter
+     * @return
+     */
     @Transactional
     public CodingSheet createGeneratedCodingSheet(DataTableColumn column, Person submitter) {
         return createGeneratedCodingSheet(column, submitter, column.getDefaultOntology());
     }
 
+    /**
+     * When a user maps a @link DataTableColumn to an @link Ontology without a @link CodingSheet specifically chosen, create one on-the-fly from the @link OntologyNode values.
+     * 
+     * @param column
+     * @param submitter
+     * @param ontology
+     * @return
+     */
     @Transactional
     public CodingSheet createGeneratedCodingSheet(DataTableColumn column, Person submitter, Ontology ontology) {
         if (column == null) {
@@ -515,10 +360,22 @@ public class DataIntegrationService {
         return codingSheet;
     }
 
+    /**
+     * @see #convertCodingSheetToCSV(CodingSheet, Collection)
+     * 
+     * @param sheet
+     * @return
+     */
     public String convertCodingSheetToCSV(CodingSheet sheet) {
         return convertCodingSheetToCSV(sheet, sheet.getCodingRules());
     }
 
+    /**
+     * Given a @link CodingSheet and a set of @link CodingRule entries, create a CSV File
+     * @param sheet
+     * @param rules
+     * @return
+     */
     public String convertCodingSheetToCSV(CodingSheet sheet, Collection<CodingRule> rules) {
         // not all coding sheets have their rules directly attached at the moment (eg the generated ones)
         StringWriter sw = new StringWriter();
@@ -530,14 +387,21 @@ public class DataIntegrationService {
         return sw.toString();
     }
 
+    /**
+     * Iterate over every {@link DataTableColumn} in every {@link DataTable} and find ones that have shared {@link Ontology} entries. Return those back in Lists of Lists.
+     * 
+     * @param selectedDataTables
+     * @return
+     */
     public List<List<DataTableColumn>> getIntegrationColumnSuggestions(Collection<DataTable> selectedDataTables) {
         // iterate through all of the columns and get a map of the ones associated
         // with any ontology.
-        HashMap<Ontology, List<DataTableColumn>> dataTableAutoMap = new HashMap<Ontology, List<DataTableColumn>>();
+        HashMap<Ontology, List<DataTableColumn>> dataTableAutoMap = new HashMap<>();
 
         for (DataTable table : selectedDataTables) {
             List<DataTableColumn> dataTableColumns;
-            // TODO: remove feature toggle
+
+            //FIXME: not sure if this is correct
             if (TdarConfiguration.getInstance().getLeftJoinDataIntegrationFeatureEnabled()) {
                 dataTableColumns = table.getLeftJoinColumns();
             } else {
@@ -554,32 +418,30 @@ public class DataIntegrationService {
         }
 
         // okay now we have a map of the data table columns,
-        List<List<DataTableColumn>> columnAutoList = new ArrayList<List<DataTableColumn>>();
+        List<List<DataTableColumn>> columnAutoList = new ArrayList<>();
         for (Ontology key : dataTableAutoMap.keySet()) {
-            ArrayList<Long> seen = new ArrayList<Long>();
-            ArrayList<Long> seen2 = new ArrayList<Long>();
-            List<DataTableColumn> columnList = new ArrayList<DataTableColumn>();
-            List<DataTableColumn> columnList2 = new ArrayList<DataTableColumn>();
-            // go through the hashMap and try and pair out by set of rules
-            // assuming that there is one column per table at a time
+            Pair<ArrayList<Long>,ArrayList<DataTableColumn>> set1 = new Pair<>(new ArrayList<Long>(), new ArrayList<DataTableColumn>());
+            Pair<ArrayList<Long>,ArrayList<DataTableColumn>> set2 = new Pair<>(new ArrayList<Long>(), new ArrayList<DataTableColumn>());
+
+            // go through the hashMap and try and pair out by set of rules assuming that there is one column per table at a time
             // and there might be a case where there are more than one
             for (DataTableColumn column : dataTableAutoMap.get(key)) {
-                if (!seen.contains(column.getDataTable().getId())) {
-                    columnList.add(column);
-                    seen.add(column.getDataTable().getId());
-                } else if (!seen2.contains(column.getDataTable().getId())) {
-                    columnList2.add(column);
-                    seen2.add(column.getDataTable().getId());
+                Long dataTableIld = column.getDataTable().getId();
+                if (!set1.getFirst().contains(dataTableIld)) {
+                    set1.getSecond().add(column);
+                    set1.getFirst().add(dataTableIld);
+                } else if (!set2.getFirst().contains(dataTableIld)) {
+                    set2.getSecond().add(column);
+                    set2.getFirst().add(dataTableIld);
                 } // give up
             }
 
             // might want to tune this to some logic like:
-            // if just one table, then anything with an ontology
-            // if more than one, just show lists with at least two ontologies
-            if (columnList.size() > 0)
-                columnAutoList.add(columnList);
-            if (columnList2.size() > 0)
-                columnAutoList.add(columnList2);
+            // if just one table, then anything with an ontology if more than one, just show lists with at least two ontologies
+            if (set1.getSecond().size() > 0)
+                columnAutoList.add(set1.getSecond());
+            if (set2.getSecond().size() > 0)
+                columnAutoList.add(set2.getSecond());
         }
         return columnAutoList;
     }
