@@ -52,7 +52,8 @@ public class ListArchiveTask extends AbstractTask {
             StringBuilder archiveContents = new StringBuilder();
 
             ArchiveInputStream ais = null;
-            boolean successful = false;
+            int seenFiles = 0;
+            boolean validEntries = false;
             try {
                 ArchiveStreamFactory factory = new ArchiveStreamFactory();
                 InputStream stream = null;
@@ -66,18 +67,27 @@ public class ListArchiveTask extends AbstractTask {
                 }
                 
                 ais = factory.createArchiveInputStream(new BufferedInputStream(stream));
+                getLogger().info(ais.getClass().toString());
                 ArchiveEntry entry = ais.getNextEntry();
                 while (entry != null) {
+                    if (entry.getSize() > 0 && entry.getLastModifiedDate().getTime() > 1) {
+                        validEntries = true;
+                    }
                     writeToFile(archiveContents, entry.getName());
+                    seenFiles++;
                     entry = ais.getNextEntry();
                 }
-                successful = true;
+
             } catch (ArchiveException e) {
               throw new TdarRecoverableRuntimeException("Could find files within the archive:" + f_.getName());
             } finally {
                 if (ais != null) {
                     IOUtils.closeQuietly(ais);
                 }
+            }
+            
+            if (seenFiles < 2 && !validEntries) {
+                throw new TdarRecoverableRuntimeException("Could not process zip file, empty, or not a valid zip");
             }
             
             // write that to a file with a known format (one file per line)
