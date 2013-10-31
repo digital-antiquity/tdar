@@ -6,10 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
@@ -23,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -35,9 +32,10 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.DownloadHandler;
 import org.tdar.utils.DeleteOnCloseFileInputStream;
+import org.tdar.utils.MessageHelper;
 
 /**
- * $Id$
+ * Helps handle all downloads of tDAR resources
  * 
  * 
  * @author Jim deVos
@@ -45,6 +43,10 @@ import org.tdar.utils.DeleteOnCloseFileInputStream;
  */
 @Service
 public class DownloadService {
+
+    private static final String ARCHIVE_DOWNLOAD = "archiveDownload";
+
+    private static final String ZIP = ".zip";
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -54,14 +56,16 @@ public class DownloadService {
     @Autowired
     GenericService genericService;
 
-    // TODO
-    private String slugify(InformationResource resource) {
-        return "ir-archive";
-    }
-
+    /**
+     * Generate the Zip for for a download of multiple files, should include non-deleted files.
+     * 
+     * @param files
+     * @param destinationFile
+     * @throws IOException
+     */
     public void generateZipArchive(Map<File, String> files, File destinationFile) throws IOException {
         FileOutputStream fout = new FileOutputStream(destinationFile);
-        ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(fout)); // what is apache ZipOutputStream? It's probably better.
+        ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(fout)); 
         for (Entry<File, String> entry : files.entrySet()) {
             String filename = entry.getValue();
             if (filename == null) {
@@ -77,24 +81,18 @@ public class DownloadService {
         IOUtils.closeQuietly(zout);
     }
 
-    public void generateZipArchive(InformationResource resource, File destinationFile) throws IOException {
-        Collection<File> files = new LinkedList<File>();
 
-        for (InformationResourceFileVersion version : resource.getLatestVersions()) {
-            if (version.getInformationResourceFile().isDeleted())
-                continue;
-            files.add(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
-        }
-    }
-
-    public void generateZipArchive(InformationResource resource) throws IOException {
-        generateZipArchive(resource, File.createTempFile(slugify(resource), ".zip", TdarConfiguration.getInstance().getTempDirectory()));
-    }
-
+    /**
+     * Treat the @link DownloadHandler as a proxy for the controller and generate PDFs or zip as necessary
+     * @param authenticatedUser
+     * @param dh
+     * @param irFileVersions
+     * @throws TdarActionException
+     */
     @Transactional
     public void handleDownload(Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion... irFileVersions) throws TdarActionException {
         if (ArrayUtils.isEmpty((irFileVersions))) {
-            throw new TdarRecoverableRuntimeException("unsupported action");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.unsupported_action"));
         }
 
         File resourceFile = null;
@@ -118,17 +116,17 @@ public class DownloadService {
 
         try {
             if (irFileVersions.length > 1) {
-                resourceFile = File.createTempFile("archiveDownload", ".zip", TdarConfiguration.getInstance().getTempDirectory());
+                resourceFile = File.createTempFile(ARCHIVE_DOWNLOAD, ZIP, TdarConfiguration.getInstance().getTempDirectory());
                 generateZipArchive(files, resourceFile);
                 mimeType = "application/zip";
                 dh.setInputStream(new FileInputStream(resourceFile));
             }
         } catch (FileNotFoundException ex) {
             logger.error("Could not generate zip file to download: file not found", ex);
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
+            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, MessageHelper.getMessage("downloadService.could_not_generate_zip"));
         } catch (IOException ex) {
             logger.error("Could not generate zip file to download: IO exeption", ex);
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
+            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, MessageHelper.getMessage("downloadService.could_not_generate_zip"));
         }
         try {
             logger.debug("downloading file:" + resourceFile.getCanonicalPath());
@@ -142,22 +140,32 @@ public class DownloadService {
             try {
                 dh.setInputStream(new FileInputStream(resourceFile));
             } catch (FileNotFoundException e) {
-                throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
+                throw new TdarActionException(StatusCode.NOT_FOUND, MessageHelper.getMessage("error.file_not_found",""));
             }
         }
     }
 
+    /**
+     * Adds the specified file to the download. This method should encapsulate both handling of Zip File downloads and explicit file downloads.
+     * 
+     * @param downloadMap
+     * @param authenticatedUser
+     * @param dh
+     * @param irFileVersion
+     * @return
+     * @throws TdarActionException
+     */
     private File addFileToDownload(Map<File, String> downloadMap, Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion irFileVersion)
             throws TdarActionException {
         File resourceFile = null;
         try {
             resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFileVersion);
         } catch (FileNotFoundException e1) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
+            throw new TdarActionException(StatusCode.NOT_FOUND,MessageHelper.getMessage("error.file_not_found",""));
         }
         dh.setFileName(irFileVersion.getFilename());
         if (resourceFile == null || !resourceFile.exists()) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
+            throw new TdarActionException(StatusCode.NOT_FOUND, MessageHelper.getMessage("error.file_not_found",""));
         }
 
         String filename = null;
@@ -165,11 +173,7 @@ public class DownloadService {
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
             try {
                 resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
-                // FIXME: for merge coverpages, isn't this in a temp file/folder anyway? Is it necessary to explicitly delete?
-                // DeleteOnCloseFileInputStream docis = new DeleteOnCloseFileInputStream(resourceFile);
                 filename = irFileVersion.getFilename();
-                // FIXME: not sure if this statement was necessary (it's a side-effect anyway), and it is a contributing factor to TDAR-3311 so I commented it
-                // out. Does this break something else?
                 dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
             } catch (PdfCoverPageGenerationException cpge) {
                 logger.trace("Error occured while merging cover page onto " + irFileVersion, cpge);
@@ -181,7 +185,12 @@ public class DownloadService {
         return resourceFile;
     }
 
-    // indicate in the header whether the file should be received as an attachment (e.g. give user download prompt)
+    /**
+     *  indicate in the header whether the file should be received as an attachment (e.g. give user download prompt)
+     *  
+     * @param fileType
+     * @param dh
+     */
     private void initDispositionPrefix(InformationResourceFile.FileType fileType, DownloadHandler dh) {
         if (InformationResourceFile.FileType.IMAGE != fileType) {
             dh.setDispositionPrefix("attachment;");
