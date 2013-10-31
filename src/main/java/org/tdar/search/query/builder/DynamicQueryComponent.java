@@ -42,7 +42,7 @@ public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> 
     }
 
     public String getLabel() {
-        return SearchService.addParent(parent, label);
+        return DynamicQueryComponentHelper.addParent(parent, label);
     }
 
     public void setLabel(String label) {

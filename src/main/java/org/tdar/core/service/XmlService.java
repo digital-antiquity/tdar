@@ -87,11 +87,21 @@ public class XmlService implements Serializable {
     private Class<?>[] jaxbClasses;
 
     @Autowired
+    private UrlService urlService;
+
+    @Autowired
     JaxbPersistableConverter persistableConverter;
 
     @Autowired
     ObfuscationService obfuscationService;
 
+    /** 
+     * Convert the existing object to an XML representation using JAXB
+     * 
+     * @param object
+     * @return
+     * @throws Exception
+     */
     @Transactional(readOnly = true)
     public String convertToXML(Object object) throws Exception {
         StringWriter sw = new StringWriter();
@@ -99,7 +109,14 @@ public class XmlService implements Serializable {
         return sw.toString();
     }
 
-    // FIXME: I should cache this file and use it!!!
+    /**
+     * Generate the XSD schema for tDAR
+     * 
+     * @return
+     * @throws IOException
+     * @throws JAXBException
+     * @throws NoSuchBeanDefinitionException
+     */
     public File generateSchema() throws IOException, JAXBException, NoSuchBeanDefinitionException {
         final File tempFile = File.createTempFile(TDAR_SCHEMA, XSD, TdarConfiguration.getInstance().getTempDirectory());
         JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
@@ -113,18 +130,24 @@ public class XmlService implements Serializable {
             }
         });
 
+        
         return tempFile;
     }
 
-    @Autowired
-    private UrlService urlService;
-
+    /**
+     * Convert an Object to XML via JAXB, but use the writer instead of a String (For writing directly to a file or Stream)
+     * @param object
+     * @param writer
+     * @return
+     * @throws Exception
+     */
     @Transactional(readOnly = true)
     public Writer convertToXML(Object object, Writer writer) throws Exception {
         if (jaxbClasses == null) {
             jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
         }
 
+        // get rid of proxies
         if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
             object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
         }
@@ -139,6 +162,14 @@ public class XmlService implements Serializable {
         return writer;
     }
 
+    /**
+     * Convert an object to JSON using JAXB using writer
+     * 
+     * @param object
+     * @param writer
+     * @throws JsonProcessingException
+     * @throws IOException
+     */
     @Transactional
     public void convertToJson(Object object, Writer writer) throws JsonProcessingException, IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -152,6 +183,12 @@ public class XmlService implements Serializable {
         objectWriter.writeValue(writer, object);
     }
 
+    /**
+     * Convert an object to JSON using JAXB to string
+     * @param object
+     * @return
+     * @throws IOException
+     */
     @Transactional
     public String convertToJson(Object object) throws IOException {
         StringWriter writer = new StringWriter();
@@ -159,6 +196,14 @@ public class XmlService implements Serializable {
         return writer.toString();
     }
 
+    /**
+     * Convert an object to XML using JAXB, but populate a W3C XML Document
+     * 
+     * @param object
+     * @param document
+     * @return
+     * @throws JAXBException
+     */
     @Transactional(readOnly = true)
     public Document convertToXML(Object object, Document document) throws JAXBException {
         // http://marlonpatrick.info/blog/2012/07/12/jaxb-plus-hibernate-plus-javassist/
@@ -172,6 +217,13 @@ public class XmlService implements Serializable {
         return document;
     }
 
+    /**
+     * Parse an XML reader stream to a java bean
+     * 
+     * @param reader
+     * @return
+     * @throws Exception
+     */
     public Object parseXml(Reader reader) throws Exception {
         JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
         final List<String> lines = IOUtils.readLines(reader);
@@ -206,6 +258,13 @@ public class XmlService implements Serializable {
         return toReturn;
     }
 
+    /**
+     * Generate he FOAF RDF/XML
+     * 
+     * @param creator
+     * @param log
+     * @throws IOException
+     */
     public void generateFOAF(Creator creator, CreatorInfoLog log) throws IOException {
         Model model = ModelFactory.createDefaultModel();
         String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
@@ -251,6 +310,14 @@ public class XmlService implements Serializable {
 
     }
 
+    /**
+     * Add an institution to an RDF Model
+     * 
+     * @param model
+     * @param baseUrl
+     * @param institution
+     * @return
+     */
     private com.hp.hpl.jena.rdf.model.Resource addInstitution(Model model, String baseUrl, Institution institution) {
         com.hp.hpl.jena.rdf.model.Resource institution_ = model.createResource();
         institution_.addProperty(RDF.type, FOAF.Organization);
@@ -259,6 +326,14 @@ public class XmlService implements Serializable {
         return institution_;
     }
 
+    /**
+     * Add a person to an RDF Model
+     * 
+     * @param model
+     * @param baseUrl
+     * @param person
+     * @return
+     */
     private com.hp.hpl.jena.rdf.model.Resource addPerson(Model model, String baseUrl, Person person) {
         com.hp.hpl.jena.rdf.model.Resource person_ = model.createResource(FOAF.NS);
         person_.addProperty(RDF.type, FOAF.Person);
