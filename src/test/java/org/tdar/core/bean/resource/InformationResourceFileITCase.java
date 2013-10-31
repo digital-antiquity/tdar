@@ -181,7 +181,9 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         }
         assertEquals(0, ir.getInformationResourceFiles().size());
         } catch (Exception e){
-            seen = true;
+            if (e.getMessage().contains("Should not delete Uploaded or Archival Version")) {
+                seen = true;
+            }
         }
         assertTrue("should see exception", seen);
     }
