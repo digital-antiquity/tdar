@@ -1756,7 +1756,7 @@
 				<!-- For even more secret passwords, encrypt them: http://maven.apache.org/guides/mini/guide-encryption.html -->
 				<application.password>tdardev.crowdpw</application.password>
 				<the.jdbc.password>tdar</the.jdbc.password>
-				<!-- webapp.deploy.dir>/opt/webapps/tdar</webapp.deploy.dir-->
+				<webapp.deploy.dir>/opt/webapps/tdar</webapp.deploy.dir>
 			</properties>
 		</profile>
 		<profile>
