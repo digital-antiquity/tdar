@@ -199,9 +199,10 @@ public class BulkUploadService {
             throw throwable;
         }
         logger.debug("mapping metadata with excelManifest:" + excelManifest);
-        BulkManifestProxy manifestProxy = null;
-
-        manifestProxy = loadExcelManifest(excelManifest, receiver);
+        BulkManifestProxy manifestProxy = loadExcelManifest(excelManifest, receiver);
+        if (manifestProxy == null) {
+            manifestProxy = new BulkManifestProxy(null, null, null);
+        }
         manifestProxy.setFileProxies(fileProxies);
         manifestProxy.setSubmitter(submitter);
         // If there are errors, then stop...
