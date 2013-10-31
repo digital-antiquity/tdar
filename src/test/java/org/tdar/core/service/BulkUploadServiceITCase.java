@@ -40,12 +40,12 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.bulk.BulkManifestProxy;
+import org.tdar.core.service.bulk.BulkUploadTemplate;
+import org.tdar.core.service.bulk.CellMetadata;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.ExcelUnit;
-import org.tdar.utils.bulkUpload.BulkManifestProxy;
-import org.tdar.utils.bulkUpload.BulkUploadTemplate;
-import org.tdar.utils.bulkUpload.CellMetadata;
 
 /**
  * @author Adam Brin
@@ -62,7 +62,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testLookupMaps() {
         LinkedHashSet<CellMetadata> importFields = bulkUploadService.getAllValidFieldNames(ResourceType.DOCUMENT);
-        Map<String, CellMetadata> cellLookupMap = bulkUploadService.getCellLookupMap(importFields);
+        Map<String, CellMetadata> cellLookupMap = bulkUploadService.getCellLookupMapByName(importFields);
         assertTrue("testing local field", cellLookupMap.containsKey("documentType"));
         assertTrue("testing parent class", cellLookupMap.containsKey("description"));
         logger.info("{}", importFields);
@@ -132,7 +132,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         BulkManifestProxy manifestProxy = generateManifest("manifest.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
         AsyncUpdateReceiver receiver = new DefaultReceiver();
-        bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
+        manifestProxy.setResourcesCreated(filenameResourceMap);
+        bulkUploadService.readExcelFile(manifestProxy, receiver);
 
         for (Resource resource : filenameResourceMap.values()) {
             logger.info("{}", resource);
@@ -185,9 +186,10 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     public <R extends Resource> void parseExcelFileWithBadEnum() throws InvalidFormatException, IOException {
         BulkManifestProxy manifestProxy = generateManifest("bad_enum_value.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
+        manifestProxy.setResourcesCreated(filenameResourceMap);
 
         AsyncUpdateReceiver receiver = new DefaultReceiver();
-        bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
+        bulkUploadService.readExcelFile(manifestProxy,  receiver);
         assertTrue(receiver.getAsyncErrors().contains("is not a valid value for the"));
     }
 
@@ -199,9 +201,10 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         try {
             BulkManifestProxy manifestProxy = generateManifest("bad_field_name.xlsx");
             Map<String, Resource> filenameResourceMap = setup();
+            manifestProxy.setResourcesCreated(filenameResourceMap);
 
             AsyncUpdateReceiver receiver = new DefaultReceiver();
-            bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
+            bulkUploadService.readExcelFile(manifestProxy, receiver);
         } catch (Exception e) {
             String msg = e.getMessage();
             logger.info(msg);
@@ -216,9 +219,10 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     public <R extends Resource> void parseExcelFileWithBadNumericField() throws InvalidFormatException, IOException {
         BulkManifestProxy manifestProxy = generateManifest("bad_int_value.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
+        manifestProxy.setResourcesCreated(filenameResourceMap);
 
         AsyncUpdateReceiver receiver = new DefaultReceiver();
-        bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
+        bulkUploadService.readExcelFile(manifestProxy,  receiver);
         logger.info(receiver.getAsyncErrors());
         assertTrue(receiver.getAsyncErrors().contains("is expecting an integer value, but found"));
     }
@@ -231,7 +235,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         Map<String, Resource> filenameResourceMap = setup();
 
         AsyncUpdateReceiver receiver = new DefaultReceiver();
-        bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
+        manifestProxy.setResourcesCreated(filenameResourceMap);
+        bulkUploadService.readExcelFile(manifestProxy, receiver);
         assertTrue(receiver.getAsyncErrors().contains("skipping line in excel file as resource with the filename"));
     }
 
@@ -242,9 +247,10 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         try {
             BulkManifestProxy manifestProxy = generateManifest("bad_first_column.xlsx");
             Map<String, Resource> filenameResourceMap = setup();
+            manifestProxy.setResourcesCreated(filenameResourceMap);
 
             AsyncUpdateReceiver receiver = new DefaultReceiver();
-            bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
+            bulkUploadService.readExcelFile(manifestProxy, receiver);
         } catch (Exception e) {
             logger.info(e.getMessage());
             assertTrue(e.getMessage().contains("the first column must be the filename"));
@@ -257,9 +263,10 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     public <R extends Resource> void parseExcelFileWithIncorrectField() throws InvalidFormatException, IOException {
         BulkManifestProxy manifestProxy = generateManifest("invalid_fieldname_for_class.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
+        manifestProxy.setResourcesCreated(filenameResourceMap);
 
         AsyncUpdateReceiver receiver = new DefaultReceiver();
-        bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
+        bulkUploadService.readExcelFile(manifestProxy, receiver);
         assertTrue(receiver.getAsyncErrors().contains("is not valid for the resource type"));
     }
 
@@ -277,7 +284,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         boolean noException = true;
         try {
             AsyncUpdateReceiver receiver = new DefaultReceiver();
-            bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
+            manifestProxy.setResourcesCreated(filenameResourceMap);
+            bulkUploadService.readExcelFile(manifestProxy,  receiver);
         } catch (TdarRecoverableRuntimeException ex) {
             noException = false;
         }

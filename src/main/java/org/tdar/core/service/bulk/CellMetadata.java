@@ -4,8 +4,9 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.utils.bulkUpload;
+package org.tdar.core.service.bulk;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +24,19 @@ import org.tdar.core.bean.BulkImportField;
  * @author Adam Brin
  * 
  */
-public class CellMetadata {
+public class CellMetadata implements Serializable {
 
+    private static final String REQUIRED = "*";
+
+    private static final long serialVersionUID = 3392288145007832396L;
+
+    /**
+     * A special instance that repsents the Filename Field
+     */
     public static final CellMetadata FILENAME = new CellMetadata() {
+
+        private static final long serialVersionUID = 5182864266494862305L;
+
         @Override
         public boolean isRequired() {
             return true;
@@ -70,6 +81,15 @@ public class CellMetadata {
     private boolean floatNumber = false;
     private boolean numeric = false;
 
+    /**
+     * Initialize with specified values
+     * 
+     * @param field
+     * @param annotation
+     * @param class2
+     * @param stack
+     * @param prefix
+     */
     public CellMetadata(Field field, BulkImportField annotation, Class<?> class2, Stack<List<Class<?>>> stack, String prefix) {
         this.mappedClass = class2;
         if (field.getType().isEnum()) {
@@ -131,6 +151,9 @@ public class CellMetadata {
         this.comment = comment;
     }
 
+    /**
+     * Equality defined by cell name
+     */
     @Override
     public boolean equals(Object cm) {
         if (cm == null) { // all equals() should return false if passed a null value...
@@ -177,6 +200,7 @@ public class CellMetadata {
     }
 
     /**
+     * Get the actual name that should be used in Excel (add a * for required)
      * @return
      */
     public String getOutputName() {
@@ -187,7 +211,7 @@ public class CellMetadata {
             sb.append(getName());
         }
         if (isRequired()) {
-            sb.append("*");
+            sb.append(REQUIRED);
         }
         return sb.toString();
     }

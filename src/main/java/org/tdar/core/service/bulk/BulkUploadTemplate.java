@@ -1,5 +1,6 @@
-package org.tdar.utils.bulkUpload;
+package org.tdar.core.service.bulk;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -26,7 +27,15 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.excel.CellFormat;
 
-public class BulkUploadTemplate {
+/**
+ * Create an Excel Template for use by the @link BulkUploadService
+ * 
+ * @author abrin
+ *
+ */
+public class BulkUploadTemplate implements Serializable {
+
+    private static final long serialVersionUID = 3499465870308981885L;
 
     private static final String EXCEL_MAX_NUM = "99999999999999";
     private static final String EXCEL_MIN_NUM = "-99999999999999";
@@ -36,13 +45,25 @@ public class BulkUploadTemplate {
     public static final String EXAMPLE_PDF = "TDAR_EXAMPLE.PDF";
     public static final String FILENAME = "filename";
 
+    @SuppressWarnings("unused")
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    
+    /**
+     * Initialize with the @link ExcelService
+     * 
+     * @param excelService
+     */
     public BulkUploadTemplate(ExcelService excelService) {
         this.setExcelService(excelService);
     }
 
-    @SuppressWarnings("unused")
-    private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
+    /**
+     * Create the template based on a set of @link CellMetadata representing @link BulkUploadField annotations for a given set of @link ResourceType enums
+     * 
+     * @param fieldnameSet
+     * @return
+     */
+    @SuppressWarnings("unchecked")
     public HSSFWorkbook getTemplate(LinkedHashSet<CellMetadata> fieldnameSet) {
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -169,8 +190,15 @@ public class BulkUploadTemplate {
         return workbook;
     }
 
-    public <T extends Enum<T>> void addReferenceColumn(Sheet wb, T[] labels,
-            String header, CellStyle summaryStyle, int col) {
+    /**
+     * Add a column with a list of definited Enum Values
+     * @param wb
+     * @param labels
+     * @param header
+     * @param summaryStyle
+     * @param col
+     */
+    public <T extends Enum<T>> void addReferenceColumn(Sheet wb, T[] labels, String header, CellStyle summaryStyle, int col) {
         int rowNum = 0;
         Row row = getExcelService().createRow(wb, rowNum);
         row.createCell(col).setCellValue(header);
