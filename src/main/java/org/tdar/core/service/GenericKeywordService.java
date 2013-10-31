@@ -51,7 +51,7 @@ public class GenericKeywordService extends GenericService {
      */
     @Transactional
     public <W extends SuggestedKeyword> List<W> findAllApproved(Class<W> cls) {
-        return getDao().findAllByProperty(cls, "approved", true);
+        return genericKeywordDao.findAllByProperty(cls, "approved", true);
     }
 
     private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
@@ -137,7 +137,7 @@ public class GenericKeywordService extends GenericService {
                 throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.could_not_create_class", cls));
             }
             keyword.setLabel(label);
-            getDao().save(keyword);
+            genericKeywordDao.save(keyword);
         } else {
             keyword.setStatus(Status.ACTIVE);
         }
