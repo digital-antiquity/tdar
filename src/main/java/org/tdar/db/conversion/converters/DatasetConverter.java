@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 import com.healthmarketscience.jackcess.Database;
 
@@ -70,8 +71,6 @@ public interface DatasetConverter {
     String getFilename();
 
     List<DataTableRelationship> getRelationshipsWithTable(String tableName);
-
-    static final String ERROR_UNABLE_TO_PROCESS = "The system is unable to process this dataset file";
 
     /**
      * Abstract base class for DatasetConverterS, uses template pattern to ease implementation of execute().
@@ -179,15 +178,15 @@ public interface DatasetConverter {
                 return getDataTables();
             } catch (IOException e) {
                 logger.error("I/O error while opening input database or dumping data", e);
-                throw new TdarRecoverableRuntimeException("I/O error while opening input database or dumping data", e);
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetService.io_exception)"), e);
             } catch (TdarRecoverableRuntimeException tex) {
                 // FIXME: THIS FEELS DUMB. We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error
                 // message
                 // with a friendly-yet-generic error message.
                 throw tex;
             } catch (Exception e) {
-                logger.error(ERROR_UNABLE_TO_PROCESS + "  " + getInformationResourceFileVersion().getFilename(), e);
-                throw new TdarRecoverableRuntimeException(ERROR_UNABLE_TO_PROCESS + "  " + getInformationResourceFileVersion().getFilename(), e);
+                logger.error("unable to prcess file:  " + getInformationResourceFileVersion().getFilename(), e);
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetConverter.error_unable_to_process", getInformationResourceFileVersion().getFilename()), e);
             }
         }
 

@@ -28,6 +28,7 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
@@ -48,7 +49,6 @@ import com.vividsolutions.jts.io.WKBReader;
  */
 public class AccessDatabaseConverter extends DatasetConverter.Base {
     private static final String DB_PREFIX = "d";
-    private static final String ERROR_CORRUPT_DB = "The system was unable to read portions of this Access database. It is possible this issue may be resolved By using the \"Compact and Repair \" feature in Microsoft Access.";
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -201,10 +201,8 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     IOUtils.write("\r\n", indexedFileOutputStream);
                     targetDatabase.addTableRow(dataTable, valueColumnMap);
                 }
-            } catch (BufferUnderflowException bex) {
-                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
-            } catch (IllegalStateException iex) {
-                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
+            } catch (BufferUnderflowException | IllegalStateException  bex) {
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accessDatabaseConverter.error_corrupt"));
             } finally {
                 completePreparedStatements();
             }

@@ -14,6 +14,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -96,7 +97,7 @@ public class CsvConverter extends SimpleConverter {
             int count = 1;
             Map<DataTableColumn, String> columnToValueMap = new HashMap<DataTableColumn, String>();
             if (line.length > getHeaderLine().length)
-                throw new TdarRecoverableRuntimeException("row " + numberOfLines + " has more columns " + line.length + " than the header column");
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("simpleConverter.column_has_more", numberOfLines, line.length));
 
             for (int i = 0; i < line.length; i++) {
                 if (count <= getHeaderLine().length) {

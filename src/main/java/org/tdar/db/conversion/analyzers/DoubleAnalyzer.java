@@ -4,11 +4,17 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 public class DoubleAnalyzer implements ColumnAnalyzer {
 
+    /**
+     * Get mapped @link DataTableColumnType
+     */
     @Override
     public DataTableColumnType getType() {
         return DataTableColumnType.DOUBLE;
     }
 
+    /**
+     * Analyze whether the String can be mapped to a Double
+     */
     @Override
     public boolean analyze(String value) {
         if (value == null)
@@ -23,6 +29,9 @@ public class DoubleAnalyzer implements ColumnAnalyzer {
         return true;
     }
 
+    /**
+     * For a double, always 0
+     */
     @Override
     public int getLength() {
         return 0;

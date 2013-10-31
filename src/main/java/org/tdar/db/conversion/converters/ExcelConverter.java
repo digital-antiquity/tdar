@@ -27,6 +27,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.excel.SheetEvaluator;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 /**
  * Uses Apache POI to parse and convert Excel workbooks into a unique table,
@@ -40,9 +41,6 @@ import org.tdar.db.model.abstracts.TargetDatabase;
 public class ExcelConverter extends DatasetConverter.Base {
 
     private static final String DEFAULT_SHEET_NAME = "Sheet1";
-    private static final String ERROR_CORRUPT_FILE_TRY_RESAVING = "The system cannot read some rows in this workbook, possibly due to a corrupt file. This issue can often be resolved by simply opening the file using in Microsoft Excel and then re-saving the document.";
-    private static final String ERROR_WRONG_EXCEL_FORMAT = "The system could not open the Excel file you supplied.  Please try re-saving it in Excel as an Excel 97-2003 Workbook or Excel 2007 Workbook and upload it again.  If this problem persists, please contact us with a bug report.";
-    private static final String POI_ERROR_MISSING_ROWS = "Unexpected missing row when some rows already present";
     private static final String DB_PREFIX = "e";
     private Workbook workbook;
     private DataFormatter formatter = new HSSFDataFormatter();
@@ -88,12 +86,11 @@ public class ExcelConverter extends DatasetConverter.Base {
         } catch (IllegalArgumentException exception) {
             logger.error("Couldn't create workbook, likely due to invalid Excel file or Excel 2003 file.", exception);
             throw new TdarRecoverableRuntimeException(
-                    ERROR_WRONG_EXCEL_FORMAT,
-                    exception);
+                    MessageHelper.getMessage("excelConverter.error_wrong_excel_format"), exception);
         } catch (RuntimeException rex) {
             // if this is a "missing rows" issue, the user might be able to work around it by resaving the excel spreadsheet;
-            if (rex.getMessage().equals(POI_ERROR_MISSING_ROWS)) {
-                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_FILE_TRY_RESAVING);
+            if (rex.getMessage().equals(MessageHelper.getMessage("excelConverter.poi_error_missing_rows"))) {
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("excelConverter.error_corrupt_file_try_resaving"));
             } else {
                 throw rex;
             }

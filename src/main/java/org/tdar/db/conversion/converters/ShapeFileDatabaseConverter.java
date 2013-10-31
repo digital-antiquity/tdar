@@ -32,6 +32,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
@@ -50,7 +51,6 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
     private static final String DB_PREFIX = "s";
-    private static final String ERROR_CORRUPT_DB = "The system was unable to read portions of this Shapefile.";
     protected Logger logger = LoggerFactory.getLogger(getClass());
     private File databaseFile;
 
@@ -164,7 +164,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             }
         } catch (Exception e) {
             logger.error("could not process shapefile: {}", e);
-            throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("shapeFileConveter.corrupt"));
         } finally {
             iterator.close();
             dataStore.dispose();
