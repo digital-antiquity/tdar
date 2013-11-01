@@ -33,6 +33,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
@@ -86,7 +87,12 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public static final String USERNAME_VALID_REGEX = USERNAME_REGEX + "{5,255}$";
     public static final String EMAIL_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{4,255}$";
 
-
+    
+    
+    public List<Resource> findEditableResources(Person person, boolean isAdmin, List<ResourceType> resourceTypes) {
+        return authorizedUserDao.findEditableResources(person, resourceTypes, isAdmin);
+    }
+    
     /*
      * TdarGroups are represented in the external auth systems, but enable global permissions in tDAR; Admins, Billing Administrators, etc.
      */

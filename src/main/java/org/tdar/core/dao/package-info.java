@@ -51,6 +51,9 @@
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_RESOURCES,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_EDITABLE_RESOURCES,
+                query = TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES,
                 query = "SELECT distinct new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SORTED_SUFFIX),
 

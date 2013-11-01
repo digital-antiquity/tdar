@@ -51,6 +51,7 @@ public interface TdarNamedQueries {
     static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO = "rescol.accessible";
     static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.accessibleName";
     static final String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
+    static final String QUERY_EDITABLE_RESOURCES = "resource.editable";
     static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse";
     static final String QUERY_COLLECTION_BY_PARENT = "collection.parent";
     static final String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
