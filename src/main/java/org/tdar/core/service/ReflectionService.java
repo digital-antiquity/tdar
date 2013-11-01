@@ -53,6 +53,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.bulk.CellMetadata;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.ActionInvocation;
@@ -65,12 +66,20 @@ import com.opensymphony.xwork2.ActionProxy;
 @Service
 public class ReflectionService {
 
+    private static final String ORG_TDAR2 = "org/tdar/";
+    private static final String SET = "set";
+    private static final String GET = "get";
+    private static final String ORG_TDAR = "org.tdar.";
     public transient Logger logger = LoggerFactory.getLogger(getClass());
     private Map<String, Class<Persistable>> persistableLookup;
 
-    /*
+    /**
      * This method looks at a class like "Resource" and finds fields that contain the "classToFind",
      * e.g. GeographicKeyword. This would return [geographicKeywords,managedGeographicKeywords]
+     * 
+     * @param classToInspect
+     * @param classToFind
+     * @return
      */
     public Set<Field> findFieldsReferencingClass(Class<?> classToInspect, Class<?> classToFind) {
         Set<Field> matchingFields = new HashSet<>();
@@ -152,7 +161,7 @@ public class ReflectionService {
     }
 
     public static String generateGetterName(String name) {
-        return generateName("get", name);
+        return generateName(GET, name);
     }
 
     public static String generateSetterName(Field field) {
@@ -160,7 +169,7 @@ public class ReflectionService {
     }
 
     public static String generateSetterName(String name) {
-        return generateName("set", name);
+        return generateName(SET, name);
     }
 
     /*
@@ -266,8 +275,7 @@ public class ReflectionService {
             Class cls = Class.forName(beanClassName);
             logger.trace("{} - {} ", cls.getSimpleName(), cls);
             if (persistableLookup.containsKey(cls.getSimpleName())) {
-                throw new TdarRecoverableRuntimeException("There is an error in the JAXB Naming Mapping because of overlap in simple names "
-                        + cls.getSimpleName());
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.jaxb_mapping", cls.getSimpleName()));
             }
             persistableLookup.put(cls.getSimpleName(), cls);
         }
@@ -277,7 +285,7 @@ public class ReflectionService {
     public static Set<BeanDefinition> findClassesThatImplement(Class<?> cls) {
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AssignableTypeFilter(cls));
-        String basePackage = "org/tdar/";
+        String basePackage = ORG_TDAR2;
         Set<BeanDefinition> findCandidateComponents = scanner.findCandidateComponents(basePackage);
         return findCandidateComponents;
     }
@@ -320,7 +328,7 @@ public class ReflectionService {
         for (Class<? extends Annotation> annot : annots) {
             scanner.addIncludeFilter(new AnnotationTypeFilter(annot));
         }
-        String basePackage = "org/tdar/";
+        String basePackage = ORG_TDAR2;
         for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
             String beanClassName = bd.getBeanClassName();
             Class<?> cls = Class.forName(beanClassName);
@@ -334,7 +342,7 @@ public class ReflectionService {
         List<Field> declaredFields = new ArrayList<>();
         List<Pair<Field, Class<? extends Persistable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
-        while (cls.getPackage().getName().startsWith("org.tdar.")) {
+        while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
             CollectionUtils.addAll(declaredFields, cls.getDeclaredFields());
             cls = cls.getSuperclass();
         }
@@ -469,7 +477,7 @@ public class ReflectionService {
                     BeanUtils.setProperty(beanToProcess, name, Enum.valueOf(propertyType, value));
                 } catch (IllegalArgumentException e) {
                     logger.debug("cannot set property:", e);
-                    throw new TdarRecoverableRuntimeException(value + " is not a valid value for the " + name + " field", e);
+                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.not_valid_value", value, name), e);
                 }
             } else {
                 if (Integer.class.isAssignableFrom(propertyType)) {
@@ -479,7 +487,7 @@ public class ReflectionService {
                             value = new Integer((int) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting an integer value, but found: " + value);
+                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_integer", name, value));
                     }
                 }
                 if (Long.class.isAssignableFrom(propertyType)) {
@@ -489,14 +497,14 @@ public class ReflectionService {
                             value = new Long((long) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a big integer value, but found: " + value);
+                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_big_integer", name, value));
                     }
                 }
                 if (Float.class.isAssignableFrom(propertyType)) {
                     try {
                         Float.parseFloat(value);
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a floating point value (1.001), but found: " + value);
+                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_floating_point", name, value));
                     }
                 }
                 BeanUtils.setProperty(beanToProcess, name, value);
@@ -506,7 +514,7 @@ public class ReflectionService {
                 throw (TdarRecoverableRuntimeException) e1;
             }
             logger.debug("error processing bulk upload: {}", e1);
-            throw new TdarRecoverableRuntimeException("an error occured when setting " + name + " to " + value, e1);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_floating_generic", name, value));
         }
     }
 
@@ -518,14 +526,14 @@ public class ReflectionService {
         List<Pair<Method, Class<? extends Obfuscatable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
         Class<?> actualClass = null; 
-        while (cls.getPackage().getName().startsWith("org.tdar.")) {
+        while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
             // find first implemented tDAR class (actual class);
             if (actualClass == null) {
                 actualClass = cls;
             }
             for (Method method : cls.getDeclaredMethods()) {
                 
-                if (Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")) {
+                if (Modifier.isPublic(method.getModifiers()) && method.getName().startsWith(GET)) {
                     declaredFields.add(method);
                 }
             }

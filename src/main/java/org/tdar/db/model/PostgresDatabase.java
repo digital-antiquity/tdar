@@ -60,6 +60,7 @@ import org.tdar.odata.server.AbstractDataRecord;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationContext;
 import org.tdar.struts.data.ModernIntegrationDataResult;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 /**
@@ -739,9 +740,9 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         ModernIntegrationDataResult result = new ModernIntegrationDataResult();
         createTable(String.format(CREATE_TEMPORARY_TABLE, proxy.getTempTableName()));
         for (IntegrationColumn column : proxy.getIntegrationColumns()) {
-            String deflt = NULL_EMPTY_INTEGRATION_VALUE;
+            String deflt = MessageHelper.getMessage("database.null_empty_integration_value");
             if (column.isDisplayColumn()) {
-                deflt = NULL_EMPTY_MAPPED_VALUE;
+                deflt = MessageHelper.getMessage("database.null_empty_mapped_value");
             }
             executeUpdateOrDelete(String.format(ADD_COLUMN + " DEFAULT %s", column.getName(), deflt));
         }

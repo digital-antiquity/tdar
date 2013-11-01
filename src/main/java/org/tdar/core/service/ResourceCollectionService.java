@@ -43,6 +43,7 @@ import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin
@@ -52,7 +53,6 @@ import org.tdar.search.query.part.FieldQueryPart;
 @Service
 public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<ResourceCollection, ResourceCollectionDao> {
 
-    private static final String RESOURCE_COLLECTION_RIGHTS_ERROR = "You do not have the rights to add this resource to";
     @Autowired
     AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
@@ -99,8 +99,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         persistable.getResources().addAll(deletedResources);
         saveOrUpdate(persistable);
         if (ineligibleResources.size() > 0) {
-            throw new TdarRecoverableRuntimeException(
-                    "the following resources could not be added to the collection because you do not have the rights to add them: " + ineligibleResources);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCollectionService.could_not_add",ineligibleResources));
         }
         return rehydratedIncomingResources;
     }
@@ -212,7 +211,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional
     public void saveAuthorizedUsersForResourceCollection(ResourceCollection resourceCollection, List<AuthorizedUser> authorizedUsers, boolean shouldSaveResource) {
         if (resourceCollection == null) {
-            throw new TdarRecoverableRuntimeException("could not save resource collection ... null");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCollectionService.could_not_save"));
         }
         Set<AuthorizedUser> currentUsers = resourceCollection.getAuthorizedUsers();
         logger.debug("current users (start): {}", currentUsers);
@@ -345,7 +344,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (collectionToAdd != null && collectionToAdd.isValid()) {
             if (Persistable.Base.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
                     && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
-                throw new TdarRecoverableRuntimeException(RESOURCE_COLLECTION_RIGHTS_ERROR + collectionToAdd.getTitle());
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCollectionSerice.resource_collection_rights_error", collectionToAdd.getTitle()));
             }
             if (collectionToAdd.isTransient() && shouldSave) {
                 save(collectionToAdd);
@@ -356,7 +355,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             resource.getResourceCollections().add(collectionToAdd);
         } else {
             if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
-                throw new TdarRecoverableRuntimeException(collectionToAdd.getName() + " is not valid");
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCollectionService.invalid",collectionToAdd.getName()));
             }
         }
     }

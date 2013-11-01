@@ -39,6 +39,7 @@ import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
+import org.tdar.utils.MessageHelper;
 
 /**
  * 
@@ -73,6 +74,9 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     private LinkedHashSet<ScheduledProcess<Persistable>> scheduledProcessQueue = new LinkedHashSet<ScheduledProcess<Persistable>>();
     private boolean hasRunStartupProcesses;
 
+    /**
+     * Once a week, on Sundays, generate some static, cached stats for use by the admin area and general system
+     */
     @Scheduled(cron = "12 0 0 * * SUN")
     public void generateWeeklyStats() {
         queue(scheduledProcessMap.get(WeeklyStatisticsLoggingProcess.class));
@@ -80,6 +84,9 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         queue(scheduledProcessMap.get(CreatorAnalysisProcess.class));
     }
 
+    /**
+     * Check that our Authentication System  (Crowd /LDAP ) is actually running
+     */
     @Scheduled(fixedDelay = FIVE_MIN_MS)
     public void checkAuthService() {
         if (!authenticationService.getProvider().isConfigured()) {
@@ -87,34 +94,55 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         }
     }
 
+    /**
+     * Tell Lucene to Optimize it's indexes
+     */
     @Scheduled(cron = "16 0 0 * * SUN")
     public void optimizeSearchIndexes() {
         logger.info("Optimizing indexes");
         searchIndexService.optimizeAll();
     }
 
+    /**
+     * Cache the Crowd / LDAP group permissions for one hour
+     * 
+     */
     @Scheduled(fixedDelay = ONE_HOUR_MS)
     public void clearPermissionsCache() {
         authenticationService.clearPermissionsCache();
     }
 
+    /**
+     * Generate DOIs
+     */
     @Scheduled(cron = "16 15 0 * * *")
     public void updateDois() {
         logger.info("updating DOIs");
         queue(scheduledProcessMap.get(DoiProcess.class));
     }
 
+    /**
+     * Update the Sitemap.org sitemap files
+     */
     @Scheduled(cron = "20 15 0 * * *")
     public void updateSitemap() {
         logger.info("updating Sitemaps");
         queue(scheduledProcessMap.get(SitemapGeneratorProcess.class));
     }
 
+    /**
+     * Update the Homepage's Featured Resources
+     */
     @Scheduled(cron = "1 15 0 * * *")
     public void updateHomepage() {
         queue(scheduledProcessMap.get(RebuildHomepageCache.class));
     }
 
+    /**
+     * Verify the @link Filestore once a week
+     * 
+     * @throws IOException
+     */
     @Scheduled(cron = "5 0 0 * * SUN")
     @Async
     public void verifyTdarFiles() throws IOException {
@@ -125,6 +153,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         return TdarConfiguration.getInstance();
     }
 
+    /**
+     * Autowiring of Scheduled Processes, filter by those enabled and have not run. Also use @link TdarConfiguration to check whether the client supports
+     * running them
+     * 
+     * @param processes
+     */
     @Autowired
     public void setAllScheduledProcesses(List<ScheduledProcess<Persistable>> processes) {
         for (ScheduledProcess<Persistable> process : processes) {
@@ -150,7 +184,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         logger.debug("ALL ENABLED SCHEDULED PROCESSES: {}", scheduledProcessMap.values());
     }
 
-    /*
+    /**
      * Scheduled processes have two separate flavors.
      * (a) they run once
      * (b) they run regularly.
@@ -158,6 +192,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * Regardless, we don't want long-running transactions in tDAR or a transaction that affects tons
      * of resources at the same time. To that end, the ScheduledProcess Interface, and this task process
      * is designed to batch up tasks, and also run them at points that tDAR is not under heavy load
+     * 
      */
     @Scheduled(fixedDelay = 10000)
     @Transactional(readOnly = false, noRollbackFor = { TdarRecoverableRuntimeException.class })
@@ -186,7 +221,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         try {
             process.execute();
         } catch (Throwable e) {
-            logger.error(String.format("an error ocurred while running the process: %s", process.getDisplayName()), e);
+            logger.error(MessageHelper.getMessage("scheduledProcessService.error_running", process.getDisplayName()), e);
         }
 
         if (process.isCompleted()) {
@@ -197,6 +232,11 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         logger.trace("processes in Queue: {}", scheduledProcessQueue);
     }
 
+    /**
+     * Mark an @link UpgradeTask as having been run successfully
+     * 
+     * @param upgradeTask
+     */
     @Transactional
     private void completedSuccessfully(UpgradeTask upgradeTask) {
         upgradeTask.setRun(true);
@@ -205,6 +245,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         logger.info("completed " + upgradeTask.getName());
     }
 
+    /**
+     * Check if an @link UpgradeTask has been run or not.
+     * 
+     * @param name
+     * @return
+     */
     private UpgradeTask checkIfRun(String name) {
         UpgradeTask upgradeTask = new UpgradeTask();
         upgradeTask.setName(name);
@@ -220,6 +266,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         }
     }
 
+    /**
+     * Add a @link ScheduledProcess to the Queue
+     * 
+     * @param process
+     * @return
+     */
     public boolean queue(ScheduledProcess<Persistable> process) {
         if (process == null) {
             return false;
@@ -227,14 +279,26 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         return scheduledProcessQueue.add(process);
     }
 
+    /**
+     * get the scheduled process queue (used to make sure we don't run multiple at once)
+     * 
+     * @return
+     */
     public Set<ScheduledProcess<Persistable>> getScheduledProcessQueue() {
         return scheduledProcessQueue;
     }
 
+    /**
+     * Return all ScheduledProcesses
+     * @return
+     */
     public List<ScheduledProcess<Persistable>> getAllScheduledProcesses() {
         return new ArrayList<ScheduledProcess<Persistable>>(scheduledProcessMap.values());
     }
 
+    /**
+     * Every few minutes, trim the activity queue so it doesn't get too big
+     */
     @Scheduled(fixedDelay = TWO_MIN_MS)
     public void trimActivityQueue() {
         logger.trace("trimming activity queue");
@@ -243,7 +307,8 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     }
 
     /**
-     * Run
+     * Track startup of application (?)
+     * 
      */
     @Transactional
     @Override

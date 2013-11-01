@@ -16,8 +16,6 @@ public interface Database
         ACCESS, DB2, EXCEL, POSTGRES
     };
 
-    public static final String NULL_EMPTY_INTEGRATION_VALUE = "This integration value was not specified in the uploaded dataset";
-    public static final String NULL_EMPTY_MAPPED_VALUE = "This value has not been mapped to any ontology node";
 
     // enum DATA_TYPE
     // {

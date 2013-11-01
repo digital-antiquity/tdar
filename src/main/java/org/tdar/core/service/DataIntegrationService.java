@@ -39,7 +39,6 @@ import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.integration.DataIntegrationWorkbook;
 import org.tdar.core.service.resource.InformationResourceService;
-import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
@@ -133,7 +132,7 @@ public class DataIntegrationService {
                             value = tdarDataImportDatabase.getResultSetValueAsString(resultSet, resultSetPosition, column);
                         }
                         if (column != null && !integrationColumn.isDisplayColumn() && StringUtils.isEmpty(value)) {
-                            value = PostgresDatabase.NULL_EMPTY_INTEGRATION_VALUE;
+                            value = MessageHelper.getMessage("database.null_empty_integration_value");
                         }
                         values.add(value);
                         ontologyNodes.add(OntologyNode.NULL); // initialize the array so we have columns line up
@@ -147,7 +146,7 @@ public class DataIntegrationService {
                                 ontologyNodes.set(ontologyNodes.size() - 1, mappedOntologyNode);
                             }
                             if (mappedVal == null) {
-                                mappedVal = PostgresDatabase.NULL_EMPTY_MAPPED_VALUE;
+                                mappedVal = MessageHelper.getMessage("database.null_empty_mapped_value");
                             }
                             values.add(mappedVal);
                         }

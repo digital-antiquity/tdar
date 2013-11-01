@@ -69,6 +69,11 @@ public class SearchIndexService {
         indexAll(updateReceiver, getDefaultClassesToIndex(), person);
     }
 
+    /**
+     * The default classes to reindex
+     * 
+     * @return
+     */
     private List<Class<? extends Indexable>> getDefaultClassesToIndex() {
         List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
         for (LookupSource source : LookupSource.values()) {
@@ -82,6 +87,13 @@ public class SearchIndexService {
         return toReindex;
     }
 
+    /**
+     * Index all of the @link Indexable items. Uses a ScrollableResult to manage memory and object complexity
+     * 
+     * @param updateReceiver
+     * @param classesToIndex
+     * @param person
+     */
     @SuppressWarnings("deprecation")
     public void indexAll(AsyncUpdateReceiver updateReceiver, List<Class<? extends Indexable>> classesToIndex, Person person) {
         if (updateReceiver == null) {
@@ -156,6 +168,12 @@ public class SearchIndexService {
         activity.end();
     }
 
+    /**
+     * Index an item of some sort.
+     * 
+     * @param fullTextSession
+     * @param item
+     */
     private void index(FullTextSession fullTextSession, Object item) {
         if (item instanceof InformationResource) {
             datasetDao.assignMappedDataForInformationResource(((InformationResource) item));
@@ -170,6 +188,11 @@ public class SearchIndexService {
         fullTextSession.index(item);
     }
 
+    /**
+     * Reindex a set of @link ResourceCollection Entries and their subtrees to update rights and permissions
+     * 
+     * @param collectionToReindex
+     */
     public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
         log.info("indexing collection async");
         List<ResourceCollection> collections = resourceCollectionService.findAllChildCollections(collectionToReindex, null, CollectionType.SHARED);
@@ -182,37 +205,31 @@ public class SearchIndexService {
         indexCollection(resources);
     }
 
+    /**
+     * Reindex a set of @link ResourceCollection Entries and their subtrees to update rights and permissions
+     * 
+     * @param collectionToReindex
+     */
     @Async
     public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
         indexAllResourcesInCollectionSubTree(collectionToReindex);
     }
 
+    /**
+     * @see #indexCollection(Collection)
+     * @param collectionToReindex
+     */
     @Async
     public <C extends Indexable> void indexCollectionAsync(final Collection<C> collectionToReindex) {
         indexCollection(collectionToReindex);
     }
 
-    // @SuppressWarnings("deprecation")
-    // public <H extends Indexable & Persistable> void index(H... obj) {
-    // log.debug("MANUAL INDEXING ... " + obj.length);
-    // genericService.synchronize();
-    //
-    // FullTextSession fullTextSession = getFullTextSession();
-    // FlushMode previousFlushMode = fullTextSession.getFlushMode();
-    // fullTextSession.setFlushMode(FlushMode.MANUAL);
-    // fullTextSession.setCacheMode(CacheMode.IGNORE);
-    // fullTextSession.flushToIndexes();
-    // for (H obj_ : obj) {
-    // if (obj_ != null) {
-    // fullTextSession.purge(obj_.getClass(), obj_.getId());
-    // index(fullTextSession, obj_);
-    // }
-    // }
-    // fullTextSession.flushToIndexes();
-    // // fullTextSession.clear();
-    // fullTextSession.setFlushMode(previousFlushMode);
-    // }
-
+    /**
+     * help's calcualate the percentage complete
+     * 
+     * @param total
+     * @return
+     */
     public int getDivisor(Number total) {
         int divisor = 5;
         if (total.intValue() < 50) {
@@ -229,11 +246,20 @@ public class SearchIndexService {
         return divisor;
     }
 
+    /**
+     * @see #indexCollection(Collection)
+     * @param indexable
+     */
     @SuppressWarnings("unchecked")
     public <C extends Indexable> void index(C... indexable) {
         indexCollection(Arrays.asList(indexable));
     }
 
+    /**
+     * Index a collection of @link Indexable entities
+     * 
+     * @param indexable
+     */
     public <C extends Indexable> void indexCollection(Collection<C> indexable) {
         if (indexable != null) {
             log.debug("manual indexing ... " + indexable.size());
@@ -256,30 +282,53 @@ public class SearchIndexService {
         }
     }
 
-    /*
-     * should only be used in tests...
+    /**
+     * Similar to @link GenericService.synchronize() forces all pending indexing actions to be written. 
+     * 
+     * Should only be used in tests...
+     * 
      */
     @Deprecated
     public void flushToIndexes() {
         getFullTextSession().flushToIndexes();
     }
 
+    /**
+     * Index/Reindex everything. Requested by the @link Person
+     * 
+     * @param person
+     */
     public void indexAll(Person person) {
         indexAll(getDefaultUpdateReceiver(), getDefaultClassesToIndex(), person);
     }
 
+    /**
+     * Index all items of the Specified Class; person is the person requesting the index
+     * 
+     * @param person
+     * @param classes
+     */
     @SuppressWarnings("unchecked")
     public void indexAll(Person person, Class<? extends Indexable>... classes) {
         indexAll(getDefaultUpdateReceiver(), Arrays.asList(classes), person);
     }
 
-    // an update receiver that doesn't do anything
+    /**
+     * The AsyncUpdateReciever allows us to pass data about the indexing back to the requester. The default one does nothing.
+     * 
+     * @return
+     */
     private AsyncUpdateReceiver getDefaultUpdateReceiver() {
         return AsyncUpdateReceiver.DEFAULT_RECEIVER;
     }
 
-    // Warning, this type of indexing does not use lazy fetching, which as of
-    // the current build is causing exceptions
+    /**
+     * Maintained for reference, we have not used this since Azmiuth as it has issues with Lazy references
+     * 
+     * Warning, this type of indexing does not use lazy fetching, which as of the current build is causing exceptions
+     * 
+     * @param classes
+     */
     public void massIndex(Class<?>... classes) {
         try {
             getFullTextSession().createIndexer(classes).purgeAllOnStart(true).batchSizeToLoadObjects(INDEXER_BATCH_SIZE_TO_LOAD_OBJECTS)
@@ -290,14 +339,27 @@ public class SearchIndexService {
         }
     }
 
+    /**
+     * Exposes the FullTextSession (HibernateSearch's interface to Lucene)
+     * 
+     * @return
+     */
     private FullTextSession getFullTextSession() {
         return Search.getFullTextSession(hibernateSearchDao.getFullTextSession());
     }
 
+    /**
+     * Wipe everything from the index
+     * 
+     */
     public void purgeAll() {
         purgeAll(getDefaultClassesToIndex());
     }
 
+    /**
+     * Purge all objects of the specified Class frmo the index
+     * @param classes
+     */
     public void purgeAll(List<Class<? extends Indexable>> classes) {
         FullTextSession fullTextSession = getFullTextSession();
         for (Class<?> clss : classes) {
@@ -306,6 +368,7 @@ public class SearchIndexService {
     }
 
     /**
+     * Optimizes all lucene indexes
      * 
      */
     public void optimizeAll() {
@@ -322,6 +385,11 @@ public class SearchIndexService {
         this.genericService = genericService;
     }
 
+    /**
+     * Indexes a @link Project and it's contents. It loads the project's child @link Resource entries before indexing
+     * 
+     * @param project
+     */
     public void indexProject(Project project) {
         project.setCachedInformationResources(new HashSet<InformationResource>(projectDao.findAllResourcesInProject(project)));
         project.setReadyToIndex(true);
@@ -330,7 +398,11 @@ public class SearchIndexService {
         indexCollection(project.getCachedInformationResources());
         log.debug("completed reindexing project contents");
     }
-
+    
+    /**
+     * @see #indexProject(Project)
+     * @param project
+     */
     @Async
     public void indexProjectAsync(final Project project) {
         indexProject(project);
