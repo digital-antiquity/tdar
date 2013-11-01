@@ -19,8 +19,7 @@ import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 
 /**
- * $Id$
- * 
+ * Manages adding and saving files in the @link PersonalFilestore
  * 
  * @author <a href='jim.devos@asu.edu'>Jim Devos</a>, <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
@@ -79,11 +78,23 @@ public class PersonalFilestoreService {
         return personalFilestore;
     }
 
+    /**
+     * Find a @link PersonalFilestoreTicket based on the ID
+     * 
+     * @param ticketId
+     * @return
+     */
     @Transactional(readOnly = true)
     public PersonalFilestoreTicket findPersonalFilestoreTicket(Long ticketId) {
         return genericDao.find(PersonalFilestoreTicket.class, ticketId);
     }
 
+    /**
+     * Return all files in the @link PersonalFilestore based on the ticketId
+     * 
+     * @param ticketId
+     * @return
+     */
     @Transactional(readOnly = true)
     public List<PersonalFilestoreFile> retrieveAllPersonalFilestoreFiles(Long ticketId) {
         PersonalFilestoreTicket ticket = findPersonalFilestoreTicket(ticketId);
@@ -93,12 +104,21 @@ public class PersonalFilestoreService {
         return getPersonalFilestore(ticket.getSubmitter()).retrieveAll(ticket);
     }
 
+    /**
+     * Get the @link PersonalFilestore
+     * 
+     * @param ticket
+     * @return
+     */
     public synchronized PersonalFilestore getPersonalFilestore(PersonalFilestoreTicket ticket) {
         return getPersonalFilestore(ticket.getSubmitter());
     }
 
-    /*
+    /**
      * Get a filestore given a ticket
+     * 
+     * @param ticketId
+     * @return
      */
     @Transactional(readOnly = true)
     public synchronized PersonalFilestore getPersonalFilestore(Long ticketId) {
@@ -106,8 +126,14 @@ public class PersonalFilestoreService {
         return getPersonalFilestore(ticket);
     }
 
-    /*
+    /**
      * Store a file in the Personal Filestore
+     * 
+     * @param ticket
+     * @param file
+     * @param filename
+     * @return
+     * @throws IOException
      */
     public synchronized File store(PersonalFilestoreTicket ticket, File file, String filename) throws IOException {
         return getPersonalFilestore(ticket.getSubmitter()).store(ticket, file, filename);

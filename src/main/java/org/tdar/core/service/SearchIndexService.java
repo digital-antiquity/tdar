@@ -62,9 +62,6 @@ public class SearchIndexService {
     private static final int INDEXER_BATCH_SIZE_TO_LOAD_OBJECTS = 50;
     private static final int INDEXER_THREADS_FOR_SUBSEQUENT_FETCHING = 5;
     private static final int INDEXER_THREADS_TO_LOAD_OBJECTS = 5;
-    // private Class<? extends Indexable>[] defaultClassesToIndex = { Resource.class, Person.class, Institution.class, GeographicKeyword.class,
-    // CultureKeyword.class, InvestigationType.class, MaterialKeyword.class, SiteNameKeyword.class, SiteTypeKeyword.class, TemporalKeyword.class,
-    // OtherKeyword.class, ResourceAnnotationKey.class, ResourceCollection.class };
 
     public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
 

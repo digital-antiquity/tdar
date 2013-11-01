@@ -44,13 +44,9 @@ public class InformationResourceFileVersionService extends ServiceInterface.Type
      */
     @Override
     @Transactional(readOnly=false)
-    public void delete(Collection<?> files) {
-        for (Object object : files) {
-            if (object instanceof InformationResourceFileVersion) {
-                delete((InformationResourceFileVersion) object);
-            } else {
-                super.delete(object);
-            }
+    public void delete(Collection<InformationResourceFileVersion> files) {
+        for (InformationResourceFileVersion object : files) {
+            delete((InformationResourceFileVersion) object);
         }
     }
 

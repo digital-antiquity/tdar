@@ -97,7 +97,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         if (Persistable.Base.isNullOrTransient(person)) {
             return Collections.emptyList();
         }
-        return authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true);
+        return authorizedUserDao.findSpaseEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true);
     }
 
 

@@ -182,7 +182,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     public Set<Resource> findFullUserResources(Person person, boolean isAdmin) {
-        return authorizedUserDao.findEditableResources(person, isAdmin);
+        return authorizedUserDao.findSparseEditableResources(person, isAdmin);
     }
 
     /**

@@ -35,9 +35,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.utils.AccountEvaluationHelper;
@@ -52,7 +52,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     private GenericDao genericDao;
 
     @Autowired
-    ResourceService resourceService;
+    DatasetDao datasetDao;
 
     @Autowired
     AuthenticationAndAuthorizationService authService;
@@ -280,7 +280,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
         /* evaluate resources based on the model, and update their counts of files and space */
         ResourceEvaluator resourceEvaluator = getResourceEvaluator(resourcesToEvaluate);
-        saveOrUpdateAll(resourcesToEvaluate);
+        datasetDao.saveOrUpdate(resourcesToEvaluate);
 
         /* make sure the account associations are properly set for each resource in the bunch */
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
@@ -337,7 +337,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 }
             }
 
-            saveOrUpdateAll(resourcesToEvaluate);
+            datasetDao.saveOrUpdate(resourcesToEvaluate);
             helper.updateAccount();
             updateAccountInfo(account);
         } else {

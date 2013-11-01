@@ -530,7 +530,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         flaggedDoc.setTitle("testFlaggedaDoc");
         flaggedDoc.setStatus(Status.FLAGGED);
         List<Document> docs = Arrays.asList(activeDoc, draftDoc, flaggedDoc);
-        entityService.saveOrUpdateAll(docs);
+        genericService.saveOrUpdate(docs);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
 
         // login as an admin
