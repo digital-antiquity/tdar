@@ -9,6 +9,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -179,7 +180,7 @@ public interface Dao<T> {
         }
 
         public E find(String id) {
-            throw new UnsupportedOperationException("FIXME: unimplemented, reliably convert String into arbitrary subtypes of Number.");
+            throw new UnsupportedOperationException(MessageHelper.getMessage("error.not_implemented"));
         }
 
         @Override

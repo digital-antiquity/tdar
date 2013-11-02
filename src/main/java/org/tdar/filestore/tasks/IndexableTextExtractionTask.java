@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 import org.tdar.utils.ExceptionWrapper;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin
@@ -35,8 +36,10 @@ import org.tdar.utils.ExceptionWrapper;
  */
 public class IndexableTextExtractionTask extends AbstractTask {
 
+    private static final String INDEX_TXT = ".index.txt";
+    private static final String METADATA2 = ".metadata";
     private static final long serialVersionUID = -5207578211297342261L;
-    public static final String GPS_MESSAGE = "The image you uploaded appears to have GPS Coordinate in it, please make sure you mark it as confidential if the exact location data is important to protect (%s)";
+
 
     @Override
     public void run() throws Exception {
@@ -50,7 +53,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
         FileOutputStream metadataOutputStream = null;
         InputStream stream = null;
         String filename = file.getName();
-        File metadataFile = new File(getWorkflowContext().getWorkingDirectory(), filename + ".metadata");
+        File metadataFile = new File(getWorkflowContext().getWorkingDirectory(), filename + METADATA2);
         try {
             InputStream input = new FileInputStream(file);
             Tika tika = new Tika();
@@ -61,10 +64,10 @@ public class IndexableTextExtractionTask extends AbstractTask {
             Parser parser = new AutoDetectParser();
             ParseContext parseContext = new ParseContext();
             
-            metadataFile = new File(getWorkflowContext().getWorkingDirectory(), filename + ".metadata");
+            metadataFile = new File(getWorkflowContext().getWorkingDirectory(), filename + METADATA2);
             metadataOutputStream = new FileOutputStream(metadataFile);
             if (!FileArchiveWorkflow.ARCHIVE_EXTENSIONS_SUPPORTED.contains(FilenameUtils.getExtension(filename).toLowerCase())) {
-                File indexFile = new File(getWorkflowContext().getWorkingDirectory(), filename + ".index.txt");
+                File indexFile = new File(getWorkflowContext().getWorkingDirectory(), filename + INDEX_TXT);
                 FileOutputStream indexOutputStream = new FileOutputStream(indexFile);
                 BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(indexOutputStream);
                 BodyContentHandler handler = new BodyContentHandler(indexedFileOutputStream);
@@ -97,7 +100,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 }
             }
             if (CollectionUtils.isNotEmpty(gpsValues)) {
-                getWorkflowContext().getExceptions().add(new ExceptionWrapper(String.format(GPS_MESSAGE, gpsValues), null));
+                getWorkflowContext().getExceptions().add(new ExceptionWrapper(MessageHelper.getMessage("indexableText.gps_message", gpsValues), null));
             }
         } catch (Throwable t) {
             // Marking this as a "warn" as it's a derivative

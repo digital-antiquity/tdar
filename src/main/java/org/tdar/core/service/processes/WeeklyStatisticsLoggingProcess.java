@@ -14,6 +14,7 @@ import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
 
@@ -24,6 +25,9 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private GenericService genericService;
 
     @Autowired
     private EntityService entityService;
@@ -67,7 +71,7 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
         long repositorySize = TdarConfiguration.getInstance().getFilestore().getSizeInBytes();
         stats.add(generateStatistics(StatisticType.REPOSITORY_SIZE, Long.valueOf(repositorySize), FileUtils.byteCountToDisplaySize(repositorySize)));
-        entityService.save(stats);
+        genericService.saveOrUpdate(stats);
     }
 
     protected AggregateStatistic generateStatistics(AggregateStatistic.StatisticType statisticType, Number value, String comment) {

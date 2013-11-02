@@ -21,27 +21,66 @@ import org.tdar.core.service.Configurable;
  */
 public interface ExternalIDProvider extends Configurable {
 
+    /**
+     * Connect to the external id provider
+     * 
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     */
     abstract boolean connect() throws ClientProtocolException, IOException;
 
+    /**
+     * Logout from the external id provider
+     * 
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     */
     abstract boolean logout() throws ClientProtocolException, IOException;
 
     /**
      * returns a map of identifiers and values created by the system
+     * 
+     * @param r
+     * @param resourceUrl
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
      */
     abstract Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException;
 
     /**
      * returns a map of all of the information the ID server has on the resource
+     * 
+     * @param identifier
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
      */
     abstract Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException;
 
     /**
      * returns a map of identifiers and values created by the system
+     * 
+     * @param r
+     * @param resourceUrl
+     * @param identifier
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
      */
     abstract Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException;
 
     /**
      * returns a map of identifiers and values created by the system
+     * 
+     * @param r
+     * @param resourceUrl
+     * @param identifier
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
      */
     abstract Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException;
 

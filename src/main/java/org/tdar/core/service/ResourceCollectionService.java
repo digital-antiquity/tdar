@@ -45,6 +45,8 @@ import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.utils.MessageHelper;
 
+import com.sun.tools.hat.internal.model.Root;
+
 /**
  * @author Adam Brin
  * 
@@ -59,6 +61,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Autowired
     SearchService searchService;
 
+    /**
+     * Reconcile an existing set of @link Resource entities on a @link ResourceCollection with a set of incomming @link Resource entities, remove unmatching
+     * 
+     * @param persistable
+     * @param authenticatedUser
+     * @param resources
+     * @return
+     */
     @Transactional
     public List<Resource> reconcileIncomingResourcesForCollection(ResourceCollection persistable, Person authenticatedUser, List<Resource> resources) {
         Map<Long, Resource> incomingIdMap = Persistable.Base.createIdMap(resources);
@@ -104,6 +114,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return rehydratedIncomingResources;
     }
 
+    /**
+     * Reconcile @link AuthorizedUser entries on a @link ResourceCollection, save if told to.
+     * 
+     * @param resource
+     * @param authorizedUsers
+     * @param shouldSave
+     */
     @Transactional
     public void saveAuthorizedUsersForResource(Resource resource, List<AuthorizedUser> authorizedUsers, boolean shouldSave) {
         logger.info("saving authorized users...");
@@ -147,6 +164,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // }
     }
 
+    /**
+     * Get All @link AuthorizedUser entries for a @Link Resource based on all @link ResourceCollection entries.
+     * 
+     * @param resource
+     * @param authenticatedUser
+     * @return
+     */
     public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource, Person authenticatedUser) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<AuthorizedUser>();
 
@@ -163,6 +187,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return authorizedUsers;
     }
 
+    /**
+     * Set the transient @link enabled boolean on a @link AuthorizedUser
+     * 
+     * @param authenticatedUser
+     * @param authorizedUsers
+     * @param canModify
+     */
     private void applyTransientEnabledPermission(Person authenticatedUser, List<AuthorizedUser> authorizedUsers, boolean canModify) {
         for (AuthorizedUser au : authorizedUsers) {
             if (au.equals(authenticatedUser) || !canModify) {
@@ -193,6 +224,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     /**
+     * Find all direct child @link ResourceCollection entries of a @link ResourceCollection
+     * 
      * @param id
      * @param public
      * @return
@@ -202,12 +235,24 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findCollectionsOfParent(id, visible, type);
     }
 
+    /**
+     * Delete the @link ResourceCollection and it's @link AuthorizedUser entries.
+     * 
+     * @param resourceCollection
+     */
     @Transactional
     public void delete(ResourceCollection resourceCollection) {
         getDao().delete(resourceCollection.getAuthorizedUsers());
         getDao().delete(resourceCollection);
     }
 
+    /**
+     * Save the incoming @link AuthorizedUser entries for the @link ResourceCollection resolving as needed, avoiding duplicates
+     * 
+     * @param resourceCollection
+     * @param authorizedUsers
+     * @param shouldSaveResource
+     */
     @Transactional
     public void saveAuthorizedUsersForResourceCollection(ResourceCollection resourceCollection, List<AuthorizedUser> authorizedUsers, boolean shouldSaveResource) {
         if (resourceCollection == null) {
@@ -236,6 +281,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             getDao().saveOrUpdate(resourceCollection);
     }
 
+    /**
+     * Add a @link AuthorizedUser to the @link ResourceCollection if it's valid
+     * 
+     * @param shouldSaveResource
+     * @param currentUsers
+     * @param incomingUser
+     */
     private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser) {
         if (Persistable.Base.isNotNullOrTransient(incomingUser.getUser())) {
             Person user = getDao().find(Person.class, incomingUser.getUser().getId());
@@ -254,11 +306,24 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
     }
 
+    /**
+     * Find root @link ResourceCollection entries for a @link Person (shown on the dashboard).
+     * 
+     * @param person
+     * @return
+     */
     @Transactional(readOnly = true)
     public List<ResourceCollection> findParentOwnerCollections(Person person) {
         return getDao().findParentOwnerCollections(person, Arrays.asList(CollectionType.SHARED));
     }
 
+    /**
+     * Find all @link ResourceCollection entries that are potential parents of the specified @link ResourceCollection
+     * 
+     * @param person
+     * @param collection
+     * @return
+     */
     @Transactional(readOnly = true)
     public List<ResourceCollection> findPotentialParentCollections(Person person, ResourceCollection collection) {
         List<ResourceCollection> potentialCollections = getDao().findParentOwnerCollections(person, Arrays.asList(CollectionType.SHARED));
@@ -280,6 +345,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return potentialCollections;
     }
 
+    /**
+     * Save the shared @link ResourceCollection entries for a @link Resource (add/remove as needed)
+     * 
+     * @param resource
+     * @param incoming
+     * @param current
+     * @param authenticatedUser
+     * @param shouldSave
+     * @param errorHandling
+     */
     @Transactional
     public void saveSharedResourceCollections(Resource resource, Collection<ResourceCollection> incoming, Set<ResourceCollection> current,
             Person authenticatedUser, boolean shouldSave, ErrorHandling errorHandling) {
@@ -319,6 +394,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     }
 
+    /**
+     * Add a @Link ResourceCollection to a @link Resource, create as needed.
+     *
+     * @param resource
+     * @param current
+     * @param authenticatedUser
+     * @param shouldSave
+     * @param errorHandling
+     * @param collection
+     */
     @Transactional(readOnly=false)
     public void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, Person authenticatedUser, boolean shouldSave, ErrorHandling errorHandling,
             ResourceCollection collection) {
@@ -361,6 +446,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     /**
+     * Find all @link ResourceCollection entries (shared only)
+     * 
      * @return
      */
     @Transactional(readOnly = true)
@@ -395,6 +482,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return collections;
     }
 
+    /**
+     * Find the root @link ResourceCollection of the specified collection.
+     * 
+     * @param node
+     * @return
+     */
     private ResourceCollection getRootResourceCollection(ResourceCollection node) {
         return node.getHierarchicalResourceCollections().get(0);
     };
@@ -412,20 +505,46 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return root;
     }
 
+    /**
+     * Find all @link ResourceCollection entries that were both public and shared.
+     * @return
+     */
     public List<Long> findAllPublicActiveCollectionIds() {
         return getDao().findAllPublicActiveCollectionIds();
     }
 
+    /**
+     * Find all @link ResourceCollection entries that have the specified @link Status.
+     * 
+     * @param persistable
+     * @param statuses
+     * @return
+     */
     public List<Resource> findAllResourcesWithStatus(ResourceCollection persistable, Status... statuses) {
         return getDao().findAllResourcesWithStatus(persistable, statuses);
     }
 
+    /**
+     * Get all @link AuthorizedUser entries for a collection (could be recursive up through parents)
+     * 
+     * @param persistable
+     * @param authenticatedUser
+     * @return
+     */
     public List<AuthorizedUser> getAuthorizedUsersForCollection(ResourceCollection persistable, Person authenticatedUser) {
         List<AuthorizedUser> users = new ArrayList<>(persistable.getAuthorizedUsers());
         applyTransientEnabledPermission(authenticatedUser, users, authenticationAndAuthorizationService.canEditCollection(authenticatedUser, persistable));
         return users;
     }
 
+    /**
+     * For each @link ResourceCollection in the collection if it's in the list of id's, remove it. For a set of id's try and build a single tree and avoid
+     * duplicate trees. This is used by the two tree's in the Dashboard (your's and shared).
+     * 
+     * @param collection
+     * @param authenticatedUser
+     * @param collectionIds
+     */
     public void reconcileCollectionTree(Collection<ResourceCollection> collection, Person authenticatedUser, List<Long> collectionIds) {
         Iterator<ResourceCollection> iter = collection.iterator();
         while (iter.hasNext()) {
@@ -436,32 +555,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 iter.remove();
             }
             findAllChildCollections(rc, authenticatedUser, ResourceCollection.CollectionType.SHARED);
-        }
-    }
-
-    /*
-     * FIXME; this does not seem to find some of the deep collection children
-     */
-    public void reconcileCollectionTree2(List<ResourceCollection> resourceCollections, Person authenticatedUser, List<Long> collectionIds)
-            throws ParseException {
-        Map<Long, ResourceCollection> idMap = Persistable.Base.createIdMap(resourceCollections);
-        ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
-        queryBuilder.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_TREE, Operator.OR, idMap.keySet()));
-        queryBuilder.setOperator(Operator.OR);
-        FullTextQuery search = searchService.search(queryBuilder, null);
-        ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
-        while (results.next()) {
-            ResourceCollection coll = (ResourceCollection) results.get()[0];
-            if (collectionIds.contains(coll.getParentId())) {
-                resourceCollections.remove(coll);
-            }
-            // hibernate should use the same identity for both of these ... and thus reconcile the thing inside and outside the map
-            ResourceCollection parent = coll.getParent();
-            authenticationAndAuthorizationService.applyTransientViewableFlag(coll, authenticatedUser);
-            if (parent != null) {
-                parent.getTransientChildren().add(coll);
-            }
-            // logger.info("parent: {} child: {} ", parent, coll);
         }
     }
 

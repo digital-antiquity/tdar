@@ -40,6 +40,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.transform.DcTransformer;
+import org.tdar.utils.MessageHelper;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 
@@ -155,7 +156,7 @@ public class EZIDDao implements ExternalIDProvider {
         if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
             logger.error("StatusCode:{}", response.getStatusLine().getStatusCode());
             logger.trace(result);
-            throw new TdarRecoverableRuntimeException("could not connect to EZID Server: " + result + "\n\n" + authenticationRequest.getRequestLine());
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("ezidDao.could_not_connect",result , authenticationRequest.getRequestLine()));
         }
         recievedEntity.consumeContent();
         return result;
@@ -243,7 +244,7 @@ public class EZIDDao implements ExternalIDProvider {
 
         logger.trace(result);
         if (!StringUtils.containsIgnoreCase(result, SUCCESS)) {
-            throw new TdarRecoverableRuntimeException("the DOI Creation was not successful: " + result);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("ezidDao.could_not_create_doi",result));
         }
         return typeMap;
     }

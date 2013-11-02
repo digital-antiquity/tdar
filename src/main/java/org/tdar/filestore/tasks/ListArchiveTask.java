@@ -24,12 +24,16 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.tasks.Task.AbstractTask;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin
  * 
  */
 public class ListArchiveTask extends AbstractTask {
+
+    private static final String INDEX_TXT = ".index.txt";
+    private static final String CONTENTS_TXT = ".contents.txt";
 
     private static final long serialVersionUID = 5392550508417818439L;
 
@@ -47,8 +51,8 @@ public class ListArchiveTask extends AbstractTask {
             File f_ = version.getTransientFile();
             // take the file
             getLogger().debug("listing contents of: " + f_.getName());
-            File f = new File(getWorkflowContext().getWorkingDirectory(), f_.getName() + ".contents.txt");
-            File f2 = new File(getWorkflowContext().getWorkingDirectory(), f_.getName() + ".index.txt");
+            File f = new File(getWorkflowContext().getWorkingDirectory(), f_.getName() + CONTENTS_TXT);
+            File f2 = new File(getWorkflowContext().getWorkingDirectory(), f_.getName() + INDEX_TXT);
             StringBuilder archiveContents = new StringBuilder();
 
             ArchiveInputStream ais = null;
@@ -77,7 +81,7 @@ public class ListArchiveTask extends AbstractTask {
                     entry = ais.getNextEntry();
                 }
             } catch (ArchiveException e) {
-              throw new TdarRecoverableRuntimeException("Could find files within the archive:" + f_.getName());
+              throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("listArchiveTask.couldn_not_find_file", f_));
             } finally {
                 if (ais != null) {
                     IOUtils.closeQuietly(ais);
