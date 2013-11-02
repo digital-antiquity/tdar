@@ -26,6 +26,7 @@ import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.utils.MessageHelper;
 
 public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
 
@@ -120,7 +121,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
             ex = e;
         }
         assertNotNull(ex);
-        assertTrue(ex.getMessage().equals(PostgresDatabase.DATATABLE_TOO_LONG));
+        assertTrue(ex.getMessage().equals(MessageHelper.getMessage("postgresDatabase.datatable_too_long")));
     }
 
     @Test
