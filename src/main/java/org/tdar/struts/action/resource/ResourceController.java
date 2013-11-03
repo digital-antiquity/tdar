@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -113,10 +114,9 @@ public class ResourceController extends AuthenticationAware.Base {
         InformationResource informationResource = getInformationResourceService().find(resourceId);
         if (informationResource == null) {
             getLogger().error("trying to edit information resource but it was null.");
-            addActionError("Information resource wasn't loaded properly, please file a bug report.  Thanks!");
+            addActionError(MessageHelper.getMessage("resourceController.not_found"));
             return NOT_FOUND;
         }
-
         return informationResource.getResourceType().name();
     }
 

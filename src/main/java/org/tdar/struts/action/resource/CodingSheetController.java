@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -20,11 +19,9 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
@@ -162,17 +159,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         this.setPersistable(codingSheet);
     }
 
-    @Override
-    public String deleteCustom() {
-        List<Resource> related = getRelatedResources();
-        if (related.size() > 0) {
-            String titles = StringUtils.join(related, ',');
-            String message = "please remove the mappings before deleting: " + titles;
-            addActionErrorWithException("this resource is still mapped to the following datasets", new TdarRecoverableRuntimeException(message));
-            return ERROR;
-        }
-        return SUCCESS;
-    }
 
     @Override
     public Set<String> getValidFileExtensions() {

@@ -75,6 +75,7 @@ import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.HttpsOnly;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
+import org.tdar.utils.MessageHelper;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;
@@ -99,8 +100,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public static final String DC = "dc";
     public static final String MODS = "mods";
 
-    public static final String THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS = "this record is in draft and is only available to authorized users";
-    public static final String WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT = "We were unable to process the uploaded content.";
 
     private static final long serialVersionUID = 8620875853247755760L;
 
@@ -404,12 +403,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (getResource().isDeleted()) {
             logger.debug("resource not viewable because it is deleted: {}", getPersistable());
-            throw new TdarActionException(StatusCode.GONE, "this record has been deleted");
+            throw new TdarActionException(StatusCode.GONE, MessageHelper.getMessage("abstractResourceController.resource_deleted"));
         }
         // don't judge me I hate this code too.
         if (getResource().isDraft()) {
             logger.trace("resource not viewable because it is draft: {}", getPersistable());
-            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT), THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS);
+            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT), MessageHelper.getMessage("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
         }
 
         return false;
@@ -1056,7 +1055,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             try {
                 getInformationResourceService().reprocessInformationResourceFiles(ir, this);
             } catch (Exception e) {
-                addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
+                addActionErrorWithException(MessageHelper.getMessage("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
             }
             if (hasActionErrors()) {
                 return ERROR;

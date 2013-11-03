@@ -37,6 +37,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.Pair;
 
@@ -170,12 +171,12 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         if (getDataResource().getLatestVersions().isEmpty()) {
-            addActionError("You should upload a data file before attempting to register column metadata.");
+            addActionError(MessageHelper.getMessage("abstractDatasetController.upload_data_file_first"));
             return INPUT;
         }
 
         if (CollectionUtils.isEmpty(getDataResource().getDataTables())) {
-            addActionError("No data tables were found for this resource.");
+            addActionError(MessageHelper.getMessage("abstractDatasetController.no_tables"));
             return INPUT;
         }
         // load existing column metadata if any.

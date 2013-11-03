@@ -28,6 +28,7 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
 
 /**
@@ -117,10 +118,9 @@ public class ProjectController extends AbstractResourceController<Project> imple
             } catch (SearchPaginationException e) {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, e);
             } catch (Exception e) {
-                addActionErrorWithException("something happend", e);
+                addActionErrorWithException(MessageHelper.getMessage("projectController.something_happened"), e);
             }
         }
-
     }
 
     @SkipValidation
@@ -135,8 +135,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
             }
             json = project.toJSON().toString();
         } catch (Exception ex) {
-            addActionErrorWithException("There was an error retreiving project-level information for this resource.  Please reload the page " +
-                    " or report this problem to an administrator if the problem persists.", ex);
+            addActionErrorWithException(MessageHelper.getMessage("projectController.project_json_invalid"), ex);
         }
         getLogger().trace("returning json:" + json);
         return json;
@@ -265,7 +264,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @Override
     public String getSearchTitle() {
-        return String.format("Resources in %s", getPersistable().getTitle());
+        return MessageHelper.getMessage("projectController.search_title", getPersistable().getTitle());
     }
 
     @Override

@@ -36,6 +36,7 @@ import org.tdar.core.service.SearchIndexService;
 import org.tdar.junit.TdarAssert;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.DateRange;
+import org.tdar.utils.MessageHelper;
 
 @Transactional
 public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase {
@@ -75,7 +76,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Rollback(true)
     public void testFindAllSearchPhrase() {
         doSearch("");
-        assertEquals(AdvancedSearchController.TITLE_ALL_RECORDS, controller.getSearchSubtitle());
+        assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_records"), controller.getSearchSubtitle());
     }
 
     @Test
@@ -202,7 +203,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         logger.debug("search phrase:{}", controller.getSearchPhrase());
         assertTrue(controller.getSearchPhrase().contains(ResourceType.DOCUMENT.getLabel()));
         assertTrue(controller.getSearchPhrase().contains(ResourceType.IMAGE.getLabel()));
-        assertEquals(controller.getSearchSubtitle(), AdvancedSearchController.TITLE_ALL_RECORDS);
+        assertEquals(controller.getSearchSubtitle(), MessageHelper.getMessage("advancedSearchController.title_all_records"));
     }
 
     @Test
