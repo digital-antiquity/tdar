@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.tdar.core.exception.OAIException;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author ctuohy
@@ -77,7 +78,7 @@ public class OAIResumptionToken {
         this.fromDate = new DateTime(fromDate).toDate();
         invalidateToken();
         if (!fromDate.matches(OAI_REGEX_CONSTANT)) {
-            throw new OAIException("Invalid from parameter in resumptionToken", OaiErrorCode.BAD_RESUMPTION_TOKEN);
+            throw new OAIException(MessageHelper.getMessage("oaiResumptionToken.invalid_from"), OaiErrorCode.BAD_RESUMPTION_TOKEN);
         }
     }
 
@@ -97,7 +98,7 @@ public class OAIResumptionToken {
         this.untilDate = new DateTime(untilDate).toDate();
         invalidateToken();
         if (!untilDate.matches(OAI_REGEX_CONSTANT)) {
-            throw new OAIException("Invalid until parameter in resumptionToken", OaiErrorCode.BAD_RESUMPTION_TOKEN);
+            throw new OAIException(MessageHelper.getMessage("oaiResumptionToken.invalid_until"), OaiErrorCode.BAD_RESUMPTION_TOKEN);
         }
     }
 
@@ -159,7 +160,7 @@ public class OAIResumptionToken {
             setUntilDate(tokenPart[2]);
             setMetadataPrefix(tokenPart[3]);
         } catch (Exception e) {
-            throw new OAIException("Invalid resumptionToken", e, OaiErrorCode.BAD_RESUMPTION_TOKEN);
+            throw new OAIException(MessageHelper.getMessage("oaiResumptionToken.invalid"),e, OaiErrorCode.BAD_RESUMPTION_TOKEN);
         }
     }
 

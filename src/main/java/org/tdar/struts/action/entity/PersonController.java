@@ -24,6 +24,7 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.UserAccountController;
 import org.tdar.struts.interceptor.HttpsOnly;
+import org.tdar.utils.MessageHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,7 +160,7 @@ public class PersonController extends AbstractCreatorController<Person> {
             return;
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
-            addActionError(UserAccountController.ERROR_PASSWORDS_DONT_MATCH);
+            addActionError(MessageHelper.getMessage("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().getAuthenticationProvider().updateUserPassword(getPerson(), password);
@@ -180,7 +181,7 @@ public class PersonController extends AbstractCreatorController<Person> {
 
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
-            addActionError(UserAccountController.ERROR_PASSWORDS_DONT_MATCH);
+            addActionError(MessageHelper.getMessage("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().updateUsername(getPerson(), newUsername, password);

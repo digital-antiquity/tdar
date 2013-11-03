@@ -13,6 +13,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.utils.MessageHelper;
 
 public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQueryPart<C> {
 
@@ -24,7 +25,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
         setOperator(Operator.OR);
         setActualClass(creatorClass);
         setFieldName(fieldName);
-        setDisplayName("Creator");
+        setDisplayName(MessageHelper.getMessage("creatorQueryPart.label"));
         for (int i = 0; i < proxyList.size(); i++) {
             try {
                 ResourceCreatorProxy proxy = proxyList.get(i);
@@ -38,7 +39,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                     for (Creator creator_ : creators) {
                         if (Persistable.Base.isTransient(creator_)) {
                             // user entered a complete-ish creator record but autocomplete callback did fire successfully
-                            throw new TdarRecoverableRuntimeException(String.format("Please use autocomplete when looking for creator %s", creator_));
+                            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("creatorQueryPart.use_autocomplete", creator_));
                         }
                         this.roles.add(rc.getRole());
                         this.getFieldValues().add((C) creator_);
@@ -137,7 +138,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                 }
             }
         }
-        return String.format("With creator(s): %s", names);
+        return MessageHelper.getMessage("creatorQueryPart.with_creators", names);
     }
 
     @Override

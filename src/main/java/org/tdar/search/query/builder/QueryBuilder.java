@@ -27,6 +27,7 @@ import org.tdar.struts.action.search.SearchParameters;
  * 
  */
 public abstract class QueryBuilder extends QueryPartGroup {
+    private static final String _AUTO = "_auto";
     protected final Logger logger = Logger.getLogger(getClass());
     private Class<?>[] classes;
     private List<DynamicQueryComponent> overrides = new ArrayList<DynamicQueryComponent>();
@@ -69,7 +70,7 @@ public abstract class QueryBuilder extends QueryPartGroup {
 
     protected Map<String, Class<? extends Analyzer>> createPartialLabelOverrides() {
         Map<String, Class<? extends Analyzer>> map = new HashMap<String, Class<? extends Analyzer>>();
-        map.put("_auto", NonTokenizingLowercaseKeywordAnalyzer.class);
+        map.put(_AUTO, NonTokenizingLowercaseKeywordAnalyzer.class);
         return map;
     }
 

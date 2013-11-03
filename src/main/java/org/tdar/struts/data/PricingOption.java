@@ -9,13 +9,14 @@ import java.util.Map;
 import org.apache.commons.lang.ObjectUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.utils.MessageHelper;
 
 public class PricingOption implements Serializable {
 
-    public enum PricingType implements HasLabel {
-        SIZED_BY_MB("Priced by MB"),
-        SIZED_BY_FILE_ONLY("Priced by File"),
-        SIZED_BY_FILE_ABOVE_TIER("Priced by File rounded up");
+public enum PricingType implements HasLabel {
+        SIZED_BY_MB(MessageHelper.getMessage("pricingType.size_by_mb")),
+        SIZED_BY_FILE_ONLY(MessageHelper.getMessage("pricingType.size_by_file")),
+        SIZED_BY_FILE_ABOVE_TIER(MessageHelper.getMessage("pricingType.size_by_file_above"));
 
         private String label;
 

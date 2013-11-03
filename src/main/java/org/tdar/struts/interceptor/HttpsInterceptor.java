@@ -11,14 +11,16 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.UrlService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.utils.MessageHelper;
 
+import com.google.protobuf.Message;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 
 public class HttpsInterceptor implements Interceptor {
 
     private static final long serialVersionUID = 5032186873591920365L;
-    public static final String ERROR_HTTPS_ONLY = "Only Https requests accepted";
+
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -81,7 +83,7 @@ public class HttpsInterceptor implements Interceptor {
             response.sendRedirect(changeUrlProtocol("https", request));
         } else if (invocation.getAction() instanceof TdarActionSupport) {
             logger.warn("ERROR_HTTPS_ONLY");
-            ((TdarActionSupport) invocation.getAction()).addActionError(ERROR_HTTPS_ONLY);
+            ((TdarActionSupport) invocation.getAction()).addActionError(MessageHelper.getMessage("httpsInterceptor.error_https_only"));
         }
 
         return TdarActionSupport.BAD_REQUEST;

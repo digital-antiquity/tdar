@@ -24,6 +24,7 @@ import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 
 import freemarker.template.Configuration;
@@ -76,7 +77,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = controller.create();
         assertEquals("Expected controller to return an error, email exists", TdarActionSupport.ERROR, execute);
         logger.info(execute + " : " + controller.getActionMessages());
-        assertEquals("expecting valid message", UserAccountController.ERROR_USERNAME_ALREADY_REGISTERED, controller.getActionErrors().iterator().next());
+        assertEquals("expecting valid message", MessageHelper.getMessage("userAccountController.error_username_already_registered"), controller.getActionErrors().iterator().next());
         setIgnoreActionErrors(true);
     }
 
@@ -92,7 +93,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = controller.create();
         assertEquals("Expected controller to return an error, email exists", TdarActionSupport.ERROR, execute);
         logger.info(execute + " : " + controller.getActionMessages());
-        assertEquals("expecting valid message", UserAccountController.ERROR_DUPLICATE_EMAIL, controller.getActionErrors().iterator().next());
+        assertEquals("expecting valid message",  MessageHelper.getMessage("userAccountController.error_duplicate_email"), controller.getActionErrors().iterator().next());
         setIgnoreActionErrors(true);
     }
 
@@ -296,7 +297,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
-        assertTrue(firstError.equals(UserAccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
+        assertTrue(firstError.equals( MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time")));
         setIgnoreActionErrors(true);
     }
 
@@ -308,7 +309,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
-        assertTrue(firstError.equals(UserAccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
+        assertTrue(firstError.equals( MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time")));
         setIgnoreActionErrors(true);
     }
 
@@ -321,7 +322,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
-        assertTrue(firstError.equals(UserAccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
+        assertTrue(firstError.equals(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time")));
         setIgnoreActionErrors(true);
     }
 
@@ -343,7 +344,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setEmail("test@tdar.org");
         assertTrue(p.getId().equals(-1L));
         controller.validate();
-        assertTrue("expecting user existing", controller.getActionErrors().contains(UserAccountController.ERROR_USERNAME_ALREADY_REGISTERED));
+        assertTrue("expecting user existing", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_username_already_registered")));
         setIgnoreActionErrors(true);
     }
 
@@ -360,7 +361,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setEmail(TESTING_EMAIL);
         controller.setPerson(p);
         controller.validate();
-        assertTrue("expecting password", controller.getActionErrors().contains(UserAccountController.ERROR_CHOOSE_PASSWORD));
+        assertTrue("expecting password", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_choose_password")));
         setIgnoreActionErrors(true);
     }
 
@@ -375,7 +376,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setUsername(TESTING_EMAIL);
         controller.setPassword("password");
         controller.validate();
-        assertTrue("expecting confirm email", controller.getActionErrors().contains(UserAccountController.ERROR_CONFIRM_EMAIL));
+        assertTrue("expecting confirm email", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_confirm_email")));
         setIgnoreActionErrors(true);
     }
 
@@ -390,7 +391,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setConfirmEmail(TESTING_EMAIL);
         controller.setPassword("password");
         controller.validate();
-        assertTrue("expecting confirm password", controller.getActionErrors().contains(UserAccountController.ERROR_CONFIRM_PASSWORD));
+        assertTrue("expecting confirm password", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_confirm_password")));
         setIgnoreActionErrors(true);
     }
 
@@ -406,7 +407,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setPassword("password");
         controller.setConfirmPassword("password_");
         controller.validate();
-        assertTrue("expecting matching passwords", controller.getActionErrors().contains(UserAccountController.ERROR_PASSWORDS_DONT_MATCH));
+        assertTrue("expecting matching passwords", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
         setIgnoreActionErrors(true);
     }
 
@@ -426,7 +427,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setPassword("password");
         controller.setConfirmPassword("password_");
         controller.validate();
-        assertTrue("expecting matching passwords", controller.getActionErrors().contains(UserAccountController.ERROR_PASSWORDS_DONT_MATCH));
+        assertTrue("expecting matching passwords", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
         assertEquals(1, controller.getActionErrors().size());
         setIgnoreActionErrors(true);
     }

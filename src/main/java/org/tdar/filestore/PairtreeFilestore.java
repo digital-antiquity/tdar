@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.filestore.Filestore.BaseFilestore;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -95,7 +96,7 @@ public class PairtreeFilestore extends BaseFilestore {
 
         }
         logger.info("storing at: {}", outFile.getAbsolutePath());
-        String errorMessage = "Unable to write content to filestore.";
+        String errorMessage = MessageHelper.getMessage("pairtreeFilestore.cannot_write", outFile.getAbsolutePath());
         DigestInputStream digestInputStream = appendMessageDigestStream(content);
         try {
             FileUtils.forceMkdir(outFile.getParentFile());
@@ -104,7 +105,7 @@ public class PairtreeFilestore extends BaseFilestore {
                 IOUtils.copy(digestInputStream, outputStream);
             } else {
                 logger.error(errorMessage);
-                throw new TdarRuntimeException(errorMessage + "Can't write to: " + outFile.getAbsolutePath());
+                throw new TdarRuntimeException(errorMessage);
             }
             
             if (version.isUploaded()) {
@@ -177,7 +178,7 @@ public class PairtreeFilestore extends BaseFilestore {
         File file = new File(getAbsoluteFilePath(version));
         logger.trace("file requested: {}", file);
         if (!file.isFile())
-            throw new FileNotFoundException("Could not find file: " + file.getAbsolutePath());
+            throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found",file.getAbsolutePath()));
 
         // version.setTransientFile(file);
         return file;

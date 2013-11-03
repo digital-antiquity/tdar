@@ -13,12 +13,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.struts.data.Range;
+import org.tdar.utils.MessageHelper;
+
+import com.google.protobuf.Message;
 
 public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
-    private static final String FMT_DESCRIPTION_VALUE_BETWEEN = "between %s and %s";
-    private static final String FMT_DESCRIPTION_VALUE_GREATER = "greater than %1$s";
-    private static final String FMT_DESCRIPTION_VALUE_LESS = "less than %2$s";
 
     private String descriptionLabel;
     private boolean inclusive = true;
@@ -111,14 +111,14 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
     private String getDescription(Range<C> singleValue) {
 
-        String fmt = FMT_DESCRIPTION_VALUE_BETWEEN;
+        String fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_between");
         C start = singleValue.getStart();
         C end = singleValue.getEnd();
         if (isBlank(start) || isBlank(end)) {
             if (isBlank(start)) {
-                fmt = FMT_DESCRIPTION_VALUE_LESS;
+                fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_less");
             } else {
-                fmt = FMT_DESCRIPTION_VALUE_GREATER;
+                fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_greater");
             }
         }
         return String.format(fmt, start, end);

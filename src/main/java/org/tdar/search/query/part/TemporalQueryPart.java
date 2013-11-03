@@ -8,6 +8,7 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 
 /**
  * 
@@ -50,7 +51,7 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
 
     @Override
     public String getDescription() {
-        return "Coverage dates between: " + getFieldValues().get(0).toString();
+        return MessageHelper.getMessage("temporalQueryPart.date_between", getFieldValues().get(0).toString());
     }
 
     @Override

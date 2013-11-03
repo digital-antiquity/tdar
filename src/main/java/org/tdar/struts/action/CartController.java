@@ -39,6 +39,7 @@ import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.PostOnly;
+import org.tdar.utils.MessageHelper;
 
 @Component
 @Scope("prototype")
@@ -46,13 +47,7 @@ import org.tdar.struts.interceptor.PostOnly;
 @Namespace("/cart")
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
-    public static final String SUBJECT = "Billing Transaction";
     public static final String SIMPLE = "simple";
-    public static final String A_BILING_ADDRESS_IS_REQUIRED = "a biling address is required";
-    public static final String VALID_PHONE_NUMBER_IS_REQUIRED = "a valid phone number is required (212) 555-1212";
-    public static final String ENTER_A_BILLING_ADDERESS = "please enter a billing adderess";
-    public static final String CANNOT_MODIFY = "cannot modify existing invoice";
-    public static final String VALID_PAYMENT_METHOD_IS_REQUIRED = "a valid payment method is required";
     private static final long serialVersionUID = 1592977664145682926L;
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
     private Long accountId = -1L;
@@ -77,7 +72,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Override
     protected String save(Invoice persistable) {
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.cannot_modify"));
         }
         loadEditMetadata();
 
@@ -115,7 +110,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         if (CollectionUtils.isEmpty(getInvoice().getItems())) {
-            throw new TdarRecoverableRuntimeException("no items were found");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.no_items_found"));
         }
 
         getInvoice().setTransactedBy(getAuthenticatedUser());
@@ -196,14 +191,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String addPaymentMethod() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.cannot_modify"));
         }
         if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
         }
 
         if (getInvoice().getAddress() == null) {
-            throw new TdarRecoverableRuntimeException(ENTER_A_BILLING_ADDERESS);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.enter_a_billing_adderess"));
         }
 
         return SUCCESS;
@@ -214,7 +209,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String simplePaymentProcess() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.cannot_modify"));
         }
         if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
@@ -242,12 +237,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.cannot_modify"));
         }
 
         getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
         if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
-            addActionError("Please choose an address");
+            addActionError(MessageHelper.getMessage("cartController.choose_address"));
             return SUCCESS_ADD_ADDRESS;
         }
         getGenericService().saveOrUpdate(getInvoice());
@@ -285,7 +280,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getSuccessPathForPayment(); // initialize
         PaymentMethod paymentMethod = invoice.getPaymentMethod();
         if (paymentMethod == null) {
-            throw new TdarRecoverableRuntimeException(VALID_PAYMENT_METHOD_IS_REQUIRED);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.valid_payment_method_is_required"));
         }
 
         Long phone = null;
@@ -294,12 +289,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         if (isPhoneRequired() && (phone == null || phone.toString().length() < 10)) {
-            throw new TdarRecoverableRuntimeException(VALID_PHONE_NUMBER_IS_REQUIRED);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.valid_phone_number_is_required"));
         }
 
         invoice.setAddress(getGenericService().loadFromSparseEntity(invoice.getAddress(), Address.class));
         if (isAddressRequired() && Persistable.Base.isNullOrTransient(invoice.getAddress())) {
-            throw new TdarRecoverableRuntimeException(A_BILING_ADDRESS_IS_REQUIRED);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.a_biling_address_is_required"));
         }
 
         String invoiceNumber = invoice.getInvoiceNumber();
@@ -401,7 +396,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                             getGenericService().markReadOnly(person);
                             people.add(person);
                         }
-                        getEmailService().sendWithFreemarkerTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + SUBJECT, people.toArray(new Person[0]));
+                        getEmailService().sendWithFreemarkerTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + MessageHelper.getMessage("cartController.subject"), people.toArray(new Person[0]));
                     } catch (Exception e) {
                         logger.error("could not send email: {} ", e);
                     }

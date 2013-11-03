@@ -36,6 +36,7 @@ import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
 
 /**
@@ -57,7 +58,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private SortOption secondarySortField = SortOption.TITLE;
     private boolean debug = false;
     private ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-    public static final String ERROR_MINIMUM_LENGTH = "Search term shorter than minimum length";
+
     private Long id = null;
     private String mode;
     private String searchTitle;
@@ -431,7 +432,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 try {
                     pqp.setRegistered(Boolean.parseBoolean(registered));
                 } catch (Exception e) {
-                    addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                    addActionErrorWithException(MessageHelper.getMessage("abstractLookupController.invalid_syntax"), e);
                     return ERROR;
                 }
             }
@@ -440,7 +441,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 handleSearch(q);
                 // sanitize results if the user is not logged in
             } catch (ParseException e) {
-                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                addActionErrorWithException(MessageHelper.getMessage("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
         }
@@ -461,7 +462,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             try {
                 handleSearch(q);
             } catch (ParseException e) {
-                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                addActionErrorWithException(MessageHelper.getMessage("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
         }

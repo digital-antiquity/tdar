@@ -7,6 +7,7 @@
 package org.tdar.struts.data.oai;
 
 import org.tdar.core.exception.OAIException;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author Conal Tuohy
@@ -34,7 +35,7 @@ public enum OAIParameter {
                 return parameter;
             }
         }
-        throw new OAIException("Unknown parameter '" + val + "'", OaiErrorCode.BAD_ARGUMENT);
+        throw new OAIException(MessageHelper.getMessage("oaiParameter.unknown_parameter", val), OaiErrorCode.BAD_ARGUMENT);
     }
 
     /**

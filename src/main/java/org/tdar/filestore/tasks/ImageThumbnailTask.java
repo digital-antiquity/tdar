@@ -30,13 +30,18 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.tasks.Task.AbstractTask;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin
  * 
  */
 public class ImageThumbnailTask extends AbstractTask {
-    public static final String FMT_ERROR_PROCESSING_COULD_NOT_OPEN = "%s is either corrupt or uses an invalid format (error:\"%s\")";
+
+    private static final String UTF_8 = "UTF-8";
+    private static final String _SM = "_sm";
+    private static final String _MD = "_md";
+    private static final String _LG = "_lg";
     private static final long serialVersionUID = -108766461810056577L;
     private static final String JPG_FILE_EXT = ".jpg";
     public static final int LARGE = 600;
@@ -95,7 +100,7 @@ public class ImageThumbnailTask extends AbstractTask {
         IJ.redirectErrorMessages(true);
         if (sourceFile == null || !sourceFile.exists()) {
             getWorkflowContext().setErrorFatal(true);
-            throw new TdarRecoverableRuntimeException("File does not exist");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.file_not_found"));
         }
         ijSource = opener.openImage(sourceFile.getAbsolutePath());
 
@@ -121,7 +126,7 @@ public class ImageThumbnailTask extends AbstractTask {
                 getWorkflowContext().setErrorFatal(true);
             }
 
-            String errorMessage = String.format(FMT_ERROR_PROCESSING_COULD_NOT_OPEN, filename, msg);
+            String errorMessage = MessageHelper.getMessage("imageThumbnailTask.fmt_error_processing_could_not_open", filename, msg);
             throw new TdarRecoverableRuntimeException(errorMessage);
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
@@ -135,7 +140,7 @@ public class ImageThumbnailTask extends AbstractTask {
                 createJpegDerivative(version, ijSource, filename, SMALL, false);
             } catch (Throwable e) {
                 getLogger().error("Failed to create jpeg derivative", e);
-                throw new TdarRecoverableRuntimeException("processing error", e);
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("imageThumbnailTask.processingError"), e);
             }
         }
     }
@@ -146,20 +151,20 @@ public class ImageThumbnailTask extends AbstractTask {
 
         switch (resolution) {
             case LARGE:
-                outputFilename += "_lg";
+                outputFilename += _LG;
                 break;
             case MEDIUM:
-                outputFilename += "_md";
+                outputFilename += _MD;
                 break;
             case SMALL:
-                outputFilename += "_sm";
+                outputFilename += _SM;
                 break;
             default:
                 outputFilename += "_" + resolution;
         }
         outputFilename += JPG_FILE_EXT;
         try {
-            outputFilename = URLEncoder.encode(outputFilename, "UTF-8");
+            outputFilename = URLEncoder.encode(outputFilename, UTF_8);
         } catch (Exception e) {
             getLogger().debug("exception writing derivative image:", e);
         }

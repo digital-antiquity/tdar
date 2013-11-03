@@ -21,6 +21,7 @@ import org.tdar.core.service.ReflectionService;
  */
 public class DynamicQueryComponentHelper {
 
+    private static final String VOID = "void";
     protected static final transient Logger logger = LoggerFactory.getLogger(DynamicQueryComponentHelper.class);
 
     
@@ -229,7 +230,7 @@ public class DynamicQueryComponentHelper {
         if (annCls != null) {
             Class<?> impl = annCls.impl();
             // hibSearch defaults to "void" so removing it
-            if (!impl.getCanonicalName().equals("void"))
+            if (!impl.getCanonicalName().equals(VOID))
                 return annCls.impl();
         }
         return analyzerClass;

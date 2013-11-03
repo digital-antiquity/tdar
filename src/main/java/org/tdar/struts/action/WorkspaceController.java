@@ -36,6 +36,7 @@ import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
 import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 /**
@@ -91,7 +92,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     public String selectColumns() {
         // FIXME: do we want to log this step? Perhaps, but there's no resource being modified, and resource parameter isn't nullable.
         if (CollectionUtils.isEmpty(tableIds)) {
-            addActionError("Please select the tables that you'd like to integrate.");
+            addActionError(MessageHelper.getMessage("workspaceController.selectTables"));
             return INPUT;
         }
         return SUCCESS;

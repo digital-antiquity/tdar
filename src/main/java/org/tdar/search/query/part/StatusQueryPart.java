@@ -14,6 +14,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 
 public class StatusQueryPart extends FieldQueryPart<Status> {
 
@@ -50,7 +51,7 @@ public class StatusQueryPart extends FieldQueryPart<Status> {
 
     @Override
     public String getDescription() {
-        String fmt = "Resource is %s";
+        String fmt = MessageHelper.getMessage("statusQueryPart.resource_is");
         List<String> labels = new ArrayList<String>();
         boolean seenActive = false;
         for (Status status : getFieldValues()) {
@@ -64,7 +65,7 @@ public class StatusQueryPart extends FieldQueryPart<Status> {
             return "";
         }
 
-        return String.format(fmt, StringUtils.join(labels, " or "));
+        return String.format(fmt, StringUtils.join(labels, MessageHelper.getMessage("statusQueryPart.or")));
     }
 
     @Override

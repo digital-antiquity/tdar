@@ -2,6 +2,8 @@ package org.tdar.search.index;
 
 import java.text.DecimalFormat;
 
+import org.tdar.utils.MessageHelper;
+
 /**
  * 
  * $Id$
@@ -28,7 +30,7 @@ public class TdarIndexNumberFormatter {
 
     public static String format(Number i) {
         if ((i.intValue() < MIN_ALLOWED) || (i.intValue() > MAX_ALLOWED)) {
-            throw new IllegalArgumentException("out of allowed range");
+            throw new IllegalArgumentException(MessageHelper.getMessage("tdarIndexNumberFormatter.out_of_range"));
         }
         char prefix;
         if (i.floatValue() < 0) {

@@ -12,42 +12,42 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.utils.MessageHelper;
 
 public enum SearchFieldType implements HasLabel {
-
     // basic fields
-    ALL_FIELDS("allFields", SearchFieldGroup.BASIC_FIELDS, "All Fields"),
-    TITLE("titles", SearchFieldGroup.BASIC_FIELDS, "Title"),
-    CONTENTS("contents", SearchFieldGroup.BASIC_FIELDS, "Full-Text"),
-    RESOURCE_CREATOR_PERSON("resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "Person", false),
-    RESOURCE_CREATOR_INSTITUTION("resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "Institution", false),
-    TDAR_ID("resourceIds", SearchFieldGroup.BASIC_FIELDS, "Id"),
-    COVERAGE_DATE_CALENDAR("coverageDates", SearchFieldGroup.BASIC_FIELDS, "Calendar Dates", false),
-    COVERAGE_DATE_RADIOCARBON("coverageDates", SearchFieldGroup.BASIC_FIELDS, "RadioCarbon Dates", false),
-    PROJECT("projects", SearchFieldGroup.BASIC_FIELDS, "Project", false),
-    COLLECTION("collections", SearchFieldGroup.BASIC_FIELDS, "Collection", false),
-    FILENAME("filenames", SearchFieldGroup.BASIC_FIELDS, "File Name"),
+    ALL_FIELDS("allFields", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.all_fields"),
+    TITLE("titles", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.title"),
+    CONTENTS("contents", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.full_text"),
+    RESOURCE_CREATOR_PERSON("resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.person", false),
+    RESOURCE_CREATOR_INSTITUTION("resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.institution", false),
+    TDAR_ID("resourceIds", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.id"),
+    COVERAGE_DATE_CALENDAR("coverageDates", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.calendar_date", false),
+    COVERAGE_DATE_RADIOCARBON("coverageDates", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.radio_carbon_date", false),
+    PROJECT("projects", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.project", false),
+    COLLECTION("collections", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.collection", false),
+    FILENAME("filenames", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.file_name"),
 
     // freeform keywords
-    FFK_GEOGRAPHIC("geographicKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Geographic Keywords", GeographicKeyword.class),
-    FFK_SITE("siteNames", SearchFieldGroup.FREEFORM_KEYWORDS, "Site Names", SiteNameKeyword.class),
-    FFK_SITE_TYPE("uncontrolledSiteTypes", SearchFieldGroup.FREEFORM_KEYWORDS, "Site Type"),
-    FFK_CULTURAL("uncontrolledCultureKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Culture Keywords"),
-    FFK_TEMPORAL("temporalKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Temporal Keywords", TemporalKeyword.class),
-    FFK_GENERAL("otherKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "General Keywords", OtherKeyword.class),
+    FFK_GEOGRAPHIC("geographicKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "searchFieldType.geographic_keywords", GeographicKeyword.class),
+    FFK_SITE("siteNames", SearchFieldGroup.FREEFORM_KEYWORDS, "searchFieldType.site_name", SiteNameKeyword.class),
+    FFK_SITE_TYPE("uncontrolledSiteTypes", SearchFieldGroup.FREEFORM_KEYWORDS, "searchFieldType.site_type"),
+    FFK_CULTURAL("uncontrolledCultureKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "searchFieldType.culture_keywords_all"),
+    FFK_TEMPORAL("temporalKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "searchFieldType.temporal_keyword", TemporalKeyword.class),
+    FFK_GENERAL("otherKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "searchFieldType.other_keywords", OtherKeyword.class),
 
     // managed keywords
-    KEYWORD_INVESTIGATION("investigationTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Investigation Types", false, InvestigationType.class),
-    KEYWORD_SITE("approvedSiteTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Site Type(Controlled)", false, SiteTypeKeyword.class),
-    KEYWORD_MATERIAL("materialKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Material Types", false, MaterialKeyword.class),
-    KEYWORD_CULTURAL("approvedCultureKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Culture Keywords", false, CultureKeyword.class),
+    KEYWORD_INVESTIGATION("investigationTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "searchFieldType.investigation_type", false, InvestigationType.class),
+    KEYWORD_SITE("approvedSiteTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "searchFieldType.site_keyword", false, SiteTypeKeyword.class),
+    KEYWORD_MATERIAL("materialKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "searchFieldType.material_types", false, MaterialKeyword.class),
+    KEYWORD_CULTURAL("approvedCultureKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "searchFieldType.culture_keyword", false, CultureKeyword.class),
 
     // TODO: add these
-    CREATION_DECADE("creationDecades", SearchFieldGroup.EXPLORE, "Creation Decade", false),
+    CREATION_DECADE("creationDecades", SearchFieldGroup.EXPLORE, "searchFieldType.decade", false),
 
-    DATE_CREATED("createdDates", SearchFieldGroup.BASIC_FIELDS, "Year", false),
-    DATE_REGISTERED("registeredDates", SearchFieldGroup.BASIC_FIELDS, "Date Registered", false),
-    DATE_UPDATED("updatedDates", SearchFieldGroup.BASIC_FIELDS, "Date Updated", false);
+    DATE_CREATED("createdDates", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.year", false),
+    DATE_REGISTERED("registeredDates", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.date_registered", false),
+    DATE_UPDATED("updatedDates", SearchFieldGroup.BASIC_FIELDS, "searchFieldType.date_updated", false);
 
     private String label = "";
     private SearchFieldGroup fieldGroup;
@@ -94,7 +94,7 @@ public enum SearchFieldType implements HasLabel {
 
     @Override
     public String getLabel() {
-        return this.label;
+        return MessageHelper.getMessage(this.label);
     }
 
     public SearchFieldGroup getFieldGroup() {

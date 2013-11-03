@@ -10,6 +10,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.utils.MessageHelper;
 
 //FIXME: There be dragons here!
 /**
@@ -50,7 +51,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Override
     protected void delete(K persistable) {
         // no deleting of keywords (for now)
-        addActionError("Sorry, deleting keywords is not supported");
+        addActionError(MessageHelper.getMessage("abstractKeywordController.cannot_delete"));
     }
 
     @Override

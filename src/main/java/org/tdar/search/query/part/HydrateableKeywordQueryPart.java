@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.utils.MessageHelper;
 
 /**
  * 
@@ -22,7 +23,11 @@ import org.tdar.core.bean.keyword.Keyword;
  */
 public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydrateableQueryPart<K> {
 
-    private String descriptionLabel = "Keyword";
+    private static final String ID = ".id";
+    private static final String LABEL_KEYWORD = ".labelKeyword";
+    private static final String LABEL = ".label";
+    private static final String INFORMATION_RESOURCES = "informationResources.";
+    private String descriptionLabel = MessageHelper.getMessage("keywordQueryPart.label");
     private boolean includeChildren = true;
 
     public HydrateableKeywordQueryPart(String fieldName, Class<K> originalClass, List<K> fieldValues_) {
@@ -46,20 +51,20 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
                 labels.add(getFieldValues().get(i).getLabel());
             }
         }
-        FieldQueryPart<String> labelPart = new FieldQueryPart<String>(getFieldName() + ".label", getOperator(), labels);
-        FieldQueryPart<String> labelKeyPart = new FieldQueryPart<String>(getFieldName() + ".labelKeyword", getOperator(), labels);
+        FieldQueryPart<String> labelPart = new FieldQueryPart<String>(getFieldName() + LABEL, getOperator(), labels);
+        FieldQueryPart<String> labelKeyPart = new FieldQueryPart<String>(getFieldName() + LABEL_KEYWORD, getOperator(), labels);
         labelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-        FieldQueryPart<Long> idPart = new FieldQueryPart<Long>(getFieldName() + ".id", getOperator(), ids);
+        FieldQueryPart<Long> idPart = new FieldQueryPart<Long>(getFieldName() + ID, getOperator(), ids);
         labelKeyPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
         QueryPartGroup field = new QueryPartGroup(getOperator(), idPart, labelPart, labelKeyPart);
 
         QueryPartGroup topLevel = new QueryPartGroup(Operator.AND, field);
         if (includeChildren) {
             topLevel.setOperator(Operator.OR);
-            FieldQueryPart<Long> irIdPart = new FieldQueryPart<Long>("informationResources." + getFieldName() + ".id", getOperator(), ids);
-            FieldQueryPart<String> irLabelPart = new FieldQueryPart<String>("informationResources." + getFieldName() + ".label", getOperator(), labels);
+            FieldQueryPart<Long> irIdPart = new FieldQueryPart<Long>(INFORMATION_RESOURCES + getFieldName() + ID, getOperator(), ids);
+            FieldQueryPart<String> irLabelPart = new FieldQueryPart<String>(INFORMATION_RESOURCES + getFieldName() + LABEL, getOperator(), labels);
             irLabelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            FieldQueryPart<String> irLabelKeyPart = new FieldQueryPart<String>("informationResources." + getFieldName() + ".labelKeyword", getOperator(),
+            FieldQueryPart<String> irLabelKeyPart = new FieldQueryPart<String>(INFORMATION_RESOURCES + getFieldName() + LABEL_KEYWORD, getOperator(),
                     labels);
             irLabelKeyPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             QueryPartGroup group = new QueryPartGroup(getOperator(), irLabelPart, irIdPart, irLabelKeyPart);

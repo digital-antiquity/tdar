@@ -37,6 +37,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.mods.ModsElementContainer;
@@ -443,7 +444,7 @@ public abstract class ModsTransformer<R extends Resource> implements
     public static ModsDocument transformAny(Resource resource) {
         ResourceType resourceType = ResourceType.fromClass(resource.getClass());
         if (resourceType == null) {
-            throw new TdarRecoverableRuntimeException("Unsupported / Unknown Resource Type");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("transformer.unsupported_type"));
         }
         switch (resourceType) {
             case CODING_SHEET:
@@ -472,7 +473,7 @@ public abstract class ModsTransformer<R extends Resource> implements
                 break;
         }
 
-        throw new TdarRecoverableRuntimeException("could not provide MODS tranformer for class:" + resource.getClass());
+        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("transformer.no_mods_transformer", resource.getClass()));
     }
 
 }

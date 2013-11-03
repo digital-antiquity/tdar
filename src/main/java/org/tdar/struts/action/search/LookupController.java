@@ -33,6 +33,7 @@ import org.tdar.search.query.part.AutocompleteTitleQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -146,7 +147,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             }
             logger.trace("jsonResults:" + getResults());
         } catch (ParseException e) {
-            addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+            addActionErrorWithException(MessageHelper.getMessage("abstractLookupController.invalid_syntax"), e);
             return ERROR;
         }
 
@@ -177,7 +178,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         try {
             handleSearch(q);
         } catch (ParseException e) {
-            addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+            addActionErrorWithException(MessageHelper.getMessage("abstractLookupController.invalid_syntax"), e);
             return ERROR;
         }
 
@@ -200,7 +201,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             try {
                 handleSearch(q);
             } catch (ParseException e) {
-                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                addActionErrorWithException(MessageHelper.getMessage("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
         }
@@ -251,7 +252,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             try {
                 handleSearch(q);
             } catch (ParseException e) {
-                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                addActionErrorWithException(MessageHelper.getMessage("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
         }

@@ -12,6 +12,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -27,11 +28,6 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
 
     // In the rare situation where javascript does not catch/correct an invalid creator proxy in client form, we need to
     // raise exceptions w/ human readable feedback so user has at least some idea what they need to fix.
-    private static final String ERR_DETERMINE_CREATOR_INSUFFICIENT_INFO = "This resource CreatorProxy was initialized improperly";
-    private static final String ERR_FMT2_DETERMINE_CREATOR_TOO_MUCH_INFO = "" +
-            "There was a problem with one of your author/creator/contributor entries. " +
-            "a single creator record may contain either person name, but the system encountered both. Please revise this record with " +
-            "either \"%s\" or \"%s\" (internal type was %s).";
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private boolean initialized = false;
@@ -130,13 +126,13 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
      */
     private CreatorType determineActualCreatorType() {
         if (institution == null && person == null) {
-            throw new TdarRecoverableRuntimeException(ERR_DETERMINE_CREATOR_INSUFFICIENT_INFO);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCreatorProxy.err_determine_creator_insufficient_info"));
         }
         if (institution.hasNoPersistableValues() && person.hasNoPersistableValues()) {
             return null;
         }
         if (!institution.hasNoPersistableValues() && !person.hasNoPersistableValues()) {
-            String err = String.format(ERR_FMT2_DETERMINE_CREATOR_TOO_MUCH_INFO, getPerson(), getInstitution(), getType());
+            String err = MessageHelper.getMessage("resourceCreatorProxy.err_fmt2_determine_creator_too_much_info", getPerson(), getInstitution(), getType());
             logger.warn(err);
             return type;
         }

@@ -31,7 +31,10 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
+
+import com.google.protobuf.Message;
 
 @Component
 @Scope("prototype")
@@ -93,7 +96,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         ResourceCollection parent = getResourceCollectionService().find(parentId);
         if (Persistable.Base.isNotNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(parent)
                 && (parent.getParentIdList().contains(persistable.getId()) || parent.getId().equals(persistable.getId()))) {
-            addActionError("cannot set a parent collection of self or it's child");
+            addActionError(MessageHelper.getMessage("collectionController.cannot_set_self_parent"));
             return INPUT;
         }
         persistable.setParent(parent);
@@ -293,11 +296,10 @@ public class CollectionController extends AbstractPersistableController<Resource
             try {
                 getSearchService().handleSearch(qb, this);
             } catch (Exception e) {
-                addActionErrorWithException("error occurred while searching for collection contents", e);
+                addActionErrorWithException(MessageHelper.getMessage("collectionController.error_searching_contents"), e);
             }
         }
     }
-
     /**
      * @return the resources
      */

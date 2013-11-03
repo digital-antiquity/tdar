@@ -52,9 +52,11 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceRelationshipService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
 
+import com.google.protobuf.Message;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -257,7 +259,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public SessionData getSessionData() {
         if (sessionData == null) {
             getLogger().error("Session data was null, should be managed by Spring.");
-            throw new IllegalStateException("Session data was null, should be managed by Spring.");
+            throw new IllegalStateException(MessageHelper.getMessage("tdarActionSupport.no_sesion_data"));
         }
         return sessionData;
     }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -41,7 +42,7 @@ public class RedirectMessageITCase extends AbstractControllerITCase {
         boolean deleteUser = authService.getAuthenticationProvider().deleteUser(p);
         assertTrue("could not delete user", deleteUser);
         assertFalse("there should be an action message on successful creation ", controller.getActionMessages().isEmpty());
-        assertEquals(UserAccountController.SUCCESSFUL_REGISTRATION_MESSAGE, controller.getActionMessages().iterator().next());
+        assertEquals(MessageHelper.getMessage("userAccountController.successful_registration_message"), controller.getActionMessages().iterator().next());
         assertTrue("no errors expected", controller.getActionErrors().isEmpty());
     }
 

@@ -16,6 +16,7 @@ import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author abrin
@@ -23,6 +24,8 @@ import org.tdar.core.exception.TdarValidationException;
  * @param <C>
  */
 public class FieldQueryPart<C> implements QueryPart<C> {
+    private static final String NOT = " NOT ";
+
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String fieldName;
@@ -236,7 +239,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
      */
     public FieldQueryPart<C> setFuzzy(Float fuzzy) {
         if (fuzzy > 1) {
-            throw new TdarRecoverableRuntimeException("fuzzyness can only be between 0 & 1");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("fieldQueryPart.fuzzyness_out_of_range"));
         }
         this.fuzzy = fuzzy;
         return this;
@@ -304,7 +307,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     protected String getInverse() {
         if (isInverse())
-            return " NOT ";
+            return NOT;
         return "";
     }
 
@@ -347,7 +350,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         if (value == null)
             return false;
         if (value instanceof Validatable && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
-            throw new TdarValidationException(String.format("%s is not valid", value));
+            throw new TdarValidationException(MessageHelper.getMessage("fieldQueryPart.is_not_valid", value));
         }
         return true;
     }
@@ -385,9 +388,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     public String getDescriptionOperator() {
-        String delim = " and ";
+        String delim = MessageHelper.getMessage("fieldQueryPart.and");
         if (getOperator() == Operator.OR) {
-            delim = " or ";
+            delim = MessageHelper.getMessage("fieldQueryPart.or");
         }
         return delim;
     }

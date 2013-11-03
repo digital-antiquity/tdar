@@ -31,6 +31,7 @@ import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.HttpsOnly;
+import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -165,7 +166,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
                 checkForNonContributorCrud();
                 if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
-                    addActionError("cannot delete item because references still exist");
+                    addActionError(MessageHelper.getMessage("abstractPersistableController.cannot_delete"));
                     return CONFIRM;
                 }
                 logAction("DELETING");
@@ -179,7 +180,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             } catch (TdarActionException exception) {
                 throw exception;
             } catch (Exception e) {
-                addActionErrorWithException("could not delete " + getPersistableClass().getSimpleName(), e);
+                addActionErrorWithException(MessageHelper.getMessage("abstractPersistableController.cannot_delete_reason", getPersistableClass().getSimpleName()), e);
             }
             return SUCCESS;
         }
@@ -249,12 +250,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     actionReturnStatus = INPUT;
                 }
             } else {
-                throw new TdarActionException(StatusCode.BAD_REQUEST, "bad request -- expecting post");
+                throw new TdarActionException(StatusCode.BAD_REQUEST, MessageHelper.getMessage("abstactPersistableController.bad_request"));
             }
         } catch (TdarActionException exception) {
             throw exception;
         } catch (Exception exception) {
-            addActionErrorWithException("Sorry, we were unable to save: " + getPersistable(), exception);
+            addActionErrorWithException(MessageHelper.getMessage("abstactPersistableController.unable_to_save", getPersistable()), exception);
             return INPUT;
         } finally {
             // FIXME: make sure this doesn't cause issues with SessionSecurityInterceptor now handling TdarActionExceptions
@@ -353,9 +354,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (!getAuthenticatedUser().getContributor()) {
             // FIXME: The html here could benefit from link to the prefs page. Devise a way to hint to the view-layer that certain messages can be decorated
             // and/or replaced.
-            addActionMessage("The system has hidden the menu options for creating and editing records based on your " +
-                    "current preferences.  You can change this setting by going to your account page and enabling the " +
-                    "\"contributor\" option.");
+            addActionMessage(MessageHelper.getMessage("abstactPersistableController.change_profile"));
         }
     }
 
@@ -427,12 +426,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (userAction.isAuthenticationRequired()) {
             try {
                 if (!getSessionData().isAuthenticated()) {
-                    addActionError("you must authenticate");
-                    abort(StatusCode.OK.withResultName(LOGIN), "you must authenticate");
+                    addActionError(MessageHelper.getMessage("abstactPersistableController.must_authenticate"));
+                    abort(StatusCode.OK.withResultName(LOGIN), MessageHelper.getMessage("abstactPersistableController.must_authenticate"));
                 }
             } catch (Exception e) {
-                addActionErrorWithException("something wrong with the session, was it initialized properly?", e);
-                abort(StatusCode.OK.withResultName(LOGIN), "could not load item, no user on session");
+                addActionErrorWithException(MessageHelper.getMessage("abstactPersistableController.session_not_initialized"), e);
+                abort(StatusCode.OK.withResultName(LOGIN), MessageHelper.getMessage("abstactPersistableController.could_not_load"));
             }
         }
 
@@ -451,11 +450,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 default:
                     if (persistable == null) {
                         // persistable is null, so the lookup failed (aka not found)
-                        abort(StatusCode.NOT_FOUND, String.format("Sorry, the page you requested cannot be found"));
+                        abort(StatusCode.NOT_FOUND, MessageHelper.getMessage("abstactPersistableController.not_found"));
                     } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
                         // id not specified or not a number, so this is an invalid request
-                        abort(StatusCode.BAD_REQUEST, String.format(
-                                "Sorry, the system does not recognize this type of request on a %s ", persistable.getClass().getSimpleName()));
+                        abort(StatusCode.BAD_REQUEST, MessageHelper.getMessage("abstactPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
                     }
             }
         }
@@ -495,9 +493,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             default:
                 break;
         }
-        addActionError("user does not have permissions to perform the requested action");
-        abort(StatusCode.FORBIDDEN.withResultName(GONE),
-                "could not load requested item (insufficient permissions -- may not be able to view deleted resources)");
+        addActionError(MessageHelper.getMessage("abstactPersistableController.no_permissions"));
+        abort(StatusCode.FORBIDDEN.withResultName(GONE),MessageHelper.getMessage("abstactPersistableController.could_not_load"));
 
     }
 
@@ -720,7 +717,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         logger.debug("validating resource {} - {}", getPersistable(), getPersistableClass().getSimpleName());
         if (getPersistable() == null) {
             logger.warn("Null being validated.");
-            addActionError("Sorry, we couldn't find the resource you specified.");
+            addActionError(MessageHelper.getMessage("abstactPersistableController.could_not_find"));
             return;
         }
         // String resourceTypeLabel = getPersistable().getResourceType().getLabel();
@@ -728,7 +725,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             try {
                 boolean valid = ((Validatable) getPersistable()).isValidForController();
                 if (!valid) {
-                    addActionError("could not validate:" + getPersistable());
+                    addActionError(MessageHelper.getMessage("abstactPersistableController.could_not_validate", getPersistable()));
                 }
             } catch (Exception e) {
                 addActionError(e.getMessage());

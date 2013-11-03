@@ -48,7 +48,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals(BillingAccountController.INVOICE_IS_REQURIED, msg);
+        assertEquals(MessageHelper.getMessage("billingAccountController.invoice_is_requried"), msg);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals(BillingAccountController.RIGHTS_TO_ASSIGN_THIS_INVOICE, msg);
+        assertEquals(MessageHelper.getMessage("billingAccountController.rights_to_assign_this_invoice"), msg);
     }
 
     @Test

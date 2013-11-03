@@ -49,6 +49,7 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.utils.MessageHelper;
 
 import freemarker.ext.dom.NodeModel;
 
@@ -70,10 +71,13 @@ import freemarker.ext.dom.NodeModel;
 @HttpOnlyIfUnauthenticated
 public class BrowseController extends AbstractLookupController {
 
+    private static final String FOAF_XML = ".foaf.xml";
+    private static final String SLASH = "/";
+    private static final String XML = ".xml";
     public static final String CREATORS = "creators";
     public static final String COLLECTIONS = "collections";
     public static final String EXPLORE = "explore";
-    private static final String ALL_TDAR_COLLECTIONS = "All Collections";
+
     private static final long serialVersionUID = -128651515783098910L;
     private Creator creator;
     private Persistable persistable;
@@ -84,7 +88,7 @@ public class BrowseController extends AbstractLookupController {
     private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     private List<BrowseYearCountCache> scholarData;
-    private File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml");
+    private File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + XML);
     private List<BrowseDecadeCountCache> timelineData;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private List<String> groups = new ArrayList<String>();
@@ -126,8 +130,8 @@ public class BrowseController extends AbstractLookupController {
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         setMode("browseCollections");
         handleSearch(qb);
-        setSearchDescription(ALL_TDAR_COLLECTIONS);
-        setSearchTitle(ALL_TDAR_COLLECTIONS);
+        setSearchDescription(MessageHelper.getMessage("browseController.all_tdar_collections"));
+        setSearchTitle(MessageHelper.getMessage("browseController.all_tdar_collections"));
 
         if (isEditor()) {
             setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
@@ -150,7 +154,7 @@ public class BrowseController extends AbstractLookupController {
     public String creatorRdf() throws FileNotFoundException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".foaf.xml");
+            File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + FOAF_XML);
             if (file.exists()) {
                 setInputStream(new FileInputStream(file));
                 setContentLength(file.length());
@@ -168,7 +172,7 @@ public class BrowseController extends AbstractLookupController {
 
             if (Persistable.Base.isNotNullOrTransient(creator)) {
                 try {
-                    File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml");
+                    File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + XML);
                     if (foafFile.exists()) {
                         setNodeModel(NodeModel.parse(foafFile));
                     } else {
@@ -201,7 +205,7 @@ public class BrowseController extends AbstractLookupController {
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
             if (Persistable.Base.isNotNullOrTransient(creator)) {
-                String descr = String.format("All Resources from %s", creator.getProperName());
+                String descr = MessageHelper.getMessage("browseController.all_resource_from", creator.getProperName());
                 setSearchDescription(descr);
                 setSearchTitle(descr);
                 setRecordsPerPage(50);

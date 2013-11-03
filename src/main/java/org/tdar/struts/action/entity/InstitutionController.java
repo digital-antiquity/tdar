@@ -9,6 +9,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.action.AbstractPersistableController;
+import org.tdar.utils.MessageHelper;
 
 @Component
 @Scope("prototype")
@@ -16,7 +17,6 @@ import org.tdar.struts.action.AbstractPersistableController;
 @Namespace("/entity/institution")
 public class InstitutionController extends AbstractPersistableController<Institution> {
 
-    public static final String ERROR_INSTITUTION_NAME_BLANK = "Institution name cannot be blank.";
     private static final long serialVersionUID = 2051510910128780834L;
 
     private String name;
@@ -41,7 +41,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
         if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
             Institution findInstitutionByName = getEntityService().findInstitutionByName(name);
             if (findInstitutionByName != null) {
-                addActionError(String.format("Cannot rename institution to %s because it already exists", name));
+                addActionError(MessageHelper.getMessage("institutionController.cannot_rename", name));
             }
         }
     }

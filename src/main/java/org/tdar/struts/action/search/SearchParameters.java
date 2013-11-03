@@ -48,6 +48,7 @@ import org.tdar.search.query.part.TitleQueryPart;
 import org.tdar.struts.data.DateRange;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.StringRange;
+import org.tdar.utils.MessageHelper;
 
 /**
  * This class is meant to capture a group of search terms.
@@ -67,7 +68,7 @@ public class SearchParameters {
 
     private boolean explore = false;
     // user specified status that they do not have permissions to search for. probably because they are not logged in.
-    public static final String ERROR_INSUFFICIENT_PERMISSIONS_STATUS = "You are not allowed to search for resources with the selected status";
+
     private static final Operator defaultOperator = Operator.AND;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -305,8 +306,8 @@ public class SearchParameters {
 
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles()));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, "File Contents", contents));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, "Filename", filenames));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, MessageHelper.getMessage("searchParameter.file_contents"), contents));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, MessageHelper.getMessage("searchParameter.file_name"), filenames));
 
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
@@ -325,16 +326,16 @@ public class SearchParameters {
         appendKeywordQueryParts(queryPartGroup, InvestigationType.class, QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, this.getInvestigationTypeIdLists());
         appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, this.getApprovedCultureKeywordIdLists());
 
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, "Project ", "project.", Resource.class, getProjects()));
-        queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, "ID", Operator.OR, getResourceIds()));
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID,MessageHelper.getMessage("searchParameter.project"), "project.", Resource.class, getProjects()));
+        queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, MessageHelper.getMessage("searchParameter.id"), Operator.OR, getResourceIds()));
 
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, "Resource Type", getResourceTypes(), Operator.OR,
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, MessageHelper.getMessage("searchParameter.resource_type"), getResourceTypes(), Operator.OR,
                 Arrays.asList(ResourceType.values()));
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE, "Integratable", getIntegratableOptions(), Operator.OR,
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE,MessageHelper.getMessage("searchParameter.integrable"), getIntegratableOptions(), Operator.OR,
                 Arrays.asList(IntegratableOptions.values()));
 
-        queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, "Document Type", Operator.OR, getDocumentTypes()));
-        queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, "Resource Access Type", Operator.OR,
+        queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, MessageHelper.getMessage("searchParameter.document_Type"), Operator.OR, getDocumentTypes()));
+        queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, MessageHelper.getMessage("searchParameter.resource_access_type"), Operator.OR,
                 getResourceAccessTypes()));
 
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_CREATED, operator, getRegisteredDates()));
@@ -344,7 +345,7 @@ public class SearchParameters {
         queryPartGroup.append(new TemporalQueryPart(getCoverageDates(), getOperator()));
         queryPartGroup.append(new SpatialQueryPart(getLatitudeLongitudeBoxes()));
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, "Collection", "resourceCollections.",
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, MessageHelper.getMessage("searchParameter.resource_collection"), "resourceCollections.",
                 ResourceCollection.class,
                 getCollections()));
         queryPartGroup.append(new CreatorQueryPart<Creator>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
@@ -355,7 +356,7 @@ public class SearchParameters {
         // explore: title starts with
         if (startingLetter != null) {
             FieldQueryPart<String> part = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, startingLetter.toLowerCase());
-            part.setDisplayName("Title starts with");
+            part.setDisplayName(MessageHelper.getMessage("searchParameter.title_starts_with"));
             part.setPhraseFormatters(PhraseFormatter.WILDCARD);
             queryPartGroup.append(part);
         }
