@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -14,17 +15,17 @@ import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
  * @version $Revision$
  */
 public enum ResourceType implements HasLabel, Facetable<ResourceType> {
-    CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset", CodingSheet.class),
-    DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
-    DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
-    IMAGE("Image", 2, "Still Image", "unknown", "Photograph", Image.class),
-    SENSORY_DATA("3D & Sensory Data", 7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
-    GEOSPATIAL("GIS", 6, "Dataset", "unknown", "Dataset", Geospatial.class),
-    ONTOLOGY("Ontology", 9, "Dataset", "unknown", "Dataset", Ontology.class),
-    PROJECT("Project", 5, "ItemList", Project.class),
-    VIDEO("Video", 4, "Moving Image", "unknown", "Movie", Video.class),
-    ARCHIVE("Site Archive", 8, "Collection", "unknown", "SoftwareApplication", Archive.class),
-    AUDIO("Audio", 11, "Sound", "unknown", "AudioObject", Audio.class);
+    CODING_SHEET("coding_sheet", 10, "Dataset", "unknown", "Dataset", CodingSheet.class),
+    DATASET("dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
+    DOCUMENT("document", 1, "Text", "document", "Book", Document.class),
+    IMAGE("image", 2, "Still Image", "unknown", "Photograph", Image.class),
+    SENSORY_DATA("sensory_data", 7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
+    GEOSPATIAL("gis", 6, "Dataset", "unknown", "Dataset", Geospatial.class),
+    ONTOLOGY("ontology", 9, "Dataset", "unknown", "Dataset", Ontology.class),
+    PROJECT("project", 5, "ItemList", Project.class),
+    VIDEO("video", 4, "Moving Image", "unknown", "Movie", Video.class),
+    ARCHIVE("archive", 8, "Collection", "unknown", "SoftwareApplication", Archive.class),
+    AUDIO("audio", 11, "Sound", "unknown", "AudioObject", Audio.class);
 
     private final String label;
     /**
@@ -55,18 +56,7 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
     }
 
     public String getPlural() {
-        switch (this) {
-            case ONTOLOGY:
-                return "Ontologies";
-            case SENSORY_DATA:
-                return SENSORY_DATA.label;
-            case GEOSPATIAL:
-                return GEOSPATIAL.label;
-            case AUDIO:
-                return AUDIO.label;
-            default:
-                return getLabel().concat("s");
-        }
+        return MessageHelper.getMessage("resourceType." + label + "_plural");
     }
 
     public boolean supportBulkUpload() {
@@ -138,7 +128,7 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
 
     @Override
     public String getLabel() {
-        return label;
+        return MessageHelper.getMessage("resourceType." + label );
     }
 
     /**

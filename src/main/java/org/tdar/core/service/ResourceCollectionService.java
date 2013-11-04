@@ -20,11 +20,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotNullPredicate;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.hibernate.ScrollMode;
-import org.hibernate.ScrollableResults;
-import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,12 +35,8 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.utils.MessageHelper;
 
-import com.sun.tools.hat.internal.model.Root;
 
 /**
  * @author Adam Brin

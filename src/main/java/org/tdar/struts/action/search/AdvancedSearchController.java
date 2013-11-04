@@ -723,6 +723,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         } else if (isKeywordSearch()) {
             setSearchTitle(MessageHelper.getMessage("advancedSearchController.title_filtered_by_keyword"));
         }
+        
     }
 
     private void determineCollectionSearchTitle() {
