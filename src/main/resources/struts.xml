@@ -15,7 +15,7 @@
     <constant name="struts.ui.theme" value="bootstrap"/>
     <constant name="struts.url.includeParams" value="none"/>
     <constant name="struts.action.excludePattern" value="/services/.*"/>
-    <constant name="struts.custom.i18n.resources" value="Locales/tdar-freemarker-messages" />
+    <constant name="struts.custom.i18n.resources" value="Locales/tdar-freemarker-messages,/Locales/tdar-messages" />
 
     <!-- constant name="struts.enable.SlashesInActionNames" value="true"/> <constant
           name="struts.mapper.alwaysSelectFullNamespace" value="false"/ -->

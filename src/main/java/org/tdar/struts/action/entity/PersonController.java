@@ -76,7 +76,7 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     public void validateEmailRequiredForActiveUsers() {
         if(getPersistable().isActive() && getPersistable().isRegistered() && StringUtils.isBlank(email)) {
-            addFieldError("email", "Please enter a valid email address");
+            addFieldError("email", getText(getText("userAccountController.email_invalid")));
         }
     }
 
@@ -87,7 +87,7 @@ public class PersonController extends AbstractCreatorController<Person> {
         Person person2 = getEntityService().findByEmail(email);
         if(person2 != null) {
             if(!person2.equals(getPersistable())) {
-                addFieldError("email", "This email address is not available");
+                addFieldError("email", getText("userAccountController.username_not_available"));
             }
         }
 
@@ -100,7 +100,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     }
 
     @Override
-    @Validations(emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "email", message= "Please enter a valid email address")})
+    @Validations(emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "email", message= "${getText('userAccountController.email_invalid')}")})
     protected String save(Person person) {
         if(!StringUtils.equals(email, getPersistable().getEmail())) {
             getPersistable().setEmail(email);
@@ -147,7 +147,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Override
     public boolean isViewable() throws org.tdar.struts.action.TdarActionException {
         if (!isEditable()) {
-            throw new TdarActionException(StatusCode.UNAUTHORIZED, "you are not allowed to view/edit this record");
+            throw new TdarActionException(StatusCode.UNAUTHORIZED, getText("abstactPersistableController.unable_to_view_edit"));
         }
         return true;
     };
@@ -163,8 +163,7 @@ public class PersonController extends AbstractCreatorController<Person> {
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().getAuthenticationProvider().updateUserPassword(getPerson(), password);
-            // FIXME: we currently have no way to indicate success because we are redirecting to success page, So the message below is lost.
-            addActionMessage("Password successfully changed");
+            addActionMessage(getText("personController.password_successfully_changed"));
         }
     }
 
@@ -175,7 +174,7 @@ public class PersonController extends AbstractCreatorController<Person> {
             return false;
 
         if (StringUtils.isBlank(password)) {
-            throw new TdarRecoverableRuntimeException("you must re-enter your password to change your username");
+            throw new TdarRecoverableRuntimeException(getText("userAccountController.error_reenter_password_to_change_username"));
         }
 
         if (!StringUtils.equals(password, confirmPassword)) {
@@ -185,7 +184,7 @@ public class PersonController extends AbstractCreatorController<Person> {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().updateUsername(getPerson(), newUsername, password);
             // FIXME: we currently have no way to indicate success because we are redirecting to success page, So the message below is lost.
-            addActionMessage("Username successfully changed, please logout");
+            addActionMessage(getText("userAccountController.username_successfully_changed"));
             return true;
         }
         return false;
