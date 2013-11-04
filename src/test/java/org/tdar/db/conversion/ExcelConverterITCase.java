@@ -68,7 +68,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
             converter.execute();
             assertTrue("Should never get to this point in the code.", false);
         } catch (TdarRecoverableRuntimeException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains(expectedErrorMessage));
+            assertEquals(expectedErrorMessage, e.getMessage());
         }
     }
 
