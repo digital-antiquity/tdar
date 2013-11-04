@@ -34,8 +34,6 @@ import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
 
-import com.google.protobuf.Message;
-
 @Component
 @Scope("prototype")
 @ParentPackage("secured")

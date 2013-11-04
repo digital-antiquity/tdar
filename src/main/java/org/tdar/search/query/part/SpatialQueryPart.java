@@ -17,8 +17,6 @@ import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 
-import com.google.protobuf.Message;
-
 /**
  * $Id$
  * 

@@ -411,4 +411,12 @@ public class BrowseController extends AbstractLookupController {
         }
         return searchFieldLookup;
     }
+
+    public File getFoafFile() {
+        return foafFile;
+    }
+
+    public void setFoafFile(File foafFile) {
+        this.foafFile = foafFile;
+    }
 }

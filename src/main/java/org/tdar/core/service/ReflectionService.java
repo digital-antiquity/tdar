@@ -664,6 +664,7 @@ public class ReflectionService {
      * @param cls
      * @return
      */
+    @SuppressWarnings("unchecked")
     public List<Pair<Method, Class<? extends Obfuscatable>>> findAllObfuscatableGetters(Class<?> cls) {
         List<Method> declaredFields = new ArrayList<>();
         List<Pair<Method, Class<? extends Obfuscatable>>> result = new ArrayList<>();
@@ -691,10 +692,9 @@ public class ReflectionService {
                 continue;
 
             
-            Class<?> dcl = actualClass;
-//            logger.info("TYPE: {} {} ", method.getGenericReturnType(), method.getName());
-//            logger.info("{} ==> {}", actualClass, method.getDeclaringClass());
-//            logger.info(" {} {} {} ", dcl.getTypeParameters(), dcl.getGenericInterfaces(), dcl.getGenericSuperclass());
+            // logger.info("TYPE: {} {} ", method.getGenericReturnType(), method.getName());
+            // logger.info("{} ==> {}", actualClass, method.getDeclaringClass());
+            // logger.info(" {} {} {} ", dcl.getTypeParameters(), dcl.getGenericInterfaces(), dcl.getGenericSuperclass());
             boolean force = false;
             if (Collection.class.isAssignableFrom(method.getReturnType())) {
                 Class<?> type2 = getType(method.getGenericReturnType());

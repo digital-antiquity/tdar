@@ -27,8 +27,6 @@ import com.redfin.sitemapgenerator.WebSitemapUrl;
 @Component
 public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
 
-    private static final int BATCH_SIZE = 1000;
-
     private static final long serialVersionUID = 561910508692901053L;
 
     @Autowired

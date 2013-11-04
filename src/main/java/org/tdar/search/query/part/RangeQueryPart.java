@@ -15,8 +15,6 @@ import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.struts.data.Range;
 import org.tdar.utils.MessageHelper;
 
-import com.google.protobuf.Message;
-
 public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
 
@@ -25,7 +23,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
     private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMdd");
 
-    public RangeQueryPart(String field, Range<C>... values) {
+    public RangeQueryPart(String field, @SuppressWarnings("unchecked") Range<C>... values) {
         this(field, "Value", values);
     }
 
@@ -43,7 +41,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         }
     }
 
-    public RangeQueryPart(String field, String descriptionLabel, Range<C>... values) {
+    public RangeQueryPart(String field, String descriptionLabel, @SuppressWarnings("unchecked") Range<C>... values) {
         super(field, values);
         this.descriptionLabel = descriptionLabel;
     }

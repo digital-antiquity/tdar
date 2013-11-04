@@ -30,6 +30,7 @@ import freemarker.template.TemplateModel;
  */
 public class FreemarkerHttpHeaderResult extends FreemarkerResult {
     private static final long serialVersionUID = 195648957144219214L;
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(FreemarkerHttpHeaderResult.class);
     private Map<String, String> headers;
     private int status;
@@ -60,6 +61,7 @@ public class FreemarkerHttpHeaderResult extends FreemarkerResult {
             // allow for
             ValueStack stack = ActionContext.getContext().getValueStack();
             for (Map.Entry<String, String> header : headers.entrySet()) {
+                @SuppressWarnings("unused")
                 String value = TextParseUtil.translateVariables(header.getValue(), stack);
                 response.setHeader(header.getKey(), header.getValue());
             }

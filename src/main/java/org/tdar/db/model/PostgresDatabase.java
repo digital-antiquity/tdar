@@ -928,7 +928,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public int getRowCount(DataTable dataTable) {
         String sql = String.format(SELECT_ROW_COUNT, dataTable.getName());
-        return jdbcTemplate.queryForInt(sql);
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     public List<String> selectAllFrom(final DataTableColumn column) {

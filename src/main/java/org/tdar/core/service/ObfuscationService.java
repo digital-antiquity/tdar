@@ -107,6 +107,7 @@ public class ObfuscationService {
      * @param target
      * @return
      */
+    @SuppressWarnings("deprecation")
     private List<Obfuscatable> handleObfuscation(Obfuscatable target) {
         logger.trace("obfuscating: {} [{}]", target.getClass(), target.getId());
         target.setObfuscated(true);

@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Dataset;
@@ -16,7 +13,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.service.ServiceInterface;
-import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
 /**

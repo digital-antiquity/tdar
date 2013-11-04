@@ -334,6 +334,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     /*
      * Given an @link InformationResource, find all of the latest versions and reprocess them.
      */
+    @SuppressWarnings("deprecation")
     @Transactional(readOnly = false)
     public void reprocessInformationResourceFiles(T ir, ActionMessageErrorSupport listener) throws Exception {
         List<InformationResourceFileVersion> latestVersions = new ArrayList<>();

@@ -1,6 +1,9 @@
 package org.tdar.core.dao;
 
 public interface TdarNamedQueries {
+    /**
+     * constants to map between the Annotation Keys for HQL queries and the queries in the DAOs
+     */
     static final String QUERY_DELETE_INFORMATION_RESOURCE_FILE_DERIVATIVES = "informationResourceFileVersion.deleteDerivatives";
     static final String QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY = "ontology.isMapped";
     static final String QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_COLUMN = "ontology.isMappedToColumn";
@@ -107,6 +110,9 @@ public interface TdarNamedQueries {
     static final String QUERY_RELATED_RESOURCES = "resource.related";
     // raw SQL/HQL queries
 
+    /**
+     * Static HQL and SQL queries that cannot be represented as annotations because they are either pure SQL or use String replacement.
+     */
     static final String QUERY_SQL_DASHBOARD =
             "select id, status, resource_type from resource " +
                     "where id in " +
@@ -154,8 +160,7 @@ public interface TdarNamedQueries {
             "(res.submitter.id=:userId or exists (" +
             " from ResourceCollection rescol join rescol.authorizedUsers  as authUser " +
             " join rescol.resources as colres " +
-            " where " +
-            " colres.id = res.id and " +
+            " where colres.id = res.id and " +
             "(TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
     static final String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
     static final String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";

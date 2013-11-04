@@ -103,7 +103,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         targetDatabase.dropTable(dataTable);
 
         Map<String, URL> connect = new HashMap<>();
-        connect.put("url", getDatabaseFile().toURL());
+        connect.put("url", getDatabaseFile().toURI().toURL());
 
         DataStore dataStore = DataStoreFinder.getDataStore(connect);
         String[] typeNames = dataStore.getTypeNames();

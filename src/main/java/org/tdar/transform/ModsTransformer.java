@@ -196,6 +196,7 @@ public abstract class ModsTransformer<R extends Resource> implements
             // TODO we dont' do anything here. but we override it so the parent doesn't implement this
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         public ModsDocument transform(Document source) {
             ModsDocument mods = super.transform(source);

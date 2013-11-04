@@ -33,6 +33,7 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTempla
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
+@SuppressWarnings("deprecation")
 @Component
 @Scope("prototype")
 @ParentPackage("default")
@@ -91,6 +92,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         }
         postReq.setEntity(new UrlEncodedFormEntity(pairs, Consts.UTF_8));
         try {
+            @SuppressWarnings({ "resource" })
             DefaultHttpClient httpclient = new DefaultHttpClient();
             HttpResponse httpresponse = httpclient.execute(postReq);
             BufferedReader rd = new BufferedReader(new InputStreamReader(httpresponse.getEntity().getContent()));

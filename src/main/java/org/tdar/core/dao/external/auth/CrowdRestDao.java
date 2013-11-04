@@ -172,7 +172,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         String login = person.getUsername();
         try {
             
-            User user = securityServerClient.getUser(login);
+            securityServerClient.getUser(login);
             // if this succeeds, then this principal already exists.
             // FIXME: if they already exist in the system, we should let them know
             // that they already have an account in the system and that they can
@@ -318,6 +318,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         return passwordResetURL;
     }
 
+    @SuppressWarnings("el-syntax")
     @Value("${crowd.passwordreseturl:http://auth.tdar.org/crowd/console/forgottenlogindetails!default.action}")
     public void setPasswordResetURL(String url)
     {

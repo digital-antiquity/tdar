@@ -5,7 +5,6 @@ package org.tdar.search.query.builder;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
-import org.tdar.core.service.SearchService;
 
 /**
  * $$Id$$

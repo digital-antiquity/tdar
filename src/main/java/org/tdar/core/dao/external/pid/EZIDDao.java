@@ -22,15 +22,15 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -260,7 +260,7 @@ public class EZIDDao implements ExternalIDProvider {
         HttpPost post = new HttpPost(hostname + "/" + path + "/" + shoulder);
         String anvlContent = generateAnvlMetadata(r, resourceUrl, delete);
         logger.trace("sending content:to {} \n{}", post.getURI(), anvlContent);
-        StringEntity entity_ = new StringEntity(anvlContent, "text/plain", HTTP.UTF_8);
+        HttpEntity entity_ = EntityBuilder.create().setText(anvlContent).setContentType(ContentType.TEXT_PLAIN.withCharset("UTF-8")).build();
         post.setEntity(entity_);
         return processRequest(post);
     }

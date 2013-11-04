@@ -46,6 +46,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
     private static final String NEW_TARBALL_TEMPLATE_KEY = "new_tarball";
     // in time the template/templates can be moved to a file
+    @SuppressWarnings("el-syntax")
     private static final String XML_TEMPLATE_NEW_TARBALL = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + lineSeparator() +
             "<run_settings>" + lineSeparator() +
             "    <file_name>${" + FILE_NAME + "}</file_name>" + lineSeparator() +

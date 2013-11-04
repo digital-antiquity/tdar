@@ -15,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -36,11 +34,8 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.NamedNativeQueries;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -137,31 +132,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query.setCacheMode(CacheMode.IGNORE);
         return query.list();
     }
-
-    // @SuppressWarnings("unchecked")
-    // public List<InformationResource> findByFilename(List<String> valuesToMatch, DataTableColumn column) {
-    // List<String> filenames = new ArrayList<String>();
-    // for (String value : valuesToMatch) {
-    // if (column.isIgnoreFileExtension()) {
-    // filenames.add(FilenameUtils.getBaseName(value.toLowerCase()) + ".");
-    // } else {
-    // filenames.add(value.toLowerCase());
-    // }
-    // }
-    // Query query = getCurrentSession().getNamedQuery(QUERY_MATCHING_FILES);
-    // query.setParameterList("filenamesToMatch", filenames);
-    // query.setParameter("projectId", column.getDataTable().getDataset().getProject().getId());
-    // query.setParameterList("versionTypes", Arrays.asList(VersionType.UPLOADED,
-    // VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL));
-    // List<InformationResource> toReturn = new ArrayList<InformationResource>();
-    // for (InformationResourceFileVersion version : (List<InformationResourceFileVersion>) query.list()) {
-    // // add checks for (a) latest version (b) matching is correct
-    // toReturn.add(version.getInformationResourceFile().getInformationResource());
-    // }
-    // logger.debug("find by filename: " + toReturn);
-    // return toReturn;
-    // }
-
     /*
      * Take the distinct column values mapped and associate them with files in tDAR based on:
      * - shared project

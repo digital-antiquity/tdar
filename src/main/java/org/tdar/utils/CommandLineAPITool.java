@@ -358,6 +358,7 @@ public class CommandLineAPITool {
     /**
      * process all the files that were read in from the command line, and any nested sub-directories.
      */
+    @SuppressWarnings("deprecation")
     private int processFiles() {
 
         int errorCount = 0;
@@ -477,6 +478,7 @@ public class CommandLineAPITool {
         return errorCount;
     }
 
+    @SuppressWarnings("deprecation")
     public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
         String path = record.getPath();
         HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "=" + URLEncoder.encode(path, "UTF-8"));

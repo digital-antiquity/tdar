@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.tdar.core.bean.resource.Facetable;
 
+@SuppressWarnings("rawtypes")
 public class FacetGroup<C extends Facetable> implements Serializable {
 
     private static final long serialVersionUID = -4830192828726636840L;
@@ -42,6 +43,7 @@ public class FacetGroup<C extends Facetable> implements Serializable {
     }
 
     public void add(String result, int count) {
+        @SuppressWarnings("unchecked")
         C f = (C) facetEnum.getValueOf(result);
         f.setCount(count);
         getFacets().add(f);

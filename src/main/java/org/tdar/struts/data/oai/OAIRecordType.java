@@ -7,8 +7,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
 import org.tdar.utils.MessageHelper;
 
-import com.google.protobuf.Message;
-
 /**
  * @author ctuohy
  * 

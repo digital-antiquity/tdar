@@ -63,11 +63,13 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.operator = oper;
     }
 
+    @SuppressWarnings("unchecked")
     public FieldQueryPart(String fieldName, String displayName, Operator oper, C... fieldValues_) {
         this(fieldName, displayName, Arrays.asList(fieldValues_));
         this.operator = oper;
     }
 
+    @SuppressWarnings("unchecked")
     public FieldQueryPart(String fieldName, C... fieldValues_) {
         this(fieldName, "", Arrays.asList(fieldValues_));
     }
@@ -80,6 +82,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this(fieldName, "", oper, fieldValues_);
     }
 
+    @SuppressWarnings("unchecked")
     public FieldQueryPart(String fieldName, Operator oper, C... fieldValues_) {
         this(fieldName, "", oper, fieldValues_);
     }
@@ -330,6 +333,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return fieldValues;
     }
 
+    @SuppressWarnings("unchecked")
     public void setFieldValues(Collection<C> fieldValues) {
         this.fieldValues.clear();
         for (C item : fieldValues) {
@@ -337,6 +341,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void add(C... values) {
         for (C value : values) {
             if (validate(value)) {

@@ -341,7 +341,7 @@ public class SearchService {
      * 
      * @param q
      */
-    @SuppressWarnings({ "rawtypes" })
+    @SuppressWarnings({ "rawtypes","unchecked" })
     private <T extends Persistable> void hydrateQueryParts(QueryGroup q) {
         List<AbstractHydrateableQueryPart> partList = findAllHydratableParts(q);
         Map<Class, Set<T>> lookupMap = new HashMap<>();
@@ -586,7 +586,6 @@ public class SearchService {
             ResourceCreator rc = proxy.getResourceCreator();
             if (rc != null && proxy.isValid()) {
                 ArrayList<ResourceCreatorProxy> values = new ArrayList<>();
-                QueryBuilder q = null;
                 Creator creator = rc.getCreator();
                 if (Persistable.Base.isTransient(creator)) {
                     resolveCreator(maxToResolve, replacements, proxy, rc, values, creator);
@@ -617,6 +616,7 @@ public class SearchService {
      * @param creator
      * @throws ParseException
      */
+    @SuppressWarnings("unchecked")
     private void resolveCreator(int maxToResolve, Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements, ResourceCreatorProxy proxy,
             ResourceCreator rc, ArrayList<ResourceCreatorProxy> values, Creator creator) throws ParseException {
         QueryBuilder q;

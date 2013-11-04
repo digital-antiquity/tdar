@@ -21,8 +21,6 @@ import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.utils.MessageHelper;
 import org.xml.sax.SAXException;
 
-import com.sun.xml.bind.marshaller.MinimumEscapeHandler;
-
 import au.csiro.pidclient.AndsPidClient;
 import au.csiro.pidclient.AndsPidClient.HandleType;
 import au.csiro.pidclient.AndsPidResponse;

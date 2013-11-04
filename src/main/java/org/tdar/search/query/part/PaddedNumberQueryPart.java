@@ -8,6 +8,7 @@ import org.tdar.search.index.TdarIndexNumberFormatter;
 
 public class PaddedNumberQueryPart<C> extends FieldQueryPart<C> {
 
+    @SuppressWarnings("unchecked")
     public PaddedNumberQueryPart(String fieldName, C... fieldValues_) {
         this(fieldName, Arrays.asList(fieldValues_));
     }
@@ -22,6 +23,7 @@ public class PaddedNumberQueryPart<C> extends FieldQueryPart<C> {
         setOperator(oper);
     }
 
+    @SuppressWarnings("unchecked")
     public PaddedNumberQueryPart(String fieldName, Operator oper, C... fieldValues_) {
         this(fieldName, fieldValues_);
         setOperator(oper);

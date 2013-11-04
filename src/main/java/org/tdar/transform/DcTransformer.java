@@ -38,8 +38,6 @@ import org.tdar.core.bean.resource.Video;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
 
-import com.google.protobuf.Message;
-
 import edu.asu.lib.dc.DublinCoreDocument;
 
 public abstract class DcTransformer<R extends Resource> implements Transformer<R, DublinCoreDocument> {

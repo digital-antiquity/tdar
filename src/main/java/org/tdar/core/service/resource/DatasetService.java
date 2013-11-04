@@ -295,6 +295,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * DataTableColunn on import such that if the old DataTables and Columns match the incomming, then we'll re-use the mappings. If they're different, their
      * either added or dropped respectively.
      */
+    @SuppressWarnings("deprecation")
     @Transactional(noRollbackFor = TdarRecoverableRuntimeException.class)
     public void reconcileDataset(InformationResourceFile datasetFile, Dataset dataset, Dataset transientDatasetToPersist) {
         // helper Map to manage existing tables - all remaining entries in this existingTablesMap will be purged at the end of this process
