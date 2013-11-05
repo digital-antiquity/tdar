@@ -52,7 +52,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             "<run_settings>" + lineSeparator() +
             "    <file_name>${" + FILE_NAME + "}</file_name>" + lineSeparator() +
             "    <project_id>${" + PROJECT_ID + "?c}</project_id>" + lineSeparator() +
-            "    <updated_by>${" + PROJECT_ID + "}</updated_by>" + lineSeparator() +
+            "    <updated_by>${" + UPDATED_BY_EMAIL + "}</updated_by>" + lineSeparator() +
             "</run_settings>";
 
 
