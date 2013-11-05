@@ -1,6 +1,7 @@
 package org.tdar.utils;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -41,10 +42,10 @@ public class MessageHelper implements Serializable, TextProvider {
     }
 
     /*
-     * Wraps getMessage() with String.format() to enable us to include parameterized replacement
+     * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
      */
     public static String getMessage(String key, Object ... formatKeys) {
-        return String.format(getMessage(key),formatKeys);
+        return MessageFormat.format(getMessage(key),formatKeys);
     }
 
     private ResourceBundle getBundle() {
