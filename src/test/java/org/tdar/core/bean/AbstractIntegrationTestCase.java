@@ -114,8 +114,10 @@ import org.xml.sax.SAXException;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.conversion.impl.AnnotationXWorkConverter;
+import com.opensymphony.xwork2.config.ConfigurationManager;
+import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
 import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
+import com.opensymphony.xwork2.util.ValueStack;
 
 @ContextConfiguration(locations = { "classpath:/applicationContext.xml" })
 @SuppressWarnings("rawtypes")
@@ -445,13 +447,23 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             ((TdarActionSupport) controller).setServletRequest(getServletRequest());
             ((TdarActionSupport) controller).setServletResponse(getServletResponse());
             // set the context
-            Map<String, Object> contextMap = new HashMap<String, Object>();
-            contextMap.put(StrutsStatics.HTTP_REQUEST, getServletRequest());
-            ActionContext.setContext(new ActionContext(contextMap));
-            ActionContext context = new ActionContext(new HashMap<String,Object>());
-            context.setLocale(Locale.getDefault());
-            ActionContext.setContext(context);
         }
+        Map<String, Object> contextMap = new HashMap<String, Object>();
+        contextMap.put(StrutsStatics.HTTP_REQUEST, getServletRequest());
+        ActionContext.setContext(new ActionContext(contextMap));
+        ActionContext context = new ActionContext(new HashMap<String,Object>());
+
+        //http://mail-archives.apache.org/mod_mbox/struts-user/201001.mbox/%3C637b76e41001151852x119c9cd4vbbe6ff560e56e46f@mail.gmail.com%3E
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        OgnlValueStackFactory factory = new OgnlValueStackFactory();
+        configurationManager.addContainerProvider(new XWorkConfigurationProvider());
+
+        configurationManager.getConfiguration().getContainer().inject(factory);
+        ValueStack stack = factory.createValueStack();
+
+        context.setValueStack(stack);
+        context.setLocale(Locale.getDefault());
+        ActionContext.setContext(context);
         return controller;
     }
 

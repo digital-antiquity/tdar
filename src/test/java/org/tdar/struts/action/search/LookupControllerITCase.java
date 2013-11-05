@@ -45,7 +45,6 @@ import org.tdar.struts.interceptor.ObfuscationResultListener;
 
 public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
-    @Autowired
     private LookupController controller;
 
     @Before
