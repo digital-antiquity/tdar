@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
@@ -43,6 +44,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
     private static final String FILE_NAME = "file_name";
     private static final String PROJECT_ID = "project_id";
+    private static final String UPDATED_BY_EMAIL = "updated_by_email";
 
     private static final String NEW_TARBALL_TEMPLATE_KEY = "new_tarball";
     // in time the template/templates can be moved to a file
@@ -50,7 +52,9 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             "<run_settings>" + lineSeparator() +
             "    <file_name>${" + FILE_NAME + "}</file_name>" + lineSeparator() +
             "    <project_id>${" + PROJECT_ID + "?c}</project_id>" + lineSeparator() +
+            "    <updated_by>${" + PROJECT_ID + "}</updated_by>" + lineSeparator() +
             "</run_settings>";
+
 
     private String kettleInputPath = TdarConfiguration.getInstance().getKettleInputPath();
     private File controlFileOuputDir;
@@ -110,7 +114,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         final WorkflowContext ctx = getWorkflowContext();
         // it's quite hard to pick a start of this run out of the log files, so we'll log a title for the time being
         getLogger().warn("<============= Starting run of task to extract tarball =============>");
-        
+
         // first off, a whole raft of preconditions that we need to pass before we write the control file:
         // reality check: do we have an archive?
         final Class<? extends Resource> resourceClass = ctx.getResourceType().getResourceClass();
@@ -173,9 +177,26 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         Map<String, Object> values = new HashMap<>();
         values.put(FILE_NAME, copy.getAbsolutePath());
         values.put(PROJECT_ID, archive.getProjectId());
+        values.put(UPDATED_BY_EMAIL, getEmailToNotify(archive));
         try (Writer output = new FileWriter(getNewRunControlFile())) {
             template.process(values, output);
         }
+    }
+
+    /**
+     * @param archive that is being extracted
+     * @return The email address to notify about the extraction of the archive. If it is null or empty, then the administrator is notified.
+     */
+    @SuppressWarnings("static-method")
+    protected String getEmailToNotify(Archive archive) {
+        String result = null;
+        if (archive.getUpdatedBy() != null) {
+            result = archive.getUpdatedBy().getEmail();
+        }
+        if (StringUtils.isEmpty(result)) {
+            result = TdarConfiguration.getInstance().getSystemAdminEmail();
+        }
+        return result;
     }
 
     private File getNewRunControlFile() {

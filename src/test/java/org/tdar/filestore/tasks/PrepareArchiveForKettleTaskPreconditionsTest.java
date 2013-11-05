@@ -7,8 +7,10 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
@@ -20,6 +22,7 @@ import org.tdar.filestore.WorkflowContext;
  */
 public class PrepareArchiveForKettleTaskPreconditionsTest {
 
+    private static final String BOB_AT_CAT_COM = "bob@cat.com";
     PrepareArchiveForKettleTask task;
     Archive archive;
 
@@ -118,5 +121,18 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
             assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
             assertTrue(e.getMessage(), e.getMessage().startsWith("Must have an archive file to work with"));
         }
+    }
+    
+    @Test
+    public void willSelectAdminEmailIfNoUploaderEmail() {
+        assertTrue(task.getEmailToNotify(archive).equals(TdarConfiguration.getInstance().getSystemAdminEmail()));
+    }
+    
+    @Test
+    public void willSelectUploaderEmailIfSet() {
+        Person updater = new Person();
+        updater.setEmail(BOB_AT_CAT_COM);
+        archive.setUpdatedBy(updater);
+        assertTrue(task.getEmailToNotify(archive).equals(BOB_AT_CAT_COM));
     }
 }
