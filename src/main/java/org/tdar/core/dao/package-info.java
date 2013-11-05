@@ -378,7 +378,11 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name=TdarNamedQueries.QUERY_FILE_STATUS,
-            query= "from InformationResourceFile file where status in (:statuses)")
+            query= "from InformationResourceFile file where status in (:statuses)"),
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.QUERY_FILE_SIZE_TOTAL,
+            query= "select vers.extension, sum(vers.fileLength) from InformationResourceFileVersion vers where fileVersionType in (:types) group by extension")
 })
+
 package org.tdar.core.dao;
 
