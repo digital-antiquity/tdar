@@ -76,7 +76,7 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     public void validateEmailRequiredForActiveUsers() {
         if(getPersistable().isActive() && getPersistable().isRegistered() && StringUtils.isBlank(email)) {
-            addFieldError("email", getText(getText("userAccountController.email_invalid")));
+            addFieldError("email", getText("userAccountController.email_invalid"));
         }
     }
 
@@ -100,7 +100,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     }
 
     @Override
-    @Validations(emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "email", message= "${getText('userAccountController.email_invalid')}")})
+    @Validations(emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "email", key= "userAccountController.email_invalid")})
     protected String save(Person person) {
         if(!StringUtils.equals(email, getPersistable().getEmail())) {
             getPersistable().setEmail(email);
