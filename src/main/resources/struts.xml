@@ -53,7 +53,11 @@
                 <interceptor-ref name="servletConfig"/>
                 <interceptor-ref name="prepare"/>
                 <interceptor-ref name="fileUpload">
-                	<param name="maximumSize">8589934592</param>
+	<!--
+	 ONLY OVERRIDE IF ABSOLUTELY NECESSARY - THIS PROTECTS THE TEMP DIRECTORY 
+		AND CLEANS UP IF A FILE THAT'S TOO BIG IS UPLOADED 
+		<param name="maximumSize">8589934592</param> 
+		-->
                 </interceptor-ref>
                 <interceptor-ref name="staticParams"/>
                 <interceptor-ref name="actionMappingParams"/>
