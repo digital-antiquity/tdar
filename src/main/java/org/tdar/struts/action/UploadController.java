@@ -87,12 +87,12 @@ public class UploadController extends AuthenticationAware.Base {
             ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
             logger.debug("UPLOAD CONTROLLER: upload request with ticket included: {}", ticket);
             if (ticket == null) {
-                addActionError(MessageHelper.getMessage("uploadController.require_valid_ticket"));
+                addActionError(getText("uploadController.require_valid_ticket"));
             }
         }
 
         if (CollectionUtils.isEmpty(uploadFile)) {
-            addActionError(MessageHelper.getMessage("uploadController.no_files"));
+            addActionError(getText("uploadController.no_files"));
         }
         if (CollectionUtils.isEmpty(getActionErrors())) {
             Person submitter = getAuthenticatedUser();
@@ -112,7 +112,7 @@ public class UploadController extends AuthenticationAware.Base {
                     try {
                         filestore.store(ticket, file, fileName);
                     } catch (Exception e) {
-                        addActionErrorWithException(MessageHelper.getMessage("uploadController.could_not_store"), e);
+                        addActionErrorWithException(getText("uploadController.could_not_store"), e);
                     }
                 }
             }

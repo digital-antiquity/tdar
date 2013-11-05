@@ -49,7 +49,6 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
-import org.tdar.utils.MessageHelper;
 
 import freemarker.ext.dom.NodeModel;
 
@@ -130,8 +129,8 @@ public class BrowseController extends AbstractLookupController {
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         setMode("browseCollections");
         handleSearch(qb);
-        setSearchDescription(MessageHelper.getMessage("browseController.all_tdar_collections"));
-        setSearchTitle(MessageHelper.getMessage("browseController.all_tdar_collections"));
+        setSearchDescription(getText("browseController.all_tdar_collections"));
+        setSearchTitle(getText("browseController.all_tdar_collections"));
 
         if (isEditor()) {
             setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
@@ -168,7 +167,7 @@ public class BrowseController extends AbstractLookupController {
     public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser());
+            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser(),this);
 
             if (Persistable.Base.isNotNullOrTransient(creator)) {
                 try {
@@ -205,7 +204,7 @@ public class BrowseController extends AbstractLookupController {
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
             if (Persistable.Base.isNotNullOrTransient(creator)) {
-                String descr = MessageHelper.getMessage("browseController.all_resource_from", creator.getProperName());
+                String descr = getText("browseController.all_resource_from", creator.getProperName());
                 setSearchDescription(descr);
                 setSearchTitle(descr);
                 setRecordsPerPage(50);

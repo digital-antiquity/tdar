@@ -51,14 +51,14 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     @Override
     public void validate() {
         if (entityType == null) {
-            addActionError(MessageHelper.getMessage("authorityManagementController.error_no_entity_type"));
+            addActionError(getText("authorityManagementController.error_no_entity_type"));
         }
         if (CollectionUtils.isEmpty(selectedDupeIds)) {
-            addActionError(MessageHelper.getMessage("authorityManagementController.error_no_duplicates"));
+            addActionError(getText("authorityManagementController.error_no_duplicates"));
         } else if (selectedDupeIds.size() < 2) {
-            addActionError(MessageHelper.getMessage("authorityManagementController.error_not_enough_duplicates"));
+            addActionError(getText("authorityManagementController.error_not_enough_duplicates"));
         } else if (selectedDupeIds.size() > getDupeListMaxSize()) {
-            String message = MessageHelper.getMessage("authorityManagementController.fmt_too_many_duplicates", getDupeListMaxSize());
+            String message = getText("authorityManagementController.fmt_too_many_duplicates", getDupeListMaxSize());
             addActionError(message);
         }
     }
@@ -85,7 +85,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
             return INPUT;
 
         if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 1) {
-            addActionError(MessageHelper.getMessage("authorityManagementController.error_too_many_protected_records"));
+            addActionError(getText("authorityManagementController.error_too_many_protected_records"));
             return INPUT;
         }
 
@@ -108,7 +108,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     @WriteableSession
     public String mergeDuplicates() {
         if (authorityId == null) {
-            addActionError(MessageHelper.getMessage("authorityManagementController.error_no_authority_record"));
+            addActionError(getText("authorityManagementController.error_no_authority_record"));
             return INPUT;
         }
 
@@ -118,7 +118,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         selectedDupeIds.remove(authorityId);
 
         if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 0) {
-            addActionError(MessageHelper.getMessage("authorityManagementController.error_cannot_dedupe_protected_records"));
+            addActionError(getText("authorityManagementController.error_cannot_dedupe_protected_records"));
             selectedDuplicates.put(authority.getId(), authority);
             return INPUT;
         }
@@ -127,7 +127,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         try {
             authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId, mode);
         } catch (TdarRecoverableRuntimeException trex) {
-            addActionErrorWithException(MessageHelper.getMessage("authorityManagementController.could_not_dedup"), trex);
+            addActionErrorWithException(getText("authorityManagementController.could_not_dedup"), trex);
             return INPUT;
         }
         

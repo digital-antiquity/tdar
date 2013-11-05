@@ -79,7 +79,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         logger.info("saving batches...");
 
         if (Persistable.Base.isNullOrTransient(getTicketId())) {
-            addActionError(MessageHelper.getMessage("bulkUploadController.no_files"));
+            addActionError(getText("bulkUploadController.no_files"));
             return INPUT;
         }
         logger.debug("ticketId: {} ", getTicketId());
@@ -95,7 +95,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 String filename = getUploadedFilesFileName().get(0);
                 excelManifest = personalFilestore.store(ticket, getUploadedFiles().get(0), filename);
             } catch (Exception e) {
-                addActionErrorWithException(MessageHelper.getMessage("bulkUploadController.cannot_store_manifest"), e);
+                addActionErrorWithException(getText("bulkUploadController.cannot_store_manifest"), e);
             }
         }
 
@@ -137,7 +137,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
         logger.info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
         if (CollectionUtils.isEmpty(getUploadedFiles())) {
-            addActionError(MessageHelper.getMessage("bulkUploadController.upload_template"));
+            addActionError(getText("bulkUploadController.upload_template"));
             return INPUT;
         }
         try {
@@ -152,11 +152,11 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 setTemplateFilename(filename);
                 personalFilestore.store(ticket, getUploadedFiles().get(0), filename);
             } catch (Exception e) {
-                addActionErrorWithException(MessageHelper.getMessage("bulkUploadController.cannot_store_manifest"), e);
+                addActionErrorWithException(getText("bulkUploadController.cannot_store_manifest"), e);
             }
 
         } catch (Exception e) {
-            addActionErrorWithException(MessageHelper.getMessage("bulkUploadController.problem_template"), e);
+            addActionErrorWithException(getText("bulkUploadController.problem_template"), e);
             return INPUT;
         }
         addActionMessage("");
@@ -205,7 +205,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             setTemplateInputStream(new FileInputStream(getTemplateFile()));
         } catch (Exception iox) {
             logger.error("an error ocurred creating the template file", iox);
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("bulkUploadController.could_not_store_file"));
+            throw new TdarRecoverableRuntimeException(getText("bulkUploadController.could_not_store_file"));
         }
         return SUCCESS;
     }

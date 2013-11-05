@@ -215,8 +215,8 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                     logger.warn("could not authenticate", e);
                 }
             }
-            reconcilePersonWithTransient(findByUsername, MessageHelper.getMessage("userAccountController.error_username_already_registered"));
-            reconcilePersonWithTransient(getEntityService().findByEmail(person.getEmail()), MessageHelper.getMessage("userAccountController.error_duplicate_email"));
+            reconcilePersonWithTransient(findByUsername, getText("userAccountController.error_username_already_registered"));
+            reconcilePersonWithTransient(getEntityService().findByEmail(person.getEmail()), getText("userAccountController.error_duplicate_email"));
             person.setRegistered(true);
             Institution institution = getEntityService().findInstitutionByName(institutionName);
             if (institution == null && !StringUtils.isBlank(institutionName)) {
@@ -264,7 +264,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 getLogger().debug("Authenticated successfully with auth service.");
                 getEntityService().registerLogin(person);
                 getAuthenticationAndAuthorizationService().createAuthenticationToken(person, getSessionData());
-                addActionMessage(MessageHelper.getMessage("userAccountController.successful_registration_message"));
+                addActionMessage(getText("userAccountController.successful_registration_message"));
                 return SUCCESS;
             }
 
@@ -279,14 +279,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             addActionError(result.toString());
         } catch (Throwable t) {
             logger.debug("authentication error", t);
-            addActionErrorWithException(MessageHelper.getMessage("userAccountController.could_not_create_account"), t);
+            addActionErrorWithException(getText("userAccountController.could_not_create_account"), t);
         }
         return ERROR;
     }
 
     private void sendWelcomeEmail() {
         try {
-            String subject = MessageHelper.getMessage("userAccountController.welcome",TdarConfiguration.getInstance().getSiteAcronym());
+            String subject = getText("userAccountController.welcome",TdarConfiguration.getInstance().getSiteAcronym());
             getEmailService().sendWithFreemarkerTemplate(EMAIL_WELCOME_TEMPLATE, getWelcomeEmailValues(), subject, person);
         } catch (Exception e) {
             // we don't want to ruin the new user's experience with a nasty error message...
@@ -326,7 +326,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     public boolean isUsernameRegistered(String username) {
         logger.trace("testing username:", username);
         if (StringUtils.isBlank(username)) {
-            addActionError(MessageHelper.getMessage("userAccountController.error_missing_username"));
+            addActionError(getText("userAccountController.error_missing_username"));
             return true;
         }
         Person person = getEntityService().findByUsername(username);
@@ -345,12 +345,12 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             }
 
             if (!getAuthenticationAndAuthorizationService().isValidUsername(person.getUsername())) {
-                addActionError(MessageHelper.getMessage("userAccountController.username_invalid"));
+                addActionError(getText("userAccountController.username_invalid"));
                 return;
             }
 
             if (!getAuthenticationAndAuthorizationService().isValidEmail(person.getEmail())) {
-                addActionError(MessageHelper.getMessage("userAccountController.email_invalid"));
+                addActionError(getText("userAccountController.email_invalid"));
                 return;
             }
         }
@@ -358,32 +358,32 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         if (StringUtils.length(person.getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
             logger.debug("contributor reason too long");
-            addActionError(String.format(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time"), "Contributor Reason", MAXLENGTH_CONTRIBUTOR));
+            addActionError(String.format(getText("userAccountController.could_not_authenticate_at_this_time"), "Contributor Reason", MAXLENGTH_CONTRIBUTOR));
         }
         // FIXME: replace with visitor field validation on Person?
         if (StringUtils.isBlank(person.getFirstName())) {
-            addActionError(MessageHelper.getMessage("userAccountController.enter_first_name"));
+            addActionError(getText("userAccountController.enter_first_name"));
         }
         if (StringUtils.isBlank(person.getLastName())) {
-            addActionError(MessageHelper.getMessage("userAccountController.enter_last_name"));
+            addActionError(getText("userAccountController.enter_last_name"));
         }
 
         // validate email + confirmation
         if (isUsernameRegistered(person.getUsername())) {
             logger.debug("username was already registered: ", person.getUsername());
-            addActionError(MessageHelper.getMessage("userAccountController.error_username_already_registered"));
+            addActionError(getText("userAccountController.error_username_already_registered"));
         } else if (StringUtils.isBlank(getConfirmEmail())) {
-            addActionError(MessageHelper.getMessage("userAccountController.error_confirm_email"));
+            addActionError(getText("userAccountController.error_confirm_email"));
         } else if (!new EqualsBuilder().append(person.getEmail(), getConfirmEmail()).isEquals()) {
-            addActionError(MessageHelper.getMessage("userAccountController.error_emails_dont_match"));
+            addActionError(getText("userAccountController.error_emails_dont_match"));
         }
         // validate password + confirmation
         if (StringUtils.isBlank(password)) {
-            addActionError(MessageHelper.getMessage("userAccountController.error_choose_password"));
+            addActionError(getText("userAccountController.error_choose_password"));
         } else if (StringUtils.isBlank(confirmPassword)) {
-            addActionError(MessageHelper.getMessage("userAccountController.error_confirm_password"));
+            addActionError(getText("userAccountController.error_confirm_password"));
         } else if (!new EqualsBuilder().append(password, confirmPassword).isEquals()) {
-            addActionError(MessageHelper.getMessage("userAccountController.error_passwords_dont_match"));
+            addActionError(getText("userAccountController.error_passwords_dont_match"));
         }
 
         checkForSpammers();
@@ -399,7 +399,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         // 3 - check for known spammer - fname == lname & phone = 123456
         if (StringUtils.isNotBlank(getComment())) {
             logger.debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
-            addActionError(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time"));
+            addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
             return true;
         }
 
@@ -409,7 +409,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                         getPerson().getFirstName().equals(getPerson().getLastName())
                         && getPerson().getPhone().equals("123456")) {
                     logger.debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
-                    addActionError(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time"));
+                    addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
                     return true;
                 }
             } catch (NullPointerException npe) {
@@ -421,7 +421,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         logger.debug("timcheck:{}", getTimeCheck());
         if (getTimeCheck() == null) {
             logger.debug("internal time check was null, this should never happen for real users");
-            addActionError(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time"));
+            addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
             return true;
         }
 
@@ -429,7 +429,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         if (now < FIVE_SECONDS_IN_MS || now > ONE_HOUR_IN_MS) {
             logger.debug(String.format("we think this user was a spammer, due to the time taken " +
                     "to complete the form field: %s  -- %s", getConfirmEmail(), now));
-            addActionError(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time"));
+            addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
             return true;
         }
 

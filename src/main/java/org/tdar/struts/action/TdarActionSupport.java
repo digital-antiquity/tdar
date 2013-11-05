@@ -26,6 +26,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.Localizable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.ActivityManager;
@@ -58,12 +59,13 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceRelationshipService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * $Id$
@@ -264,7 +266,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public SessionData getSessionData() {
         if (sessionData == null) {
             getLogger().error("Session data was null, should be managed by Spring.");
-            throw new IllegalStateException(MessageHelper.getMessage("tdarActionSupport.no_sesion_data"));
+            throw new IllegalStateException(getText("tdarActionSupport.no_sesion_data"));
         }
         return sessionData;
     }
@@ -510,7 +512,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         if (exception instanceof TdarRecoverableRuntimeException) {
             int maxDepth = 4;
             Throwable thrw = exception;
-            StringBuilder sb = new StringBuilder(exception.getMessage());
+            if (exception instanceof Localizable) {
+                ((Localizable) exception).setLocale(getLocale());
+            }
+            StringBuilder sb = new StringBuilder(exception.getLocalizedMessage());
 
             while (thrw.getCause() != null && maxDepth > -1) {
                 thrw = thrw.getCause();
@@ -709,5 +714,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public void setClientValidationInfo(LinkedHashMap<String, String> clientValidationInfo) {
         this.clientValidationInfo = clientValidationInfo;
+    }
+    
+    public String getText(String aTextName, Object ... args) {
+        return super.getText(aTextName, Arrays.asList(args));
     }
 }

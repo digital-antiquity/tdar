@@ -114,7 +114,7 @@ public class ResourceController extends AuthenticationAware.Base {
         InformationResource informationResource = getInformationResourceService().find(resourceId);
         if (informationResource == null) {
             getLogger().error("trying to edit information resource but it was null.");
-            addActionError(MessageHelper.getMessage("resourceController.not_found"));
+            addActionError(getText("resourceController.not_found"));
             return NOT_FOUND;
         }
         return informationResource.getResourceType().name();

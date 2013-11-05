@@ -49,7 +49,7 @@ public class UserAgreementController extends AuthenticationAware.Base implements
             return LOGIN;
 
         if (DECLINE.equals(userResponse)) {
-            String fmt = MessageHelper.getMessage("userAgreementController.decline_message");
+            String fmt = getText("userAgreementController.decline_message");
             addActionMessage(String.format(fmt, getSiteAcronym()));
             logger.debug("agreements declined,  redirecting to logout page");
             return NONE;
@@ -61,7 +61,7 @@ public class UserAgreementController extends AuthenticationAware.Base implements
                 return SUCCESS;
             } else {
                 logger.debug("some requirements remain, returning input");
-                addActionError(MessageHelper.getMessage("userAgreementController.please_choose"));
+                addActionError(getText("userAgreementController.please_choose"));
                 return INPUT;
             }
         } else {

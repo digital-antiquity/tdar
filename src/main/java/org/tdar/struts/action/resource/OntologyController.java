@@ -108,7 +108,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     public String node() throws TdarActionException {
         setNode(getOntology().getNodeByIri(getIri()));
         if (node == null) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, MessageHelper.getMessage("ontologyController.node_not_found", getIri() ));
+            throw new TdarActionException(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri() ));
         }
         setChildren(getChildElements(node));
         setParentNode(getOntologyNodeService().getParent(node));

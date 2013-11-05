@@ -41,7 +41,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
         if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
             Institution findInstitutionByName = getEntityService().findInstitutionByName(name);
             if (findInstitutionByName != null) {
-                addActionError(MessageHelper.getMessage("institutionController.cannot_rename", name));
+                addActionError(getText("institutionController.cannot_rename", name));
             }
         }
     }

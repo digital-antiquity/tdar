@@ -28,7 +28,6 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
 
 /**
@@ -105,7 +104,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         if (getPersistable() != null) {
-            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser());
+            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(),this);
             setSortField(getProject().getSortBy());
             setSecondarySortField(SortOption.TITLE);
             if (getProject().getSecondarySortBy() != null) {
@@ -118,7 +117,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
             } catch (SearchPaginationException e) {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, e);
             } catch (Exception e) {
-                addActionErrorWithException(MessageHelper.getMessage("projectController.something_happened"), e);
+                addActionErrorWithException(getText("projectController.something_happened"), e);
             }
         }
     }
@@ -135,7 +134,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
             }
             json = project.toJSON().toString();
         } catch (Exception ex) {
-            addActionErrorWithException(MessageHelper.getMessage("projectController.project_json_invalid"), ex);
+            addActionErrorWithException(getText("projectController.project_json_invalid"), ex);
         }
         getLogger().trace("returning json:" + json);
         return json;
@@ -264,7 +263,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @Override
     public String getSearchTitle() {
-        return MessageHelper.getMessage("projectController.search_title", getPersistable().getTitle());
+        return getText("projectController.search_title", getPersistable().getTitle());
     }
 
     @Override

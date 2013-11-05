@@ -403,12 +403,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (getResource().isDeleted()) {
             logger.debug("resource not viewable because it is deleted: {}", getPersistable());
-            throw new TdarActionException(StatusCode.GONE, MessageHelper.getMessage("abstractResourceController.resource_deleted"));
+            throw new TdarActionException(StatusCode.GONE, getText("abstractResourceController.resource_deleted"));
         }
         // don't judge me I hate this code too.
         if (getResource().isDraft()) {
             logger.trace("resource not viewable because it is draft: {}", getPersistable());
-            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT), MessageHelper.getMessage("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
+            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT), getText("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
         }
 
         return false;
@@ -1055,7 +1055,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             try {
                 getInformationResourceService().reprocessInformationResourceFiles(ir, this);
             } catch (Exception e) {
-                addActionErrorWithException(MessageHelper.getMessage("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
+                addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
             }
             if (hasActionErrors()) {
                 return ERROR;

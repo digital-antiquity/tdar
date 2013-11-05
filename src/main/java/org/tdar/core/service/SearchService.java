@@ -82,6 +82,8 @@ import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
+import com.opensymphony.xwork2.TextProvider;
+
 @Service
 @Transactional
 public class SearchService {
@@ -419,11 +421,11 @@ public class SearchService {
      * @param user
      * @return
      */
-    public <P extends Persistable> ResourceQueryBuilder buildResourceContainedInSearch(String fieldName, P indexable, Person user) {
+    public <P extends Persistable> ResourceQueryBuilder buildResourceContainedInSearch(String fieldName, P indexable, Person user, TextProvider provider) {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
         getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, user);
-        qb.append(reservedSearchParameters);
+        qb.append(reservedSearchParameters,provider);
         qb.setOperator(Operator.AND);
         qb.append(new FieldQueryPart<>(fieldName, indexable.getId()));
 
@@ -655,7 +657,7 @@ public class SearchService {
      * @param user
      * @return
      */
-    public QueryBuilder generateQueryForRelatedResources(Creator creator, Person user) {
+    public QueryBuilder generateQueryForRelatedResources(Creator creator, Person user,TextProvider provider) {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
 
@@ -667,10 +669,10 @@ public class SearchService {
             }
             params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
         }
-        queryBuilder.append(params);
+        queryBuilder.append(params,provider);
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
         getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, user);
-        queryBuilder.append(reservedSearchParameters);
+        queryBuilder.append(reservedSearchParameters,provider);
         return queryBuilder;
     }
 

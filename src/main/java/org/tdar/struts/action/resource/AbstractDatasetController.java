@@ -165,12 +165,12 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         if (getDataResource().getLatestVersions().isEmpty()) {
-            addActionError(MessageHelper.getMessage("abstractDatasetController.upload_data_file_first"));
+            addActionError(getText("abstractDatasetController.upload_data_file_first"));
             return INPUT;
         }
 
         if (CollectionUtils.isEmpty(getDataResource().getDataTables())) {
-            addActionError(MessageHelper.getMessage("abstractDatasetController.no_tables"));
+            addActionError(getText("abstractDatasetController.no_tables"));
             return INPUT;
         }
         // load existing column metadata if any.

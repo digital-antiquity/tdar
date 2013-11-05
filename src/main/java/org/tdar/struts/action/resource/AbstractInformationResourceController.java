@@ -123,7 +123,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      *             If there was an IO error
      */
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
-        throw new UnsupportedOperationException(MessageHelper.getMessage("abstractInformationResourceController.didnt_override", getClass() ));
+        throw new UnsupportedOperationException(getText("abstractInformationResourceController.didnt_override", getClass() ));
     }
 
     public boolean isMultipleFileUploadEnabled() {
@@ -181,7 +181,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             }
 
         } catch (TdarRecoverableRuntimeException trrc) {
-            addActionErrorWithException(MessageHelper.getMessage("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), trrc);
+            addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), trrc);
         }
 
         if (isHasFileProxyChanges()
@@ -195,7 +195,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         try {
             getInformationResourceService().importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this, proxies);
         } catch (Exception e) {
-            addActionErrorWithException(MessageHelper.getMessage("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
+            addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
         }
         getInformationResourceService().saveOrUpdate(getPersistable());
         getLogger().trace("done processing upload files");
@@ -619,11 +619,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                 logger.info("{} {}", copyrightHolderProxies, transientCreator);
                 if (transientCreator != null && StringUtils.isEmpty(transientCreator.getCreator().getProperName().trim())) {
                     logger.debug("No copyright holder set for {}", getPersistable());
-                    addActionError(MessageHelper.getMessage("abstractInformationResourceController.add_copyright_holder"));
+                    addActionError(getText("abstractInformationResourceController.add_copyright_holder"));
                 }
                 // and if not on a form (the reprocess below, for example, then check the persistable itself
             } else if (getPersistable().getCopyrightHolder() == null) {
-                addActionError(MessageHelper.getMessage("abstractInformationResourceController.copyright_holder_missing"));
+                addActionError(getText("abstractInformationResourceController.copyright_holder_missing"));
             }
         }
     }

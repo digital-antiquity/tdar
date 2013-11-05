@@ -76,7 +76,6 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
-import org.tdar.utils.MessageHelper;
 
 /**
  * Eventual replacement for LuceneSearchController. extending
@@ -253,7 +252,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             addActionError(tdre.getMessage());
         } catch (ParseException e) {
             logger.warn("search parse exception: {}", e.getMessage());
-            addActionErrorWithException(MessageHelper.getMessage("advancedSearchController.error_parsing_failed"), e);
+            addActionErrorWithException(getText("advancedSearchController.error_parsing_failed"), e);
         }
         
         if (getActionErrors().isEmpty()) {
@@ -277,7 +276,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             setMode("rss");
             search();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
-            setSearchDescription(MessageHelper.getMessage("advancedSearchController.rss_subtitle",TdarConfiguration.getInstance().getSiteAcronym(), StringEscapeUtils.escapeXml(getSearchPhrase())));
+            setSearchDescription(getText("advancedSearchController.rss_subtitle",TdarConfiguration.getInstance().getSiteAcronym(), StringEscapeUtils.escapeXml(getSearchPhrase())));
             // if (getAuthenticatedUser() == null) {
             // geoMode = GeoRssMode.NONE;
             // }
@@ -288,7 +287,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             }
         } catch (Exception e) {
             logger.error("rss error", e);
-            addActionErrorWithException(MessageHelper.getMessage("advancedSearchController.could_not_process"), e);
+            addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
         }
         return SUCCESS;
     }
@@ -396,11 +395,11 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            topLevelQueryPart.append(group.toQueryPartGroup());
+            topLevelQueryPart.append(group.toQueryPartGroup(this));
         }
         queryBuilder.append(topLevelQueryPart);
 
-        reservedQueryPart = processReservedTerms();
+        reservedQueryPart = processReservedTerms(this);
         queryBuilder.append(reservedQueryPart);
 
         try {
@@ -413,7 +412,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             addActionError(tdre.getMessage());
         } catch (ParseException e) {
             logger.warn("search parse exception: {}", e.getMessage());
-            addActionError(MessageHelper.getMessage("advancedSearchController.error_parsing_failed"));
+            addActionError(getText("advancedSearchController.error_parsing_failed"));
         }
 
         if (getActionErrors().isEmpty()) {
@@ -589,14 +588,14 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         StringBuilder sb = new StringBuilder();
         String searchingFor = topLevelQueryPart.getDescription();
         if (groups.isEmpty() || StringUtils.isBlank(searchingFor)) {
-            sb.append(MessageHelper.getMessage("advancedSearchController.showing_all_resources"));
+            sb.append(getText("advancedSearchController.showing_all_resources"));
         } else {
             sb.append(searchingFor);
         }
         // THIS SHOULD BE LESS BRITTLE THAN CALLING isEmpty()
         String narrowedBy = reservedQueryPart.getDescription();
         if (narrowedBy != null && StringUtils.isNotBlank(narrowedBy.trim())) {
-            sb.append(MessageHelper.getMessage("advancedSearchController.narrowed_by"));
+            sb.append(getText("advancedSearchController.narrowed_by"));
             sb.append(narrowedBy);
         }
         return sb.toString();
@@ -607,7 +606,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     public void setRawQuery(String rawQuery) {
-        throw new NotImplementedException(MessageHelper.getMessage("advancedSearchController.admin_not_implemented"));
+        throw new NotImplementedException(getText("advancedSearchController.admin_not_implemented"));
     }
 
     public List<ResourceType> getResourceTypeFacets() {
@@ -705,30 +704,30 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     private void determineSearchTitle() {
-        setSearchTitle(MessageHelper.getMessage("advancedSearchController.title_all_records")); // if all else fails.
+        setSearchTitle(getText("advancedSearchController.title_all_records")); // if all else fails.
         if (getId() != null) {
-            setSearchTitle(MessageHelper.getMessage("advancedSearchController.title_by_tdar_id")); // accurate
+            setSearchTitle(getText("advancedSearchController.title_by_tdar_id")); // accurate
         } else if (StringUtils.isNotBlank(getQuery())) {
             setSearchTitle(getQuery());
         } else if (isExplore()) {
             // FIXME -- Why can't we delegate this to the searchParameter object?
             if (getExploreKeyword() != null) {
-                setSearchTitle(MessageHelper.getMessage("advancedSearchController.title_filtered_by_keyword",getExploreKeyword().getLabel()));
+                setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword",getExploreKeyword().getLabel()));
             } else if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
-                setSearchTitle(MessageHelper.getMessage("advancedSearchController.title_beginning_with_s", getFirstGroup().getStartingLetter()));
+                setSearchTitle(getText("advancedSearchController.title_beginning_with_s", getFirstGroup().getStartingLetter()));
                 // FIXME: only supports 1
             } else if (CollectionUtils.isNotEmpty(getFirstGroup().getCreationDecades())) {
-                setSearchTitle(MessageHelper.getMessage("advancedSearchController.created_in_the_decade_s", getFirstGroup().getCreationDecades().get(0)));
+                setSearchTitle(getText("advancedSearchController.created_in_the_decade_s", getFirstGroup().getCreationDecades().get(0)));
             }
         } else if (isKeywordSearch()) {
-            setSearchTitle(MessageHelper.getMessage("advancedSearchController.title_filtered_by_keyword"));
+            setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword"));
         }
         
     }
 
     private void determineCollectionSearchTitle() {
         if (StringUtils.isEmpty(query)) {
-            setSearchTitle(MessageHelper.getMessage("advancedSearchController.title_all_collections"));
+            setSearchTitle(getText("advancedSearchController.title_all_collections"));
         } else {
             setSearchTitle(query);
         }
@@ -806,7 +805,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         if (groups.size() > 0) {
             return groups.get(0);
         }
-        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("advancedSearchController.try_again"));
+        throw new TdarRecoverableRuntimeException(getText("advancedSearchController.try_again"));
     }
 
     private <K extends Keyword> void setExploreKeyword(Class<K> type,
@@ -815,7 +814,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         try {
             exploreKeyword = getGenericService().find(type, NumberFormat.getInstance().parse(id).longValue());
         } catch (java.text.ParseException e) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("advancedSearchController.bad_id",id), e);
+            throw new TdarRecoverableRuntimeException(getText("advancedSearchController.bad_id",id), e);
         }
     }
 
@@ -838,7 +837,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             "${contentLength}" }) })
     public String viewExcelReport() throws ParseException, TdarActionException {
         if (!isAuthenticated()) {
-            throw new TdarActionException(StatusCode.UNAUTHORIZED, MessageHelper.getMessage("advancedSearchController.log_in_required"));
+            throw new TdarActionException(StatusCode.UNAUTHORIZED, getText("advancedSearchController.log_in_required"));
         }
         try {
             setMode("excel");
@@ -869,19 +868,19 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 // ADD HEADER ROW THAT SHOWS URL and SEARCH PHRASE
                 sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, fieldNames.size()));
                 excelService.addDocumentHeaderRow(sheet, rowNum, 0,
-                        Arrays.asList(MessageHelper.getMessage("advancedSearchController.excel_search_results", TdarConfiguration.getInstance().getSiteAcronym(), getSearchPhrase())));
+                        Arrays.asList(getText("advancedSearchController.excel_search_results", TdarConfiguration.getInstance().getSiteAcronym(), getSearchPhrase())));
                 rowNum++;
-                List<String> headerValues = Arrays.asList(MessageHelper.getMessage("advancedSearchController.search_url"), getUrlService().getBaseUrl() + getServletRequest().getRequestURI()
+                List<String> headerValues = Arrays.asList(getText("advancedSearchController.search_url"), getUrlService().getBaseUrl() + getServletRequest().getRequestURI()
                         .replace("/download", "/results") + "?" + getServletRequest().getQueryString());
                 excelService.addPairedHeaderRow(sheet, rowNum, 0, headerValues);
                 rowNum++;
                 excelService.addPairedHeaderRow(sheet, rowNum, 0,
-                        Arrays.asList(MessageHelper.getMessage("advancedSearchController.downloded_by"),
-                                MessageHelper.getMessage("advancedSearchController.downloaded_on", getAuthenticatedUser().getProperName() , new Date())));
+                        Arrays.asList(getText("advancedSearchController.downloded_by"),
+                                getText("advancedSearchController.downloaded_on", getAuthenticatedUser().getProperName() , new Date())));
                 rowNum++;
                 rowNum++;
                 for (int i=0; i < fieldNames.size(); i++) {
-                    fieldNames.set(i, MessageHelper.getMessage("advancedSearchController." + fieldNames.get(i)));
+                    fieldNames.set(i, getText("advancedSearchController." + fieldNames.get(i)));
                 }
                 
                 excelService.addHeaderRow(sheet, rowNum, 0, fieldNames);
@@ -950,7 +949,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 contentLength = tempFile.length();
             }
         } catch (Exception e) {
-            addActionErrorWithException(MessageHelper.getMessage("advancedSearchController.something_happened_with_excel_export"), e);
+            addActionErrorWithException(getText("advancedSearchController.something_happened_with_excel_export"), e);
             return INPUT;
         }
 

@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.struts2.StrutsStatics;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.hibernate.SessionFactory;
@@ -110,7 +112,10 @@ import org.tdar.utils.TestConfiguration;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.conversion.impl.AnnotationXWorkConverter;
+import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
 
 @ContextConfiguration(locations = { "classpath:/applicationContext.xml" })
 @SuppressWarnings("rawtypes")
@@ -439,6 +444,13 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (controller instanceof AuthenticationAware.Base) {
             ((TdarActionSupport) controller).setServletRequest(getServletRequest());
             ((TdarActionSupport) controller).setServletResponse(getServletResponse());
+            // set the context
+            Map<String, Object> contextMap = new HashMap<String, Object>();
+            contextMap.put(StrutsStatics.HTTP_REQUEST, getServletRequest());
+            ActionContext.setContext(new ActionContext(contextMap));
+            ActionContext context = new ActionContext(new HashMap<String,Object>());
+            context.setLocale(Locale.getDefault());
+            ActionContext.setContext(context);
         }
         return controller;
     }

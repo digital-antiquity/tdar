@@ -72,10 +72,10 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public String selectAccount() throws TdarActionException {
         Invoice invoice = getInvoice();
         if (invoice == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("billingAccountController.invoice_is_requried"));
+            throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
         }
         if (!getAuthenticationAndAuthorizationService().canAssignInvoice(invoice, getAuthenticatedUser())) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("billingAccountController.rights_to_assign_this_invoice"));
+            throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
         }
         setAccounts(getAccountService().listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         if (CollectionUtils.isNotEmpty(getAccounts())) {

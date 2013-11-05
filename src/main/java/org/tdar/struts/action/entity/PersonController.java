@@ -159,7 +159,7 @@ public class PersonController extends AbstractCreatorController<Person> {
             return;
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
-            addActionError(MessageHelper.getMessage("userAccountController.error_passwords_dont_match"));
+            addActionError(getText("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().getAuthenticationProvider().updateUserPassword(getPerson(), password);
@@ -179,7 +179,7 @@ public class PersonController extends AbstractCreatorController<Person> {
 
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
-            addActionError(MessageHelper.getMessage("userAccountController.error_passwords_dont_match"));
+            addActionError(getText("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().updateUsername(getPerson(), newUsername, password);

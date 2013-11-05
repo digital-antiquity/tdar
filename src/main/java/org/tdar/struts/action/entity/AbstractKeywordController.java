@@ -51,7 +51,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Override
     protected void delete(K persistable) {
         // no deleting of keywords (for now)
-        addActionError(MessageHelper.getMessage("abstractKeywordController.cannot_delete"));
+        addActionError(getText("abstractKeywordController.cannot_delete"));
     }
 
     @Override

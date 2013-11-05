@@ -168,12 +168,12 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
             // Sets are currently not supported
             if (set != null) {
-                throw new OAIException(MessageHelper.getMessage("oaiControler.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
+                throw new OAIException(getText("oaiControler.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
             }
 
             if (verbToHandle == null) {
                 logger.warn("NO VERB PROVIDED");
-                throw new OAIException(MessageHelper.getMessage("oaiControler.bad_verb"), OaiErrorCode.BAD_VERB);
+                throw new OAIException(getText("oaiControler.bad_verb"), OaiErrorCode.BAD_VERB);
             } else {
                 switch (verbToHandle) {
                     case IDENTIFY:
@@ -217,7 +217,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
 
     private String identifyVerb() throws OAIException {
-        String message = MessageHelper.getMessage("oaiControler.not_allowed_with_identity");
+        String message = getText("oaiControler.not_allowed_with_identity");
         assertParameterIsNull(metadataPrefix, "metadataPrefix", message);
         assertParameterIsNull(identifier, "identifier", message);
         assertParameterIsNull(set, "set", message);
@@ -229,7 +229,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
     private void assertParameterIsNull(Object parameter, String parameterName, String message) throws OAIException {
         if (parameter != null) {
-            throw new OAIException(MessageHelper.getMessage("oaiController.bad_argument", parameterName , message), OaiErrorCode.BAD_ARGUMENT);
+            throw new OAIException(getText("oaiController.bad_argument", parameterName , message), OaiErrorCode.BAD_ARGUMENT);
         }
     }
 
@@ -247,7 +247,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // Check parameters
 
         // The only valid parameters for ListRecords are verb, from, until, set, resumptionToken, and metadataPrefix: identifier is always invalid
-        assertParameterIsNull(identifier, "identifier",MessageHelper.getMessage("oaiController.not_allowed_with_list"));
+        assertParameterIsNull(identifier, "identifier",getText("oaiController.not_allowed_with_list"));
         // the resumptionToken parameter is exclusive - if present, then no other parameters may be present apart from verb
         if (resumptionToken != null) {
             String message = "Not allowed with resumptionToken";
@@ -333,7 +333,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
         // if there were no records found, then throw an exception
         if (totalResources + totalPersons + totalInstitutions == 0) {
-            throw new OAIException(MessageHelper.getMessage("oaiController.no_matches"), OaiErrorCode.NO_RECORDS_MATCH);
+            throw new OAIException(getText("oaiController.no_matches"), OaiErrorCode.NO_RECORDS_MATCH);
         }
 
     }
@@ -417,7 +417,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 break;
             case MODS:
                 if (object instanceof Creator) {
-                    throw new OAIException(MessageHelper.getMessage("oaiController.cannot_disseminate"), OaiErrorCode.CANNOT_DISSEMINATE_FORMAT);
+                    throw new OAIException(getText("oaiController.cannot_disseminate"), OaiErrorCode.CANNOT_DISSEMINATE_FORMAT);
                 }
                 jaxbDocument = ModsTransformer.transformAny((Resource) object);
                 JaxbDocumentWriter.write(jaxbDocument, document, true);
@@ -493,27 +493,27 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     }
 
     private String listSetsVerb() throws OAIException {
-        throw new OAIException(MessageHelper.getMessage("oaiControler.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
+        throw new OAIException(getText("oaiControler.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
         // return SUCCESS_LIST_SETS;
     }
 
     private String getRecordVerb() throws JAXBException, OAIException, ParserConfigurationException {
         // validate parameters
-        String message = MessageHelper.getMessage("oaiControler.not_allowed_with_get");
+        String message = getText("oaiControler.not_allowed_with_get");
 
         assertParameterIsNull(resumptionToken, "resumptionToken", message);
         assertParameterIsNull(from, "from", message);
         assertParameterIsNull(until, "until", message);
 
         if (identifier == null) {
-            throw new OAIException(MessageHelper.getMessage("oaiController.missing_identifer"), OaiErrorCode.BAD_ARGUMENT);
+            throw new OAIException(getText("oaiController.missing_identifer"), OaiErrorCode.BAD_ARGUMENT);
         }
 
         // check the requested metadata format
         OAIMetadataFormat requestedFormat = getMetadataPrefixEnum();
 
         if (requestedFormat == null)
-            throw new OAIException(MessageHelper.getMessage("oaiController.invalid_metadata_param"),
+            throw new OAIException(getText("oaiController.invalid_metadata_param"),
                     OaiErrorCode.BAD_ARGUMENT);
 
         // check that this kind of record can be disseminated in the requested format
@@ -581,7 +581,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             // First token must = "oai"
             // Second token must = the repository namespace identifier
             if (!token[0].equals("oai") || !token[1].equals(repositoryNamespaceIdentifier)) {
-                throw new OAIException(MessageHelper.getMessage("oaiController.identifier_not_part"), OaiErrorCode.ID_DOES_NOT_EXIST);
+                throw new OAIException(getText("oaiController.identifier_not_part"), OaiErrorCode.ID_DOES_NOT_EXIST);
             }
             // the third token is the type of the record, i.e. "Resource", "Person" or "Institution"
             setIdentifierType(token[2]);
@@ -602,7 +602,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             setOaiObject((OaiDcProvider) getGenericService().find(oaiObjectClass, getIdentifierRecordNumber()));
             if (getOaiObject() == null)
                 throw new OAIException(
-                        MessageHelper.getMessage("oaiController.no_identifier", oaiObjectClass.getSimpleName()),
+                        getText("oaiController.no_identifier", oaiObjectClass.getSimpleName()),
                         OaiErrorCode.ID_DOES_NOT_EXIST);
 
         } catch (OAIException e) {

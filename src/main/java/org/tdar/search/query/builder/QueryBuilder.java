@@ -18,6 +18,8 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.search.SearchParameters;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * 
  * $Id$
@@ -45,9 +47,9 @@ public abstract class QueryBuilder extends QueryPartGroup {
         this.overrides = over;
     }
 
-    public void append(SearchParameters param) {
+    public void append(SearchParameters param,TextProvider provider) {
         if (param != null)
-            append(param.toQueryPartGroup());
+            append(param.toQueryPartGroup(provider));
     }
 
     /*

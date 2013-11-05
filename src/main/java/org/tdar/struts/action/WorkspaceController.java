@@ -92,7 +92,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     public String selectColumns() {
         // FIXME: do we want to log this step? Perhaps, but there's no resource being modified, and resource parameter isn't nullable.
         if (CollectionUtils.isEmpty(tableIds)) {
-            addActionError(MessageHelper.getMessage("workspaceController.selectTables"));
+            addActionError(getText("workspaceController.selectTables"));
             return INPUT;
         }
         return SUCCESS;

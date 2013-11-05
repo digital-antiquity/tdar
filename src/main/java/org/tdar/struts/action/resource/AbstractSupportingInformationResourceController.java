@@ -70,7 +70,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             return null;
         }
         if (StringUtils.isBlank(getFileTextInput())) {
-            addActionError(MessageHelper.getMessage("abstractSupportingInformationResourceController.please_enter"));
+            addActionError(getText("abstractSupportingInformationResourceController.please_enter"));
             return null;
         }
         InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion();
@@ -176,8 +176,8 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         List<Resource> related = getRelatedResources();
         if (related.size() > 0) {
             String titles = StringUtils.join(related, ',');
-            String message = MessageHelper.getMessage("abstractSupportingInformationResourceController.remove_mappings",titles);
-            addActionErrorWithException(MessageHelper.getMessage("abstractSupportingInformationResourceController.still_mapped"), new TdarRecoverableRuntimeException(message));
+            String message = getText("abstractSupportingInformationResourceController.remove_mappings",titles);
+            addActionErrorWithException(getText("abstractSupportingInformationResourceController.still_mapped"), new TdarRecoverableRuntimeException(message));
             return ERROR;
         }
         return SUCCESS;

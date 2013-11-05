@@ -72,7 +72,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Override
     protected String save(Invoice persistable) {
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.cannot_modify"));
+            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
         loadEditMetadata();
 
@@ -110,7 +110,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         if (CollectionUtils.isEmpty(getInvoice().getItems())) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.no_items_found"));
+            throw new TdarRecoverableRuntimeException(getText("cartController.no_items_found"));
         }
 
         getInvoice().setTransactedBy(getAuthenticatedUser());
@@ -191,14 +191,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String addPaymentMethod() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.cannot_modify"));
+            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
         if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
         }
 
         if (getInvoice().getAddress() == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.enter_a_billing_adderess"));
+            throw new TdarRecoverableRuntimeException(getText("cartController.enter_a_billing_adderess"));
         }
 
         return SUCCESS;
@@ -209,7 +209,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String simplePaymentProcess() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.cannot_modify"));
+            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
         if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
@@ -237,12 +237,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.cannot_modify"));
+            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
 
         getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
         if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
-            addActionError(MessageHelper.getMessage("cartController.choose_address"));
+            addActionError(getText("cartController.choose_address"));
             return SUCCESS_ADD_ADDRESS;
         }
         getGenericService().saveOrUpdate(getInvoice());
@@ -280,7 +280,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getSuccessPathForPayment(); // initialize
         PaymentMethod paymentMethod = invoice.getPaymentMethod();
         if (paymentMethod == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.valid_payment_method_is_required"));
+            throw new TdarRecoverableRuntimeException(getText("cartController.valid_payment_method_is_required"));
         }
 
         Long phone = null;
@@ -289,12 +289,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         if (isPhoneRequired() && (phone == null || phone.toString().length() < 10)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.valid_phone_number_is_required"));
+            throw new TdarRecoverableRuntimeException(getText("cartController.valid_phone_number_is_required"));
         }
 
         invoice.setAddress(getGenericService().loadFromSparseEntity(invoice.getAddress(), Address.class));
         if (isAddressRequired() && Persistable.Base.isNullOrTransient(invoice.getAddress())) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("cartController.a_biling_address_is_required"));
+            throw new TdarRecoverableRuntimeException(getText("cartController.a_biling_address_is_required"));
         }
 
         String invoiceNumber = invoice.getInvoiceNumber();
@@ -396,7 +396,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                             getGenericService().markReadOnly(person);
                             people.add(person);
                         }
-                        getEmailService().sendWithFreemarkerTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + MessageHelper.getMessage("cartController.subject"), people.toArray(new Person[0]));
+                        getEmailService().sendWithFreemarkerTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + getText("cartController.subject"), people.toArray(new Person[0]));
                     } catch (Exception e) {
                         logger.error("could not send email: {} ", e);
                     }

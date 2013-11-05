@@ -36,8 +36,9 @@ import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
+
+import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * @author Adam Brin
@@ -197,9 +198,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets
-    protected QueryPartGroup processReservedTerms() {
+    protected QueryPartGroup processReservedTerms(ActionSupport support) {
         getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
-        return getReservedSearchParameters().toQueryPartGroup();
+        return getReservedSearchParameters().toQueryPartGroup(support);
     }
 
     @Override
@@ -432,7 +433,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 try {
                     pqp.setRegistered(Boolean.parseBoolean(registered));
                 } catch (Exception e) {
-                    addActionErrorWithException(MessageHelper.getMessage("abstractLookupController.invalid_syntax"), e);
+                    addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                     return ERROR;
                 }
             }
@@ -441,7 +442,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 handleSearch(q);
                 // sanitize results if the user is not logged in
             } catch (ParseException e) {
-                addActionErrorWithException(MessageHelper.getMessage("abstractLookupController.invalid_syntax"), e);
+                addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
         }
@@ -462,7 +463,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             try {
                 handleSearch(q);
             } catch (ParseException e) {
-                addActionErrorWithException(MessageHelper.getMessage("abstractLookupController.invalid_syntax"), e);
+                addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
         }
