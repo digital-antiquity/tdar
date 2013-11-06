@@ -189,7 +189,8 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     private DoiDTO populateDTO(Resource r) {
         DoiDTO doiDTO = new DoiDTO();
         java.util.List<String> creatorNames = new ArrayList<>();
-        for (ResourceCreator creator : r.getPrimaryCreators()) {
+        // was primary creator, but that was returning null : Daniel feels in Australia this should be the copyright holder.
+        for (ResourceCreator creator : r.getResourceCreators()) {
             creatorNames.add(creator.getCreator().getName());
         }
         doiDTO.setCreators(creatorNames);
