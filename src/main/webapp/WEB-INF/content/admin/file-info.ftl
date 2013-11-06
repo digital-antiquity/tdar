@@ -90,6 +90,22 @@ ${file.errorMessage!""}
      </table>
 </div>
 
+<div class="glide">
+    <h3>Total File Space Usage by extension</h3>
+    <table class="tableFormat table">
+     <tr>
+      <th>Extension</th>
+      <th>size</th>
+     </tr>
+     <#list fileStats?keys?sort as stat>
+     <tr>
+       <td><b>${stat}</b></td>
+       <td>${fileStats.get(stat)[0]}</td>
+     </tr>
+     </#list>
+     </table>
+</div>
+
 <script>
     $(function(){
         TDAR.datatable.extendSorting();

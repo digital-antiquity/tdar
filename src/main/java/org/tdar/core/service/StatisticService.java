@@ -96,6 +96,7 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
      * Get current @link Resource Counts limited to those with files (grouped by week)
      * @return
      */
+    @Transactional(readOnly=true)
     public Map<Date, Map<StatisticType, Long>> getResourceStatisticsWithFiles() {
         List<StatisticType> types = Arrays.asList(StatisticType.NUM_CODING_SHEET_WITH_FILES, StatisticType.NUM_DATASET_WITH_FILES,
                 StatisticType.NUM_DOCUMENT_WITH_FILES,
@@ -110,8 +111,14 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
      * 
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Pair<Long, Long>> getUserLoginStats() {
         return getDao().getUserLoginStats();
     }
 
+    @Transactional(readOnly=true)
+    public  Map<String, Long>  getFileStats(List<VersionType> types) {
+        return getDao().getFileStats(types);
+    }
+    
 }
