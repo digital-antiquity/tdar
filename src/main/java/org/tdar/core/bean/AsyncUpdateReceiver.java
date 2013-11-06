@@ -90,7 +90,7 @@ public interface AsyncUpdateReceiver {
         public String getAsyncErrors() {
             StringBuilder sb = new StringBuilder();
             for (Throwable throwable : getThrowables()) {
-                sb.append(throwable.getMessage());
+                sb.append(throwable.getLocalizedMessage());
             }
             return sb.toString();
         }
@@ -99,7 +99,7 @@ public interface AsyncUpdateReceiver {
         public String getHtmlAsyncErrors() {
             StringBuilder sb = new StringBuilder();
             for (Throwable throwable : getThrowables()) {
-                sb.append("<li>").append(throwable.getMessage()).append("</li>");
+                sb.append("<li>").append(throwable.getLocalizedMessage()).append("</li>");
             }
             return sb.toString();
         }

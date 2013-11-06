@@ -21,7 +21,7 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
     @Rollback(true)
     public void testFindAllSearchPhrase() {
         doSearch("");
-        assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_records"), controller.getSearchSubtitle());
+        assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_collections"), controller.getSearchSubtitle());
     }
 
     @Test
