@@ -392,7 +392,7 @@ public class CommandLineAPITool {
 
             if (!sawCrowdAuth) {
                 logger.warn("unable to authenticate, check username and password " + getHostname());
-                // exit(0);
+                exit(-1);
             }
             logger.trace(EntityUtils.toString(entity));
             entity.consumeContent();
