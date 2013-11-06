@@ -9,6 +9,8 @@
 
     "supporting_scripts::postgres_password" : "${the.jdbc.password}",
 
+    "nrpe::nagiosservers" : "nagios.vpac.org",
+
     "ddclient::ddclientconnectserver" : "${dynamic.dns.service}",
     "ddclient::ddclientlogin" : "${username.dns.service}",
     "ddclient::ddclientpassword" : "${password.dns.service}",
