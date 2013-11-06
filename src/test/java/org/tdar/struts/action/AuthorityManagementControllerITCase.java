@@ -19,7 +19,6 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.GenericService;
 import org.tdar.utils.MessageHelper;
 
@@ -124,7 +123,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         controller.prepare();
         controller.validate();
         controller.selectAuthority();
-        assertTrue("expecting protected record error", controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_too_many_protected_records")));
+        assertEquals(MessageHelper.getMessage("authorityManagementController.error_too_many_protected_records"), controller.getActionErrors().iterator().next());
     }
 
     @Test

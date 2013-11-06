@@ -83,7 +83,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     public String selectAuthority() {
         if (hasActionErrors())
             return INPUT;
-
+        getLogger().debug("{}" , getLocale());
         if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 1) {
             addActionError(getText("authorityManagementController.error_too_many_protected_records"));
             return INPUT;

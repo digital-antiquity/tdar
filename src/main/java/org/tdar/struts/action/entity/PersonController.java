@@ -22,7 +22,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.HttpsOnly;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
