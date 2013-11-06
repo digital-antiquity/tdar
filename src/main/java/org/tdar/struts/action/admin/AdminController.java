@@ -87,7 +87,7 @@ public class AdminController extends AuthenticationAware.Base {
     private List<Person> recentLogins;
 
     private Map<String, List<Number>> fileAverageStats;
-    private Map<String, Double> fileStats;
+    private Map<String, Long> fileStats;
 
     private Map<String, List<Number>> fileUploadedAverageStats;
 
@@ -368,11 +368,11 @@ public class AdminController extends AuthenticationAware.Base {
         this.files = files;
     }
 
-    public Map<String, Double> getFileStats() {
+    public Map<String, Long> getFileStats() {
         return fileStats;
     }
 
-    public void setFileStats(Map<String, Double> map) {
+    public void setFileStats(Map<String, Long> map) {
         this.fileStats = map;
     }
 

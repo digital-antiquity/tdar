@@ -75,7 +75,7 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     }
 
     @Transactional(readOnly=true)
-    public  Map<String, Double>  getFileStats(List<VersionType> types) {
+    public  Map<String, Long>  getFileStats(List<VersionType> types) {
         return getDao().getFileStats(types);
     }
     

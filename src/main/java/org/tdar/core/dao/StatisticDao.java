@@ -87,10 +87,10 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         return toReturn;
     }
 
-    public Map<String, Double> getFileStats(List<VersionType> types) {
+    public Map<String, Long> getFileStats(List<VersionType> types) {
         Query query = getCurrentSession().getNamedQuery(QUERY_FILE_SIZE_TOTAL);
         query.setParameterList("types", types);
-        Map<String, Double> toReturn = new HashMap<>();
+        Map<String, Long> toReturn = new HashMap<>();
         for (Object[] result_ : (List<Object[]>) query.list()) {
             String txt = StringUtils.upperCase((String) result_[0]);
             switch (txt) {
@@ -102,11 +102,11 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
                 default:
                     break;
             }
-            Double val = toReturn.get(txt);
+            Long val = toReturn.get(txt);
             if (val == null) {
-                val = 0D;
+                val = 0L;
             }
-            toReturn.put(txt, val + (Double) result_[1]);
+            toReturn.put(txt, val + (Long) result_[1]);
         }
         return toReturn;
     }
