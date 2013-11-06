@@ -1,5 +1,6 @@
 package org.tdar.search.query.part;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -119,7 +120,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
                 fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_greater");
             }
         }
-        return String.format(fmt, start, end);
+        return MessageFormat.format(fmt, start, end);
     }
 
     private boolean isBlank(C item) {
