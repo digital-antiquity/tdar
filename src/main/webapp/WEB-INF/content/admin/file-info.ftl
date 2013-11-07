@@ -100,7 +100,7 @@ ${file.errorMessage!""}
      <#list fileStats?keys?sort as stat>
      <tr>
        <td><b>${stat}</b></td>
-       <td>${fileStats.get(stat)[0]}</td>
+       <td><@common.convertFileSize fileStats[stat]/></td>
      </tr>
      </#list>
      </table>
