@@ -23,7 +23,7 @@
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-process.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-validate.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-ui.js",
-                     "/js/jquery.populate.js",
+                     "/includes/jquery.populate.js",
                      "/includes/jquery.tabby-0.12.js",
                      "/js/latLongUtil-1.0.js",
                      "/includes/jquery.orgChart/jquery.orgchart.js",
@@ -55,11 +55,11 @@
                      "/js${fakeDirectory}/tdar.contexthelp.js",
 	                 "/js${fakeDirectory}/tdar.formValidateExtensions.js",
 	                 "/js${fakeDirectory}/tdar.jquery-upload-validation.js",
-                     "/js/bindWithDelay.js"
+                     "/includes/bindWithDelay.js"
     ] />
 <#--                     "/includes/ivaynberg-select2-817453b/select2.js" -->
 
-    <#if !production> <#local srcs = srcs + ["/includes${fakeDirectory}/tdar.test.js"]> </#if> 
+    <#if !production> <#local srcs = srcs + ["/js${fakeDirectory}/tdar.test.js"]> </#if> 
 
 <#if combine>
    <!-- call to http://code.google.com/p/webutilities/wiki/JSCSSMergeServlet#URLs_in_CSS -->
