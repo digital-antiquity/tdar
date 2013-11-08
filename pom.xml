@@ -38,6 +38,7 @@
 		<truezip.version>7.7.4</truezip.version>
 		<http-components.version>4.3.1</http-components.version>
 		<display.port></display.port>
+		<warfile.name>ROOT</warfile.name>
 		<!-- following points to the profile directory to use for filtering resources -->
 		<!-- override by redefining in a profile. don't forget to 'clean' when redefining -->
 		<!-- Be warned: Eclipse may have a different active profile in play to the command line -->
@@ -1064,7 +1065,7 @@
 	</pluginRepositories>
 
 	<build>
-		<finalName>ROOT</finalName>
+		<finalName>${warfile.name}</finalName>
 		<resources>
 			<!-- We only want a small set of files to be filtered. -->
 			<resource>
