@@ -1890,6 +1890,29 @@
 			</build>
 		</profile>
 		<profile>
+			<id>checkLicenses</id>
+			<build>
+				<plugins>
+					<plugin>
+					<!--  https://github.com/mrice/license-check -->
+						<groupId>org.complykit</groupId>
+						<artifactId>license-check-maven-plugin</artifactId>
+						<version>0.5.1</version>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					   <configuration>
+					    </configuration>
+					</plugin>
+				</plugins>
+			</build>
+	</profile>
+		<profile>
 			<id>migrateFilestore</id>
 			<build>
 				<plugins>

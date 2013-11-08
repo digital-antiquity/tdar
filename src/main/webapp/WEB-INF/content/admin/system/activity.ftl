@@ -37,8 +37,33 @@ pre, td {
 <@list.hashtable data=counters keyLabel="Browser" valueLabel="Count" />
 
 <h3>Recent Activity</h3>
-<@list.easytable id="tblRecentActivity" data=activityList cols=["startDate", "user", "totalTime", "name"] />
-
+<table class="tableFormat table" id="tblRecentActivity">
+    <thead>
+        <tr>
+            <th>date</th><th>user</th><th>total time (ms)</th><th>request</th>
+        </tr>
+    </thead>
+    <tbody>
+    <#list activityList as activity>
+    <#assign highlight = false/>
+    <#assign highlightPost = false/>
+    <#if activity.user?has_content>
+    	<#assign highlight=true />
+	</#if>
+	<#if activity.name?contains("POST") >
+		<#assign highlightPost=true />
+	</#if>
+     <tr class="${highlight?string('highlightrow-yellow','')} ${highlightPost?string('highlightrow-green','')}">
+        <td>${activity.startDate?datetime}</td>
+        <td><#if activity.user?has_content>${activity.user.properName}</#if></td>
+        <td>${(activity.totalTime?c)!default("-")}</td>
+        <#noescape>
+        <td width=550>${(activity.name!"")?html?replace("&", "<br>&")}</td>
+        </#noescape>
+      </tr>
+    </#list>
+    </tbody>
+</table>
 <h3>Scheduled Processes Currently in the Queue</h3>
 <#if scheduledProcessesEnabled??>
 <ol>
