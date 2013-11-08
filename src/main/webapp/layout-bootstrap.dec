@@ -28,7 +28,7 @@
         <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
         <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}"> 
 		<script>		TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
-        <script type="text/javascript" src="/includes/tdar.errorutils.js?build${common.tdarBuildId}"></script>
+        <script type="text/javascript" src="/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
 		<#-- dev only
         <script src="${protocol}//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
         -->
@@ -45,7 +45,7 @@
             <link rel="stylesheet" href="/css/qunit-1.11.0.css" type="text/css">
         </#if>
         
-        <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
+        <script src="<@s.url value="/js/tdar.core.js"/>"></script>
         <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
         <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
 
