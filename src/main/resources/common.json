@@ -19,5 +19,5 @@
     "tomcat7::keystore_password" : "${password.keystore}",
     "tomcat7::manager_password" : "${password.tomcat.manager}",
 
-    "kettle::cli_user_password" : "${password.cli.user}",
+    "kettle::cli_user_password" : "${password.cli.user}"
 }
