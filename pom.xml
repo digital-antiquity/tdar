@@ -8,7 +8,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
 		<struts2.version>2.3.15.3</struts2.version>
-		<hibernate.version>4.2.6.Final</hibernate.version>
+		<hibernate.version>4.2.7.Final</hibernate.version>
 		<hibernate.search.version>4.3.0.Final</hibernate.search.version>
 		<spring.framework.version>3.2.4.RELEASE</spring.framework.version>
 		<spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
@@ -133,6 +133,10 @@
 			<id>Laughing Panda</id>
 			<url>http://maven.laughingpanda.org/maven2</url>
 		</repository>
+		<repository>
+			<id>local-dev</id>
+			<url>http://dev.tdar.org/repo/</url>
+		</repository>
 	</repositories>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -200,7 +204,7 @@
 		<dependency>
 			<groupId>com.ibm.icu</groupId>
 			<artifactId>icu4j</artifactId>
-			<version>52.1</version>
+			<version>51.2</version>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
@@ -240,18 +244,13 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.48d</version>
-		</dependency>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>ij</artifactId>
-			<version>1.48a</version>
+			<version>1.48f</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.ij_io</groupId>
 			<artifactId>ij_io</artifactId>
 			<version>1.2.4</version>
-			</dependency>
+		</dependency>
 		<dependency>
 			<groupId>javax.media.jai</groupId>
 			<artifactId>com.springsource.javax.media.jai.core</artifactId>
@@ -301,7 +300,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>apache-log4j-extras</artifactId>
-			<version>1.1</version>
+			<version>1.2.17</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
