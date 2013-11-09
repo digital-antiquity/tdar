@@ -1015,7 +1015,6 @@
 			<version>${odata4j.version}</version>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
-	</dependency>
 	<!-- OData REST Infrastructure -->
 	<!-- REMOVED: GPL 2.0 <dependency>
 		<groupId>com.sun.net.httpserver</groupId>
@@ -1068,7 +1067,7 @@
 				<artifactId>spring-aop</artifactId>
 			</exclusion>
 		</exclusions>
-
+	</dependency>
 
 		<!-- OData Integration Testing Support -->
 		<dependency>
