@@ -12,12 +12,12 @@
                      "/includes/jquery.metadata.2.1/jquery.metadata.js",
     				<#-- LICENSE: MIT /GPL 2.0 -->
                      "/includes/jquery.maphilight-1.2.2.js",
-    				<#-- LICENSE: MIT->
+    				<#-- LICENSE: MIT -->
                      "/includes/jquery.textarearesizer.js",
-    				<#-- LICENSE: MIT->
+    				<#-- LICENSE: MIT -->
                      "/js${fakeDirectory}/jquery.FormNavigate.js",
                      "/includes/jquery.watermark-3.1.3.min.js",
-    				<#-- LICENSE: MIT->
+    				<#-- LICENSE: MIT -->
                      "/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js",
     				<#-- LICENSE: BSD /GPL 2.0 -->
                      "/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js",
@@ -31,11 +31,11 @@
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-process.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-validate.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-ui.js",
-    				<#-- LICENSE: MIT->
+    				<#-- LICENSE: MIT -->
                      "/includes/jquery.populate.js",
-    				<#-- LICENSE: MIT->
+    				<#-- LICENSE: MIT -->
                      "/includes/jquery.tabby-0.12.js",
-    				<#-- LICENSE: MIT->
+    				<#-- LICENSE: MIT -->
                      "/js/latLongUtil-1.0.js",
                      <#-- LICENSE:CC Attribution 3.0 Unported -->
                      "/includes/jquery.orgChart/jquery.orgchart.js",
