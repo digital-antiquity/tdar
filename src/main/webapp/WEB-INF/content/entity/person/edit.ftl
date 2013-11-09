@@ -50,7 +50,7 @@ label.error {display:block;}
         <@s.textfield cssClass="required input-xlarge"         label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
         <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Institution"       name="institutionName"     maxlength="255" value="${person.institution!}"/>
 		<#assign registered = "" />
-        <@s.textfield cssClass="input-xlarge ${(person.registered)?string('registered', '')}"  label="Email"   name="person.email"  maxlength="255"  title="An email is required" /> 
+        <@s.textfield cssClass="input-xlarge ${(person.registered)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
         
         <#if privacyControlsEnabled>
             <@common.boolfield label='Make email public?' name="person.emailPublic" id="email-public" value=person.emailPublic!false  />
@@ -110,6 +110,13 @@ label.error {display:block;}
 
 <@edit.submit "Save" false />    
 
+<div class="callout">
+    <p>
+        <#assign commentEmail = commentUrl?replace("mailto:", "")>
+        <em><strong>Account cancellation:</strong>
+        If you would like to cancel your ${siteAcronym} account please send an email request to <@s.a href="${commentUrl}">${commentEmail}</@s.a></em>
+    </p>
+</div>
 </@s.form>
 <div id="error"></div>
     <script type="text/javascript">
@@ -117,7 +124,6 @@ label.error {display:block;}
         $(function() {
             $frmPerson = $('#frmPerson');
             TDAR.autocomplete.applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
-            initializeView();
             TDAR.common.initEditPage($('#frmPerson')[0]);
             //tack on the confirm-password rules
         });

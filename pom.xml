@@ -7,7 +7,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
-		<struts2.version>2.3.15.2</struts2.version>
+		<struts2.version>2.3.15.3</struts2.version>
 		<hibernate.version>4.2.6.Final</hibernate.version>
 		<hibernate.search.version>4.3.0.Final</hibernate.search.version>
 		<spring.framework.version>3.2.4.RELEASE</spring.framework.version>
@@ -242,6 +242,16 @@
 			<artifactId>ij</artifactId>
 			<version>1.48d</version>
 		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij</artifactId>
+			<version>1.48a</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ij_io</groupId>
+			<artifactId>ij_io</artifactId>
+			<version>1.2.4</version>
+			</dependency>
 		<dependency>
 			<groupId>javax.media.jai</groupId>
 			<artifactId>com.springsource.javax.media.jai.core</artifactId>

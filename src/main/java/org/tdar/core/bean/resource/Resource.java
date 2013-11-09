@@ -443,8 +443,9 @@ public class Resource extends JsonModel.Base implements Persistable,
                     GeneralPermissions.MODIFY_METADATA, true));
         }
         for (Person p : writable) {
-            if (p == null || p.getId() == null)
+            if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
+            }
             users.add(p.getId());
         }
         // FIXME: decide whether right should inherit from projects (1) of (2)

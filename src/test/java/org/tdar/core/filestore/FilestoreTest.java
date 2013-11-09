@@ -25,9 +25,9 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.PairtreeFilestore;
-import org.tdar.filestore.tasks.ListArchiveTask;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
 

@@ -87,6 +87,7 @@ public class AdminController extends AuthenticationAware.Base {
     private List<Person> recentLogins;
 
     private Map<String, List<Number>> fileAverageStats;
+    private Map<String, Long> fileStats;
 
     private Map<String, List<Number>> fileUploadedAverageStats;
 
@@ -114,8 +115,8 @@ public class AdminController extends AuthenticationAware.Base {
     @Action("file-info")
     public String fileInfo() {
         setFileAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.values())));
-        setFileUploadedAverageStats(getStatisticService().getFileAverageStats(
-                Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
+        setFileStats(getStatisticService().getFileStats(Arrays.asList(VersionType.values())));
+        setFileUploadedAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
         setExtensionStats(getInformationResourceFileService().getAdminFileExtensionStats());
         setFiles(getInformationResourceFileService().findFilesWithStatus(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING));
         return SUCCESS;
@@ -365,6 +366,14 @@ public class AdminController extends AuthenticationAware.Base {
 
     public void setFiles(List<InformationResourceFile> files) {
         this.files = files;
+    }
+
+    public Map<String, Long> getFileStats() {
+        return fileStats;
+    }
+
+    public void setFileStats(Map<String, Long> map) {
+        this.fileStats = map;
     }
 
 }

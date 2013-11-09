@@ -446,7 +446,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void setProjectId(Long projectId_) {
         // remove me?
         if (projectId_ == null) {
-            logger.warn("Tried to set null project id, no-op.");
+            logger.trace("Tried to set null project id, no-op.");
             return;
         }
         this.projectId = projectId_;

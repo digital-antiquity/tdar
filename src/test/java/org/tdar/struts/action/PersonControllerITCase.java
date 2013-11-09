@@ -14,6 +14,11 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.entity.PersonController;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasKey;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 public class PersonControllerITCase extends AbstractAdminControllerITCase {
 
     @Override
@@ -196,16 +201,62 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         String saveAddress = controller.deleteAddress();
         assertEquals(PersonController.SUCCESS, saveAddress);
         controller = null;
-        // genericService.synchronize();
-        // setVerifyTransactionCallback(new TransactionCallback<Person>() {
-        // @Override
-        // public Person doInTransaction(TransactionStatus status) {
         Person person_ = genericService.find(Person.class, presonId);
         assertEquals(0, person_.getAddresses().size());
         genericService.delete(person_);
-        // return null;
-        // }
-        // });
+    }
+
+    @Test
+    @Rollback
+    public void editEmailAlreadyInUse() throws TdarActionException {
+        String email1 = "email1@tdar.org";
+        Person existingUser = createAndSaveNewPerson(email1, "user1");
+        controller = generateNewInitializedController(PersonController.class, getUser());
+        controller.setId(getUserId());
+        controller.prepare();
+        controller.setEmail(email1);
+        controller.setServletRequest(getServletPostRequest());
+        controller.validate();
+        assertThat(controller.getFieldErrors(), hasKey("email"));
+    }
+
+    @Test
+    @Rollback
+    //make sure none of the validators fail if we aren't making any changes
+    public void testSaveWithNoChanges() throws TdarActionException {
+        //change the first name but leave the email alone
+        controller.setId(getUserId());
+        controller.prepare();
+        controller.setEmail(controller.getPerson().getEmail());
+        controller.setServletRequest(getServletPostRequest());
+        controller.validate();
+        assertThat(controller.getFieldErrors().keySet(), empty());
+    }
+
+
+
+    @Test
+    @Rollback
+    public void editNewEmail() throws TdarActionException {
+        String email1 = "email1@tdar.org";
+        controller = generateNewInitializedController(PersonController.class, getUser());
+        controller.setId(getUserId());
+        controller.prepare();
+        controller.setEmail(email1);
+        controller.setServletRequest(getServletPostRequest());
+        controller.validate();
+        assertThat(controller.getFieldErrors().keySet(), empty());
+    }
+
+    @Test
+    @Rollback
+    public void testBlankEmailForActiveUser() throws TdarActionException {
+        controller.setId(getUserId());
+        controller.prepare();
+        controller.setEmail("");
+        controller.setServletRequest(getServletPostRequest());
+        controller.validate();
+        assertThat(controller.getFieldErrors(), hasKey("email"));
     }
 
     private Long addAddressToNewPerson() throws TdarActionException {

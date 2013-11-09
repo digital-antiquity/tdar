@@ -85,7 +85,8 @@ public class AggregateStatistic extends Persistable.Base {
 
     @Override
     public String toString() {
-        StringBuffer toRet = new StringBuffer(statisticType.toString());
+        StringBuffer toRet = new StringBuffer();
+        toRet.append(statisticType);
         toRet.append(":");
         toRet.append(value);
         return toRet.toString();

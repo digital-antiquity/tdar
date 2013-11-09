@@ -296,6 +296,11 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     }
 
     @Transient
+    public boolean isUploadedOrArchival() {
+        return (isArchival() || isUploaded());
+    }
+
+    @Transient
     public boolean isArchival() {
         // FIXME: change back later and update test
         return (getFileVersionType() == VersionType.ARCHIVAL || getFileVersionType() == VersionType.UPLOADED_ARCHIVAL);

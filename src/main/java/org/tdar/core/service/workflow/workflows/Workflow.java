@@ -3,6 +3,7 @@ package org.tdar.core.service.workflow.workflows;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -92,7 +93,9 @@ public interface Workflow {
                 return false;
             }
 
-            for (WorkflowPhase phase : WorkflowPhase.values()) {
+            // ensuring proper sorting
+            EnumSet<WorkflowPhase> phases = EnumSet.allOf(WorkflowPhase.class);
+            for (WorkflowPhase phase : phases) {
                 List<Class<? extends Task>> phaseTasks = workflowPhaseToTasks.get(phase);
                 if (CollectionUtils.isEmpty(phaseTasks)) {
                     continue;

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.Tika;
@@ -23,6 +24,7 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 import org.tdar.utils.ExceptionWrapper;
 
@@ -46,8 +48,9 @@ public class IndexableTextExtractionTask extends AbstractTask {
     public void run(InformationResourceFileVersion version) throws Exception {
         File file = version.getTransientFile();
         FileOutputStream metadataOutputStream = null;
-        FileInputStream stream = null;
-        File metadataFile = new File(getWorkflowContext().getWorkingDirectory(), file.getName() + ".metadata");
+        InputStream stream = null;
+        String filename = file.getName();
+        File metadataFile = new File(getWorkflowContext().getWorkingDirectory(), filename + ".metadata");
         try {
             InputStream input = new FileInputStream(file);
             Tika tika = new Tika();
@@ -57,18 +60,22 @@ public class IndexableTextExtractionTask extends AbstractTask {
 
             Parser parser = new AutoDetectParser();
             ParseContext parseContext = new ParseContext();
-
-            File indexFile = new File(getWorkflowContext().getWorkingDirectory(), file.getName() + ".index.txt");
-            metadataFile = new File(getWorkflowContext().getWorkingDirectory(), file.getName() + ".metadata");
-            FileOutputStream indexOutputStream = new FileOutputStream(indexFile);
-            BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(indexOutputStream);
+            
+            metadataFile = new File(getWorkflowContext().getWorkingDirectory(), filename + ".metadata");
             metadataOutputStream = new FileOutputStream(metadataFile);
-            BodyContentHandler handler = new BodyContentHandler(indexedFileOutputStream);
-            stream = new FileInputStream(file);
-            parser.parse(stream, handler, metadata, parseContext);
-            IOUtils.closeQuietly(indexedFileOutputStream);
-            if (indexFile.length() > 0) {
-                addDerivativeFile(version, indexFile, VersionType.INDEXABLE_TEXT);
+            if (!FileArchiveWorkflow.ARCHIVE_EXTENSIONS_SUPPORTED.contains(FilenameUtils.getExtension(filename).toLowerCase())) {
+                File indexFile = new File(getWorkflowContext().getWorkingDirectory(), filename + ".index.txt");
+                FileOutputStream indexOutputStream = new FileOutputStream(indexFile);
+                BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(indexOutputStream);
+                BodyContentHandler handler = new BodyContentHandler(indexedFileOutputStream);
+                //If we're dealing with a zip, read only the beginning of the file
+                    stream = new FileInputStream(file);
+
+                parser.parse(stream, handler, metadata, parseContext);
+                IOUtils.closeQuietly(indexedFileOutputStream);
+                if (indexFile.length() > 0) {
+                    addDerivativeFile(version, indexFile, VersionType.INDEXABLE_TEXT);
+                }
             }
 
             List<String> gpsValues = new ArrayList<>();

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -58,8 +57,8 @@ public class TdarConfiguration {
 
     private Filestore filestore;
 
-    private Set<String> stopWords = new HashSet<>();
-    private List<String> couponCodes = new ArrayList<>();
+    private Set<String> stopWords = new HashSet<String>();
+    private List<String> couponCodes = new ArrayList<String>();
 
     private String configurationFile;
 
@@ -87,7 +86,7 @@ public class TdarConfiguration {
         if (ImageUtilities.isMediaLibAvailable()) {
             logger.info("JAI ImageIO available and configured");
         } else {
-            logger.error("\n\n\t *** JAI-ImageIO is not properly installed with Native Libraries *** \n\t *** Instructions for Installation: http://docs.geoserver.org/latest/en/user/production/java.html *** \n\n");
+            logger.error("JAI-ImageIO is not properly installed with Native Libraries\n\nInstructions for Installation: http://docs.geoserver.org/latest/en/user/production/java.html");
             if (isProductionEnvironment()) {
                 throw new IllegalStateException("cannot start up in production without JAI");
             }
@@ -172,7 +171,8 @@ public class TdarConfiguration {
      * @return
      */
     private Filestore loadFilestore() {
-        String filestoreClassName = assistant.getStringProperty("file.store.class", PairtreeFilestore.class.getCanonicalName());
+        String filestoreClassName = assistant.getStringProperty("file.store.class",
+                PairtreeFilestore.class.getCanonicalName());
         Filestore filestore = null;
 
         File filestoreLoc = new File(getFileStoreLocation());
@@ -268,7 +268,8 @@ public class TdarConfiguration {
     }
 
     public String getFileStoreLocation() {
-        return assistant.getStringProperty("file.store.location", "/home/tdar/filestore");
+        return assistant.getStringProperty("file.store.location",
+                "/home/tdar/filestore");
     }
 
     public String getPersonalFileStoreLocation() {
@@ -518,6 +519,12 @@ public class TdarConfiguration {
         return assistant.getStringProperty("help.url.site", "http://dev.tdar.org/confluence/display/TDAR/Site+Types");
     }
 
+    @Deprecated
+    // TODO: Martin will remove
+    public String getMobileImportURL() {
+        return assistant.getStringProperty("mobile.upload.url", "/");
+    }
+
     /*
      * Returns the collectionId to use for finding featured resources within
      * 
@@ -595,9 +602,6 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("archive.enabled", false);
     }
 
-    /**
-     * @return true if <b>Video</b> <i>and</i> <b>Audio</b> are enabled, false otherwise.
-     */
     public boolean isVideoEnabled() {
         return assistant.getBooleanProperty("video.enabled", false);
     }
@@ -628,7 +632,7 @@ public class TdarConfiguration {
 
     public List<Long> getUserIdsToIgnoreInLargeTasks() {
         String users = assistant.getStringProperty("userids.to.ignore");
-        List<Long> userIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<Long>();
         for (String userid : users.split("[|,;]")) {
             try {
                 if (StringUtils.isNotBlank(userid)) {
@@ -657,13 +661,6 @@ public class TdarConfiguration {
         return assistant.getIntProperty("creator.analytics.days.to.process", 10);
     }
 
-    /**
-     * @return the directory that the kettle ETL tool will scan for input. If not defined will return the empty string.
-     */
-    public String getKettleInputPath() {
-        return assistant.getStringProperty("kettle.input.path", "");
-    }
-
     public String getContributorAgreementUrl() {
         return assistant.getStringProperty("contributor.url", "http://www.tdar.org/about/policies/contributors-agreement/");
     }
@@ -680,16 +677,7 @@ public class TdarConfiguration {
         return assistant.getIntProperty("tos.version", 0);
     }
 
-    /**
-     * Introduced by TDAR-1978
-     * 
-     * @return true if tdar.properties has the property "switchable.map.obfuscation" set to true, false in all other cases.
-     */
-    public boolean isSwitchableMapObfuscation() {
-        return assistant.getBooleanProperty("switchable.map.obfuscation");
-    }
-
-    public boolean obfuscationInterceptorDisabled() {
-        return assistant.getBooleanProperty("obfuscation.interceptor.disabled",false);
+    public boolean isJaiImageJenabled() {
+        return assistant.getBooleanProperty("jai.imagej.enabled", true);
     }
 }

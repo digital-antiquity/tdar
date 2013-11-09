@@ -24,6 +24,7 @@ glassfish-web.xml
 libpeerconnection.log
 
 .externalToolBuilders\org.eclipse.wst.jsdt.core.javascriptValidator.launch
+import.log
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 
@@ -34,7 +35,3 @@ syntax: regexp
 ^src/main/resources/jetty-ssl\.keystore$
 syntax: regexp
 ^src/test/resources/jetty-ssl\.keystore$
-syntax: regexp
-^src/main/release/profiles/default/config\.properties$
-syntax: regexp
-^src/main/release/profiles/default/backup\.properties$

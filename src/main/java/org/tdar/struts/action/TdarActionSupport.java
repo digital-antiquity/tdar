@@ -672,9 +672,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                     getJavascriptErrorLogDefault());
         } else {
             String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
-            logger.error("the client {} reported {} javascript errors", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length);
-            for (String error : errors) {
-                logger.error(error);
+            if(logger.isErrorEnabled()) {
+                logger.error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length, StringUtils.join(errors, "\n\t - "));
             }
         }
     }
