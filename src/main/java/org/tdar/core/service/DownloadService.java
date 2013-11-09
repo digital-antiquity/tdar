@@ -97,13 +97,9 @@ public class DownloadService {
             throw new TdarRecoverableRuntimeException("unsupported action");
         }
 
-        File resourceFile = null;
-        String mimeType = null;
         Map<File, String> files = new HashMap<>();
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
-            resourceFile = addFileToDownload(files, authenticatedUser, dh, irFileVersion);
-            mimeType = irFileVersion.getMimeType();
-
+            addFileToDownload(files, authenticatedUser, irFileVersion);
             if (!irFileVersion.isDerivative()) {
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
                 FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
@@ -117,12 +113,23 @@ public class DownloadService {
         }
 
         try {
+            File resourceFile = null;
+            String mimeType = null;
             if (irFileVersions.length > 1) {
                 resourceFile = File.createTempFile("archiveDownload", ".zip", TdarConfiguration.getInstance().getTempDirectory());
                 generateZipArchive(files, resourceFile);
                 mimeType = "application/zip";
+                // although in temp, it might be quite large, so let's not leave it lying around
+                dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
+            } else {
+                mimeType = irFileVersions[0].getMimeType();
+                resourceFile = (File) files.keySet().toArray()[0];
                 dh.setInputStream(new FileInputStream(resourceFile));
             }
+            dh.setFileName(resourceFile.getName());
+            dh.setContentLength(resourceFile.length());
+            dh.setContentType(mimeType);
+            logger.debug("downloading file:" + resourceFile.getCanonicalPath());
         } catch (FileNotFoundException ex) {
             logger.error("Could not generate zip file to download: file not found", ex);
             throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
@@ -130,24 +137,9 @@ public class DownloadService {
             logger.error("Could not generate zip file to download: IO exeption", ex);
             throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
         }
-        try {
-            logger.debug("downloading file:" + resourceFile.getCanonicalPath());
-        } catch (IOException e) {
-            // Note: this was being "eaten" ... so not sure if we should throw exception here or not
-            logger.error("{}", e);
-        }
-        dh.setContentLength(resourceFile.length());
-        dh.setContentType(mimeType);
-        if (dh.getInputStream() == null) {
-            try {
-                dh.setInputStream(new FileInputStream(resourceFile));
-            } catch (FileNotFoundException e) {
-                throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
-            }
-        }
     }
 
-    private File addFileToDownload(Map<File, String> downloadMap, Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion irFileVersion)
+    private void addFileToDownload(Map<File, String> downloadMap, Person authenticatedUser, InformationResourceFileVersion irFileVersion)
             throws TdarActionException {
         File resourceFile = null;
         try {
@@ -155,30 +147,22 @@ public class DownloadService {
         } catch (FileNotFoundException e1) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
         }
-        dh.setFileName(irFileVersion.getFilename());
         if (resourceFile == null || !resourceFile.exists()) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
         }
 
-        String filename = null;
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
             try {
+                // this will be in the temp directory, so it will be scavenged at some stage.
                 resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
-                // FIXME: for merge coverpages, isn't this in a temp file/folder anyway? Is it necessary to explicitly delete?
-                // DeleteOnCloseFileInputStream docis = new DeleteOnCloseFileInputStream(resourceFile);
-                filename = irFileVersion.getFilename();
-                // FIXME: not sure if this statement was necessary (it's a side-effect anyway), and it is a contributing factor to TDAR-3311 so I commented it
-                // out. Does this break something else?
-                dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
             } catch (PdfCoverPageGenerationException cpge) {
                 logger.trace("Error occured while merging cover page onto " + irFileVersion, cpge);
             } catch (Exception e) {
                 logger.error("Error occured while merging cover page onto " + irFileVersion, e);
             }
         }
-        downloadMap.put(resourceFile, filename);
-        return resourceFile;
+        downloadMap.put(resourceFile, irFileVersion.getFilename());
     }
 
     // indicate in the header whether the file should be received as an attachment (e.g. give user download prompt)
