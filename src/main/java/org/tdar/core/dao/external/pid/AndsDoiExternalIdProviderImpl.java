@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -153,7 +154,11 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
             try {
                 AndsDoiResponse response = doiClient.mintDOI(resourceUrl, doiDTO, debug);
                 validateResponse("create", response);
-                result.put(DoiProcess.DOI_KEY, response.getDoi());
+                String doi = response.getDoi();
+                if (StringUtils.isEmpty(doi)) {
+                    logger.error("NB ====> Minted empty DOI for {}", resourceUrl);
+                }
+                result.put(DoiProcess.DOI_KEY, doi);
             } catch (Exception e) {
                 logger.error("Could not mint DOI {}", doiDTO, e);
             }
