@@ -8,13 +8,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.DoiProcess;
-
 
 import au.csiro.doiclient.AndsDoiClient;
 import au.csiro.doiclient.AndsDoiResponse;
@@ -151,9 +150,13 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         if (doiDTO.getCreators().isEmpty()) {
             logger.error("NB ====> This resource {} has no creators, so can't mint doi", r.toString());
         } else {
-            AndsDoiResponse response = doiClient.mintDOI(resourceUrl, doiDTO, debug);
-            validateResponse("create", response);
-            result.put(DoiProcess.DOI_KEY, response.getDoi());
+            try {
+                AndsDoiResponse response = doiClient.mintDOI(resourceUrl, doiDTO, debug);
+                validateResponse("create", response);
+                result.put(DoiProcess.DOI_KEY, response.getDoi());
+            } catch (Exception e) {
+                logger.error("Could not mint DOI {}", doiDTO, e);
+            }
         }
         return result;
     }
@@ -195,11 +198,14 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         DoiDTO doiDTO = new DoiDTO();
         java.util.List<String> creatorNames = new ArrayList<>();
         // was primary creator, but that was returning null : Daniel feels in Australia this should be the copyright holder.
-        for (ResourceCreator creator : r.getResourceCreators()) {
-            creatorNames.add(creator.getCreator().getName());
+        if (r instanceof InformationResource) { // should always be true, but
+            creatorNames.add(((InformationResource)r).getCopyrightHolder().getName());
         }
         doiDTO.setCreators(creatorNames);
         // Ands mandate that we must list a publisher and a publication year. I suspect that Ands thus can only deal with documents...
+        // I can confirm that it appears that the Ands Java client falls over if it doesn't have a publisher, publication year and a title
+        // The error is on packing the DOI is:  
+        // Value '' with length = '0' is not facet-valid with respect to minLength '1' for type '#AnonType_publisherresource'
         if (r instanceof Document) {
             Document document = (Document)r;
             doiDTO.setPublisher(document.getPublisherName());
