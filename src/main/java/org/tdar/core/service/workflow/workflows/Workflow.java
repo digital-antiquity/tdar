@@ -171,12 +171,25 @@ public interface Workflow {
 
         public void registerFileExtensions(String[] fileExtensions, ResourceType... resourceTypes) {
             if (resourceTypes == null || resourceTypes.length == 0 || fileExtensions == null || fileExtensions.length == 0) {
-                logger.warn("invalid file extensions {} or resource types {}", Arrays.asList(fileExtensions), Arrays.asList(resourceTypes));
+                logger.warn("invalid file extensions {} or resource types {}", getAsList(fileExtensions), getAsList(resourceTypes));
                 return;
             }
             for (String fileExtension : fileExtensions) {
                 registerFileExtension(fileExtension, resourceTypes);
             }
+        }
+
+       /**
+        * A utility method to return the argument in a list in a NPE safe way
+         * @param targetArray
+         * @return
+         */
+        @SuppressWarnings("static-method")
+        private <T> List<T> getAsList(T[] targetArray) {
+            if (targetArray == null) {
+                return new ArrayList<>();
+            }
+            return Arrays.asList(targetArray);
         }
 
         public Logger getLogger() {
