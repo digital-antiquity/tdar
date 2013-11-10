@@ -27,7 +27,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
@@ -61,8 +60,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     public static final int LATITUDE = 1;
     public static final int LONGITUDE = 2;
     
-    private transient TdarConfiguration config = TdarConfiguration.getInstance();
-
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
 
     /** used to record whether this instance has been obfuscated by the obfuscation service or not */
