@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +26,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.Localizable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.ActivityManager;
@@ -61,6 +64,8 @@ import org.tdar.web.SessionData;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * $Id$
@@ -202,6 +207,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     private HttpServletResponse servletResponse;
 
+    private Map<String, String> clientValidationInfo = new LinkedHashMap<>();
+
     public ProjectService getProjectService() {
         return projectService;
     }
@@ -259,7 +266,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public SessionData getSessionData() {
         if (sessionData == null) {
             getLogger().error("Session data was null, should be managed by Spring.");
-            throw new IllegalStateException("Session data was null, should be managed by Spring.");
+            throw new IllegalStateException(getText("tdarActionSupport.no_sesion_data"));
         }
         return sessionData;
     }
@@ -505,7 +512,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         if (exception instanceof TdarRecoverableRuntimeException) {
             int maxDepth = 4;
             Throwable thrw = exception;
-            StringBuilder sb = new StringBuilder(exception.getMessage());
+            if (exception instanceof Localizable) {
+                ((Localizable) exception).setLocale(getLocale());
+            }
+            StringBuilder sb = new StringBuilder(exception.getLocalizedMessage());
 
             while (thrw.getCause() != null && maxDepth > -1) {
                 thrw = thrw.getCause();
@@ -658,24 +668,27 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     /**
-     * Check the js error log for any client-side errors that preceeded to the current request. If we detect any
-     * errors, log them at ERROR.
+     * Check the js error log and js validation error log.  If we detect any js  errors, log them at ERROR.  Validation
+     * errors are an expected part of the workflow and are only logged at INFO.
      */
     public void reportAnyJavascriptErrors() {
         if (StringUtils.isBlank(javascriptErrorLog)) {
             logger.trace("No javascript errors reported by the client");
-            return;
-        }
-
-        if (StringUtils.equals(getJavascriptErrorLogDefault(), javascriptErrorLog)) {
-            logger.error("JS error log contains {}, an indication that javascript was disabled on the client prior to the request",
-                    getJavascriptErrorLogDefault());
         } else {
             String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
-            logger.error("the client {} reported {} javascript errors", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length);
-            for (String error : errors) {
-                logger.error(error);
+            if(logger.isErrorEnabled()) {
+                logger.error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length, StringUtils.join(errors, "\n\t - "));
             }
+        }
+
+
+        List<String> lines = new ArrayList<>(clientValidationInfo.size());
+        for(Map.Entry<String, String> entry : getClientValidationInfo().entrySet()) {
+            String line = String.format("%s\t %s", entry.getKey(),  entry.getValue());
+            lines.add(line);
+        }
+        if(!lines.isEmpty()) {
+            logger.info("the client reported validation errors: \n {}", StringUtils.join(lines, "\n\t"));
         }
     }
 
@@ -693,5 +706,17 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     public boolean isSwitchableMapObfuscation() {
         return getTdarConfiguration().isSwitchableMapObfuscation();
+    }
+
+    public Map<String, String> getClientValidationInfo() {
+        return clientValidationInfo;
+    }
+
+    public void setClientValidationInfo(LinkedHashMap<String, String> clientValidationInfo) {
+        this.clientValidationInfo = clientValidationInfo;
+    }
+    
+    public String getText(String aTextName, Object ... args) {
+        return super.getText(aTextName, Arrays.asList(args));
     }
 }

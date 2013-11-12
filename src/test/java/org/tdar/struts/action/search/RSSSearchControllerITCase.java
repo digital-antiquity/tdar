@@ -112,7 +112,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback(true)
     public void testFindResourceBuildRss() throws XpathException, SAXException, IOException, InterruptedException, TdarActionException {
-        ActivityManager.getInstance().getActivityQueue().clear();
+        ActivityManager.getInstance().getActivityQueueClone().clear();
         Resource r = genericService.find(Resource.class, 3074L);
         r.setStatus(Status.ACTIVE);
         genericService.saveOrUpdate(r);

@@ -28,6 +28,7 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
@@ -48,9 +49,9 @@ import com.vividsolutions.jts.io.WKBReader;
  */
 public class AccessDatabaseConverter extends DatasetConverter.Base {
     private static final String DB_PREFIX = "d";
-    private static final String ERROR_CORRUPT_DB = "The system was unable to read portions of this Access database. It is possible this issue may be resolved By using the \"Compact and Repair \" feature in Microsoft Access.";
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Override
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
@@ -63,8 +64,8 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
         setInformationResourceFileVersion(versions[0]);
     }
 
-    protected void openInputDatabase()
-            throws IOException {
+    @Override
+    protected void openInputDatabase() throws IOException {
         File databaseFile = getInformationResourceFileVersion().getTransientFile();
         // if we use ReadOnly Mode here we have the ability to open older files... http://jira.pentaho.com/browse/PDI-5111
         setDatabase(DatabaseBuilder.open(databaseFile));
@@ -78,6 +79,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
      * 
      * @param targetDatabase
      */
+    @Override
     public void dumpData() throws Exception {
         // start dumping ...
         Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
@@ -95,7 +97,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             List<? extends Column> columnList = currentTable.getColumns();
             for (Column currentColumn : columnList) {
                 DataTableColumnType dataType = DataTableColumnType.VARCHAR;
-                logger.info("Incoming column \t name:{}  type:{}", currentColumn.getName(), currentColumn.getType());
+                logger.info("INCOMING COLUMN: '{}'  ({})", currentColumn.getName(), currentColumn.getType());
                 // NOTE: switch passthrough is intentional here (e.g. big, long, int types should all convert to BIGINT)
                 switch (currentColumn.getType()) {
                     case BOOLEAN:
@@ -137,13 +139,13 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                 if (description_ != null && !StringUtils.isEmpty(description_.toString())) {
                     dataTableColumn.setDescription(description_.toString());
                 }
-                logger.info("Converted column\t obj:{}\t description:{}\t length:{}", new Object[] { dataTableColumn, dataTableColumn.getDescription(),
-                        dataTableColumn.getLength() });
                 if (dataType == DataTableColumnType.VARCHAR) {
                     dataTableColumn.setLength(Short.valueOf(currentColumn.getLengthInUnits()).intValue());
                     logger.trace("currentColumn:{}\t length:{}\t length in units:{}", new Object[] { currentColumn, currentColumn.getLength(),
                             currentColumn.getLengthInUnits() });
                 }
+                logger.info("  \t create column {} {} ({}) -- {}", dataTableColumn.getName(), dataTableColumn.getColumnDataType(), dataTableColumn.getLength(),
+                        dataTableColumn.getDescription());
             }
 
             targetDatabase.createTable(dataTable);
@@ -199,10 +201,8 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     IOUtils.write("\r\n", indexedFileOutputStream);
                     targetDatabase.addTableRow(dataTable, valueColumnMap);
                 }
-            } catch (BufferUnderflowException bex) {
-                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
-            } catch (IllegalStateException iex) {
-                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
+            } catch (BufferUnderflowException | IllegalStateException  bex) {
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accessDatabaseConverter.error_corrupt"));
             } finally {
                 completePreparedStatements();
             }

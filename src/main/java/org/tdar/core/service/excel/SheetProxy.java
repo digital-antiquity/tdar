@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
+import org.tdar.utils.MessageHelper;
 
 /**
  * A sheet proxy holds context needed to construct one or more sheets; it's goal is to attempt to hide Excel / POI from whatever is writing to it
@@ -94,7 +95,7 @@ public class SheetProxy implements Serializable {
 
     public void setName(String name) {
         if (workbook != null && workbook.getSheet(name) != null) {
-            throw new TdarRecoverableRuntimeException("This workbook already has a sheet with the name '" + name + "'");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("sheetProxy.workbook_name_already_exists", name));
         }
         this.name = name;
     }

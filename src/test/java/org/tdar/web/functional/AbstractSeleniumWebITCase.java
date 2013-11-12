@@ -97,49 +97,62 @@ public abstract class AbstractSeleniumWebITCase {
     private Set<WebElement> clickElems = new HashSet<>();
 
     private WebDriverEventListener eventListener = new WebDriverEventListener() {
+        @Override
         public void afterNavigateTo(String url, WebDriver driver) {
             afterPageChange();
         }
 
+        @Override
         public void beforeNavigateBack(WebDriver driver) {
             beforePageChange();
         }
 
+        @Override
         public void afterNavigateBack(WebDriver driver) {
             afterPageChange();
         }
 
+        @Override
         public void beforeNavigateForward(WebDriver driver) {
             beforePageChange();
         }
 
+        @Override
         public void afterNavigateForward(WebDriver driver) {
             afterPageChange();
         }
 
+        @Override
         public void beforeFindBy(By by, WebElement element, WebDriver driver) {
         }
 
+        @Override
         public void afterFindBy(By by, WebElement element, WebDriver driver) {
         }
 
+        @Override
         public void beforeChangeValueOf(WebElement element, WebDriver driver) {
         }
 
+        @Override
         public void afterChangeValueOf(WebElement element, WebDriver driver) {
         }
 
+        @Override
         public void beforeScript(String script, WebDriver driver) {
         }
 
+        @Override
         public void afterScript(String script, WebDriver driver) {
         }
 
+        @Override
         public void onException(Throwable throwable, WebDriver driver) {
             logger.error("hey there was an error", throwable);
             takeScreenshot("ERROR " + throwable.getClass().getSimpleName());
         }
 
+        @Override
         public void beforeClickOn(WebElement element, WebDriver driver) {
             if (elementCausesNavigation(element)) {
                 clickElems.add(element);
@@ -147,6 +160,7 @@ public abstract class AbstractSeleniumWebITCase {
             }
         }
 
+        @Override
         public void afterClickOn(WebElement element, WebDriver driver) {
             // if beforeClickOn() put this element here, we are on the other side of page change.
             if (clickElems.remove(element)) {
@@ -162,6 +176,7 @@ public abstract class AbstractSeleniumWebITCase {
                     || (tag.equals("button") && "submit".equals(element.getAttribute("type")));
         }
 
+        @Override
         public void beforeNavigateTo(String url, WebDriver driver) {
             beforePageChange();
         }

@@ -12,6 +12,7 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.utils.MessageHelper;
 
 /**
  * 
@@ -32,8 +33,8 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     private boolean includeChildren = true;
 
     // for use when generating description
-    private String descriptionLabel = "Keyword";
-
+    private String descriptionLabel = MessageHelper.getMessage("keywordQueryPart.label");
+    
     private String keywordType;
 
     public KeywordQueryPart() {
@@ -44,6 +45,7 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         this.keywordType = field;
     }
 
+    @Override
     public boolean isEmpty() {
         return CollectionUtils.isEmpty(terms);
     }
@@ -170,6 +172,7 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         this.includeChildren = includeChildren;
     }
 
+    @Override
     public Operator getOperator() {
         return Operator.OR;
     }

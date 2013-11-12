@@ -45,6 +45,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
     @Transient
     public static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "approved", "selectable", "level", "occurrence" }; // fixme: should ID be here too?
 
+    @Override
     public String getLabel();
 
     public void setLabel(String label);
@@ -85,6 +86,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         @Field
         @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
         @Transient
+        @Override
         public String getKeywordType() {
             return getClass().getSimpleName();
         }
@@ -101,10 +103,12 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
         @Transient
         @XmlTransient
+        @Override
         public boolean isReadyToIndex() {
             return readyToIndex;
         }
 
+        @Override
         public void setReadyToIndex(boolean readyToIndex) {
             this.readyToIndex = readyToIndex;
         }
@@ -114,19 +118,23 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
             return this.getLabel().compareTo(o.getLabel());
         }
 
+        @Override
         public String getLabel() {
             return label;
         }
 
+        @Override
         public void setLabel(String label) {
             this.label = label;
         }
 
         @XmlTransient
+        @Override
         public String getDefinition() {
             return definition;
         }
 
+        @Override
         public void setDefinition(String definition) {
             this.definition = definition;
         }
@@ -142,21 +150,25 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         }
 
         @Transient
+        @Override
         @XmlTransient
         public Float getScore() {
             return score;
         }
 
+        @Override
         public void setScore(Float score) {
             this.score = score;
         }
 
         @Transient
         @XmlTransient
+        @Override
         public Explanation getExplanation() {
             return explanation;
         }
 
+        @Override
         public void setExplanation(Explanation explanation) {
             this.explanation = explanation;
         }
@@ -167,18 +179,22 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         }
 
         @XmlAttribute
+        @Override
         public Status getStatus() {
             return this.status;
         }
 
+        @Override
         public void setStatus(Status status) {
             this.status = status;
         }
 
+        @Override
         public boolean isActive() {
             return this.status == Status.ACTIVE;
         }
 
+        @Override
         public boolean isDeleted() {
             return this.status == Status.DELETED;
         }

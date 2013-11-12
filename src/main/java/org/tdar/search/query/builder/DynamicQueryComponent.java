@@ -5,7 +5,6 @@ package org.tdar.search.query.builder;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
-import org.tdar.core.service.SearchService;
 
 /**
  * $$Id$$
@@ -42,7 +41,7 @@ public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> 
     }
 
     public String getLabel() {
-        return SearchService.addParent(parent, label);
+        return DynamicQueryComponentHelper.addParent(parent, label);
     }
 
     public void setLabel(String label) {

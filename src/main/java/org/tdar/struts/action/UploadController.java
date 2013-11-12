@@ -27,6 +27,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")
@@ -86,11 +87,12 @@ public class UploadController extends AuthenticationAware.Base {
             ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
             logger.debug("UPLOAD CONTROLLER: upload request with ticket included: {}", ticket);
             if (ticket == null) {
-                addActionError("asynchronous uploads require a valid ticket");
+                addActionError(getText("uploadController.require_valid_ticket"));
             }
         }
+
         if (CollectionUtils.isEmpty(uploadFile)) {
-            addActionError("No files in this request");
+            addActionError(getText("uploadController.no_files"));
         }
         if (CollectionUtils.isEmpty(getActionErrors())) {
             Person submitter = getAuthenticatedUser();
@@ -110,7 +112,7 @@ public class UploadController extends AuthenticationAware.Base {
                     try {
                         filestore.store(ticket, file, fileName);
                     } catch (Exception e) {
-                        addActionErrorWithException("Could not store file.", e);
+                        addActionErrorWithException(getText("uploadController.could_not_store"), e);
                     }
                 }
             }

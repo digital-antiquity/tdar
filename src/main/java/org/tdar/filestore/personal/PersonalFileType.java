@@ -1,8 +1,10 @@
 package org.tdar.filestore.personal;
 
+import org.tdar.utils.MessageHelper;
+
 public enum PersonalFileType {
-    UPLOAD("uploads"),
-    INTEGRATION("integrations");
+    UPLOAD(MessageHelper.getMessage("personalFileType.uploads")),
+    INTEGRATION(MessageHelper.getMessage("PersonalFileType.integrations"));
 
     private final String pathname;
 

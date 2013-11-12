@@ -58,6 +58,7 @@ public enum StatusCode {
         return this;
     }
 
+    @Override
     public String toString() {
         return String.format("HTTP %d %s (%s)", httpStatusCode, errorMessage, getResultName());
     }

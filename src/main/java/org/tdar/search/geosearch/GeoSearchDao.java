@@ -28,6 +28,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.struts.data.SvgMapWrapper;
+import org.tdar.utils.MessageHelper;
 
 /**
  * This is a DAO to manage access to postGIS. It's attempted to manage this by hiding all of the PostGIS info at this layer
@@ -53,7 +54,7 @@ public class GeoSearchDao {
         // into a multipolygon instead of a standard one. The multipolygon is two polygons
         // each one being on either side of the dateline
         if (!latLong.isValid()) {
-            throw new TdarRuntimeException("the specified latLong box is not valid");
+            throw new TdarRuntimeException(MessageHelper.getMessage("geoSearchService.lat_long_Not_valid"));
         }
         if (latLong.crossesDateline()) {
             return String.format(PSQL_MULTIPOLYGON_DATELINE, latLong.getMinObfuscatedLongitude(), latLong.getMinObfuscatedLatitude(),

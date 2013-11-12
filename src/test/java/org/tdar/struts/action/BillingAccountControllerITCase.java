@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.utils.MessageHelper;
 
 public class BillingAccountControllerITCase extends AbstractResourceControllerITCase {
 
@@ -47,7 +48,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals(BillingAccountController.INVOICE_IS_REQURIED, msg);
+        assertEquals(MessageHelper.getMessage("billingAccountController.invoice_is_requried"), msg);
     }
 
     @Test
@@ -79,7 +80,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals(BillingAccountController.RIGHTS_TO_ASSIGN_THIS_INVOICE, msg);
+        assertEquals(MessageHelper.getMessage("billingAccountController.rights_to_assign_this_invoice"), msg);
     }
 
     @Test
@@ -191,7 +192,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.setNumberOfFiles(1000L);
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
-        assertTrue(controller.getActionMessages().contains(AccountService.NOT_ENOUGH_SPACE_OR_FILES));
+        assertTrue(controller.getActionMessages().contains(MessageHelper.getMessage("accountService.not_enough_space_or_files")));
         setIgnoreActionErrors(true);
     }
 
@@ -204,7 +205,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         // controller.setNumberOfFiles(1000L);
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
-        assertTrue(controller.getActionMessages().contains(AccountService.CANNOT_GENERATE_A_COUPON_FOR_NOTHING));
+        assertTrue(controller.getActionMessages().contains(MessageHelper.getMessage("accountService.cannot_generate_a_coupon_for_nothing")));
         setIgnoreActionErrors(true);
     }
 
@@ -218,7 +219,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.setNumberOfMb(1L);
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
-        assertTrue(controller.getActionMessages().contains(AccountService.SPECIFY_EITHER_SPACE_OR_FILES));
+        assertTrue(controller.getActionMessages().contains(MessageHelper.getMessage("accountService.specify_either_space_or_files")));
         setIgnoreActionErrors(true);
     }
 

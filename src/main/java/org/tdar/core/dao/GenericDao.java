@@ -29,9 +29,12 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -381,6 +384,10 @@ public class GenericDao {
         if (entity instanceof HasStatus) {
             ((HasStatus) entity).setStatus(Status.DELETED);
             saveOrUpdate(entity);
+        } else if (entity  instanceof InformationResourceFileVersion) {
+            if (((InformationResourceFileVersion) entity).isUploadedOrArchival()) {
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.cannot_delete_archival"));
+            }
         } else {
             forceDelete(entity);
         }

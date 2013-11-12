@@ -45,6 +45,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.LogType;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.jaxb.IdList;
 import org.tdar.utils.jaxb.converters.JaxbMapConverter;
@@ -62,9 +63,9 @@ public class AuthorityManagementService {
          * 3. User consolidation mode -- mark the "dups" as dups, but keep the references set on the "dup" instead of the authority. If I have 2 versions of a
          * person from different jobs, this is useful for consolidating the people, but keeping the context of that person at that time.
          */
-        DELETE_DUPLICATES("Delete Duplicates (irreversable)"),
-        MARK_DUPS_AND_CONSOLDIATE("Mark duplicates and update references (somewhat reversable)"),
-        MARK_DUPS_ONLY("Mark As Dup (reversable)");
+        DELETE_DUPLICATES(MessageHelper.getMessage("dupMode.delete_dups")),
+        MARK_DUPS_AND_CONSOLDIATE(MessageHelper.getMessage("dupMode.mark_dups_consolidate")),
+        MARK_DUPS_ONLY(MessageHelper.getMessage("dupMode.mark_dups"));
 
         private String label;
 
@@ -72,14 +73,12 @@ public class AuthorityManagementService {
             this.label = label;
         }
 
+        @Override
         public String getLabel() {
             return label;
         }
 
     }
-
-    public static final String SERVICE_NAME = "Authority Management Service:";
-    public static final String SUBJECT = "%s " + SERVICE_NAME + " user %s merged %s %s records to '%s'";
 
     @Autowired
     private ReflectionDao reflectionDao;
@@ -102,6 +101,13 @@ public class AuthorityManagementService {
     private static List<Class<?>> hostClasses = Arrays.<Class<?>> asList(Resource.class, InformationResource.class, ResourceCreator.class,
             Person.class, Institution.class, ContributorRequest.class, AuthorizedUser.class, ResourceCollection.class);
 
+    /**
+     * Search through all of the defined classes in {@link #hostClasses} and find Fields that refer to the specified class.
+     * 
+     * @param referredClass
+     * @param dupeIds
+     * @return
+     */
     @Transactional(readOnly = true)
     public Map<Field, ScrollableResults> getReferrers(Class<?> referredClass, Set<Long> dupeIds) {
         Map<Field, ScrollableResults> referrers = new HashMap<Field, ScrollableResults>();
@@ -117,6 +123,13 @@ public class AuthorityManagementService {
         return referrers;
     }
 
+    /**
+     * Count the total number of Objects that refer to the set of Ids specified (to report to the user)
+     * 
+     * @param referredClass
+     * @param idlist
+     * @return
+     */
     @Transactional(readOnly = true)
     public Map<Class<?>, Long> getReferrerCounts(Class<?> referredClass, List<Long> idlist) {
         Map<Class<?>, Long> countMap = new HashMap<Class<?>, Long>();
@@ -132,6 +145,13 @@ public class AuthorityManagementService {
         return countMap;
     }
 
+    /**
+     * Aggregate all referrer counts
+     * 
+     * @param referredClass
+     * @param idlist
+     * @return
+     */
     @Transactional(readOnly = true)
     public long getTotalReferrerCount(Class<?> referredClass, List<Long> idlist) {
         Map<Class<?>, Long> map = getReferrerCounts(referredClass, idlist);
@@ -142,8 +162,13 @@ public class AuthorityManagementService {
         return total;
     }
 
-    // return a map<id, count> of occurancecounts
-    // TODO: maybe create a method that returns Map<id, Map<class, count>>
+
+    /**
+     * Create an aggregated map of Ids and counts to report to the user what's going to be changed or adjusted
+     * @param referredClass
+     * @param idlist
+     * @return
+     */
     @Transactional(readOnly = true)
     public Map<Long, Long> getReferrerCountMaps(Class<?> referredClass, List<Long> idlist) {
         Map<Long, Long> countmap = new HashMap<Long, Long>();
@@ -180,7 +205,17 @@ public class AuthorityManagementService {
      *  
      *  - all of the potential referring classes must refer to duplicate objects via fields that have public getters
      *  and setters.
-     *  
+     *
+     *  Based on DupeMode, this method will do different things:
+     *  - MARK_DUPS_ONLY -- only marks the dups, does not do anything else
+     *  - MARK_DUPS_AND_CONSOLDIATE -- mark the items as dups, but also transfer their references to the declared master
+     *  - DELETE_DUPLICATES -- completely delete the duplicate
+     *
+     * @param user
+     * @param class1
+     * @param dupeIds
+     * @param authorityId
+     * @param dupeMode
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T extends Dedupable> void updateReferrers(Person user, Class<? extends Dedupable> class1, Set<Long> dupeIds, Long authorityId, DupeMode dupeMode) {
@@ -201,16 +236,17 @@ public class AuthorityManagementService {
         // prevent 'protected' records from being deleted
         if (countProtectedRecords(dupes) > 0) {
             activity.end();
-            throw new TdarRecoverableRuntimeException("This de-dupe operation is not allowed because at least one of the selected duplicates is protected");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("authorityManagementService.dedup_not_allowed_protected"));
         }
 
-        // -if many-to-many or one-to-many,
-        // + get collection getter and remove dupes
-        // + add authority records to collection
-        // + (this may be unnecessary if many-to-many target deletion implicitly deletes rows in jointable... test this out!)
-        // -if many-to-one
-        // + get scalar setter and set to authority record
-        // -hibsession.save() each reference
+        /* -if many-to-many or one-to-many, 
+           + get collection getter and remove dupes
+           + add authority records to collection
+           + (this may be unnecessary if many-to-many target deletion implicitly deletes rows in jointable... test this out!)
+           - if many-to-one
+           + get scalar setter and set to authority record
+         -hibsession.save() each reference
+         */
         AuthorityManagementLog<T> authorityManagementLog = new AuthorityManagementLog<T>(authority, dupes, user, dupeMode);
         for (Map.Entry<Field, ScrollableResults> entry : referrers.entrySet()) {
             Field field = entry.getKey();
@@ -249,8 +285,7 @@ public class AuthorityManagementService {
         // Throw an exception if this operation touched on too many records. Here we rely upon the assumption that throwing an exception will rollback the
         // underlying transaction and all will be set back to normal. A much slower, but safer, way to go about it would be to pre-count the affected records.
         if (dupeMode != DupeMode.MARK_DUPS_ONLY && affectedRecordCount > maxAffectedRecordsCount) {
-            String fmt = "This de-dupe operation is not allowed because would affect too many records. The maximum affected record count is %s.";
-            String msg = String.format(fmt, NumberFormat.getNumberInstance().format(maxAffectedRecordsCount));
+            String msg = MessageHelper.getMessage("authorityManagementService.dedup_not_allowed_too_many", NumberFormat.getNumberInstance().format(maxAffectedRecordsCount));
             throw new TdarRecoverableRuntimeException(msg);
         }
 
@@ -264,7 +299,11 @@ public class AuthorityManagementService {
         activity.end();
     }
 
-    // return number "protected" items in the dupe list. Duplicates may not be de-duped
+    /**
+     * For People, we have "protected" resources, those that have User accounts, we have to count them to ensure that we don't try and dedup two into one (which is unsupported, and bad).
+     * @param dupes
+     * @return
+     */
     @SuppressWarnings("rawtypes")
     public <T extends Dedupable> int countProtectedRecords(Collection<T> dupes) {
         int count = 0;
@@ -276,6 +315,12 @@ public class AuthorityManagementService {
         return count;
     }
 
+    /**
+     * Old names become synonyms... this makrs items as synonyms as needed
+     * @param authority
+     * @param dupes
+     * @param markAndConsoldiateDups
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <T extends Dedupable> void processSynonyms(T authority, Set<T> dupes, DupeMode markAndConsoldiateDups) {
         for (T dup : dupes) {
@@ -294,6 +339,10 @@ public class AuthorityManagementService {
         }
     }
 
+    /**
+     * Log the results of the deduplication (XML/text) and notify the admins (email)
+     * @param logData
+     */
     private <T extends Dedupable<?>> void logAndNotify(AuthorityManagementLog<T> logData) {
         logger.debug("{}", logData);
 
@@ -305,7 +354,7 @@ public class AuthorityManagementService {
         try {
             xml = xmlService.convertToXML(logData);
         } catch (Exception e) {
-            xml = "xml conversion failure";
+            xml = MessageHelper.getMessage("authorityManagementService.xml_conversion_error");
             logger.warn("could not completely log authmgmt operation", e);
         }
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-H-m-s");
@@ -314,8 +363,10 @@ public class AuthorityManagementService {
         filestore.storeLog(LogType.AUTHORITY_MANAGEMENT, filename, xml);
 
         // now send a summary email
-        String subject = String.format(SUBJECT,
-                TdarConfiguration.getInstance().getSiteAcronym(), logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString());
+        String subject = MessageHelper.getMessage("authorityManagementService.email_subject",
+                TdarConfiguration.getInstance().getSiteAcronym(), 
+                MessageHelper.getMessage("authorityManagementService.service_name"),
+                logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString());
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("log", logData);
@@ -330,38 +381,13 @@ public class AuthorityManagementService {
         }
     }
 
-    @XmlRootElement
-    @XmlAccessorType(XmlAccessType.PROPERTY)
-    @XmlType(name = "logPart")
-    public static class AuthorityManagementLogPart {
 
-        private HashMap<String, IdList> fieldToDupeIds = new HashMap<String, IdList>();
-
-        public void add(String fieldName, Long dupeId) {
-            IdList dupeIds = fieldToDupeIds.get(fieldName);
-            if (dupeIds == null) {
-                dupeIds = new IdList();
-                fieldToDupeIds.put(fieldName, dupeIds);
-            }
-            dupeIds.add(dupeId);
-        }
-
-        /**
-         * @return the fieldToDupeIds
-         */
-        @XmlElement
-        // @XmlAnyElement(lax=true)
-        @XmlJavaTypeAdapter(JaxbMapConverter.class)
-        public HashMap<String, IdList> getFieldToDupeIds() {
-            return fieldToDupeIds;
-        }
-
-        public String toString() {
-            return fieldToDupeIds.toString();
-        }
-
-    }
-
+    /**
+     * Static entry for the XML / bean representation to an entire Log
+     * @author abrin
+     *
+     * @param <R>
+     */
     @XmlRootElement
     @XmlAccessorType(XmlAccessType.PROPERTY)
     @XmlType(name = "log")
@@ -430,6 +456,7 @@ public class AuthorityManagementService {
             return updatedReferrers;
         }
 
+        @Override
         public String toString() {
             return String.format("Authority: %s, dupes: %s, referrers: %s", authority, dupes, updatedReferrers.values());
         }
@@ -448,6 +475,44 @@ public class AuthorityManagementService {
 
         public void setDupeMode(DupeMode dupeMode) {
             this.dupeMode = dupeMode;
+        }
+
+    }
+
+    /**
+     * Static class for the Log Entry Part used to log to XML via JAXB
+     * @author abrin
+     *
+     */
+    @XmlRootElement
+    @XmlAccessorType(XmlAccessType.PROPERTY)
+    @XmlType(name = "logPart")
+    public static class AuthorityManagementLogPart {
+
+        private HashMap<String, IdList> fieldToDupeIds = new HashMap<String, IdList>();
+
+        public void add(String fieldName, Long dupeId) {
+            IdList dupeIds = fieldToDupeIds.get(fieldName);
+            if (dupeIds == null) {
+                dupeIds = new IdList();
+                fieldToDupeIds.put(fieldName, dupeIds);
+            }
+            dupeIds.add(dupeId);
+        }
+
+        /**
+         * @return the fieldToDupeIds
+         */
+        @XmlElement
+        // @XmlAnyElement(lax=true)
+        @XmlJavaTypeAdapter(JaxbMapConverter.class)
+        public HashMap<String, IdList> getFieldToDupeIds() {
+            return fieldToDupeIds;
+        }
+
+        @Override
+        public String toString() {
+            return fieldToDupeIds.toString();
         }
 
     }

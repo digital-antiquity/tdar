@@ -14,6 +14,9 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.query.part.StatusQueryPart;
+import org.tdar.utils.MessageHelper;
+
+import com.opensymphony.xwork2.TextProvider;
 
 public class ReservedSearchParameters extends SearchParameters {
     private List<Status> statuses = new ArrayList<Status>();
@@ -35,14 +38,17 @@ public class ReservedSearchParameters extends SearchParameters {
     }
 
     @Override
-    public QueryPartGroup toQueryPartGroup() {
-        QueryPartGroup queryPartGroup = super.toQueryPartGroup();
+    public QueryPartGroup toQueryPartGroup(TextProvider support) {
+        if (support == null) {
+            support = MessageHelper.getInstance();
+        }
+        QueryPartGroup queryPartGroup = super.toQueryPartGroup(support);
         // TODO: not just statusQueryPart, but also maps, resourceTypes
         StatusQueryPart statusQueryPart = new StatusQueryPart(statuses, getAuthenticatedUser(), getTdarGroup());
         FieldQueryPart<String> generated = new FieldQueryPart<String>("generated", "true");
         if (isUseSubmitterContext()) {
             if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
-                throw new TdarRecoverableRuntimeException("You must be logged in");
+                throw new TdarRecoverableRuntimeException(support.getText("reservedSearchParameter.logged_in"));
             }
             FieldQueryPart<Long> fqp = new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, getAuthenticatedUser().getId());
             fqp.setDisplayName("User Id");

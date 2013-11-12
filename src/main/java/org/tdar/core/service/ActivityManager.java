@@ -12,33 +12,54 @@ import org.tdar.utils.activity.Activity;
 /**
  * $Id$
  * 
- * FIXME: should probably convert this back into a spring managed component
+ * The Activity Manager is a Singleton that fronts a BlockingQueue. It keeps track of http Requests, and long running activities (reindexing, bulk import, etc.)
+ * that are happening on the system. This is used to help show things on the admin page and provide warnings on other pages.
  * 
  * @author Adam Brin
  * @version $Rev$
  */
 public class ActivityManager {
 
+    private static final int QUEUE_CAPACITY = 1000;
+
     private final static ActivityManager INSTANCE = new ActivityManager();
 
-    private final BlockingQueue<Activity> activityQueue = new ArrayBlockingQueue<Activity>(1000);
+    private final BlockingQueue<Activity> activityQueue = new ArrayBlockingQueue<Activity>(QUEUE_CAPACITY);
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ActivityManager() {
     }
 
+    /**
+     * Get the ActivityManager
+     * @return
+     */
     public static ActivityManager getInstance() {
         return INSTANCE;
     }
 
+    /**
+     * Add an @link Activity to the Queue
+     * @param activity
+     * @return
+     */
     public synchronized boolean addActivityToQueue(final Activity activity) {
         return activityQueue.offer(activity);
     }
 
-    public BlockingQueue<Activity> getActivityQueue() {
-        return activityQueue;
+    /**
+     * Expose a copy of the Queue to those that want to read it
+     * @return
+     */
+    public BlockingQueue<Activity> getActivityQueueClone() {
+        return new ArrayBlockingQueue<>(QUEUE_CAPACITY, true, activityQueue);
     }
 
+    /**
+     * Find an @link Activity by name so it can be removed
+     * @param name
+     * @return
+     */
     public synchronized Activity findActivity(String name) {
         for (Activity activity : activityQueue) {
             if (StringUtils.equals(activity.getName(), name)) {
@@ -48,6 +69,11 @@ public class ActivityManager {
         return null;
     }
 
+    /**
+     * Based on the age, cleanup items that are older than the specified time. 
+     * 
+     * @param expirationTimeInMillis
+     */
     public synchronized void cleanup(long expirationTimeInMillis) {
         Iterator<Activity> iterator = activityQueue.iterator();
         while (iterator.hasNext()) {
@@ -60,13 +86,17 @@ public class ActivityManager {
         }
     }
 
+    /**
+     * Search through the Queue to find a task created by the BulkReIndexer
+     * @return
+     */
     public synchronized Activity getIndexingTask() {
         Activity active = null;
         Activity latest = null;
         /*
          * we could have multiple indexing activities, try reporting the one that's active before reporting that it's done
          */
-        for (Activity activity : ActivityManager.getInstance().getActivityQueue()) {
+        for (Activity activity : activityQueue) {
             if (activity.isIndexingActivity()) {
                 latest = activity;
                 if (!activity.hasEnded())

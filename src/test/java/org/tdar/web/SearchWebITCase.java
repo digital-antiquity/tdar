@@ -76,6 +76,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
+    @Override
     public void testBasicSearchView() {
         super.testBasicSearchView();
         submitForm("Search");
@@ -83,6 +84,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
+    @Override
     public void testAdvancedSearchView() {
         super.testAdvancedSearchView();
         submitForm("Search");

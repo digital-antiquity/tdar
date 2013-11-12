@@ -2,6 +2,7 @@ package org.tdar.search.query.part;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.tdar.utils.MessageHelper;
 
 /**
  * 
@@ -13,6 +14,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
  */
 public class FreetextQueryPart extends FieldQueryPart<String> {
 
+    private static final String AN_OBJECT = "*:*";
+
     @Override
     public String getFieldName() {
         return "";
@@ -22,7 +25,7 @@ public class FreetextQueryPart extends FieldQueryPart<String> {
     public String generateQueryString() {
         String txt = super.generateQueryString();
         /* THESE LINES ARE TO MAINTAIN COMPATIBILITY WITH THE TAG GATEWAY SEE TagGatewayITCase.getTopRecords() */
-        if (txt != null && (txt.trim().equals("*:*") || txt.trim().equals("(*:*)"))) {
+        if (txt != null && (txt.trim().equals(AN_OBJECT) || txt.trim().equals("(*:*)"))) {
             return "";
         }
         logger.info(txt);
@@ -31,7 +34,7 @@ public class FreetextQueryPart extends FieldQueryPart<String> {
 
     @Override
     public String getDescription() {
-        return "Every Single Field: " + StringUtils.join(getFieldValues(), ", ");
+        return MessageHelper.getMessage("freetextQueryPart.every_field",  StringUtils.join(getFieldValues(), ", "));
     }
 
     @Override

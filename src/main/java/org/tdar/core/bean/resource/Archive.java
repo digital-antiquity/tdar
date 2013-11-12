@@ -52,7 +52,7 @@ public class Archive extends InformationResource {
     public Archive getTransientCopyForWorkflow() {
         final Archive result = new Archive();
         result.setId(this.getId());
-        result.setProjectId(this.getProjectId());
+        result.setProject(this.getProject());
         result.setImportDone(this.importdone);
         result.setDoImportContent(this.doImportContent);
         return result;

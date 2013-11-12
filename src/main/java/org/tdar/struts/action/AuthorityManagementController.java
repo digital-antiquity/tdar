@@ -26,6 +26,7 @@ import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.AuthorityManagementService.DupeMode;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.WriteableSession;
+import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -42,14 +43,6 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     private Long authorityId;
     private Map<Long, Dedupable<?>> selectedDuplicates = new HashMap<Long, Dedupable<?>>();
 
-    public static String ERROR_NOT_ENOUGH_DUPLICATES = "No Duplicates selected. Please select at least two duplicates.";
-    public static String ERROR_NO_DUPLICATES = "Please select at least two duplicates.";
-    public static String ERROR_NO_ENTITY_TYPE = "Select an entity type.";
-    public static String ERROR_NO_AUTHORITY_RECORD = "Please select an authority record.";
-    public static final String ERROR_TOO_MANY_PROTECTED_RECORDS = "Your selection contains too many protected records.  Protected records can serve as an authority record but cannot be deduped";
-    public static final String ERROR_CANNOT_DEDUPE_PROTECTED_RECORDS = "At least one of your selected duplicates is a protected record.  Protected records can serve as an authority record but cannot be deduped";
-    public static String FMT_TOO_MANY_DUPLICATES = "You may only select up to %s duplicates.";
-
     private DupeMode mode = DupeMode.MARK_DUPS_ONLY;
 
     @Autowired
@@ -58,14 +51,14 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     @Override
     public void validate() {
         if (entityType == null) {
-            addActionError(ERROR_NO_ENTITY_TYPE);
+            addActionError(getText("authorityManagementController.error_no_entity_type"));
         }
         if (CollectionUtils.isEmpty(selectedDupeIds)) {
-            addActionError(ERROR_NO_DUPLICATES);
+            addActionError(getText("authorityManagementController.error_no_duplicates"));
         } else if (selectedDupeIds.size() < 2) {
-            addActionError(ERROR_NOT_ENOUGH_DUPLICATES);
+            addActionError(getText("authorityManagementController.error_not_enough_duplicates"));
         } else if (selectedDupeIds.size() > getDupeListMaxSize()) {
-            String message = String.format(FMT_TOO_MANY_DUPLICATES, getDupeListMaxSize());
+            String message = getText("authorityManagementController.fmt_too_many_duplicates", getDupeListMaxSize());
             addActionError(message);
         }
     }
@@ -90,9 +83,9 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     public String selectAuthority() {
         if (hasActionErrors())
             return INPUT;
-
+        getLogger().debug("{}" , getLocale());
         if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 1) {
-            addActionError(ERROR_TOO_MANY_PROTECTED_RECORDS);
+            addActionError(getText("authorityManagementController.error_too_many_protected_records"));
             return INPUT;
         }
 
@@ -115,7 +108,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     @WriteableSession
     public String mergeDuplicates() {
         if (authorityId == null) {
-            addActionError(ERROR_NO_AUTHORITY_RECORD);
+            addActionError(getText("authorityManagementController.error_no_authority_record"));
             return INPUT;
         }
 
@@ -125,7 +118,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         selectedDupeIds.remove(authorityId);
 
         if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 0) {
-            addActionError(ERROR_CANNOT_DEDUPE_PROTECTED_RECORDS);
+            addActionError(getText("authorityManagementController.error_cannot_dedupe_protected_records"));
             selectedDuplicates.put(authority.getId(), authority);
             return INPUT;
         }
@@ -134,10 +127,10 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         try {
             authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId, mode);
         } catch (TdarRecoverableRuntimeException trex) {
-            addActionErrorWithException("Could not de-dupe", trex);
+            addActionErrorWithException(getText("authorityManagementController.could_not_dedup"), trex);
             return INPUT;
         }
-
+        
         return SUCCESS;
     }
 

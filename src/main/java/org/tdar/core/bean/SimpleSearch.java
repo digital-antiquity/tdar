@@ -1,5 +1,7 @@
 package org.tdar.core.bean;
 
+import org.tdar.utils.MessageHelper;
+
 /*
  * This interface is designed to ensure that fields are available for basic searhing
  * NOTE: HibernateSearch does not have the ability to inherit the @Field annotations
@@ -7,10 +9,9 @@ package org.tdar.core.bean;
  * NOTE: THIS IS NOT USED
  */
 public interface SimpleSearch {
-
     enum SimpleSearchType {
-        RESOURCE("Resource"),
-        COLLECTION("Collection");
+        RESOURCE(MessageHelper.getMessage("simpleSearchType.resource")),
+        COLLECTION(MessageHelper.getMessage("simpleSearchType.collection"));
 
         private String label;
 

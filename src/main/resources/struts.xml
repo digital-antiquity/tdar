@@ -15,10 +15,8 @@
     <constant name="struts.ui.theme" value="bootstrap"/>
     <constant name="struts.url.includeParams" value="none"/>
     <constant name="struts.action.excludePattern" value="/services/.*"/>
-    <constant name="struts.custom.i18n.resources" value="Locales/tdar-freemarker-messages" />
-    <!-- set it to 50 MB to start with, using the ISI standard for megabyte,
-          i.e., 1,000,000 bytes -->
-    <constant name="struts.multipart.maxSize" value="5368709120"/>
+    <constant name="struts.custom.i18n.resources" value="Locales/tdar-freemarker-messages,/Locales/tdar-messages" />
+
     <!-- constant name="struts.enable.SlashesInActionNames" value="true"/> <constant
           name="struts.mapper.alwaysSelectFullNamespace" value="false"/ -->
     <constant name="struts.patternMatcher" value="com.opensymphony.xwork2.util.NamedVariablePatternMatcher"/>
@@ -55,7 +53,13 @@
                 </interceptor-ref>
                 <interceptor-ref name="servletConfig"/>
                 <interceptor-ref name="prepare"/>
-                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="fileUpload">
+	<!--
+	 ONLY OVERRIDE IF ABSOLUTELY NECESSARY - THIS PROTECTS THE TEMP DIRECTORY 
+		AND CLEANS UP IF A FILE THAT'S TOO BIG IS UPLOADED 
+		<param name="maximumSize">8589934592</param> 
+		-->
+                </interceptor-ref>
                 <interceptor-ref name="staticParams"/>
                 <interceptor-ref name="actionMappingParams"/>
                 <interceptor-ref name="params">

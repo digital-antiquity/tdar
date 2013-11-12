@@ -27,6 +27,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
 
     @Autowired
+    @Override
     public TdarActionSupport getController() {
         return controller;
     }
@@ -37,6 +38,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     GenericKeywordService genericKeywordService;
 
     @Before
+    @Override
     public void reset() {
         reindex();
         controller = generateNewInitializedController(AdvancedSearchController.class, getUser());

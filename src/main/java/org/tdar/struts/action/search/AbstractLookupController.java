@@ -38,6 +38,8 @@ import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.PaginationHelper;
 
+import com.opensymphony.xwork2.ActionSupport;
+
 /**
  * @author Adam Brin
  * 
@@ -57,7 +59,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private SortOption secondarySortField = SortOption.TITLE;
     private boolean debug = false;
     private ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-    public static final String ERROR_MINIMUM_LENGTH = "Search term shorter than minimum length";
+
     private Long id = null;
     private String mode;
     private String searchTitle;
@@ -93,22 +95,27 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.minLookupLength = minLookupLength;
     }
 
+    @Override
     public int getRecordsPerPage() {
         return recordsPerPage;
     }
 
+    @Override
     public void setRecordsPerPage(int recordsPerPage) {
         this.recordsPerPage = recordsPerPage;
     }
 
+    @Override
     public int getStartRecord() {
         return startRecord;
     }
 
+    @Override
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }
 
+    @Override
     public SortOption getSortField() {
         if (sortField == null) {
             sortField = getDefaultSort();
@@ -116,6 +123,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return sortField;
     }
 
+    @Override
     public void setSortField(SortOption sortField) {
         this.sortField = sortField;
     }
@@ -124,6 +132,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      * @param totalRecords
      *            the totalRecords to set
      */
+    @Override
     public void setTotalRecords(int totalRecords) {
         this.totalRecords = totalRecords;
     }
@@ -131,6 +140,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /**
      * @return the totalRecords
      */
+    @Override
     public int getTotalRecords() {
         return totalRecords;
     }
@@ -188,15 +198,17 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets
-    protected QueryPartGroup processReservedTerms() {
+    protected QueryPartGroup processReservedTerms(ActionSupport support) {
         getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
-        return getReservedSearchParameters().toQueryPartGroup();
+        return getReservedSearchParameters().toQueryPartGroup(support);
     }
 
+    @Override
     public int getNextPageStartRecord() {
         return startRecord + recordsPerPage;
     }
 
+    @Override
     public int getPrevPageStartRecord() {
         return startRecord - recordsPerPage;
     }
@@ -205,6 +217,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      * @param results
      *            the results to set
      */
+    @Override
     public void setResults(List<I> results) {
         this.results = results;
     }
@@ -212,6 +225,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /**
      * @return the results
      */
+    @Override
     public List<I> getResults() {
         return results;
     }
@@ -227,6 +241,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /**
      * @return the debug
      */
+    @Override
     public boolean isDebug() {
         return debug;
     }
@@ -239,6 +254,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.debug = debug;
     }
 
+    @Override
     public boolean isShowAll() {
         return showAll;
     }
@@ -265,6 +281,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /**
      * @return the secondarySortField
      */
+    @Override
     public SortOption getSecondarySortField() {
         return secondarySortField;
     }
@@ -295,6 +312,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     /**
      * @return the mode
      */
+    @Override
     public String getMode() {
         return mode;
     }
@@ -304,10 +322,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      *            the mode to set
      */
     // TODO: method needs better name... this is just metadata used to describe the caller of handleSearch()
+    @Override
     public void setMode(String mode) {
         this.mode = mode;
     }
 
+    @Override
     public String getSearchDescription() {
         return searchDescription;
     }
@@ -316,6 +336,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.searchDescription = searchDescription;
     }
 
+    @Override
     public String getSearchTitle() {
         return searchTitle;
     }
@@ -412,7 +433,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 try {
                     pqp.setRegistered(Boolean.parseBoolean(registered));
                 } catch (Exception e) {
-                    addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                    addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                     return ERROR;
                 }
             }
@@ -421,7 +442,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 handleSearch(q);
                 // sanitize results if the user is not logged in
             } catch (ParseException e) {
-                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
         }
@@ -442,7 +463,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             try {
                 handleSearch(q);
             } catch (ParseException e) {
-                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
         }

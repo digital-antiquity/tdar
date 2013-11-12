@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.filestore.Filestore.BaseFilestore;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -66,6 +67,7 @@ public class PairtreeFilestore extends BaseFilestore {
         }
     }
 
+    @Override
     public String store(InputStream content, InformationResourceFileVersion version) throws IOException {
         StorageMethod rotate = StorageMethod.NO_ROTATION;
         return storeAndRotate(content, version, rotate);
@@ -74,6 +76,7 @@ public class PairtreeFilestore extends BaseFilestore {
     /**
      * @see org.tdar.filestore.Filestore#store(java.io.InputStream)
      */
+    @Override
     public String storeAndRotate(InputStream content, InformationResourceFileVersion version, StorageMethod rotate) throws IOException {
         OutputStream outputStream = null;
         String path = getAbsoluteFilePath(version);
@@ -93,7 +96,7 @@ public class PairtreeFilestore extends BaseFilestore {
 
         }
         logger.info("storing at: {}", outFile.getAbsolutePath());
-        String errorMessage = "Unable to write content to filestore.";
+        String errorMessage = MessageHelper.getMessage("pairtreeFilestore.cannot_write", outFile.getAbsolutePath());
         DigestInputStream digestInputStream = appendMessageDigestStream(content);
         try {
             FileUtils.forceMkdir(outFile.getParentFile());
@@ -102,8 +105,13 @@ public class PairtreeFilestore extends BaseFilestore {
                 IOUtils.copy(digestInputStream, outputStream);
             } else {
                 logger.error(errorMessage);
-                throw new TdarRuntimeException(errorMessage + "Can't write to: " + outFile.getAbsolutePath());
+                throw new TdarRuntimeException(errorMessage);
             }
+            
+            if (version.isUploaded()) {
+                outFile.setWritable(false);
+            }
+            
             updateVersionInfo(outFile, version);
             MessageDigest digest = digestInputStream.getMessageDigest();
             if (StringUtils.isEmpty(version.getChecksum())) {
@@ -145,6 +153,7 @@ public class PairtreeFilestore extends BaseFilestore {
     /**
      * @see org.tdar.filestore.Filestore#store(File)
      */
+    @Override
     public String store(File content, InformationResourceFileVersion version) throws IOException {
         return storeAndRotate(content, version, StorageMethod.NO_ROTATION);
     }
@@ -152,6 +161,7 @@ public class PairtreeFilestore extends BaseFilestore {
     /**
      * @see org.tdar.filestore.Filestore#store(File)
      */
+    @Override
     public String storeAndRotate(File content, InformationResourceFileVersion version, StorageMethod rotations) throws IOException {
         if (content == null || !content.isFile()) {
             logger.warn("Trying to store null or non-file content: {}", content);
@@ -163,11 +173,12 @@ public class PairtreeFilestore extends BaseFilestore {
     /**
      * @see org.tdar.filestore.Filestore#retrieveFile(java.lang.String)
      */
+    @Override
     public File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException {
         File file = new File(getAbsoluteFilePath(version));
         logger.trace("file requested: {}", file);
         if (!file.isFile())
-            throw new FileNotFoundException("Could not find file: " + file.getAbsolutePath());
+            throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found",file.getAbsolutePath()));
 
         // version.setTransientFile(file);
         return file;
@@ -255,6 +266,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @return Canonical path to the base filestore directory on the filesystem
      *         as a string.
      */
+    @Override
     public String getFilestoreLocation() {
         return fileStoreLocation;
     }
@@ -262,17 +274,21 @@ public class PairtreeFilestore extends BaseFilestore {
     /**
      * @see org.tdar.filestore.Filestore#purge(java.lang.String)
      */
+    @Override
     public void purge(InformationResourceFileVersion version) throws IOException {
         File file = new File(getAbsoluteFilePath(version));
         if (!version.isDerivative() && !version.isTranslated()) {
             try {
                 // if archival, need to go up one more
-                if (version.isArchival())
+                if (version.isArchival()) {
                     file = file.getParentFile();
-                logger.debug("renaming: {} -> {}",
-                        file.getParentFile().getAbsolutePath(),
-                        new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX).getAbsoluteFile());
-                FileUtils.moveDirectory(file.getParentFile(), new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX));
+                }
+                File parentFile = file.getParentFile();
+                String canonicalPath = parentFile.getCanonicalPath();
+                File deletedFile = new File(canonicalPath + DELETED_SUFFIX);
+                
+                logger.debug("renaming: {} ==> {}", parentFile.getAbsolutePath(), deletedFile.getAbsoluteFile());
+                FileUtils.moveDirectory(parentFile, deletedFile);
             } catch (Exception e) {
                 logger.warn("cannot purge file", e);
             }

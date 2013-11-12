@@ -234,7 +234,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         logger.info("results: {} ", controller.getResources());
         assertTrue(controller.getResults().contains(normal));
         assertTrue(controller.getResults().contains(draft));
-        entityService.delete(controller.getResourceCollection().getAuthorizedUsers());
+        genericService.delete(controller.getResourceCollection().getAuthorizedUsers());
         // return null;
         // }
         //

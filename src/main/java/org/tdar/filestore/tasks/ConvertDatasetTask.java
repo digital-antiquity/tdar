@@ -16,10 +16,10 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.filestore.tasks.Task.AbstractTask;
+import org.tdar.utils.MessageHelper;
 
 public class ConvertDatasetTask extends AbstractTask {
 
-    private static final String FILE_DOES_NOT_EXIST = "Latest uploaded version %s for InformationResourceFile %s had no actual File payload";
     private static final long serialVersionUID = -4321652414809404866L;
 
     @Override
@@ -60,7 +60,7 @@ public class ConvertDatasetTask extends AbstractTask {
 
                 if (versionToConvert == null || !versionToConvert.getTransientFile().exists()) {
                     // abort!
-                    String msg = String.format(FILE_DOES_NOT_EXIST, versionToConvert, versionToConvert.getId());
+                    String msg = MessageHelper.getMessage("convertDatasetTask.file_does_not_exist", versionToConvert, versionToConvert.getId());
                     getLogger().error(msg);
                     throw new TdarRecoverableRuntimeException(msg);
                 }

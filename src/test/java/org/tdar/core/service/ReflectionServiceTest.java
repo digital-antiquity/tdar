@@ -17,7 +17,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.utils.bulkUpload.CellMetadata;
+import org.tdar.core.service.bulk.CellMetadata;
 
 public class ReflectionServiceTest {
 

@@ -8,14 +8,22 @@
 
     <#local srcs = [
                      "/includes/jquery.cookie.js",
+    				<#-- LICENSE: MIT /GPL 2.0 -->
                      "/includes/jquery.metadata.2.1/jquery.metadata.js",
+    				<#-- LICENSE: MIT /GPL 2.0 -->
                      "/includes/jquery.maphilight-1.2.2.js",
+    				<#-- LICENSE: MIT -->
                      "/includes/jquery.textarearesizer.js",
-                     "/includes${fakeDirectory}/jquery.FormNavigate.js",
+    				<#-- LICENSE: MIT -->
+                     "/js${fakeDirectory}/jquery.FormNavigate.js",
                      "/includes/jquery.watermark-3.1.3.min.js",
+    				<#-- LICENSE: MIT -->
                      "/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js",
+    				<#-- LICENSE: BSD /GPL 2.0 -->
                      "/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js",
+    				<#-- LICENSE: BSD /GPL 2.0 -->
                      "/includes/jquery-treeview/jquery.treeview.js",
+    				<#-- LICENSE: MIT /GPL 2.0 -->
                      "/includes/blueimp-javascript-templates/tmpl.min.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/vendor/jquery.ui.widget.js", 
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.iframe-transport.js", 
@@ -23,11 +31,17 @@
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-process.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-validate.js",
                      "/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-ui.js",
+    				<#-- LICENSE: MIT -->
                      "/includes/jquery.populate.js",
+    				<#-- LICENSE: MIT -->
                      "/includes/jquery.tabby-0.12.js",
-                     "/includes/latLongUtil-1.0.js",
+    				<#-- LICENSE: MIT -->
+                     "/js/latLongUtil-1.0.js",
+                     <#-- LICENSE:CC Attribution 3.0 Unported -->
                      "/includes/jquery.orgChart/jquery.orgchart.js",
+    				<#-- LICENSE: MIT /GPL 2.0 -->
   					 "/includes/jqplot-1.08/jquery.jqplot.js",
+  					 <#-- LICENSE: MIT -->
                      "/includes/jqplot-1.08/plugins/jqplot.cursor.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.logAxisRenderer.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.highlighter.js",
@@ -40,26 +54,27 @@
 					 "/includes/jqplot-1.08/plugins/jqplot.enhancedLegendRenderer.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.pieRenderer.js",
 					 "/includes/jqplot-1.08/plugins/jqplot.pointLabels.js",
-                     "/includes${fakeDirectory}/tdar.gmaps.js",
-                     "/includes${fakeDirectory}/tdar.common.js",
-                     "/includes${fakeDirectory}/tdar.upload.js",
-                     "/includes${fakeDirectory}/tdar.repeatrow.js",
-                     "/includes${fakeDirectory}/tdar.autocomplete.js",
-                     "/includes${fakeDirectory}/tdar.datatable.js",
-                     "/includes${fakeDirectory}/tdar.dataintegration.js", 
-                     "/includes${fakeDirectory}/tdar.advanced-search.js",
-                     "/includes${fakeDirectory}/tdar.authority-management.js",
-                     "/includes${fakeDirectory}/tdar.inheritance.js",
-                     "/includes${fakeDirectory}/tdar.pricing.js",
-                     "/includes${fakeDirectory}/tdar.heightevents.js",
-                     "/includes${fakeDirectory}/tdar.contexthelp.js",
-	                 "/includes${fakeDirectory}/tdar.formValidateExtensions.js",
-	                 "/includes${fakeDirectory}/tdar.jquery-upload-validation.js",
+                     "/js${fakeDirectory}/tdar.gmaps.js",
+                     "/js${fakeDirectory}/tdar.common.js",
+                     "/js${fakeDirectory}/tdar.upload.js",
+                     "/js${fakeDirectory}/tdar.repeatrow.js",
+                     "/js${fakeDirectory}/tdar.autocomplete.js",
+                     "/js${fakeDirectory}/tdar.datatable.js",
+                     "/js${fakeDirectory}/tdar.dataintegration.js",
+                     "/js${fakeDirectory}/tdar.advanced-search.js",
+                     "/js${fakeDirectory}/tdar.authority-management.js",
+                     "/js${fakeDirectory}/tdar.inheritance.js",
+                     "/js${fakeDirectory}/tdar.pricing.js",
+                     "/js${fakeDirectory}/tdar.heightevents.js",
+                     "/js${fakeDirectory}/tdar.contexthelp.js",
+	                 "/js${fakeDirectory}/tdar.formValidateExtensions.js",
+	                 "/js${fakeDirectory}/tdar.jquery-upload-validation.js",
                      "/includes/bindWithDelay.js"
+  					 <#-- LICENSE: MIT -->
     ] />
 <#--                     "/includes/ivaynberg-select2-817453b/select2.js" -->
 
-    <#if !production> <#local srcs = srcs + ["/includes${fakeDirectory}/tdar.test.js"]> </#if> 
+    <#if !production> <#local srcs = srcs + ["/js${fakeDirectory}/tdar.test.js"]> </#if> 
 
 <#if combine>
    <!-- call to http://code.google.com/p/webutilities/wiki/JSCSSMergeServlet#URLs_in_CSS -->

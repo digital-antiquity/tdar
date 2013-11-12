@@ -22,8 +22,11 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.MessageHelper;
 
 public abstract class AbstractSupportingInformationResourceController<R extends InformationResource> extends AbstractInformationResourceController<R> {
+
+    private static final String TXT = ".txt";
 
     private static final long serialVersionUID = -3261759402735229520L;
 
@@ -66,9 +69,8 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         if (!isTextInput()) {
             return null;
         }
-
         if (StringUtils.isBlank(getFileTextInput())) {
-            addActionError("Please enter your " + getPersistable().getResourceType().getLabel() + " into the text area.");
+            addActionError(getText("abstractSupportingInformationResourceController.please_enter"));
             return null;
         }
         InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion();
@@ -90,7 +92,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             // addActionError("Please enter a title for your " + getPersistable().getResourceType().getLabel());
             // return null;
             // }
-            String uploadedTextFilename = getPersistable().getTitle() + ".txt";
+            String uploadedTextFilename = getPersistable().getTitle() + TXT;
 
             FileProxy uploadedTextFileProxy = new FileProxy(uploadedTextFilename, FileProxy.createTempFileFromString(getFileTextInput()),
                     VersionType.UPLOADED_TEXT);
@@ -174,8 +176,8 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         List<Resource> related = getRelatedResources();
         if (related.size() > 0) {
             String titles = StringUtils.join(related, ',');
-            String message = "please remove the mappings before deleting: " + titles;
-            addActionErrorWithException("this resource is still mapped to the following datasets", new TdarRecoverableRuntimeException(message));
+            String message = getText("abstractSupportingInformationResourceController.remove_mappings",titles);
+            addActionErrorWithException(getText("abstractSupportingInformationResourceController.still_mapped"), new TdarRecoverableRuntimeException(message));
             return ERROR;
         }
         return SUCCESS;

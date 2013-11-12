@@ -691,6 +691,10 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("switchable.map.obfuscation");
     }
 
+    public boolean isJaiImageJenabled() {
+        return assistant.getBooleanProperty("jai.imagej.enabled", true);
+    }
+
     public boolean obfuscationInterceptorDisabled() {
         return assistant.getBooleanProperty("obfuscation.interceptor.disabled",false);
     }

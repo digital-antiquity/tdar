@@ -33,6 +33,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 import com.google.common.io.Files;
 
@@ -113,7 +114,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
             attempt++;
         }
         if (bag == null) {
-            throw new RuntimeException("could not successfully call createBag after repeated attempts.", lastException);
+            throw new RuntimeException(MessageHelper.getMessage("bagitPersonalFilestore.could_not_create_bag"), lastException);
         }
         if (attempt > 1) {
             // FIXME: lower to WARN once we are satisfied we've worked around this bug.
@@ -151,7 +152,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
                 return new File(pathToBag, storedBagFile.getFilepath());
             }
         }
-        throw new TdarRecoverableRuntimeException("could not find the file we just filed:" + incomingFileName);
+        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("bagitPersonalFilestore.could_not_find_file_created", incomingFileName));
     }
 
     @Override

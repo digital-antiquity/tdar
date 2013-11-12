@@ -33,6 +33,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpEntity;
@@ -40,14 +41,20 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
@@ -107,7 +114,7 @@ public class CommandLineAPITool {
     private static final String OPTION_SHOW_LOG = "log";
 
     private static final Logger logger = Logger.getLogger(CommandLineAPITool.class);
-    private DefaultHttpClient httpclient = new DefaultHttpClient();
+    private CloseableHttpClient httpclient;
     private String hostname = ALPHA_TDAR_ORG; // DEFAULT SHOULD NOT BE CORE
     private String username = ALPHA_USER_NAME;
     private String password = ALPHA_PASSWORD;
@@ -327,7 +334,7 @@ public class CommandLineAPITool {
         if (StringUtils.isEmpty(getPassword())) {
             throw new ParseException("No password specified");
         }
-        if (files.length == 0) {
+        if (ArrayUtils.isEmpty(files)) {
             throw new ParseException("Nothing to do, no files or directories specified...");
         }
         for (File path : files) {
@@ -351,21 +358,32 @@ public class CommandLineAPITool {
     /**
      * process all the files that were read in from the command line, and any nested sub-directories.
      */
+    @SuppressWarnings("deprecation")
     private int processFiles() {
 
         int errorCount = 0;
         try {
 
+            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            RequestConfig globalConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.BEST_MATCH).build();
+            CookieStore cookieStore = new BasicCookieStore();
+            HttpClientContext context = HttpClientContext.create();
+            context.setCookieStore(cookieStore);
+
+            httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).setDefaultRequestConfig(globalConfig).setDefaultCookieStore(cookieStore).build();
+         
             if (getHostname().equalsIgnoreCase(ALPHA_TDAR_ORG)) {
-                AuthScope scope = new AuthScope(getHostname(), 80);
-                UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(ALPHA_USER_NAME, ALPHA_PASSWORD);
-                httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
+                AuthScope scope = new AuthScope(getHostname(), 443);
+                credsProvider.setCredentials(scope, new UsernamePasswordCredentials(ALPHA_USER_NAME, ALPHA_PASSWORD));
+//                httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
                 logger.info("creating challenge/response authentication request for alpha");
                 HttpGet tdarIPAuth = new HttpGet(httpProtocol + getHostname() + "/");
                 logger.debug(tdarIPAuth.getRequestLine());
                 HttpResponse response = httpclient.execute(tdarIPAuth);
                 HttpEntity entity = response.getEntity();
                 entity.consumeContent();
+            } else {
+                httpclient = HttpClients.custom().build();
             }
             // make tdar authentication call
             HttpPost tdarAuth = new HttpPost(httpProtocol + getHostname() + "/login/process");
@@ -378,7 +396,7 @@ public class CommandLineAPITool {
             HttpEntity entity = response.getEntity();
             logger.trace("Login form get: " + response.getStatusLine());
             logger.trace("Post logon cookies:");
-            List<Cookie> cookies = httpclient.getCookieStore().getCookies();
+            List<Cookie> cookies = cookieStore.getCookies();
             boolean sawCrowdAuth = false;
             if (cookies.isEmpty()) {
                 logger.trace("None");
@@ -421,18 +439,22 @@ public class CommandLineAPITool {
         List<File> records = new ArrayList<>();
 
         int errorCount = 0;
-        for (File file : parentDir.listFiles()) {
-            if (file.isHidden())
-                continue;
-            String fileName = file.getName();
-            if (file.isDirectory()) {
-                directories.add(file);
-            } else if (FilenameUtils.getExtension(fileName).equalsIgnoreCase("xml")) {
-                records.add(file);
-            } else {
-                attachments.add(file);
+        if (parentDir.isDirectory()) {
+            for (File file : parentDir.listFiles()) {
+                if (file.isHidden())
+                    continue;
+                String fileName = file.getName();
+                if (file.isDirectory()) {
+                    directories.add(file);
+                } else if (FilenameUtils.getExtension(fileName).equalsIgnoreCase("xml")) {
+                    records.add(file);
+                } else {
+                    attachments.add(file);
+                }
             }
-        }
+        } else if (FilenameUtils.getExtension(parentDir.getName()).equalsIgnoreCase("xml")) {
+            records.add(parentDir);
+        } 
 
         // if there is more than one record in a directory after scanning of the directory is
         // complete, then ignore all files that are not xml records
@@ -456,37 +478,39 @@ public class CommandLineAPITool {
         return errorCount;
     }
 
+    @SuppressWarnings("deprecation")
     public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
         String path = record.getPath();
         HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "=" + URLEncoder.encode(path, "UTF-8"));
-        MultipartEntity reqEntity = new MultipartEntity();
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+//        MultipartEntity reqEntity = new MultipartEntity();
         boolean callSuccessful = true;
         if (seen.contains(path)) {
             logger.debug("skipping: " + path);
         }
-        reqEntity.addPart(API_FIELD_RECORD, new StringBody(FileUtils.readFileToString(record)));
+        builder.addTextBody(API_FIELD_RECORD, FileUtils.readFileToString(record));
 
         if (projectId != null) {
             logger.trace("setting " + API_FIELD_PROJECT_ID + ":" + projectId);
-            reqEntity.addPart(API_FIELD_PROJECT_ID, new StringBody(projectId.toString()));
+            builder.addTextBody(API_FIELD_PROJECT_ID, projectId.toString());
         }
         if (accountId != null) {
             logger.trace("setting " + API_FIELD_ACCOUNT_ID + ":" + accountId);
-            reqEntity.addPart(API_FIELD_ACCOUNT_ID, new StringBody(accountId.toString()));
+            builder.addTextBody(API_FIELD_ACCOUNT_ID, accountId.toString());
         }
 
-        reqEntity.addPart(API_FIELD_FILE_ACCESS_RESTRICTION, new StringBody(getFileAccessRestriction().name()));
+        builder.addTextBody(API_FIELD_FILE_ACCESS_RESTRICTION, getFileAccessRestriction().name());
 
         if (!CollectionUtils.isEmpty(attachments)) {
             for (int i = 0; i < attachments.size(); i++) {
-                reqEntity.addPart(API_FIELD_UPLOAD_FILE, new FileBody(attachments.get(i)));
+                builder.addBinaryBody(API_FIELD_UPLOAD_FILE, attachments.get(i));
                 if (getFileAccessRestriction().isRestricted()) {
-                    reqEntity.addPart(API_FIELD_RESTRICTED_FILES, new StringBody(attachments.get(i).getName()));
+                    builder.addTextBody(API_FIELD_RESTRICTED_FILES, attachments.get(i).getName());
                 }
             }
         }
 
-        apicall.setEntity(reqEntity);
+        apicall.setEntity(builder.build());
         logger.debug("      files: " + StringUtils.join(attachments, ", "));
 
         HttpResponse response = httpclient.execute(apicall);

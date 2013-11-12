@@ -31,6 +31,7 @@ public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements Co
     @JoinColumn(name = "merge_keyword_id")
     private Set<MaterialKeyword> synonyms = new HashSet<MaterialKeyword>();
 
+    @Override
     public Set<MaterialKeyword> getSynonyms() {
         return synonyms;
     }

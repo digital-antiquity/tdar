@@ -43,6 +43,7 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
     @Actions({
             @Action("stats")
     })
+    @Override
     public String execute() {
         DateTime end = new DateTime();
         DateTime start = end.minusDays(7);

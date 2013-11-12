@@ -47,6 +47,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         // however, whatever caused the processing error is fixed
         File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFile.getLatestUploadedVersion());
         File sourceFile = new File(TestConstants.TEST_ARCHIVE_DIR + TestConstants.GOOD_ARCHIVE);
+        fileInStore.setWritable(true);
         org.apache.commons.io.FileUtils.copyFile(sourceFile, fileInStore);
 
         // and the file is reprocessed

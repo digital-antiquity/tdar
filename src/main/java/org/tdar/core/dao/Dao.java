@@ -9,6 +9,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -155,6 +156,7 @@ public interface Dao<T> {
             this.persistentClass = persistentClass;
         }
 
+        @Override
         public List<E> findByEqCriteria(Map<String, ?> map) {
             return findByCriteria(getDetachedCriteria().add(Restrictions.allEq(map)));
         }
@@ -167,18 +169,21 @@ public interface Dao<T> {
             return super.findByCriteria(persistentClass, criteria, start, numberOfRecords);
         }
 
+        @Override
         public Number count() {
             return super.count(persistentClass);
         }
 
+        @Override
         public E find(Long id) {
             return super.find(persistentClass, id);
         }
 
         public E find(String id) {
-            throw new UnsupportedOperationException("FIXME: unimplemented, reliably convert String into arbitrary subtypes of Number.");
+            throw new UnsupportedOperationException(MessageHelper.getMessage("error.not_implemented"));
         }
 
+        @Override
         public List<E> findAll() {
             return super.findAll(persistentClass);
         }
@@ -187,18 +192,22 @@ public interface Dao<T> {
             return super.findAllIds(persistentClass);
         }
 
+        @Override
         public List<E> findAll(List<Long> ids) {
             return super.findAll(persistentClass, ids);
         }
 
+        @Override
         public List<E> findAll(int start, int maxResults) {
             return super.findAll(persistentClass, maxResults);
         }
 
+        @Override
         public List<E> findAllSorted() {
             return super.findAllSorted(persistentClass);
         }
 
+        @Override
         public List<E> findAllSorted(String orderByClause) {
             return super.findAllSorted(persistentClass, orderByClause);
         }
@@ -207,10 +216,12 @@ public interface Dao<T> {
             return super.findByProperty(persistentClass, propertyName, propertyValue);
         }
 
+        @Override
         public List<E> findAllByProperty(String propertyName, Object propertyValue) {
             return super.findAllByProperty(persistentClass, propertyName, propertyValue);
         }
 
+        @Override
         public List<E> findAllFromList(String propertyName, List<?> propertyValues) {
             return super.findAllFromList(persistentClass, propertyName, propertyValues);
         }
@@ -219,6 +230,7 @@ public interface Dao<T> {
             return super.findByProperty(persistentClass, "name", name);
         }
 
+        @Override
         public E findOrCreateById(E entity) {
             return super.findOrCreateById(persistentClass, entity);
         }

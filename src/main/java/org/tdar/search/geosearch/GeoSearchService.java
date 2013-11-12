@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
-import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.geosearch.GeoSearchDao.SpatialTables;
 import org.tdar.struts.data.SvgMapWrapper;
 

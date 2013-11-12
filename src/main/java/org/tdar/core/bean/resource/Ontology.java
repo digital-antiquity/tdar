@@ -74,10 +74,12 @@ public class Ontology extends InformationResource implements SupportsResource {
         setResourceType(ResourceType.ONTOLOGY);
     }
 
+    @Override
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
 
+    @Override
     public void setCategoryVariable(CategoryVariable categoryVariable) {
         this.categoryVariable = categoryVariable;
     }

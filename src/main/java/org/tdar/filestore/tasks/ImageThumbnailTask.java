@@ -21,26 +21,34 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import net.sf.ij.jaiio.JAIReader;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.tasks.Task.AbstractTask;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin
  * 
  */
 public class ImageThumbnailTask extends AbstractTask {
-    public static final String FMT_ERROR_PROCESSING_COULD_NOT_OPEN = "%s is either corrupt or uses an invalid format (error:\"%s\")";
+
+    private static final String UTF_8 = "UTF-8";
+    private static final String _SM = "_sm";
+    private static final String _MD = "_md";
+    private static final String _LG = "_lg";
     private static final long serialVersionUID = -108766461810056577L;
     private static final String JPG_FILE_EXT = ".jpg";
     public static final int LARGE = 600;
     public static final int MEDIUM = 300;
     public static final int SMALL = 96;
     transient ImagePlus ijSource;
-
+    private boolean jaiImageJenabled = true;
     /*
      * public static void main(String[] args) {
      * ImageThumbnailTask task = new ImageThumbnailTask();
@@ -72,12 +80,6 @@ public class ImageThumbnailTask extends AbstractTask {
         processImage(version, version.getTransientFile());
     }
 
-    public void prepare() {
-        // deleteFile(generateFilename(getWorkflowContext().getOutputDirectory(), getWorkflowContext().getOriginalFile().getFilename() , SMALL));
-        // deleteFile(generateFilename(getWorkflowContext().getOutputDirectory(), getWorkflowContext().getOriginalFile().getFilename() , MEDIUM));
-        // deleteFile(generateFilename(getWorkflowContext().getOutputDirectory(), getWorkflowContext().getOriginalFile().getFilename() , LARGE));
-    }
-
     public void processImage(InformationResourceFileVersion version, File sourceFile) {
         String filename = sourceFile.getName();
         getLogger().debug("sourceFile: " + sourceFile);
@@ -98,7 +100,7 @@ public class ImageThumbnailTask extends AbstractTask {
         IJ.redirectErrorMessages(true);
         if (sourceFile == null || !sourceFile.exists()) {
             getWorkflowContext().setErrorFatal(true);
-            throw new TdarRecoverableRuntimeException("File does not exist");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.file_not_found"));
         }
         ijSource = opener.openImage(sourceFile.getAbsolutePath());
 
@@ -106,13 +108,25 @@ public class ImageThumbnailTask extends AbstractTask {
         if (StringUtils.isNotBlank(msg)) {
             getLogger().error(msg);
         }
+        
+        if (isJaiImageJenabled() && ijSource == null) {
+            getLogger().debug("Unable to load source image with ImageJ: " + sourceFile);
+            try {
+                // http://sourceforge.net/projects/ij-plugins/files/ij-imageio/v.1.2.4/
+                ImagePlus[] read = JAIReader.read(sourceFile);
+                ijSource = read[0];
+            } catch (Exception e) {
+                getLogger().error("could not open image with ImageJ-ImageIO" + sourceFile, e);
+            }
+        }
+        
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
             if (!msg.contains("Note: IJ cannot open CMYK JPEGs")) {
                 getWorkflowContext().setErrorFatal(true);
             }
 
-            String errorMessage = String.format(FMT_ERROR_PROCESSING_COULD_NOT_OPEN, filename, msg);
+            String errorMessage = MessageHelper.getMessage("imageThumbnailTask.fmt_error_processing_could_not_open", filename, msg);
             throw new TdarRecoverableRuntimeException(errorMessage);
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
@@ -126,7 +140,7 @@ public class ImageThumbnailTask extends AbstractTask {
                 createJpegDerivative(version, ijSource, filename, SMALL, false);
             } catch (Throwable e) {
                 getLogger().error("Failed to create jpeg derivative", e);
-                throw new TdarRecoverableRuntimeException("processing error", e);
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("imageThumbnailTask.processingError"), e);
             }
         }
     }
@@ -137,20 +151,20 @@ public class ImageThumbnailTask extends AbstractTask {
 
         switch (resolution) {
             case LARGE:
-                outputFilename += "_lg";
+                outputFilename += _LG;
                 break;
             case MEDIUM:
-                outputFilename += "_md";
+                outputFilename += _MD;
                 break;
             case SMALL:
-                outputFilename += "_sm";
+                outputFilename += _SM;
                 break;
             default:
                 outputFilename += "_" + resolution;
         }
         outputFilename += JPG_FILE_EXT;
         try {
-            outputFilename = URLEncoder.encode(outputFilename, "UTF-8");
+            outputFilename = URLEncoder.encode(outputFilename, UTF_8);
         } catch (Exception e) {
             getLogger().debug("exception writing derivative image:", e);
         }
@@ -311,6 +325,17 @@ public class ImageThumbnailTask extends AbstractTask {
     @Override
     public String getName() {
         return "ImageThumbnailGenerator";
+    }
+
+    public boolean isJaiImageJenabled() {
+        if (TdarConfiguration.getInstance().isJaiImageJenabled()) {
+            return jaiImageJenabled;
+        }
+        return false;
+    }
+
+    public void setJaiImageJenabled(boolean jaiImageJenabled) {
+        this.jaiImageJenabled = jaiImageJenabled;
     }
 
 }

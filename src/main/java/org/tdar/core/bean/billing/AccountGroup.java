@@ -79,6 +79,7 @@ public class AccountGroup extends Base implements Updatable {
         return accounts;
     }
 
+    @Override
     public void markUpdated(Person p) {
         if (getOwner() == null) {
             setDateCreated(new Date());
@@ -156,6 +157,7 @@ public class AccountGroup extends Base implements Updatable {
         this.status = status;
     }
 
+    @Override
     public Date getDateUpdated() {
         return lastModified;
     }

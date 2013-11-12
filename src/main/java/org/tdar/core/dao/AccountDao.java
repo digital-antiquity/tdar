@@ -26,6 +26,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -175,11 +176,11 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         query.setParameter("code", coupon.getCode().toLowerCase());
         for (Invoice inv : (List<Invoice>) query.list()) {
             if (inv.getTransactionStatus().isComplete()) {
-                throw new TdarRecoverableRuntimeException("Cannot use Coupon, it has already been used");
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountDao.coupon_already_used"));
             }
         }
         if (!invoice.getCoupon().getId().equals(coupon.getId())) {
-            throw new TdarRecoverableRuntimeException("Coupon is assigned to wrong invoice");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountDao.coupon_assigned_wrong"));
         }
     }
 }

@@ -24,6 +24,10 @@ public abstract class AbstractConfigurableService<S extends Configurable> implem
     private final Logger logger = Logger.getLogger(getClass());
     private List<S> allServices = new ArrayList<>();
 
+    /**
+     * returns all services that the system knows about regardless of whether they're enabled or not.
+     * @return
+     */
     public List<S> getAllServices() {
         return allServices;
     }

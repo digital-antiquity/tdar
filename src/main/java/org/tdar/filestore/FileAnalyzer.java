@@ -24,6 +24,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -35,7 +36,6 @@ import org.tdar.struts.data.FileProxy;
 @Component
 public class FileAnalyzer {
 
-    private static final String NO_WORKFLOW_FOUND = "no workflow could be found for these files %s";
     private List<Workflow> workflows;
     private Map<String, Workflow> fileExtensionToWorkflowMap = new HashMap<>();
     private Map<FileType, List<String>> primaryExtensionList = new HashMap<>();
@@ -103,7 +103,7 @@ public class FileAnalyzer {
             if (wf == null) {
                 wf = w;
             } else if (w != null && wf.getClass() != w.getClass()) {
-                throw new TdarRecoverableRuntimeException("cannot use two separate workflows");
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("filestore.file_version_null"));
             }
         }
         return wf;
@@ -112,11 +112,11 @@ public class FileAnalyzer {
     public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
         Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null) {
-            String message = String.format(NO_WORKFLOW_FOUND, java.util.Arrays.toString(informationResourceFileVersions));
+            String message = MessageHelper.getMessage("fileAnalyzer.no_workflow_found", java.util.Arrays.toString(informationResourceFileVersions));
             throw new TdarRecoverableRuntimeException(message);
         }
         if (informationResourceFileVersions == null) {
-            throw new TdarRecoverableRuntimeException("File version was null, this should not happen");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("filestore.file_version_null"));
         }
         checkFilesExist(informationResourceFileVersions);
 
@@ -130,10 +130,10 @@ public class FileAnalyzer {
             File file = version.getTransientFile();
 
             if (file == null) {
-                throw new FileNotFoundException(version + " -- file does not exist (its reference was null)");
+                throw new FileNotFoundException(MessageHelper.getMessage("filestore.file_does_not_exist",version));
             }
             if (!file.exists()) {
-                throw new FileNotFoundException(file.getCanonicalPath() + " does not exist");
+                throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found", file.getCanonicalPath()));
             }
 
         }

@@ -14,6 +14,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.DoiProcess;
+import org.tdar.utils.MessageHelper;
 
 import au.csiro.doiclient.AndsDoiClient;
 import au.csiro.doiclient.AndsDoiResponse;
@@ -110,7 +111,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     private String getStringProperty(String property) {
         String result = assistant.getProperty(property, null);
         if (result == null) {
-            throw new IllegalStateException("AndsDoi required property not set: " + property);
+            throw new IllegalStateException(MessageHelper.getMessage("Doi.required_property_not_set", property));
         }
         return result;
     }
@@ -154,7 +155,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     @Override
     public Map<String, String> getMetadata(String identifier) {
-        throw new TdarRecoverableRuntimeException("This method has yet to be writted.");
+        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.not_implemented"));
     }
 
     @Override
@@ -180,7 +181,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     @SuppressWarnings("static-method")
     private void validateResponse(String operation, AndsDoiResponse response) {
         if (!response.isSuccess()) {
-            throw new TdarRecoverableRuntimeException("Could not " + operation + " doi: " + response.getMessage());
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("andsDoi.could_not_complete",operation ,response.getMessage()));
         }
     }
 

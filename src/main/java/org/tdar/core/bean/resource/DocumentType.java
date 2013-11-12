@@ -2,6 +2,7 @@ package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -13,17 +14,14 @@ import org.tdar.search.query.QueryFieldNames;
  */
 public enum DocumentType implements HasLabel, Facetable<DocumentType> {
 
-    BOOK("Book / Report", "Books / Reports", "book", "Book"),
-    BOOK_SECTION("Book Chapter / Section", "Book Chapters / Sections", "bookitem", "Book"),
-    JOURNAL_ARTICLE("Journal Article", "Journal Articles", "article", "Article"),
-    THESIS("Thesis / Dissertation", "Theses / Dissertations", "thesis", "Institution", "Department", "Book"),
-    CONFERENCE_PRESENTATION("Conference Presentation", "Conference Presentations", "conference", "Conference", "Conference Location", "Book"),
-    OTHER("Other", "Other", "unknown", "Book");
+    BOOK("book", "book", "Book"),
+    BOOK_SECTION("chapter", "bookitem", "Book"),
+    JOURNAL_ARTICLE("article", "article", "Article"),
+    THESIS("thesis", "thesis", "Institution", "Department", "Book"),
+    CONFERENCE_PRESENTATION("conference", "conference", "Conference", "Conference Location", "Book"),
+    OTHER("other", "unknown", "Book");
 
-    public static final String PUBLISHER = "Publisher";
-    public static final String PUBLISHER_LOCATION = "Publisher Location";
     private final String label;
-    private final String plural;
     private final String openUrlGenre;
     private String publisherName;
     private String publisherLocationName;
@@ -41,24 +39,23 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         }
     }
 
-    private DocumentType(String label, String plural, String genre, String schema) {
+    private DocumentType(String label, String genre, String schema) {
         this.label = label;
-        this.plural = plural;
         this.openUrlGenre = genre;
         this.schema = schema;
     }
 
-    private DocumentType(String label, String plural, String genre, String pubName, String pubLoc, String schema) {
+    private DocumentType(String label,  String genre, String pubName, String pubLoc, String schema) {
         this.label = label;
-        this.plural = plural;
         this.openUrlGenre = genre;
         this.publisherName = pubName;
         this.publisherLocationName = pubLoc;
         this.schema = schema;
     }
 
+    @Override
     public String getLabel() {
-        return label;
+        return MessageHelper.getMessage("documentType."+ label);
     }
 
     public boolean isBookTitleDisplayed() {
@@ -103,18 +100,21 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         return openUrlGenre;
     }
 
+    @Override
     public Integer getCount() {
         return count;
     }
 
+    @Override
     public void setCount(Integer count) {
         this.count = count;
     }
 
     public String getPlural() {
-        return plural;
+        return MessageHelper.getMessage("documentType."+label+"_plural");
     }
 
+    @Override
     public String getLuceneFieldName() {
         return QueryFieldNames.DOCUMENT_TYPE;
     }
@@ -126,7 +126,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
 
     public String getPublisherLocationName() {
         if (publisherLocationName == null) {
-            return PUBLISHER_LOCATION;
+            return MessageHelper.getMessage("documentType.publisher_location");
         }
         return publisherLocationName;
     }
@@ -137,7 +137,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
 
     public String getPublisherName() {
         if (publisherName == null) {
-            return PUBLISHER;
+            return MessageHelper.getMessage("documentType.publisher");
         }
         return publisherName;
     }

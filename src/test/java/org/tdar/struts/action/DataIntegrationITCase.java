@@ -27,6 +27,7 @@ import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
 import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -248,9 +249,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             logger.debug("\n{}\n\trowdata: {}", result, result.getRowData());
             assertFalse("Should have integration results from each dataset", CollectionUtils.isEmpty(result.getRowData()));
             for (String[] rowData : result.getRowData()) {
-                if (rowData[1].equals(Database.NULL_EMPTY_INTEGRATION_VALUE))
+                if (rowData[1].equals(MessageHelper.getMessage("database.null_empty_integration_value")))
                     seenElementNull = true;
-                if (rowData[3].equals(Database.NULL_EMPTY_INTEGRATION_VALUE))
+                if (rowData[3].equals(MessageHelper.getMessage("database.null_empty_integration_value")))
                     seenSpeciesNull = true;
             }
         }
@@ -348,7 +349,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         for (IntegrationDataResult result : results) {
 
             for (String[] rowData : result.getRowData()) {
-                if (rowData[1].equals(org.tdar.db.model.abstracts.Database.NULL_EMPTY_INTEGRATION_VALUE)) {
+                if (rowData[1].equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenElementNull = true;
                 }
                 if (rowData[2].equalsIgnoreCase("tarsal"))
@@ -357,7 +358,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
                     ulna++;
                 if (rowData[2].equalsIgnoreCase("astragalus"))
                     astragalus++;
-                if (rowData[2].equalsIgnoreCase(org.tdar.db.model.abstracts.Database.NULL_EMPTY_MAPPED_VALUE))
+                if (rowData[2].equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value")))
                     empty++;
             }
         }

@@ -10,6 +10,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.utils.MessageHelper;
 
 //FIXME: There be dragons here!
 /**
@@ -27,6 +28,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Action(value = VIEW, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
             @Result(name = SUCCESS, location = "/WEB-INF/content/entity/keyword/view.ftl")
     })
+    @Override
     public String view() throws TdarActionException {
         return super.view();
     }
@@ -35,6 +37,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = "/WEB-INF/content/entity/keyword/edit.ftl")
     })
+    @Override
     public String edit() throws TdarActionException {
         return super.edit();
     }
@@ -48,7 +51,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Override
     protected void delete(K persistable) {
         // no deleting of keywords (for now)
-        addActionError("Sorry, deleting keywords is not supported");
+        addActionError(getText("abstractKeywordController.cannot_delete"));
     }
 
     @Override

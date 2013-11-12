@@ -37,6 +37,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.Pair;
 
@@ -57,17 +58,16 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private Integer recordsPerPage = 10;
 
     public enum PostSaveColumnMapActions implements HasLabel {
-        SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"),
-        SAVE_MAP_THIS("Save, and return to this edit page", "Save, and return to this edit page");
+        SAVE_VIEW(MessageHelper.getMessage("abstractDatasetController.view")),
+        SAVE_MAP_THIS(MessageHelper.getMessage("abstractDatasetController.save_map_this"));
 
         private String label;
-        private String ontologyLabel;
 
-        private PostSaveColumnMapActions(String label, String ontologyLabel) {
+        private PostSaveColumnMapActions(String label) {
             this.setLabel(label);
-            this.setOntologyLabel(ontologyLabel);
         }
 
+        @Override
         public String getLabel() {
             return label;
         }
@@ -77,11 +77,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         }
 
         public String getOntologyLabel() {
-            return ontologyLabel;
-        }
-
-        public void setOntologyLabel(String ontologyLabel) {
-            this.ontologyLabel = ontologyLabel;
+            return label;
         }
 
         public String getResultName(boolean gotoView, Dataset resource) {
@@ -169,12 +165,12 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         if (getDataResource().getLatestVersions().isEmpty()) {
-            addActionError("You should upload a data file before attempting to register column metadata.");
+            addActionError(getText("abstractDatasetController.upload_data_file_first"));
             return INPUT;
         }
 
         if (CollectionUtils.isEmpty(getDataResource().getDataTables())) {
-            addActionError("No data tables were found for this resource.");
+            addActionError(getText("abstractDatasetController.no_tables"));
             return INPUT;
         }
         // load existing column metadata if any.
@@ -233,7 +229,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             return INPUT_COLUMNS;
         }
         this.columnsToRemap = updateResults.getSecond();
-        getResourceService().saveRecordToFilestore(getDataResource());
+        getResourceService().logRecordXmlToFilestore(getDataResource());
         postSaveColumnMetadataCleanup();
         return getPostSaveAction().getResultName(!updateResults.getFirst(), (Dataset) getPersistable());
     }

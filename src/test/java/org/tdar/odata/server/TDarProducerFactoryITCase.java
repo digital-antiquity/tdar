@@ -71,6 +71,7 @@ public class TDarProducerFactoryITCase extends AbstractLightFitTest {
         repositoryService.saveOwnedDataTables(dataset.getDataTables());
     }
 
+    @Override
     protected Logger getLogger() {
         return logger;
     }

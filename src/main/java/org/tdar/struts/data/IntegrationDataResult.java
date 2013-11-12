@@ -46,6 +46,7 @@ public class IntegrationDataResult implements Serializable {
         return integrationColumns;
     }
 
+    @Override
     public String toString() {
         return String.format("integration data result for %s and columns %s", dataTable, integrationColumns);
     }

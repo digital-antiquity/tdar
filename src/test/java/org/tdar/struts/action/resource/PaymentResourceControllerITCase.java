@@ -23,13 +23,13 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.AccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.AccountEvaluationHelper;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
@@ -139,7 +139,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Pair<String, Exception> tdae = setupResource(d);
         assertTrue(CollectionUtils.isNotEmpty(getController().getActionErrors()));
         logger.info("errors {}", getController().getActionErrors());
-        assertTrue(getController().getActionErrors().contains(AccountService.ACCOUNT_IS_NULL));
+        assertTrue(getController().getActionErrors().contains(MessageHelper.getMessage("accountService.account_is_null")));
         Long newId = controller.getResource().getId();
 
         Assert.assertNotNull(entityService.findByEmail("new@email.com"));

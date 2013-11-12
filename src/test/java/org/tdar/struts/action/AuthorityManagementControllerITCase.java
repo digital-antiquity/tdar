@@ -19,8 +19,8 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.GenericService;
+import org.tdar.utils.MessageHelper;
 
 public class AuthorityManagementControllerITCase extends AbstractAdminControllerITCase {
 
@@ -51,8 +51,8 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         controller.validate();
         controller.selectAuthority();
         assertEquals("should be only one action error.  contents:" + controller.getActionErrors(), 2, controller.getActionErrors().size());
-        assertTrue("Expecting no dupes error ", controller.getActionErrors().contains(AuthorityManagementController.ERROR_NO_DUPLICATES));
-        assertTrue("Expecting 'select a type' error", controller.getActionErrors().contains(AuthorityManagementController.ERROR_NO_ENTITY_TYPE));
+        assertTrue("Expecting no dupes error ", controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_no_duplicates")));
+        assertTrue("Expecting 'select a type' error", controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_no_entity_type")));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         controller.getSelectedDupeIds().add(1L);
         controller.validate();
         controller.selectAuthority();
-        assertTrue("expecting not enough dupes ", controller.getActionErrors().contains(AuthorityManagementController.ERROR_NOT_ENOUGH_DUPLICATES));
+        assertTrue("expecting not enough dupes ", controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_not_enough_duplicates")));
 
     }
 
@@ -74,7 +74,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         controller.getSelectedDupeIds().add(1L);
         controller.validate();
         controller.mergeDuplicates();
-        assertTrue("no authority", controller.getActionErrors().contains(AuthorityManagementController.ERROR_NO_AUTHORITY_RECORD));
+        assertTrue("no authority", controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_no_authority_record")));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         // before this test terminates.
         genericService.synchronize();
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
-        assertTrue(received.getSubject().contains(AuthorityManagementService.SERVICE_NAME));
+        assertTrue(received.getSubject().contains(MessageHelper.getMessage("authorityManagementService.service_name")));
         assertTrue(received.getText().contains("Records Merged"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
@@ -123,7 +123,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         controller.prepare();
         controller.validate();
         controller.selectAuthority();
-        assertTrue("expecting protected record error", controller.getActionErrors().contains(AuthorityManagementController.ERROR_TOO_MANY_PROTECTED_RECORDS));
+        assertEquals(MessageHelper.getMessage("authorityManagementController.error_too_many_protected_records"), controller.getActionErrors().iterator().next());
     }
 
     @Test
@@ -141,7 +141,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         controller.validate();
         controller.mergeDuplicates();
         assertTrue("expecting protected record error",
-                controller.getActionErrors().contains(AuthorityManagementController.ERROR_CANNOT_DEDUPE_PROTECTED_RECORDS));
+                controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_cannot_dedupe_protected_records")));
     }
 
     @Test

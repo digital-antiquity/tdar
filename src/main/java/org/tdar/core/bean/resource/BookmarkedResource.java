@@ -78,14 +78,16 @@ public class BookmarkedResource extends Persistable.Base {
         this.name = name;
     }
 
+    @Override
     public String toString() {
         if (StringUtils.isEmpty(name)) {
-            return String.format("(%d, %s, %s)", getId(), getPerson().getEmail(), getResource());
+            return String.format("(%d, %s, %s)", getId(), getPerson(), getResource());
         } else {
             return name;
         }
     }
 
+    @Override
     public List<?> getEqualityFields() {
         // ab probably okay as not nullable fields
         return Arrays.asList(person, resource);

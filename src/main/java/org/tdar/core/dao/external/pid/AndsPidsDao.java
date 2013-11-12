@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.DoiProcess;
+import org.tdar.utils.MessageHelper;
 import org.xml.sax.SAXException;
 
 import au.csiro.pidclient.AndsPidClient;
@@ -107,7 +108,7 @@ public class AndsPidsDao implements ExternalIDProvider {
                 throw new TdarRecoverableRuntimeException(message);
             }
         } catch (IllegalStateException | IllegalArgumentException | XPathExpressionException | ParserConfigurationException | SAXException e) {
-            throw new TdarRecoverableRuntimeException("the DOI Creation was not successful for: " + resourceUrl, e);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("andsPidDao.create_fail",resourceUrl), e);
         }
         return typeMap;
     }
@@ -139,7 +140,7 @@ public class AndsPidsDao implements ExternalIDProvider {
             }
         } catch (Exception e) {
             logger.debug("could not modify handle for resource: {}", resourceUrl);
-            throw new TdarRecoverableRuntimeException("the DOI modification was not successful for: " + resourceUrl, e);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("andsPidDao.update_fail",resourceUrl), e);
         }
         return typeMap;
     }
@@ -154,9 +155,8 @@ public class AndsPidsDao implements ExternalIDProvider {
                 pidsClient.deleteValueByIndex(handle, 1);
         } catch (Exception e) {
             logger.debug("could not delete handle for resource: {}", resourceUrl);
-            throw new TdarRecoverableRuntimeException("the DOI value deletion was not successful for: " + resourceUrl, e);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("andsPidDao.delete_fail",resourceUrl), e);
         }
-
         return typeMap;
     }
 

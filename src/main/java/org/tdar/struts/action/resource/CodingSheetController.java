@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -20,11 +19,10 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -108,7 +106,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         setCodingRules(new ArrayList<CodingRule>(getCodingSheet().getSortedCodingRules()));
 
         // generate suggestions for all distinct column values or only those columns that aren't already mapped?
-        suggestions = getOntologyService().applySuggestions(getCodingSheet().getCodingRules(), getOntologyNodes());
+        OntologyNodeSuggestionGenerator generator  = new OntologyNodeSuggestionGenerator();
+        suggestions = generator.applySuggestions(getCodingSheet().getCodingRules(), getOntologyNodes());
         // load existing ontology mappings
 
         return SUCCESS;
@@ -160,23 +159,13 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         this.setPersistable(codingSheet);
     }
 
-    @Override
-    public String deleteCustom() {
-        List<Resource> related = getRelatedResources();
-        if (related.size() > 0) {
-            String titles = StringUtils.join(related, ',');
-            String message = "please remove the mappings before deleting: " + titles;
-            addActionErrorWithException("this resource is still mapped to the following datasets", new TdarRecoverableRuntimeException(message));
-            return ERROR;
-        }
-        return SUCCESS;
-    }
 
     @Override
     public Set<String> getValidFileExtensions() {
         return analyzer.getExtensionsForType(ResourceType.CODING_SHEET);
     }
 
+    @Override
     public Class<CodingSheet> getPersistableClass() {
         return CodingSheet.class;
     }

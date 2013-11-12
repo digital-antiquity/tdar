@@ -25,6 +25,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
+import org.tdar.utils.MessageHelper;
 
 @Entity
 @Indexed
@@ -96,9 +97,9 @@ public class SensoryData extends Dataset {
     private String controlDataFilename;
 
     public enum RgbCapture {
-        NA("None"),
-        INTERNAL("Internal"),
-        EXTERNAL("External");
+        NA(MessageHelper.getMessage("rgbCapture.none")),
+        INTERNAL(MessageHelper.getMessage("rgbCapture.internal")),
+        EXTERNAL(MessageHelper.getMessage("rgbCapture.external"));
         String label;
 
         RgbCapture(String label) {

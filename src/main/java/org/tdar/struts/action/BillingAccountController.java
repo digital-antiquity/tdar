@@ -34,6 +34,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.interceptor.PostOnly;
+import org.tdar.utils.MessageHelper;
 
 @Component
 @Scope("prototype")
@@ -44,8 +45,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public static final String UPDATE_QUOTAS = "updateQuotas";
     public static final String CHOOSE = "choose";
     public static final String VIEW_ID = "view?id=${id}";
-    public static final String RIGHTS_TO_ASSIGN_THIS_INVOICE = "you do not have the rights to assign this invoice";
-    public static final String INVOICE_IS_REQURIED = "an invoice is requried";
     private static final long serialVersionUID = 2912533895769561917L;
     public static final String NEW_ACCOUNT = "new_account";
     private static final String LIST_INVOICES = "listInvoices";
@@ -73,10 +72,10 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public String selectAccount() throws TdarActionException {
         Invoice invoice = getInvoice();
         if (invoice == null) {
-            throw new TdarRecoverableRuntimeException(INVOICE_IS_REQURIED);
+            throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
         }
         if (!getAuthenticationAndAuthorizationService().canAssignInvoice(invoice, getAuthenticatedUser())) {
-            throw new TdarRecoverableRuntimeException(RIGHTS_TO_ASSIGN_THIS_INVOICE);
+            throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
         }
         setAccounts(getAccountService().listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         if (CollectionUtils.isNotEmpty(getAccounts())) {
@@ -105,6 +104,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return SUCCESS;
     }
 
+    @Override
     public void loadListData() {
         if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
             getAccounts().addAll(getAccountService().findAll());

@@ -3,7 +3,13 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -41,6 +47,7 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
     private CultureKeyword parent;
 
     @XmlAttribute
+    @Override
     public boolean isApproved() {
         return approved;
     }
@@ -53,6 +60,7 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
      * @param parent
      *            the parent to set
      */
+    @Override
     public void setParent(CultureKeyword parent) {
         this.parent = parent;
     }
@@ -62,10 +70,12 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
      */
     @XmlElement(name = "parentRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @Override
     public CultureKeyword getParent() {
         return parent;
     }
 
+    @Override
     public Set<CultureKeyword> getSynonyms() {
         return synonyms;
     }

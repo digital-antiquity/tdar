@@ -23,18 +23,21 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     }
 
     @Test
+    @Override
     public void testOntologyView() {
         super.testOntologyView();
         assertTextNotPresent("edit metadata");
     }
 
     @Test
+    @Override
     public void testCodingSheetView() {
         super.testCodingSheetView();
         assertTextNotPresent("edit metadata");
     }
 
     @Test
+    @Override
     public void testProjectView() {
         reindexOnce();
         super.testProjectView();
@@ -42,12 +45,14 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     }
 
     @Test
+    @Override
     public void testDocumentView() {
         super.testDocumentView();
         assertTextNotPresent("edit metadata");
     }
 
     @Test
+    @Override
     public void testDatasetView() {
         super.testDatasetView();
         assertTextNotPresent("edit metadata");

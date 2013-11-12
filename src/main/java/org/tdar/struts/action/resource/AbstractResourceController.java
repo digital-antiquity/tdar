@@ -1,7 +1,18 @@
 package org.tdar.struts.action.resource;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -10,7 +21,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Sequence;
@@ -47,12 +57,10 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.AbstractPersistableController;
@@ -67,6 +75,7 @@ import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.HttpsOnly;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
+import org.tdar.utils.MessageHelper;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;
@@ -91,8 +100,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public static final String DC = "dc";
     public static final String MODS = "mods";
 
-    public static final String THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS = "this record is in draft and is only available to authorized users";
-    public static final String WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT = "We were unable to process the uploaded content.";
 
     private static final long serialVersionUID = 8620875853247755760L;
 
@@ -143,7 +150,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceCreatorProxy> contactProxies;
 
     private List<ResourceAnnotation> resourceAnnotations;
-    private Long activeResourceCount;
 
     private List<ResourceCollection> viewableResourceCollections;
 
@@ -181,19 +187,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected void loadCustomMetadata() throws TdarActionException {
     };
-
-    @Override
-    protected void loadListData() {
-        setActiveResourceCount(getResourceService().countResourcesForUserAccess(getAuthenticatedUser()));
-    }
-
-    public void setActiveResourceCount(Long countResourcesForUserAccess) {
-        this.activeResourceCount = countResourcesForUserAccess;
-    }
-
-    public Long getActiveResourceCount() {
-        return activeResourceCount;
-    }
 
     @Override
     public String loadAddMetadata() {
@@ -283,6 +276,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return SUCCESS;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String loadViewMetadata() throws TdarActionException {
         if (getResource() == null)
@@ -316,7 +310,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         } else {
             reason = "reason not specified";
         }
-        getResourceService().saveRecordToFilestore(resource);
+        getResourceService().logRecordXmlToFilestore(resource);
         String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().getLabel(), resource.getId(),
                 getAuthenticatedUser(), reason);
 
@@ -338,7 +332,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
 
         if (shouldSaveResource() && getResource() != null) {
-            getResourceService().saveRecordToFilestore(getPersistable());
+            getResourceService().logRecordXmlToFilestore(getPersistable());
         }
 
         if (getResource() != null) { // this will happen with the bulk uploader
@@ -409,12 +403,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (getResource().isDeleted()) {
             logger.debug("resource not viewable because it is deleted: {}", getPersistable());
-            throw new TdarActionException(StatusCode.GONE, "this record has been deleted");
+            throw new TdarActionException(StatusCode.GONE, getText("abstractResourceController.resource_deleted"));
         }
         // don't judge me I hate this code too.
         if (getResource().isDraft()) {
             logger.trace("resource not viewable because it is draft: {}", getPersistable());
-            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT), THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS);
+            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT), getText("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
         }
 
         return false;
@@ -1061,7 +1055,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             try {
                 getInformationResourceService().reprocessInformationResourceFiles(ir, this);
             } catch (Exception e) {
-                addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
+                addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
             }
             if (hasActionErrors()) {
                 return ERROR;

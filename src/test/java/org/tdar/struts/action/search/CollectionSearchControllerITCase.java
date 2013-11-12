@@ -12,6 +12,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.index.LookupSource;
+import org.tdar.utils.MessageHelper;
 
 @Transactional
 public class CollectionSearchControllerITCase extends AbstractSearchControllerITCase {
@@ -20,7 +21,7 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
     @Rollback(true)
     public void testFindAllSearchPhrase() {
         doSearch("");
-        assertEquals(AdvancedSearchController.TITLE_ALL_COLLECTIONS, controller.getSearchSubtitle());
+        assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_collections"), controller.getSearchSubtitle());
     }
 
     @Test

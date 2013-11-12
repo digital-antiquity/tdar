@@ -1,5 +1,3 @@
-
-
 /* FIXME: still unsupported
 @org.hibernate.annotations.NamedNativeQueries({
 	@org.hibernate.annotations.NamedNativeQuery(
@@ -52,6 +50,9 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_RESOURCES,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_EDITABLE_RESOURCES,
+                query = TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES,
                 query = "SELECT distinct new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SORTED_SUFFIX),
@@ -379,7 +380,11 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name=TdarNamedQueries.QUERY_FILE_STATUS,
-            query= "from InformationResourceFile file where status in (:statuses)")
+            query= "from InformationResourceFile file where status in (:statuses)"),
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.QUERY_FILE_SIZE_TOTAL,
+            query= "select vers.extension, sum(vers.fileLength) from InformationResourceFileVersion vers where fileVersionType in (:types) group by extension")
 })
+
 package org.tdar.core.dao;
 

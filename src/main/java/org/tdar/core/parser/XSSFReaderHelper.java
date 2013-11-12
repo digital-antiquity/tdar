@@ -18,6 +18,7 @@ import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler;
 import org.apache.poi.xssf.model.StylesTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.utils.MessageHelper;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -75,11 +76,10 @@ public class XSSFReaderHelper {
         } catch (IndexOutOfBoundsException aob) {
             logger.error("{}", aob);
         } catch (ParserConfigurationException e) {
-            throw new RuntimeException("SAX parser appears to be broken - " + e.getMessage());
+            throw new RuntimeException(MessageHelper.getMessage("xssfReaderHelpher.sax_parser_broken",e.getMessage()));
         }
         sheetInputStream.close();
         return currentSheetName;
-
     }
 
 }

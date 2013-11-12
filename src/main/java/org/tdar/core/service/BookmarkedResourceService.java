@@ -13,7 +13,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.BookmarkedResourceDao;
 
 /**
- * $Id$
+ * Helps create and manage Bookmarks for users. Bookmarks are for keeping track of items, and identifying items for DataIntegration
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -28,7 +28,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
     }
 
     /**
-     * Returns true if this a new BookmarkedResource was created as a result of this call, false otherwise.
+     * Returns true if this a new @link BookmarkedResource for a @link Resource and @link Person was created as a result of this call, false otherwise.
      * 
      * @param resource
      * @param person
@@ -52,6 +52,12 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         return true;
     }
 
+    /**
+     * Returns true if a @link BookmarkedResouce exists for a @link Person and @link Resource and it was removed successfully.
+     * @param resource
+     * @param person
+     * @return
+     */
     public boolean removeBookmark(Resource resource, Person person) {
         BookmarkedResource bookmark = getDao().findBookmark(resource, person);
         if (bookmark == null) {
@@ -65,8 +71,15 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         return true;
     }
 
+    /**
+     * Find all @link Resource entries that are referred to by a @link BookmarkedResource and a @link Person with a specified set of @link Status entries.
+     * 
+     * @param person
+     * @param statuses
+     * @return
+     */
     @Transactional(readOnly = true)
-    public List<Resource> findResourcesByPerson(Person person, List<Status> statuses) {
-        return getDao().findResourcesByPerson(person, statuses);
+    public List<Resource> findBookmarkedResourcesByPerson(Person person, List<Status> statuses) {
+        return getDao().findBookmarkedResourcesByPerson(person, statuses);
     }
 }

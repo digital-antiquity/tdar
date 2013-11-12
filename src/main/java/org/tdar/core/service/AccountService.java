@@ -35,36 +35,33 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.utils.AccountEvaluationHelper;
+import org.tdar.utils.MessageHelper;
 
 @Transactional(readOnly = true)
 @Service
 public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
 
-    public static final String SPECIFY_EITHER_SPACE_OR_FILES = "Specify either Space or Files for your coupon";
-    public static final String COUPON_HAS_EXPIRED = "Coupon has expired";
-    public static final String CANNOT_GENERATE_A_COUPON_FOR_NOTHING = "cannot generate a coupon for nothing";
-    public static final String NOT_ENOUGH_SPACE_OR_FILES = "cannot create coupon for value greater than account's current available files or MB";
-    private static final String COUPON_ALREADY_APPLIED = "Coupon already applied";
-    private static final String CANNOT_REDEEM_COUPON = "Cannot redeem coupon";
-    public static final String ACCOUNT_IS_NULL = "account is null";
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private GenericDao genericDao;
 
     @Autowired
-    ResourceService resourceService;
+    DatasetDao datasetDao;
 
     @Autowired
     AuthenticationAndAuthorizationService authService;
 
-    /*
+    /**
      * Find all accounts for user: return accounts that are active and have not met their quota
+     * @param user
+     * @param statuses
+     * @return
      */
     public Set<Account> listAvailableAccountsForUser(Person user, Status... statuses) {
         if (Persistable.Base.isNullOrTransient(user)) {
@@ -73,8 +70,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return getDao().findAccountsForUser(user, statuses);
     }
 
-    /*
+    /**
      * Find all accounts for user: return accounts that are active and have not met their quota
+     * @param user
+     * @return
      */
     public List<Invoice> listUnassignedInvoicesForUser(Person user) {
         if (Persistable.Base.isNullOrTransient(user)) {
@@ -83,6 +82,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return getDao().findUnassignedInvoicesForUser(user);
     }
 
+    /**
+     * Return defined @link BillingActivity entries that are enabled. A billing activity represents a type of charge (uses ASU Verbage)
+     * @return
+     */
     public List<BillingActivity> getActiveBillingActivities() {
         List<BillingActivity> toReturn = new ArrayList<BillingActivity>();
         for (BillingActivity activity : genericDao.findAll(BillingActivity.class)) {
@@ -96,6 +99,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     }
 
+    /**
+     * We know that we will change pricing from time to time, so, a @link BillingActivityModel allows us to represent different models at the same time. Return
+     * the current model.
+     * 
+     * @return
+     */
     public BillingActivityModel getLatestActivityModel() {
         List<BillingActivityModel> findAll = getDao().findAll(BillingActivityModel.class);
         BillingActivityModel latest = null;
@@ -109,22 +118,39 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return latest;
     }
 
-    public ResourceEvaluator getResourceEvaluator() {
-        return getResourceEvaluator(new Resource[0]);
-    }
-
+    /**
+     * Get a pre-configured @link ResourceEvaluator with the specified array of @link Resource entries.
+     * @param resources
+     * @return
+     */
     public ResourceEvaluator getResourceEvaluator(Resource... resources) {
         return new ResourceEvaluator(getLatestActivityModel(), resources);
     }
 
+    /**
+     * Get a pre-configured @link ResourceEvaluator with the specified collection of @link Resource entries.
+     * @param resources
+     * @return
+     */
     public ResourceEvaluator getResourceEvaluator(Collection<Resource> resources) {
         return new ResourceEvaluator(getLatestActivityModel(), resources.toArray(new Resource[0]));
     }
 
+    /**
+     * Get the @link AccountGroup referenced by the @link Account
+     * @param account
+     * @return
+     */
     public AccountGroup getAccountGroup(Account account) {
         return getDao().getAccountGroup(account);
     }
 
+    /**
+     * Check that an @link Invoice can be assigned to an @link Account based on the permissions of who transacted the Invoice
+     * @param find
+     * @param account
+     * @return
+     */
     public boolean checkThatInvoiceBeAssigned(Invoice find, Account account) {
 
         if (authService.isMember(find.getTransactedBy(), TdarGroup.TDAR_BILLING_MANAGER)) {
@@ -134,9 +160,18 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (account.getOwner().equals(find.getTransactedBy()) || account.getAuthorizedMembers().contains(find.getTransactedBy())) {
             return true;
         }
-        throw new TdarRecoverableRuntimeException("cannot assign invoice to account");
+        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountService.cannot_assign"));
     }
 
+    /**
+     * Checks whether the @link Person / user has space in their @link Account to create a resource of the specified @link ResourceType. This method also looks
+     * to see if their are unassigned Invoices and assigns them to an account if needed.
+     * 
+     * @param user
+     * @param type
+     * @param createAccountIfNeeded
+     * @return
+     */
     @Transactional
     public boolean hasSpaceInAnAccount(Person user, ResourceType type, boolean createAccountIfNeeded) {
         Set<Account> accounts = listAvailableAccountsForUser(user);
@@ -172,6 +207,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return false;
     }
 
+    /**
+     * Marks a @link Resource @link Status to be FLAGGED_ACCOUNT_BALANCE
+     * @param resources
+     */
     @Transactional
     protected void markResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
@@ -182,6 +221,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     }
 
+    /**
+     * Set the @link Resource back to whatever the resource.getPreviousStatus() was set to; set to Status.ACTIVE if NULL.
+     * @param resources
+     */
     @Transactional
     protected void unMarkResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
@@ -195,27 +238,49 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
     }
 
+    /**
+     * Update quota for account based on an array of @link Resource entries
+     * @param account
+     * @param resources
+     * @return
+     */
     @Transactional
     public AccountAdditionStatus updateQuota(Account account, Resource... resources) {
         return updateQuota(account, Arrays.asList(resources));
     }
 
+    /**
+     * Refresh the account info for an @link Account
+     * @param account
+     */
     @Transactional
     public void updateAccountInfo(Account account) {
         getDao().updateAccountInfo(account, getResourceEvaluator());
     }
 
+    /**
+     * Update quota for account based on an Collection of @link Resource entries. This method works in two different paths:
+     * (a) if there's an incremental change that does not bump the quota
+     * (b) if the account is overdrawn or manually told to re-evaluate.
+     * 
+     * If (a) then just adjust the small bit; otherwise if (b) sort the resources chronologically and then evaluate chronologically so only the recent files
+     * fail
+     * 
+     * @param account
+     * @param resourcesToEvaluate
+     * @return
+     */
     @Transactional
     public AccountAdditionStatus updateQuota(Account account, Collection<Resource> resourcesToEvaluate) {
         logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
         logger.trace("model {}", getLatestActivityModel());
 
         if (Persistable.Base.isNullOrTransient(account)) {
-            throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountService.account_is_null"));
         }
         /* evaluate resources based on the model, and update their counts of files and space */
         ResourceEvaluator resourceEvaluator = getResourceEvaluator(resourcesToEvaluate);
-        saveOrUpdateAll(resourcesToEvaluate);
+        datasetDao.saveOrUpdate(resourcesToEvaluate);
 
         /* make sure the account associations are properly set for each resource in the bunch */
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
@@ -272,7 +337,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 }
             }
 
-            saveOrUpdateAll(resourcesToEvaluate);
+            datasetDao.saveOrUpdate(resourcesToEvaluate);
             helper.updateAccount();
             updateAccountInfo(account);
         } else {
@@ -287,6 +352,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return status;
     }
 
+    /**
+     * Log out the account info and the identified change
+     * @param account
+     * @param helper
+     */
     private void logAccountAndHelperState(Account account, AccountEvaluationHelper helper) {
         Object[] log = { account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes(), account.getFilesUsed(), account.getAvailableNumberOfFiles() };
         logger.info("ACCOUNT: space used: {} avail:{} files used: {} avail {}", log);
@@ -295,13 +365,19 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
     }
 
+    /**
+     * Update a Collection of @link Resource entries to use the specified @link Account and keep track using the @link AccountEvaluationHelper
+     * @param account
+     * @param resourcesToEvaluate
+     * @param helper
+     * @return
+     */
     @Transactional
     private boolean updateAccountAssociations(Account account, Collection<Resource> resourcesToEvaluate, AccountEvaluationHelper helper) {
         // Account localAccount = account;
         Set<Account> additionalAccountsToCleanup = new HashSet<Account>();
         boolean hasUpdates = false;
         for (Resource resource : resourcesToEvaluate) {
-            // if the account is null -- die
             if (resource == null) {
                 continue;
             }
@@ -334,6 +410,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return hasUpdates;
     }
 
+    /**
+     * Once the @link Account has been reconcilled, update all of the @link Status entires for each @link Resource and report back
+     * @param helper
+     * @param status
+     * @return
+     */
     private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status) {
         markResourcesAsFlagged(helper.getFlagged());
         unMarkResourcesAsFlagged(helper.getUnflagged());
@@ -349,16 +431,25 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return status;
     }
 
+    /**
+     * Process through all @link Resource entries chronologically and identify items that should be marked as Status.FLAGGED_FOR_BILLING 
+     * @param helper
+     * @param resourcesToEvaluate
+     */
     private void processResourcesChronologically(AccountEvaluationHelper helper, Collection<Resource> resourcesToEvaluate) {
         List<Resource> resourceList = new ArrayList<Resource>(resourcesToEvaluate);
         GenericService.sortByUpdatedDate(resourceList);
         processResourceGroup(helper, resourceList, Mode.ADD);
     }
 
-    /*
+    /**
      * For each item, determine if the account has space for it, if so, add it, if not, add it to the flagged list.
      * Wait until the very end to add the weight of the flagged resources to try and get as many resources visible
      * and functional as possible.
+     * 
+     * @param helper
+     * @param items
+     * @param mode
      */
     private void processResourceGroup(AccountEvaluationHelper helper, List<Resource> items, Mode mode) {
         boolean seenFlagged = false;
@@ -384,10 +475,14 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         ADD;
     }
 
-    /*
+    /**
      * Update the account files and space settings. Based on Mode. Mode for a full re-evaulation of the account will be
      * ADD whereby the total space used is evaluated. Otherwise, in UPDATE, the differential change between last save and
      * current is used.
+     *
+     * @param resource
+     * @param helper
+     * @param mode
      */
     private void updateMarkers(Resource resource, AccountEvaluationHelper helper, Mode mode) {
         if (!resource.isCountedInBillingEvaluation()) {
@@ -405,6 +500,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         helper.setFilesUsed(helper.getFilesUsed() + files);
     }
 
+    /**
+     * Check that an @link Account has space for the @link Resource using the metadata in @link AccountEvaluationHelper
+     * @param resource
+     * @param helper
+     * @param mode
+     * @return
+     */
     private boolean hasSpaceFor(Resource resource, AccountEvaluationHelper helper, Mode mode) {
         Long files = resource.getEffectiveFilesUsed();
         Long space = resource.getEffectiveSpaceUsed();
@@ -436,11 +538,21 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return true;
     }
 
+    /**
+     * Iterate through a Collection of @link Resource entries and set the @link Account
+     * 
+     * @param resources
+     */
     @Transactional
     public void updateTransientAccountInfo(Collection<Resource> resources) {
         getDao().updateTransientAccountOnResources(resources);
     }
 
+    /**
+     * Set an @link Account on a @link Resource
+     * 
+     * @param resource
+     */
     @Transactional
     public void updateTransientAccountInfo(Resource resource) {
         // TODO: add hql/sql for account lookup by resource
@@ -449,6 +561,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         updateTransientAccountInfo(Arrays.asList(resource));
     }
 
+    /**
+     * Iterate through all active @link BillingActivity entries and find the first that is only MB.
+     * @return
+     */
     public BillingActivity getSpaceActivity() {
         for (BillingActivity activity : getActiveBillingActivities()) {
             if (activity.getActivityType() == BillingActivityType.TEST) {
@@ -463,6 +579,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return null;
     }
 
+    /**
+     * As we can bill by different things, # of Files, # of MB, we want to find out what the cheapest method is by # of files either using exact entries in
+     * tiers, or even jumping to the next tier which may be cheaper.
+     * 
+     * @param numFiles_
+     * @param numMb_
+     * @param exact
+     * @return
+     */
     public PricingOption getCheapestActivityByFiles(Long numFiles_, Long numMb_, boolean exact) {
         Long numFiles = 0L;
         Long numMb = 0L;
@@ -538,6 +663,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return option;
     }
 
+    /**
+     * Calculate rate purely on space
+     * 
+     * @param option
+     * @param spaceActivity
+     * @param spaceNeeded
+     */
     public void calculateSpaceActivity(PricingOption option, BillingActivity spaceActivity, Long spaceNeeded) {
         BillingItem extraSpace;
         if (spaceNeeded > 0 && spaceActivity != null) {
@@ -547,6 +679,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
     }
 
+    /**
+     * As we can bill by different things, # of Files, # of MB, we want to find out what the cheapest method by MB.
+     * 
+     * @param numFiles_
+     * @param spaceInMb_
+     * @return
+     */
     public PricingOption getCheapestActivityBySpace(Long numFiles_, Long spaceInMb_) {
         Long numFiles = 0L;
         Long spaceInMb = 0L;
@@ -607,6 +746,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return option;
     }
 
+    /**
+     * Given an @link Invoice calculate the cheapeset Pricing Option
+     * 
+     * @param invoice
+     * @return
+     */
     public PricingOption calculateCheapestActivities(Invoice invoice) {
         PricingOption lowestByMB = getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
         PricingOption lowestByFiles = getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
@@ -624,6 +769,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return lowestByMB;
     }
 
+    /**
+     * Calculate @link PricingOption based on @link PricingType calculation
+     * 
+     * @param invoice
+     * @param pricingType
+     * @return
+     */
     public PricingOption calculateActivities(Invoice invoice, PricingType pricingType) {
         switch (pricingType) {
             case SIZED_BY_FILE_ABOVE_TIER:
@@ -636,11 +788,22 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return null;
     }
 
+    /**
+     * Confirm that @link Coupon can be used (Not assigned, not expired)
+     * @param coupon
+     * @param invoice
+     */
     @Transactional
     public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
         getDao().checkCouponStillValidForCheckout(coupon, invoice);
     }
 
+    /**
+     * Apply a @link Coupon to a @link Invoice
+     * @param persistable
+     * @param user
+     * @param code
+     */
     @Transactional
     public void redeemCode(Invoice persistable, Person user, String code) {
         if (StringUtils.isEmpty(code)) {
@@ -648,17 +811,17 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
         Coupon coupon = locateRedeemableCoupon(code, user);
         if (coupon == null) {
-            throw new TdarRecoverableRuntimeException(CANNOT_REDEEM_COUPON);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountService.cannot_redeem_coupon"));
         }
         if (Persistable.Base.isNotNullOrTransient(persistable.getCoupon())) {
             if (Persistable.Base.isEqual(coupon, persistable.getCoupon())) {
                 return;
             } else {
-                throw new TdarRecoverableRuntimeException(COUPON_ALREADY_APPLIED);
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountService.coupon_already_applied"));
             }
         }
         if (coupon.getDateExpires().before(new Date())) {
-            throw new TdarRecoverableRuntimeException(COUPON_HAS_EXPIRED);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountService.coupon_has_expired"));
         }
         persistable.setCoupon(coupon);
         coupon.setUser(user);
@@ -666,6 +829,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         getDao().saveOrUpdate(coupon);
     }
 
+    /**
+     * Find the @link Coupon based on the String code.
+     * 
+     * @param code
+     * @param user
+     * @return
+     */
     @Transactional(readOnly = true)
     public Coupon locateRedeemableCoupon(String code, Person user) {
         if (org.apache.commons.lang.StringUtils.isBlank(code) || Persistable.Base.isNullOrTransient(user)) {
@@ -674,6 +844,14 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return getDao().findCoupon(code, user);
     }
 
+    /**
+     * Based on an @link Account and criteria, generate a @link Coupon
+     * @param account
+     * @param numberOfFiles
+     * @param numberOfMb
+     * @param dateExpires
+     * @return
+     */
     @Transactional
     public Coupon generateCouponCode(Account account, Long numberOfFiles, Long numberOfMb, Date dateExpires) {
         Coupon coupon = new Coupon();
@@ -686,18 +864,18 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             coupon.setNumberOfMb(numberOfMb);
         }
         if (coupon.getNumberOfFiles() > 0L && coupon.getNumberOfMb() > 0L) {
-            throw new TdarRecoverableRuntimeException(SPECIFY_EITHER_SPACE_OR_FILES);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountService.specify_either_space_or_files"));
         }
 
         if ((Persistable.Base.isNullOrTransient(numberOfFiles) || numberOfFiles < 1) && (Persistable.Base.isNullOrTransient(numberOfMb) || numberOfMb < 1)) {
-            throw new TdarRecoverableRuntimeException(CANNOT_GENERATE_A_COUPON_FOR_NOTHING);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountService.cannot_generate_a_coupon_for_nothing"));
         }
 
         if (account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles() || account.getAvailableSpaceInMb() < coupon.getNumberOfMb()) {
             logger.info("{}", account.getTotalNumberOfFiles());
             logger.info("{} < {} ", account.getAvailableNumberOfFiles(), coupon.getNumberOfFiles());
             logger.info("{} < {} ", account.getAvailableSpaceInMb(), coupon.getNumberOfMb());
-            throw new TdarRecoverableRuntimeException(NOT_ENOUGH_SPACE_OR_FILES);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountService.not_enough_space_or_files"));
         }
         genericDao.save(coupon);
 

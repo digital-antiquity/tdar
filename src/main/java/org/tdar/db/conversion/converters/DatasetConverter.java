@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 import com.healthmarketscience.jackcess.Database;
 
@@ -55,6 +57,8 @@ public interface DatasetConverter {
     Set<DataTableRelationship> getKeys();
 
     DataTable getDataTableByName(String name);
+    
+    DataTable getDataTableByOriginalName(String name);
 
     Set<DataTableRelationship> getRelationships();
 
@@ -67,8 +71,6 @@ public interface DatasetConverter {
     String getFilename();
 
     List<DataTableRelationship> getRelationshipsWithTable(String tableName);
-
-    static final String ERROR_UNABLE_TO_PROCESS = "The system is unable to process this dataset file";
 
     /**
      * Abstract base class for DatasetConverterS, uses template pattern to ease implementation of execute().
@@ -90,14 +92,17 @@ public interface DatasetConverter {
 
         protected abstract void dumpData() throws IOException, Exception;
 
+        @Override
         public void setRelationships(Set<DataTableRelationship> relationships) {
             this.dataTableRelationships = relationships;
         }
 
+        @Override
         public Set<DataTableRelationship> getRelationships() {
             return dataTableRelationships;
         }
 
+        @Override
         public List<DataTableRelationship> getRelationshipsWithTable(String tableName) {
             List<DataTableRelationship> rels = new ArrayList<DataTableRelationship>();
             for (DataTableRelationship rel : dataTableRelationships) {
@@ -108,6 +113,7 @@ public interface DatasetConverter {
             return rels;
         }
 
+        @Override
         public Set<DataTable> getDataTables() {
             return dataTables;
         }
@@ -172,18 +178,19 @@ public interface DatasetConverter {
                 return getDataTables();
             } catch (IOException e) {
                 logger.error("I/O error while opening input database or dumping data", e);
-                throw new TdarRecoverableRuntimeException("I/O error while opening input database or dumping data", e);
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetService.io_exception)"), e);
             } catch (TdarRecoverableRuntimeException tex) {
                 // FIXME: THIS FEELS DUMB. We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error
                 // message
                 // with a friendly-yet-generic error message.
                 throw tex;
             } catch (Exception e) {
-                logger.error(ERROR_UNABLE_TO_PROCESS + "  " + getInformationResourceFileVersion().getFilename(), e);
-                throw new TdarRecoverableRuntimeException(ERROR_UNABLE_TO_PROCESS + "  " + getInformationResourceFileVersion().getFilename(), e);
+                logger.error("unable to prcess file:  " + getInformationResourceFileVersion().getFilename(), e);
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetConverter.error_unable_to_process", getInformationResourceFileVersion().getFilename()), e);
             }
         }
 
+        @Override
         public List<String> getTableNames() {
             ArrayList<String> tables = new ArrayList<String>();
             for (DataTable table : dataTables) {
@@ -192,10 +199,21 @@ public interface DatasetConverter {
             return tables;
         }
 
+        @Override
         public DataTable getDataTableByName(String name) {
             for (DataTable table : dataTables) {
                 if (name.equals(table.getName()))
                     return table;
+            }
+            return null;
+        }
+
+        @Override
+        public DataTable getDataTableByOriginalName(String name) {
+            for (DataTable table : dataTables) {
+                if (ObjectUtils.equals(getInternalTableName(name),getInternalTableName(table.getName()))) {
+                    return table;
+                }
             }
             return null;
         }
@@ -214,14 +232,17 @@ public interface DatasetConverter {
             }
         }
 
+        @Override
         public void setTargetDatabase(TargetDatabase targetDatabase) {
             this.targetDatabase = targetDatabase;
         }
 
+        @Override
         public void setFilename(String filename) {
             this.filename = filename;
         }
 
+        @Override
         public String getFilename() {
             return filename;
         }
@@ -253,10 +274,12 @@ public interface DatasetConverter {
             return targetDatabase.normalizeTableOrColumnNames(sb.toString());
         }
 
+        @Override
         public String getInternalTableName(String originalTableName) {
             return originalTableName.replaceAll("^(" + getDatabasePrefix() + "_)(\\d+)(_?)", "");
         }
 
+        @Override
         public Set<DataTableRelationship> getKeys() {
             return dataTableRelationships;
         }
@@ -265,6 +288,7 @@ public interface DatasetConverter {
          * @param informationResourceFileVersion
          *            the informationResourceFileVersion to set
          */
+        @Override
         public void setInformationResourceFileVersion(InformationResourceFileVersion informationResourceFileVersion) {
             this.informationResourceFileVersion = informationResourceFileVersion;
         }
@@ -276,10 +300,12 @@ public interface DatasetConverter {
             return informationResourceFileVersion;
         }
 
+        @Override
         public File getIndexedContentsFile() {
             return indexedContentsFile;
         }
 
+        @Override
         public void setIndexedContentsFile(File indexedContentsFile) {
             this.indexedContentsFile = indexedContentsFile;
         }

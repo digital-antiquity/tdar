@@ -11,14 +11,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.TestConstants;
@@ -27,11 +30,6 @@ import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-
-import de.schlichtherle.truezip.file.TArchiveDetector;
-import de.schlichtherle.truezip.file.TConfig;
-import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TVFS;
 
 public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
@@ -61,39 +59,26 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     }
 
     public void assertArchiveContents(Collection<File> expectedFiles, File archive, boolean strict) throws IOException {
-        TConfig.get().setArchiveDetector(TArchiveDetector.ALL);
-        TFile arc = new TFile(archive, TArchiveDetector.ALL);
 
-        if (!arc.exists())
-            fail("file does not exist:" + archive);
-        if (!arc.isArchive())
-            fail("file is not an archive:" + archive);
 
-        HashMap<String, TFile> dmap = new HashMap<>();
-        Assert.assertNotNull(arc);
-        logger.info("files:{}", arc.list());
-        for (TFile file : arc.listFiles()) {
-            dmap.put(file.getName(), file);
-        }
-
+        ArchiveInputStream ais = null;
+        Map<String,Long> nameSize = unzipArchive(archive);
         List<String> errs = new ArrayList<>();
         for (File expected : expectedFiles) {
-            TFile actual = dmap.get(expected.getName());
-            if (actual == null) {
+            Long size = nameSize.get(expected.getName());
+            if (size == null) {
                 errs.add("expected file not in archive:" + expected.getName());
                 continue;
             }
-            File temp = File.createTempFile("test123", ".tmp");
-            actual.cp(temp);
             // if doing a strict test, assert that file is exactly the same
             if (strict) {
-                if (!FileUtils.contentEquals(expected, temp)) {
-                    errs.add(String.format("%s: item in archive %s does not have same content", actual, expected));
+                if (size.longValue() != expected.length()) {
+                    errs.add(String.format("%s: item in archive %s does not have same content", size.longValue(), expected));
                 }
                 // otherwise, just make sure that the actual file is not empty
             } else {
                 if (expected.length() > 0) {
-                    assertThat(temp.length(), greaterThan(0L));
+                    assertThat(size, greaterThan(0L));
                 }
             }
         }
@@ -103,6 +88,21 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
             }
             fail("problems found in archive:" + archive);
         }
+    }
+    
+    public Map<String, Long> unzipArchive(File archive) {
+        Map<String,Long> files = new HashMap<>();
+        try {
+            ZipFile zipfile = new ZipFile(archive);
+            for (Enumeration e = zipfile.entries(); e.hasMoreElements(); ) {
+                ZipEntry entry = (ZipEntry) e.nextElement();
+                files.put(entry.getName(), entry.getSize());
+                logger.info("{} {}", entry.getName(), entry.getSize());
+            }
+        } catch (Exception e) {
+            logger.error("Error while extracting file " + archive, e);
+        }
+        return files;
     }
 
     // get some files from the test dir and put them into an archive stream
@@ -142,7 +142,6 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         IOUtils.closeQuietly(controller.getInputStream());
         assertTrue("file should have been created", file.exists());
         assertTrue("file should be non-empty", file.length() > 0);
-        TVFS.umount();
 
         // don't do strict test since the downloaded pdf's will have a cover page
         assertArchiveContents(files, file, false);

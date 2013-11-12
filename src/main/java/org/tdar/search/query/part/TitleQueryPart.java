@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 
 public class TitleQueryPart extends FieldQueryPart<String> {
 
@@ -75,8 +76,7 @@ public class TitleQueryPart extends FieldQueryPart<String> {
 
     @Override
     public String getDescription() {
-        String fmt = "Title containing: \"%s\"";
-        return String.format(fmt, StringUtils.join(getFieldValues(), ";"));
+        return MessageHelper.getMessage("titleQueryPart.description", StringUtils.join(getFieldValues(),";"));
     }
 
     @Override

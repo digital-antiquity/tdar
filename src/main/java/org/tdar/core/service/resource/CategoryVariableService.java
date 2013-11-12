@@ -19,11 +19,17 @@ import org.tdar.core.service.ServiceInterface;
 @Service
 public class CategoryVariableService extends ServiceInterface.TypedDaoBase<CategoryVariable, CategoryVariableDao> {
 
+    /*
+     * Returns all category variables in unknown order
+     */
     @Transactional(readOnly = true)
     public List<CategoryVariable> findAllCategories() {
         return getDao().findAllCategories();
     }
 
+    /*
+     * Returns all category variables sorted by Id
+     */
     @Transactional(readOnly = true)
     public List<CategoryVariable> findAllCategoriesSorted() {
         return getDao().findAllCategoriesSorted();

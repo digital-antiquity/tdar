@@ -1,9 +1,9 @@
 package org.tdar.core.bean.citation;
 
-import org.hibernate.annotations.Index;
-
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Index;
 
 /**
  * Relation.comparativeCollection (resource level; repeatable) - If

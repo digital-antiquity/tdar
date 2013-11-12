@@ -20,6 +20,7 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
         this.title = value;
     }
 
+    @Override
     public boolean isEmpty() {
         return StringUtils.isBlank(title);
     }
@@ -84,6 +85,7 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public Operator getOperator() {
         return Operator.AND;
     }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.plexus.util.StringUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
@@ -14,6 +15,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.utils.Pair;
+
 
 @Component
 public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
@@ -81,6 +83,30 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
             Number total = (Number) result_[0];
             Number count = (Number) result_[1];
             toReturn.add(Pair.create(total.longValue(), count.longValue()));
+        }
+        return toReturn;
+    }
+
+    public Map<String, Long> getFileStats(List<VersionType> types) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_FILE_SIZE_TOTAL);
+        query.setParameterList("types", types);
+        Map<String, Long> toReturn = new HashMap<>();
+        for (Object[] result_ : (List<Object[]>) query.list()) {
+            String txt = StringUtils.upperCase((String) result_[0]);
+            switch (txt) {
+                case "JPEG":
+                    txt = "JPG";
+                    break;
+                case "TIFF":
+                    txt = "TIF";
+                default:
+                    break;
+            }
+            Long val = toReturn.get(txt);
+            if (val == null) {
+                val = 0L;
+            }
+            toReturn.put(txt, val + (Long) result_[1]);
         }
         return toReturn;
     }

@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -18,8 +19,8 @@ import org.tdar.core.bean.HasLabel;
  * @version $Rev$
  */
 public enum ResourceAnnotationType implements HasLabel {
-
-    IDENTIFIER("Resource Identifier");
+    
+    IDENTIFIER(MessageHelper.getMessage("resourceAnnotationType.identifier"));
 
     private final String label;
 
@@ -27,6 +28,7 @@ public enum ResourceAnnotationType implements HasLabel {
         this.label = label;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

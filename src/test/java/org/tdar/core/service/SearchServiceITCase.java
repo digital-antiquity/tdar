@@ -44,6 +44,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     @SuppressWarnings("rawtypes")
     public static abstract class DesignatedComparable<T> implements Comparator<T> {
+        @Override
         public final int compare(T obj1, T obj2) {
             Comparable item1 = null;
             Comparable item2 = null;
@@ -61,12 +62,14 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     private static List<SortTestStruct> sortTests = new ArrayList<SortTestStruct>();
 
     public static Comparator<Resource> titleComparator = ComparatorUtils.nullLowComparator(new Comparator<Resource>() {
+        @Override
         public int compare(Resource item1, Resource item2) {
             return item1.getTitleSort().compareTo(item2.getTitleSort());
         }
     });
 
     public static Comparator<Resource> idComparator = ComparatorUtils.nullLowComparator(new Comparator<Resource>() {
+        @Override
         public int compare(Resource item1, Resource item2) {
             return item1.getId().compareTo(item2.getId());
         }
@@ -74,6 +77,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     // kill me now.
     public static Comparator<Resource> projectComparator = new Comparator<Resource>() {
+        @Override
         public int compare(Resource item1, Resource item2) {
             String title1 = getProjectTitle(item1);
             String title2 = getProjectTitle(item2);
@@ -120,6 +124,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         resourceQueryBuilder
                 .setRawQuery("+(resourceType:DOCUMENT resourceType:CODING_SHEET resourceType:IMAGE resourceType:SENSORY_DATA resourceType:DATASET resourceType:ONTOLOGY)");
         Comparator<Resource> yearComparator = new Comparator<Resource>() {
+            @Override
             public int compare(Resource arg0, Resource arg1) {
                 InformationResource ir1 = (InformationResource) arg0;
                 InformationResource ir2 = (InformationResource) arg1;
@@ -135,11 +140,13 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     @Test
     public void testDateSorting() throws ParseException {
         DesignatedComparable<Resource> dateCreatedComparator = new DesignatedComparable<Resource>() {
+            @Override
             public Comparable getComparableFor(Resource t) {
                 return t.getDateCreated();
             }
         };
         DesignatedComparable<Resource> dateUpdatedComparator = new DesignatedComparable<Resource>() {
+            @Override
             public Comparable getComparableFor(Resource t) {
                 return t.getDateUpdated();
             }
@@ -153,6 +160,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     public void testResourceTypeSorting() throws ParseException {
         DesignatedComparable<Resource> resourceTypeComparator = new DesignatedComparable<Resource>() {
             @SuppressWarnings("rawtypes")
+            @Override
             public Comparable getComparableFor(Resource t) {
                 return t.getResourceTypeSort();
             }

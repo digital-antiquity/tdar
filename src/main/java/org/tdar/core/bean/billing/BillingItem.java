@@ -14,6 +14,7 @@ import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.utils.MessageHelper;
 
 /*
  * an Activity + quantity
@@ -22,8 +23,6 @@ import org.tdar.core.exception.TdarValidationException;
 @Table(name = "pos_item")
 public class BillingItem extends Base implements Validatable {
 
-    private static final String CHOOSE_A_NON_ZERO_QUANTITY = "Please choose a non-zero quantity";
-    private static final String ACTIVITY_MUST_BE_SPECIFIED = "an activity must be specified";
     private static final long serialVersionUID = -2775737509085985555L;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -66,10 +65,10 @@ public class BillingItem extends Base implements Validatable {
     @XmlTransient
     public boolean isValidForController() {
         if (getActivity() == null) {
-            throw new TdarValidationException(ACTIVITY_MUST_BE_SPECIFIED);
+            throw new TdarValidationException(MessageHelper.getMessage("billingItem.specify_activity"));
         }
         if (getQuantity() < 1) {
-            throw new TdarValidationException(CHOOSE_A_NON_ZERO_QUANTITY);
+            throw new TdarValidationException(MessageHelper.getMessage("billingItem.non_zero_value"));
         }
         return true;
     }

@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.tdar.core.dao.external.auth.TdarGroup;
+
 /**
  * $Id$
  * 
@@ -17,6 +19,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface RequiresTdarUserGroup {
 
-    public org.tdar.core.dao.external.auth.TdarGroup value() default org.tdar.core.dao.external.auth.TdarGroup.TDAR_USERS;
+    public TdarGroup value() default TdarGroup.TDAR_USERS;
 
 }

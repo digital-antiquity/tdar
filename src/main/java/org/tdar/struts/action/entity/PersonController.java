@@ -21,8 +21,11 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.UserAccountController;
 import org.tdar.struts.interceptor.HttpsOnly;
+
+import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.Validations;
+import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 
 @Component
 @Scope("prototype")
@@ -43,8 +46,21 @@ public class PersonController extends AbstractCreatorController<Person> {
     private List<Account> accounts;
     private List<String> groups = new ArrayList<String>();
 
+    private String email;
+
+    //TODO: add email change validator
+    //private String confirmEmail;
+
     @Autowired
     ObfuscationService obfuscationService;
+
+
+    @Override
+    public String loadEditMetadata() throws TdarActionException {
+        String ret = super.loadEditMetadata();
+        email = getPersistable().getEmail();
+        return ret;
+    }
 
     @Action(value = MYPROFILE, results = {
             @Result(name = SUCCESS, location = "edit.ftl")
@@ -57,9 +73,38 @@ public class PersonController extends AbstractCreatorController<Person> {
         return edit();
     }
 
+    public void validateEmailRequiredForActiveUsers() {
+        if(getPersistable().isActive() && getPersistable().isRegistered() && StringUtils.isBlank(email)) {
+            addFieldError("email", getText("userAccountController.email_invalid"));
+        }
+    }
+
+    public void validateUniqueEmail() {
+        if(StringUtils.isBlank(getPersistable().getEmail())) return;
+
+        //person2 should be null or same person being edited.  Anything else means email address is not unique.
+        Person person2 = getEntityService().findByEmail(email);
+        if(person2 != null) {
+            if(!person2.equals(getPersistable())) {
+                addFieldError("email", getText("userAccountController.username_not_available"));
+            }
+        }
+
+    }
+
     @Override
+    public void validate() {
+        validateEmailRequiredForActiveUsers();
+        validateUniqueEmail();
+    }
+
+    @Override
+    @Validations(emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "email", key= "userAccountController.email_invalid")})
     protected String save(Person person) {
-        validateAndProcessPasswordChange();
+        if(!StringUtils.equals(email, getPersistable().getEmail())) {
+            getPersistable().setEmail(email);
+        }
+        validateAndProcessPasswordChange();     //TODO: this should just be in validate()
         if (validateAndProcessUsernameChange()) {
             // FIXME: logout?
         }
@@ -101,7 +146,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Override
     public boolean isViewable() throws org.tdar.struts.action.TdarActionException {
         if (!isEditable()) {
-            throw new TdarActionException(StatusCode.UNAUTHORIZED, "you are not allowed to view/edit this record");
+            throw new TdarActionException(StatusCode.UNAUTHORIZED, getText("abstactPersistableController.unable_to_view_edit"));
         }
         return true;
     };
@@ -113,12 +158,11 @@ public class PersonController extends AbstractCreatorController<Person> {
             return;
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
-            addActionError(UserAccountController.ERROR_PASSWORDS_DONT_MATCH);
+            addActionError(getText("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().getAuthenticationProvider().updateUserPassword(getPerson(), password);
-            // FIXME: we currently have no way to indicate success because we are redirecting to success page, So the message below is lost.
-            addActionMessage("Password successfully changed");
+            addActionMessage(getText("personController.password_successfully_changed"));
         }
     }
 
@@ -129,17 +173,17 @@ public class PersonController extends AbstractCreatorController<Person> {
             return false;
 
         if (StringUtils.isBlank(password)) {
-            throw new TdarRecoverableRuntimeException("you must re-enter your password to change your username");
+            throw new TdarRecoverableRuntimeException(getText("userAccountController.error_reenter_password_to_change_username"));
         }
 
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
-            addActionError(UserAccountController.ERROR_PASSWORDS_DONT_MATCH);
+            addActionError(getText("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().updateUsername(getPerson(), newUsername, password);
             // FIXME: we currently have no way to indicate success because we are redirecting to success page, So the message below is lost.
-            addActionMessage("Username successfully changed, please logout");
+            addActionMessage(getText("userAccountController.username_successfully_changed"));
             return true;
         }
         return false;
@@ -263,4 +307,11 @@ public class PersonController extends AbstractCreatorController<Person> {
         this.proxyInstitutionName = proxyInstitutionName;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String personEmail) {
+        this.email = personEmail;
+    }
 }

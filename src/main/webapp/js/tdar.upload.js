@@ -323,6 +323,7 @@ TDAR.fileupload = function() {
         //FIXME: this would be more efficient if we passed the specific div that holds the upload section (instead of entire form)
         $(fileuploadSelector).on("change", ".replace-file" , function (e) {
             console.log("triggering file upload");
+            var $elem = $(this);
 
             //tell filupload-ui to hide this upload from files table
             _nextRowVisibility = false;
@@ -335,10 +336,12 @@ TDAR.fileupload = function() {
             $(fileuploadSelector).fileupload('send', {
                 files: e.target.files || [{name: this.value}],
                 fileInput: $(this),
-                $replaceTarget: $replaceTarget
+                $replaceTarget: $replaceTarget,
+                ticketId:$('#ticketId').val()
             });
 
             $replaceTarget.removeClass("replace-target");
+            $elem.prop("disabled", true);
 
         });
 
@@ -355,6 +358,7 @@ TDAR.fileupload = function() {
         $(fileuploadSelector).bind("fileuploadfinished", function() {
             //tell filupload-ui to stop hiding uploads
             _nextRowVisibility = true;
+            $(fileuploadSelector).find(".replace-file").prop("disabled", false);
         });
 
         //

@@ -7,9 +7,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
-		<struts2.version>2.3.15.2</struts2.version>
-		<hibernate.version>4.2.6.Final</hibernate.version>
-		<hibernate.search.version>4.3.0.Final</hibernate.search.version>
+		<struts2.version>2.3.15.3</struts2.version>
+		<hibernate.version>4.2.7.Final</hibernate.version>
+		<hibernate.search.version>4.4.0.Final</hibernate.search.version>
 		<spring.framework.version>3.2.4.RELEASE</spring.framework.version>
 		<spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
 		<spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
@@ -35,7 +35,6 @@
 		<jersey.version>1.17.1</jersey.version>
 		<jackson.version>2.2.3</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
-		<truezip.version>7.7.4</truezip.version>
 		<http-components.version>4.3.1</http-components.version>
 		<display.port></display.port>
 		<!-- following points to the profile directory to use for filtering resources -->
@@ -132,6 +131,10 @@
 			<id>Laughing Panda</id>
 			<url>http://maven.laughingpanda.org/maven2</url>
 		</repository>
+		<repository>
+			<id>local-dev</id>
+			<url>http://dev.tdar.org/repo/</url>
+		</repository>
 	</repositories>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -148,21 +151,25 @@
 			<groupId>com.joestelmach</groupId>
 			<artifactId>natty</artifactId>
 			<version>0.8</version>
+			<!--  LICENSE: MIT -->
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
 			<artifactId>keytool-api</artifactId>
 			<version>1.3</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>com.jgeppert.struts2.bootstrap</groupId>
 			<artifactId>struts2-bootstrap-plugin</artifactId>
 			<version>1.6.1</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.webutilities</groupId>
 			<artifactId>webutilities</artifactId>
 			<version>0.0.6</version>
+			<!--  LICENSE: APACHE 2.0 -->
 			<exclusions>
 				<exclusion>
 					<artifactId>junit</artifactId>
@@ -174,104 +181,94 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
+			<!--  LICENSE: ECLIPSE -->
 		</dependency>
 		<!-- postgres jdbc -->
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.jdbc.version}</version>
+			<!--  LICENSE: BSD -->
 		</dependency>
 		<dependency>
 			<groupId>org.postgis</groupId>
 			<artifactId>postgis-jdbc</artifactId>
 			<version>1.3.3</version>
+			<!--  LICENSE: LGPL 2 -->
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk16</artifactId>
 			<version>1.46</version>
+			<!--  LICENSE: MIT -->
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk16</artifactId>
 			<version>1.46</version>
+			<!--  LICENSE: MIT -->
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.icu</groupId>
 			<artifactId>icu4j</artifactId>
 			<version>52.1</version>
-		</dependency>
-		<dependency>
-			<groupId>de.schlichtherle.truezip</groupId>
-			<artifactId>truezip-driver-zip</artifactId>
-			<version>${truezip.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>de.schlichtherle.truezip</groupId>
-			<artifactId>truezip-driver-tar</artifactId>
-			<version>${truezip.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>de.schlichtherle.truezip</groupId>
-			<artifactId>truezip-driver-tzp</artifactId>
-			<version>${truezip.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>de.schlichtherle.truezip</groupId>
-			<artifactId>truezip-file</artifactId>
-			<version>${truezip.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>de.schlichtherle.truezip</groupId>
-			<artifactId>truezip-kernel</artifactId>
-			<version>${truezip.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>de.schlichtherle.truezip</groupId>
-			<artifactId>truezip-driver-file</artifactId>
-			<version>${truezip.version}</version>
+			<!--  LICENSE: MIT (variant?)-->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
 			<version>1.9.2</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.48d</version>
+			<version>1.48f</version>
+			<!--  LICENSE: PUBLIC DOMAIN -->
 		</dependency>
+		<dependency>
+			<groupId>net.sf.ij_io</groupId>
+			<artifactId>ij_io</artifactId>
+			<version>1.2.4</version>
+			<!--  LICENSE: APACHE 2.0 / LGPL 2 -->
+			</dependency>
 		<dependency>
 			<groupId>javax.media.jai</groupId>
 			<artifactId>com.springsource.javax.media.jai.core</artifactId>
 			<version>1.1.3</version>
+			<!-- SUN Binary Code License Agreement -->
 		</dependency>
 		<dependency>
 			<groupId>javax.media.jai</groupId>
 			<artifactId>com.springsource.javax.media.jai.codec</artifactId>
 			<version>1.1.3</version>
+			<!-- SUN Binary Code License Agreement -->
 		</dependency>
 		<dependency>
 			<groupId>javax.media</groupId>
 			<artifactId>jmf</artifactId>
 			<version>2.1.1e</version>
+			<!-- SUN Binary Code License Agreement -->
 		</dependency>
 		<dependency>
 			<groupId>jtidy</groupId>
 			<artifactId>jtidy</artifactId>
 			<version>4aug2000r7-dev</version>
+			<!--  LICENSE: MIT VARIENT -->
 		</dependency>
 
 		<dependency>
 			<groupId>net.tanesha.recaptcha4j</groupId>
 			<artifactId>recaptcha4j</artifactId>
 			<version>0.0.7</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- log4j -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
+			<!--  LICENSE: APACHE 2.0 -->
 			<exclusions>
 				<exclusion>
 					<groupId>com.sun.jdmk</groupId>
@@ -290,24 +287,27 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>apache-log4j-extras</artifactId>
-			<version>1.1</version>
+			<version>1.2.17</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
 			<artifactId>commons-cli</artifactId>
 			<version>1.2</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- Log4J e-mail throttling: https://github.com/reaktor/log4j-email-throttle -->
 		<dependency>
 			<groupId>fi.reaktor.log4j</groupId>
 			<artifactId>log4j-email-throttle</artifactId>
 			<version>1.0.0</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- crowd integration -->
 		<dependency>
 		    <groupId>com.atlassian.crowd</groupId>
 		    <artifactId>crowd-integration-client-rest</artifactId>
 			<version>2.6.5</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 <!-- 
 		<dependency>
@@ -325,12 +325,14 @@
  -->		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
-			<version>2.0.1</version>
-		</dependency>
+			<version>2.0.2</version>
+			<!--  LICENSE: LGPL -->
+		</dependency>	
 		<dependency>
 			<groupId>gov.loc</groupId>
 			<artifactId>bagit</artifactId>
 			<version>4.8</version>
+			<!--  LICENSE: PUBLIC DOMAIN -->
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-codec</artifactId>
@@ -355,16 +357,19 @@
 			<groupId>rome</groupId>
 			<artifactId>rome</artifactId>
 			<version>1.0</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>rome</groupId>
 			<artifactId>opensearch</artifactId>
 			<version>0.1</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.geonames</groupId>
 			<artifactId>georss-rome</artifactId>
 			<version>0.9.8</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- <dependency>
 		    <groupId>com.thoughtworks.xstream</groupId>
@@ -376,23 +381,27 @@
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core</artifactId>
 			<version>${spring.ldap.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core-tiger</artifactId>
 			<version>${spring.ldap.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- ANDS PID Client -->
 		<dependency>
 			<groupId>net.sourceforge.andspidclient</groupId>
 			<artifactId>ands-pid-client</artifactId>
 			<version>1.0.30</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- Junit -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
 			<version>1.3</version>
+			<!--  LICENSE: BSD -->
 		</dependency>
 		<dependency>
 			<groupId>org.jmock</groupId>
@@ -403,16 +412,19 @@
 			<groupId>org.jmock</groupId>
 			<artifactId>jmock-legacy</artifactId>
 			<version>2.5.1</version>
+			<!--  LICENSE: MIT/BSD VARIENT -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-core</artifactId>
 			<version>${jena.version}</version>
+			<!--  LICENSE: MIT/BSD VARIENT -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
 			<version>${jena.version}</version>
+			<!--  LICENSE: MIT/BSD VARIENT -->
 			<exclusions>
 				<exclusion>
 					<artifactId>httpclient</artifactId>
@@ -424,36 +436,43 @@
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-shapefile</artifactId>
 			<version>${geotools.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-xml</artifactId>
 			<version>${geotools.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.geotools.xsd</groupId>
 			<artifactId>gt-xsd-kml</artifactId>
 			<version>${geotools.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.geotools.xsd</groupId>
 			<artifactId>gt-xsd-core</artifactId>
 			<version>${geotools.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-image</artifactId>
 			<version>${geotools.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-epsg-extension</artifactId>
 			<version>${geotools.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-epsg-hsql</artifactId>
 			<version>${geotools.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<!-- <dependency>
 		    <groupId>org.geotools</groupId>
@@ -464,36 +483,43 @@
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-geotiff</artifactId>
 			<version>${geotools.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-swing</artifactId>
 			<version>${geotools.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>com.google.code</groupId>
 			<artifactId>sitemapgen4j</artifactId>
 			<version>1.0.1</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>stax</groupId>
 			<artifactId>stax-api</artifactId>
 			<version>1.0.1</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jettison</groupId>
 			<artifactId>jettison</artifactId>
 			<version>1.3.4</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>xmlunit</groupId>
 			<artifactId>xmlunit</artifactId>
 			<version>1.5</version>
+			<!--  LICENSE: BSD -->
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>
 			<version>2.13</version>
+			<!--  LICENSE: APACHE 2.0 -->
 			<exclusions>
 			<exclusion>
 				<artifactId>httpclient</artifactId>
@@ -506,6 +532,7 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
 			<version>${http-components.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- /these are required for htmlunit 2.10 -->
 		<dependency>
@@ -518,21 +545,25 @@
 					<groupId>javassist</groupId>
 				</exclusion>
 			</exclusions>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-config-browser-plugin</artifactId>
 			<version>${struts2.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-sitemesh-plugin</artifactId>
 			<version>${struts2.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-spring-plugin</artifactId>
 			<version>${struts2.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.struts</groupId>
@@ -544,32 +575,38 @@
 					<groupId>junit</groupId>
 				</exclusion>
 			</exclusions>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.amqp</groupId>
 			<artifactId>spring-amqp</artifactId>
 			<version>${spring.amqp.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.amqp</groupId>
 			<artifactId>spring-rabbit</artifactId>
 			<version>${spring.amqp.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-convention-plugin</artifactId>
 			<version>${struts2.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- freemarker -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<version>2.3.20</version>
+			<!--  LICENSE: BSD -->
 		</dependency>
 		<dependency>
 			<groupId>org.owasp</groupId>
 			<artifactId>antisamy</artifactId>
 			<version>1.4</version>
+			<!--  LICENSE: BSD -->
 		</dependency>
 		<!-- Apache POI / HSSF - included via tika <dependency> <groupId>org.apache.poi</groupId> 
 			<artifactId>poi-ooxml</artifactId> <version>3.7</version> </dependency> <dependency> 
@@ -581,46 +618,55 @@
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
 			<version>1.0.0.Final</version>
 			<type>pom</type>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>${hibernate.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
 			<version>${hibernate.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-c3p0</artifactId>
 			<version>${hibernate.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-search</artifactId>
 			<version>${hibernate.search.version}</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>4.3.0.Final</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
+			<!--  LICENSE: MIT -->
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j.version}</version>
+			<!--  LICENSE: MIT -->
 		</dependency>
 		<!-- SPRING DEPENDENCIES (we're not listing them all individually, but 
 			includes orm, jdbc, aop, tx, -->
@@ -628,51 +674,61 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>${spring.framework.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 			<version>${spring.framework.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>${spring.framework.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring.framework.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
 			<version>${spring.framework.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>${spring.framework.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 			<version>${spring.framework.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
 			<version>${spring.framework.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
 			<version>${spring.framework.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 			<version>${spring.framework.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<!-- needed by spring for @Transactional calls -->
@@ -681,6 +737,7 @@
 			<!-- seems to be somewhat incompatible with jetty 8 -->
 			<version>2.2</version>
 			<!-- <scope>runtime</scope> -->
+			<!--  LICENSE: APACHE 1.1 -->
 		</dependency>
 		<dependency>
 			<groupId>javax.transaction</groupId>
@@ -716,65 +773,77 @@
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
 			<version>2.0.1</version>
+			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<!-- OpenCSV -->
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>2.3</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- Jakarta Commons -->
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
 			<version>1.4</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
 			<version>3.2</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-exec</artifactId>
 			<version>1.1</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.3</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
 			<version>2.7.1</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- OWL API access -->
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-apibinding</artifactId>
 			<version>3.4.5</version>
+			<!--  LICENSE: APACHE 2.0  / LGPL -->
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-api</artifactId>
 			<version>3.4.5</version>
+			<!--  LICENSE: APACHE 2.0 / LGPL -->
 		</dependency>
 		<!-- CXF for web-services endpoint -->
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
 			<version>${apache.cxf.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -786,6 +855,7 @@
 					<groupId>asm</groupId>
 				</exclusion>
 			</exclusions>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 <!-- 
 		<dependency>
@@ -804,80 +874,95 @@
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
 			<type>jar</type>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
 			<version>${tika.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
 			<version>${tika.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-bridge</artifactId>
 			<version>${batik.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-svg-dom</artifactId>
 			<version>${batik.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-dom</artifactId>
 			<version>${batik.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-anim</artifactId>
 			<version>${batik.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-gvt</artifactId>
 			<version>${batik.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-ext</artifactId>
 			<version>${batik.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-awt-util</artifactId>
 			<version>${batik.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-script</artifactId>
 			<version>${batik.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.tuckey</groupId>
 			<artifactId>urlrewritefilter</artifactId>
 			<version>4.0.4</version>
 			<type>jar</type>
+			<!--  LICENSE: BSD -->
 		</dependency>
 		<dependency>
 			<groupId>net.sf.json-lib</groupId>
 			<artifactId>json-lib</artifactId>
 			<version>2.4</version>
 			<classifier>jdk15</classifier>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 			<version>1.6.1</version>
 			<type>jar</type>
+			<!--  LICENSE: BSD -->
 		</dependency>
 		<!-- joda time -->
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>2.3</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- Jackson v2 (1.7.3 cannot be used because it doesnt handle @XmlJavaTypeConverter 
 			w/ collections correctly) -->
@@ -885,101 +970,112 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
 			<version>${jackson.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 			<version>${jackson.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
 			<version>${jackson.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>commons-dbutils</groupId>
 			<artifactId>commons-dbutils</artifactId>
 			<version>1.5</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<!-- OData (odata4j) Stuff: Begin -->
 		<dependency>
 			<groupId>org.odata4j</groupId>
 			<artifactId>odata4j-core</artifactId>
 			<version>${odata4j.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.odata4j</groupId>
 			<artifactId>odata4j-jersey</artifactId>
 			<version>${odata4j.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.odata4j</groupId>
 			<artifactId>odata4j-fit</artifactId>
 			<version>${odata4j.version}</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
-		<!-- OData REST Infrastructure -->
-		<dependency>
-			<groupId>com.sun.net.httpserver</groupId>
-			<artifactId>http</artifactId>
-			<version>20070405</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-server</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-core</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-spring</artifactId>
-			<version>${jersey.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-web</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-beans</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-context</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-aop</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+	<!-- OData REST Infrastructure -->
+	<!-- REMOVED: GPL 2.0 <dependency>
+		<groupId>com.sun.net.httpserver</groupId>
+		<artifactId>http</artifactId>
+		<version>20070405</version>
+	</dependency> -->
+	<dependency>
+		<groupId>com.sun.jersey</groupId>
+		<artifactId>jersey-server</artifactId>
+		<version>${jersey.version}</version>
+		<!-- LICENSE: CDDL / GPL 2.0 -->
+	</dependency>
+	<dependency>
+		<groupId>com.sun.jersey</groupId>
+		<artifactId>jersey-core</artifactId>
+		<version>${jersey.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>com.sun.jersey</groupId>
+		<artifactId>jersey-client</artifactId>
+		<version>${jersey.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>com.sun.jersey.contribs</groupId>
+		<artifactId>jersey-spring</artifactId>
+		<version>${jersey.version}</version>
+		<exclusions>
+			<exclusion>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+
 		<!-- OData Integration Testing Support -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-client</artifactId>
 			<version>${jetty.version}</version>
 			<scope>test</scope>
+			<!--  LICENSE: APACHE 2.0 / ECLIPSE 1.0 -->
 		</dependency>
 		<!-- OData (odata4j) Stuff: End -->
 		<!-- Selenium tests -->
@@ -994,17 +1090,20 @@
 					<groupId>org.apache.httpcomponents</groupId>
 				</exclusion>
 			</exclusions>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.arquillian.extension</groupId>
 			<artifactId>arquillian-phantom-driver</artifactId>
 			<version>1.1.0.Beta1</version>
 			<scope>test</scope>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
 			<version>3.2.0</version>
+			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 	</dependencies>
 

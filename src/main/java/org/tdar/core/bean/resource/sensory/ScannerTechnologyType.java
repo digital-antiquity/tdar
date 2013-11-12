@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tdar.core.bean.HasLabel;
-
+import org.tdar.utils.MessageHelper;
 public enum ScannerTechnologyType implements HasLabel {
-    NONE("Not Specified"),
-    TIME_OF_FLIGHT("Time of Flight"),
-    PHASE_BASED("Phase-based"),
-    TRIANGULATION("Triangulation"),
-    COMBINED("Combined");
+    NONE(MessageHelper.getMessage("scannerTechnologyType.none")),
+    TIME_OF_FLIGHT(MessageHelper.getMessage("scannerTechnologyType.none")),
+    PHASE_BASED(MessageHelper.getMessage("scannerTechnologyType.phase_based")),
+    TRIANGULATION(MessageHelper.getMessage("scannerTechnologyType.triangulation")),
+    COMBINED(MessageHelper.getMessage("scannerTechnologyType.combined"));
 
     private final String label;
     private final boolean active;
@@ -34,6 +34,7 @@ public enum ScannerTechnologyType implements HasLabel {
         this.active = active;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

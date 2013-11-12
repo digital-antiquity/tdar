@@ -1,5 +1,6 @@
 package org.tdar.search.query.part;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,19 +14,17 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.struts.data.Range;
+import org.tdar.utils.MessageHelper;
 
 public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
-    private static final String FMT_DESCRIPTION_VALUE_BETWEEN = "between %s and %s";
-    private static final String FMT_DESCRIPTION_VALUE_GREATER = "greater than %1$s";
-    private static final String FMT_DESCRIPTION_VALUE_LESS = "less than %2$s";
 
     private String descriptionLabel;
     private boolean inclusive = true;
 
     private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMdd");
 
-    public RangeQueryPart(String field, Range<C>... values) {
+    public RangeQueryPart(String field, @SuppressWarnings("unchecked") Range<C>... values) {
         this(field, "Value", values);
     }
 
@@ -43,7 +42,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         }
     }
 
-    public RangeQueryPart(String field, String descriptionLabel, Range<C>... values) {
+    public RangeQueryPart(String field, String descriptionLabel, @SuppressWarnings("unchecked") Range<C>... values) {
         super(field, values);
         this.descriptionLabel = descriptionLabel;
     }
@@ -111,17 +110,17 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
     private String getDescription(Range<C> singleValue) {
 
-        String fmt = FMT_DESCRIPTION_VALUE_BETWEEN;
+        String fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_between");
         C start = singleValue.getStart();
         C end = singleValue.getEnd();
         if (isBlank(start) || isBlank(end)) {
             if (isBlank(start)) {
-                fmt = FMT_DESCRIPTION_VALUE_LESS;
+                fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_less");
             } else {
-                fmt = FMT_DESCRIPTION_VALUE_GREATER;
+                fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_greater");
             }
         }
-        return String.format(fmt, start, end);
+        return MessageFormat.format(fmt, start, end);
     }
 
     private boolean isBlank(C item) {

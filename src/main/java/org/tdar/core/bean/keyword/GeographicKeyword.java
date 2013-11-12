@@ -91,6 +91,7 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
         return toReturn.toString();
     }
 
+    @Override
     public Set<GeographicKeyword> getSynonyms() {
         return synonyms;
     }

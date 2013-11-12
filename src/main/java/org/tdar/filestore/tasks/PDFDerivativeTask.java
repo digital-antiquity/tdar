@@ -16,6 +16,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin
@@ -23,8 +24,6 @@ import org.tdar.filestore.WorkflowContext;
 
 public class PDFDerivativeTask extends ImageThumbnailTask {
 
-    private static final String ENCRYPTION_WARNING = "This document is encrypted, please remove the encryption before uploading it to tDAR";
-    private static final String PROCESSING_ERROR = "An error occurred when processing your PDF";
     private static final long serialVersionUID = -1138753863662695849L;
 
     public static void main(String[] args) {
@@ -40,7 +39,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         try {
             task.run(vers);
         } catch (Throwable e) {
-            throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, e);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("pdfDerivativeTask.processing_error"), e);
         }
     }
 
@@ -63,7 +62,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 processImage(version, imageFile);
             }
         } catch (Throwable t) {
-            throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, t);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("pdfDerivativeTask.processing_error"), t);
         }
     }
 
@@ -122,7 +121,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 getLogger().info("access permissions: " + document.getCurrentAccessPermission());
                 getLogger().info("security manager: " + document.getSecurityHandler());
                 getWorkflowContext().setErrorFatal(true);
-                throw new TdarRecoverableRuntimeException(ENCRYPTION_WARNING);
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("pdfDerivativeTask.encryption_warning"));
             }
 
             // try {

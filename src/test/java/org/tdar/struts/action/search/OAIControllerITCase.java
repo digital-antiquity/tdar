@@ -21,6 +21,7 @@ import org.tdar.struts.data.oai.OAIVerb;
 public class OAIControllerITCase extends AbstractSearchControllerITCase {
 
     @Before
+    @Override
     public void reset() {
         reindex();
     }

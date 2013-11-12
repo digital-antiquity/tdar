@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -11,10 +12,10 @@ import org.tdar.core.bean.HasLabel;
  * @version $Revision$
  */
 public enum ResourceNoteType implements HasLabel {
-    GENERAL("General Note"),
-    REDACTION("Redaction Note"),
-    RIGHTS_ATTRIBUTION("Rights & Attribution"),
-    ADMIN("Administration Note");
+    GENERAL(MessageHelper.getMessage("resourceNoteType.general")),
+    REDACTION(MessageHelper.getMessage("resourceNoteType.redaction")),
+    RIGHTS_ATTRIBUTION(MessageHelper.getMessage("resourceNoteType.rights")),
+    ADMIN(MessageHelper.getMessage("resourceNoteType.admin"));
 
     private final String label;
 
@@ -22,6 +23,7 @@ public enum ResourceNoteType implements HasLabel {
         this.label = label;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

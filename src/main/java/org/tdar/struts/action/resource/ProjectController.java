@@ -101,9 +101,10 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return getProjectService().findAllResourcesInProject(getProject(), Status.ACTIVE, Status.DRAFT);
     }
 
+    @Override
     protected void loadCustomMetadata() throws TdarActionException {
         if (getPersistable() != null) {
-            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser());
+            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(),this);
             setSortField(getProject().getSortBy());
             setSecondarySortField(SortOption.TITLE);
             if (getProject().getSecondarySortBy() != null) {
@@ -116,10 +117,9 @@ public class ProjectController extends AbstractResourceController<Project> imple
             } catch (SearchPaginationException e) {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, e);
             } catch (Exception e) {
-                addActionErrorWithException("something happend", e);
+                addActionErrorWithException(getText("projectController.something_happened"), e);
             }
         }
-
     }
 
     @SkipValidation
@@ -134,8 +134,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
             }
             json = project.toJSON().toString();
         } catch (Exception ex) {
-            addActionErrorWithException("There was an error retreiving project-level information for this resource.  Please reload the page " +
-                    " or report this problem to an administrator if the problem persists.", ex);
+            addActionErrorWithException(getText("projectController.project_json_invalid"), ex);
         }
         getLogger().trace("returning json:" + json);
         return json;
@@ -157,6 +156,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         setPersistable(project);
     }
 
+    @Override
     public Class<Project> getPersistableClass() {
         return Project.class;
     }
@@ -196,10 +196,12 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return false;
     }
 
+    @Override
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }
 
+    @Override
     public void setRecordsPerPage(int recordsPerPage) {
         this.recordsPerPage = recordsPerPage;
     }
@@ -224,6 +226,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         this.secondarySortField = secondarySortField;
     }
 
+    @Override
     public void setSortField(SortOption sortField) {
         this.sortField = sortField;
     }
@@ -248,17 +251,19 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return mode;
     }
 
+    @Override
     public int getNextPageStartRecord() {
         return startRecord + recordsPerPage;
     }
 
+    @Override
     public int getPrevPageStartRecord() {
         return startRecord - recordsPerPage;
     }
 
     @Override
     public String getSearchTitle() {
-        return String.format("Resources in %s", getPersistable().getTitle());
+        return getText("projectController.search_title", getPersistable().getTitle());
     }
 
     @Override

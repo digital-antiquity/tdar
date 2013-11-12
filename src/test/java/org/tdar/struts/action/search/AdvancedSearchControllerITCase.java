@@ -1048,6 +1048,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         return found;
     }
 
+    @Override
     protected void reindex() {
         genericService.synchronize();
         searchIndexService.purgeAll();

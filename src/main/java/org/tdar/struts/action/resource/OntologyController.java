@@ -23,6 +23,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -107,7 +108,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     public String node() throws TdarActionException {
         setNode(getOntology().getNodeByIri(getIri()));
         if (node == null) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, "Ontology Node: " + getIri() + " does not exist");
+            throw new TdarActionException(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri() ));
         }
         setChildren(getChildElements(node));
         setParentNode(getOntologyNodeService().getParent(node));
@@ -129,6 +130,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         setPersistable(ontology);
     }
 
+    @Override
     public Class<Ontology> getPersistableClass() {
         return Ontology.class;
     }

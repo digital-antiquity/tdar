@@ -41,6 +41,7 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
     private SiteTypeKeyword parent;
 
     @XmlAttribute
+    @Override
     public boolean isApproved() {
         return approved;
     }
@@ -51,10 +52,12 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
 
     @XmlElement(name = "parentRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @Override
     public SiteTypeKeyword getParent() {
         return parent;
     }
 
+    @Override
     public void setParent(SiteTypeKeyword parent) {
         this.parent = parent;
     }
@@ -63,6 +66,7 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
     @JoinColumn(name = "merge_keyword_id")
     private Set<SiteTypeKeyword> synonyms = new HashSet<SiteTypeKeyword>();
 
+    @Override
     public Set<SiteTypeKeyword> getSynonyms() {
         return synonyms;
     }

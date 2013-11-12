@@ -78,6 +78,7 @@ import org.tdar.search.index.bridge.PersistentReaderBridge;
 import org.tdar.search.index.bridge.StringMapBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -736,10 +737,12 @@ public abstract class InformationResource extends Resource {
         return isProjectVisible() && isInheritingCulturalInformation() ? project.getApprovedCultureKeywords() : getApprovedCultureKeywords();
     }
 
+    @Override
     public Set<ResourceNote> getActiveResourceNotes() {
         return isProjectVisible() && isInheritingNoteInformation() ? project.getResourceNotes() : getResourceNotes();
     }
 
+    @Override
     public Set<ResourceAnnotation> getActiveResourceAnnotations() {
         return isProjectVisible() && isInheritingIdentifierInformation() ? project.getResourceAnnotations() : getResourceAnnotations();
     }
@@ -856,7 +859,7 @@ public abstract class InformationResource extends Resource {
     @JSONTransient
     public boolean isValidForController() {
         if (date == null) {
-            throw new TdarValidationException("Specifying a \"Created Date\" is required for this " + getResourceType());
+            throw new TdarValidationException(MessageHelper.getMessage("informationResource.created_date_required",getResourceType()));
         }
         return super.isValidForController();
     }

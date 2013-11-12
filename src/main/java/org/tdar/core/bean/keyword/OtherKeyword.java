@@ -31,6 +31,7 @@ public class OtherKeyword extends UncontrolledKeyword.Base<OtherKeyword> {
     @JoinColumn(name = "merge_keyword_id")
     private Set<OtherKeyword> synonyms = new HashSet<OtherKeyword>();
 
+    @Override
     public Set<OtherKeyword> getSynonyms() {
         return synonyms;
     }

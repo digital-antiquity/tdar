@@ -40,8 +40,12 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Explanation;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfile.FetchOverride;
+import org.hibernate.annotations.FetchProfiles;
+import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -71,6 +75,7 @@ import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -103,11 +108,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient boolean viewable;
 
     // private transient boolean readyToIndex = true;
-
     public enum CollectionType {
-        INTERNAL("Internal"),
-        SHARED("Shared"),
-        PUBLIC("Public");
+        INTERNAL(MessageHelper.getMessage("collectionType.internal")),
+        SHARED(MessageHelper.getMessage("collectionType.shared")),
+        PUBLIC(MessageHelper.getMessage("collectionType.public"));
 
         private String label;
 
@@ -222,6 +226,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         getResources().add(resource);
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -232,6 +237,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     // @Boost(1.2f)
     @Field
+    @Override
     public String getDescription() {
         return description;
     }
@@ -376,6 +382,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     /**
      * @return the sortBy
      */
+    @Override
     public SortOption getSortBy() {
         return sortBy;
     }
@@ -439,8 +446,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         writable.add(getOwner());
         writable.addAll(getUsersWhoCan(permission, true));
         for (Person p : writable) {
-            if (Persistable.Base.isTransient(p))
+            if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
+            }
             users.add(p.getId());
         }
         return users;
@@ -561,6 +569,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    @Override
     public String getTitleSort() {
         if (getTitle() == null)
             return "";
@@ -569,19 +578,23 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field
     // @Boost(1.5f)
+    @Override
     public String getTitle() {
         return getName();
     }
 
+    @Override
     public String getUrlNamespace() {
         return "collection";
     }
 
     @XmlTransient
+    @Override
     public boolean isViewable() {
         return viewable;
     }
 
+    @Override
     public void setViewable(boolean viewable) {
         this.viewable = viewable;
     }
@@ -604,6 +617,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Override
+    @XmlTransient
+    @Transient
+    @JSONTransient
     public boolean isReadyToIndex() {
         // TODO Auto-generated method stub
         return false;
@@ -615,6 +631,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     }
 
+    @Override
     public Date getDateUpdated() {
         return dateUpdated;
     }
@@ -665,6 +682,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     }
 
+    @XmlTransient
+    @Transient
+    @JSONTransient
     public Set<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }

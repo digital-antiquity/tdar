@@ -38,6 +38,7 @@ import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -122,7 +123,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      *             If there was an IO error
      */
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
-        throw new UnsupportedOperationException(getClass() + " didn't override properly");
+        throw new UnsupportedOperationException(getText("abstractInformationResourceController.didnt_override", getClass() ));
     }
 
     public boolean isMultipleFileUploadEnabled() {
@@ -180,7 +181,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             }
 
         } catch (TdarRecoverableRuntimeException trrc) {
-            addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, trrc);
+            addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), trrc);
         }
 
         if (isHasFileProxyChanges()
@@ -188,11 +189,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                         GeneralPermissions.MODIFY_RECORD)) {
             throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
         }
+      //abstractInformationResourceController.didnt_override=%s didn't override properly
+      //abstractInformationResourceController.didnt_override=%s didn't override properly
 
         try {
             getInformationResourceService().importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this, proxies);
         } catch (Exception e) {
-            addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
+            addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
         }
         getInformationResourceService().saveOrUpdate(getPersistable());
         getLogger().trace("done processing upload files");
@@ -446,7 +449,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void setProjectId(Long projectId_) {
         // remove me?
         if (projectId_ == null) {
-            logger.warn("Tried to set null project id, no-op.");
+            logger.trace("Tried to set null project id, no-op.");
             return;
         }
         this.projectId = projectId_;
@@ -616,11 +619,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                 logger.info("{} {}", copyrightHolderProxies, transientCreator);
                 if (transientCreator != null && StringUtils.isEmpty(transientCreator.getCreator().getProperName().trim())) {
                     logger.debug("No copyright holder set for {}", getPersistable());
-                    addActionError("Please enter a copyright holder!");
+                    addActionError(getText("abstractInformationResourceController.add_copyright_holder"));
                 }
                 // and if not on a form (the reprocess below, for example, then check the persistable itself
             } else if (getPersistable().getCopyrightHolder() == null) {
-                addActionError("The required copyright holder is missing!");
+                addActionError(getText("abstractInformationResourceController.copyright_holder_missing"));
             }
         }
     }

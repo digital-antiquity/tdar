@@ -16,6 +16,7 @@ import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author abrin
@@ -23,6 +24,8 @@ import org.tdar.core.exception.TdarValidationException;
  * @param <C>
  */
 public class FieldQueryPart<C> implements QueryPart<C> {
+    private static final String NOT = " NOT ";
+
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String fieldName;
@@ -60,11 +63,13 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.operator = oper;
     }
 
+    @SuppressWarnings("unchecked")
     public FieldQueryPart(String fieldName, String displayName, Operator oper, C... fieldValues_) {
         this(fieldName, displayName, Arrays.asList(fieldValues_));
         this.operator = oper;
     }
 
+    @SuppressWarnings("unchecked")
     public FieldQueryPart(String fieldName, C... fieldValues_) {
         this(fieldName, "", Arrays.asList(fieldValues_));
     }
@@ -77,6 +82,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this(fieldName, "", oper, fieldValues_);
     }
 
+    @SuppressWarnings("unchecked")
     public FieldQueryPart(String fieldName, Operator oper, C... fieldValues_) {
         this(fieldName, "", oper, fieldValues_);
     }
@@ -236,7 +242,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
      */
     public FieldQueryPart<C> setFuzzy(Float fuzzy) {
         if (fuzzy > 1) {
-            throw new TdarRecoverableRuntimeException("fuzzyness can only be between 0 & 1");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("fieldQueryPart.fuzzyness_out_of_range"));
         }
         this.fuzzy = fuzzy;
         return this;
@@ -285,6 +291,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return StringEscapeUtils.escapeHtml4(getDescription());
     }
 
+    @Override
     public Operator getOperator() {
         return operator;
     }
@@ -303,7 +310,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     protected String getInverse() {
         if (isInverse())
-            return " NOT ";
+            return NOT;
         return "";
     }
 
@@ -326,6 +333,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return fieldValues;
     }
 
+    @SuppressWarnings("unchecked")
     public void setFieldValues(Collection<C> fieldValues) {
         this.fieldValues.clear();
         for (C item : fieldValues) {
@@ -333,6 +341,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void add(C... values) {
         for (C value : values) {
             if (validate(value)) {
@@ -346,7 +355,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         if (value == null)
             return false;
         if (value instanceof Validatable && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
-            throw new TdarValidationException(String.format("%s is not valid", value));
+            throw new TdarValidationException(MessageHelper.getMessage("fieldQueryPart.is_not_valid", value));
         }
         return true;
     }
@@ -362,10 +371,12 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.displayName = displayName;
     }
 
+    @Override
     public boolean isDescriptionVisible() {
         return descriptionVisible;
     }
 
+    @Override
     public void setDescriptionVisible(boolean descriptionVisible) {
         this.descriptionVisible = descriptionVisible;
     }
@@ -382,9 +393,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     public String getDescriptionOperator() {
-        String delim = " and ";
+        String delim = MessageHelper.getMessage("fieldQueryPart.and");
         if (getOperator() == Operator.OR) {
-            delim = " or ";
+            delim = MessageHelper.getMessage("fieldQueryPart.or");
         }
         return delim;
     }

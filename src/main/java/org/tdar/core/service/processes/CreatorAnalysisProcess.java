@@ -79,6 +79,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
 
+    @Override
     public String getDisplayName() {
         return "Creator Analytics Process";
     }
@@ -88,6 +89,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
         return 100;
     }
 
+    @Override
     public Class<Creator> getPersistentClass() {
         return Creator.class;
     }
@@ -144,7 +146,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             int total = 0;
             if (!creator.isActive())
                 continue;
-            QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null);
+            QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null,null);
             try {
                 FullTextQuery search = searchService.search(query, null);
                 ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);

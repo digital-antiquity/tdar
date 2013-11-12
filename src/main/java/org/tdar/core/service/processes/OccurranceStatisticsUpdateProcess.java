@@ -30,7 +30,7 @@ public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<Hom
         run = true;
 
         genericKeywordService.updateOccurranceValues();
-        entityService.updateOcurrances();
+        entityService.updatePersonOcurrances();
         // Person person = new Person();
         // person.setFirstName("system");
         // person.setLastName("user");

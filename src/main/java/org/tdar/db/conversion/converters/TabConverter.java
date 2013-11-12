@@ -20,6 +20,7 @@ public class TabConverter extends SimpleConverter {
 
     private static final String DB_PREFIX = "tab";
 
+    @Override
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }

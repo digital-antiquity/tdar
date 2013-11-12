@@ -4,6 +4,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 public class DatasetConversionFactory {
 
@@ -24,7 +25,7 @@ public class DatasetConversionFactory {
             converter.setInformationResourceFileVersion(dataset);
             return converter;
         } catch (Exception e) {
-            throw new IllegalArgumentException("No converter defined for format: " + dataset.getExtension(), e);
+            throw new IllegalArgumentException(MessageHelper.getMessage("datasetConversionFactory.no_converter", dataset.getExtension()), e);
         }
     }
 

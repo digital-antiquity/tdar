@@ -37,6 +37,8 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
  */
 public class AuthenticationInterceptor implements SessionDataAware, Interceptor {
 
+    private static final String CACHE_CONTROL = "Cache-control";
+
     private static final long serialVersionUID = -3147151913316273258L;
 
     public static final String SKIP_REDIRECT = "(.*)/lookup/(.*)";
@@ -128,7 +130,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             logger.warn("No http servlet response available to set headers: {}", cacheControlHeaders);
             return;
         }
-        response.setHeader("Cache-control", cacheControlHeaders);
+        response.setHeader(CACHE_CONTROL, cacheControlHeaders);
     }
 
     protected void setReturnUrl(ActionInvocation invocation) {

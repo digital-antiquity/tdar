@@ -15,7 +15,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.struts2.StrutsStatics;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.hibernate.SessionFactory;
@@ -110,7 +113,16 @@ import org.tdar.utils.TestConfiguration;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.DefaultTextProvider;
+import com.opensymphony.xwork2.LocaleProvider;
+import com.opensymphony.xwork2.TextProviderFactory;
+import com.opensymphony.xwork2.config.ConfigurationManager;
+import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
+import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
+import com.opensymphony.xwork2.util.LocalizedTextUtil;
+import com.opensymphony.xwork2.util.ValueStack;
 
 @ContextConfiguration(locations = { "classpath:/applicationContext.xml" })
 @SuppressWarnings("rawtypes")
@@ -437,9 +449,32 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected <T> T generateNewController(Class<T> controllerClass) {
         T controller = (T) applicationContext.getBean(controllerClass);
         if (controller instanceof AuthenticationAware.Base) {
-            ((TdarActionSupport) controller).setServletRequest(getServletRequest());
-            ((TdarActionSupport) controller).setServletResponse(getServletResponse());
+            TdarActionSupport tas = (TdarActionSupport) controller;
+            tas.setServletRequest(getServletRequest());
+            tas.setServletResponse(getServletResponse());
+            // set the context
         }
+        Map<String, Object> contextMap = new HashMap<String, Object>();
+        contextMap.put(StrutsStatics.HTTP_REQUEST, getServletRequest());
+        ActionContext context = new ActionContext(contextMap);
+        context.setLocale(Locale.getDefault());
+        //http://mail-archives.apache.org/mod_mbox/struts-user/201001.mbox/%3C637b76e41001151852x119c9cd4vbbe6ff560e56e46f@mail.gmail.com%3E
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        OgnlValueStackFactory factory = new OgnlValueStackFactory();
+        
+        //FIXME: needs to be a better way to handle this
+        TextProviderFactory textProviderFactory = new TextProviderFactory();
+        String bundle = "Locales/tdar-messages";
+        
+        LocalizedTextUtil.addDefaultResourceBundle(bundle);
+        factory.setTextProvider(textProviderFactory.createInstance(ResourceBundle.getBundle(bundle), (LocaleProvider)controller));
+
+        configurationManager.addContainerProvider(new XWorkConfigurationProvider());
+        configurationManager.getConfiguration().getContainer().inject(factory);
+        ValueStack stack = factory.createValueStack();
+
+        context.setValueStack(stack);
+        ActionContext.setContext(context);
         return controller;
     }
 

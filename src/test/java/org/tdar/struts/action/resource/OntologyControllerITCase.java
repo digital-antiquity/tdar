@@ -36,6 +36,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.service.resource.OntologyService;
+import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.Pair;
@@ -183,7 +184,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
 
                 for (InformationResourceFile file : ont.getInformationResourceFiles()) {
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
-                        genericService.delete(version);
+                        genericService.forceDelete(version);
                     }
                     genericService.delete(file);
                 }
@@ -338,20 +339,20 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
             if (!StringUtils.isBlank(line)) {
                 String nodeLabel = line.trim();
                 ArrayList<String> synonyms = new ArrayList<String>();
-                Matcher matcher = OntologyService.SYNONYM_PATTERN.matcher(line);
+                Matcher matcher = OwlOntologyConverter.SYNONYM_PATTERN.matcher(line);
                 if (matcher.matches()) {
                     nodeLabel = matcher.group(1).trim();
                     Set<String> nodeSynonyms = ontologyNodes.get(i).getSynonyms();
                     logger.debug("node synonyms for " + ontologyNodes.get(i).getDisplayName() + ": " + nodeSynonyms);
-                    assertEquals(nodeSynonyms.size(), matcher.group(2).split(OntologyService.SYNONYM_SPLIT_REGEX).length);
-                    for (String synonym : matcher.group(2).split(OntologyService.SYNONYM_SPLIT_REGEX)) {
+                    assertEquals(nodeSynonyms.size(), matcher.group(2).split(OwlOntologyConverter.SYNONYM_SPLIT_REGEX).length);
+                    for (String synonym : matcher.group(2).split(OwlOntologyConverter.SYNONYM_SPLIT_REGEX)) {
                         synonym = synonym.trim();
                         synonyms.add(synonym);
                         logger.trace("checking for " + synonym);
                         assertTrue(nodeSynonyms.contains(synonym));
                     }
                 }
-                String nodeFragment = ontologyService.labelToFragmentId(nodeLabel);
+                String nodeFragment = OwlOntologyConverter.labelToFragmentId(nodeLabel);
                 logger.info("text:" + line + " <--> parsed:" + ontologyNodes.get(i).getIri());
                 assertEquals(nodeLabel, ontologyNodes.get(i).getDisplayName().trim());
                 assertEquals(nodeFragment, ontologyNodes.get(i).getIri().trim());

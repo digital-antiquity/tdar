@@ -32,6 +32,7 @@ public class HomepageResourceCountCache extends Persistable.Base implements Comp
         this.count = count;
     }
 
+    @Override
     public Long getCount() {
         return count;
     }
@@ -40,6 +41,7 @@ public class HomepageResourceCountCache extends Persistable.Base implements Comp
         this.count = count;
     }
 
+    @Override
     public Double getLogCount() {
         return Math.log(getCount());
     }
@@ -57,14 +59,17 @@ public class HomepageResourceCountCache extends Persistable.Base implements Comp
         return ObjectUtils.compare(getResourceType(), o.getResourceType());
     }
 
+    @Override
     public String getLabel() {
         return getResourceType().getPlural();
     }
 
+    @Override
     public ResourceType getKey() {
         return getResourceType();
     }
 
+    @Override
     public String getCssId() {
         return this.getKey().name();
     }

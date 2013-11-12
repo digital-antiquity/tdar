@@ -138,7 +138,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             setSecondarySortField(SortOption.TITLE);
         }
 
-        q.append(processReservedTerms());
+        q.append(processReservedTerms(this));
         try {
             handleSearch(q);
             if (CollectionUtils.isNotEmpty(getProjections())) {
@@ -146,7 +146,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             }
             logger.trace("jsonResults:" + getResults());
         } catch (ParseException e) {
-            addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+            addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;
         }
 
@@ -177,7 +177,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         try {
             handleSearch(q);
         } catch (ParseException e) {
-            addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+            addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;
         }
 
@@ -200,7 +200,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             try {
                 handleSearch(q);
             } catch (ParseException e) {
-                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
         }
@@ -251,7 +251,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             try {
                 handleSearch(q);
             } catch (ParseException e) {
-                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
         }

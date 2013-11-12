@@ -25,11 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -52,25 +47,37 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.bulk.CellMetadata;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
-import org.tdar.utils.bulkUpload.CellMetadata;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 
 /**
+ * Service to help with Reflection
+ * 
  * @author Adam Brin
  * 
  */
 @Service
 public class ReflectionService {
 
+    private static final String EXECUTE = "execute";
+    private static final String ORG_TDAR2 = "org/tdar/";
+    private static final String SET = "set";
+    private static final String GET = "get";
+    private static final String ORG_TDAR = "org.tdar.";
     public transient Logger logger = LoggerFactory.getLogger(getClass());
     private Map<String, Class<Persistable>> persistableLookup;
 
-    /*
+    /**
      * This method looks at a class like "Resource" and finds fields that contain the "classToFind",
      * e.g. GeographicKeyword. This would return [geographicKeywords,managedGeographicKeywords]
+     * 
+     * @param classToInspect
+     * @param classToFind
+     * @return
      */
     public Set<Field> findFieldsReferencingClass(Class<?> classToInspect, Class<?> classToFind) {
         Set<Field> matchingFields = new HashSet<>();
@@ -83,7 +90,13 @@ public class ReflectionService {
         return matchingFields;
     }
 
-    // todo: do we really need an extra function for this?
+    /**
+     * Find all fields with a return-type of the specified class
+     * 
+     * @param classToInspect
+     * @param ancestorToFind
+     * @return
+     */
     public Set<Field> findAssignableFieldsRefererencingClass(Class<?> classToInspect, Class<?> ancestorToFind) {
         Set<Field> matchingFields = new HashSet<>();
         for (Field field : classToInspect.getDeclaredFields()) {
@@ -95,6 +108,14 @@ public class ReflectionService {
         return matchingFields;
     }
 
+    /**
+     * Find Fields with any of the annotations specified within the source tree
+     * 
+     * @param targetClass
+     * @param list
+     * @param recursive
+     * @return
+     */
     public Set<Field> findFieldsWithAnnotation(Class<?> targetClass, List<Class<? extends Annotation>> list, boolean recursive) {
         Set<Field> set = new HashSet<>();
         for (Field field : targetClass.getDeclaredFields()) {
@@ -112,24 +133,6 @@ public class ReflectionService {
         return set;
     }
 
-    public void warmUp(Object obj, int i) {
-        logger.debug("warming up: {} ", obj);
-        Set<Field> fields = findFieldsWithAnnotation(obj.getClass(), Arrays.asList(ManyToMany.class, ManyToOne.class, OneToMany.class, OneToOne.class), true);
-        for (Field field : fields) {
-            Object result = callFieldGetter(obj, field);
-            logger.trace("{}", result);
-            if (result == null)
-                continue;
-            if (result instanceof Collection<?> && i > 0) {
-                for (Object child : (Collection<?>) result) {
-                    warmUp(child, i - 1);
-                }
-            } else if (field.getAnnotation(OneToOne.class) != null) {
-                warmUp(result, 0);
-            }
-        }
-    }
-
     /**
      * Take the method name and try and replace it with the same
      * logic that Hibernate uses
@@ -143,28 +146,61 @@ public class ReflectionService {
         return name;
     }
 
+    /**
+     * String the getter or setter prefix from a method name to get the field name
+     * 
+     * @param method
+     * @return
+     */
     public static String cleanupMethodName(Method method) {
         return cleanupMethodName(method.getName());
     }
 
+    /**
+     * from the field, generate the appropriate Getter name
+     * 
+     * @param field
+     * @return
+     */
     public static String generateGetterName(Field field) {
         return generateGetterName(field.getName());
     }
 
+    /**
+     * From the string generate the getter name
+     * @param name
+     * @return
+     */
     public static String generateGetterName(String name) {
-        return generateName("get", name);
+        return generateName(GET, name);
     }
 
+    /**
+     * From the field, generate the Setter name
+     * 
+     * @param field
+     * @return
+     */
     public static String generateSetterName(Field field) {
         return generateSetterName(field.getName());
     }
 
+    /**
+     * From the String, generate the appropriate setter
+     * 
+     * @param name
+     * @return
+     */
     public static String generateSetterName(String name) {
-        return generateName("set", name);
+        return generateName(SET, name);
     }
 
-    /*
+    /**
      * Based on the field and the object passed in, call the getter and return the result
+     * 
+     * @param obj
+     * @param field
+     * @return
      */
     @SuppressWarnings("unchecked")
     public <T> T callFieldGetter(Object obj, Field field) {
@@ -182,6 +218,10 @@ public class ReflectionService {
 
     /**
      * Call the setter of the supplied object and field with the supplied value
+     * 
+     * @param obj
+     * @param field
+     * @param fieldValue
      */
     public <T> void callFieldSetter(Object obj, Field field, T fieldValue) {
         String setterName = generateSetterName(field);
@@ -200,10 +240,23 @@ public class ReflectionService {
 
     }
 
+    /**
+     * Get the CamelCase name for a field
+     * 
+     * @param prefix
+     * @param name
+     * @return
+     */
     private static String generateName(String prefix, String name) {
         return prefix + name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
+    /**
+     * Get the return type of a field
+     * 
+     * @param accessibleObject
+     * @return
+     */
     public static Class<?> getFieldReturnType(AccessibleObject accessibleObject) {
         final Logger log = LoggerFactory.getLogger(ReflectionService.class);
 
@@ -220,6 +273,12 @@ public class ReflectionService {
         return null;
     }
 
+    /**
+     * Get the Class of the return type/or generic type
+     * 
+     * @param type
+     * @return
+     */
     private static Class<?> getType(Type type) {
         Logger logger = LoggerFactory.getLogger(ReflectionService.class);
 
@@ -247,6 +306,14 @@ public class ReflectionService {
         return null;
     }
 
+    /**
+     * Find Classes within the org/tdar/core/bean tree that support @link Persistable and resolve the SimpleName with the specified String
+     * 
+     * @param name
+     * @return
+     * @throws NoSuchBeanDefinitionException
+     * @throws ClassNotFoundException
+     */
     public Class<Persistable> getMatchingClassForSimpleName(String name) throws NoSuchBeanDefinitionException, ClassNotFoundException {
         logger.trace("scanning for: {}", name);
         scanForPersistables();
@@ -254,6 +321,12 @@ public class ReflectionService {
         return persistableLookup.get(name);
     }
 
+    /**
+     * Scan the class tree to find all objects that implement @link Persistable
+     * 
+     * @throws NoSuchBeanDefinitionException
+     * @throws ClassNotFoundException
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void scanForPersistables() throws NoSuchBeanDefinitionException, ClassNotFoundException {
         if (persistableLookup != null)
@@ -266,22 +339,36 @@ public class ReflectionService {
             Class cls = Class.forName(beanClassName);
             logger.trace("{} - {} ", cls.getSimpleName(), cls);
             if (persistableLookup.containsKey(cls.getSimpleName())) {
-                throw new TdarRecoverableRuntimeException("There is an error in the JAXB Naming Mapping because of overlap in simple names "
-                        + cls.getSimpleName());
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.jaxb_mapping", cls.getSimpleName()));
             }
             persistableLookup.put(cls.getSimpleName(), cls);
         }
 
     }
 
+    /**
+     * Find all classes that implement the identified Class
+     * 
+     * @param cls
+     * @return
+     */
     public static Set<BeanDefinition> findClassesThatImplement(Class<?> cls) {
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AssignableTypeFilter(cls));
-        String basePackage = "org/tdar/";
+        String basePackage = ORG_TDAR2;
         Set<BeanDefinition> findCandidateComponents = scanner.findCandidateComponents(basePackage);
         return findCandidateComponents;
     }
 
+    /**
+     * Check whether the identified Method or Action has the annotation
+     * 
+     * @param invocation
+     * @param annotationClass
+     * @return
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     */
     public static boolean methodOrActionContainsAnnotation(ActionInvocation invocation, Class<? extends Annotation> annotationClass) throws SecurityException,
             NoSuchMethodException {
         Object action = invocation.getAction();
@@ -290,13 +377,20 @@ public class ReflectionService {
         Method method = action.getClass().getMethod(methodName);
 
         if (methodName == null) {
-            methodName = "execute";
+            methodName = EXECUTE;
         }
         Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
         Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);
         return (class_ != null || method_ != null);
     }
-
+    
+    /**
+     * For the specified Method, return the annotation of the identified Class.
+     * 
+     * @param method
+     * @param annotationClass
+     * @return
+     */
     public static <C extends Annotation> C getAnnotationFromMethodOrClass(Method method, Class<C> annotationClass) {
         C method_ = AnnotationUtils.findAnnotation(method, annotationClass);
         if (method_ != null) {
@@ -309,10 +403,25 @@ public class ReflectionService {
         return null;
     }
 
+    /**
+     * Find all classes or methods that have the identified annotation
+     * 
+     * @param method
+     * @param annotationClass
+     * @return
+     */
     public static boolean classOrMethodContainsAnnotation(Method method, Class<? extends Annotation> annotationClass) {
         return getAnnotationFromMethodOrClass(method, annotationClass) != null;
     }
 
+    /**
+     * find all Classes that support the identified Annotation
+     * 
+     * @param annots
+     * @return
+     * @throws NoSuchBeanDefinitionException
+     * @throws ClassNotFoundException
+     */
     @SafeVarargs
     public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws NoSuchBeanDefinitionException, ClassNotFoundException {
         List<Class<?>> toReturn = new ArrayList<>();
@@ -320,7 +429,7 @@ public class ReflectionService {
         for (Class<? extends Annotation> annot : annots) {
             scanner.addIncludeFilter(new AnnotationTypeFilter(annot));
         }
-        String basePackage = "org/tdar/";
+        String basePackage = ORG_TDAR2;
         for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
             String beanClassName = bd.getBeanClassName();
             Class<?> cls = Class.forName(beanClassName);
@@ -329,12 +438,18 @@ public class ReflectionService {
         return toReturn.toArray(new Class<?>[0]);
     }
 
+    /**
+     * Find all beans that implment the @link Persistable interface
+     * 
+     * @param cls
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields(Class<?> cls) {
         List<Field> declaredFields = new ArrayList<>();
         List<Pair<Field, Class<? extends Persistable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
-        while (cls.getPackage().getName().startsWith("org.tdar.")) {
+        while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
             CollectionUtils.addAll(declaredFields, cls.getDeclaredFields());
             cls = cls.getSuperclass();
         }
@@ -367,11 +482,25 @@ public class ReflectionService {
         return result;
     }
 
+    /**
+     * @see #findBulkAnnotationsOnClass(Class, Stack, String)
+     * 
+     * @param class2
+     * @return
+     */
     public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2) {
         Stack<List<Class<?>>> classStack = new Stack<>();
         return findBulkAnnotationsOnClass(class2, classStack, "");
     }
 
+    /**
+     * Find all @link BulkImportField annotations on all resource classes.
+     * 
+     * @param class2
+     * @param stack
+     * @param prefix
+     * @return
+     */
     public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2, Stack<List<Class<?>>> stack, String prefix) {
         Class<BulkImportField> annotationToFind = BulkImportField.class;
         LinkedHashSet<CellMetadata> set = new LinkedHashSet<>();
@@ -405,6 +534,17 @@ public class ReflectionService {
         return set;
     }
 
+    /**
+     * Find @link BulkImportField on a class.
+     * 
+     * @param class2
+     * @param stack
+     * @param annotationToFind
+     * @param runAs
+     * @param runAsField
+     * @param prefix
+     * @return
+     */
     private LinkedHashSet<CellMetadata> handleClassAnnotations(Class<?> class2, Stack<List<Class<?>>> stack, Class<BulkImportField> annotationToFind,
             Class<?> runAs, Field runAsField, String prefix) {
         LinkedHashSet<CellMetadata> set = new LinkedHashSet<>();
@@ -457,6 +597,13 @@ public class ReflectionService {
         return set;
     }
 
+    /**
+     * Cast the value to the object type of the field and call the setter. Validate the propert in the process.
+     * 
+     * @param beanToProcess
+     * @param name
+     * @param value
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void validateAndSetProperty(Object beanToProcess, String name, String value) {
         try {
@@ -469,7 +616,7 @@ public class ReflectionService {
                     BeanUtils.setProperty(beanToProcess, name, Enum.valueOf(propertyType, value));
                 } catch (IllegalArgumentException e) {
                     logger.debug("cannot set property:", e);
-                    throw new TdarRecoverableRuntimeException(value + " is not a valid value for the " + name + " field", e);
+                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.not_valid_value", value, name), e);
                 }
             } else {
                 if (Integer.class.isAssignableFrom(propertyType)) {
@@ -479,7 +626,7 @@ public class ReflectionService {
                             value = new Integer((int) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting an integer value, but found: " + value);
+                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_integer", name, value));
                     }
                 }
                 if (Long.class.isAssignableFrom(propertyType)) {
@@ -489,14 +636,14 @@ public class ReflectionService {
                             value = new Long((long) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a big integer value, but found: " + value);
+                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_big_integer", name, value));
                     }
                 }
                 if (Float.class.isAssignableFrom(propertyType)) {
                     try {
                         Float.parseFloat(value);
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a floating point value (1.001), but found: " + value);
+                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_floating_point", name, value));
                     }
                 }
                 BeanUtils.setProperty(beanToProcess, name, value);
@@ -506,26 +653,31 @@ public class ReflectionService {
                 throw (TdarRecoverableRuntimeException) e1;
             }
             logger.debug("error processing bulk upload: {}", e1);
-            throw new TdarRecoverableRuntimeException("an error occured when setting " + name + " to " + value, e1);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_floating_generic", name, value));
         }
     }
 
-    /*
-     * FIXME: make more generic
+
+    /**
+     * Find all getters of beans that support the @link Obfuscatable interface and any child beans throughout the graph 
+     * 
+     * @param cls
+     * @return
      */
+    @SuppressWarnings("unchecked")
     public List<Pair<Method, Class<? extends Obfuscatable>>> findAllObfuscatableGetters(Class<?> cls) {
         List<Method> declaredFields = new ArrayList<>();
         List<Pair<Method, Class<? extends Obfuscatable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
         Class<?> actualClass = null; 
-        while (cls.getPackage().getName().startsWith("org.tdar.")) {
+        while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
             // find first implemented tDAR class (actual class);
             if (actualClass == null) {
                 actualClass = cls;
             }
             for (Method method : cls.getDeclaredMethods()) {
                 
-                if (Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")) {
+                if (Modifier.isPublic(method.getModifiers()) && method.getName().startsWith(GET)) {
                     declaredFields.add(method);
                 }
             }
@@ -540,10 +692,9 @@ public class ReflectionService {
                 continue;
 
             
-            Class<?> dcl = actualClass;
-//            logger.info("TYPE: {} {} ", method.getGenericReturnType(), method.getName());
-//            logger.info("{} ==> {}", actualClass, method.getDeclaringClass());
-//            logger.info(" {} {} {} ", dcl.getTypeParameters(), dcl.getGenericInterfaces(), dcl.getGenericSuperclass());
+            // logger.info("TYPE: {} {} ", method.getGenericReturnType(), method.getName());
+            // logger.info("{} ==> {}", actualClass, method.getDeclaringClass());
+            // logger.info(" {} {} {} ", dcl.getTypeParameters(), dcl.getGenericInterfaces(), dcl.getGenericSuperclass());
             boolean force = false;
             if (Collection.class.isAssignableFrom(method.getReturnType())) {
                 Class<?> type2 = getType(method.getGenericReturnType());

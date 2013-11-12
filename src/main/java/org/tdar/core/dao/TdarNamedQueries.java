@@ -1,6 +1,9 @@
 package org.tdar.core.dao;
 
 public interface TdarNamedQueries {
+    /**
+     * constants to map between the Annotation Keys for HQL queries and the queries in the DAOs
+     */
     static final String QUERY_DELETE_INFORMATION_RESOURCE_FILE_DERIVATIVES = "informationResourceFileVersion.deleteDerivatives";
     static final String QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY = "ontology.isMapped";
     static final String QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_COLUMN = "ontology.isMappedToColumn";
@@ -51,7 +54,8 @@ public interface TdarNamedQueries {
     static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO = "rescol.accessible";
     static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.accessibleName";
     static final String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
-    static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse";
+    static final String QUERY_EDITABLE_RESOURCES = "resource.editable";
+    static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse" ;
     static final String QUERY_COLLECTION_BY_PARENT = "collection.parent";
     static final String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
     static final String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
@@ -71,7 +75,7 @@ public interface TdarNamedQueries {
     static final String QUERY_KEYWORD_COUNT_FILE_EXTENSION = "adminStats.fileExtensions";
     static final String QUERY_RECENT_USERS_ADDED = "adminStats.recentUsers";
     static final String QUERY_RECENT = "adminStats.recentFiles";
-    // static final String QUERY_MATCHING_FILES = "datasetRelated.Files";
+//    static final String QUERY_MATCHING_FILES = "datasetRelated.Files";
     static final String QUERY_USAGE_STATS = "adminStats.usage";
     static final String QUERY_FILE_STATS = "adminStats.fileDetails";
     static final String QUERY_MAPPED_CODING_RULES = "dataTableColumn.mappedCodingRules";
@@ -103,9 +107,13 @@ public interface TdarNamedQueries {
     static final String UNASSIGNED_INVOICES_FOR_PERSON = "invoices.unassignedForPerson";
     static final String FIND_INVOICE_FOR_COUPON = "invoices.coupons";
     static final String QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY = "sparseCodingSheets.ontology";
+    static final String QUERY_FILE_SIZE_TOTAL ="file.total_size";
     static final String QUERY_RELATED_RESOURCES = "resource.related";
     // raw SQL/HQL queries
 
+    /**
+     * Static HQL and SQL queries that cannot be represented as annotations because they are either pure SQL or use String replacement.
+     */
     static final String QUERY_SQL_DASHBOARD =
             "select id, status, resource_type from resource " +
                     "where id in " +
@@ -153,8 +161,7 @@ public interface TdarNamedQueries {
             "(res.submitter.id=:userId or exists (" +
             " from ResourceCollection rescol join rescol.authorizedUsers  as authUser " +
             " join rescol.resources as colres " +
-            " where " +
-            " colres.id = res.id and " +
+            " where colres.id = res.id and " +
             "(TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
     static final String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
     static final String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";

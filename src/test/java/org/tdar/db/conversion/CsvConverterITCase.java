@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,20 +21,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.conversion.converters.DatasetConverter;
-import org.tdar.db.model.PostgresDatabase;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.utils.MessageHelper;
 
 public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
-
-    @Override
-    public String[] getDataImportDatabaseTables() {
-        String[] databases = { "csv_503_workbook1", "csv_505_malformed_csv_dataset", "csv_504_word_formed_csv_dataset" };
-        return databases;
-    }
 
     @Autowired
     public DataTableService dataTableService;
@@ -128,7 +120,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
             ex = e;
         }
         assertNotNull(ex);
-        assertTrue(ex.getMessage().equals(PostgresDatabase.DATATABLE_TOO_LONG));
+        assertEquals(MessageHelper.getMessage("postgresDatabase.datatable_to_long"),ex.getMessage());
     }
 
     @Test
@@ -140,10 +132,6 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();
-
-        for (DataTable table : converter.getDataTables()) {
-            assertTrue("didn't find " + table.getName(), ArrayUtils.contains(getDataImportDatabaseTables(), table.getName()));
-        }
 
         tdarDataImportDatabase.selectAllFromTableInImportOrder(converter.getDataTableByName("csv_503_workbook1"),
                 new ResultSetExtractor<Object>() {

@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
-import org.hibernate.annotations.IndexColumn;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -141,6 +140,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.index = index;
     }
 
+    @Override
     public String toString() {
         return String.format("label: %s url:%s id:%s", getDisplayName(), iri, getId());
     }
@@ -158,6 +158,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         return StringUtils.split(index, '.').length;
     }
 
+    @Override
     public int compareTo(OntologyNode other) {
         return ObjectUtils.compare(index, other.getIndex());
     }

@@ -36,6 +36,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 
@@ -321,7 +322,7 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
     public static DublinCoreDocument transformAny(Resource resource) {
         ResourceType resourceType = ResourceType.fromClass(resource.getClass());
         if (resourceType == null) {
-            throw new TdarRecoverableRuntimeException("Unsupported / Unknown Resource Type");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("transformer.unsupported_type"));
         }
         switch (resourceType) {
             case CODING_SHEET:
@@ -350,6 +351,6 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
                 break;
         }
 
-        throw new TdarRecoverableRuntimeException("could not provide DC tranformer for class:" + resource.getClass());
+        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("transformer.no_dc_transformer", resource.getClass()));
     }
 }

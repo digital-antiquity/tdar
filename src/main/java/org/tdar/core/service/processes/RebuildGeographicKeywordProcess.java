@@ -14,14 +14,17 @@ public class RebuildGeographicKeywordProcess extends ScheduledBatchProcess<Resou
     @Autowired
     private ResourceService resourceService;
 
+    @Override
     public boolean isSingleRunProcess() {
         return true;
     }
 
+    @Override
     public String getDisplayName() {
         return "Rebuild Geographic Keywords";
     }
 
+    @Override
     public Class<Resource> getPersistentClass() {
         return Resource.class;
     }

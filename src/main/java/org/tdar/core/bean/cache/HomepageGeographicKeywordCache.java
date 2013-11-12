@@ -40,6 +40,7 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
         this.keywordId = id;
     }
 
+    @Override
     public Long getCount() {
         return count;
     }
@@ -48,6 +49,7 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
         this.count = count;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -64,6 +66,7 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
         this.level = level;
     }
 
+    @Override
     public Double getLogCount() {
         return Math.log(getCount());
     }
@@ -73,10 +76,12 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
         return String.format("%s %s (%s)", label, level, count);
     }
 
+    @Override
     public String getKey() {
         return getLabel();
     }
 
+    @Override
     public String getCssId() {
         return this.getKey().toString();
     }

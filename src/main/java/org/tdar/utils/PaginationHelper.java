@@ -129,6 +129,7 @@ public class PaginationHelper {
         return minimumPageNumber + windowIndex;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < getWindowSize(); i++) {

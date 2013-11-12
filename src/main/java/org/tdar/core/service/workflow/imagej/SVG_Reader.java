@@ -30,6 +30,7 @@ import org.w3c.dom.svg.SVGSVGElement;
 public class SVG_Reader extends ImagePlus implements PlugIn {
 
     /** Expects path as argument, or will ask for it and then open the image. */
+    @Override
     public void run(final String arg) {
         File file = null;
         if (arg != null && arg.length() > 0)

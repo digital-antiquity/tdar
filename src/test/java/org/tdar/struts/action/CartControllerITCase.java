@@ -31,6 +31,7 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.utils.MessageHelper;
 
 public class CartControllerITCase extends AbstractResourceControllerITCase {
 
@@ -122,7 +123,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals(CartController.VALID_PAYMENT_METHOD_IS_REQUIRED, msg);
+        assertEquals(MessageHelper.getMessage("cartController.valid_payment_method_is_required"), msg);
 
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
@@ -133,7 +134,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals(CartController.ENTER_A_BILLING_ADDERESS, msg);
+        assertEquals(MessageHelper.getMessage("cartController.enter_a_billing_adderess"), msg);
     }
 
     @Test
@@ -214,7 +215,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         Invoice invoice = runSuccessfullTransaction(controller);
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
-        assertTrue(received.getSubject().contains(CartController.SUBJECT));
+        assertTrue(received.getSubject().contains(MessageHelper.getMessage("cartController.subject")));
         assertTrue(received.getText().contains("Transaction Status"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
     }
@@ -358,7 +359,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals(CartController.VALID_PHONE_NUMBER_IS_REQUIRED, msg);
+        assertEquals(MessageHelper.getMessage("cartController.valid_phone_number_is_required"), msg);
     }
 
     private CartController setupPaymentTests() throws TdarActionException {

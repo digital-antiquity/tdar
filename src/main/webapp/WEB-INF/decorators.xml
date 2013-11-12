@@ -8,6 +8,7 @@ vim:sts=2:sw=2:
     <pattern>/css/*</pattern>
     <pattern>/images/*</pattern>
     <pattern>/includes/*</pattern>
+    <pattern>/js/*</pattern>
     <pattern>/*.html</pattern>
     <pattern>/map</pattern>
     <pattern>/featured</pattern>

@@ -162,7 +162,7 @@ public class DashboardController extends AuthenticationAware.Base {
 
     public List<Resource> getBookmarkedResources() {
         if (bookmarkedResources == null) {
-            bookmarkedResources = getBookmarkedResourceService().findResourcesByPerson(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT));
+            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
         for (Resource res : bookmarkedResources) {

@@ -32,6 +32,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
@@ -50,10 +51,10 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
     private static final String DB_PREFIX = "s";
-    private static final String ERROR_CORRUPT_DB = "The system was unable to read portions of this Shapefile.";
     protected Logger logger = LoggerFactory.getLogger(getClass());
     private File databaseFile;
 
+    @Override
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
@@ -69,6 +70,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         this.versions = Arrays.asList(versions);
     }
 
+    @Override
     protected void openInputDatabase() throws IOException {
         setDatabaseFile(getInformationResourceFileVersion().getTransientFile());
 
@@ -89,6 +91,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
      * 
      * @param targetDatabase
      */
+    @Override
     public void dumpData() throws Exception {
         // start dumping ...
         // Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
@@ -100,7 +103,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         targetDatabase.dropTable(dataTable);
 
         Map<String, URL> connect = new HashMap<>();
-        connect.put("url", getDatabaseFile().toURL());
+        connect.put("url", getDatabaseFile().toURI().toURL());
 
         DataStore dataStore = DataStoreFinder.getDataStore(connect);
         String[] typeNames = dataStore.getTypeNames();
@@ -161,7 +164,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             }
         } catch (Exception e) {
             logger.error("could not process shapefile: {}", e);
-            throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("shapeFileConveter.corrupt"));
         } finally {
             iterator.close();
             dataStore.dispose();

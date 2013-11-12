@@ -15,6 +15,7 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -147,10 +148,10 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
     @Override
     public String getDescription() {
         if (getFieldValues().isEmpty()) {
-            return "Resource Located: anywhere (or does not specifiy grographic boundaries)";
+            return MessageHelper.getMessage("spatialQueryPart.empty_description");
         }
 
-        String fmt = "Resource Located: %s";
+        String fmt = MessageHelper.getMessage("spatialQueryPart.resource_located");
         List<String> latlongs = new ArrayList<String>();
         for (LatitudeLongitudeBox box : getFieldValues()) {
             latlongs.add(box.toString());

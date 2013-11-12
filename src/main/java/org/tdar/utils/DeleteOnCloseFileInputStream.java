@@ -28,6 +28,7 @@ public class DeleteOnCloseFileInputStream extends FileInputStream {
         this.file = file;
     }
 
+    @Override
     public void close() throws IOException {
         try {
             super.close();

@@ -25,6 +25,7 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
     @Autowired
     private EmailService emailService;
 
+    @Override
     public String getDisplayName() {
         return "Overdrawn Account Process";
     }
@@ -34,6 +35,7 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
         return 10000;
     }
 
+    @Override
     public Class<Account> getPersistentClass() {
         return Account.class;
     }

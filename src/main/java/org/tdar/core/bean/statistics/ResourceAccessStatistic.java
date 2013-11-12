@@ -24,10 +24,12 @@ public class ResourceAccessStatistic extends AbstractResourceStatistic<Resource>
     @JoinColumn(name = "resource_id")
     private Resource reference;
 
+    @Override
     public Resource getReference() {
         return reference;
     }
 
+    @Override
     public void setReference(Resource reference) {
         this.reference = reference;
     }

@@ -26,6 +26,7 @@ public class BrowseDecadeCountCache extends AbstractCountCache<BrowseDecadeCount
         setCount(count);
     }
 
+    @Override
     public String getCssId() {
         return this.getClass().getSimpleName() + this.getKey().toString();
     }
@@ -40,6 +41,7 @@ public class BrowseDecadeCountCache extends AbstractCountCache<BrowseDecadeCount
         this.key = key;
     }
 
+    @Override
     public Long getCount() {
         return count;
     }

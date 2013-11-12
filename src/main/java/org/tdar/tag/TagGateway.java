@@ -55,6 +55,7 @@ import org.w3c.dom.Element;
  * @version $Rev$
  * 
  */
+@SuppressWarnings("deprecation")
 @Component
 @WebService(portName = "TagGateway", serviceName = "TagGatewayService",
         targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema",
@@ -86,7 +87,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked"})
     @Override
     public SearchResults getTopRecords(String sessionId, Query query, int numberOfRecords) {
 

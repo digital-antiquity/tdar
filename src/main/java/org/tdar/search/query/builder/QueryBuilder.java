@@ -18,6 +18,8 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.search.SearchParameters;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * 
  * $Id$
@@ -27,6 +29,7 @@ import org.tdar.struts.action.search.SearchParameters;
  * 
  */
 public abstract class QueryBuilder extends QueryPartGroup {
+    private static final String _AUTO = "_auto";
     protected final Logger logger = Logger.getLogger(getClass());
     private Class<?>[] classes;
     private List<DynamicQueryComponent> overrides = new ArrayList<DynamicQueryComponent>();
@@ -44,9 +47,9 @@ public abstract class QueryBuilder extends QueryPartGroup {
         this.overrides = over;
     }
 
-    public void append(SearchParameters param) {
+    public void append(SearchParameters param,TextProvider provider) {
         if (param != null)
-            append(param.toQueryPartGroup());
+            append(param.toQueryPartGroup(provider));
     }
 
     /*
@@ -69,7 +72,7 @@ public abstract class QueryBuilder extends QueryPartGroup {
 
     protected Map<String, Class<? extends Analyzer>> createPartialLabelOverrides() {
         Map<String, Class<? extends Analyzer>> map = new HashMap<String, Class<? extends Analyzer>>();
-        map.put("_auto", NonTokenizingLowercaseKeywordAnalyzer.class);
+        map.put(_AUTO, NonTokenizingLowercaseKeywordAnalyzer.class);
         return map;
     }
 
@@ -106,10 +109,12 @@ public abstract class QueryBuilder extends QueryPartGroup {
         return createPartialLabelOverrides();
     }
 
+    @Override
     public Operator getOperator() {
         return operator;
     }
 
+    @Override
     public void setOperator(Operator or) {
         this.operator = or;
     }

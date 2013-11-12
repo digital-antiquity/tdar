@@ -60,6 +60,7 @@ import org.tdar.odata.server.AbstractDataRecord;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationContext;
 import org.tdar.struts.data.ModernIntegrationDataResult;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 /**
@@ -73,7 +74,6 @@ import org.tdar.utils.Pair;
  */
 public class PostgresDatabase implements TargetDatabase, RowOperations {
 
-    public static final String DATATABLE_TOO_LONG = "This data table contains more columns that is allowed, please simplify the dataset before archiving";
     public static final int MAX_VARCHAR_LENGTH = 500;
     private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
     private static final String SELECT_ROW_FROM_TABLE = "SELECT * FROM %s WHERE " + TDAR_ID_COLUMN + " = %s";
@@ -190,14 +190,14 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             // cleanup
         } catch (SQLException e) {
             logger.warn("sql exception", e.getNextException());
-            throw new TdarRecoverableRuntimeException("an error ocurred while processing a prepared statement ", e);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.prepared_statement_fail"), e);
         } finally {
             try {
                 statement.clearBatch();
                 statement.getConnection().close();
                 preparedStatementMap.remove(dataTable);
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException("could not close and clear statement", e);
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.could_not_close"), e);
             }
         }
     }
@@ -437,7 +437,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         Iterator<DataTableColumn> iterator = dataTable.getDataTableColumns().iterator();
         int i = 1;
         if (dataTable.getDataTableColumns().size() > MAX_ALLOWED_COLUMNS) {
-            throw new TdarRecoverableRuntimeException(DATATABLE_TOO_LONG);
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.datatable_to_long"));
         }
 
         while (iterator.hasNext()) {
@@ -558,7 +558,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                         java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
                         preparedStatement.setTimestamp(i, sqlDate);
                     } else {
-                        throw new TdarRecoverableRuntimeException(String.format("don't know how to parse date: %s in column '%s' of table '%s'",
+                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.cannot_parse_date",
                                 colValue.toString(), column.getName(), column.getDataTable().getName()));
                     }
                     break;
@@ -739,9 +739,9 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         ModernIntegrationDataResult result = new ModernIntegrationDataResult();
         createTable(String.format(CREATE_TEMPORARY_TABLE, proxy.getTempTableName()));
         for (IntegrationColumn column : proxy.getIntegrationColumns()) {
-            String deflt = NULL_EMPTY_INTEGRATION_VALUE;
+            String deflt = MessageHelper.getMessage("database.null_empty_integration_value");
             if (column.isDisplayColumn()) {
-                deflt = NULL_EMPTY_MAPPED_VALUE;
+                deflt = MessageHelper.getMessage("database.null_empty_mapped_value");
             }
             executeUpdateOrDelete(String.format(ADD_COLUMN + " DEFAULT %s", column.getName(), deflt));
         }
@@ -773,7 +773,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         String selectSql = generateModernOntologyEnhancedSelect(table, proxy);
 
         if (!selectSql.toLowerCase().contains(" where ")) {
-            throw new TdarRecoverableRuntimeException("something happend, no where clause in integration");
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.integration_query_broken"));
         }
 
         executeUpdateOrDelete(selectSql);
@@ -928,7 +928,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public int getRowCount(DataTable dataTable) {
         String sql = String.format(SELECT_ROW_COUNT, dataTable.getName());
-        return jdbcTemplate.queryForInt(sql);
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     public List<String> selectAllFrom(final DataTableColumn column) {
@@ -984,7 +984,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         // Not allowed this time.
         // The use case was to allow modification of existing records.
         // I am interpreting this literally as update only.
-        throw new NotImplementedException("Not allowed. Deletion of records is out of scope");
+        throw new NotImplementedException(MessageHelper.getMessage("error.not_implemented"));
     }
 
     @Override

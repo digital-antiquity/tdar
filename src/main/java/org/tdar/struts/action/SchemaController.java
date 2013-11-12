@@ -1,6 +1,7 @@
 package org.tdar.struts.action;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -12,7 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.XmlService;
 
-import de.schlichtherle.truezip.file.TFileInputStream;
 
 /**
  * $Id$
@@ -45,7 +45,7 @@ public class SchemaController extends TdarActionSupport {
     public String execute() {
         try {
             File file = xmlService.generateSchema();
-            setInputStream(new TFileInputStream(file));
+            setInputStream(new FileInputStream(file));
         } catch (Exception e) {
             logger.error("could not create schema", e);
             return ERROR;

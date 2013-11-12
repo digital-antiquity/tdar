@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 public interface Filestore {
 
@@ -130,6 +131,7 @@ public interface Filestore {
     abstract boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException, TaintedFileException;
 
     public abstract static class BaseFilestore implements Filestore {
+        private static final String MD5 = "MD5";
         private static final String LOG_DIR = "logs";
         // protected static final MimeTypes mimes = TikaConfig.getDefaultConfig().getMimeRepository();
         protected static final Logger logger = LoggerFactory.getLogger(BaseFilestore.class);
@@ -271,10 +273,10 @@ public interface Filestore {
             DigestInputStream digestInputStream = null;
             MessageDigest messageDigest = null;
             try {
-                messageDigest = MessageDigest.getInstance("MD5");
+                messageDigest = MessageDigest.getInstance(MD5);
                 digestInputStream = new DigestInputStream(content, messageDigest);
             } catch (NoSuchAlgorithmException e) {
-                String error = "MD5 does not appear to be a valid digest format in this environment.";
+                String error = MessageHelper.getMessage("filestore.md5_doesnt_match");
                 logger.error(error, e);
                 throw new TdarRuntimeException(error, e);
             }
