@@ -1,6 +1,7 @@
 package org.tdar.core.dao.external.pid;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -198,7 +199,6 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         }
     }
 
-    @SuppressWarnings("static-method")
     private DoiDTO populateDTO(Resource r) {
         DoiDTO doiDTO = new DoiDTO();
         java.util.List<String> creatorNames = new ArrayList<>();
@@ -207,14 +207,19 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
             creatorNames.add(((InformationResource)r).getCopyrightHolder().getName());
         }
         doiDTO.setCreators(creatorNames);
-        // Ands mandate that we must list a publisher and a publication year. I suspect that Ands thus can only deal with documents...
-        // I can confirm that it appears that the Ands Java client falls over if it doesn't have a publisher, publication year and a title
-        // The error is on packing the DOI is:  
-        // Value '' with length = '0' is not facet-valid with respect to minLength '1' for type '#AnonType_publisherresource'
+        // Ands mandate that we must list a publisher and a publication year.
+        doiDTO.setPublisher(assistant.getStringProperty("default.publisher", "FAIMS"));
+        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy");
+        doiDTO.setPublicationYear(dateformat.format(r.getDateCreated()));
+        // but if there is a real document, it might have been published...
         if (r instanceof Document) {
             Document document = (Document)r;
-            doiDTO.setPublisher(document.getPublisherName());
-            doiDTO.setPublicationYear(String.valueOf(document.getDate()));
+            if (!StringUtils.isEmpty(document.getPublisherName())) {
+                doiDTO.setPublisher(document.getPublisherName());
+            }
+            if (document.getDate()!= null) {
+                doiDTO.setPublicationYear(String.valueOf(document.getDate()));
+            }
         }
         doiDTO.setTitle(r.getTitle());
         return doiDTO;
