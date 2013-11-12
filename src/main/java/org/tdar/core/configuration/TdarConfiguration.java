@@ -697,4 +697,8 @@ public class TdarConfiguration {
     public boolean isJaiImageJenabled() {
         return assistant.getBooleanProperty("jai.imagej.enabled", true);
     }
+    
+    public boolean isJSCSSMergeServletEnabled() {
+        return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
+    }
 }

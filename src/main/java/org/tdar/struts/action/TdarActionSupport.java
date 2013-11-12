@@ -693,4 +693,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isSwitchableMapObfuscation() {
         return getTdarConfiguration().isSwitchableMapObfuscation();
     }
+    
+    public boolean isJSCSSMergeServletEnabled() {
+        return getTdarConfiguration().isJSCSSMergeServletEnabled();
+    }
 }
