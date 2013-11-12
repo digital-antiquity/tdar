@@ -1086,6 +1086,7 @@
 					<exclude>crowd.properties</exclude>
 					<exclude>hibernate.properties</exclude>
 					<exclude>log4j.properties</exclude>
+					<exclude>struts-local-settings.xml</exclude>
 					<exclude>common.json</exclude>
 				</excludes>
 			</resource>
@@ -1100,6 +1101,7 @@
 					<include>crowd.properties</include>
 					<include>hibernate.properties</include>
 					<include>log4j.properties</include>
+					<include>struts-local-settings.xml</include>
 					<include>common.json</include>
 				</includes>
 			</resource>
