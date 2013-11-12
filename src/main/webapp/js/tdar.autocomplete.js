@@ -68,6 +68,25 @@ TDAR.autocomplete = (function() {
         }
     };
 
+    //return subset of getValues() for any partial matches of term in object[key].  If key not supplied,  search
+    //all fields in each object for a partial match
+    ObjectCache.basicSearch = function(term, key) {
+        var values = this.getValues();
+        var ret = $.grep(values, function(obj) {
+            var keys = Object.keys(obj);
+            if(key) keys = [key];
+            for(var i = 0; i < keys.length; i++) {
+                var val = obj[keys[i]];
+                if(val) {
+                    if(val.toLowerCase().indexOf(term) > -1 ) {
+                        return true;
+                    }
+                }
+            }
+        });
+        return ret;
+    };
+
     //grab cache for specified url or create one
     function _getCache(options) {
         if(!_caches[options.url]) {
@@ -208,8 +227,8 @@ function _applyGenericAutocomplete($elements, opts) {
     var options = $.extend({
 
         //callback function that returns list of extra items to include in dropdown: function(options, requestData)
-        addCustomValuesToReturn: function() {
-            return cache.getValues();
+        addCustomValuesToReturn: function(term) {
+            return cache.search(term);
         }
     }, opts);
 
@@ -318,9 +337,11 @@ function _applyGenericAutocomplete($elements, opts) {
 
                     // enable custom data to be pushed onto values
                     if (options.addCustomValuesToReturn) {
-                        var extraValues = options.addCustomValuesToReturn(options, requestData);
+                        var extraValues = options.addCustomValuesToReturn(request.term);
                         // could be push, need to test
-                        values = values.concat(extraValues);
+                        if(extraValues) {
+                            values = values.concat(extraValues);
+                        }
                     }
                     console.log(options.dataPath + " autocomplete returned " + values.length);
 
@@ -424,7 +445,7 @@ function _applyUserAutoComplete($elements) {
 }
 
 function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
-    _applyGenericAutocomplete($elements, {
+    var options = {
         url: "lookup/person",
         dataPath: "people",
         retainInputValueOnSelect: true,
@@ -439,7 +460,10 @@ function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
             obj.properName = obj.firstName + " " + obj.lastName;
             return obj;
         }
-    });
+    };
+    _applyGenericAutocomplete($elements, options);
+    _getCache(options).search = ObjectCache.basicSearch;
+
 }
 
 
