@@ -125,7 +125,7 @@ $(document).ready(function(){
     </#list>
 </div>
 
-
+<@edit.personAutocompleteTemplate />
   
 </body>
 <#macro fieldTemplate fieldType="NONE" fieldIndex=0 groupid=0>

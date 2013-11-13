@@ -66,6 +66,25 @@ function _applyDataElements(element, item) {
 
 }
 
+    function _customPersonRender(ul, item) {
+        var htmlDoubleEncode = TDAR.common.htmlDoubleEncode,
+            encProperName = htmlDoubleEncode(item.properName),
+            encEmail = htmlDoubleEncode(item.email),
+            institution = item.institution ? item.institution.name || "" : "";
+
+        //double-encode on custom render
+        var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
+            "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + encProperName + "</span><span class='email'>(" +
+            encEmail + ")</span><br/><span class='institution'>" + htmlDoubleEncode(institution) + "</span></p>";
+        if (item.id == -1 && options.showCreate) {
+            htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
+                "<span class='name'><em>Create a new person record</em></span> </p>";
+        }
+        return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);
+    };
+
+
+
 function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
     var options = {};
     options.url = "lookup/person";
@@ -83,24 +102,18 @@ function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
     };
 
     options.customRender = function(ul, item) {
-        var htmlDoubleEncode = TDAR.common.htmlDoubleEncode,
-            encProperName = htmlDoubleEncode(item.properName),
-            encEmail = htmlDoubleEncode(item.email),
-            institution = item.institution ? item.institution.name || "" : "";
-
-        //double-encode on custom render
-        //FIXME: use tmpl maybe?
-        var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
-                "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + encProperName + "</span><span class='email'>(" +
-                encEmail + ")</span><br/><span class='institution'>" + htmlDoubleEncode(institution) + "</span></p>";
-        if (item.id == -1 && options.showCreate) {
-            htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
-                    "<span class='name'><em>Create a new person record</em></span> </p>";
-        }
-        return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);
+        var obj = $.extend({}, item);
+        obj.addnew = (item.id == -1 && options.showCreate);
+        var $snippet = $(tmpl("template-person-autocomplete-li", obj));
+        $snippet.data("item.autocomplete", item).appendTo(ul);
+        return $snippet;
     };
+
     _applyGenericAutocomplete($elements, options);
 }
+
+
+
 
 function _evaluateAutocompleteRowAsEmpty(element, minCount) {
     var req = _buildRequestData($(element));

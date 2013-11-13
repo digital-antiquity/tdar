@@ -350,25 +350,7 @@ TDAR.inheritance.applyInheritance(formSelector);
 </script>
 
 
-<script id="template-person-autocomplete-li" type="text/x-tmpl">
-    <li class="ui-menu-item" role="menuitem">
-        <a class="ui-corner-all" tabindex="-1">
-            <p style="min-height:4em">
-                <img class="silhouette pull-left" src="/images/man_silhouette_clip_art_9510.jpg">
-                <span class="name">{%=person.displayName%}</span>
-                {% if(person.email) { %}<span class="email">({%=person.email%})</span> {% } %}
-                <br>
-                <span class="institution">{%=person.institutionName %}</span>
-            </p>
-        </a>
-    </li>
-</script>
-
-<#-- FIXME: used for debugging autocomplete menu display. remove this
-<script id="template-person-autocomplete-ul" type="text/x-tmpl">
-    <ul class="ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all" role="listbox" aria-activedescendant="ui-active-menuitem" style="z-index: 1; top: 1411px; left: 234px; display: none; width: 570px;"></ul>
-</script>
--->
+<@edit.personAutocompleteTemplate />
 
 </body>
 </#escape>

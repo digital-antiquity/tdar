@@ -169,6 +169,6 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 	});
 </script>
 </#noescape>
-
+<@edit.personAutocompleteTemplate />
 </body>
 </#escape>
