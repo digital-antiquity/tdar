@@ -95,6 +95,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      * <p>
      * Preconditions:
      * <ul>
+     * <li>We need a project id, an email address, and a file.
      * <li>We need to know the directory that we are writing control files to.
      * <li>That directory needs to be able to writable
      * <li>We need to be able to read the original Archive resource.
@@ -140,6 +141,11 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             getLogger().info(getLogMessage("Archive has already been imported.", archive));
             return;
         }
+        
+        // has the archive been assigned to a project? 
+        if (archive.getProjectId() == null || archive.getProjectId() <= 0) {
+            recordErrorAndExit("Cannot unpack an archive that has not yet been assigned to a project!");
+        }
 
         controlFileOuputDir = new File(kettleInputPath);
         if (!isDirectoryWritable(controlFileOuputDir)) {
@@ -159,7 +165,6 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         }
 
         // Preconditions have been checked, now to write the control file and set up the copy of the archive to work with.
-
         // at the moment there should be only one of these files: however, that should only be an artifact of the user interface.
         for (InformationResourceFileVersion version : archiveFiles) {
             File copyOfTarball = makeCopyOfSourceFile(version);
@@ -188,14 +193,17 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      * @param archive that is being extracted
      * @return The email address to notify about the extraction of the archive. If it is null or empty, then the administrator is notified.
      */
-    @SuppressWarnings("static-method")
     protected String getEmailToNotify(Archive archive) {
         String result = null;
         if (archive.getUpdatedBy() != null) {
             result = archive.getUpdatedBy().getEmail();
         }
         if (StringUtils.isEmpty(result)) {
+            // this should never be null, hopefully...
             result = TdarConfiguration.getInstance().getSystemAdminEmail();
+        }
+        if (StringUtils.isEmpty(result)) {
+            recordErrorAndExit("Could not find an email address to notify of archive import!");
         }
         return result;
     }
