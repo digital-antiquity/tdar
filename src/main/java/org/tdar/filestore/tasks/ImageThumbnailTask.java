@@ -77,6 +77,10 @@ public class ImageThumbnailTask extends AbstractTask {
 
 
     public void processImage(InformationResourceFileVersion version, File sourceFile) {
+        if (sourceFile == null || !sourceFile.exists()) {
+            getWorkflowContext().setErrorFatal(true);
+            throw new TdarRecoverableRuntimeException("File does not exist");
+        }
         String filename = sourceFile.getName();
         getLogger().debug("sourceFile: " + sourceFile);
 
@@ -94,10 +98,6 @@ public class ImageThumbnailTask extends AbstractTask {
         Opener opener = new Opener();
         opener.setSilentMode(true);
         IJ.redirectErrorMessages(true);
-        if (sourceFile == null || !sourceFile.exists()) {
-            getWorkflowContext().setErrorFatal(true);
-            throw new TdarRecoverableRuntimeException("File does not exist");
-        }
         ijSource = opener.openImage(sourceFile.getAbsolutePath());
 
         String msg = IJ.getErrorMessage();
