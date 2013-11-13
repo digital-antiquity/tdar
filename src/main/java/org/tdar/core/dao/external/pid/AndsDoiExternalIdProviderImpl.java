@@ -10,11 +10,13 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.processes.DoiProcess;
 
 import au.csiro.doiclient.AndsDoiClient;
@@ -155,16 +157,16 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
             } else {
                 AndsDoiResponse response = doiClient.mintDOI(resourceUrl, doiDTO, debug);
                 validateResponse("create", response);
-                String doi = response.getDoi();
-                if (StringUtils.isEmpty(doi)) {
-                    logger.error("NB ====> Minted empty DOI for {}", resourceUrl);
-                }
-                result.put(DoiProcess.DOI_KEY, doi);
+                result.put(DoiProcess.DOI_KEY, response.getDoi());
             }
         } catch (Exception e) {
-            // it is a deliberate policy to suppress all exceptions: for all DOI's are minted within one transaction boundary, and if anything goes wrong
-            // that whole transaction will be rolled back: hence loosing all information about the other doi's that have been minted.
-            logger.error("Could not mint DOI for resource {}", r, e);
+            // it is a deliberate policy to suppress all exceptions and to rethrow as a TdarRuntimeException:
+            // for all DOI's are minted within one transaction boundary, and if anything goes wrong
+            // that whole transaction will be rolled back unless a TdarRuntimeException is thrown:
+            // hence loosing all information about the other doi's that have been minted.
+            String error = String.format("Could not mint DOI for resource %s", r.toString());
+            logger.error(error);
+            throw new TdarRuntimeException(error, e);
         }
         return result;
     }
@@ -208,12 +210,20 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     private DoiDTO populateDTO(Resource r) {
         DoiDTO doiDTO = new DoiDTO();
         java.util.List<String> creatorNames = new ArrayList<>();
-        // was primary creator, but that was returning null : Daniel feels in Australia this should be the copyright holder.
+        // In Australia this should be the copyright holder, I'm told
         if (r instanceof InformationResource) { // should always be true, but
-            creatorNames.add(((InformationResource) r).getCopyrightHolder().getName());
+            Creator copyrightHolder = ((InformationResource) r).getCopyrightHolder();
+            if (copyrightHolder != null) {
+                //uploaded resources might not have these set.
+                creatorNames.add(copyrightHolder.getName());
+            }
+        }
+        if (creatorNames.size() <= 0) {
+            return doiDTO; // no point in going further, this isn't going to be accepted.
         }
         doiDTO.setCreators(creatorNames);
         // Ands mandate that we must list a publisher and a publication year.
+        // so we provide a default (ourselves) and then overwrite with any actually found publisher
         doiDTO.setPublisher(assistant.getStringProperty("default.publisher", "FAIMS"));
         SimpleDateFormat dateformat = new SimpleDateFormat("yyyy");
         doiDTO.setPublicationYear(dateformat.format(r.getDateCreated()));
