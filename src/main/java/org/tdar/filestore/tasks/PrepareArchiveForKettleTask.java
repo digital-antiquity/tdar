@@ -199,6 +199,11 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             result = archive.getUpdatedBy().getEmail();
         }
         if (StringUtils.isEmpty(result)) {
+            if (archive.getUploader() != null) {
+                result = archive.getUploader().getEmail();
+            }
+        }
+        if (StringUtils.isEmpty(result)) {
             // this should never be null, hopefully...
             result = TdarConfiguration.getInstance().getSystemAdminEmail();
         }
