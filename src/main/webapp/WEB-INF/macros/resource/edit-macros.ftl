@@ -1507,7 +1507,7 @@ $(function() {
 
 <#macro personAutocompleteTemplate>
 <script id="template-person-autocomplete-li" type="text/x-tmpl">
-    <li>
+    <li class="{%=o.addnew?'addnew':''%}">
         <a>
             <div>
                 <span class="name">{%=_e(o.properName)%}</span>
