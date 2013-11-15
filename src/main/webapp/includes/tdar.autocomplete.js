@@ -1,74 +1,14 @@
 /**
  * Autocomplete Support
  */
-//HACK: jtd remove this line
-$(function() {$(window).unbind("beforeunload")});
+
 
 TDAR.namespace("autocomplete");
 TDAR.autocomplete = (function() {
     "use strict";
 
-    //when a user creates a record manually instead of choosing a menu-item from the autocomplete dropdown, this module
-    //stores the record in the object cache.  If the user later fills out similar autocomplete fields,   we add
-    //these cached records to the autocomplete dropdown.  This allows the user to save some time in situations where
-    //a new value may appear several times on a form (e.g. a new person record  that should be listed as an 'author',
-    // 'editor', and 'contact'.
-    var _caches = {};
-    function ObjectCache(acOptions) {
-        this.acOptions = acOptions;
-        this.namespace = acOptions.url || "root";
-        this.parentMap = {};
-        this.objectMapper = acOptions.objectMapper || _objectFromAutocompleteParent;
+    var self = {};
 
-        //_caches[this.namespace] = this;
-    };
-
-    ObjectCache.prototype = {
-        put: function(val) {
-            this.cache.push(val);
-            console.log("adding val to %s cache", this.namespace, val);
-        },
-
-        //register the fields inside this parent as an 'extra record'. When caller invokes getValues(), this class
-        //will generate records based for all the registeredRecords
-        register: function(parentElem) {
-            var self = this,
-                parentId = parentElem.id;
-            this.parentMap[parentId] = parentElem;
-
-            //if user removes the row then unregister the associated record
-            $(parentElem).bind("remove", function() {
-                self.unregister(parentId);
-            });
-        },
-
-        unregister: function(parentId) {
-            delete this.parentMap[parentId];
-        },
-
-        getValues: function() {
-            //var keys = Object.keys(this.parentMap).sort();
-            var values = [];
-            for(var parentId in this.parentMap) {
-                var elem = this.parentMap[parentId];
-                values.push(this.objectMapper(elem));
-            }
-            return values;
-        },
-
-        search: function(term) {
-            //get current state of the new records;
-            return this.cache;
-        }
-    };
-
-    //grab cache for specified url or create one
-    function _getCache(options) {
-        if(!_caches[options.url]) {
-            _caches[options.url] = new ObjectCache(options);
-        }
-        return _caches[options.url];
-    }
 
 function _buildRequestData(element) {
     var data = {};
@@ -80,15 +20,10 @@ function _buildRequestData(element) {
             //                            console.log("autocompleteName: " + $val.attr("autocompleteName") + "==" + $val.val());
         });
     }
+    //    console.log(data);
     return data;
 }
 
-    /**
-     * translate item property values to form fiends contained in a autocompleteParentElement
-     * @param element any .ui-autocomplete-input field contained by the autocompleteParent element
-     * @param item the source object. the function copies the item property values to the input fields under the parent
-     * @private
-     */
 function _applyDataElements(element, item) {
     var $element = $(element);
     if ($element.attr("autocompleteParentElement") != undefined) {
@@ -131,60 +66,56 @@ function _applyDataElements(element, item) {
 
 }
 
-function _renderPerson(ul, item) {
-    var htmlDoubleEncode = TDAR.common.htmlDoubleEncode,
-        encProperName = htmlDoubleEncode(item.properName),
-        encEmail = htmlDoubleEncode(item.email),
-        institution = item.institution ? item.institution.name || "" : "";
+    function _customPersonRender(ul, item) {
+        var htmlDoubleEncode = TDAR.common.htmlDoubleEncode,
+            encProperName = htmlDoubleEncode(item.properName),
+            encEmail = htmlDoubleEncode(item.email),
+            institution = item.institution ? item.institution.name || "" : "";
 
-    //double-encode on custom render
-    //FIXME: use tmpl maybe?
-    var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
-        "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + encProperName + "</span><span class='email'>(" +
-        encEmail + ")</span><br/><span class='institution'>" + htmlDoubleEncode(institution) + "</span></p>";
-    if (item.id == -1 && item.showCreate) {
-        htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
-            "<span class='name'><em>Create a new person record</em></span> </p>";
-    }
-    return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);
-};
-
-
-//todo: i'm guessing that the user control may end up using a different objectMapper & customRender
-function _applyUserAutoComplete($elements) {
-    _applyGenericAutocomplete($elements, {
-        url: "lookup/person",
-        dataPath: "people",
-        retainInputValueOnSelect: true,
-        showCreate: false,
-        minLength: 3,
-        customRender: _renderPerson,
-        requestData:  {
-            registered: true
+        //double-encode on custom render
+        var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
+            "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + encProperName + "</span><span class='email'>(" +
+            encEmail + ")</span><br/><span class='institution'>" + htmlDoubleEncode(institution) + "</span></p>";
+        if (item.id == -1 && options.showCreate) {
+            htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
+                "<span class='name'><em>Create a new person record</em></span> </p>";
         }
-    });
-}
+        return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);
+    };
+
+
 
 function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
-    _applyGenericAutocomplete($elements, {
-        url: "lookup/person",
-        dataPath: "people",
-        retainInputValueOnSelect: true,
-        showCreate: showCreate,
-        minLength: 3,
-        customRender: _renderPerson,
-        requestData:  {
-            registered: usersOnly
-        },
-        objectMapper: function(parentElem) {
-            var obj = _objectFromAutocompleteParent(parentElem)
-            obj.properName = obj.firstName + " " + obj.lastName;
-            return obj;
+    var options = {};
+    options.url = "lookup/person";
+    options.dataPath = "data.people";
+    options.retainInputValueOnSelect = true;
+    options.sortField = 'CREATOR_NAME';
+    options.showCreate = showCreate;
+    options.minLength = 3;
+
+    //unlike insitu we keep the 'term' property because we need it for the new user autocomplete control
+    options.enhanceRequestData = function(requestData) {
+        if (usersOnly) {
+            requestData.registered = true;
         }
-    });
+    };
+
+    options.customRender = function(ul, item) {
+        var obj = $.extend({}, item);
+        obj.addnew = (item.id == -1 && options.showCreate);
+        var $snippet = $(tmpl("template-person-autocomplete-li", obj));
+        $snippet.data("item.autocomplete", item).appendTo(ul);
+        return $snippet;
+    };
+
+    _applyGenericAutocomplete($elements, options);
 }
 
-    function _evaluateAutocompleteRowAsEmpty(element, minCount) {
+
+
+
+function _evaluateAutocompleteRowAsEmpty(element, minCount) {
     var req = _buildRequestData($(element));
     var total = 0;
     //FIXME:  I think 'ignored' is irrelevant as defined here.  Can we remove this?
@@ -219,18 +150,7 @@ function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
     return false;
 }
 
-function _applyGenericAutocomplete($elements, opts) {
-    var options = $.extend({
-
-        //callback function that returns list of extra items to include in dropdown: function(options, requestData)
-        addCustomValuesToReturn: function() {
-            return cache.getValues();
-        }
-    }, opts);
-
-    var cache = _getCache(options);
-
-
+function _applyGenericAutocomplete($elements, options) {
     // if there's a change in the autocomplete, reset the ID to ""
     $elements.change(function() {
         var $element = $(this);
@@ -252,6 +172,7 @@ function _applyGenericAutocomplete($elements, opts) {
 
     //set allowNew attribute for each element's corresponding 'id' element
     $elements.each(function() {
+
         if (options.showCreate) {
             var $idElement = $($(this).attr("autocompleteIdElement"));
             $idElement.attr("allowNew", "true");
@@ -276,8 +197,9 @@ function _applyGenericAutocomplete($elements, opts) {
                 };
             }
 
-            // add requestData that's passed from the options
             var requestData = {};
+            // add requestData that's passed from the
+            // options
             if (options.requestData != undefined) {
                 $.extend(requestData, options.requestData);
             }
@@ -316,7 +238,6 @@ function _applyGenericAutocomplete($elements, opts) {
                         responseHolder.callback({});
                         return;
                     }
-
                     // if there's a custom dataMap function, use that, otherwise not
                     if (options.customDisplayMap == undefined) {
                         options.customDisplayMap = function(item) {
@@ -324,38 +245,35 @@ function _applyGenericAutocomplete($elements, opts) {
                                 // there is no need to escape this because we're rendering as plain text
                                 item.label = item.name;
                             }
+
                             return item;
                         };
                     }
-
-                    //tdar lookup returns an object that wraps the results - the property with the results is specified by options.dataPath
-                    var dataItems = typeof options.dataPath === "function" ? options.dataPath(data) : data[options.dataPath];
-                    var values = $.map(dataItems, options.customDisplayMap);
+                    var values = $.map(eval(options.dataPath), options.customDisplayMap);
+                    // show create function
 
                     // enable custom data to be pushed onto values
-                    if (options.addCustomValuesToReturn) {
+                    if (options.addCustomValuesToReturn != undefined) {
                         var extraValues = options.addCustomValuesToReturn(options, requestData);
                         // could be push, need to test
                         values = values.concat(extraValues);
                     }
                     console.log(options.dataPath + " autocomplete returned " + values.length);
 
-                    if (options.showCreate) {
+                    if (options.showCreate != undefined && options.showCreate == true) {
                         var createRow = _buildRequestData($elem);
                         createRow.value = request.term;
                         // allow for custom phrasing
-                        if (options.showCreatePhrase) {
+                        if (options.showCreatePhrase != undefined) {
                             createRow.label = "(" + options.showCreatePhrase + ": " + request.term + ")";
                         }
                         createRow.id = -1;
-                        createRow.isNewItem = true;
-                        createRow.showCreate = true;
                         values.push(createRow);
                     }
                     responseHolder.callback(values);
                 },
-
                 complete : function() {
+
                     $elem.removeData('responseHolder');
                 }
             };
@@ -363,6 +281,9 @@ function _applyGenericAutocomplete($elements, opts) {
         },
         minLength : options.minLength || 0,
         select : function(event, ui) {
+            // 'this' is the input box element.
+//            console.log(event.target);
+  //          console.log(ui);
             var $elem = $(event.target);
             _applyDataElements(this, ui.item);
 
@@ -372,15 +293,6 @@ function _applyGenericAutocomplete($elements, opts) {
                 responseHolder.callback();
                 responseHolder.callback = function() {
                 };
-            }
-
-            //if user selects 'create new' option, add it to the new item cache and stop trying to find matches.
-            //FIXME: disabling autocomplete 'cache' in default,  will continue in feature branch and merge back when complete
-            if(false && ui.item.isNewItem) {
-                var $parent = $($elem.attr("autocompleteparentelement"));
-                cache.register($parent.get());
-                $parent.find(".ui-autocomplete-input").autocomplete("disable");
-                $parent.addClass("autocomplete-new-record");
             }
         },
         open : function() {
@@ -413,7 +325,7 @@ function _applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
         $.extend(requestData, extraData);
     };
 
-    options.dataPath = "items";
+    options.dataPath = "data.items";
     options.sortField = 'LABEL';
     options.showCreate = newOption;
     options.showCreatePhrase = "Create a new keyword";
@@ -435,7 +347,7 @@ function _applyCollectionAutocomplete($elements, options, extraData) {
     };
 
     defaults.url = "lookup/collection";
-    defaults.dataPath = "collections";
+    defaults.dataPath = "data.collections";
     defaults.sortField = 'TITLE';
     defaults.showCreate = false;
     if (defaults.showCreate) {
@@ -460,7 +372,7 @@ function _displayResourceAutocomplete(item) {
 function _applyResourceAutocomplete($elements, type) {
     var options = {};
     options.url = "lookup/resource";
-    options.dataPath = "resources";
+    options.dataPath = "data.resources";
     options.sortField = 'TITLE';
     options.enhanceRequestData = function(requestData) {
         if (requestData["subCategoryId"] != undefined && requestData["subCategoryId"] != '' && requestData["subCategoryId"] != -1) {
@@ -495,7 +407,7 @@ function _applyInstitutionAutocomplete($elements, newOption) {
 
     var options = {};
     options.url = "lookup/institution";
-    options.dataPath = "institutions";
+    options.dataPath = "data.institutions";
     options.sortField = 'CREATOR_NAME';
     options.enhanceRequestData = function(requestData) {
         requestData.institution = requestData.term;
@@ -527,24 +439,6 @@ function _applyComboboxAutocomplete($elements, type) {
             });
     });
 }
-
-/**
- * return an object from any autocomplete input elements inside the specified parentElem elment. This function
- * maps every .autocomplete-ui-input  into a property of the returned object.  The property name is based on the
- * value of the "autocompletename" attribute of the input element (or the value of the 'name' attribute, if no
- * autocompletename attribute specified.
- *
- * @param parentElem
- */
-function _objectFromAutocompleteParent(parentElem) {
-    var obj = {};
-    $(parentElem).find(".ui-autocomplete-input").each(function(idx) {
-        var key = $(this).attr("autocompletename") || this.name;
-        obj[key] = this.value;
-    });
-    return obj;
-}
-
 return {
     applyPersonAutoComplete: _applyPersonAutoComplete,
     evaluateAutocompleteRowAsEmpty: _evaluateAutocompleteRowAsEmpty,
@@ -552,7 +446,6 @@ return {
     applyCollectionAutocomplete: _applyCollectionAutocomplete,
     applyResourceAutocomplete: _applyResourceAutocomplete,
     applyInstitutionAutocomplete: _applyInstitutionAutocomplete,
-    applyComboboxAutocomplete: _applyComboboxAutocomplete,
-    objectFromAutocompleteParent: _objectFromAutocompleteParent
+    applyComboboxAutocomplete: _applyComboboxAutocomplete
     };
 })();

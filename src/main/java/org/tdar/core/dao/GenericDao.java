@@ -386,6 +386,8 @@ public class GenericDao {
         } else if (entity  instanceof InformationResourceFileVersion) {
             if (((InformationResourceFileVersion) entity).isUploadedOrArchival()) {
                 throw new TdarRecoverableRuntimeException("Should not delete Uploaded or Archival Version");
+            } else {
+                forceDelete(entity);
             }
         } else {
             forceDelete(entity);

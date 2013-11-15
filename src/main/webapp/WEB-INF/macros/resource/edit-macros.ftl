@@ -1508,5 +1508,19 @@ $(function() {
     <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" />
 </#macro>
 
+<#macro personAutocompleteTemplate>
+<script id="template-person-autocomplete-li" type="text/x-tmpl">
+    <li class="{%=o.addnew?'addnew':''%}">
+        <a>
+            <div>
+                <span class="name">{%=_e(o.properName)%}</span>
+                {% if(o.email)  %}<span class="email">({%=_e(o.email)%})</span>{%
+                %}{% if(o.institution) { %}, <span class="institution">{%=_e(o.institution.name)%}</span> {% } %}
+                {% if(o.addnew) { %}<em>Create a new person record</em> {% } %}
+            </div>
+        </a>
+    </li>
+</script>
+</#macro>
 
 </#escape>
