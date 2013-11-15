@@ -33,19 +33,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.CategoryVariable;
-import org.tdar.core.bean.resource.CodingRule;
-import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.*;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
@@ -146,14 +136,17 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     @Transactional
     public InformationResourceFile createTranslatedFile(Dataset dataset) {
         // assumes that Datasets only have a single file
-        InformationResourceFile file = dataset.getFirstInformationResourceFile();
+        Set<InformationResourceFile> activeFiles = dataset.getActiveInformationResourceFiles();
+        InformationResourceFile file = null;
+        if(!activeFiles.isEmpty()) {
+            file = dataset.getActiveInformationResourceFiles().iterator().next();
+        }
 
         if (file == null) {
             getLogger().warn("Trying to translate {} with a null file payload.", dataset);
             return null;
         }
         informationResourceFileDao.deleteTranslatedFiles(dataset);
-
         // FIXME: remove synchronize once Hibernate learns more about unique constraints
         // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
         getDao().synchronize();
@@ -368,7 +361,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * Returns either the incoming column without any changes or the result of merging the incoming column
      * with the existing column.
      * 
-     * @param existingTable
+     * @param incomingTable
      * @param existingNameToColumnMap
      * @param normalizedColumnName
      * @param incomingColumn

@@ -69,6 +69,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         // ISSUES (DELETE NOT
         // HAPPENING BEFORE INSERT)
         for (InformationResourceFile irFile : dataset.getInformationResourceFiles()) {
+            logger.debug("deleting {}", irFile);
             deleteTranslatedFiles(irFile);
         }
     }
@@ -78,8 +79,10 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         // ISSUES (DELETE NOT
         // HAPPENING BEFORE INSERT)
         for (InformationResourceFileVersion version : irFile.getLatestVersions()) {
+            logger.debug("deleting version:{}  isTranslated:{}", version, version.isTranslated());
             if (version.isTranslated()) {
-                informationResourceFileVersionDao.delete(version);
+                //we don't need safeguards on a translated file, so tell the dao to delete no matter what.
+                informationResourceFileVersionDao.forceDelete(version);
             }
         }
     }
