@@ -66,7 +66,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         resource = getDao().merge(resource);
         boolean removed = resource.getBookmarks().remove(bookmark);
         logger.debug("was bookmark removed? " + removed);
-        save(resource);
+        getDao().saveOrUpdate(resource);
         getDao().delete(bookmark);
         return true;
     }

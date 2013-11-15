@@ -51,7 +51,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
 
     /**
      * Save or Update all Persistables in the collection
-     * @see #saveOrUpdate(Object)
+     * @see #saveOrUpdate(T)
      * 
      * @param c
      */
@@ -122,27 +122,27 @@ public interface ServiceInterface<T, S extends Dao<T>> {
      * Save just the entity (Save is hibernate's concept of save, new objects only)
      * @param entity
      */
-    void save(Object entity);
+    void save(T entity);
 
     /**
      * Useful hibernate construct, save if needed, otherwise update
      * @param entity
      */
-    void saveOrUpdate(Object entity);
+    void saveOrUpdate(T entity);
 
     /**
      * Update the version in the database with the version passed
      * 
      * @param entity
      */
-    void update(Object entity);
+    void update(T entity);
 
     /**
      * Delete the object in the database
      * 
      * @param entity
      */
-    void delete(Object entity);
+    void delete(T entity);
 
     /**
      * Delete the entire collection of objects
@@ -238,7 +238,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
 
         @Transactional(readOnly = false)
         @Override
-        public void save(Object entity) {
+        public void save(E entity) {
             if (entity == null)
                 return;
             dao.save(entity);
@@ -246,7 +246,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
 
         @Transactional(readOnly = false)
         @Override
-        public void saveOrUpdate(Object entity) {
+        public void saveOrUpdate(E entity) {
             if (entity == null)
                 return;
             dao.saveOrUpdate(entity);
@@ -254,7 +254,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
 
         @Transactional(readOnly = false)
         @Override
-        public void update(Object entity) {
+        public void update(E entity) {
             if (entity == null)
                 return;
             dao.update(entity);
@@ -270,7 +270,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
 
         @Transactional(readOnly = false)
         @Override
-        public void delete(Object entity) {
+        public void delete(E entity) {
             if (entity == null)
                 return;
             dao.delete(entity);
@@ -302,7 +302,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         public void saveOrUpdateAll(Collection<E> c) {
             if (CollectionUtils.isEmpty(c))
                 return;
-            for (Object o : c) {
+            for (E o : c) {
                 dao.saveOrUpdate(o);
             }
         }
