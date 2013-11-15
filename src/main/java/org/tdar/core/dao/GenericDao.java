@@ -384,13 +384,16 @@ public class GenericDao {
         if (entity instanceof HasStatus) {
             ((HasStatus) entity).setStatus(Status.DELETED);
             saveOrUpdate(entity);
-        } else if (entity  instanceof InformationResourceFileVersion) {
+            return;
+        } 
+        
+        if (entity  instanceof InformationResourceFileVersion) {
             if (((InformationResourceFileVersion) entity).isUploadedOrArchival()) {
                 throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.cannot_delete_archival"));
             }
-        } else {
-            forceDelete(entity);
         }
+
+        forceDelete(entity);
     }
 
     public <T> void forceDelete(T entity) {

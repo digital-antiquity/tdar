@@ -43,6 +43,7 @@ public class InformationResourceFileVersionDao extends HibernateBase<Information
         if (file.getInformationResourceFile() != null) {
             file.getInformationResourceFile().getInformationResourceFileVersions().remove(file);
         }
+        logger.debug("I'm about to delete file:{}", file);
         super.delete(file);
 
     }

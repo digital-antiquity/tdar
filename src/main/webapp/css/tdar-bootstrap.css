@@ -1340,3 +1340,16 @@ div.tdarresults .row.GRID:first-child div.listItem {
 .inlineblock {
     display: inline-block;
 }
+
+.ui-widget .ui-menu, .ui-widget, .ui-widget .ui-menu-item {
+    font-size: 10pt;
+    font-family: helvetica, arial, sans-serif;
+    padding: 2px 0;
+
+}
+.ui-menu-item:not(:first-child) {
+    border-top: solid 1px #eee;
+}
+.ui-menu-item.addnew {
+    border-top: solid 2px #ddd;
+}
