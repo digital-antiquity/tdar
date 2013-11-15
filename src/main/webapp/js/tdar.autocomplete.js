@@ -215,7 +215,7 @@ function _registerOnBlur(objectCache, elem) {
     var $parentElem = $(parentid);
     var $hidden = $parentElem.find("input[type=hidden]").first();
 
-    $parentElem.find(".ui-autocomplete-input").bind("blur", function() {
+    $parentElem.find(".ui-autocomplete-input").last().one("blur", function() {
         var hiddenVal = $hidden.val();
         if((hiddenVal === "" || hiddenVal === "-1") && this.value !== "") {
             objectCache.register($parentElem.get());
@@ -411,6 +411,26 @@ function _applyGenericAutocomplete($elements, opts) {
     $elements.filter("[autocompleteparentelement]").each(function(){
         _registerOnBlur(cache, this);
     });
+
+
+  //if autocomplete is in a repeatable, register if they clicked 'addnew' after filling out a transient record
+  var repeatables = [];
+  $elements.closest(".repeatLastRow").filter(function(){
+    if(repeatables.indexOf(this) > -1) return false;
+    repeatables.push(this);
+    return true;
+  });
+  $(repeatables).on("repeatrowadded", function(e, parentElem, cloneElem, idxOfNewRow, originalElem){
+    $(originalElem).find("[autocompleteparentelement]").filter(":visible").each(function(){
+      var elem = this;
+      var parentid = $(elem).attr("autocompleteparentelement");
+      var $parentElem = $(parentid);
+      var id = $parentElem.find("input[type=hidden]").first().val();
+      if(id === "-1")  {
+        cache.register(parentElem[0]);
+      }
+    });
+  });
 
 };
 
