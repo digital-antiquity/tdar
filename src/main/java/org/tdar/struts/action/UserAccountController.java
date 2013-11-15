@@ -222,7 +222,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             if (institution == null && !StringUtils.isBlank(institutionName)) {
                 institution = new Institution();
                 institution.setName(institutionName);
-                getEntityService().save(institution);
+                getGenericService().save(institution);
             }
             person.setInstitution(institution);
 
@@ -237,7 +237,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 person.setContributor(true);
                 getContributorRequest().setContributorReason(person.getContributorReason());
                 getContributorRequest().setTimestamp(new Date());
-                getEntityService().saveOrUpdate(getContributorRequest());
+                getGenericService().saveOrUpdate(getContributorRequest());
                 getAuthenticationAndAuthorizationService().satisfyPrerequisite(person, AuthNotice.CONTRIBUTOR_AGREEMENT);
             }
             getAuthenticationAndAuthorizationService().satisfyPrerequisite(person, AuthNotice.TOS_AGREEMENT);

@@ -165,7 +165,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         AuthorizedUser user1 = new AuthorizedUser(dupe1, GeneralPermissions.ADMINISTER_GROUP);
         ResourceCollection resourceCollection = genericService.findAll(ResourceCollection.class).iterator().next();
         resourceCollection.getAuthorizedUsers().add(user1);
-        entityService.save(user1);
+        genericService.save(user1);
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));

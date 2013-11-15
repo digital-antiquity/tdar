@@ -22,6 +22,7 @@ import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
 
@@ -52,6 +53,9 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private GenericService genericService;
 
     @Override
     public String getDisplayName() {
@@ -108,7 +112,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             oneFileActivity.setNumberOfMb(0L);
             oneFileActivity.setActivityType(BillingActivityType.TEST);
             oneFileActivity.setEnabled(true);
-            accountService.saveOrUpdate(oneFileActivity);
+            genericService.saveOrUpdate(oneFileActivity);
         }
 
         if (oneMbActivity == null) {
@@ -118,7 +122,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             oneMbActivity.setActivityType(BillingActivityType.TEST);
             oneMbActivity.setMinAllowedNumberOfFiles(0L);
             oneMbActivity.setNumberOfMb(1L);
-            accountService.saveOrUpdate(oneMbActivity);
+            genericService.saveOrUpdate(oneMbActivity);
         }
         try {
             String properName = person.getProperName();
