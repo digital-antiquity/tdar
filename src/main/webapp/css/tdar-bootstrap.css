@@ -719,6 +719,14 @@ aside.tdar-icon:before {
 	display: inline-block;
 }
 
+.responsive-tablet i.audio-bg-large,i.audio-125 {
+/* Temporary placeholder image until we get a better quality one... */
+    background: url(/images/sound-125.gif) no-repeat;
+    width: 125px;
+    height: 125px;
+    display: inline-block;
+}
+
 .responsive-tablet i.collection-bg-large,i.collection-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -1719px
 		no-repeat;
