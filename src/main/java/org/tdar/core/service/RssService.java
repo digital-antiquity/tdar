@@ -57,6 +57,7 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.feed.synd.SyndPerson;
 import com.sun.syndication.feed.synd.SyndPersonImpl;
 import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.ParsingFeedException;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.SyndFeedOutput;
 import com.sun.syndication.io.XmlReader;
@@ -80,25 +81,32 @@ public class RssService implements Serializable {
     }
 
     @Autowired
-    private UrlService urlService;
+    private transient UrlService urlService;
 
     @Autowired
-    private ObfuscationService obfuscationService;
+    private transient ObfuscationService obfuscationService;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
     public static String cleanStringForXML(String input) {
         return INVALID_XML_CHARS.matcher(input).replaceAll("");
     }
 
-    @SuppressWarnings("unchecked")
     public List<SyndEntry> parseFeed(URL url) throws IllegalArgumentException, FeedException, IOException {
+        List<SyndEntry> result = new ArrayList<>();
         HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
         // Reading the feed
         SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed = input.build(new XmlReader(httpcon));
-        return feed.getEntries();
+        XmlReader xmlReader = new XmlReader(httpcon);
+        try {
+            SyndFeed feed = input.build(xmlReader);
+            result.addAll(feed.getEntries());
+        } catch (ParsingFeedException pfe) {
+            String errorMsg = pfe.getMessage() + System.lineSeparator() + xmlReader.toString();
+            logger.error(errorMsg);
+        }
+        return result;
     }
 
     @SuppressWarnings({ "unused", "unchecked" })
