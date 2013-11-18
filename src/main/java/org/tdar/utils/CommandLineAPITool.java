@@ -327,7 +327,7 @@ public class CommandLineAPITool {
         if (StringUtils.isEmpty(getPassword())) {
             throw new ParseException("No password specified");
         }
-        if (files.length == 0) {
+        if (files == null  || files.length == 0) {
             throw new ParseException("Nothing to do, no files or directories specified...");
         }
         for (File path : files) {
