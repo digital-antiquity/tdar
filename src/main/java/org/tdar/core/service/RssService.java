@@ -98,7 +98,6 @@ public class RssService implements Serializable {
         HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
         // Reading the feed
         SyndFeedInput input = new SyndFeedInput();
-        XmlReader.setDefaultEncoding("UTF-8");
         XmlReader xmlReader = new XmlReader(httpcon);
         try {
             SyndFeed feed = input.build(xmlReader);
