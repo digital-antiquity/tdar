@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -27,7 +26,6 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.DataIntegrationITCase;
 
-@Ignore
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
     private static final String BONE_COMMON_NAME = "Bone Common name";
