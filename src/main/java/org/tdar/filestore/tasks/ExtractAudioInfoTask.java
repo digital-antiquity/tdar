@@ -62,7 +62,7 @@ public class ExtractAudioInfoTask extends AbstractTask {
             targetAudioResource.setAudioCodec(audioFileFormat.toString());
         } catch (UnsupportedAudioFileException | IOException e) {
             targetAudioResource.setAudioCodec("Java Sound API needs upgrading to determine content.");
-            getLogger().error("Swallowed error", e);
+            getLogger().error("Swallowed error - file: " + originalAudioFile.getName(), e);
         }
     }
 
