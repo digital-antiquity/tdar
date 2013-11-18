@@ -565,7 +565,7 @@ public abstract class InformationResource extends Resource {
                 InformationResourceFileVersion indexableVersion = irFile.getIndexableVersion();
                 fileURIs.add(indexableVersion);
             } catch (Exception e) {
-                logger.trace("an exception occured while reading file: {} ", e);
+                logger.trace("an exception occurred while reading file: {} ", e);
             }
         }
         return fileURIs;

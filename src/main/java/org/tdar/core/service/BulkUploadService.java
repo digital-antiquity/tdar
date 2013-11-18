@@ -311,7 +311,7 @@ public class BulkUploadService {
         try {
             IOUtils.closeQuietly(wrapper.getStream());
         } catch (Exception e) {
-            logger.debug("an exception occured when closing import stream", e);
+            logger.debug("an exception occurred when closing import stream", e);
         }
 
     }
