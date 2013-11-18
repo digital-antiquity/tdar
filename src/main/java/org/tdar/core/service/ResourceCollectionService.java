@@ -385,46 +385,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     }
 
-    @Transactional(readOnly=false)
-    public void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, Person authenticatedUser, boolean shouldSave, ErrorHandling errorHandling,
-            ResourceCollection collection) {
-        ResourceCollection collectionToAdd = null;
-        if (collection.isTransient()) {
-            ResourceCollection potential = getDao().findCollectionWithName(authenticatedUser, collection, GeneralPermissions.ADMINISTER_GROUP);
-            if (potential != null) {
-                collectionToAdd = potential;
-            } else {
-                collection.setOwner(authenticatedUser);
-                collection.markUpdated(resource.getSubmitter());
-                collection.setType(CollectionType.SHARED);
-                if (collection.getSortBy() == null) {
-                    collection.setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
-                }
-                collection.setVisible(true);
-                collectionToAdd = collection;
-            }
-        } else {
-            collectionToAdd = find(collection.getId());
-        }
-
-        if (collectionToAdd != null && collectionToAdd.isValid()) {
-            if (Persistable.Base.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
-                    && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
-                throw new TdarRecoverableRuntimeException(RESOURCE_COLLECTION_RIGHTS_ERROR + collectionToAdd.getTitle());
-            }
-            if (collectionToAdd.isTransient() && shouldSave) {
-                save(collectionToAdd);
-            }
-
-            // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
-            collectionToAdd.getResources().add(resource);
-            resource.getResourceCollections().add(collectionToAdd);
-        } else {
-            if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
-                throw new TdarRecoverableRuntimeException(collectionToAdd.getName() + " is not valid");
-            }
-        }
-    }
 
     /**
      * Add a @Link ResourceCollection to a @link Resource, create as needed.
@@ -472,7 +432,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             resource.getResourceCollections().add(collectionToAdd);
         } else {
             if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCollectionService.invalid",collectionToAdd.getName()));
+                String collectionName = collectionToAdd != null ? collectionToAdd.getName(): "null collection";
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCollectionService.invalid",collectionName));
             }
         }
     }
