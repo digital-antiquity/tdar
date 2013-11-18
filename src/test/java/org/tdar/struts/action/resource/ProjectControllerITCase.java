@@ -71,7 +71,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    @Ignore
+    @Ignore //ignored because bad test with HashCode
     public void testProjectResourceCreator() throws Exception {
         Institution inst = new Institution("da");
 

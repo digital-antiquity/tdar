@@ -172,14 +172,17 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     @Transactional
     public InformationResourceFile createTranslatedFile(Dataset dataset) {
         // assumes that Datasets only have a single file
-        InformationResourceFile file = dataset.getFirstInformationResourceFile();
+        Set<InformationResourceFile> activeFiles = dataset.getActiveInformationResourceFiles();
+        InformationResourceFile file = null;
+        if(!activeFiles.isEmpty()) {
+            file = dataset.getActiveInformationResourceFiles().iterator().next();
+        }
 
         if (file == null) {
             getLogger().warn("Trying to translate {} with a null file payload.", dataset);
             return null;
         }
         informationResourceFileDao.deleteTranslatedFiles(dataset);
-
         // FIXME: remove synchronize once Hibernate learns more about unique constraints
         // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
         getDao().synchronize();
@@ -415,7 +418,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * Using the existing column map, we try and find a matching @link DataTableColumn, if we do, we copy the values off of the 
      * existing column before returning.
      * 
-     * @param existingTable
+     * @param incomingTable
      * @param existingNameToColumnMap
      * @param normalizedColumnName
      * @param incomingColumn
@@ -697,7 +700,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column));
             }
         }
-        searchIndexService.indexProject(project);
+        if (project != null) {
+            searchIndexService.indexProject(project);
+        }
     }
 
     /*

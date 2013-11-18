@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.AccountService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.resource.ResourceService;
 
 /**
@@ -29,6 +30,9 @@ public class InitializeBillingValuesOnResource extends ScheduledBatchProcess<Res
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private GenericService genericService;
 
     @Override
     public String getDisplayName() {
@@ -53,7 +57,7 @@ public class InitializeBillingValuesOnResource extends ScheduledBatchProcess<Res
     @Override
     public void process(Resource resource) {
         accountService.getResourceEvaluator(resource);
-        accountService.saveOrUpdate(resource);
+        genericService.saveOrUpdate(resource);
     }
 
     @Override

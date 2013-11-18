@@ -174,7 +174,8 @@ View freemarker macros
                         'ONTOLOGY':'page-white-text',
                         'GEOSPATIAL':'page-white-picture',
                         'ARCHIVE':'page-white-zip',
-                        'AUDIO':'cd'
+                        'AUDIO':'cd',
+                        'VIDEO': 'film'
           } />
 		      <#local ext = "" >
               <#local ext = extensionMap[irfile.latestUploadedOrArchivalVersion.extension?lower_case ]!'' />

@@ -5,7 +5,7 @@
     <span id="asyncErrors" >
         <div id="unspecifiedError" class="alert alert-error" style="display:none">
             <h3>Unspecified Error</h3>
-            <p>An error occured while asking the server for an upload status update.   This does not mean that your upload failed.  
+            <p>An error occurred while asking the server for an upload status update.   This does not mean that your upload failed.  
             Please check the <a href="<@s.url value="/dashboard"/>">dashboard</a> to determine
             whether you successfully uploaded your files. Please notify an administrator if this problem persists.
             </p>

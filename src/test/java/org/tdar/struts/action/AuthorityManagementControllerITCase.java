@@ -170,7 +170,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
 
     // make two institutions (auth and dupe), and then associate it w/ all manner of tdar stuff
     private void makeSomeInstitutionReferences(Institution authority, Institution dupe) throws Exception {
-        entityService.save(authority);
+        genericService.save(authority);
         genericService.save(dupe);
 
         // reference via document.resourceProviderInstitution

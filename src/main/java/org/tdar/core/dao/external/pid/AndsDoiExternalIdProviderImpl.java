@@ -1,18 +1,22 @@
 package org.tdar.core.dao.external.pid;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.utils.MessageHelper;
 
@@ -28,7 +32,7 @@ import au.csiro.doiclient.business.DoiDTO;
  * Technical documentation: http://ands.org.au/resource/r9-cite-my-data-v1.1-tech-doco.pdf
  * Client source code: http://andspidclient.sourceforge.net/
  * 
- * ANDS use the same server for test and production. Hence we have had to go to quite a bit of extra work to make sure that the default is, should anything 
+ * ANDS use the same server for test and production. Hence we have had to go to quite a bit of extra work to make sure that the default is, should anything
  * go wrong, "TEST" !!! See: <a href="https://jira.ands.org.au/browse/SD-4420">SD-4420</a>
  * 
  * @author Martin Paulo
@@ -36,21 +40,20 @@ import au.csiro.doiclient.business.DoiDTO;
 @Service
 public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
-    
     protected static final String IS_PRODUCTION_SERVER_KEY = "is.production.server";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ConfigurationAssistant assistant = new ConfigurationAssistant();
-    
+
     private boolean isEnabled = true; // the happy case
     private String configIssue;
     private boolean debug;
     private AndsDoiClient doiClient = new AndsDoiClient();
-    
+
     /**
      * The ANDS documentation has the following clear requirement:
-     * If in test mode, *you* have to remember to prefix the words "TEST" to your application key to let the world know that this isn't a proper DOI, if 
+     * If in test mode, *you* have to remember to prefix the words "TEST" to your application key to let the world know that this isn't a proper DOI, if
      * testing. Hence this factory class to make this a testable proposition.
      */
     protected static class IdentityFactory {
@@ -66,26 +69,25 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
             this.authDomain = authDomain;
             this.productionServer = productionServer;
         }
-        
+
         public AndsDoiIdentity getAppId() {
             if (applicationId == null) {
                 applicationId = new AndsDoiIdentity((productionServer ? "" : TEST_PREFIX) + appId, authDomain);
             }
             return applicationId;
         }
-        
+
         public AndsDoiIdentity getNullAppId() {
             return nullId;
         }
     }
 
     private IdentityFactory identityFactory;
-    
 
     public AndsDoiExternalIdProviderImpl() {
         this("andsdoi.properties");
     }
-    
+
     protected AndsDoiExternalIdProviderImpl(String propertyFileName) {
         try {
             assistant.loadProperties(propertyFileName);
@@ -104,9 +106,11 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     }
 
     /**
-     * @param property The name of the property in the property file
+     * @param property
+     *            The name of the property in the property file
      * @return The value of the property
-     * @throws IllegalStateException the property was not found
+     * @throws IllegalStateException
+     *             the property was not found
      */
     private String getStringProperty(String property) {
         String result = assistant.getProperty(property, null);
@@ -145,11 +149,26 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     }
 
     @Override
-    public Map<String, String> create(Resource r, String resourceUrl) throws IOException {
+    public Map<String, String> create(Resource r, String resourceUrl) {
         Map<String, String> result = new HashMap<>();
-        AndsDoiResponse response = doiClient.mintDOI(resourceUrl, populateDTO(r), debug);
-        validateResponse("create", response);
-        result.put(DoiProcess.DOI_KEY, response.getDoi());
+        try {
+            DoiDTO doiDTO = populateDTO(r);
+            if (doiDTO.getCreators().isEmpty()) {
+                logger.error("NB ====> This resource {} has no creators, so can't mint doi", r.toString());
+            } else {
+                AndsDoiResponse response = doiClient.mintDOI(resourceUrl, doiDTO, debug);
+                validateResponse("create", response);
+                result.put(DoiProcess.DOI_KEY, response.getDoi());
+            }
+        } catch (Exception e) {
+            // it is a deliberate policy to suppress all exceptions and to rethrow as a TdarRuntimeException:
+            // for all DOI's are minted within one transaction boundary, and if anything goes wrong
+            // that whole transaction will be rolled back unless a TdarRuntimeException is thrown:
+            // hence loosing all information about the other doi's that have been minted.
+            String error = String.format("Could not mint DOI for resource %s", r.toString());
+            logger.error(error);
+            throw new TdarRuntimeException(error, e);
+        }
         return result;
     }
 
@@ -174,9 +193,13 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     /**
      * Simply throws an exception if the operation did not succeed.
-     * @param operation A string describing the operation attempted.
-     * @param response The response received from the server
-     * @throws TdarRecoverableRuntimeException if the operation did not succeed.
+     * 
+     * @param operation
+     *            A string describing the operation attempted.
+     * @param response
+     *            The response received from the server
+     * @throws TdarRecoverableRuntimeException
+     *             if the operation did not succeed.
      */
     @SuppressWarnings("static-method")
     private void validateResponse(String operation, AndsDoiResponse response) {
@@ -185,16 +208,35 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         }
     }
 
-    @SuppressWarnings("static-method")
     private DoiDTO populateDTO(Resource r) {
         DoiDTO doiDTO = new DoiDTO();
         java.util.List<String> creatorNames = new ArrayList<>();
-        for (ResourceCreator creator : r.getPrimaryCreators()) {
-            creatorNames.add(creator.getCreator().getName());
+        // In Australia this should be the copyright holder, I'm told
+        if (r instanceof InformationResource) { // should always be true, but
+            Creator copyrightHolder = ((InformationResource) r).getCopyrightHolder();
+            if (copyrightHolder != null) {
+                //uploaded resources might not have these set.
+                creatorNames.add(copyrightHolder.getName());
+            }
+        }
+        if (creatorNames.size() <= 0) {
+            return doiDTO; // no point in going further, this isn't going to be accepted.
         }
         doiDTO.setCreators(creatorNames);
+        // Ands mandate that we must list a publisher and a publication year.
+        // so we provide a default (ourselves) and then overwrite with any actually found publisher
+        doiDTO.setPublisher(assistant.getStringProperty("default.publisher", "FAIMS"));
+        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy");
+        doiDTO.setPublicationYear(dateformat.format(r.getDateCreated()));
+        // but if there is a real document, it might have been published...
         if (r instanceof Document) {
-            doiDTO.setPublisher(((Document) r).getPublisherName());
+            Document document = (Document) r;
+            if (!StringUtils.isEmpty(document.getPublisherName())) {
+                doiDTO.setPublisher(document.getPublisherName());
+            }
+            if (document.getDate() != null) {
+                doiDTO.setPublicationYear(String.valueOf(document.getDate()));
+            }
         }
         doiDTO.setTitle(r.getTitle());
         return doiDTO;

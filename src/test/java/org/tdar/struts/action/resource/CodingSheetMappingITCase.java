@@ -155,7 +155,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertEquals(DataTableColumnType.DOUBLE, column.getColumnDataType());
         column.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
         column.setDefaultCodingSheet(codingSheet);
-        datasetService.save(column);
+        genericService.save(column);
         datasetService.translate(column, codingSheet);
 
         ResultMetadataWrapper resultsWrapper = datasetService.selectAllFromDataTable(firstTable, 0, 100, true, false);

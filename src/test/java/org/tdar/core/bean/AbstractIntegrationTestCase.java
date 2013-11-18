@@ -608,7 +608,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
         internalResourceCollection.getAuthorizedUsers().add(authorizedUser);
         genericService.saveOrUpdate(internalResourceCollection);
-        entityService.saveOrUpdate(resource);
+        genericService.saveOrUpdate(resource);
     }
 
     /**

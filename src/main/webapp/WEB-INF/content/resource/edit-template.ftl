@@ -349,5 +349,8 @@ TDAR.inheritance.applyInheritance(formSelector);
 </#noescape>
 </script>
 
+
+<@edit.personAutocompleteTemplate />
+
 </body>
 </#escape>

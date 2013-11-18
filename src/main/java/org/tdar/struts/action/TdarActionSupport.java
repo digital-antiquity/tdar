@@ -719,4 +719,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getText(String aTextName, Object ... args) {
         return super.getText(aTextName, Arrays.asList(args));
     }
+
+    public boolean isJSCSSMergeServletEnabled() {
+        return getTdarConfiguration().isJSCSSMergeServletEnabled();
+    }
 }

@@ -42,7 +42,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     @Rollback
     public void testBrowseInstitutionWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
         Institution institution = new Institution("testBrowseControllerInstitution");
-        entityService.save(institution);
+        genericService.save(institution);
         testBrowseController(institution);
     }
 
@@ -50,7 +50,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     @Rollback
     public void testBrowseInstitutionWithResultsViaResourceProvider() throws Exception {
         Institution institution = new Institution("testBrowseControllerInstitution");
-        entityService.save(institution);
+        genericService.save(institution);
         Document doc = genericService.find(Document.class, setupDatedDocument());
         doc.setResourceProviderInstitution(institution);
         genericService.saveOrUpdate(doc);
@@ -71,7 +71,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
         initController();
         creator = new Institution("testNewCreatorHasNoResourceAssociations");
-        entityService.save(creator);
+        genericService.save(creator);
         controller.setId(creator.getId());
         controller.browseCreators();
         assertEquals(0, controller.getResults().size());

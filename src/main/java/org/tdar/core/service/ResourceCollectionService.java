@@ -385,6 +385,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     }
 
+
     /**
      * Add a @Link ResourceCollection to a @link Resource, create as needed.
      *
@@ -431,7 +432,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             resource.getResourceCollections().add(collectionToAdd);
         } else {
             if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCollectionService.invalid",collectionToAdd.getName()));
+                String collectionName = collectionToAdd != null ? collectionToAdd.getName(): "null collection";
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCollectionService.invalid",collectionName));
             }
         }
     }

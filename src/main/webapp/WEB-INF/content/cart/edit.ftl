@@ -149,6 +149,8 @@ $(document).ready(function(){
 });
 </script>
 
+<@edit.personAutocompleteTemplate />
+
 </body>
 
 <#macro rates>

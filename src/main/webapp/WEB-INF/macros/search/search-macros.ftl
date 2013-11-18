@@ -100,17 +100,11 @@
   <#if includeRss>
   <@rssUrlTag url=rssUrl />
   </#if>
-    <#-- if id parameter was added to querystring via urlrewrite inbound rule, we need to remove it when rendering relative url's  -->
-    <#local path = "">
-    <#if (actionName!"")=="results">
-    <#local path=actionName>
-    </#if>
-    
   <#if (nextPageStartRecord < totalRecords) >
-      <link rel="next" href="<@searchUrl path><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@searchUrl>"/>
+      <link rel="next" href="<@searchUrl ""><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@searchUrl>"/>
   </#if>
   <#if  paginationHelper.hasPrevious() >
-      <link rel="previous" href="<@searchUrl path ><#if prevPageStartRecord !=0><@s.param name="startRecord" value="${prevPageStartRecord?c}" /><#else><@s.param name="startRecord" value="" /></#if></@searchUrl>"/>
+      <link rel="previous" href="<@searchUrl "" ><#if prevPageStartRecord !=0><@s.param name="startRecord" value="${prevPageStartRecord?c}" /><#else><@s.param name="startRecord" value="" /></#if></@searchUrl>"/>
   </#if>
 </#macro>
 

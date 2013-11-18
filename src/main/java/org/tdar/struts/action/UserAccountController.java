@@ -222,7 +222,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             if (institution == null && !StringUtils.isBlank(institutionName)) {
                 institution = new Institution();
                 institution.setName(institutionName);
-                getEntityService().save(institution);
+                getGenericService().save(institution);
             }
             person.setInstitution(institution);
 
@@ -237,7 +237,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 person.setContributor(true);
                 getContributorRequest().setContributorReason(person.getContributorReason());
                 getContributorRequest().setTimestamp(new Date());
-                getEntityService().saveOrUpdate(getContributorRequest());
+                getGenericService().saveOrUpdate(getContributorRequest());
                 getAuthenticationAndAuthorizationService().satisfyPrerequisite(person, AuthNotice.CONTRIBUTOR_AGREEMENT);
             }
             getAuthenticationAndAuthorizationService().satisfyPrerequisite(person, AuthNotice.TOS_AGREEMENT);
@@ -272,7 +272,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             // mulitple reasons for this failure including the fact that the
             // user is already in CROWD
             if (!success) {
-                addActionError("a problem occured while trying to create a user");
+                addActionError("a problem occurred while trying to create a user");
                 return ERROR;
             }
             getLogger().error("Unable to authenticate with the auth service.");
@@ -290,7 +290,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             getEmailService().sendWithFreemarkerTemplate(EMAIL_WELCOME_TEMPLATE, getWelcomeEmailValues(), subject, person);
         } catch (Exception e) {
             // we don't want to ruin the new user's experience with a nasty error message...
-            logger.error("Suppressed error that occured when trying to send welcome email", e);
+            logger.error("Suppressed error that occurred when trying to send welcome email", e);
         }
     }
 

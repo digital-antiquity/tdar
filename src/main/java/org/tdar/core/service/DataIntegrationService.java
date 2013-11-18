@@ -287,7 +287,7 @@ public class DataIntegrationService {
             PersonalFilestore filestore = filestoreService.getPersonalFilestore(person);
             filestore.store(ticket, resultFile, integrationProxy.getFileName());
         } catch (Exception iox) {
-            logger.error("an error occured when producing the integration excel file: {}", iox);
+            logger.error("an error occurred when producing the integration excel file: {}", iox);
             throw new TdarRecoverableRuntimeException("could not save file");
         }
 

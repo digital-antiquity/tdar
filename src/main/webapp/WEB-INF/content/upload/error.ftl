@@ -8,7 +8,7 @@
     {"message": "${_err?js_string}", "details":null}<#if _err_has_next>,</#if>
     </#list>    
     <#else>
-    {"message":"an unspecified error occured", "details":null}
+    {"message":"an unspecified error occurred", "details":null}
     </#if>
     ]
 }
