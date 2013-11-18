@@ -693,10 +693,6 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("switchable.map.obfuscation");
     }
 
-    public boolean isJaiImageJenabled() {
-        return assistant.getBooleanProperty("jai.imagej.enabled", true);
-    }
-
     public boolean obfuscationInterceptorDisabled() {
         return assistant.getBooleanProperty("obfuscation.interceptor.disabled",false);
     }
@@ -704,7 +700,10 @@ public class TdarConfiguration {
     public String getDefaultFromEmail() {
         return assistant.getStringProperty("email.default.from", FROM_EMAIL_NAME + getEmailHostName());
     }
-}
+    
+    public boolean isJaiImageJenabled() {
+        return assistant.getBooleanProperty("jai.imagej.enabled", true);
+    }
     
     public boolean isJSCSSMergeServletEnabled() {
         return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
