@@ -287,7 +287,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             // mulitple reasons for this failure including the fact that the
             // user is already in CROWD
             if (!success) {
-                addActionError("a problem occured while trying to create a user");
+                addActionError("a problem occurred while trying to create a user");
                 return ERROR;
             }
             getLogger().error("Unable to authenticate with the auth service.");
@@ -305,7 +305,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             getEmailService().sendTemplate(EMAIL_WELCOME_TEMPLATE, getWelcomeEmailValues(), subject, person);
         } catch (Exception e) {
             // we don't want to ruin the new user's experience with a nasty error message...
-            logger.error("Suppressed error that occured when trying to send welcome email", e);
+            logger.error("Suppressed error that occurred when trying to send welcome email", e);
         }
     }
 

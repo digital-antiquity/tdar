@@ -157,9 +157,9 @@ public class DownloadService {
                 // this will be in the temp directory, so it will be scavenged at some stage.
                 resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
             } catch (PdfCoverPageGenerationException cpge) {
-                logger.trace("Error occured while merging cover page onto " + irFileVersion, cpge);
+                logger.trace("Error occurred while merging cover page onto " + irFileVersion, cpge);
             } catch (Exception e) {
-                logger.error("Error occured while merging cover page onto " + irFileVersion, e);
+                logger.error("Error occurred while merging cover page onto " + irFileVersion, e);
             }
         }
         downloadMap.put(resourceFile, irFileVersion.getFilename());

@@ -90,7 +90,7 @@ public class BulkUploadService {
     private static final String RESOURCE_CREATOR_IS_NOT_VALID_FOR_TYPE = "resource creator is not valid %s, %s, %s (check appropriate role for type)";
     private static final String SKIPPING_LINE_FILENAME_NOT_FOUND = "skipping line in excel file as resource with the filename \"%s\" was not found in the import batch";
     private static final String THE_SYSTEM_HAS_NOT_RECEIVED_ANY_FILES = "The system has not received any files.";
-    private static final String AN_EXCEPTION_OCCURED_WHILE_PROCESSING_THE_MANIFEST_FILE = "an exception occured while processing the manifest file";
+    private static final String AN_EXCEPTION_OCCURED_WHILE_PROCESSING_THE_MANIFEST_FILE = "an exception occurred while processing the manifest file";
     private static final String PLEASE_INCLUDE_THE_FILE_EXTENSION_IN_THE_FILENAME = "please include the file extension in the filename";
     private static final String THE_MANIFEST_FILE_UPLOADED_APPEARS_TO_BE_EMPTY_NO_COLUMNS_FOUND = "the manifest file uploaded appears to be empty, no columns found";
 
@@ -259,7 +259,7 @@ public class BulkUploadService {
         try {
             IOUtils.closeQuietly(stream);
         } catch (Exception e) {
-            logger.debug("an exception occured when closing import stream", e);
+            logger.debug("an exception occurred when closing import stream", e);
         }
 
     }
