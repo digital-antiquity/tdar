@@ -98,18 +98,20 @@ public class RssService implements Serializable {
         HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
         // Reading the feed
         SyndFeedInput input = new SyndFeedInput();
+        XmlReader.setDefaultEncoding("UTF-8");
         XmlReader xmlReader = new XmlReader(httpcon);
         try {
             SyndFeed feed = input.build(xmlReader);
             result.addAll(feed.getEntries());
         } catch (ParsingFeedException pfe) {
-            String errorMsg = pfe.getMessage() + System.lineSeparator() + xmlReader.toString();
-            logger.error(errorMsg);
+            // faims are filling up the log files with stack traces that are very distracting, 
+            // simply because their feed isn't parsing correctly.
+            logger.warn(pfe.getMessage());
         }
         return result;
     }
 
-    @SuppressWarnings({ "unused", "unchecked" })
+    @SuppressWarnings({ "unused" })
     public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, String rssUrl, GeoRssMode mode,
             boolean includeEnclosures) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
