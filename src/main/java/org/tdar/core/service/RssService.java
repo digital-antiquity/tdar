@@ -58,6 +58,7 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.feed.synd.SyndPerson;
 import com.sun.syndication.feed.synd.SyndPersonImpl;
 import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.ParsingFeedException;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.SyndFeedOutput;
 import com.sun.syndication.io.XmlReader;
@@ -94,13 +95,13 @@ public class RssService implements Serializable {
     }
 
     @Autowired
-    private UrlService urlService;
+    private transient UrlService urlService;
 
     @Autowired
-    private ObfuscationService obfuscationService;
+    private transient ObfuscationService obfuscationService;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
     /**
      * Strip invalid characters from a string for XML (low-level ASCII)
@@ -136,11 +137,20 @@ public class RssService implements Serializable {
      */
     @SuppressWarnings("unchecked")
     public List<SyndEntry> parseFeed(URL url) throws IllegalArgumentException, FeedException, IOException {
+        List<SyndEntry> result = new ArrayList<>();
         HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
         // Reading the feed
         SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed = input.build(new XmlReader(httpcon));
-        return feed.getEntries();
+        XmlReader xmlReader = new XmlReader(httpcon);
+        try {
+            SyndFeed feed = input.build(xmlReader);
+            result.addAll(feed.getEntries());
+        } catch (ParsingFeedException pfe) {
+            // faims are filling up the log files with stack traces that are very distracting, 
+            // simply because their feed isn't parsing correctly.
+            logger.warn(pfe.getMessage());
+        }
+        return result;
     }
 
     /**

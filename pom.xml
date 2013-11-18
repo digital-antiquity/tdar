@@ -37,6 +37,7 @@
 		<slf4j.version>1.7.5</slf4j.version>
 		<http-components.version>4.3.1</http-components.version>
 		<display.port></display.port>
+		<warfile.name>ROOT</warfile.name>
 		<!-- following points to the profile directory to use for filtering resources -->
 		<!-- override by redefining in a profile. don't forget to 'clean' when redefining -->
 		<!-- Be warned: Eclipse may have a different active profile in play to the command line -->
@@ -1163,7 +1164,7 @@
 	</pluginRepositories>
 
 	<build>
-		<finalName>ROOT</finalName>
+		<finalName>${warfile.name}</finalName>
 		<resources>
 			<!-- We only want a small set of files to be filtered. -->
 			<resource>
@@ -1175,6 +1176,7 @@
 					<exclude>crowd.properties</exclude>
 					<exclude>hibernate.properties</exclude>
 					<exclude>log4j.properties</exclude>
+					<exclude>struts-local-settings.xml</exclude>
 					<exclude>common.json</exclude>
 				</excludes>
 			</resource>
@@ -1189,6 +1191,7 @@
 					<include>crowd.properties</include>
 					<include>hibernate.properties</include>
 					<include>log4j.properties</include>
+					<include>struts-local-settings.xml</include>
 					<include>common.json</include>
 				</includes>
 			</resource>

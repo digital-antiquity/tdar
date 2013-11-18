@@ -174,7 +174,8 @@ public class TdarConfiguration {
      * @return
      */
     private Filestore loadFilestore() {
-        String filestoreClassName = assistant.getStringProperty("file.store.class", PairtreeFilestore.class.getCanonicalName());
+        String filestoreClassName = assistant.getStringProperty("file.store.class",
+                PairtreeFilestore.class.getCanonicalName());
         Filestore filestore = null;
 
         File filestoreLoc = new File(getFileStoreLocation());
@@ -270,7 +271,8 @@ public class TdarConfiguration {
     }
 
     public String getFileStoreLocation() {
-        return assistant.getStringProperty("file.store.location", "/home/tdar/filestore");
+        return assistant.getStringProperty("file.store.location",
+                "/home/tdar/filestore");
     }
 
     public String getPersonalFileStoreLocation() {
@@ -701,5 +703,10 @@ public class TdarConfiguration {
 
     public String getDefaultFromEmail() {
         return assistant.getStringProperty("email.default.from", FROM_EMAIL_NAME + getEmailHostName());
+    }
+}
+    
+    public boolean isJSCSSMergeServletEnabled() {
+        return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
     }
 }

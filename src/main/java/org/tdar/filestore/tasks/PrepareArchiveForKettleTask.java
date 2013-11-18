@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
@@ -43,6 +45,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
     private static final String FILE_NAME = "file_name";
     private static final String PROJECT_ID = "project_id";
+    private static final String UPDATED_BY_EMAIL = "updated_by_email";
 
     private static final String NEW_TARBALL_TEMPLATE_KEY = "new_tarball";
     // in time the template/templates can be moved to a file
@@ -51,7 +54,9 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             "<run_settings>" + lineSeparator() +
             "    <file_name>${" + FILE_NAME + "}</file_name>" + lineSeparator() +
             "    <project_id>${" + PROJECT_ID + "?c}</project_id>" + lineSeparator() +
+            "    <updated_by>${" + UPDATED_BY_EMAIL + "}</updated_by>" + lineSeparator() +
             "</run_settings>";
+
 
     private String kettleInputPath = TdarConfiguration.getInstance().getKettleInputPath();
     private File controlFileOuputDir;
@@ -91,6 +96,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      * <p>
      * Preconditions:
      * <ul>
+     * <li>We need a project id, an email address, and a file.
      * <li>We need to know the directory that we are writing control files to.
      * <li>That directory needs to be able to writable
      * <li>We need to be able to read the original Archive resource.
@@ -109,6 +115,8 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     @Override
     public void run() throws Exception {
         final WorkflowContext ctx = getWorkflowContext();
+        // it's quite hard to pick a start of this run out of the log files, so we'll log a title for the time being
+        getLogger().warn("<============= Starting run of task to extract tarball =============>");
 
         // first off, a whole raft of preconditions that we need to pass before we write the control file:
         // reality check: do we have an archive?
@@ -134,6 +142,11 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             getLogger().info(getLogMessage("Archive has already been imported.", archive));
             return;
         }
+        
+        // has the archive been assigned to a project? 
+        if (archive.getProjectId() == null || archive.getProjectId() <= 0) {
+            recordErrorAndExit("Cannot unpack an archive that has not yet been assigned to a project!");
+        }
 
         controlFileOuputDir = new File(kettleInputPath);
         if (!isDirectoryWritable(controlFileOuputDir)) {
@@ -153,7 +166,6 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         }
 
         // Preconditions have been checked, now to write the control file and set up the copy of the archive to work with.
-
         // at the moment there should be only one of these files: however, that should only be an artifact of the user interface.
         for (InformationResourceFileVersion version : archiveFiles) {
             File copyOfTarball = makeCopyOfSourceFile(version);
@@ -170,11 +182,36 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     private void writeKettleControlFileToDisk(Archive archive, File copy) throws IOException, TemplateException {
         Template template = loadFreemarkerTemplate();
         Map<String, Object> values = new HashMap<>();
-        values.put(FILE_NAME, copy.getAbsolutePath());
+        values.put(FILE_NAME, StringEscapeUtils.escapeXml(copy.getAbsolutePath()));
         values.put(PROJECT_ID, archive.getProjectId());
+        values.put(UPDATED_BY_EMAIL, StringEscapeUtils.escapeXml(getEmailToNotify(archive)));
         try (Writer output = new FileWriter(getNewRunControlFile())) {
             template.process(values, output);
         }
+    }
+
+    /**
+     * @param archive that is being extracted
+     * @return The email address to notify about the extraction of the archive. If it is null or empty, then the administrator is notified.
+     */
+    protected String getEmailToNotify(Archive archive) {
+        String result = null;
+        if (archive.getUpdatedBy() != null) {
+            result = archive.getUpdatedBy().getEmail();
+        }
+        if (StringUtils.isEmpty(result)) {
+            if (archive.getUploader() != null) {
+                result = archive.getUploader().getEmail();
+            }
+        }
+        if (StringUtils.isEmpty(result)) {
+            // this should never be null, hopefully...
+            result = TdarConfiguration.getInstance().getSystemAdminEmail();
+        }
+        if (StringUtils.isEmpty(result)) {
+            recordErrorAndExit("Could not find an email address to notify of archive import!");
+        }
+        return result;
     }
 
     private File getNewRunControlFile() {
@@ -183,7 +220,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
         do {
             result = generateControlFileName(i++);
         } while (result.exists());
-        getLogger().debug("writing control file to: " + result.getAbsolutePath());
+        getLogger().warn("=> writing control file to: " + result.getAbsolutePath());
         return result;
     }
 
@@ -194,7 +231,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     private File makeCopyOfSourceFile(InformationResourceFileVersion version) throws IOException {
         File originalFile = version.getTransientFile();
         File workingDir = new File(archiveCopiesDir, "kettle_input");
-        getLogger().debug("about to extract the contents of: " + originalFile.getName() + " to: " + workingDir.getAbsolutePath());
+        getLogger().warn("=> about to extract the contents of: " + originalFile.getName() + " to: " + workingDir.getAbsolutePath());
         FileUtils.copyFileToDirectory(originalFile, workingDir);
         return new File(workingDir, originalFile.getName());
     }
