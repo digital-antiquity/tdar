@@ -19,7 +19,7 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
     DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
     IMAGE("Image", 2, "Still Image", "unknown", "Photograph", Image.class),
     SENSORY_DATA("3D & Sensory Data", 7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
-    GEOSPATIAL("GIS", 6, "Dataset", "unknown", "Dataset", Geospatial.class),
+    GEOSPATIAL("Geospatial", 6, "Dataset", "unknown", "Dataset", Geospatial.class),
     ONTOLOGY("Ontology", 9, "Dataset", "unknown", "Dataset", Ontology.class),
     PROJECT("Project", 5, "ItemList", Project.class),
     VIDEO("Video", 4, "Moving Image", "unknown", "Movie", Video.class),
