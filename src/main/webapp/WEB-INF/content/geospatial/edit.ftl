@@ -14,14 +14,14 @@ TDAR.fileupload.addGisValidation(TDAR.fileupload.validator);
 		<br/>
     
     <span data-tiplabel="Currentness &amp; Update Notes" data-tooltipcontent="Please describe how current this dataset is and what the frequency for updates is">
-            <@s.textarea rows="4" label="Currentness & Update Information" name='geospatial.currentnessUpdateNotes' cssClass='resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+            <@s.textarea rows="4" label="Currentness & Update Information" name='geospatial.currentnessUpdateNotes' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
     </span>
 
 	        <@helptext.srid />
 
     <span data-tiplabel="Spatial Reference System &amp; Projection" data-tooltipcontent="#sridTip" class="">
             <@s.textfield label="Spatial Reference System & Projection" title="A SRS/Projection is required"  maxlength=50 required=true
-			name='geospatial.spatialReferenceSystem' cssClass="tdartext longfield input-xxlarge" />
+			name='geospatial.spatialReferenceSystem' cssClass="required tdartext longfield input-xxlarge" />
     </span>
 
     <span data-tiplabel="Map Source" data-tooltipcontent="Please describe the source of the map, if possible, include a citation">
