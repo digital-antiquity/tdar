@@ -108,6 +108,8 @@ public class CommandLineAPITool {
     private static final String OPTION_SHOW_LOG = "log";
 
     private static final Logger logger = Logger.getLogger(CommandLineAPITool.class);
+    
+    private static int errorCount = 0;
     private DefaultHttpClient httpclient = new DefaultHttpClient();
     private String hostname = ALPHA_TDAR_ORG; // DEFAULT SHOULD NOT BE CORE
     private String username = ALPHA_USER_NAME;
@@ -139,8 +141,9 @@ public class CommandLineAPITool {
         Options options = buildCommandLineOptions();
         try {
             parseArguments(args, importer, options);
+            errorCount = 0;
             importer.verifyState();
-            int errorCount = importer.processFiles();
+            importer.processFiles();
             if (errorCount > 0) {
                 logger.error("Exiting with errors...");
                 exit(errorCount);
@@ -152,7 +155,7 @@ public class CommandLineAPITool {
     }
 
     private static void parseArguments(String[] args, CommandLineAPITool importer, Options options) throws ParseException, IOException {
-        logger.info("args are: " + Arrays.toString(args));
+        logger.info("====> Start of run with args: " + Arrays.toString(args));
         CommandLineParser parser = new GnuParser();
         CommandLine line = parser.parse(options, args);
         if (hasNoOptions(line) || line.hasOption(OPTION_HELP)) {
@@ -354,11 +357,8 @@ public class CommandLineAPITool {
     /**
      * process all the files that were read in from the command line, and any nested sub-directories.
      */
-    private int processFiles() {
-
-        int errorCount = 0;
+    private void processFiles() {
         try {
-
             if (getHostname().equalsIgnoreCase(ALPHA_TDAR_ORG)) {
                 AuthScope scope = new AuthScope(getHostname(), 80);
                 UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(ALPHA_USER_NAME, ALPHA_PASSWORD);
@@ -402,7 +402,7 @@ public class CommandLineAPITool {
 
             for (File file : files) {
                 out.print("*"); // give the user some sort of visual indicator as to progress
-                errorCount += processDirectory(file);
+                processDirectory(file);
             }
             out.println(); // end of progress indicator
 
@@ -410,7 +410,6 @@ public class CommandLineAPITool {
             e.printStackTrace();
             errorCount++;
         }
-        return errorCount;
     }
 
     /**
@@ -418,12 +417,11 @@ public class CommandLineAPITool {
      * @throws IOException
      * @throws UnsupportedEncodingException
      */
-    private int processDirectory(File parentDir) throws UnsupportedEncodingException, IOException {
+    private void processDirectory(File parentDir) throws UnsupportedEncodingException, IOException {
         List<File> directories = new ArrayList<>();
         List<File> attachments = new ArrayList<>();
         List<File> records = new ArrayList<>();
 
-        int errorCount = 0;
         if (parentDir.isDirectory()) {
             for (File file : parentDir.listFiles()) {
                 if (file.isHidden())
@@ -460,7 +458,6 @@ public class CommandLineAPITool {
         for (File directory : directories) {
             processDirectory(directory);
         }
-        return errorCount;
     }
 
     public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
@@ -498,11 +495,11 @@ public class CommandLineAPITool {
 
         HttpResponse response = httpclient.execute(apicall);
         int statusCode = response.getStatusLine().getStatusCode();
+        
         if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
             logger.error("Server returned error: [" + record.getAbsolutePath() + "]:" + response.getStatusLine().getReasonPhrase());
             callSuccessful = false;
-        }
-        if (statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+        } else if (statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
             logger.error("Server returned found: [" + record.getAbsolutePath() + "]:" + response.getStatusLine().getReasonPhrase());
             callSuccessful = false;
         }
