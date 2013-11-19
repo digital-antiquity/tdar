@@ -254,7 +254,7 @@
         <p class="sml">
         ${resource.title}. <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}.</#if> 
          ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c})
-        <#if resource.externalId?has_content>; ${resource.externalId}
+        <#if resource.externalId?has_content>; <a href="http://dx.doi.org/${resource.externalId}"><b>DOI:</b>${resource.externalId}</a>
         <#elseif resource.lessThanDayOld && !resource.citationRecord>
         <br/>
             <em>Note:</em>A DOI will be generated <#if resource.draft>when this resource is no longer a draft<#else> in the next day for this resource</#if>.
