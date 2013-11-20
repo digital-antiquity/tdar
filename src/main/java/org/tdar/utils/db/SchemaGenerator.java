@@ -55,12 +55,11 @@ public class SchemaGenerator {
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
         scanner.addIncludeFilter(new AnnotationTypeFilter(NamedQuery.class));
+        scanner.addExcludeFilter(new AnnotationTypeFilter(Subselect.class));
         String basePackage = "org/tdar/";
         for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
             Class<?> forName = Class.forName(bd.getBeanClassName());
-            if (!forName.isAnnotationPresent(Subselect.class)) {
-                cfg.addAnnotatedClass(forName);
-            }
+            cfg.addAnnotatedClass(forName);
         }
 
         cfg.setProperty("hibernate.hbm2ddl.auto", "create");
