@@ -30,8 +30,6 @@ public class EmailService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final static String FROM_EMAIL_NAME = "info@";
-
     @Autowired
     private MailSender mailSender;
 
@@ -81,7 +79,7 @@ public class EmailService {
     }
 
     public String getFromEmail() {
-        return FROM_EMAIL_NAME + getTdarConfiguration().getEmailHostName();
+        return  getTdarConfiguration().getEmailFromName() + "@" + getTdarConfiguration().getEmailHostName();
     }
 
     public TdarConfiguration getTdarConfiguration() {

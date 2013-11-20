@@ -701,4 +701,8 @@ public class TdarConfiguration {
     public boolean isJSCSSMergeServletEnabled() {
         return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
     }
+
+    public String getEmailFromName() {
+        return assistant.getStringProperty("app.email.from", "info");
+    }
 }
