@@ -575,6 +575,22 @@ aside.tdar-icon:before {
 	display: inline-block;
 }
 
+/* Temporary placeholder image until we get a better quality one... */
+.responsive-large-desktop i.audio-bg-large {
+    background: url(/images/r4/audio-230.gif) no-repeat;
+    width: 230px;
+    height: 230px;
+    display: inline-block;
+}
+
+/* Temporary placeholder image until we get a better quality one... */
+.responsive-large-desktop i.archive-bg-large {
+    background: url(/images/r4/archive-230.gif) no-repeat;
+    width: 230px;
+    height: 230px;
+    display: inline-block;
+}
+
 .responsive-desktop i.document-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px 0px
 		no-repeat;
@@ -655,6 +671,22 @@ aside.tdar-icon:before {
 	display: inline-block;
 }
 
+/* Temporary placeholder image until we get a better quality one... */
+.responsive-desktop i.audio-bg-large {
+    background: url(/images/r4/audio-180.gif) no-repeat;
+    width: 180px;
+    height: 180px;
+    display: inline-block;
+}
+
+/* Temporary placeholder image until we get a better quality one... */
+.responsive-desktop i.archive-bg-large {
+    background: url(/images/r4/archive-180.gif) no-repeat;
+    width: 180px;
+    height: 180px;
+    display: inline-block;
+}
+
 .responsive-tablet i.document-bg-large,i.document-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px 0px
 		no-repeat;
@@ -719,14 +751,6 @@ aside.tdar-icon:before {
 	display: inline-block;
 }
 
-.responsive-tablet i.audio-bg-large,i.audio-125 {
-/* Temporary placeholder image until we get a better quality one... */
-    background: url(/images/sound-125.gif) no-repeat;
-    width: 125px;
-    height: 125px;
-    display: inline-block;
-}
-
 .responsive-tablet i.collection-bg-large,i.collection-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -1719px
 		no-repeat;
@@ -741,6 +765,22 @@ aside.tdar-icon:before {
 	width: 125px;
 	height: 125px;
 	display: inline-block;
+}
+
+/* Temporary placeholder image until we get a better quality one... */
+.responsive-tablet i.audio-bg-large,i.audio-125 {
+    background: url(/images/r4/audio-125.gif) no-repeat;
+    width: 125px;
+    height: 125px;
+    display: inline-block;
+}
+
+/* Temporary placeholder image until we get a better quality one... */
+.responsive-tablet i.archive-bg-large,i.archive-125 {
+    background: url(/images/r4/archive-125.gif) no-repeat;
+    width: 125px;
+    height: 125px;
+    display: inline-block;
 }
 
 .search-map-icon-red {
@@ -849,14 +889,24 @@ h3.image-mid-red::before {
 	margin-bottom: -2px;
 }
 
+/* Temporary placeholder image until we get a better quality one... */
 h3.audio-mid-red::before {
-	/* Temporary placeholder image until we get a better quality one... */
-	background: url(/images/sound.gif) no-repeat;
+	background: url(/images/r4/audio.gif) no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
 	content: "";
 	margin-bottom: -2px;
+}
+
+/* Temporary placeholder image until we get a better quality one... */
+h3.archive-mid-red::before {
+    background: url(/images/r4/archive.gif) no-repeat;
+    display: inline-block;
+    width: 34px;
+    height: 37px;
+    content: "";
+    margin-bottom: -2px;
 }
 
 h3.video-mid-red::before {
@@ -903,8 +953,6 @@ h3.collection-mid-red::before {
 	content: "";
 	margin-bottom: -2px;
 }
-
-
 
 h3.document-mid-black::before {
 	background: url(/images/r4/tdar-sprites.gif) -39px -487px no-repeat;
@@ -1082,6 +1130,22 @@ select.searchType {
 	height: 16px;
 	margin-top: -1px;
 	display: inline-block;
+}
+
+/* Temporary placeholder image until we get a better quality one... */
+.icon-audio {
+    background: url(/images/r4/audio-small.gif) no-repeat;
+    width: 14px;
+    height: 16px;
+    display: inline-block;
+}
+
+/* Temporary placeholder image until we get a better quality one... */
+.icon-archive {
+    background: url(/images/r4/archive-small.gif) no-repeat;
+    width: 14px;
+    height: 16px;
+    display: inline-block;
 }
 
 .icon-collection {
