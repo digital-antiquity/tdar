@@ -1,0 +1,93 @@
+package org.tdar.search.query;
+
+public interface QueryFieldNames {
+
+    static final String PROJECT_ID = "projectId";
+    static final String RESOURCE_TYPE = "resourceType";
+    static final String STATUS = "status";
+    static final String ACTIVE_START_DATE = "activeCoverageDates.startDate";
+    static final String ACTIVE_END_DATE = "activeCoverageDates.endDate";
+    static final String DATE = "date";
+    static final String DATE_UPDATED = "dateUpdated";
+    static final String DATE_CREATED = "dateCreated";
+    static final String LABEL = "label";
+    static final String DOT = ".";
+    static final String DOT_LABEL = DOT + LABEL;
+    static final String IR = "informationResources.";
+    static final String TITLE = "title";
+    static final String TITLE_AUTO = "title_auto";
+    static final String PROJECT_TITLE = "project.title";
+    static final String PROJECT_TITLE_AUTO = "project.title_auto";
+    static final String TITLE_SORT = "title_sort";
+    static final String DOCUMENT_TYPE = "documentType";
+    static final String INTEGRATABLE = "integratable";
+    static final String SUBMITTER_ID = "submitter.id";
+    static final String RESOURCE_CREATORS_CREATOR_ID = "resourceCreators.creator.id";
+    static final String RESOURCE_CREATORS_CREATOR_NAME_KEYWORD = "resourceCreators.creator.name_kwd";
+    static final String ACTIVE_SITE_TYPE_KEYWORDS = "activeSiteTypeKeywords";
+    static final String ACTIVE_MATERIAL_KEYWORDS = "activeMaterialKeywords";
+    static final String ACTIVE_CULTURE_KEYWORDS = "activeCultureKeywords";
+    static final String ACTIVE_SITE_NAME_KEYWORDS = "activeSiteNameKeywords";
+    static final String ACTIVE_INVESTIGATION_TYPES = "activeInvestigationTypes";
+    static final String ACTIVE_GEOGRAPHIC_KEYWORDS = "activeGeographicKeywords";
+    static final String ACTIVE_OTHER_KEYWORDS = "activeOtherKeywords";
+    static final String ACTIVE_LATITUDE_LONGITUDE_BOXES = "activeLatitudeLongitudeBoxes";
+
+    static final String MAXX = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxx";
+    static final String MAXY = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxy";
+    static final String MINY = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "miny";
+    static final String MINX = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "minx";
+    static final String SCALE = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "scale";
+    static final String MINXPRIME = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "minxPrime";
+    static final String MAXXPRIME = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxxPrime";
+
+    static final String ACTIVE_TEMPORAL_KEYWORDS = "activeTemporalKeywords";
+    static final String ACTIVE_SITE_TYPE_KEYWORDS_LABEL = ACTIVE_SITE_TYPE_KEYWORDS + DOT_LABEL;
+    static final String ACTIVE_CULTURE_KEYWORDS_LABEL = ACTIVE_CULTURE_KEYWORDS + DOT_LABEL;
+    static final String ACTIVE_GEOGRAPHIC_KEYWORDS_LABEL = ACTIVE_GEOGRAPHIC_KEYWORDS + DOT_LABEL;
+    static final String IR_ACTIVE_CULTURE_KEYWORDS_LABEL = IR + ACTIVE_CULTURE_KEYWORDS + DOT_LABEL;
+    static final String IR_ACTIVE_SITE_TYPE_KEYWORDS_LABEL = IR + ACTIVE_SITE_TYPE_KEYWORDS + DOT_LABEL;
+    static final String ACTIVE_COVERAGE_TYPE = "activeCoverageDates.dateType";
+    static final String NAME = "name";
+    static final String FIRST_NAME = "firstName";
+    static final String LAST_NAME = "lastName";
+    static final String EMAIL = "email";
+    static final String ID = "id";
+    static final String ALL = "all";
+    static final String ALL_PHRASE = "allPhrase";
+    static final String CONTENT = "content";
+    static final String DESCRIPTION = "description";
+    static final String PROJECT_TITLE_SORT = "project_title_sort";
+    static final String LABEL_SORT = "label_sort";
+    static final String FIRST_NAME_SORT = "firstName_sort";
+    static final String LAST_NAME_SORT = "lastName_sort";
+    static final String CREATOR_NAME_SORT = "creator_name_sort";
+
+    static final String COLLECTION_NAME = TITLE;
+    static final String COLLECTION_NAME_AUTO = TITLE_AUTO;
+    static final String COLLECTION_TYPE = "type";
+    static final String RESOURCE_USERS_WHO_CAN_VIEW = "usersWhoCanView";
+    static final String RESOURCE_USERS_WHO_CAN_MODIFY = "usersWhoCanModify";
+    static final String COLLECTION_USERS_WHO_CAN_ADMINISTER = "usersWhoCanAdminister";
+    static final String COLLECTION_USERS_WHO_CAN_VIEW = RESOURCE_USERS_WHO_CAN_VIEW;
+    static final String COLLECTION_USERS_WHO_CAN_MODIFY = RESOURCE_USERS_WHO_CAN_MODIFY;
+    // static final String RESOURCE_COLLECTION_PUBLIC_IDS = "publicCollectionIds";
+    static final String RESOURCE_COLLECTION_SHARED_IDS = "sharedCollectionIds";
+    static final String RESOURCE_ACCESS_TYPE = "resourceAccessType";
+    static final String PROPER_NAME = "properName";
+    static final String RESOURCE_CREATORS_PROPER_NAME = "resourceCreators.creator." + PROPER_NAME;
+    static final String INFORMATION_RESOURCE_FILES_FILENAME = "informationResourceFiles.filename";
+    static final String RESOURCE_PROVIDER_ID = "resourceProviderInstitution.id";
+    static final String CATEGORY_ID = "categoryVariable.id";
+    static final String CATEGORY_LABEL = "categoryVariable.label";
+    static final String COLLECTION_VISIBLE = "visible";
+    static final String TOP_LEVEL = "topLevel";
+    static final String RESOURCE_TYPE_SORT = "resourceTypeSort";
+    static final String RESOURCE_OWNER = "resourceOwner";
+    static final String DATE_CREATED_DECADE = "decadeCreated";
+    static final String CREATOR_ROLE_IDENTIFIER = "crid";
+    static final String FILENAME = "filename";
+    static final String DATA_VALUE_PAIR = "dataValuePair";
+    static final String COLLECTION_TREE = "collection.parentTree";
+
+}
