@@ -91,14 +91,14 @@ function _convertToFormJson(rawJson) {
         }
     };
 
-    // FIXME: update the parent latlong box (i.e. the red box not the brown
-    // box)..p_miny, pmaxy, etc. etc.
+    // FIXME: update the parent latlong box (i.e. the red box not the brown box)..p_miny, pmaxy, etc. etc.
     // console.warn(rawJson.firstLatitudeLongitudeBox)
     if (rawJson.firstLatitudeLongitudeBox) {
         obj.spatialInformation['minx'] = rawJson.firstLatitudeLongitudeBox.minObfuscatedLongitude;
         obj.spatialInformation['maxx'] = rawJson.firstLatitudeLongitudeBox.maxObfuscatedLongitude;
         obj.spatialInformation['miny'] = rawJson.firstLatitudeLongitudeBox.minObfuscatedLatitude;
         obj.spatialInformation['maxy'] = rawJson.firstLatitudeLongitudeBox.maxObfuscatedLatitude;
+        obj.spatialInformation['is_okay_to_show_exact_location'] = rawJson.firstLatitudeLongitudeBox.okayToShowExactLocation;
     }
 
     return obj;
@@ -306,7 +306,6 @@ function _inheritSpatialInformation(formId, json) {
         // clear the existing redbox and draw new one;
         TDAR.maps.clearResourceRect(mapdiv);
         _populateLatLongTextFields();
-
         var si = json.spatialInformation;
         if(si.miny != null && si.minx != null && si.maxy != null && si.maxx != null) {
             TDAR.maps.updateResourceRect(mapdiv,  si.miny, si.minx, si.maxy, si.maxx);
@@ -317,7 +316,7 @@ function _inheritSpatialInformation(formId, json) {
 
     //need to wait until map api is ready *and* this page's map is ready.
     if(!$(mapdiv).data("gmap")) {
-        $(mapdiv).one("mapready", mapReadyCallback)
+        $(mapdiv).one("mapready", mapReadyCallback);
     } else {
         mapReadyCallback();
     }

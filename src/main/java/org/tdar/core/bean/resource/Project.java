@@ -64,6 +64,7 @@ public class Project extends Resource implements Sortable {
             // latlongbox properties
             "minObfuscatedLongitude", "maxObfuscatedLongitude",
             "minObfuscatedLatitude", "maxObfuscatedLatitude",
+            "okayToShowExactLocation",
 
             "relatedComparativeCollections",
             "sourceCollections",
