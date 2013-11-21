@@ -31,12 +31,18 @@ TDAR.autocomplete = (function() {
         //register the fields inside this parent as an 'extra record'. When caller invokes getValues(), this class
         //will generate records based for all the registeredRecords
         register: function(parentElem) {
+            var self = this,
+                parentId = parentElem.id;
             //prevent dupe registration
             if($(parentElem).hasClass("autocomplete-new-record")) {
                 return;
             }
-            var self = this,
-                parentId = parentElem.id;
+
+            $(parentElem).closest(".repeat-row").bind("repeatrowbeforedelete", function(e){
+                self.unregister(parentId);
+                _enable($(parentElem));
+            });
+
             this.parentMap[parentId] = parentElem;
 
             $(parentElem).addClass("autocomplete-new-record");
@@ -204,10 +210,22 @@ function _registerOnBlur(objectCache, elem) {
     });
 }
 
-function _disableAutocompleteElements($parent) {
+function _disable($parent) {
     //fixme: "disable" function is broken in jquery ui 1.8.23, but jquery 1.9 introduces bootstrap incompatibility - find a workaround
     //$parent.find(".ui-autocomplete-input").autocomplete("disable");
+    $parent.find(".ui-autocomplete-input").each(function() {
+        $(this).data("autocomplete").disabled = true;
+    });
 }
+
+
+function _enable($parent) {
+    $parent.find(".ui-autocomplete-input").each(function() {
+        $(this).data("autocomplete").disabled = false;
+    });
+}
+
+
 
 function _applyGenericAutocomplete($elements, opts) {
     var options = $.extend({
@@ -251,6 +269,12 @@ function _applyGenericAutocomplete($elements, opts) {
     var autoResult = $elements.autocomplete({
         source : function(request, response) {
             var $elem = $(this.element);
+
+            //workaround for broken "disable" functionality in jquery-ui 1.8.x
+            if($elem.data("autocomplete").disabled) {
+                response();
+                return;
+            }
 
             //is another ajax request in flight?
             var oldResponseHolder = $elem.data('responseHolder');
@@ -370,7 +394,7 @@ function _applyGenericAutocomplete($elements, opts) {
             if(ui.item.isNewItem) {
                 var $parent = $($elem.attr("autocompleteparentelement"));
                 cache.register($parent.get());
-                _disableAutocompleteElements($parent);
+                _disable($parent);
 
             }
         },
@@ -462,7 +486,6 @@ function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
     };
     _applyGenericAutocomplete($elements, options);
     _getCache(options).search = ObjectCache.basicSearch;
-
 }
 
 

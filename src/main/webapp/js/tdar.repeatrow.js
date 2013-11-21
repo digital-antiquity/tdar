@@ -65,6 +65,7 @@ TDAR.repeatrow = function() {
     var _registerDeleteButtons = function(parentElement) {
         $(parentElement).on("click", ".repeat-row-delete", function(e){
             var rowElem = $(this).parents(".repeat-row")[0];
+            $(rowElem).trigger("repeatrowbeforedelete");
             TDAR.repeatrow.deleteRow(rowElem);
             $(parentElement).trigger('repeatrowdeleted');
         });
@@ -167,15 +168,17 @@ TDAR.repeatrow = function() {
         // allow html5 polyfills for watermarks to be added.
         TDAR.common.applyWatermarks($element);
     };
-    
-    
+
+    //delete closest .repeat-row element, return true if deleted, false if input elements were cleared instead.
     var _deleteRow = function(elem) {
         var $row = $(elem).closest(".repeat-row");
-        if($row.siblings(".repeat-row").length > 0) {
+        var bDelete = $row.siblings(".repeat-row").length > 0;
+        if(bDelete) {
             $row.remove();
         } else {
             _clearInputs($row);
         }
+        return bDelete;
     };
     
     

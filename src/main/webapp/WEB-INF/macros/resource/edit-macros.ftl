@@ -1515,7 +1515,7 @@ $(function() {
             <div>
                 <span class="name">{%=_e(o.properName)%}</span>
                 {% if(o.email)  %}<span class="email">({%=_e(o.email)%})</span>{%
-                %}{% if(o.institution) { %}, <span class="institution">{%=_e(o.institution.name)%}</span> {% } %}
+                %}{% if(o.institution && o.institution.name) { %}, <span class="institution">{%=_e(o.institution.name)%}</span> {% } %}
                 {% if(o.addnew) { %}<em>Create a new person record</em> {% } %}
             </div>
         </a>
