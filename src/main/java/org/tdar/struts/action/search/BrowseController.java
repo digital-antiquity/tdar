@@ -296,7 +296,7 @@ public class BrowseController extends AbstractLookupController {
     @SuppressWarnings("unchecked")
     @Override
     public List<String> getProjections() {
-        if (type == 0) {
+        if (type == 1) {
         return ListUtils.EMPTY_LIST;
         } else {
             return Arrays.asList("id");

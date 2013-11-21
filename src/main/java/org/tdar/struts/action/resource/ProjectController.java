@@ -274,7 +274,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     @SuppressWarnings("unchecked")
     @Override
     public List<String> getProjections() {
-        if (type == 0) {
+        if (type == 1) {
         return ListUtils.EMPTY_LIST;
         } else {
             return Arrays.asList("id");

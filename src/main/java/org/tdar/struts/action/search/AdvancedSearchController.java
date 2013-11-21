@@ -163,7 +163,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             @Result(name = INPUT, location = "advanced.ftl") })
     public String search() throws TdarActionException {
         setLookupSource(LookupSource.RESOURCE);
-        if (getType() != 0) {
+        if (getType() == 0) {
             projections = Arrays.asList("id");
         }
         
