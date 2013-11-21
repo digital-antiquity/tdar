@@ -82,7 +82,7 @@ public class ObfuscationService {
 //        }
 
         if (authService.isEditor(user)) {
-            logger.debug("user is editor: {} ({}}", target, user);
+//            logger.debug("user is editor: {} ({}}", target, user);
             return;
         }
         

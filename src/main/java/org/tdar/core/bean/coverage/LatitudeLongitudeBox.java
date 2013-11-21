@@ -509,7 +509,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     public List<Obfuscatable> obfuscate() {
         // set directly, as we don't want to reset the obfuscated values
         obfuscatedObjectDifferent = false;
-        logger.info("obfuscating latLong");
         Double val = getMaxObfuscatedLatitude();
         if (ObjectUtils.notEqual(val, getMaximumLatitude())) {
             setMaximumLatitude(val);
