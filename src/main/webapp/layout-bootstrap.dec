@@ -5,7 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 
 <#global jquery_version="1.10.2">
-<#global jquery_ui_version="1.9.2">
+<#global jquery_ui_version="1.8.23">
 <#global jquery_ui_css_version="1.9.2">
 
 <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>

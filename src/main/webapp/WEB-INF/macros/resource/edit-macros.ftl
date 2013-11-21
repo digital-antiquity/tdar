@@ -1380,52 +1380,42 @@ $(function() {
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()" autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
-            <div class="span2">
-                <@s.textfield theme="tdar" cssClass="input-block-level ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
+                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
                     autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
                     name="${strutsPrefix}${personPrefix}.lastName" maxlength="255"
                     title="${surnameTitle}"
                      />
-            </div>
-            <div class="span2">
-                <@s.textfield theme="tdar" cssClass="input-block-level ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
+                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
                     name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
                     autocompleteIdElement="#${idIdElement}"
                     autocompleteParentElement="#${rowIdElement}"
                      title="${firstnameTitle}"
                     />
-            </div>
 
             <#if includeRole || includeRights>
-                <div class="span2">
                     <#if includeRole>
                         <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles
-                            cssClass="creator-role-select input-block-level" />
+                            cssClass="creator-role-select span2" />
                     <#else>
-                        <@s.select theme="tdar" cssClass="creator-rights-select input-block-level" name="${strutsPrefix}.generalPermission" emptyOption='false'
+                        <@s.select theme="tdar" cssClass="creator-rights-select span2" name="${strutsPrefix}.generalPermission" emptyOption='false'
                             listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                         <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
                         <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
                     </#if>
-                </div>
             <#else>
                 <span class="span2">&nbsp;</span> 
             </#if>
         </div>
         <div class="controls-row">
-            <div class="span3">
-                <@s.textfield theme="tdar" cssClass="input-block-level ${lookupType} skip_validation" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
+                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
                     autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
                     name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
-            </div>
-            <div class="span3">
-                <@s.textfield theme="tdar" cssClass="input-block-level ${lookupType} skip_validation" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
+                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
                     autocompleteIdElement="#${idIdElement}"
                     autocompleteName="institution"
                     autocompleteParentElement="#${rowIdElement}"
                     name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
 
-            </div>
         </div>
     </div>
 </#macro>

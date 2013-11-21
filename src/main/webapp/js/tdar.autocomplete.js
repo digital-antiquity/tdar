@@ -204,6 +204,11 @@ function _registerOnBlur(objectCache, elem) {
     });
 }
 
+function _disableAutocompleteElements($parent) {
+    //fixme: "disable" function is broken in jquery ui 1.8.23, but jquery 1.9 introduces bootstrap incompatibility - find a workaround
+    //$parent.find(".ui-autocomplete-input").autocomplete("disable");
+}
+
 function _applyGenericAutocomplete($elements, opts) {
     var options = $.extend({
 
@@ -365,7 +370,8 @@ function _applyGenericAutocomplete($elements, opts) {
             if(ui.item.isNewItem) {
                 var $parent = $($elem.attr("autocompleteparentelement"));
                 cache.register($parent.get());
-                $parent.find(".ui-autocomplete-input").autocomplete("disable");
+                _disableAutocompleteElements($parent);
+
             }
         },
         open : function() {
