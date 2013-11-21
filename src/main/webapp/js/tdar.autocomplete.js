@@ -155,55 +155,6 @@ function _applyDataElements(element, item) {
 
 }
 
-    function _customPersonRender(ul, item) {
-        var htmlDoubleEncode = TDAR.common.htmlDoubleEncode,
-            encProperName = htmlDoubleEncode(item.properName),
-            encEmail = htmlDoubleEncode(item.email),
-            institution = item.institution ? item.institution.name || "" : "";
-
-        //double-encode on custom render
-        var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
-            "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + encProperName + "</span><span class='email'>(" +
-            encEmail + ")</span><br/><span class='institution'>" + htmlDoubleEncode(institution) + "</span></p>";
-        if (item.id == -1 && options.showCreate) {
-            htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
-                "<span class='name'><em>Create a new person record</em></span> </p>";
-        }
-        return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);
-    };
-
-
-
-function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
-    var options = {};
-    options.url = "lookup/person";
-    options.dataPath = "data.people";
-    options.retainInputValueOnSelect = true;
-    options.sortField = 'CREATOR_NAME';
-    options.showCreate = showCreate;
-    options.minLength = 3;
-
-    //unlike insitu we keep the 'term' property because we need it for the new user autocomplete control
-    options.enhanceRequestData = function(requestData) {
-        if (usersOnly) {
-            requestData.registered = true;
-        }
-    };
-
-    options.customRender = function(ul, item) {
-        var obj = $.extend({}, item);
-        obj.addnew = (item.id == -1 && options.showCreate);
-        var $snippet = $(tmpl("template-person-autocomplete-li", obj));
-        $snippet.data("item.autocomplete", item).appendTo(ul);
-        return $snippet;
-    };
-
-    _applyGenericAutocomplete($elements, options);
-}
-
-
-
-
 function _evaluateAutocompleteRowAsEmpty(element, minCount) {
     var req = _buildRequestData($(element));
     var total = 0;
@@ -480,21 +431,6 @@ function _applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
     _applyGenericAutocomplete($(selector), options);
 }
 
-//todo: i'm guessing that the user control may end up using a different objectMapper & customRender
-function _applyUserAutoComplete($elements) {
-    _applyGenericAutocomplete($elements, {
-        url: "lookup/person",
-        dataPath: "people",
-        retainInputValueOnSelect: true,
-        showCreate: false,
-        minLength: 3,
-        customRender: _renderPerson,
-        requestData:  {
-            registered: true
-        }
-    });
-}
-
 function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
     var options = {
         url: "lookup/person",
@@ -502,7 +438,13 @@ function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
         retainInputValueOnSelect: true,
         showCreate: showCreate,
         minLength: 3,
-        customRender: _renderPerson,
+        customRender: function(ul, item) {
+            var obj = $.extend({}, item);
+            obj.addnew = (item.id == -1 && options.showCreate);
+            var $snippet = $(tmpl("template-person-autocomplete-li", obj));
+            $snippet.data("item.autocomplete", item).appendTo(ul);
+            return $snippet;
+        },
         requestData:  {
             registered: usersOnly
         },
