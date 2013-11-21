@@ -98,7 +98,7 @@ function _convertToFormJson(rawJson) {
         obj.spatialInformation['maxx'] = rawJson.firstLatitudeLongitudeBox.maxObfuscatedLongitude;
         obj.spatialInformation['miny'] = rawJson.firstLatitudeLongitudeBox.minObfuscatedLatitude;
         obj.spatialInformation['maxy'] = rawJson.firstLatitudeLongitudeBox.maxObfuscatedLatitude;
-        obj.spatialInformation['is_okay_to_show_exact_location'] = rawJson.firstLatitudeLongitudeBox.okayToShowExactLocation;
+        obj.spatialInformation.okayToShowExactLocation = rawJson.firstLatitudeLongitudeBox.okayToShowExactLocation;
     }
 
     return obj;
@@ -300,6 +300,8 @@ function _inheritSpatialInformation(formId, json) {
         console.log("map ready callback");
         _clearFormSection('#divSpatialInformation');
         TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
+        // is a bit hacky: TODO: get to work with populateSection
+        $("#is_okay_to_show_exact_location").prop('checked', json.spatialInformation.okayToShowExactLocation);
         _populateSection(formId, json.spatialInformation);
         _disableSection('#divSpatialInformation');
 
