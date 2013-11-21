@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -41,11 +40,10 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
  */
 @Entity
 @Immutable
-@Subselect(value="information_resource_file")
-//@Subselect(value = "select id, general_type, latest_version, sequence_number, status, date_made_public, part_of_composite, information_resource_id, restriction from information_resource_file")
+@Subselect(value="select * from information_resource_file")
 public class InformationResourceFileProxy implements Serializable {
 
-    private static final long serialVersionUID = -5053790722109498743L;
+    private static final long serialVersionUID = -1321714940676599837L;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
 
@@ -81,8 +79,7 @@ public class InformationResourceFileProxy implements Serializable {
     @Column(name = "latest_version")
     private Integer latestVersion = 0;
 
-    // FIXME: cascade "delete" ?
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+    @OneToMany()
     @Sort(type = SortType.NATURAL)
     @JoinColumn(name="information_resource_file_id")
     private List<InformationResourceFileVersionProxy> informationResourceFileVersionProxies = new ArrayList<InformationResourceFileVersionProxy>();

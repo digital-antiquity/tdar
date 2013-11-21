@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 @Entity
 @Immutable
-@Subselect(value="information_resource_file_version")
+@Subselect(value="select * from information_resource_file_version")
 public class InformationResourceFileVersionProxy  implements Serializable {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());

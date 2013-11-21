@@ -67,15 +67,15 @@ public class ResourceProxy implements Serializable {
     @Length(max = 255)
     private String url;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "submitter_id")
     private Person submitter;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "uploader_id")
     private Person uploader;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+    @ManyToOne()
     @JoinColumn(name = "updater_id")
     @NotNull
     private Person updatedBy;
