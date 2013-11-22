@@ -33,18 +33,31 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    public void testFindSimple() {
-        long time = System.currentTimeMillis();
+    public void testFindSimple() throws InterruptedException {
+        Thread.sleep(4000l);
+        genericService.findAll(Document.class);
         long id = Long.parseLong(TestConstants.TEST_DOCUMENT_ID);
-        List<Resource> docs = resourceService.findSkeletonsForSearch(id);
+        newWay(id);
+        oldWay(id);
+        newWay(id);
+        oldWay(id);
+    }
+
+    private Resource newWay(long id) {
+        long time = System.currentTimeMillis();
+        List<Resource> docs = resourceService.findSkeletonsForSearch(false, id);
         Resource doc = docs.get(0);
         doc.logForTiming();
-        logger.info("total time: {} ", System.currentTimeMillis() - time);
-        time = System.currentTimeMillis();
-        Resource rec2 = resourceService.find(Resource.class, id);
+        logger.info("NEW TOTAL TIME: {} ", System.currentTimeMillis() - time);
+        return doc;
+    }
+
+    private void oldWay(long id) {
+        long time = System.currentTimeMillis();
+        List<Resource> recs = resourceService.findOld(id);
+        Resource rec2 = recs.get(0);
         rec2.logForTiming();
-        logger.info("total time: {} ", System.currentTimeMillis() - time);
-        assertNotNull(doc.getSubmitter());
+        logger.info("OLD TOTAL TIME: {} ", System.currentTimeMillis() - time);
     }
     
     @Test

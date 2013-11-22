@@ -203,13 +203,18 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
-    public List<Resource> findSkeletonsForSearch(Long ... ids) {
+    public List<Resource> findSkeletonsForSearch(boolean use, Long ... ids) {
         Session session = getCurrentSession();
         //distinct prevents duplicates
         //left join res.informationResourceFiles
         long time = System.currentTimeMillis();
-        //fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies 
-        Query query = session.createQuery("select distinct res from ResourceProxy res where res.id in (:ids)");
+        String queryString = "select distinct res from ResourceProxy res ";
+        if (use) {
+            queryString += "fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies ";
+        }
+        queryString += "where res.id in (:ids)";
+
+        Query query = session.createQuery(queryString);
         query.setParameterList("ids", Arrays.asList(ids));
         List<ResourceProxy> results = (List<ResourceProxy>)query.list();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
@@ -224,6 +229,16 @@ public class DatasetDao extends ResourceDao<Dataset> {
         }
         logger.info("generation took: {} ", System.currentTimeMillis() - time);
         return toReturn;
+    }
+
+    public List<Resource> findOld(Long[] ids) {
+        Session session = getCurrentSession();
+        long time = System.currentTimeMillis();
+        Query query = session.createQuery("select distinct res from Resource res where res.id in (:ids)");
+        query.setParameterList("ids", Arrays.asList(ids));
+        List<Resource> results = (List<Resource>)query.list();
+        logger.info("query took: {} ", System.currentTimeMillis() - time);
+        return results;
     }
 
 }
