@@ -85,7 +85,7 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
     public void testFindSimple() throws InterruptedException, InstantiationException, IllegalAccessException {
 //        List<Long> idScript = genericService.findAllIds(Resource.class);
 //        assertThat(idScript, not(empty()));
-        int trials = 3;
+        int trials = 10;
 
         StopWatch stopwatch = new StopWatch();
         SummaryStatistics oldstats = new SummaryStatistics();
@@ -94,37 +94,43 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
 
         for(int i = 0; i < trials; i++) {
                 
+            stopwatch.start();
             Long id = setupDoc();
-
-            stopwatch.start();
-
-            newWay(false, id);
+            Long id2 = setupDoc();
+            Long id3 = setupDoc();
             stopwatch.stop();
-            newstats1.addValue(stopwatch.getNanoTime());
-
-            id = setupDoc();
             stopwatch.reset();
+
             stopwatch.start();
 
-            oldWay(id);
+            oldWay(id2);
             stopwatch.stop();
             oldstats.addValue(stopwatch.getNanoTime());
 
-            id = setupDoc();
             stopwatch.reset();
             stopwatch.start();
-            newWay(true, id);
+
+            newWay(true, id3);
             stopwatch.stop();
             newstats2.addValue(stopwatch.getNanoTime());
+
+            stopwatch.reset();
+            stopwatch.start();
+            newWay(false, id);
+            stopwatch.stop();
+            newstats1.addValue(stopwatch.getNanoTime());
             stopwatch.reset();
         }
 
         logger.debug("timing complete: {} trials:  values:{}", trials, oldstats.getN());
-        logger.debug(" old way::  total:{}   avg:{}   stddev:{}", oldstats.getSum(), oldstats.getMean(), oldstats.getStandardDeviation());
-        logger.debug("new way1::  total:{}   avg:{}   stddev:{}", newstats1.getSum(), newstats1.getMean(), newstats1.getStandardDeviation());
-        logger.debug("new way2::  total:{}   avg:{}   stddev:{}", newstats2.getSum(), newstats2.getMean(), newstats2.getStandardDeviation());
+        logger.debug(" old  way::  total:{}   avg:{}   stddev:{}", seconds(oldstats.getSum()), seconds(oldstats.getMean()), seconds(oldstats.getStandardDeviation()));
+        logger.debug(" new1 way::  total:{}   avg:{}   stddev:{}", seconds(newstats1.getSum()), seconds(newstats1.getMean()), seconds(newstats1.getStandardDeviation()));
+        logger.debug(" new2 way::  total:{}   avg:{}   stddev:{}", seconds(newstats2.getSum()), seconds(newstats2.getMean()), seconds(newstats2.getStandardDeviation()));
     }
 
+    public double seconds(double nano) {
+        return nano / 1000000000.0;
+    }
     private Long setupDoc() throws InstantiationException, IllegalAccessException {
         Document doc = generateDocumentWithFileAndUser();
         doc.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.AUTHOR));

@@ -88,13 +88,9 @@ public class GenericService {
         return extractIds(findRandom(persistentClass, maxResults));
     }
 
-    public <T extends Persistable> List<Long> findAllIds(Class<T> persistentClass) {
-        return genericDao.findAllIds(persistentClass, Integer.MAX_VALUE);
-    }
-
     /**
      * Find a list of @link Persistable items that fit between the range of specified ids.
-     *
+     * 
      * @param persistentClass
      * @param firstId
      * @param lastId
