@@ -122,7 +122,7 @@
                         <#if bodyid != 'home'>
                             <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform hidden-phone hidden-tablet  screen">
                                 <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; " >
-                                <input type="hidden" name="searchType" value="simple">
+                                <input type="hidden" name="_tdar.searchType" value="simple">
                             </form>
                         </#if>
                         </li>

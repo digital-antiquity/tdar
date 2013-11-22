@@ -203,7 +203,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
-    public <D> List<D> findSkeletonsForSearch(Class<D> cls, Long ... ids) {
+    public List<Resource> findSkeletonsForSearch(Long ... ids) {
         Session session = getCurrentSession();
         //distinct prevents duplicates
         //left join res.informationResourceFiles
@@ -213,15 +213,16 @@ public class DatasetDao extends ResourceDao<Dataset> {
         List<ResourceProxy> results = (List<ResourceProxy>)query.list();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
         time = System.currentTimeMillis();
-        List<D> toReturn = new ArrayList<>();
+        List<Resource> toReturn = new ArrayList<>();
         for (ResourceProxy prox : results) {
             try {
-                toReturn.add((D)prox.generateResource());
+                toReturn.add(prox.generateResource());
             } catch (Exception e) {
                 logger.error("{}", e);
             }
         }
         logger.info("generation took: {} ", System.currentTimeMillis() - time);
+        logger.info("returning: {}" , toReturn);
         return toReturn;
     }
 

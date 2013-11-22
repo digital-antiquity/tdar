@@ -33,7 +33,7 @@
     <div class="tab-content">
         <div id="resource" class="tab-pane ${activeWhen('basic,advanced,results')}" >
             <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal">
-                <input type="hidden" name="searchType" value="advanced">
+                <input type="hidden" name="_tdar.searchType" value="advanced">
                 <div class="searchgroup" >
                     <h2>Choose Search Terms</h2>
                     <#assign currentIndex = 0 />

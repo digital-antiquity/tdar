@@ -295,7 +295,16 @@ public class SearchService {
         }
         
         if (CollectionUtils.isNotEmpty(ids)) {
-            return (List<Indexable>)datasetDao.findSkeletonsForSearch(Indexable.class, ids.toArray(new Long[0]));
+            logger.info("ids:{}",ids);
+            toReturn.clear();
+            for (Resource r : datasetDao.findSkeletonsForSearch(ids.toArray(new Long[0])) ) {
+                if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() && Persistable.Base.isNullOrTransient(user)) {
+                    obfuscationService.obfuscate((Obfuscatable) r, user);
+                }
+                getAuthenticationAndAuthorizationService().applyTransientViewableFlag(r, user);
+                toReturn.add(r);
+                
+            }
         }
 
         return toReturn;

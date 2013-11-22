@@ -252,6 +252,8 @@ public class ResourceProxy implements Serializable {
         res.setDateCreated(this.getDateCreated());
         res.setStatus(this.getStatus());
         res.setResourceType(this.getResourceType());
+        res.setTitle(getTitle());
+        res.setDescription(getDescription());
         res.setUrl(this.getUrl());
         res.setDateUpdated(this.getDateUpdated());
         res.setId(this.getId());
