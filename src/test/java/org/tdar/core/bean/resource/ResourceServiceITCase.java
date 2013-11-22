@@ -37,15 +37,18 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
         Thread.sleep(4000l);
         genericService.findAll(Document.class);
         long id = Long.parseLong(TestConstants.TEST_DOCUMENT_ID);
-        newWay(id);
+        logger.debug("BEGIN");
         oldWay(id);
-        newWay(id);
+        newWay(false,id);
+        newWay(true, id);
         oldWay(id);
+        newWay(false,id);
+        newWay(true, id);
     }
 
-    private Resource newWay(long id) {
+    private Resource newWay(boolean include, long id) {
         long time = System.currentTimeMillis();
-        List<Resource> docs = resourceService.findSkeletonsForSearch(false, id);
+        List<Resource> docs = resourceService.findSkeletonsForSearch(include, id);
         Resource doc = docs.get(0);
         doc.logForTiming();
         logger.info("NEW TOTAL TIME: {} ", System.currentTimeMillis() - time);
