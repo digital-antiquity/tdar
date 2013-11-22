@@ -81,7 +81,58 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    //fixme: this is just an example of how to get more accurate timings - if useful, we should pull out this timing harness to work with any test.
+    public void testFindSimple2() throws InterruptedException, InstantiationException, IllegalAccessException {
+        List<Long> idScript = genericService.findAllIds(Resource.class);
+        StopWatch stopwatch = new StopWatch();
+        SummaryStatistics oldstats = new SummaryStatistics();
+        SummaryStatistics newstats1 = new SummaryStatistics();
+        SummaryStatistics newstats2 = new SummaryStatistics();
+        int total = 10;
+        
+        for (int i=0; i < total; i++) {
+            genericService.synchronize();
+            genericService.clearCurrentSession();
+            stopwatch.start();
+
+            newWay(false,idScript.toArray(new Long[0]));
+            stopwatch.stop();
+            if (i != 0) {
+            newstats1.addValue(stopwatch.getNanoTime());
+            }
+
+            genericService.synchronize();
+            genericService.clearCurrentSession();
+            stopwatch.reset();
+            stopwatch.start();
+            newWay(true,idScript.toArray(new Long[0]));
+            stopwatch.stop();
+            if (i != 0) {
+            newstats2.addValue(stopwatch.getNanoTime());
+            }
+            
+            genericService.synchronize();
+            genericService.clearCurrentSession();
+            stopwatch.reset();
+            stopwatch.start();
+
+            oldWay(idScript.toArray(new Long[0]));
+            stopwatch.stop();
+            if (i != 0) {
+                oldstats.addValue(stopwatch.getNanoTime());
+            }
+            
+            
+            stopwatch.reset();
+        }
+
+        logger.debug("timing complete: {} trials:  values:{}", total, oldstats.getN());
+        logger.debug(" old  way::  total:{}   avg:{}   stddev:{}", seconds(oldstats.getSum()), seconds(oldstats.getMean()), seconds(oldstats.getStandardDeviation()));
+        logger.debug(" new1 way::  total:{}   avg:{}   stddev:{}", seconds(newstats1.getSum()), seconds(newstats1.getMean()), seconds(newstats1.getStandardDeviation()));
+        logger.debug(" new2 way::  total:{}   avg:{}   stddev:{}", seconds(newstats2.getSum()), seconds(newstats2.getMean()), seconds(newstats2.getStandardDeviation()));
+
+
+    }
+    @Test
     public void testFindSimple() throws InterruptedException, InstantiationException, IllegalAccessException {
 //        List<Long> idScript = genericService.findAllIds(Resource.class);
 //        assertThat(idScript, not(empty()));
@@ -103,9 +154,9 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
 
             stopwatch.start();
 
-            oldWay(id2);
+            newWay(false, id);
             stopwatch.stop();
-            oldstats.addValue(stopwatch.getNanoTime());
+            newstats1.addValue(stopwatch.getNanoTime());
 
             stopwatch.reset();
             stopwatch.start();
@@ -116,9 +167,11 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
 
             stopwatch.reset();
             stopwatch.start();
-            newWay(false, id);
+
+            oldWay(id2);
             stopwatch.stop();
-            newstats1.addValue(stopwatch.getNanoTime());
+            oldstats.addValue(stopwatch.getNanoTime());
+
             stopwatch.reset();
         }
 
@@ -145,17 +198,19 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
         return doc.getId();
     }
 
-    private void newWay(boolean include, long id) {
+    private void newWay(boolean include, Long ... id) {
         List<Resource> docs = resourceService.findSkeletonsForSearch(include, id);
-        Resource doc = docs.get(0);
-        logger.debug("retrieved {}", doc);
+        for (Resource rec : docs) {
+            rec.logForTiming();
+        }
     }
 
-    private void oldWay(long id) {
+    private void oldWay(Long ... id) {
         long time = System.currentTimeMillis();
         List<Resource> recs = resourceService.findOld(id);
-        Resource rec2 = recs.get(0);
-        logger.debug("retrieved {}", rec2);
+        for (Resource rec : recs) {
+            rec.logForTiming();
+        }
     }
     
     @Test

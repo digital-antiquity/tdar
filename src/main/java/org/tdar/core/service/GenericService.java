@@ -89,6 +89,16 @@ public class GenericService {
     }
 
     /**
+     * Find all ids given a specified class
+     * @param persistentClass
+     * @return
+     */
+    @Transactional 
+    public <T extends Persistable> List<Long> findAllIds(Class<T> persistentClass) {
+        return genericDao.findAllIds(persistentClass);
+    }
+
+    /**
      * Find a list of @link Persistable items that fit between the range of specified ids.
      * 
      * @param persistentClass
