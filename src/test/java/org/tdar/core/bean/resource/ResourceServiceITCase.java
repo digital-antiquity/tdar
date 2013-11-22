@@ -21,6 +21,9 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
@@ -79,48 +82,61 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     //fixme: this is just an example of how to get more accurate timings - if useful, we should pull out this timing harness to work with any test.
-    public void testFindSimple() throws InterruptedException {
-        List<Long> idScript = genericService.findAllIds(Resource.class);
-        assertThat(idScript, not(empty()));
-        int trials = 50;
+    public void testFindSimple() throws InterruptedException, InstantiationException, IllegalAccessException {
+//        List<Long> idScript = genericService.findAllIds(Resource.class);
+//        assertThat(idScript, not(empty()));
+        int trials = 3;
 
         StopWatch stopwatch = new StopWatch();
         SummaryStatistics oldstats = new SummaryStatistics();
         SummaryStatistics newstats1 = new SummaryStatistics();
         SummaryStatistics newstats2 = new SummaryStatistics();
 
-        troff();
         for(int i = 0; i < trials; i++) {
-            for(Long id: idScript) {
-                stopwatch.start();
-                oldWay(id);
-                stopwatch.stop();
-                oldstats.addValue(stopwatch.getNanoTime());
+                
+            Long id = setupDoc();
 
-                stopwatch.reset();
-                stopwatch.start();
-                newWay(false, id);
-                stopwatch.stop();
-                newstats1.addValue(stopwatch.getNanoTime());
+            stopwatch.start();
 
-                stopwatch.reset();
-                stopwatch.start();
-                newWay(true, id);
-                stopwatch.stop();
-                newstats2.addValue(stopwatch.getNanoTime());
-                stopwatch.reset();
-            }
+            newWay(false, id);
+            stopwatch.stop();
+            newstats1.addValue(stopwatch.getNanoTime());
 
-            //shuffle the id load order and clear the hibcache to see if we can minimize execution time differences outside of our control
-            Collections.shuffle(idScript);
-            sessionFactory.getCurrentSession().clear();
+            id = setupDoc();
+            stopwatch.reset();
+            stopwatch.start();
+
+            oldWay(id);
+            stopwatch.stop();
+            oldstats.addValue(stopwatch.getNanoTime());
+
+            id = setupDoc();
+            stopwatch.reset();
+            stopwatch.start();
+            newWay(true, id);
+            stopwatch.stop();
+            newstats2.addValue(stopwatch.getNanoTime());
+            stopwatch.reset();
         }
-        tron();
 
         logger.debug("timing complete: {} trials:  values:{}", trials, oldstats.getN());
         logger.debug(" old way::  total:{}   avg:{}   stddev:{}", oldstats.getSum(), oldstats.getMean(), oldstats.getStandardDeviation());
         logger.debug("new way1::  total:{}   avg:{}   stddev:{}", newstats1.getSum(), newstats1.getMean(), newstats1.getStandardDeviation());
         logger.debug("new way2::  total:{}   avg:{}   stddev:{}", newstats2.getSum(), newstats2.getMean(), newstats2.getStandardDeviation());
+    }
+
+    private Long setupDoc() throws InstantiationException, IllegalAccessException {
+        Document doc = generateDocumentWithFileAndUser();
+        doc.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.AUTHOR));
+        doc.getResourceCreators().add(new ResourceCreator(getBasicUser(), ResourceCreatorRole.AUTHOR));
+        doc.getResourceCreators().add(new ResourceCreator(getAdminUser().getInstitution(), ResourceCreatorRole.CONTACT));
+        doc.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.SUBMITTED_TO));
+        doc.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(1d, 1d, 4d, 4d));
+        genericService.saveOrUpdate(doc);
+        genericService.synchronize();
+        searchIndexService.flushToIndexes();
+        genericService.clearCurrentSession();
+        return doc.getId();
     }
 
     private void newWay(boolean include, long id) {
