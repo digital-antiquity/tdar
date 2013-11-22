@@ -1,11 +1,19 @@
 package org.tdar.core.bean.resource;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -13,6 +21,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 
@@ -20,6 +29,42 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private transient SessionFactory sessionFactory;
+
+
+    List<Level> oldLevels = new LinkedList<>();
+    List<Logger> loggers = new LinkedList<>();
+
+    //turn off all loggers.  revert state with tron().
+    void troff() {
+        getVerifyTransactionCallback();
+        loggers.clear();
+        oldLevels.clear();
+        loggers.addAll(Collections.<Logger>list(LogManager.getCurrentLoggers()));
+        loggers.add(LogManager.getRootLogger());
+        for ( Logger logger : loggers ) {
+            //out("troff:: %s \t was:%s", logger.getName(), logger.getLevel());
+            oldLevels.add(logger.getLevel());
+            logger.setLevel(Level.OFF);
+        }
+    }
+
+    void tron() {
+        ListIterator<Logger> itor = loggers.listIterator();
+        for(Level level : oldLevels) {
+            itor.next().setLevel(level);
+        }
+    }
+
+    void out(String fmt, Object ... args) {
+        System.out.println(String.format(fmt, args));
+    }
+
+    long nano() {
+        return System.nanoTime();
+    }
 
     @Test
     @Rollback
@@ -33,34 +78,58 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    //fixme: pull out this timing harness to work with any test.
     public void testFindSimple() throws InterruptedException {
-        Thread.sleep(4000l);
-        genericService.findAll(Document.class);
+        List<Long> idScript = genericService.findAllIds(Resource.class);
+        assertThat(idScript, not(empty()));
         long id = Long.parseLong(TestConstants.TEST_DOCUMENT_ID);
-        logger.debug("BEGIN");
-        oldWay(id);
-        newWay(false,id);
-        newWay(true, id);
-        oldWay(id);
-        newWay(false,id);
-        newWay(true, id);
+        int trials = 50;
+
+        StopWatch stopwatch = new StopWatch();
+        SummaryStatistics oldstats = new SummaryStatistics();
+        SummaryStatistics newstats1 = new SummaryStatistics();
+        SummaryStatistics newstats2 = new SummaryStatistics();
+
+        stopwatch.start();
+        troff();
+        for(int i = 0; i < trials; i++) {
+            //here we assume addValue() is too quick to measure
+            oldWay(id);
+            stopwatch.split();
+            oldstats.addValue(stopwatch.getNanoTime());
+
+            newWay(false, id);
+            stopwatch.split();
+            newstats1.addValue(stopwatch.getNanoTime());
+
+            newWay(true, id);
+            stopwatch.split();
+            newstats2.addValue(stopwatch.getNanoTime());
+
+            stopwatch.suspend();
+            Collections.shuffle(idScript);
+            sessionFactory.getCurrentSession().clear();
+            stopwatch.resume();
+        }
+        tron();
+        stopwatch.stop();
+
+        logger.debug(" old way::  total:{}   avg:{}   stddev:{}", oldstats.getSum(), oldstats.getMean(), oldstats.getStandardDeviation());
+        logger.debug("new way1::  total:{}   avg:{}   stddev:{}", newstats1.getSum(), newstats1.getMean(), newstats1.getStandardDeviation());
+        logger.debug("new way2::  total:{}   avg:{}   stddev:{}", newstats2.getSum(), newstats2.getMean(), newstats2.getStandardDeviation());
     }
 
-    private Resource newWay(boolean include, long id) {
-        long time = System.currentTimeMillis();
+    private void newWay(boolean include, long id) {
         List<Resource> docs = resourceService.findSkeletonsForSearch(include, id);
         Resource doc = docs.get(0);
-        doc.logForTiming();
-        logger.info("NEW TOTAL TIME: {} ", System.currentTimeMillis() - time);
-        return doc;
+        logger.debug("retrieved {}", doc);
     }
 
     private void oldWay(long id) {
         long time = System.currentTimeMillis();
         List<Resource> recs = resourceService.findOld(id);
         Resource rec2 = recs.get(0);
-        rec2.logForTiming();
-        logger.info("OLD TOTAL TIME: {} ", System.currentTimeMillis() - time);
+        logger.debug("retrieved {}", rec2);
     }
     
     @Test

@@ -94,7 +94,12 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <T> List<Long> findAllIds(Class<T> persistentClass) {
-        return getCurrentSession().createQuery("select id from " + persistentClass.getName()).list();
+        return findAllIds(persistentClass, Integer.MAX_VALUE);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> List<Long> findAllIds(Class<T> persistentClass, int maxResults) {
+       return getCurrentSession().createQuery("select id from " + persistentClass.getName()).setMaxResults(maxResults).list();
     }
 
     @SuppressWarnings("unchecked")
