@@ -78,11 +78,10 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    //fixme: pull out this timing harness to work with any test.
+    //fixme: this is just an example of how to get more accurate timings - if useful, we should pull out this timing harness to work with any test.
     public void testFindSimple() throws InterruptedException {
         List<Long> idScript = genericService.findAllIds(Resource.class);
         assertThat(idScript, not(empty()));
-        long id = Long.parseLong(TestConstants.TEST_DOCUMENT_ID);
         int trials = 50;
 
         StopWatch stopwatch = new StopWatch();
@@ -90,30 +89,35 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
         SummaryStatistics newstats1 = new SummaryStatistics();
         SummaryStatistics newstats2 = new SummaryStatistics();
 
-        stopwatch.start();
         troff();
         for(int i = 0; i < trials; i++) {
-            //here we assume addValue() is too quick to measure
-            oldWay(id);
-            stopwatch.split();
-            oldstats.addValue(stopwatch.getNanoTime());
+            for(Long id: idScript) {
+                stopwatch.start();
+                oldWay(id);
+                stopwatch.stop();
+                oldstats.addValue(stopwatch.getNanoTime());
 
-            newWay(false, id);
-            stopwatch.split();
-            newstats1.addValue(stopwatch.getNanoTime());
+                stopwatch.reset();
+                stopwatch.start();
+                newWay(false, id);
+                stopwatch.stop();
+                newstats1.addValue(stopwatch.getNanoTime());
 
-            newWay(true, id);
-            stopwatch.split();
-            newstats2.addValue(stopwatch.getNanoTime());
+                stopwatch.reset();
+                stopwatch.start();
+                newWay(true, id);
+                stopwatch.stop();
+                newstats2.addValue(stopwatch.getNanoTime());
+                stopwatch.reset();
+            }
 
-            stopwatch.suspend();
+            //shuffle the id load order and clear the hibcache to see if we can minimize execution time differences outside of our control
             Collections.shuffle(idScript);
             sessionFactory.getCurrentSession().clear();
-            stopwatch.resume();
         }
         tron();
-        stopwatch.stop();
 
+        logger.debug("timing complete: {} trials:  values:{}", trials, oldstats.getN());
         logger.debug(" old way::  total:{}   avg:{}   stddev:{}", oldstats.getSum(), oldstats.getMean(), oldstats.getStandardDeviation());
         logger.debug("new way1::  total:{}   avg:{}   stddev:{}", newstats1.getSum(), newstats1.getMean(), newstats1.getStandardDeviation());
         logger.debug("new way2::  total:{}   avg:{}   stddev:{}", newstats2.getSum(), newstats2.getMean(), newstats2.getStandardDeviation());
