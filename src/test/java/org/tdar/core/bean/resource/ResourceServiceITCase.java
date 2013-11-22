@@ -36,7 +36,7 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
     public void testFindSimple() {
         long time = System.currentTimeMillis();
         long id = Long.parseLong(TestConstants.TEST_DOCUMENT_ID);
-        List<Resource> docs = resourceService.findSkeletonsForSearch(id);
+        List<Resource> docs = resourceService.findSkeletonsForSearch(Resource.class, id);
         Resource doc = docs.get(0);
         doc.logForTiming();
         logger.info("total time: {} ", System.currentTimeMillis() - time);

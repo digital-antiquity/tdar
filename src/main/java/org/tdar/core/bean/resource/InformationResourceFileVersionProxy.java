@@ -234,7 +234,21 @@ public class InformationResourceFileVersionProxy  implements Serializable {
     @SuppressWarnings("deprecation")
     public InformationResourceFileVersion generateInformationResourceFileVersion() throws IllegalAccessException, InvocationTargetException {
         InformationResourceFileVersion vers = new InformationResourceFileVersion();
-        BeanUtilsBean.getInstance().copyProperties(vers, this);
+        vers.setId(getId());
+        vers.setChecksum(getChecksum());
+        vers.setChecksumType(getChecksumType());
+        vers.setPath(getPath());
+        vers.setFileLength(getFileLength());
+        vers.setFilename(getFilename());
+        vers.setFilestoreId(getFilestoreId());
+        vers.setFileType(getFileType());
+        vers.setVersion(getVersion());
+        vers.setHeight(getHeight());
+        vers.setWidth(getWidth());
+        vers.setExtension(getExtension());
+        vers.setDateCreated(getDateCreated());
+        vers.setFormat(getFormat());
+        vers.setMimeType(getMimeType());
         return vers;
     }
 

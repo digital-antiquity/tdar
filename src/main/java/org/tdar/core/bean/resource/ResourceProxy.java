@@ -32,17 +32,23 @@ import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.validator.constraints.Length;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 
 @Entity
 @Immutable
-@Subselect(value = "select rp.* , project_id, inheriting_spatial_information from resource rp left join information_resource ir on rp.id=ir.id")
+@Subselect(value = "select rp.* , date_created, project_id, inheriting_spatial_information from resource rp left join information_resource ir on rp.id=ir.id")
 public class ResourceProxy implements Serializable {
 
     private static final long serialVersionUID = -2574871889110727564L;
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Column(name = "date_created")
+    private Integer date = -1;
+    
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id")
     @Immutable
@@ -236,14 +242,23 @@ public class ResourceProxy implements Serializable {
     
     @SuppressWarnings("unchecked")
     public <T extends Resource> T generateResource() throws IllegalAccessException, InvocationTargetException, InstantiationException{
+        logger.trace("begin bean generation");
         T res = (T) getResourceType().getResourceClass().newInstance();
-        java.util.Date defaultValue = null;
-        Converter converter = new DateConverter(defaultValue);
-        BeanUtilsBean beanUtilsBean = BeanUtilsBean.getInstance();
-        beanUtilsBean.getConvertUtils().register(converter, java.util.Date.class);
-        beanUtilsBean.copyProperties(res, this);
+        res.getLatitudeLongitudeBoxes().addAll(this.getLatitudeLongitudeBoxes());
+        res.getResourceCreators().addAll(this.getResourceCreators());
+        res.setSubmitter(this.getSubmitter());
+        res.setUpdatedBy(this.getUpdatedBy());
+        res.setUploader(this.getUploader());
+        res.setDateCreated(this.getDateCreated());
+        res.setStatus(this.getStatus());
+        res.setResourceType(this.getResourceType());
+        res.setUrl(this.getUrl());
+        res.setDateUpdated(this.getDateUpdated());
+        res.setId(this.getId());
+        logger.trace("recursing down");
         if (res instanceof InformationResource) {
             InformationResource ir = (InformationResource)res;
+            ir.setDate(this.getDate());
             for (InformationResourceFileProxy prox : getInformationResourceFileProxies()) {
                 ir.getInformationResourceFiles().add(prox.generateInformationResourceFile());
             }
@@ -254,7 +269,16 @@ public class ResourceProxy implements Serializable {
             ir.setProject(project);
 
         }
+        logger.trace("done generation");
         return res;
+    }
+
+    public Integer getDate() {
+        return date;
+    }
+
+    public void setDate(Integer date) {
+        this.date = date;
     }
 
 }

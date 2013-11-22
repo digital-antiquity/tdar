@@ -167,11 +167,14 @@ public class InformationResourceFileProxy implements Serializable {
 
     public InformationResourceFile generateInformationResourceFile() throws IllegalAccessException, InvocationTargetException {
         InformationResourceFile file = new InformationResourceFile();
-        java.util.Date defaultValue = null;
-        Converter converter = new DateConverter(defaultValue);
-        BeanUtilsBean beanUtilsBean = BeanUtilsBean.getInstance();
-        beanUtilsBean.getConvertUtils().register(converter, java.util.Date.class);
-        beanUtilsBean.copyProperties(file, this);
+        file.setId(getId());
+        file.setPartOfComposite(isPartOfComposite());
+        file.setSequenceNumber(getSequenceNumber());
+        file.setInformationResourceFileType(getInformationResourceFileType());
+        file.setLatestVersion(getLatestVersion());
+        file.setRestriction(getRestriction());
+        file.setStatus(getStatus());
+        file.setDateMadePublic(getDateMadePublic());
         
         for (InformationResourceFileVersionProxy prox : getInformationResourceFileVersionProxies()) {
             file.getInformationResourceFileVersions().add(prox.generateInformationResourceFileVersion());

@@ -76,9 +76,6 @@ import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPart;
-import org.tdar.struts.action.CollectionController;
-import org.tdar.struts.action.resource.ProjectController;
-import org.tdar.struts.action.search.BrowseController;
 import org.tdar.struts.action.search.ReservedSearchParameters;
 import org.tdar.struts.action.search.SearchParameters;
 import org.tdar.struts.data.FacetGroup;
@@ -267,13 +264,19 @@ public class SearchService {
      */
     private List<Indexable> convertProjectedResultIntoObjects(SearchResultHandler<?> resultHandler, List<String> projections, List<Object[]> list, Person user) {
         List<Indexable> toReturn = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
         for (Object[] obj : list) {
             Indexable p = null;
             Float score = (Float) obj[projections.indexOf(FullTextQuery.SCORE)];
             if (CollectionUtils.isEmpty(resultHandler.getProjections())) { // if we have no projection, do raw cast, we should have inflated object already
                 p = (Indexable) obj[0];
             } else {
-                p = createSpareObjectFromProjection(resultHandler, projections, obj, p);
+                if (CollectionUtils.isNotEmpty(projections) && projections.contains("id")) {
+                    Long id = (Long)obj[projections.indexOf("id")];
+                    ids.add(id);
+                } else {
+                    p = createSpareObjectFromProjection(resultHandler, projections, obj, p);
+                }
             }
             if (p == null) {
                 logger.warn("Indexable persistable is null!");
@@ -289,6 +292,10 @@ public class SearchService {
                 p.setScore(score);
                 toReturn.add(p);
             }
+        }
+        
+        if (CollectionUtils.isNotEmpty(ids)) {
+            return (List<Indexable>)datasetDao.findSkeletonsForSearch(Indexable.class, ids.toArray(new Long[0]));
         }
 
         return toReturn;
@@ -308,23 +315,15 @@ public class SearchService {
     private Indexable createSpareObjectFromProjection(SearchResultHandler<?> resultHandler, List<String> projections, Object[] obj, Indexable p) {
         @SuppressWarnings("unchecked")
         Class<? extends Indexable> cast = (Class<? extends Indexable>) obj[projections.indexOf(FullTextQuery.OBJECT_CLASS)];
-        
-        if (CollectionUtils.isNotEmpty(projections) && projections.contains("id")) {
-            Long id = (Long)obj[projections.indexOf("id")];
-            List<Resource> findSkeletonForSearch = datasetDao.findSkeletonsForSearch(id);
-            if (CollectionUtils.isNotEmpty(findSkeletonForSearch)) {
-                p = findSkeletonForSearch.get(0);
+
+        try {
+            p = cast.newInstance();
+            Collection<String> fields = resultHandler.getProjections();
+            for (String field : fields) {
+                BeanUtils.setProperty(p, field, obj[projections.indexOf(field)]);
             }
-        } else {
-            try {
-                p = cast.newInstance();
-                Collection<String> fields = resultHandler.getProjections();
-                for (String field : fields) {
-                    BeanUtils.setProperty(p, field, obj[projections.indexOf(field)]);
-                }
-            } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException(e);
-            }
+        } catch (Exception e) {
+            throw new TdarRecoverableRuntimeException(e);
         }
         return p;
     }

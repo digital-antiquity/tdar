@@ -276,7 +276,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         String label = "Sinagua";
         firstGroup().getUncontrolledCultureKeywords().add(label);
         Keyword keyword = genericKeywordService.findByLabel(CultureKeyword.class, label);
-
+        
         doSearch();
         assertTrue("we should get back at least one hit", !controller.getResults().isEmpty());
 
@@ -1060,6 +1060,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     protected void doSearch(Boolean b) {
+        controller.setType(1);
         AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE, b);
         logger.info("search found: " + controller.getTotalRecords());
     }

@@ -123,6 +123,7 @@ public class BrowseController extends AbstractLookupController {
 
     @Action(COLLECTIONS)
     public String browseCollections() throws ParseException {
+        setType(1);
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
         qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
