@@ -11,7 +11,7 @@ var _initPricing = function(form, ajaxUrl) {
     
     $form.change(function() { 
         var numFiles = $("#MetadataForm_invoice_numberOfFiles").val();
-        var numMb = Math.round($("#MetadataForm_invoice_numberOfMb").val());
+        var numMb = Math.ceil($("#MetadataForm_invoice_numberOfMb").val());
         
         /* give the user an understanding of size in GB if size is > 1/2 GB */
         var mb = "";
