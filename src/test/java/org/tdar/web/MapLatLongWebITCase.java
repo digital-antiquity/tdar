@@ -38,7 +38,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         setInput("authorizedUsers[0].user.id", getBasicUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
-        String url = getCurrentUrlPath();
+        String url = getCurrentUrlPath() + "?type=1";
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();    
         latLong.setMaximumLatitude(45.336701909968106);
         latLong.setMinimumLatitude(32.175612478499325);

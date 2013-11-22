@@ -208,7 +208,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
         //distinct prevents duplicates
         //left join res.informationResourceFiles
         long time = System.currentTimeMillis();
-        Query query = session.createQuery("select distinct res from ResourceProxy res fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies where res.id in (:ids)");
+        //fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies 
+        Query query = session.createQuery("select distinct res from ResourceProxy res where res.id in (:ids)");
         query.setParameterList("ids", Arrays.asList(ids));
         List<ResourceProxy> results = (List<ResourceProxy>)query.list();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
@@ -222,7 +223,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
             }
         }
         logger.info("generation took: {} ", System.currentTimeMillis() - time);
-        logger.info("returning: {}" , toReturn);
         return toReturn;
     }
 

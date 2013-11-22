@@ -303,7 +303,6 @@ public class SearchService {
                 }
                 getAuthenticationAndAuthorizationService().applyTransientViewableFlag(r, user);
                 toReturn.add(r);
-                
             }
         }
 
