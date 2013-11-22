@@ -447,12 +447,15 @@ public class BulkUploadService {
                     fields.remove();
                 }
             }
-            if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            // we are striping out copyright holder for the time being, and applying the copyright holder to all uploads in the post processing step.
+            // this is because the copyright holder can either be an institution or a person, and we can't yet simply differentiate between the two,
+            // so this is deemed less confusing.
+            //if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
                 if (field.getName().contains("copyrightHolder") || StringUtils.isNotBlank(field.getDisplayName())
                         && (field.getDisplayName().contains(BulkImportField.COPYRIGHT_HOLDER))) {
                     fields.remove();
                 }
-            }
+            //}
         }
 
         return nameSet;
