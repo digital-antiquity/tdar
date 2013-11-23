@@ -13,7 +13,13 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.hibernate.Cache;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.joda.time.Duration;
+import org.joda.time.format.PeriodFormat;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -36,11 +42,12 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
     @Autowired
     private transient SessionFactory sessionFactory;
 
+    PeriodFormatter periodFormatter;
 
     List<Level> oldLevels = new LinkedList<>();
     List<Logger> loggers = new LinkedList<>();
-
-    //turn off all loggers.  revert state with tron().
+    //turn off *all* loggers.  revert state with tron(). Careful: if you don't call tron() or if an unhandled
+    //exception occurs the loggers will remain off for the remainder of your unit tests.
     void troff() {
         getVerifyTransactionCallback();
         loggers.clear();
@@ -65,8 +72,56 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
         System.out.println(String.format(fmt, args));
     }
 
-    long nano() {
-        return System.nanoTime();
+    void logstats(String title, SummaryStatistics stats) {
+        String fmt = "[{}::\tn:{}\tsum:{}\tmin:{}\tmax:{}\tavg:{}\tsdv:±{}]";
+        Object[] args = new Object[]{
+                title,
+                stats.getN(),
+                fmtnano(stats.getSum()),
+                fmtnano(stats.getMin()),
+                fmtnano(stats.getMax()),
+                fmtnano(stats.getMean()),
+                fmtnano(stats.getStandardDeviation())};
+
+        logger.debug(fmt, args);
+    }
+
+    //format nanotime  into readable format e.g. "1m 2s 345ms"
+    String  fmtnano(double nano) {
+        long ns = Math.round(nano);
+        long ms = ns / 1_000_000;
+        Duration duration = new Duration(ms);
+        String period = periodFormatter.print(duration.toPeriod());
+        return period;
+    }
+
+    //obliterate hibernate caches(1st level, 2nd level, and query cache), then return the current session
+    Session cleanSession() {
+        Cache cache = sessionFactory.getCache();
+        cache.evictEntityRegions();
+        cache.evictCollectionRegions();
+        cache.evictDefaultQueryRegion();
+        cache.evictQueryRegions();
+        Session session = sessionFactory.getCurrentSession();
+        session.clear();
+        return session;
+    }
+
+    public ResourceServiceITCase() {
+        PeriodFormatterBuilder b = new PeriodFormatterBuilder();
+        periodFormatter = b
+                .minimumPrintedDigits(1)
+                .printZeroNever()
+                .appendMinutes()
+                .appendSuffix("m")
+                .printZeroAlways()
+                .appendSeconds()
+                .appendSuffix("s")
+                .appendSeparatorIfFieldsBefore(" ")
+                .minimumPrintedDigits(3)
+                .appendMillis()
+                .appendSuffix("ms")
+                .toFormatter();
     }
 
     @Test
@@ -81,14 +136,62 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    public void testFindSimple3() throws InterruptedException, InstantiationException, IllegalAccessException {
+        List<Long> idScript = genericService.findAllIds(Resource.class);
+        final Long[] ids = new Long[idScript.size()];
+        final StopWatch stopwatch = new StopWatch();
+        int total = 50;
+        Runnable[] strategies = new Runnable[] {
+            new Runnable() {public void run() {newWay(false, ids);}},
+            new Runnable() {public void run() {newWay(true, ids);}},
+            new Runnable() {public void run() {oldWay(ids);}}
+        };
+        SummaryStatistics newstats1 = new SummaryStatistics();
+        SummaryStatistics newstats2 = new SummaryStatistics();
+        SummaryStatistics oldstats = new SummaryStatistics();
+        SummaryStatistics[] strategyStats = new SummaryStatistics[] {newstats1, newstats2, oldstats};
+        int nextStrategy = 0;
+
+        try {
+            troff();
+            for (int i=0; i < total; i++) {
+                //mix up the load order
+                Collections.shuffle(idScript);
+                idScript.toArray(ids);
+                //obliterate cache
+                cleanSession();
+                //The first call in each pass may run slower than subsequent calls (due to hibernate caching, jvm caching, cpu caching, who knows)
+                //so, choose a different strategy to go first in each pass to distribute the first-mover penalty more evenly across all participants
+                nextStrategy++;
+                for(int j = 0; j < strategies.length;  j++) {
+                    nextStrategy = nextStrategy % strategies.length;
+                    stopwatch.start();
+                    strategies[nextStrategy].run();
+                    stopwatch.stop();
+                    strategyStats[nextStrategy].addValue(stopwatch.getNanoTime());
+                    stopwatch.reset();
+                    nextStrategy++;
+                }
+            }
+        } finally {
+            tron();
+        }
+        logger.debug("Perf Test Complete\n\n");
+        logger.debug("timing complete: {} trials", total);
+        logstats(" old way", oldstats);
+        logstats("new1 way", newstats1);
+        logstats("new2 way", newstats2);
+    }
+
+    @Test
     public void testFindSimple2() throws InterruptedException, InstantiationException, IllegalAccessException {
         List<Long> idScript = genericService.findAllIds(Resource.class);
         StopWatch stopwatch = new StopWatch();
         SummaryStatistics oldstats = new SummaryStatistics();
         SummaryStatistics newstats1 = new SummaryStatistics();
         SummaryStatistics newstats2 = new SummaryStatistics();
-        int total = 10;
-        
+        int total = 51;
+
         for (int i=0; i < total; i++) {
             genericService.synchronize();
             genericService.clearCurrentSession();
@@ -97,7 +200,7 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
             newWay(false,idScript.toArray(new Long[0]));
             stopwatch.stop();
             if (i != 0) {
-            newstats1.addValue(stopwatch.getNanoTime());
+                newstats1.addValue(stopwatch.getNanoTime());
             }
 
             genericService.synchronize();
@@ -107,9 +210,9 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
             newWay(true,idScript.toArray(new Long[0]));
             stopwatch.stop();
             if (i != 0) {
-            newstats2.addValue(stopwatch.getNanoTime());
+                newstats2.addValue(stopwatch.getNanoTime());
             }
-            
+
             genericService.synchronize();
             genericService.clearCurrentSession();
             stopwatch.reset();
@@ -120,22 +223,19 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
             if (i != 0) {
                 oldstats.addValue(stopwatch.getNanoTime());
             }
-            
-            
+
             stopwatch.reset();
         }
 
-        logger.debug("timing complete: {} trials:  values:{}", total, oldstats.getN());
-        logger.debug(" old  way::  total:{}   avg:{}   stddev:{}", seconds(oldstats.getSum()), seconds(oldstats.getMean()), seconds(oldstats.getStandardDeviation()));
-        logger.debug(" new1 way::  total:{}   avg:{}   stddev:{}", seconds(newstats1.getSum()), seconds(newstats1.getMean()), seconds(newstats1.getStandardDeviation()));
-        logger.debug(" new2 way::  total:{}   avg:{}   stddev:{}", seconds(newstats2.getSum()), seconds(newstats2.getMean()), seconds(newstats2.getStandardDeviation()));
-
-
+        logger.debug("timing complete: {} trials", total);
+        logstats(" old way", oldstats);
+        logstats("new1 way", newstats1);
+        logstats("new2 way", newstats2);
     }
+
     @Test
+    @Rollback
     public void testFindSimple() throws InterruptedException, InstantiationException, IllegalAccessException {
-//        List<Long> idScript = genericService.findAllIds(Resource.class);
-//        assertThat(idScript, not(empty()));
         int trials = 10;
 
         StopWatch stopwatch = new StopWatch();
@@ -144,13 +244,9 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
         SummaryStatistics newstats2 = new SummaryStatistics();
 
         for(int i = 0; i < trials; i++) {
-                
-            stopwatch.start();
             Long id = setupDoc();
             Long id2 = setupDoc();
             Long id3 = setupDoc();
-            stopwatch.stop();
-            stopwatch.reset();
 
             stopwatch.start();
 
@@ -175,10 +271,10 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
             stopwatch.reset();
         }
 
-        logger.debug("timing complete: {} trials:  values:{}", trials, oldstats.getN());
-        logger.debug(" old  way::  total:{}   avg:{}   stddev:{}", seconds(oldstats.getSum()), seconds(oldstats.getMean()), seconds(oldstats.getStandardDeviation()));
-        logger.debug(" new1 way::  total:{}   avg:{}   stddev:{}", seconds(newstats1.getSum()), seconds(newstats1.getMean()), seconds(newstats1.getStandardDeviation()));
-        logger.debug(" new2 way::  total:{}   avg:{}   stddev:{}", seconds(newstats2.getSum()), seconds(newstats2.getMean()), seconds(newstats2.getStandardDeviation()));
+        logger.debug("timing complete: {} trials", trials);
+        logstats(" old way", oldstats);
+        logstats("new1 way", newstats1);
+        logstats("new2 way", newstats2);
     }
 
     public double seconds(double nano) {
