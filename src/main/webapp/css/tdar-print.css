@@ -1,5 +1,5 @@
 @media print {
-	.inline-menu,.subnav, {
+	.inline-menu,.subnav {
 		display: none;
 		visibility: hidden;
 	}
@@ -27,6 +27,6 @@
 
   .atlwdg-trigger {
 	display:none !important;
-	visbility:hidden;
+	visibility: hidden;
   }
 }
