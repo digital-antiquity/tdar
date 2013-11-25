@@ -15,11 +15,11 @@ section.row.cols {
 
 #map_legend {
 	position: absolute;
-	display: block; //
+	display: block; 
 	width: 300px;
 	height: 1.8em;
 	bottom: 0px;
-    /* //FIXME: 100px shift is unnecessary if we can put legend inside of .worldmap */
+    /* FIXME: 100px shift is unnecessary if we can put legend inside of .worldmap */
 	right: 100px;
 
 }
@@ -91,7 +91,7 @@ left: 0!important;
 .uneditable-input.subtle {
     background-color: inherit;
     color: inherit;
-    border:1px solid rgba(128,128,128,0 .1);
+    border: 1px solid rgba(128,128,128, 0.1);
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
@@ -395,7 +395,6 @@ body.edit h2 {
 	border-top: 5px solid #555;
 	display: inline;
 	cursor: pointer;
-	cursor: hand;
 	position: relative;
 	left: 700px;
 	top: -32px;
@@ -1055,7 +1054,7 @@ h3.collection-mid-black::before {
 	-moz-transform: rotate(-90deg);
 	-ms-transform: rotate(-90deg);
 	-o-transform: rotate(-90deg);
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2 );
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
 }
 
 .rotate-90 {
@@ -1064,7 +1063,7 @@ h3.collection-mid-black::before {
 	-moz-transform: rotate(90deg);
 	-ms-transform: rotate(90deg);
 	-o-transform: rotate(90deg);
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=4 );
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=4);
 }
 
 .adminbox {
@@ -1124,8 +1123,7 @@ select.searchType {
 }
 
 .icon-project {
-	background: url(/images/r4/resource-types-large.gif) -398px -2474px
-		no-repeat;
+	background: url(/images/r4/resource-types-large.gif) -398px -2474px no-repeat;
 	width: 14px;
 	height: 16px;
 	margin-top: -1px;
@@ -1213,13 +1211,13 @@ p.copyright-notice {
 
 .popover h3,.popover h2 {
 	margin-top: 0px !important;
-	paddding: 10px 0px 10px 0px !important;
+	padding: 10px 0px 10px 0px !important;
 }
 
 /* ensure proper spacing in view page metadata name/value pairs, and don't wrap in the middle */
 .cols p.meta span.name-value {
 	margin-right: 0.5em;
-	diaplay: inline-block;
+	display: inline-block;
 }
 
 .tdar-gmap-control button:disabled {
