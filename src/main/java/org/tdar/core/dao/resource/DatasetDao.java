@@ -211,7 +211,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         String queryString = "select res from ResourceProxy res ";
 
         // by default, use true; it's most often faster
-        if (use) {
+        if (ids.length > 1) {
             queryString += "fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies ";
         }
         queryString += "where res.id in (:ids)";
