@@ -1844,14 +1844,4 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.obfuscatedObjectDifferent = value;
     }
 
-    @Deprecated
-    public void logForTiming() {
-        if (this instanceof InformationResource) {
-            InformationResource ir = (InformationResource)this;
-            logger.info("{} {} {} {} {}",  this, ir.getLatitudeLongitudeBoxes(), this.getResourceCreators(), this.getSubmitter(), ir.getProject(), ir.getInformationResourceFiles());
-        } else {
-        logger.info("{} {} {} {} {}",  this, this.getLatitudeLongitudeBoxes(), this.getResourceCreators(), this.getSubmitter());
-        }
-        
-    }
 }
