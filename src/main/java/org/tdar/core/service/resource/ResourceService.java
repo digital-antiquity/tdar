@@ -74,8 +74,8 @@ public class ResourceService extends GenericService {
 
     
     @Transactional(readOnly=true)
-    public List<Resource> findSkeletonsForSearch(boolean use, Long ... ids) {
-        return datasetDao.findSkeletonsForSearch(use, ids);
+    public List<Resource> findSkeletonsForSearch(Long ... ids) {
+        return datasetDao.findSkeletonsForSearch(ids);
     }
 
     @Transactional(readOnly=true)

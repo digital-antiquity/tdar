@@ -95,14 +95,12 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         final StopWatch stopwatch = new StopWatch();
         int total = 50;
         Runnable[] strategies = new Runnable[] {
-            new Runnable() {public void run() {newWay(false, ids);}},
-            new Runnable() {public void run() {newWay(true, ids);}},
+            new Runnable() {public void run() {newWay(ids);}},
             new Runnable() {public void run() {oldWay(ids);}}
         };
         SummaryStatistics newstats1 = new SummaryStatistics();
-        SummaryStatistics newstats2 = new SummaryStatistics();
         SummaryStatistics oldstats = new SummaryStatistics();
-        SummaryStatistics[] strategyStats = new SummaryStatistics[] {newstats1, newstats2, oldstats};
+        SummaryStatistics[] strategyStats = new SummaryStatistics[] {newstats1, oldstats};
         int nextStrategy = 0;
 
         try {
@@ -134,7 +132,6 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         logger.debug("timing complete: {} trials", total);
         logstats(" old way", oldstats);
         logstats("new1 way", newstats1);
-        logstats("new2 way", newstats2);
     }
     
     //http://stackoverflow.com/questions/1519736/random-shuffling-of-an-array
@@ -158,26 +155,16 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         StopWatch stopwatch = new StopWatch();
         SummaryStatistics oldstats = new SummaryStatistics();
         SummaryStatistics newstats1 = new SummaryStatistics();
-        SummaryStatistics newstats2 = new SummaryStatistics();
         int total = 51;
         disableLogging();
         for (int i=0; i < total; i++) {
             cleanSession();
             stopwatch.start();
 
-            newWay(false,idScript.toArray(new Long[0]));
+            newWay(idScript.toArray(new Long[0]));
             stopwatch.stop();
             if (i != 0) {
                 newstats1.addValue(stopwatch.getNanoTime());
-            }
-
-            cleanSession();
-            stopwatch.reset();
-            stopwatch.start();
-            newWay(true,idScript.toArray(new Long[0]));
-            stopwatch.stop();
-            if (i != 0) {
-                newstats2.addValue(stopwatch.getNanoTime());
             }
 
             cleanSession();
@@ -196,7 +183,6 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         logger.debug("timing complete: {} trials", total);
         logstats(" old way", oldstats);
         logstats("new1 way", newstats1);
-        logstats("new2 way", newstats2);
     }
 
     @Test
@@ -207,25 +193,16 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         StopWatch stopwatch = new StopWatch();
         SummaryStatistics oldstats = new SummaryStatistics();
         SummaryStatistics newstats1 = new SummaryStatistics();
-        SummaryStatistics newstats2 = new SummaryStatistics();
         disableLogging();
         for(int i = 0; i < trials; i++) {
             Long id = setupDoc();
             Long id2 = setupDoc();
-            Long id3 = setupDoc();
 
             stopwatch.start();
 
-            newWay(false, id);
+            newWay(id);
             stopwatch.stop();
             newstats1.addValue(stopwatch.getNanoTime());
-
-            stopwatch.reset();
-            stopwatch.start();
-
-            newWay(true, id3);
-            stopwatch.stop();
-            newstats2.addValue(stopwatch.getNanoTime());
 
             stopwatch.reset();
             stopwatch.start();
@@ -240,7 +217,6 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         logger.debug("timing complete: {} trials", trials);
         logstats(" old way", oldstats);
         logstats("new1 way", newstats1);
-        logstats("new2 way", newstats2);
     }
 
     private Long setupDoc() throws InstantiationException, IllegalAccessException {
@@ -255,8 +231,8 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         return doc.getId();
     }
 
-    private void newWay(boolean include, Long ... id) {
-        List<Resource> docs = resourceService.findSkeletonsForSearch(include, id);
+    private void newWay(Long ... id) {
+        List<Resource> docs = resourceService.findSkeletonsForSearch(id);
         for (Resource rec : docs) {
             logForTiming(rec);
         }

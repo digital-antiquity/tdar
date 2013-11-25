@@ -203,14 +203,14 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
-    public List<Resource> findSkeletonsForSearch(boolean use, Long ... ids) {
+    public List<Resource> findSkeletonsForSearch(Long ... ids) {
         Session session = getCurrentSession();
         //distinct prevents duplicates
         //left join res.informationResourceFiles
         long time = System.currentTimeMillis();
         String queryString = "select res from ResourceProxy res ";
 
-        // by default, use true; it's most often faster
+        //if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
         if (ids.length > 1) {
             queryString += "fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies ";
         }
