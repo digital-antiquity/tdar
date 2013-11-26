@@ -111,7 +111,6 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
 
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
         return true;
     }
 
