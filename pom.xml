@@ -1569,6 +1569,8 @@
 					</execution>
 				</executions>
 				<configuration>
+				    <forkCount>0</forkCount>
+					<forkMode>never</forkMode>
 					<runOrder>alphabetical</runOrder>
 					<systemPropertyVariables>
 						<display.port>${display.port}</display.port>
