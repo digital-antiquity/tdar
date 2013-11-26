@@ -1421,6 +1421,8 @@
 				<version>2.15</version>
 				<configuration>
 					<outputDirectory>${basedir}/target/site</outputDirectory>
+					<forkCount>0</forkCount>
+					<forkMode>never</forkMode>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -1431,6 +1433,7 @@
 					<excludes>
 						<exclude>**/experimental/*.java</exclude>
 					</excludes>
+					<forkCount>0</forkCount>
 					<forkMode>never</forkMode>
 					<skip>${maven.test.skip}</skip>
 					<runOrder>alphabetical</runOrder>
@@ -1482,6 +1485,8 @@
 					</execution>
 				</executions>
 				<configuration>
+					<forkCount>0</forkCount>
+					<forkMode>never</forkMode>
 					<runOrder>alphabetical</runOrder>
 					<systemPropertyVariables>
 						<display.port>${display.port}</display.port>
