@@ -97,7 +97,6 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
 
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
         return true;
     }
 
