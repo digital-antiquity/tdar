@@ -805,6 +805,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             public void fatalError(CSSParseException exception) throws CSSException {
                 if (exception.getURI().contains(getBaseUrl())) {
                     logger.warn("CSS Fatal Error:", exception);
+                    fail("CSS Fatal Error: " + ExceptionUtils.getFullStackTrace( exception));
                 }
             }
 
@@ -812,7 +813,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             public void error(CSSParseException exception) throws CSSException {
                 String uri = exception.getURI();
                 if (uri.contains(getBaseUrl()) && uri.contains("tdar")) {
-                    logger.error("CSS Error: {} ; message: {} line: {} ", exception.getURI(), exception.getMessage(), exception.getLineNumber());
+                    String msg = String.format("CSS Error: %s ; message: %s line: %s ", exception.getURI(), exception.getMessage(), exception.getLineNumber());
+                    logger.error(msg);
+                    fail(msg);
                 }
             }
         });
