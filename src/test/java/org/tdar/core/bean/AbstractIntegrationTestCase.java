@@ -115,7 +115,6 @@ import org.xml.sax.SAXException;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.DefaultTextProvider;
 import com.opensymphony.xwork2.LocaleProvider;
 import com.opensymphony.xwork2.TextProviderFactory;
 import com.opensymphony.xwork2.config.ConfigurationManager;

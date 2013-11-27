@@ -214,13 +214,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     isNew = true;
                 }
                 preSaveCallback();
-                if (persistable instanceof HasStatus) {
-                    if (getStatus() == null) {
-                        setStatus(Status.ACTIVE);
-                    }
-
-                    ((HasStatus) getPersistable()).setStatus(getStatus());
-                }
+                determineAndUpdateStatus();
 
                 if (persistable instanceof Updatable) {
                     ((Updatable) persistable).markUpdated(getAuthenticatedUser());
@@ -275,6 +269,16 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             return INPUT;
         }
         return actionReturnStatus;
+    }
+
+    private void determineAndUpdateStatus() {
+        if (persistable instanceof HasStatus) {
+            if (getStatus() == null) {
+                setStatus(Status.ACTIVE);
+            }
+
+            ((HasStatus) getPersistable()).setStatus(getStatus());
+        }
     }
 
     protected void indexPersistable() {
