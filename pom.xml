@@ -1805,6 +1805,30 @@
 							</execution>
 						</executions>
 					</plugin>
+					<plugin>
+						<groupId>net.alchim31.maven</groupId>
+						<artifactId>yuicompressor-maven-plugin</artifactId>
+						<version>1.3.0</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>jslint</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<nosuffix>true</nosuffix>
+							<failOnWarning>false</failOnWarning>
+							<excludes>
+								<exclude>**/*.pack.js</exclude>
+								<exclude>**/*.min.js</exclude>
+								<exclude>**/test/**</exclude>
+								<exclude>**/localization/*.*</exclude>
+								<exclude>**/compressed.css</exclude>
+							</excludes>
+							<webappDirectory>target/generated/webapp</webappDirectory>
+						</configuration>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
