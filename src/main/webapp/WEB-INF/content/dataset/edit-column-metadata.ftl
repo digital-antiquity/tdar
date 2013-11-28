@@ -11,8 +11,6 @@
     <h1>Edit Table Metadata for ${dataset.title}</h1>
     <h3>Table ${dataTable.displayName}, ${dataTable.dataTableColumns?size } columns</h3>
 
-
-
 <#if dataTable.dataTableColumns?has_content>
 
 <!--TODO: .container sets content width, it should be outside of grid layout  (or a grid-layout parent) --> 
@@ -442,16 +440,19 @@ function registerCheckboxInfo() {
     } else {
       codingInfo.show();
       ontologyInfo.hide();
-    }        
+    }
 
     if (val == "MEASUREMENT") {
        measurementInfo.show();
     } else {
        measurementInfo.hide();
     }
-
-    square.removeClass();
-
+    
+    // this is supposed to remove all classes on the square, but it's not working.
+    // see: http://bugs.jqueryui.com/ticket/9015
+    // square.removeClass();
+    // so we go for the less subtle
+    square.removeAttr('class');
     square.addClass("columnSquare");
 
     
