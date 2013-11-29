@@ -907,10 +907,11 @@ var _sortFilesAlphabetically= function() {
 
     }
 
+    // expand those nodes where children are selected
     var _switchLabel = function(field, type) {
         // console.debug('_switchLabel('+field+','+type+')');
         $("label",field).text(field.attr(type));
-    }
+    };
 
     var _toggleDiv = function() {
         $(this).next().slideToggle('slow');
@@ -1092,16 +1093,6 @@ var _sortFilesAlphabetically= function() {
     }
 
      */
-    // expand those nodes where children are selected
-    function _switchLabel(field, type) {
-        var label = "#" + $(field).attr('id') + '-label';
-        if ($(field).attr(type) != undefined && $(label) != undefined) {
-            $(label).text($(field).attr(type));
-        }
-    }
-
-
-
 
     /*
     function showTooltip(x, y, contents) {
