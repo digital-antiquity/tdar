@@ -84,18 +84,18 @@ TDAR.maps = function() {
 
         var map = new google.maps.Map(mapDiv, mapOptions);
 
-        if (_defaults.isGeoLocationToBeUsed && navigator.geolocation) {
+        $mapDiv.data("gmap", map);
+        var doUseGeolocation = true;
+        if(inputContainer) {
+            doUseGeolocation = !_setupLatLongBoxes(mapDiv, inputContainer);
+        }
+		if (doUseGeolocation && _defaults.isGeoLocationToBeUsed && navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function(position) {
 				var initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-				map.setCenter(initialLocation);
+				$(mapDiv).data("gmap").setCenter(initialLocation);
 			});
 		}
-
-        $mapDiv.data("gmap", map);
-
-        if(inputContainer) {
-            _setupLatLongBoxes(mapDiv, inputContainer);
-        }
+        
         
         //indicate the map is ready and dom elements loaded (we wrap this because the google.maps api may not be available to the listener at time of call)
         google.maps.event.addListenerOnce(map, 'idle', function(){
@@ -117,6 +117,7 @@ TDAR.maps = function() {
     //private: look for resource latlongboxes and draw rectangles if found.
     var _setupLatLongBoxes = function(mapDiv, inputContainer){
     	'use strict';
+    	var result = false;
         var style = _defaults.rectStyleOptions.RESOURCE;
         var gmap = $(mapDiv).data("gmap");
         
@@ -128,17 +129,16 @@ TDAR.maps = function() {
             
             var rect = _addBound(mapDiv, style, lat1, lng1, lat2, lng2);
             if (rect) {
+            	//pan/zoom the map to the rect 
                 gmap.fitBounds(rect.getBounds());
+                gmap.panToBounds(rect.getBounds());
+                $(mapDiv).data("resourceRect", rect);
+                result = true;
             }
-            //pan/zoom the 
         };
-        
-        $(mapDiv).data("resourceRect", rect);
-        
-        
         //TODO: draw a rect for parent project (but don't pan/zoom to it)
-
         //TODO: add "snap back" control, for when the user pans/zooms away from resource bounds
+        return result;
     };
 
     //private: add rect to map, returns: google.maps.Rectangle
