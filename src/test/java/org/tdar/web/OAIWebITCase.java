@@ -54,7 +54,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             indexed = true;
         }
         // establish namespace bindings for the XPath tests
-        HashMap<String, String> namespaceBindings = new HashMap();
+        HashMap<String, String> namespaceBindings = new HashMap<>();
         namespaceBindings.put("oai", "http://www.openarchives.org/OAI/2.0/");
         namespaceBindings.put("oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/");
         namespaceBindings.put("dc", "http://purl.org/dc/elements/1.1/");
