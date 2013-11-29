@@ -96,6 +96,7 @@ TDAR.maps = function() {
 					$(mapDiv).data("gmap").setCenter(initialLocation);
 				}, 
 				function errorCallback(error) {
+					// error codes can be found at: http://www.w3.org/TR/geolocation-API/#position_error_interface
 					console.log("couldn't get geolocation. code was: " + error.code);
 				}, 
 				{
