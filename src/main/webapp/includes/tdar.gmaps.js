@@ -90,10 +90,19 @@ TDAR.maps = function() {
             doUseGeolocation = !_setupLatLongBoxes(mapDiv, inputContainer);
         }
 		if (doUseGeolocation && _defaults.isGeoLocationToBeUsed && navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(function(position) {
-				var initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-				$(mapDiv).data("gmap").setCenter(initialLocation);
-			});
+			navigator.geolocation.getCurrentPosition(
+				function(position) {
+					var initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+					$(mapDiv).data("gmap").setCenter(initialLocation);
+				}, 
+				function errorCallback(error) {
+					console.log("couldn't get geolocation. code was: " + error.code);
+				}, 
+				{
+					maximumAge:Infinity,
+					timeout:5000
+				}
+			);
 		}
         
         
