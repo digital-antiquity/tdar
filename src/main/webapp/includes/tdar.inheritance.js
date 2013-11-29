@@ -113,6 +113,7 @@ function _disableSection(idSelector) {
     $('.addAnother, .minus', idSelector).hide();
 }
 
+//default function for enabling an inheritance section
 function _enableSection(idSelector) {
     $(':input', idSelector).prop('disabled', false);
     $('label', idSelector).removeClass('disabled');
@@ -861,13 +862,6 @@ function _enableMap() {
         _resetRepeatable(repeatableSelector, keywords.length);
     };
     
-    //default function for enabling an inheritance section
-    var _enableSection = function (idSelector) {
-        $(':input', idSelector).prop('disabled', false);
-        $('label', idSelector).removeClass('disabled');
-        $('.addAnother, .minus', idSelector).show();
-    };
-
     //wrapper for modal inheritance confirm
     var _confirm = function(msg, okaySelected, cancelSelected) {
         var confirmed = confirm(msg);
