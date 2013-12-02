@@ -1076,44 +1076,6 @@ var _sortFilesAlphabetically= function() {
         $('#textInputDiv').toggle(!showUploadDiv);
     }
 
-    /*
-     * 
-    function personAdded(id) {
-//        console.log("person added " + id);
-        $(".creatorInstitution", "#" + id).hide();
-        $(".creatorPerson", "#" + id).show();
-    }
-
-    function institutionAdded(id) {
-//        console.log("institution added " + id);
-        // hide the person record
-        $(".creatorPerson", "#" + id).hide();
-        $(".creatorInstitution", "#" + id).show();
-    }
-
-     */
-    // expand those nodes where children are selected
-    function _switchLabel(field, type) {
-        var label = "#" + $(field).attr('id') + '-label';
-        if ($(field).attr(type) != undefined && $(label) != undefined) {
-            $(label).text($(field).attr(type));
-        }
-    }
-
-
-
-
-    /*
-    function showTooltip(x, y, contents) {
-        $('<div id="flottooltip">' + contents + '</div>').css({
-            position : 'absolute',
-            display : 'none',
-            top : y + 30,
-            left : x + 5
-        }).appendTo("body").fadeIn(200);
-    }
-    */
-
     function _coordinatesCheckboxClicked(elem) {
 
         $('#explicitCoordinatesDiv').toggle(elem.checked);
