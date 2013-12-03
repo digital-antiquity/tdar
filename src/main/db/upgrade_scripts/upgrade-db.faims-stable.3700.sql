@@ -1,6 +1,7 @@
 -- mpaulo 12/01/2013
 -- upgrade script for faims stable, first production release.
--- 
+-- NB: to be run as the tdar user!
+
 -- add sensory data records to the dataset join-table
 insert into dataset(id) select id from sensory_data sd where not exists (select * from dataset ds where ds.id = sd.id);
 
