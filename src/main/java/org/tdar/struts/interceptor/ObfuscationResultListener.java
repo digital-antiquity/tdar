@@ -63,10 +63,12 @@ public class ObfuscationResultListener implements PreResultListener {
         } catch (Exception e) {
             // if the session is already closed, then we don't want to actually worry about session closed errors
             // if the session is not closed, then we probably have a real error here
-            logger.error("error durring obfuscation",e);
             if (sessionSecurityInterceptor != null && !sessionSecurityInterceptor.isSessionClosed()) {
+                logger.error("error durring obfuscation",e);
                 invocation.setResultCode("error");
-            } 
+            } else {
+                logger.info("session closed during obfuscation attempt - error message: " + e.getMessage());
+            }
         }
     }
 
