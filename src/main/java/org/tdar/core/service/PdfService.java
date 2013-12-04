@@ -219,6 +219,7 @@ public class PdfService implements Serializable {
                 cursorPositionFromBottom);
 
         if (StringUtils.isNotBlank(description)) {
+            cursorPositionFromBottom = writeOnPage(content, "", FontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
             cursorPositionFromBottom = writeLabelPairOnPage(content, "Note: ", description, FontHelper.HELVETICA_TEN_POINT,
                     LEFT_MARGIN,
                     cursorPositionFromBottom);
