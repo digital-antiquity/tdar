@@ -9,8 +9,12 @@ vim:sts=2:sw=2:
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-  <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <bean id="tdarHibernateInterceptor" class="org.tdar.core.dao.TdarHibernateInterceptor">
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 <!--     <property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration"/> -->
+    <property name="entityInterceptor" ref="tdarHibernateInterceptor" />
     <property name="packagesToScan">
       <list>
         <value>org.tdar.core.bean</value>
