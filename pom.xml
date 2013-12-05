@@ -2,13 +2,13 @@
 <!-- $Id$ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<version>10-JAR</version>
+	<version>11-KNAP</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
 		<struts2.version>2.3.15.3</struts2.version>
-		<hibernate.version>4.2.7.Final</hibernate.version>
+		<hibernate.version>4.2.8.Final</hibernate.version>
 		<hibernate.search.version>4.4.0.Final</hibernate.search.version>
 		<spring.framework.version>3.2.4.RELEASE</spring.framework.version>
 		<spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
