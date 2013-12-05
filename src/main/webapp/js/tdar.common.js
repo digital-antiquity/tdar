@@ -1145,6 +1145,7 @@ var _sortFilesAlphabetically= function() {
     }
     */
 
+
     function _coordinatesCheckboxClicked(elem) {
 
         $('#explicitCoordinatesDiv').toggle(elem.checked);

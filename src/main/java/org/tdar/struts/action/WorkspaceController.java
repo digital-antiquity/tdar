@@ -144,8 +144,10 @@ public class WorkspaceController extends AuthenticationAware.Base {
                     getDataIntegrationService().updateMappedCodingRules(column);
                 }
             }
-            logger.trace("intermediate: {}",
-                    getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getGenericService().merge(getAuthenticatedUser())));
+            if (logger.isTraceEnabled()) {
+                logger.trace("intermediate: {}",
+                        getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getGenericService().merge(getAuthenticatedUser())));
+            }
         } catch (Exception e) {
             addActionErrorWithException(e.getMessage(), e);
             return INPUT;

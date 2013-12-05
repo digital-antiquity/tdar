@@ -65,3 +65,14 @@ create index data_table_column_default_coding_sheet_id_idx on data_table_column(
 create index data_table_column_default_ontology_id_idx on data_table_column(default_ontology_id);
 create index related_comparative_collection_resource_id_idx on related_comparative_collection(resource_id);
 create index source_collection_resource_id_idx on source_collection(resource_id);
+
+-- abrin 12/4/2013 -- adding foreign keys that should have been there
+alter table sensory_data_image
+    add constraint FK_l4o8gyxxc17q6w3g8ew9ivhlh
+    foreign key (sensory_data_id)
+    references sensory_data;
+
+alter table sensory_data_scan
+    add constraint FK_bbetp1cmjicvtydwd0hfepab1
+    foreign key (sensory_data_id)
+    references sensory_data;
