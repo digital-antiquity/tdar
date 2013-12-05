@@ -6,11 +6,13 @@
 <!-- Use this hibernate mapping file when using annotated classes is not an option (e.g. join_table indices) -->
 <hibernate-mapping>
 
+<!-- 
     <database-object>
         <create>create view resource_proxy as (select rp.* , date_created, project_id, inheriting_spatial_information from resource rp left join information_resource ir on rp.id=ir.id)</create>
         <drop>drop index view resource_proxy</drop>
         <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
     </database-object>
+ -->
 
     <!-- join table indices -->
     <database-object>

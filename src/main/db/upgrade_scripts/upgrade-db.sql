@@ -78,5 +78,4 @@ alter table sensory_data_scan
     references sensory_data;
 
 -- abrin 12/5/2013 -- adding view    
-create view resource_proxy as (select rp.* , date_created, project_id, inheriting_spatial_inform
-ation from resource rp left join information_resource ir on rp.id=ir.id);
+create view resource_proxy as (select rp.* , date_created, project_id, inheriting_spatial_information from resource rp left join information_resource ir on rp.id=ir.id);

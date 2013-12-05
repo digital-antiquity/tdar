@@ -41,8 +41,11 @@ import org.tdar.core.bean.entity.ResourceCreator;
 
 @Entity
 @Immutable
-//@Subselect(value = "select rp.* , date_created, project_id, inheriting_spatial_information from resource rp left join information_resource ir on rp.id=ir.id")
-@Table(name="resource_proxy")
+@Subselect(value = "select rp.* , date_created, project_id, inheriting_spatial_information from resource rp left join information_resource ir on rp.id=ir.id")
+//@Table(name="resource_proxy")
+/*
+ * performance wise-it appears that the subselect is faster than the view
+ */
 public class ResourceProxy implements Serializable {
 
     private static final long serialVersionUID = -2574871889110727564L;
@@ -244,7 +247,7 @@ public class ResourceProxy implements Serializable {
     
     @SuppressWarnings("unchecked")
     public <T extends Resource> T generateResource() throws IllegalAccessException, InvocationTargetException, InstantiationException{
-        logger.trace("begin bean generation");
+        logger.debug("begin bean generation: {}", this.getId());
         T res = (T) getResourceType().getResourceClass().newInstance();
         res.getLatitudeLongitudeBoxes().addAll(this.getLatitudeLongitudeBoxes());
         res.getResourceCreators().addAll(this.getResourceCreators());
