@@ -17,18 +17,15 @@ import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 
 import org.apache.log4j.Logger;
+import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaExport.Type;
 import org.hibernate.tool.hbm2ddl.Target;
-import org.hibernate.validator.internal.util.ReflectionHelper;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.util.ReflectionUtils;
-import org.tdar.core.service.ReflectionService;
 
 /**
  * @author john.thompson
@@ -56,6 +53,7 @@ public class SchemaGenerator {
         scanner.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
         scanner.addIncludeFilter(new AnnotationTypeFilter(NamedQuery.class));
         scanner.addExcludeFilter(new AnnotationTypeFilter(Subselect.class));
+        scanner.addExcludeFilter(new AnnotationTypeFilter(Immutable.class));
         String basePackage = "org/tdar/";
         for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
             Class<?> forName = Class.forName(bd.getBeanClassName());
