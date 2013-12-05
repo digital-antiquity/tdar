@@ -15,7 +15,7 @@ section.row.cols {
 
 #map_legend {
 	position: absolute;
-	display: block; //
+	display: block; 
 	width: 300px;
 	height: 1.8em;
 	bottom: 0px;

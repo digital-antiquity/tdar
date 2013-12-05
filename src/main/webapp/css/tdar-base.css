@@ -21,7 +21,7 @@
 
 
 .responsive-tablet .span45 {
-	width:250px; !important;
+	width:250px !important;
 }
 
 body {
@@ -77,7 +77,7 @@ button.tdar-button, submit.tdar-button[type=button] {
 }
 a.button, .tdar-button {
 	font-family: helvetica, arial, sans-serif;
-//	width: 130px;
+/*	width: 130px; */
 	height: 35px;
 	display: inline-block;
 	background: #7a1501;
@@ -238,7 +238,7 @@ header .welcome {
 	top: 11px;
 	right: 0;
 	margin: 0;
-//	margin-right:12px !important;	
+/*	margin-right:12px !important;	*/
 	font-weight: 700;
 	font-size: 11px;
 	color: #999;
@@ -247,10 +247,12 @@ header .welcome {
 	z-index: 200;
 }
 
+/*
 header .welcome a {
-	// padding-right: 13px;
-	// background: url(/images/r4/bg-welcome.png) right 3px no-repeat;
+	 padding-right: 13px;
+	 background: url(/images/r4/bg-welcome.png) right 3px no-repeat;
 }
+*/
 
 header .welcome-drop {
 	position: absolute;
@@ -291,7 +293,7 @@ header .welcome-drop ul {
 
 .hero p {
 	margin: 18px 0;
-//	width: 552px; 
+/*	width: 552px;  */
 	font-weight: 500;
 	font-size: 18px;
 	line-height: 24px;

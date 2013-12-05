@@ -7,8 +7,98 @@ TDAR.namespace("autocomplete");
 TDAR.autocomplete = (function() {
     "use strict";
 
-    var self = {};
+    //when a user creates a record manually instead of choosing a menu-item from the autocomplete dropdown, this module
+    //stores the record in the object cache.  If the user later fills out similar autocomplete fields,   we add
+    //these cached records to the autocomplete dropdown.  This allows the user to save some time in situations where
+    //a new value may appear several times on a form (e.g. a new person record  that should be listed as an 'author',
+    // 'editor', and 'contact'.
+    var _caches = {};
+    function ObjectCache(acOptions) {
+        this.acOptions = acOptions;
+        this.namespace = acOptions.url || "root";
+        this.parentMap = {};
+        this.objectMapper = acOptions.objectMapper || _objectFromAutocompleteParent;
 
+        //_caches[this.namespace] = this;
+    };
+
+    ObjectCache.prototype = {
+        put: function(val) {
+            this.cache.push(val);
+            console.log("adding val to %s cache", this.namespace, val);
+        },
+
+        //register the fields inside this parent as an 'extra record'. When caller invokes getValues(), this class
+        //will generate records based for all the registeredRecords
+        register: function(parentElem) {
+            var self = this,
+                parentId = parentElem.id;
+            //prevent dupe registration
+            if($(parentElem).hasClass("autocomplete-new-record")) {
+                return;
+            }
+
+            $(parentElem).closest(".repeat-row").bind("repeatrowbeforedelete", function(e){
+                self.unregister(parentId);
+                _enable($(parentElem));
+            });
+
+            this.parentMap[parentId] = parentElem;
+
+            $(parentElem).addClass("autocomplete-new-record");
+
+            //if user removes the row then unregister the associated record
+            $(parentElem).bind("remove", function() {
+                self.unregister(parentId);
+            });
+        },
+
+        unregister: function(parentId) {
+            delete this.parentMap[parentId];
+        },
+
+        getValues: function() {
+            //var keys = Object.keys(this.parentMap).sort();
+            var values = [];
+            for(var parentId in this.parentMap) {
+                var elem = this.parentMap[parentId];
+                values.push(this.objectMapper(elem));
+            }
+            return values;
+        },
+
+        search: function(term) {
+            //get current state of the new records;
+            return this.cache;
+        }
+    };
+
+    //return subset of getValues() for any partial matches of term in object[key].  If key not supplied,  search
+    //all fields in each object for a partial match
+    ObjectCache.basicSearch = function(term, key) {
+        var values = this.getValues();
+        var ret = $.grep(values, function(obj) {
+            var keys = Object.keys(obj);
+            if(key) keys = [key];
+            for(var i = 0; i < keys.length; i++) {
+                var val = obj[keys[i]];
+                if(val) {
+                    if(val.toLowerCase().indexOf(term) > -1 ) {
+                        return true;
+                    }
+                }
+            }
+        });
+        return ret;
+    };
+
+    //grab cache for specified url or create one
+    function _getCache(options) {
+        if(!_caches[options.url]) {
+            _caches[options.url] = new ObjectCache(options);
+        }
+        return _caches[options.url];
+    }
 
 function _buildRequestData(element) {
     var data = {};
@@ -20,10 +110,15 @@ function _buildRequestData(element) {
             //                            console.log("autocompleteName: " + $val.attr("autocompleteName") + "==" + $val.val());
         });
     }
-    //    console.log(data);
     return data;
 }
 
+    /**
+     * translate item property values to form fiends contained in a autocompleteParentElement
+     * @param element any .ui-autocomplete-input field contained by the autocompleteParent element
+     * @param item the source object. the function copies the item property values to the input fields under the parent
+     * @private
+     */
 function _applyDataElements(element, item) {
     var $element = $(element);
     if ($element.attr("autocompleteParentElement") != undefined) {
@@ -66,55 +161,6 @@ function _applyDataElements(element, item) {
 
 }
 
-    function _customPersonRender(ul, item) {
-        var htmlDoubleEncode = TDAR.common.htmlDoubleEncode,
-            encProperName = htmlDoubleEncode(item.properName),
-            encEmail = htmlDoubleEncode(item.email),
-            institution = item.institution ? item.institution.name || "" : "";
-
-        //double-encode on custom render
-        var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
-            "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + encProperName + "</span><span class='email'>(" +
-            encEmail + ")</span><br/><span class='institution'>" + htmlDoubleEncode(institution) + "</span></p>";
-        if (item.id == -1 && options.showCreate) {
-            htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
-                "<span class='name'><em>Create a new person record</em></span> </p>";
-        }
-        return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);
-    };
-
-
-
-function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
-    var options = {};
-    options.url = "lookup/person";
-    options.dataPath = "data.people";
-    options.retainInputValueOnSelect = true;
-    options.sortField = 'CREATOR_NAME';
-    options.showCreate = showCreate;
-    options.minLength = 3;
-
-    //unlike insitu we keep the 'term' property because we need it for the new user autocomplete control
-    options.enhanceRequestData = function(requestData) {
-        if (usersOnly) {
-            requestData.registered = true;
-        }
-    };
-
-    options.customRender = function(ul, item) {
-        var obj = $.extend({}, item);
-        obj.addnew = (item.id == -1 && options.showCreate);
-        var $snippet = $(tmpl("template-person-autocomplete-li", obj));
-        $snippet.data("item.autocomplete", item).appendTo(ul);
-        return $snippet;
-    };
-
-    _applyGenericAutocomplete($elements, options);
-}
-
-
-
-
 function _evaluateAutocompleteRowAsEmpty(element, minCount) {
     var req = _buildRequestData($(element));
     var total = 0;
@@ -150,7 +196,48 @@ function _evaluateAutocompleteRowAsEmpty(element, minCount) {
     return false;
 }
 
-function _applyGenericAutocomplete($elements, options) {
+//if user tabs away from autocomplete field instead of selecting valid menu item,  register as new record
+function _registerOnBlur(objectCache, elem) {
+    var parentid = $(elem).attr("autocompleteparentelement");
+    var $parentElem = $(parentid);
+    var $hidden = $parentElem.find("input[type=hidden]").first();
+
+    $parentElem.find(".ui-autocomplete-input").last().one("blur", function() {
+        var hiddenVal = $hidden.val();
+        if((hiddenVal === "" || hiddenVal === "-1") && this.value !== "") {
+            objectCache.register($parentElem.get());
+        }
+    });
+}
+
+function _disable($parent) {
+    //fixme: "disable" function is broken in jquery ui 1.8.23, but jquery 1.9 introduces bootstrap incompatibility - find a workaround
+    //$parent.find(".ui-autocomplete-input").autocomplete("disable");
+    $parent.find(".ui-autocomplete-input").each(function() {
+        $(this).data("autocomplete").disabled = true;
+    });
+}
+
+
+function _enable($parent) {
+    $parent.find(".ui-autocomplete-input").each(function() {
+        $(this).data("autocomplete").disabled = false;
+    });
+}
+
+
+
+function _applyGenericAutocomplete($elements, opts) {
+    var options = $.extend({
+
+        //callback function that returns list of extra items to include in dropdown: function(options, requestData)
+        addCustomValuesToReturn: function(term) {
+            return cache.search(term);
+        }
+    }, opts);
+
+    var cache = _getCache(options);
+
     // if there's a change in the autocomplete, reset the ID to ""
     $elements.change(function() {
         var $element = $(this);
@@ -164,7 +251,7 @@ function _applyGenericAutocomplete($elements, options) {
                 $idElement.val("");
 
             } else {
-                //TODO:  confirm  $element.closest('.autocomplete-id-element') will work for all use cases. 
+                //TODO:  confirm  $element.closest('.autocomplete-id-element') will work for all use cases.
             }
         }
         return true;
@@ -172,7 +259,6 @@ function _applyGenericAutocomplete($elements, options) {
 
     //set allowNew attribute for each element's corresponding 'id' element
     $elements.each(function() {
-
         if (options.showCreate) {
             var $idElement = $($(this).attr("autocompleteIdElement"));
             $idElement.attr("allowNew", "true");
@@ -183,6 +269,12 @@ function _applyGenericAutocomplete($elements, options) {
     var autoResult = $elements.autocomplete({
         source : function(request, response) {
             var $elem = $(this.element);
+
+            //workaround for broken "disable" functionality in jquery-ui 1.8.x
+            if($elem.data("autocomplete").disabled) {
+                response();
+                return;
+            }
 
             //is another ajax request in flight?
             var oldResponseHolder = $elem.data('responseHolder');
@@ -197,6 +289,7 @@ function _applyGenericAutocomplete($elements, options) {
                 };
             }
 
+            // add requestData that's passed from the options
             var requestData = {};
             // add requestData that's passed from the
             // options
@@ -238,6 +331,7 @@ function _applyGenericAutocomplete($elements, options) {
                         responseHolder.callback({});
                         return;
                     }
+
                     // if there's a custom dataMap function, use that, otherwise not
                     if (options.customDisplayMap == undefined) {
                         options.customDisplayMap = function(item) {
@@ -245,35 +339,39 @@ function _applyGenericAutocomplete($elements, options) {
                                 // there is no need to escape this because we're rendering as plain text
                                 item.label = item.name;
                             }
-
                             return item;
                         };
                     }
-                    var values = $.map(eval(options.dataPath), options.customDisplayMap);
-                    // show create function
+
+                    //tdar lookup returns an object that wraps the results - the property with the results is specified by options.dataPath
+                    var dataItems = typeof options.dataPath === "function" ? options.dataPath(data) : data[options.dataPath];
+                    var values = $.map(dataItems, options.customDisplayMap);
 
                     // enable custom data to be pushed onto values
-                    if (options.addCustomValuesToReturn != undefined) {
-                        var extraValues = options.addCustomValuesToReturn(options, requestData);
+                    if (options.addCustomValuesToReturn) {
+                        var extraValues = options.addCustomValuesToReturn(request.term);
                         // could be push, need to test
-                        values = values.concat(extraValues);
+                        if(extraValues) {
+                            values = values.concat(extraValues);
+                        }
                     }
                     console.log(options.dataPath + " autocomplete returned " + values.length);
 
-                    if (options.showCreate != undefined && options.showCreate == true) {
+                    if (options.showCreate) {
                         var createRow = _buildRequestData($elem);
                         createRow.value = request.term;
                         // allow for custom phrasing
-                        if (options.showCreatePhrase != undefined) {
+                        if (options.showCreatePhrase) {
                             createRow.label = "(" + options.showCreatePhrase + ": " + request.term + ")";
                         }
                         createRow.id = -1;
+                        createRow.isNewItem = true;
+                        createRow.showCreate = true;
                         values.push(createRow);
                     }
                     responseHolder.callback(values);
                 },
                 complete : function() {
-
                     $elem.removeData('responseHolder');
                 }
             };
@@ -281,9 +379,6 @@ function _applyGenericAutocomplete($elements, options) {
         },
         minLength : options.minLength || 0,
         select : function(event, ui) {
-            // 'this' is the input box element.
-//            console.log(event.target);
-  //          console.log(ui);
             var $elem = $(event.target);
             _applyDataElements(this, ui.item);
 
@@ -293,6 +388,14 @@ function _applyGenericAutocomplete($elements, options) {
                 responseHolder.callback();
                 responseHolder.callback = function() {
                 };
+            }
+
+            //if user selects 'create new' option, add it to the new item cache and stop trying to find matches.
+            if(ui.item.isNewItem) {
+                var $parent = $($elem.attr("autocompleteparentelement"));
+                cache.register($parent.get());
+                _disable($parent);
+
             }
         },
         open : function() {
@@ -316,6 +419,31 @@ function _applyGenericAutocomplete($elements, options) {
             $(elem).data("autocomplete")._renderItem = options.customRender;
         });
     }
+
+    $elements.filter("[autocompleteparentelement]").each(function(){
+        _registerOnBlur(cache, this);
+    });
+
+
+  //if autocomplete is in a repeatable, register if they clicked 'addnew' after filling out a transient record
+  var repeatables = [];
+  $elements.closest(".repeatLastRow").filter(function(){
+    if(repeatables.indexOf(this) > -1) return false;
+    repeatables.push(this);
+    return true;
+  });
+  $(repeatables).on("repeatrowadded", function(e, parentElem, cloneElem, idxOfNewRow, originalElem){
+    $(originalElem).find("[autocompleteparentelement]").filter(":visible").each(function(){
+      var elem = this;
+      var parentid = $(elem).attr("autocompleteparentelement");
+      var $parentElem = $(parentid);
+      var id = $parentElem.find("input[type=hidden]").first().val();
+      if(id === "-1")  {
+        cache.register(parentElem[0]);
+      }
+    });
+  });
+
 };
 
 function _applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
@@ -325,13 +453,41 @@ function _applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
         $.extend(requestData, extraData);
     };
 
-    options.dataPath = "data.items";
+    options.dataPath = "items";
     options.sortField = 'LABEL';
     options.showCreate = newOption;
     options.showCreatePhrase = "Create a new keyword";
     options.minLength = 2;
     _applyGenericAutocomplete($(selector), options);
 }
+
+function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
+    var options = {
+        url: "lookup/person",
+        dataPath: "people",
+        retainInputValueOnSelect: true,
+        showCreate: showCreate,
+        minLength: 3,
+        customRender: function(ul, item) {
+            var obj = $.extend({}, item);
+            obj.addnew = (item.id == -1 && options.showCreate);
+            var $snippet = $(tmpl("template-person-autocomplete-li", obj));
+            $snippet.data("item.autocomplete", item).appendTo(ul);
+            return $snippet;
+        },
+        requestData:  {
+            registered: usersOnly
+        },
+        objectMapper: function(parentElem) {
+            var obj = _objectFromAutocompleteParent(parentElem)
+            obj.properName = obj.firstName + " " + obj.lastName;
+            return obj;
+        }
+    };
+    _applyGenericAutocomplete($elements, options);
+    _getCache(options).search = ObjectCache.basicSearch;
+}
+
 
 function _applyCollectionAutocomplete($elements, options, extraData) {
     //FIXME: HACK: this is a bandaid.  need better way to not bind multiple autocompletes
@@ -347,7 +503,7 @@ function _applyCollectionAutocomplete($elements, options, extraData) {
     };
 
     defaults.url = "lookup/collection";
-    defaults.dataPath = "data.collections";
+    defaults.dataPath = "collections";
     defaults.sortField = 'TITLE';
     defaults.showCreate = false;
     if (defaults.showCreate) {
@@ -372,7 +528,7 @@ function _displayResourceAutocomplete(item) {
 function _applyResourceAutocomplete($elements, type) {
     var options = {};
     options.url = "lookup/resource";
-    options.dataPath = "data.resources";
+    options.dataPath = "resources";
     options.sortField = 'TITLE';
     options.enhanceRequestData = function(requestData) {
         if (requestData["subCategoryId"] != undefined && requestData["subCategoryId"] != '' && requestData["subCategoryId"] != -1) {
@@ -407,7 +563,7 @@ function _applyInstitutionAutocomplete($elements, newOption) {
 
     var options = {};
     options.url = "lookup/institution";
-    options.dataPath = "data.institutions";
+    options.dataPath = "institutions";
     options.sortField = 'CREATOR_NAME';
     options.enhanceRequestData = function(requestData) {
         requestData.institution = requestData.term;
@@ -439,6 +595,24 @@ function _applyComboboxAutocomplete($elements, type) {
             });
     });
 }
+
+/**
+ * return an object from any autocomplete input elements inside the specified parentElem elment. This function
+ * maps every .autocomplete-ui-input  into a property of the returned object.  The property name is based on the
+ * value of the "autocompletename" attribute of the input element (or the value of the 'name' attribute, if no
+ * autocompletename attribute specified.
+ *
+ * @param parentElem
+ */
+function _objectFromAutocompleteParent(parentElem) {
+    var obj = {};
+    $(parentElem).find(".ui-autocomplete-input").each(function(idx) {
+        var key = $(this).attr("autocompletename") || this.name;
+        obj[key] = this.value;
+    });
+    return obj;
+}
+
 return {
     applyPersonAutoComplete: _applyPersonAutoComplete,
     evaluateAutocompleteRowAsEmpty: _evaluateAutocompleteRowAsEmpty,
@@ -446,6 +620,7 @@ return {
     applyCollectionAutocomplete: _applyCollectionAutocomplete,
     applyResourceAutocomplete: _applyResourceAutocomplete,
     applyInstitutionAutocomplete: _applyInstitutionAutocomplete,
-    applyComboboxAutocomplete: _applyComboboxAutocomplete
+    applyComboboxAutocomplete: _applyComboboxAutocomplete,
+    objectFromAutocompleteParent: _objectFromAutocompleteParent
     };
 })();

@@ -5,14 +5,27 @@ TDAR.namespace("repeatrow");
 
 TDAR.repeatrow = function() {
     "use strict";
-    
+
+  //FIXME: use jsdoc notation
     /**
      *  public: register a repeat-row element
      *  This has the effect of adding a "add another"  button after each matched element.  Clicking the add another button clones 
      *  the element specified by options.rowSelector, and places it after that element in the dom.
-     *  
+     *  options:
+     *    addAnother:  button label text for the 'add new' button (default: "add another"),
+     *    rowSelector: selector used to identify the element that the repeatable will clone when user clicks on
+     *                  'add another' button, relative to parentElem. In other words, $(options.rowSelector, parentElem),
+     *                  (default: "> div.controls, .repeat-row").
+     *
      *  events: 
-     *      -"repeatrowadded": function(e, parentElement, clonedElement)
+     *      -"repeatrowadded": function(e, parentElem, cloneElem, idxOfNewRow, originalElem )
+     *        e the event object
+     *        parentElem the row container
+     *        cloneElem  the cloned element
+     *        cloneIdx  index of cloned row
+     *        originalElem element that was cloned (as determined by options.rowSelector)
+   *
+     *
      */
 
     var _registerRepeatable = function(selector, options) {
@@ -35,8 +48,8 @@ TDAR.repeatrow = function() {
             $('button', $button).click(function() {
                 var element = $(_options.rowSelector, parentElement).last();
                 var $clone = _cloneSection(element, parentElement);
-                var idx = $(parentElement).find('.repeat-row').length;
-                $(parentElement).trigger("repeatrowadded", [parentElement, $clone[0], idx]);
+                var idx = $(parentElement).find('.repeat-row').length;  //FIXME: shouldn't this be length -1?
+                $(parentElement).trigger("repeatrowadded", [parentElement, $clone[0], idx, element]);
 
                 // set focus on the first input field (or designate w/ repeatrow-focus class).
                 $("input[type=text], textarea, .repeatrow-focus", $clone).filter(":visible:first").focus();
@@ -52,6 +65,7 @@ TDAR.repeatrow = function() {
     var _registerDeleteButtons = function(parentElement) {
         $(parentElement).on("click", ".repeat-row-delete", function(e){
             var rowElem = $(this).parents(".repeat-row")[0];
+            $(rowElem).trigger("repeatrowbeforedelete");
             TDAR.repeatrow.deleteRow(rowElem);
             $(parentElement).trigger('repeatrowdeleted');
         });
@@ -154,15 +168,17 @@ TDAR.repeatrow = function() {
         // allow html5 polyfills for watermarks to be added.
         TDAR.common.applyWatermarks($element);
     };
-    
-    
+
+    //delete closest .repeat-row element, return true if deleted, false if input elements were cleared instead.
     var _deleteRow = function(elem) {
         var $row = $(elem).closest(".repeat-row");
-        if($row.siblings(".repeat-row").length > 0) {
+        var bDelete = $row.siblings(".repeat-row").length > 0;
+        if(bDelete) {
             $row.remove();
         } else {
             _clearInputs($row);
         }
+        return bDelete;
     };
     
     

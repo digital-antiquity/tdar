@@ -1380,42 +1380,42 @@ $(function() {
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()" autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
-            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
-                autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
-                name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" 
-                title="${surnameTitle}"
-                 /> 
-            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
-                name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
-                autocompleteIdElement="#${idIdElement}" 
-                autocompleteParentElement="#${rowIdElement}" 
-                 title="${firstnameTitle}" 
-                />
+                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
+                    autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
+                    name="${strutsPrefix}${personPrefix}.lastName" maxlength="255"
+                    title="${surnameTitle}"
+                     />
+                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
+                    name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
+                    autocompleteIdElement="#${idIdElement}"
+                    autocompleteParentElement="#${rowIdElement}"
+                     title="${firstnameTitle}"
+                    />
 
             <#if includeRole || includeRights>
-            
-                <#if includeRole>
-                    <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  
-                        cssClass="creator-role-select span2" />
-                <#else>
-                    <@s.select theme="tdar" cssClass="creator-rights-select span2" name="${strutsPrefix}.generalPermission" emptyOption='false' 
-                        listValue='label' list='%{availablePermissions}' disabled=isDisabled />
-                    <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
-                    <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
-                </#if>
+                    <#if includeRole>
+                        <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles
+                            cssClass="creator-role-select span2" />
+                    <#else>
+                        <@s.select theme="tdar" cssClass="creator-rights-select span2" name="${strutsPrefix}.generalPermission" emptyOption='false'
+                            listValue='label' list='%{availablePermissions}' disabled=isDisabled />
+                        <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
+                        <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
+                    </#if>
             <#else>
                 <span class="span2">&nbsp;</span> 
             </#if>
         </div>
         <div class="controls-row">
-        <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
-            autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
-            name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
-        <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
-            autocompleteIdElement="#${idIdElement}" 
-            autocompleteName="institution" 
-            autocompleteParentElement="#${rowIdElement}"
-            name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
+                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
+                    autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
+                    name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
+                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
+                    autocompleteIdElement="#${idIdElement}"
+                    autocompleteName="institution"
+                    autocompleteParentElement="#${rowIdElement}"
+                    name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
+
         </div>
     </div>
 </#macro>
@@ -1515,7 +1515,7 @@ $(function() {
             <div>
                 <span class="name">{%=_e(o.properName)%}</span>
                 {% if(o.email)  %}<span class="email">({%=_e(o.email)%})</span>{%
-                %}{% if(o.institution) { %}, <span class="institution">{%=_e(o.institution.name)%}</span> {% } %}
+                %}{% if(o.institution && o.institution.name) { %}, <span class="institution">{%=_e(o.institution.name)%}</span> {% } %}
                 {% if(o.addnew) { %}<em>Create a new person record</em> {% } %}
             </div>
         </a>

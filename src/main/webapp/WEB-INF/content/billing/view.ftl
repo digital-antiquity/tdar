@@ -160,6 +160,8 @@
 <thead>
     <tr>
         <th>Id</th>
+        <th>Date Created</th>
+        <th>Date Updated</th>
         <th>Status</th>
         <th>Name</th>
         <th>Resource Type</th>
@@ -179,6 +181,8 @@
 
 <tr class="${stat} ${resource.status}">
     <td>${resource.id?c}</td>
+    <td>${resource.dateCreated}</td>
+    <td>${resource.dateUpdated}</td>
 	<td>${resource.status.label}</td>
     <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></td>
     <td>${resource.resourceType.label}</td>

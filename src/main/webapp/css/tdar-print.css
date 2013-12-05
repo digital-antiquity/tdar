@@ -1,8 +1,9 @@
 @media print {
-	.inline-menu,.subnav, {
+	.inline-menu,.subnav {
 		display: none;
 		visibility: hidden;
 	}
+
 	header {
 		border-bottom: 2px solid #444;
 	}
