@@ -300,7 +300,6 @@ public class SearchService {
         }
         
         if (CollectionUtils.isNotEmpty(ids)) {
-            logger.info("ids:{}",ids);
             toReturn.clear();
             for (Resource r : datasetDao.findSkeletonsForSearch(ids.toArray(new Long[0])) ) {
                 if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() && Persistable.Base.isNullOrTransient(user)) {
