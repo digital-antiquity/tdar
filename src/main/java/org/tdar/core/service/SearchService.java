@@ -270,7 +270,14 @@ public class SearchService {
             Float score = (Float) obj[projections.indexOf(FullTextQuery.SCORE)];
             if (CollectionUtils.isEmpty(resultHandler.getProjections())) { // if we have no projection, do raw cast, we should have inflated object already
                 p = (Indexable) obj[0];
+                if (p == null) {
+                    logger.warn("Indexable persistable is null!");
+                }
             } else {
+                /*
+                 * if we have the ID in the projection list, then we're going to use the new resource projection which can be twice as fast by not binding to
+                 * 40+ tables.
+                 */
                 if (CollectionUtils.isNotEmpty(projections) && projections.contains("id")) {
                     Long id = (Long)obj[projections.indexOf("id")];
                     ids.add(id);
@@ -278,9 +285,7 @@ public class SearchService {
                     p = createSpareObjectFromProjection(resultHandler, projections, obj, p);
                 }
             }
-            if (p == null) {
-                logger.warn("Indexable persistable is null!");
-            } else {
+            if (p != null) {
                 if (resultHandler.isDebug()) {
                     Explanation ex = (Explanation) obj[projections.indexOf(FullTextQuery.EXPLANATION)];
                     p.setExplanation(ex);

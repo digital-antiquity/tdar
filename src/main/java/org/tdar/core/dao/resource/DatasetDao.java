@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -222,13 +223,18 @@ public class DatasetDao extends ResourceDao<Dataset> {
         logger.info("query took: {} ", System.currentTimeMillis() - time);
         time = System.currentTimeMillis();
         List<Resource> toReturn = new ArrayList<>();
+        Map<Long, Resource> resultMap = new HashMap<>();
         for (ResourceProxy prox : results) {
             try {
-                toReturn.add(prox.generateResource());
+                resultMap.put(prox.getId(), prox.generateResource());
             } catch (Exception e) {
                 logger.error("{}", e);
             }
         }
+        for (Long id : ids) {
+            toReturn.add(resultMap.get(id));
+        }
+        
         logger.info("generation took: {} {}", System.currentTimeMillis() - time,toReturn.size());
         return toReturn;
     }
