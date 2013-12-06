@@ -491,6 +491,16 @@ public abstract class InformationResource extends Resource {
         return files;
     }
 
+    @JSONTransient
+    @XmlTransient
+    public InformationResourceFile getFirstActiveInformationResourceFile() {
+        Set<InformationResourceFile> files = getActiveInformationResourceFiles();
+        if (CollectionUtils.isNotEmpty(files)){
+            return files.iterator().next();
+        }
+        return null;
+    }
+
     public void setInformationResourceFiles(Set<InformationResourceFile> informationResourceFiles) {
         this.informationResourceFiles = informationResourceFiles;
     }

@@ -28,6 +28,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.CodingSheetDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
@@ -70,7 +71,9 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
          * 1) 1 file uploaded (csv | tab | xls)
          * 2) tab entry into form (2 files uploaded 1 archival, 2 not)
          */
-
+        if (codingSheet.getActiveInformationResourceFiles().size() > 1) {
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("codingSheetService.tooManyFiles"));
+        }
         InformationResourceFileVersion toProcess = files.iterator().next();
         if (files.size() > 1) {
             for (InformationResourceFileVersion file : files) {
@@ -87,7 +90,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
             ctx.getExceptions().add(new ExceptionWrapper(e.getMessage(), ExceptionUtils.getFullStackTrace(e)));
             ctx.setErrorFatal(true);
             ctx.setProcessedSuccessfully(false);
-            getDao().saveOrUpdate(toProcess.getInformationResourceFile());
+            getDao().saveOrUpdate(codingSheet.getFirstActiveInformationResourceFile());
         }
 
     }

@@ -20,6 +20,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
@@ -72,8 +73,9 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(FileType.FILE_ARCHIVE, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(FileArchiveWorkflow.class, workflow.getClass());
-        messageService.sendFileProcessingRequest(workflow, originalVersion);
-        InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
+        InformationResourceFile informationResourceFile = resourceService.findInformationResourceFileByFileVersionId(originalVersion.getId());
+        InformationResource resource = resourceService.findInformationResourceByFileVersionId(originalVersion.getId());
+        messageService.sendFileProcessingRequest(workflow, resource, informationResourceFile, originalVersion);
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
 
         boolean seen = false;

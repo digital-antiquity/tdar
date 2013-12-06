@@ -55,7 +55,7 @@ public class CodingSheetServiceITCase extends AbstractControllerITCase {
         irFile.setId(100L);
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setFilename(content.getName());
-        version.setInformationResourceFile(irFile);
+        version.setInformationResourceFileId(irFile.getId());
         version.setInformationResourceId(100L);
         version.setFileVersionType(VersionType.UPLOADED_TEXT);
         TdarConfiguration.getInstance().getFilestore().store(content, version);

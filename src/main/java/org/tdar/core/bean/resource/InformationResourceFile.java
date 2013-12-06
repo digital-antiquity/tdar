@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -14,10 +15,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -170,9 +173,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private Integer numberOfParts = 0;
 
     // FIXME: cascade "delete" ?
-    @OneToMany(mappedBy = "informationResourceFile", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
-    @Sort(type = SortType.NATURAL)
-    private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH }, orphanRemoval=true)
+    @JoinColumn(nullable = false, updatable = false, name = "information_resource_file_id")
+    private Set<InformationResourceFileVersion> informationResourceFileVersions = new HashSet<InformationResourceFileVersion>();
 
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
@@ -234,12 +237,11 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     @XmlElementWrapper(name = "informationResourceFileVersions")
     @XmlElement(name = "informationResourceFileVersion")
-    public SortedSet<InformationResourceFileVersion> getInformationResourceFileVersions() {
+    public Set<InformationResourceFileVersion> getInformationResourceFileVersions() {
         return informationResourceFileVersions;
     }
 
-    public void setInformationResourceFileVersions(
-            SortedSet<InformationResourceFileVersion> informationResourceFileVersions) {
+    public void setInformationResourceFileVersions(Set<InformationResourceFileVersion> informationResourceFileVersions) {
         this.informationResourceFileVersions = informationResourceFileVersions;
     }
 

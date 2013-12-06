@@ -42,6 +42,7 @@ import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AbstractConfigurableService;
 import org.tdar.struts.action.search.ReservedSearchParameters;
@@ -72,6 +73,9 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     @Autowired
     private PersonDao personDao;
 
+    @Autowired
+    DatasetDao datasetDao;
+    
     @Override
     public boolean isServiceRequired() {
         return true;
@@ -491,7 +495,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public boolean canDownload(InformationResourceFileVersion irFileVersion, Person person) {
         if (irFileVersion == null)
             return false;
-        return canDownload(irFileVersion.getInformationResourceFile(), person);
+        InformationResourceFile irFile = datasetDao.findInformationResourceFileByFileVersionId(irFileVersion.getId());
+        return canDownload(irFile, person);
     }
 
     /*

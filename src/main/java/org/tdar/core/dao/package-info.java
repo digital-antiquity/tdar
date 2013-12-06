@@ -120,8 +120,8 @@
             query = "FROM DataTableColumn dtc WHERE dtc.dataTable.dataset.id=:datasetId AND dtc.defaultOntology IS NOT NULL ORDER BY dtc.id"),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME,
-            query = "SELECT file from InformationResourceFile as file, InformationResourceFileVersion as version where file.informationResource = :resource and "
-                    + "file=version.informationResourceFile and file.latestVersion=version.version and version.filename = :filename"
+            query = "SELECT file from InformationResource ir join ir.informationResourceFiles as file join file.informationResourceFileVersions as version where ir = :resource and "
+                    + " version.filename = :filename"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD,
@@ -272,7 +272,7 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_DELETE_INFORMATION_RESOURCE_FILE_DERIVATIVES,
-            query = "delete from InformationResourceFileVersion version where version.informationResourceFile.id=:informationResourceFileId and version.fileVersionType in (:derivativeFileVersionTypes)"
+            query = "delete from InformationResourceFileVersion version where version in (select version from InformationResourceFile irf join irf.informationResourceFileVersions as version where irf.id=:informationResourceFileId and version.fileVersionType in (:derivativeFileVersionTypes))"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_RESOURCES_IN_PROJECT_WITH_STATUS,

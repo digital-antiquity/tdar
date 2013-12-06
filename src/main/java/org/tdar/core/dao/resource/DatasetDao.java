@@ -27,6 +27,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceProxy;
@@ -247,6 +248,20 @@ public class DatasetDao extends ResourceDao<Dataset> {
         List<Resource> results = (List<Resource>)query.list();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
         return results;
+    }
+
+    public InformationResourceFile findInformationResourceFileByFileVersionId(Long id) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("select file from InformationResourceFile file join file.informationResourceFileVersions as version where version.id=:id");
+        query.setParameter("id", id);
+        return (InformationResourceFile)query.uniqueResult();
+    }
+
+    public InformationResource findInformationResourceByFileVersionId(Long id) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("select ir from InformationResource ir join ir.informationResourceFiles as file join file.informationResourceFileVersions as version where version.id=:id");
+        query.setParameter("id", id);
+        return (InformationResource)query.uniqueResult();
     }
 
 }

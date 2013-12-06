@@ -80,11 +80,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         // genericDao.saveOrUpdate(resource);
         getDao().saveOrUpdate(resource);
         irFile.setInformationResource(resource);
-        proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(irFile, proxy));
+        proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(resource, irFile, proxy));
         setInformationResourceFileMetadata(irFile, proxy);
         for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
             logger.debug("Creating new version {}", additionalVersion);
-            createVersionMetadataAndStore(irFile, additionalVersion);
+            createVersionMetadataAndStore(resource, irFile, additionalVersion);
         }
         getDao().saveOrUpdate(irFile);
         resource.add(irFile);
@@ -175,6 +175,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
             if (!irFiles.contains(file) && !file.isDeleted()) {
                 InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
+                latestUploadedVersion.setInformationResourceFileId(file.getId());
+                latestUploadedVersion.setInformationResourceId(resource.getId());
+
                 latestUploadedVersion.setTransientFile(filestore.retrieveFile(latestUploadedVersion));
                 filesToProcess.add(latestUploadedVersion);
             }
@@ -191,14 +194,17 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
 
         if (resource.getResourceType().isCompositeFilesEnabled()) {
-            analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
+            analyzer.processFile(resource, resource.getFirstActiveInformationResourceFile(), filesToProcess.toArray(new InformationResourceFileVersion[0]));
         } else {
             for (InformationResourceFileVersion version : filesToProcess) {
                 if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
+                    version.setInformationResourceFileId(datasetDao.findInformationResourceFileByFileVersionId(version.getId()).getId());
+                    version.setInformationResourceId(resource.getId());
                     // If we are re-processing, the transient file might not exist.
                     version.setTransientFile(filestore.retrieveFile(version));
                 }
-                analyzer.processFile(version);
+                InformationResourceFile irf = datasetDao.findInformationResourceFileByFileVersionId(version.getId());
+                analyzer.processFile(resource, irf, version);
             }
         }
     }
@@ -256,7 +262,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                     addInformationResourceFile(informationResource, irFile, proxy);
                     break;
                 case ADD_DERIVATIVE:
-                    createVersionMetadataAndStore(irFile, proxy);
+                    createVersionMetadataAndStore(informationResource, irFile, proxy);
                     break;
                 case DELETE:
                     irFile.markAsDeleted();
@@ -343,6 +349,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 continue;
             }
             InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
+            original.setInformationResourceFileId(irFile.getId());
+            original.setInformationResourceId(ir.getId());
             original.setTransientFile(filestore.retrieveFile(original));
             latestVersions.add(original);
             Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
@@ -372,7 +380,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * Creates an @link InformationResourceFile and adds appropriate metadata and stores the file in the filestore.
      */
     @Transactional(readOnly = false)
-    private InformationResourceFileVersion createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
+    private InformationResourceFileVersion createVersionMetadataAndStore(InformationResource informationResource, InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
         String filename = BaseFilestore.sanitizeFilename(fileProxy.getFilename());
         if (fileProxy.getFile() == null || !fileProxy.getFile().exists()) {
             throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("fileprocessing.error.not_found",fileProxy.getFilename()));
@@ -383,6 +391,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
 
         irFile.addFileVersion(version);
+        version.setInformationResourceFileId(irFile.getId());
+        version.setInformationResourceId(informationResource.getId());
         filestore.store(fileProxy.getFile(), version);
         version.setTransientFile(fileProxy.getFile());
         getDao().save(version);

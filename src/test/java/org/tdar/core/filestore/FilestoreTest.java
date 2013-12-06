@@ -177,7 +177,25 @@ public class FilestoreTest {
         version.setVersion(VERSION);
         version.setId(INFORMATION_RESOURCE_FILE_VERSION_ID);
         version.setFilename(name);
-        version.setInformationResourceFile(irFile);
+        version.setInformationResourceFileId(irFile.getId());
+        version.setInformationResourceId(ir.getId());
+        version.setFileVersionType(VersionType.UPLOADED_ARCHIVAL);
+        return version;
+    }
+    private InformationResourceFileVersion generateVersion(String name, Integer latestVersion) {
+        Document ir = new Document();
+        ir.setId(INFORMATION_RESOURCE_ID);
+        InformationResourceFile irFile = new InformationResourceFile();
+        irFile.setLatestVersion(latestVersion);
+        irFile.setId(INFORMATION_RESOURCE_FILE_ID);
+        irFile.setInformationResource(ir);
+        @SuppressWarnings("deprecation")
+        InformationResourceFileVersion version = new InformationResourceFileVersion();
+        version.setVersion(VERSION);
+        version.setId(INFORMATION_RESOURCE_FILE_VERSION_ID);
+        version.setFilename(name);
+        version.setInformationResourceFileId(irFile.getId());
+        version.setInformationResourceId(ir.getId());
         version.setFileVersionType(VersionType.UPLOADED_ARCHIVAL);
         return version;
     }
@@ -218,8 +236,7 @@ public class FilestoreTest {
     public void testStorageAndRetrievalDeleted() throws IOException {
         cleanup();
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-        InformationResourceFileVersion version = generateVersion(TEST_IMAGE_NAME);
-        version.getInformationResourceFile().setLatestVersion(2);
+        InformationResourceFileVersion version = generateVersion(TEST_IMAGE_NAME,2);
         version.setVersion(2);
         version.setFileVersionType(VersionType.UPLOADED);
         store.store(new File(TEST_IMAGE), version);

@@ -113,19 +113,19 @@ public class WorkflowContextService {
             }
             // setting transient context for evaluation
 
-            orig.setInformationResourceFile(irFile);
+//            orig.setInformationResourceFile(irFile);
 
             // Grab the new derivatives from the context and persist them.
             for (InformationResourceFileVersion version : ctx.getVersions()) {
                 // if the derivative's ID is null, we know that it hasn't been persisted yet, so we save.
                 if (version.getInformationResourceFileId().equals(irFile.getId())) {
-                    version.setInformationResourceFile(irFile);
+//                    version.setInformationResourceFile(irFile);
                     irFile.addFileVersion(version);
                 }
             }
             logger.debug("irFile: {} ", irFile);
             // }
-            orig.setInformationResourceFile(irFile);
+//            orig.setInformationResourceFile(irFile);
             // genericDao.saveOrUpdate(orig);
             irFile.setInformationResource(genericDao.find(InformationResource.class, ctx.getInformationResourceId()));
             irFile.setWorkflowContext(ctx);
@@ -158,11 +158,11 @@ public class WorkflowContextService {
     /**
      * given any InformationResourceFileVersion (for an uploaded file) this will create a workflow context
      */
-    public WorkflowContext initializeWorkflowContext(Workflow w, InformationResourceFileVersion... versions) {
+    public WorkflowContext initializeWorkflowContext(Workflow w, InformationResource resource, InformationResourceFile file, InformationResourceFileVersion... versions) {
         WorkflowContext ctx = new WorkflowContext();
         ctx.getOriginalFiles().addAll(Arrays.asList(versions));
         ctx.setTargetDatabase(tdarDataImportDatabase);
-        final InformationResource informationResource = versions[0].getInformationResourceFile().getInformationResource();
+        final InformationResource informationResource = resource;
         ctx.setResourceType(informationResource.getResourceType());
         ctx.setTransientResource(informationResource.getTransientCopyForWorkflow());
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
@@ -170,7 +170,7 @@ public class WorkflowContextService {
         ctx.setWorkflowClass(w.getClass());
         ctx.setWorkingDirectory(TdarConfiguration.getInstance().getTempDirectory());
         ctx.setXmlService(xmlService);
-        w.initializeWorkflowContext(ctx, versions); // handle any special bits here
+        w.initializeWorkflowContext(ctx, resource, versions); // handle any special bits here
         try {
             if (logger.isTraceEnabled()) {
                 logger.trace(ctx.toXML());
