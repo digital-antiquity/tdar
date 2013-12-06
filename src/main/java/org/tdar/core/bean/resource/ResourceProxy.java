@@ -247,7 +247,7 @@ public class ResourceProxy implements Serializable {
     
     @SuppressWarnings("unchecked")
     public <T extends Resource> T generateResource() throws IllegalAccessException, InvocationTargetException, InstantiationException{
-        logger.debug("begin bean generation: {}", this.getId());
+        logger.trace("begin bean generation: {}", this.getId());
         T res = (T) getResourceType().getResourceClass().newInstance();
         res.getLatitudeLongitudeBoxes().addAll(this.getLatitudeLongitudeBoxes());
         res.getResourceCreators().addAll(this.getResourceCreators());
