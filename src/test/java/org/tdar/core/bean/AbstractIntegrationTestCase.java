@@ -286,7 +286,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         version.setFileVersionType(VersionType.UPLOADED);
         irFile.getInformationResourceFileVersions().add(version);
         genericService.save(irFile);
-        genericService.save(version);
+        version.setInformationResourceFileId(irFile.getId());
+        version.setInformationResourceId(ir.getId());
         filestore.store(f, version);
         return version;
     }

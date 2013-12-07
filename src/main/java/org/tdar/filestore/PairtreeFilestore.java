@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.utils.MessageHelper;
@@ -229,7 +230,7 @@ public class PairtreeFilestore extends BaseFilestore {
         }
         StringBuffer base = new StringBuffer();
         base.append(getResourceDirPath(irID));
-        if (version.getInformationResourceFileId() == null) {
+        if (version.getFileVersionType() != VersionType.RECORD && version.getInformationResourceFileId() == null) {
             throw new TdarRuntimeException(MessageHelper.getMessage("cannot.store.no.file_id"));
         }
         base.append(version.getInformationResourceFileId());

@@ -173,7 +173,8 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private Integer numberOfParts = 0;
 
     // FIXME: cascade "delete" ?
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH }, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+//    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH }, orphanRemoval=true)
     @JoinColumn(nullable = false, updatable = false, name = "information_resource_file_id")
     private Set<InformationResourceFileVersion> informationResourceFileVersions = new HashSet<InformationResourceFileVersion>();
 
