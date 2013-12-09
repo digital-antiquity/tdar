@@ -12,7 +12,7 @@
     "supporting_scripts::amazon_secret_key": "${amazon.secret.key}",
     "supporting_scripts::swift_user_name": "${swift.user.name}",
     "supporting_scripts::swift_password": "${swift.password}",
-    "supporting_scripts::do_write_to_swift": "${swift.do.write.to}"
+    "supporting_scripts::do_write_to_swift": "${swift.do.write.to}",
             
     "nrpe::nagiosservers" : "nagios.vpac.org",
 
