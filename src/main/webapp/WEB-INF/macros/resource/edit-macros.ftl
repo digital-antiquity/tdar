@@ -1261,16 +1261,16 @@ $(function() {
                 </div>
 
             </td>
-        <td>
+        <td style="width:10%">
 
             {%if (file.fileId) { %}
-            <@edit.fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button btn btn-small btn-warning"/>
-            <button type="button" style="display:none; width: 8em; text-align:left" class="btn btn-small btn-warning undo-replace-button" title="Restore Original File">Restore</button>
+            <@fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button btn btn-small btn-warning btn-block"/>
+            <button type="button" style="display:none; text-align:left" class="btn btn-small btn-warning undo-replace-button btn-block" title="Restore Original File">Restore</button>
             {% } %}
 
 
                 <div class="delete">
-                    <button class="btn btn-danger delete-button btn-small" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}" style="width:8em; text-align:left ">
+                    <button class="btn btn-danger delete-button btn-small btn-block" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}" style="text-align:left ">
                         <i class="icon-trash icon-white"></i>
                         <span>Delete</span>
                     </button>

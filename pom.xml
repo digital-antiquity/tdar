@@ -52,18 +52,6 @@
 	</organization>
 
 	<repositories>
-		<repository>
-			<id>maven.lib.asu.edu</id>
-			<name>ASU Libraries Maven2 repository</name>
-			<url>http://maven.lib.asu.edu/maven</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
 			<id>imageJ</id>
 			<name>ImageJ Repository</name>
 			<url>http://maven.imagej.net/content/repositories/releases</url>
@@ -117,11 +105,6 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>
-		<!-- <repository>
-		    <id>maven2-repository.dev.java.net</id>
-		    <name>Java.net repository</name>
-		    <url>http://download.java.net/maven/2</url>
-		</repository> -->
 		<repository>
 			<id>osgeo</id>
 			<name>Open Source Geospatial Foundation Repository</name>
@@ -1447,6 +1430,13 @@
 					<source>1.7</source>
 					<target>1.7</target>
 					<!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> <fork>true</fork> -->
+
+                    <!--
+                        Welcome to Maven World, where 'no' means 'yes' and 'yes' means 'no'!  More info:
+                            https://jira.codehaus.org/browse/MCOMPILER-205
+                            http://jira.codehaus.org/browse/MCOMPILER-209
+                    -->
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
 				</configuration>
 			</plugin>
 			<plugin>
