@@ -69,17 +69,6 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>maven.lib.asu.edu</id>
-			<name>ASU Libraries Maven2 repository</name>
-			<url>http://maven.lib.asu.edu/maven</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
 			<id>imageJ</id>
 			<name>ImageJ Repository</name>
 			<url>http://maven.imagej.net/content/repositories/releases</url>
