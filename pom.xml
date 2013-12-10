@@ -52,6 +52,7 @@
 	</organization>
 
 	<repositories>
+		<repository>
 			<id>imageJ</id>
 			<name>ImageJ Repository</name>
 			<url>http://maven.imagej.net/content/repositories/releases</url>
