@@ -79,7 +79,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         incrementVersionNumber(irFile);
         // genericDao.saveOrUpdate(resource);
         getDao().saveOrUpdate(resource);
-//        irFile.setInformationResource(resource);
+        irFile.setInformationResource(resource);
         proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(resource, irFile, proxy));
         setInformationResourceFileMetadata(irFile, proxy);
         for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
@@ -248,8 +248,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                     logger.error("FileProxy {} {} had no InformationResourceFile.id ({}) set on it", proxy.getFilename(), proxy.getAction(), proxy.getFileId());
                     return;
                 }
-            } else {
-                informationResource.getInformationResourceFiles().add(irFile);
             }
 
             switch (proxy.getAction()) {
@@ -387,7 +385,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         if (fileProxy.getFile() == null || !fileProxy.getFile().exists()) {
             throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("fileprocessing.error.not_found",fileProxy.getFilename()));
         }
-        InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, informationResource, irFile);
+        InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, irFile);
         if (irFile.isTransient()) {
             getDao().saveOrUpdate(irFile);
         }

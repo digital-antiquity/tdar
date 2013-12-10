@@ -120,13 +120,13 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         setInformationResourceFileId(irFileId);
     }
 
-    public InformationResourceFileVersion(VersionType type, String filename, InformationResource ir, InformationResourceFile irFile) {
+    public InformationResourceFileVersion(VersionType type, String filename, InformationResourceFile irFile) {
         setFileVersionType(type);
         setFilename(filename);
         setExtension(FilenameUtils.getExtension(filename));
         setVersion(irFile.getLatestVersion());
         setInformationResourceFileId(irFile.getId());
-        setInformationResourceId(ir.getId());
+        setInformationResourceId(irFile.getInformationResource().getId());
         setDateCreated(new Date());
     }
 

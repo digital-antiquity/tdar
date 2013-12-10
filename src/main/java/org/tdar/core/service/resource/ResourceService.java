@@ -646,8 +646,4 @@ public class ResourceService extends GenericService {
     public InformationResourceFile findInformationResourceFileByFileVersionId(Long id) {
         return datasetDao.findInformationResourceFileByFileVersionId(id);
     }
-
-    public InformationResource findInformationResourceByFileId(Long id) {
-        return datasetDao.findInformationResourceByFileId(id);
-    }
 }
