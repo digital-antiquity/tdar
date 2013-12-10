@@ -508,7 +508,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         if (irFile.isDeleted() && Persistable.Base.isNullOrTransient(person)) {
             return false;
         }
-        if (!irFile.isPublic() && !canViewConfidentialInformation(person, irFile.getInformationResource())) {
+        InformationResource ir = datasetDao.findInformationResourceByFileId(irFile.getId());
+        if (!irFile.isPublic() && !canViewConfidentialInformation(person, ir)) {
             return false;
         }
         return true;

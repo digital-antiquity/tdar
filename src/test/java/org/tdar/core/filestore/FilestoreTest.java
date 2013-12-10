@@ -171,7 +171,7 @@ public class FilestoreTest {
         ir.setId(INFORMATION_RESOURCE_ID);
         InformationResourceFile irFile = new InformationResourceFile();
         irFile.setId(INFORMATION_RESOURCE_FILE_ID);
-        irFile.setInformationResource(ir);
+        ir.getInformationResourceFiles().add(irFile);
         @SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setVersion(VERSION);
@@ -188,7 +188,7 @@ public class FilestoreTest {
         InformationResourceFile irFile = new InformationResourceFile();
         irFile.setLatestVersion(latestVersion);
         irFile.setId(INFORMATION_RESOURCE_FILE_ID);
-        irFile.setInformationResource(ir);
+        ir.getInformationResourceFiles().add(irFile);
         @SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setVersion(VERSION);
