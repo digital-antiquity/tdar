@@ -1563,11 +1563,7 @@
 					</execution>
 				</executions>
 				<configuration>
-<<<<<<< local
-				    <forkCount>0</forkCount>
-=======
 					<forkCount>0</forkCount>
->>>>>>> other
 					<forkMode>never</forkMode>
 					<runOrder>alphabetical</runOrder>
 					<systemPropertyVariables>
