@@ -178,7 +178,7 @@ public class XmlService implements Serializable {
                 // TODO Auto-generated method stub
                 JaxbValidationEvent err = new JaxbValidationEvent(event, lines.get(event.getLocator().getLineNumber() - 1));
                 errors.add(err);
-                logger.warn("an XML parsing exception occured: {}", err);
+                logger.warn("an XML parsing exception occurred: {}", err);
                 return true;
             }
         });

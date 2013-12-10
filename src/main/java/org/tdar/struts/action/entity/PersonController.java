@@ -1,6 +1,7 @@
 package org.tdar.struts.action.entity;
 
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 import org.apache.commons.lang.StringUtils;
@@ -97,7 +98,10 @@ public class PersonController extends AbstractCreatorController<Person> {
     }
 
     @Override
-    @Validations(emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "email", message= "Please enter a valid email address")})
+    @Validations(
+            emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "email", message= "Please enter a valid email address")},
+            stringLengthFields = {@StringLengthFieldValidator(type = ValidatorType.SIMPLE, fieldName="person.contributorReason", message = "Please use a shorter description (max is ${maxLength} characters).", maxLength = "512")}
+    )
     protected String save(Person person) {
         if(!StringUtils.equals(email, getPersistable().getEmail())) {
             getPersistable().setEmail(email);
@@ -106,8 +110,12 @@ public class PersonController extends AbstractCreatorController<Person> {
         if (validateAndProcessUsernameChange()) {
             // FIXME: logout?
         }
-        if (hasActionErrors())
+        if (hasErrors()) {
+            logger.info("errors present, returning INPUT");
+            logger.info("actionErrors:{}", getActionErrors());
+            logger.info("fieldErrors:{}", getFieldErrors());
             return INPUT;
+        }
         logger.debug("saving person: {} with institution {} ", person, institutionName);
         if (StringUtils.isBlank(institutionName)) {
             person.setInstitution(null);

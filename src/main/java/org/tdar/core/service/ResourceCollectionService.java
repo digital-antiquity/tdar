@@ -347,6 +347,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
                 throw new TdarRecoverableRuntimeException(RESOURCE_COLLECTION_RIGHTS_ERROR + collectionToAdd.getTitle());
             }
+            collectionToAdd.markUpdated(authenticatedUser);
             if (collectionToAdd.isTransient() && shouldSave) {
                 save(collectionToAdd);
             }

@@ -506,7 +506,7 @@ public class ReflectionService {
                 throw (TdarRecoverableRuntimeException) e1;
             }
             logger.debug("error processing bulk upload: {}", e1);
-            throw new TdarRecoverableRuntimeException("an error occured when setting " + name + " to " + value, e1);
+            throw new TdarRecoverableRuntimeException("an error occurred when setting " + name + " to " + value, e1);
         }
     }
 

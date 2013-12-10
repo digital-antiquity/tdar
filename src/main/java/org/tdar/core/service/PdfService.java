@@ -153,7 +153,7 @@ public class PdfService implements Serializable {
                 File template = fileDao.loadTemplate(path);
 
                 // create the cover page
-                template = createCoverPage(submitter, template, document);
+                template = createCoverPage(submitter, template, document, version.getInformationResourceFile().getDescription());
 
                 // merge the two PDFs
 
@@ -179,7 +179,7 @@ public class PdfService implements Serializable {
     }
 
     // Create the cover pge from the template file and the resource
-    private File createCoverPage(Person submitter, File template, Document document) throws IOException, COSVisitorException, FileNotFoundException,
+    private File createCoverPage(Person submitter, File template, Document document, String description) throws IOException, COSVisitorException, FileNotFoundException,
             URISyntaxException {
         PDDocument doc = PDDocument.load(template);
         PDPage page = null;
@@ -217,6 +217,14 @@ public class PdfService implements Serializable {
         cursorPositionFromBottom = writeLabelPairOnPage(content, "Stable URL: ", urlService.absoluteUrl(document), FontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
                 cursorPositionFromBottom);
+
+        if (StringUtils.isNotBlank(description)) {
+            cursorPositionFromBottom = writeOnPage(content, "", FontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
+            cursorPositionFromBottom = writeLabelPairOnPage(content, "Note: ", description, FontHelper.HELVETICA_TEN_POINT,
+                    LEFT_MARGIN,
+                    cursorPositionFromBottom);
+        }
+        
         String doi = document.getDoi();
         if (StringUtils.isBlank(doi)) {
             doi = document.getExternalId();

@@ -91,7 +91,7 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
             emailService.send(message, subject.toString());
             logger.info("ending automated verification of files");
         } catch (Exception e) {
-            logger.error("eception occured when testing filestore", e);
+            logger.error("eception occurred when testing filestore", e);
         }
     }
 

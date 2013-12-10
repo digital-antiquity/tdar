@@ -37,5 +37,7 @@ $(document).ready(function(){
 
 </div>
 
+   <@edit.personAutocompleteTemplate />
+
 </body>
 </#escape>
