@@ -210,17 +210,16 @@ public class DatasetDao extends ResourceDao<Dataset> {
         //distinct prevents duplicates
         //left join res.informationResourceFiles
         long time = System.currentTimeMillis();
-        String queryString = "select res from ResourceProxy res ";
+        String queryString = "select distinct res from ResourceProxy res ";
 
         //if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
         if (ids.length > 1) {
-            queryString += "fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator creator ";
+            queryString += "fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies ";
         }
-        queryString += " where res.id in (:ids)";
+        queryString += "where res.id in (:ids)";
 
         Query query = session.createQuery(queryString);
         query.setParameterList("ids", Arrays.asList(ids));
-        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         List<ResourceProxy> results = (List<ResourceProxy>)query.list();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
         time = System.currentTimeMillis();
@@ -249,6 +248,20 @@ public class DatasetDao extends ResourceDao<Dataset> {
         List<Resource> results = (List<Resource>)query.list();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
         return results;
+    }
+
+    public InformationResourceFile findInformationResourceFileByFileVersionId(Long id) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("select file from InformationResourceFile file join file.informationResourceFileVersions as version where version.id=:id");
+        query.setParameter("id", id);
+        return (InformationResourceFile)query.uniqueResult();
+    }
+
+    public InformationResource findInformationResourceByFileVersionId(Long id) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("select ir from InformationResource ir join ir.informationResourceFiles as file join file.informationResourceFileVersions as version where version.id=:id");
+        query.setParameter("id", id);
+        return (InformationResource)query.uniqueResult();
     }
 
 }

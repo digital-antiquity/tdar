@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +20,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -28,6 +31,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.WordUtils;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -140,9 +145,10 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         PROCESSING_WARNING;
     }
 
-//    @ManyToOne(optional = false)
+    @ManyToOne(optional = false)
     // cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
-//      private InformationResource informationResource;
+    @JoinColumn(name = "information_resource_id", nullable = false, updatable = false)
+    private InformationResource informationResource;
 
     private transient Long transientDownloadCount;
 
@@ -191,6 +197,12 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Column(length = 32)
     private FileStatus status;
 
+    @XmlElement(name = "informationResourceRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public InformationResource getInformationResource() {
+        return informationResource;
+    }
+
     private transient boolean viewable = false;
 
     public InformationResourceFile() {
@@ -201,6 +213,10 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         if (CollectionUtils.isNotEmpty(versions)) {
             getInformationResourceFileVersions().addAll(versions);
         }
+    }
+
+    public void setInformationResource(InformationResource informationResource) {
+        this.informationResource = informationResource;
     }
 
     public FileType getInformationResourceFileType() {
@@ -578,7 +594,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public boolean isHasTranslatedVersion() {
         try {
-            if (getLatestTranslatedVersion() != null && getInformationResourceFileType() == FileType.COLUMNAR_DATA) {
+            if (getLatestTranslatedVersion() != null && getInformationResource().getResourceType().isDataTableSupported()) {
                 return true;
             }
         } catch (Exception e) {

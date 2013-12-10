@@ -356,7 +356,7 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_INFORMATIONRESOURCES_WITH_FILES,
-            query = "SELECT distinct ir.id from InformationResource ir join ir.informationResourceFiles as file"
+            query = "SELECT file.informationResource.id from InformationResourceFile file"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.INVOICES_FOR_PERSON,

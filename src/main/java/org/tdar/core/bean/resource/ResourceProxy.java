@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -64,11 +63,11 @@ public class ResourceProxy implements Serializable {
     @JoinColumn(name="project_id")
     private ResourceProxy projectProxy;
 
-    @OneToMany(fetch = FetchType.LAZY, targetEntity=InformationResourceFile.class)
+    @OneToMany(fetch = FetchType.LAZY, targetEntity=InformationResourceFileProxy.class)
     @JoinColumn(name = "information_resource_id")
     @OrderBy("sequenceNumber asc")
     @Immutable
-    private Set<InformationResourceFile> informationResourceFiles = new HashSet<>();
+    private List<InformationResourceFileProxy> informationResourceFileProxies = new ArrayList<>();
 
 
     @Column(name = "date_registered")
@@ -122,7 +121,7 @@ public class ResourceProxy implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s %s %s %s %s %s", id, title, getLatitudeLongitudeBoxes(), getResourceCreators(), getProjectProxy(), getInformationResourceFiles(), submitter);
+        return String.format("%s %s %s %s %s %s", id, title, getLatitudeLongitudeBoxes(), getResourceCreators(), getProjectProxy(), getInformationResourceFileProxies(), submitter);
     }
 
     public String getDescription() {
@@ -181,12 +180,12 @@ public class ResourceProxy implements Serializable {
         this.projectProxy = project;
     }
 
-    public Set<InformationResourceFile> getInformationResourceFiles() {
-        return informationResourceFiles;
+    public List<InformationResourceFileProxy> getInformationResourceFileProxies() {
+        return informationResourceFileProxies;
     }
 
-    public void setInformationResourceFiles(Set<InformationResourceFile> informationResourceFiles) {
-        this.informationResourceFiles = informationResourceFiles;
+    public void setInformationResourceFileProxies(List<InformationResourceFileProxy> informationResourceFiles) {
+        this.informationResourceFileProxies = informationResourceFiles;
     }
 
     public Date getDateCreated() {
@@ -267,7 +266,9 @@ public class ResourceProxy implements Serializable {
         if (res instanceof InformationResource) {
             InformationResource ir = (InformationResource)res;
             ir.setDate(this.getDate());
-            ir.setInformationResourceFiles(getInformationResourceFiles());
+            for (InformationResourceFileProxy prox : getInformationResourceFileProxies()) {
+                ir.getInformationResourceFiles().add(prox.generateInformationResourceFile());
+            }
             Project project = Project.NULL;
             if (getProjectProxy() != null) {
                 project = getProjectProxy().generateResource();
