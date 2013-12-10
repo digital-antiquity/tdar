@@ -19,6 +19,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
@@ -61,12 +62,10 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
 
                             try {
                                 InformationResourceFileVersion irfv = generateAndStoreVersion(Image.class, version.getName(), version, store);
-                                // irversions.add(irfv);
-                                genericService.saveOrUpdate(irfv.getInformationResourceFile());
-
-                                InformationResource ir = irfv.getInformationResourceFile().getInformationResource();
-                                ir = gs.merge(ir);
-                                boolean result = analyzer.processFile(irfv);
+                                InformationResourceFile informationResourceFile = resourceService.findInformationResourceFileByFileVersionId(irfv.getId());
+                                InformationResource resource = resourceService.findInformationResourceByFileVersionId(irfv.getId());
+                                resource = gs.merge(resource);
+                                boolean result = analyzer.processFile(resource, informationResourceFile, irfv);
                                 if (!result) {
                                     throw new TdarRecoverableRuntimeException("should not see this, file processing error");
                                 }

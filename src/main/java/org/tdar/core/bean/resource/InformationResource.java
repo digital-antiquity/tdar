@@ -152,7 +152,8 @@ public abstract class InformationResource extends Resource {
     // private Set<Document> sourceCitations = new HashSet<Document>();
 
     // FIXME: cascade "delete" ?
-    @OneToMany(mappedBy = "informationResource", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+    @JoinColumn(name = "information_resource_id", nullable = false, updatable = false)
     @OrderBy("sequenceNumber asc")
     @JSONTransient
     @IndexedEmbedded
@@ -489,6 +490,16 @@ public abstract class InformationResource extends Resource {
             }
         }
         return files;
+    }
+
+    @JSONTransient
+    @XmlTransient
+    public InformationResourceFile getFirstActiveInformationResourceFile() {
+        Set<InformationResourceFile> files = getActiveInformationResourceFiles();
+        if (CollectionUtils.isNotEmpty(files)){
+            return files.iterator().next();
+        }
+        return null;
     }
 
     public void setInformationResourceFiles(Set<InformationResourceFile> informationResourceFiles) {

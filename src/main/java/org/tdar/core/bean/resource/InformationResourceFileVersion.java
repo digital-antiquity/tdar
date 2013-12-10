@@ -7,8 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -33,10 +31,10 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     private static final long serialVersionUID = 3768354809654162949L;
 
     private transient File transientFile;
-    @ManyToOne()
+//    @ManyToOne()
     // optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @JoinColumn(name = "information_resource_file_id")
-    private InformationResourceFile informationResourceFile;
+//    @JoinColumn(name = "information_resource_file_id")
+//    private InformationResourceFile informationResourceFile;
 
     @Length(max = 255)
     private String filename;
@@ -122,26 +120,25 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         setInformationResourceFileId(irFileId);
     }
 
-    public InformationResourceFileVersion(VersionType type, String filename, InformationResourceFile irFile) {
+    public InformationResourceFileVersion(VersionType type, String filename, InformationResource ir, InformationResourceFile irFile) {
         setFileVersionType(type);
         setFilename(filename);
         setExtension(FilenameUtils.getExtension(filename));
         setVersion(irFile.getLatestVersion());
-        setInformationResourceFile(irFile);
         setInformationResourceFileId(irFile.getId());
-        setInformationResourceId(irFile.getInformationResource().getId());
+        setInformationResourceId(ir.getId());
         setDateCreated(new Date());
     }
 
-    @XmlTransient
-    public InformationResourceFile getInformationResourceFile() {
-        return informationResourceFile;
-    }
-
-    public void setInformationResourceFile(InformationResourceFile informationResourceFile) {
-        this.informationResourceFile = informationResourceFile;
-    }
-
+//    @XmlTransient
+//    public InformationResourceFile getInformationResourceFile() {
+//        return informationResourceFile;
+//    }
+//
+//    public void setInformationResourceFile(InformationResourceFile informationResourceFile) {
+//        this.informationResourceFile = informationResourceFile;
+//    }
+//
     public String getFilename() {
         return filename;
     }
@@ -354,8 +351,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
      */
     @XmlAttribute(name = "informationResourceFileId")
     public Long getInformationResourceFileId() {
-        if (informationResourceFile != null)
-            return informationResourceFile.getId();
         return informationResourceFileId;
     }
 
@@ -377,8 +372,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @XmlAttribute(name = "informationResourceId")
     @Transient
     public Long getInformationResourceId() {
-        if (informationResourceFile != null && informationResourceFile.getInformationResource() != null)
-            return informationResourceFile.getInformationResource().getId();
         return informationResourceId;
     }
 

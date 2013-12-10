@@ -13,6 +13,9 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentCitationFormatTestCase;
 import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.filestore.PairtreeFilestore;
 
@@ -32,7 +35,10 @@ public class PdfServiceITCase extends AbstractIntegrationTestCase {
         InformationResourceFileVersion originalVersion = generateAndStoreVersion(Document.class, "1-01.PDF", f, store);
 
         // setup document
-        Document document = (Document) originalVersion.getInformationResourceFile().getInformationResource();
+        InformationResourceFile informationResourceFile = resourceService.findInformationResourceFileByFileVersionId(originalVersion.getId());
+        InformationResource resource = resourceService.findInformationResourceByFileVersionId(originalVersion.getId());
+
+        Document document = (Document) resource;
         DocumentCitationFormatTestCase.setupDocumentWithAllFields(document, DocumentType.BOOK);
         for (ResourceCreator c : document.getResourceCreators()) {
             genericService.saveOrUpdate(c.getCreator());
@@ -47,7 +53,7 @@ public class PdfServiceITCase extends AbstractIntegrationTestCase {
         // aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa
         // aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa
         // aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a");
-        File merged = pdfService.mergeCoverPage(getBasicUser(), originalVersion);
+        File merged = pdfService.mergeCoverPage(getBasicUser(),resource, informationResourceFile,  originalVersion);
         logger.debug("{}", merged);
     }
 }

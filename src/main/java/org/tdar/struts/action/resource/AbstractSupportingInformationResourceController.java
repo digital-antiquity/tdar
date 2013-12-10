@@ -74,8 +74,9 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             return null;
         }
         InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion();
+        InformationResourceFile informationResourceFile = getPersistable().getFirstActiveInformationResourceFile();
         if (latestUploadedTextVersion != null
-                && latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR) {
+                && informationResourceFile.getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR) {
             if (ObjectUtils.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
                 logger.info("incoming and current file input text is the same, skipping further actions");
                 return null;

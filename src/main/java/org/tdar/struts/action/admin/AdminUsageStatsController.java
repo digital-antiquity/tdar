@@ -10,6 +10,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.joda.time.DateTime;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.struts.RequiresTdarUserGroup;
@@ -57,7 +58,8 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
         setDownloadStats(getResourceService().getAggregateDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
         for (AggregateDownloadStatistic download : getDownloadStats()) {
             InformationResourceFile irf = getGenericService().find(InformationResourceFile.class, download.getInformationResourceFileId());
-            download.setInformationResource(irf.getInformationResource());
+            InformationResource ir = getResourceService().findInformationResourceByFileId(irf.getId());
+            download.setInformationResource(ir);
         }
         return SUCCESS;
     }

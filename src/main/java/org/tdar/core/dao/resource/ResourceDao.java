@@ -14,6 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -26,6 +27,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -55,6 +57,7 @@ import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<E> {
     @Autowired
     private AuthenticationAndAuthorizationService authenticationService;
+    
 
     public ResourceDao(Class<E> resourceClass) {
         super(resourceClass);
@@ -345,7 +348,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         for (Object obj_ : query.list()) {
             Object[] obj = (Object[]) obj_;
             InformationResourceFile irf = find(InformationResourceFile.class, (Long) obj[2]);
-            toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFileName(), irf.getId(), irf.getInformationResource().getId()));
+            InformationResource ir = findInformationResourceByFileId(irf.getId());
+            toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFileName(), irf.getId(), ir.getId()));
         }
         return toReturn;
     }
@@ -394,5 +398,27 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
         }
         return null;
+    }
+
+
+    public InformationResourceFile findInformationResourceFileByFileVersionId(Long id) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("select file from InformationResourceFile file join file.informationResourceFileVersions as version where version.id=:id");
+        query.setParameter("id", id);
+        return (InformationResourceFile)query.uniqueResult();
+    }
+
+    public InformationResource findInformationResourceByFileVersionId(Long id) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("select ir from InformationResource ir join ir.informationResourceFiles as file join file.informationResourceFileVersions as version where version.id=:id");
+        query.setParameter("id", id);
+        return (InformationResource)query.uniqueResult();
+    }
+
+    public InformationResource findInformationResourceByFileId(Long id) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("select ir from InformationResource ir join ir.informationResourceFiles as file where file.id=:id");
+        query.setParameter("id", id);
+        return (InformationResource)query.uniqueResult();
     }
 }

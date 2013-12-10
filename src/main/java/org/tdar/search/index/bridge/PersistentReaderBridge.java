@@ -61,6 +61,8 @@ public class PersistentReaderBridge implements FieldBridge {
                     } else {
                         logger.trace("File does not exist", e);
                     }
+                } catch (Throwable t) {
+                    logger.error("I'm broken");
                 }
             }
             LazyReaderField field = new LazyReaderField(name, input, luceneOptions.getStore(), luceneOptions.getIndex(), luceneOptions.getBoost());

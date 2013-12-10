@@ -29,6 +29,8 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.PdfCoverPageGenerationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -52,7 +54,10 @@ public class DownloadService {
     PdfService pdfService;
 
     @Autowired
-    GenericService genericService;
+    DatasetDao datasetDao;
+
+    @Autowired
+    GenericDao genericDao;
 
     // TODO
     private String slugify(InformationResource resource) {
@@ -79,11 +84,10 @@ public class DownloadService {
 
     public void generateZipArchive(InformationResource resource, File destinationFile) throws IOException {
         Collection<File> files = new LinkedList<File>();
-
-        for (InformationResourceFileVersion version : resource.getLatestVersions()) {
-            if (version.getInformationResourceFile().isDeleted())
-                continue;
-            files.add(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+        for (InformationResourceFile irf : resource.getActiveInformationResourceFiles()) {
+            for (InformationResourceFileVersion file : irf.getLatestVersions()) {
+                files.add(TdarConfiguration.getInstance().getFilestore().retrieveFile(file));
+            }
         }
     }
 
@@ -99,11 +103,14 @@ public class DownloadService {
 
         Map<File, String> files = new HashMap<>();
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
-            addFileToDownload(files, authenticatedUser, irFileVersion);
+            InformationResource informationResource = datasetDao.findInformationResourceByFileVersionId(irFileVersion.getId());
+            InformationResourceFile irFile = datasetDao.findInformationResourceFileByFileVersionId(irFileVersion.getId());
+            irFileVersion.setInformationResourceFileId(irFile.getId());
+            irFileVersion.setInformationResourceId(informationResource.getId());
+            addFileToDownload(files, authenticatedUser, informationResource, irFile, irFileVersion);
             if (!irFileVersion.isDerivative()) {
-                InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
                 FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
-                genericService.save(stat);
+                genericDao.save(stat);
                 if (irFileVersions.length > 1) {
                     initDispositionPrefix(irFile.getInformationResourceFileType(), dh);
                 } else {
@@ -139,7 +146,7 @@ public class DownloadService {
         }
     }
 
-    private void addFileToDownload(Map<File, String> downloadMap, Person authenticatedUser, InformationResourceFileVersion irFileVersion)
+    private void addFileToDownload(Map<File, String> downloadMap, Person authenticatedUser, InformationResource informationResource, InformationResourceFile irFile, InformationResourceFileVersion irFileVersion)
             throws TdarActionException {
         File resourceFile = null;
         try {
@@ -155,7 +162,7 @@ public class DownloadService {
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
             try {
                 // this will be in the temp directory, so it will be scavenged at some stage.
-                resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
+                resourceFile = pdfService.mergeCoverPage(authenticatedUser, informationResource, irFile, irFileVersion);
             } catch (PdfCoverPageGenerationException cpge) {
                 logger.trace("Error occurred while merging cover page onto " + irFileVersion, cpge);
             } catch (Exception e) {

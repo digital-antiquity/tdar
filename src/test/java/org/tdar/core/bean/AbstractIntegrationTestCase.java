@@ -274,19 +274,21 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             IllegalAccessException, IOException {
         InformationResource ir = createAndSaveNewInformationResource(type, false);
         InformationResourceFile irFile = new InformationResourceFile();
-        irFile.setInformationResource(ir);
+//        irFile.setInformationResource(ir);
         irFile.setLatestVersion(1);
         @SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setVersion(1);
         version.setFilename(name);
         version.setExtension(FilenameUtils.getExtension(name));
-        version.setInformationResourceFile(irFile);
+        version.setInformationResourceFileId(irFile.getId());
         version.setDateCreated(new Date());
         version.setFileVersionType(VersionType.UPLOADED);
         irFile.getInformationResourceFileVersions().add(version);
+        ir.getInformationResourceFiles().add(irFile);
         genericService.save(irFile);
-        genericService.save(version);
+        version.setInformationResourceFileId(irFile.getId());
+        version.setInformationResourceId(ir.getId());
         filestore.store(f, version);
         return version;
     }

@@ -8,10 +8,12 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.workflow.workflows.Workflow;
@@ -34,6 +36,10 @@ public class MessageService {
     @Autowired
     private GenericDao genericDao;
 
+    
+    @Autowired
+    DatasetDao datasetDao;
+    
     @Autowired
     private XmlService xmlService;
 
@@ -107,11 +113,11 @@ public class MessageService {
      * @param workflow2
      * @return Martin: given that at some future date this might be pushing stuff onto a queue, it shouldn't return anything?
      */
-    public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResourceFileVersion... informationResourceFileVersions) {
-        WorkflowContext ctx = workflowContextService.initializeWorkflowContext(workflow, informationResourceFileVersions);
+    public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResource informationResource, InformationResourceFile irFile, InformationResourceFileVersion... informationResourceFileVersions) {
+        WorkflowContext ctx = workflowContextService.initializeWorkflowContext(workflow,  informationResource, irFile, informationResourceFileVersions);
         List<Long> irfIds = new ArrayList<>();
         for (InformationResourceFileVersion version : informationResourceFileVersions) {
-            InformationResourceFile irf = version.getInformationResourceFile();
+            InformationResourceFile irf = datasetDao.findInformationResourceFileByFileVersionId(version.getId());
             if (!irfIds.contains(irf.getId())) {
                 irf.setStatus(FileStatus.QUEUED);
                 genericDao.saveOrUpdate(irf);

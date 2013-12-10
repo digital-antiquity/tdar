@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.HasExtension;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -109,7 +110,7 @@ public class FileAnalyzer {
         return wf;
     }
 
-    public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
+    public boolean processFile(InformationResource informationResource, InformationResourceFile irFile, InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
         Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null) {
             String message = MessageHelper.getMessage("fileAnalyzer.no_workflow_found", java.util.Arrays.toString(informationResourceFileVersions));
@@ -122,7 +123,7 @@ public class FileAnalyzer {
 
         logger.debug("using workflow: {}", workflow);
         // Martin: if this is ever going to run asynchronously, this should this return anything?
-        return messageService.sendFileProcessingRequest(workflow, informationResourceFileVersions);
+        return messageService.sendFileProcessingRequest(workflow, informationResource, irFile, informationResourceFileVersions);
     }
 
     private void checkFilesExist(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
@@ -140,16 +141,16 @@ public class FileAnalyzer {
 
     }
 
-    public boolean processFile(InformationResourceFile irFile) throws Exception {
-        return processFile(irFile.getLatestUploadedVersion());
+    public boolean processFile(InformationResource informationResource, InformationResourceFile irFile) throws Exception {
+        return processFile(informationResource, irFile, irFile.getLatestUploadedVersion());
     }
 
-    public boolean processFile(InformationResourceFile... irFiles) throws Exception {
+    public boolean processFile(InformationResource informationResource, InformationResourceFile... irFiles) throws Exception {
         List<InformationResourceFileVersion> versions = new ArrayList<>();
         for (InformationResourceFile irf : irFiles) {
             versions.add(irf.getLatestUploadedOrArchivalVersion());
         }
-        return processFile(versions.toArray(new InformationResourceFileVersion[0]));
+        return processFile(informationResource, irFiles[0], versions.toArray(new InformationResourceFileVersion[0]));
     }
 
     @Autowired

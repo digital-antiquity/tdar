@@ -27,6 +27,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceProxy;
@@ -213,9 +214,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
         //if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
         if (ids.length > 1) {
-            queryString += "fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies ";
+            queryString += "fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator creator ";
         }
-        queryString += "where res.id in (:ids)";
+        queryString += " where res.id in (:ids)";
 
         Query query = session.createQuery(queryString);
         query.setParameterList("ids", Arrays.asList(ids));

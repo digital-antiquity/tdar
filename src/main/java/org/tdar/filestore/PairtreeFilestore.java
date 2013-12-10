@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.utils.MessageHelper;
@@ -224,20 +225,24 @@ public class PairtreeFilestore extends BaseFilestore {
      */
     public String getAbsoluteFilePath(InformationResourceFileVersion version) {
         Long irID = version.getInformationResourceId();
+        if (irID == null) {
+            throw new TdarRuntimeException(MessageHelper.getMessage("cannot.store.no.irid"));
+        }
         StringBuffer base = new StringBuffer();
         base.append(getResourceDirPath(irID));
-        if (version.getInformationResourceFileId() != null) {
-            base.append(version.getInformationResourceFileId());
+        if (version.getFileVersionType() != VersionType.RECORD && version.getInformationResourceFileId() == null) {
+            throw new TdarRuntimeException(MessageHelper.getMessage("cannot.store.no.file_id"));
+        }
+        base.append(version.getInformationResourceFileId());
+        base.append(File.separator);
+        base.append("v" + version.getVersion());
+        base.append(File.separator);
+        if (version.isArchival()) {
+            base.append(ARCHIVAL);
             base.append(File.separator);
-            base.append("v" + version.getVersion());
+        } else if (!version.isUploaded()) {
+            base.append(DERIV);
             base.append(File.separator);
-            if (version.isArchival()) {
-                base.append(ARCHIVAL);
-                base.append(File.separator);
-            } else if (!version.isUploaded()) {
-                base.append(DERIV);
-                base.append(File.separator);
-            }
         }
         logger.trace("{}", base);
         return FilenameUtils.concat(FilenameUtils.normalize(base.toString()), version.getFilename());

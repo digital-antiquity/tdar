@@ -33,6 +33,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -636,5 +637,17 @@ public class ResourceService extends GenericService {
             arrayList.remove(ResourceType.ARCHIVE);
         }
         return arrayList;
+    }
+
+    public InformationResource findInformationResourceByFileVersionId(Long id) {
+        return datasetDao.findInformationResourceByFileVersionId(id);
+    }
+
+    public InformationResourceFile findInformationResourceFileByFileVersionId(Long id) {
+        return datasetDao.findInformationResourceFileByFileVersionId(id);
+    }
+
+    public InformationResource findInformationResourceByFileId(Long id) {
+        return datasetDao.findInformationResourceByFileId(id);
     }
 }

@@ -2,9 +2,9 @@ package org.tdar.core.bean.resource;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,9 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlAttribute;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.converters.DateConverter;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -82,7 +79,7 @@ public class InformationResourceFileProxy implements Serializable {
     @OneToMany()
     @Sort(type = SortType.NATURAL)
     @JoinColumn(name="information_resource_file_id")
-    private List<InformationResourceFileVersionProxy> informationResourceFileVersionProxies = new ArrayList<InformationResourceFileVersionProxy>();
+    private Set<InformationResourceFileVersion> informationResourceFileVersions = new HashSet<InformationResourceFileVersion>();
 
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
@@ -175,18 +172,15 @@ public class InformationResourceFileProxy implements Serializable {
         file.setRestriction(getRestriction());
         file.setStatus(getStatus());
         file.setDateMadePublic(getDateMadePublic());
-        
-        for (InformationResourceFileVersionProxy prox : getInformationResourceFileVersionProxies()) {
-            file.getInformationResourceFileVersions().add(prox.generateInformationResourceFileVersion());
-        }
+        file.setInformationResourceFileVersions(getInformationResourceFileVersions());
         return file;
     }
 
-    public List<InformationResourceFileVersionProxy> getInformationResourceFileVersionProxies() {
-        return informationResourceFileVersionProxies;
+    public Set<InformationResourceFileVersion> getInformationResourceFileVersions() {
+        return informationResourceFileVersions;
     }
 
-    public void setInformationResourceFileVersionProxies(List<InformationResourceFileVersionProxy> informationResourceFileVersionProxies) {
-        this.informationResourceFileVersionProxies = informationResourceFileVersionProxies;
+    public void setInformationResourceFileVersions(Set<InformationResourceFileVersion> informationResourceFileVersions) {
+        this.informationResourceFileVersions = informationResourceFileVersions;
     }
 }

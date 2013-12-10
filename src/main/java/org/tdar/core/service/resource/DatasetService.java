@@ -225,7 +225,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 latestUploadedVersion.setTransientFile(transientFile);
             }
 
-            analyzer.processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
+            analyzer.processFile(dataset, dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
         } catch (Exception e) {
             throw new TdarRecoverableRuntimeException(e);
         }
@@ -319,7 +319,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
         }
         datasetFile.setStatus(FileStatus.PROCESSED);
-        datasetFile.setInformationResource(dataset);
+//        datasetFile.setInformationResource(dataset);
 
         getDao().merge(dataset);
         getDao().synchronize();

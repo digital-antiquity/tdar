@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.FileSystemResourceDao;
@@ -65,19 +66,18 @@ public class PdfService implements Serializable {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public File mergeCoverPage(Person submitter, InformationResourceFileVersion version) throws COSVisitorException, IOException, URISyntaxException {
+    public File mergeCoverPage(Person submitter, InformationResource informationResource, InformationResourceFile informationResourceFile, InformationResourceFileVersion version) throws COSVisitorException, IOException, URISyntaxException {
         try {
-            InformationResource informationResource = version.getInformationResourceFile().getInformationResource();
             if (version.getExtension().equalsIgnoreCase("PDF") && informationResource instanceof Document) {
                 // get the tDAR document and get the path to the template
-                Document document = (Document) version.getInformationResourceFile().getInformationResource();
+                Document document = (Document) informationResource;
                 String path = String.format("%s%s%s", TdarConfiguration.getInstance().getThemeDir(), COVER_PAGE, DOT_PDF);
 
                 // get the template
                 File template = fileDao.loadTemplate(path);
 
                 // create the cover page
-                template = createCoverPage(submitter, template, document, version.getInformationResourceFile().getDescription());
+                template = createCoverPage(submitter, template, document, informationResourceFile.getDescription());
 
                 // merge the two PDFs
 

@@ -100,6 +100,8 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         logger.info("versions: {} ", irFile.getInformationResourceFileVersions());
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             map.put(irfv.getFileVersionType(), irfv);
+            irfv.setInformationResourceFileId(irFile.getId());
+            irfv.setInformationResourceId(ir.getId());
             irfv.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(irfv));
             irfvids.add(irfv.getId());
         }
