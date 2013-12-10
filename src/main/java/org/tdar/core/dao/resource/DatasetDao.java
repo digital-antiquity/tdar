@@ -209,7 +209,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         //distinct prevents duplicates
         //left join res.informationResourceFiles
         long time = System.currentTimeMillis();
-        String queryString = "select distinct res from ResourceProxy res ";
+        String queryString = "select res from ResourceProxy res ";
 
         //if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
         if (ids.length > 1) {
@@ -219,6 +219,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
         Query query = session.createQuery(queryString);
         query.setParameterList("ids", Arrays.asList(ids));
+        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         List<ResourceProxy> results = (List<ResourceProxy>)query.list();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
         time = System.currentTimeMillis();
