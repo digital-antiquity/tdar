@@ -1,12 +1,12 @@
-//tDAR core javascript utilities (w/ apologies to YUI: http://developer.yahoo.com/yui)
+/** @constructor */
+var TDAR = function(){
 
-//top-level global object used by tdar js api
-if(typeof TDAR === "undefined" || !TDAR) {
-    var TDAR = {};
-}
+};
 
-//Returns the namespace specified and creates it if it doesn't exist  (e.g. "TDAR.maps.controls",  "TDAR.stringutils")
-//see YUI "module pattern",  http://yuiblog.com/blog/2007/06/12/module-pattern/
+/** 
+ * Returns the namespace specified and creates it if it doesn't exist  (e.g. "TDAR.maps.controls",  "TDAR.stringutils")
+ * (see YUI "module pattern",  http://yuiblog.com/blog/2007/06/12/module-pattern/) for more information
+ */
 TDAR.namespace = function() {
     var a=arguments, o=null, i, j, d;
     for (i=0; i<a.length; i=i+1) {
@@ -23,18 +23,23 @@ TDAR.namespace = function() {
     return o;
 };
 
-/* Simple JavaScript Inheritance
+/** Simple JavaScript Inheritance
  * By John Resig http://ejohn.org/
  * MIT Licensed.
  */
-// Inspired by base2 and Prototype
 (function(){
   var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
  
   // The base Class implementation (does nothing)
+  /** 
+   * Simple JavaScript Inheritance By John Resig 
+   * @constructor
+   */
   this.Class = function(){};
  
-  // Create a new Class that inherits from this class
+  /** 
+   *  Create a new Class that inherits from this class
+   */
   Class.extend = function(prop) {
     var _super = this.prototype;
    
@@ -89,9 +94,7 @@ TDAR.namespace = function() {
 })();
 
 /**
- * load SCRIPT asynchronously,
- *
- * returns $.promise if jquery library is available
+ * Load a script asynchronously. If jQuery is available, this function returns a promise object.
  */
 TDAR.loadScript = function(url) {
     var _url = url;
