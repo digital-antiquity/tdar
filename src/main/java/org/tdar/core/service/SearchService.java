@@ -268,13 +268,16 @@ public class SearchService {
     private List<Indexable> convertProjectedResultIntoObjects(SearchResultHandler<?> resultHandler, List<String> projections, List<Object[]> list, Person user) {
         List<Indexable> toReturn = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
+        ProjectionModel projectionModel = resultHandler.getProjectionModel();
+        if (projectionModel == null) {
+            projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
+        }
         for (Object[] obj : list) {
             Indexable p = null;
             Float score = (Float) obj[projections.indexOf(FullTextQuery.SCORE)];
-            switch (resultHandler.getProjectionModel()) {
+            switch (projectionModel) {
                 case LUCENE:
-                    if (CollectionUtils.isEmpty(resultHandler.getProjectionModel().getProjections())) { // if we have no projection, do raw cast, we should have inflated object already
-                        p = (Indexable) obj[0];
+                    if (CollectionUtils.isEmpty(projectionModel.getProjections())) { // if we have no projection, do raw cast, we should have inflated object already
                         if (p == null) {
                             logger.warn("Indexable persistable is null!");
                         }
@@ -284,6 +287,9 @@ public class SearchService {
                 case RESOURCE_PROXY:
                     Long id = (Long)obj[projections.indexOf(ID_FIELD)];
                     ids.add(id);
+                    break;
+                case HIBERNATE_DEFAULT:
+                    p = (Indexable) obj[0];
                     break;
             }
             if (p != null) {
@@ -330,7 +336,12 @@ public class SearchService {
 
         try {
             p = cast.newInstance();
-            Collection<String> fields = resultHandler.getProjectionModel().getProjections();
+            ProjectionModel projectionModel = resultHandler.getProjectionModel();
+            if (projectionModel == null) {
+                projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
+            }
+
+            Collection<String> fields = projectionModel.getProjections();
             for (String field : fields) {
                 BeanUtils.setProperty(p, field, obj[projections.indexOf(field)]);
             }
@@ -352,7 +363,12 @@ public class SearchService {
         projections.add(FullTextQuery.THIS); // Hibernate Object
         projections.add(FullTextQuery.OBJECT_CLASS); // class to project
 
-        if (resultHandler.getProjectionModel() != ProjectionModel.HIBERNATE_DEFAULT) { // OVERRIDE CASE, PROJECTIONS SET IN RESULTS HANDLER
+        ProjectionModel projectionModel = resultHandler.getProjectionModel();
+        if (projectionModel == null) {
+            projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
+        }
+
+        if (projectionModel != ProjectionModel.HIBERNATE_DEFAULT) { // OVERRIDE CASE, PROJECTIONS SET IN RESULTS HANDLER
             projections.remove(FullTextQuery.THIS);
             projections.addAll(resultHandler.getProjectionModel().getProjections());
         }

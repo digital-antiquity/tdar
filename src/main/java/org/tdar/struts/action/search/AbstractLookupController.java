@@ -503,9 +503,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     public ProjectionModel getProjectionModel() {
-        if (projectionModel == null) {
-            return ProjectionModel.HIBERNATE_DEFAULT;
-        }
         return projectionModel;
     }
 
