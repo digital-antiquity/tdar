@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -15,12 +16,15 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.Converter;
@@ -31,10 +35,12 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.DateBridge;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -112,6 +118,13 @@ public class ResourceProxy implements Serializable {
     @Id
     @Column(name = "id")
     private Long id;
+
+    @ManyToMany( fetch = FetchType.LAZY)
+    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "collection_id") })
+    @XmlTransient
+    @IndexedEmbedded(depth = 1)
+    private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
     @OneToMany(fetch=FetchType.EAGER, targetEntity=ResourceCreator.class)
     @JoinColumn(name = "resource_id")
@@ -263,6 +276,7 @@ public class ResourceProxy implements Serializable {
         res.setDateUpdated(this.getDateUpdated());
         res.setId(this.getId());
         logger.trace("recursing down");
+        res.setResourceCollections(getResourceCollections());
         if (res instanceof InformationResource) {
             InformationResource ir = (InformationResource)res;
             ir.setDate(this.getDate());
@@ -286,6 +300,14 @@ public class ResourceProxy implements Serializable {
 
     public void setDate(Integer date) {
         this.date = date;
+    }
+
+    public Set<ResourceCollection> getResourceCollections() {
+        return resourceCollections;
+    }
+
+    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
+        this.resourceCollections = resourceCollections;
     }
 
 }

@@ -1123,7 +1123,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid);
         controller.prepare();
-        controller.setType(1);
         controller.view();
         assertTrue("resource should be viewable", ((Viewable) (controller.getResults().get(0))).isViewable());
 
@@ -1134,7 +1133,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid);
         controller.prepare();
-        controller.setType(1);
         controller.view();
         assertTrue("resource should be viewable", ((Viewable) controller.getResults().get(0)).isViewable());
     }
