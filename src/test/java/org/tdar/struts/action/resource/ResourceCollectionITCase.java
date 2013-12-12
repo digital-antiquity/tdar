@@ -48,8 +48,7 @@ import org.tdar.struts.action.search.BrowseController;
 import com.opensymphony.xwork2.Action;
 
 //import static org.hamcrest.MatcherAssert.assertThat;
-public class ResourceCollectionITCase extends AbstractResourceControllerITCase
-{
+public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Autowired
     private GenericService genericService;
@@ -1118,12 +1117,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.setAsync(false);
         controller.save();
         genericService.synchronize();
-
+        searchIndexService.flushToIndexes();
         // searchIndexService.indexAll();
         // registered user is now authuser of the collection, and should be able to see the resource
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid);
         controller.prepare();
+        controller.setType(1);
         controller.view();
         assertTrue("resource should be viewable", ((Viewable) (controller.getResults().get(0))).isViewable());
 
@@ -1134,6 +1134,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid);
         controller.prepare();
+        controller.setType(1);
         controller.view();
         assertTrue("resource should be viewable", ((Viewable) controller.getResults().get(0)).isViewable());
     }

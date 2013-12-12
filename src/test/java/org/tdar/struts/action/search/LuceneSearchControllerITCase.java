@@ -123,6 +123,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
+        
         setupTestDocuments();
         doSearch(resourceTitle);
         logger.info("results:{}", controller.getResults());

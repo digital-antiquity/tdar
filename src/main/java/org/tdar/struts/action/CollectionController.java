@@ -37,7 +37,7 @@ import org.tdar.utils.PaginationHelper;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/collection")
-public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<ResourceCollection> {
+public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<Resource> {
 
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<Resource>();
@@ -51,7 +51,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
     private int totalRecords;
-    private List<ResourceCollection> results;
+    private List<Resource> results;
     private SortOption secondarySortField;
     private SortOption sortField;
     private String mode = "CollectionBrowse";
@@ -177,12 +177,6 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public String loadViewMetadata() {
-        // getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
-        // resources.addAll(getPersistable().getResources());
-        // for (Resource resource : getPersistable().getResources()) {
-        // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
-        // }
-        // FIXME: update visible flag, using below to initialize transient children
         setParentId(getPersistable().getParentId());
         return SUCCESS;
     }
@@ -290,6 +284,7 @@ public class CollectionController extends AbstractPersistableController<Resource
                     setSecondarySortField(getPersistable().getSecondarySortBy());
                 }
             }
+            
             try {
                 getSearchService().handleSearch(qb, this);
             } catch (Exception e) {
@@ -413,13 +408,13 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @Override
-    public void setResults(List<ResourceCollection> toReturn) {
+    public void setResults(List<Resource> toReturn) {
         logger.trace("setResults: {}", toReturn);
         this.results = toReturn;
     }
 
     @Override
-    public List<ResourceCollection> getResults() {
+    public List<Resource> getResults() {
         return results;
     }
 

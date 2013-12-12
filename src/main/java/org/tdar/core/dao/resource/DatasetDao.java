@@ -216,12 +216,14 @@ public class DatasetDao extends ResourceDao<Dataset> {
             queryString += "fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies ";
         }
         queryString += "where res.id in (:ids)";
-
+        if (logger.isTraceEnabled()) {
+            logger.trace("{} {}", queryString, ids);
+        }
         Query query = session.createQuery(queryString);
         query.setParameterList("ids", Arrays.asList(ids));
         query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         List<ResourceProxy> results = (List<ResourceProxy>)query.list();
-        logger.info("query took: {} ", System.currentTimeMillis() - time);
+        logger.trace("query took: {} ", System.currentTimeMillis() - time);
         time = System.currentTimeMillis();
         List<Resource> toReturn = new ArrayList<>();
         Map<Long, Resource> resultMap = new HashMap<>();
@@ -236,7 +238,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
             toReturn.add(resultMap.get(id));
         }
         
-        logger.info("generation took: {} {}", System.currentTimeMillis() - time,toReturn.size());
+        logger.info("generation took: {} {}->{}", System.currentTimeMillis() - time, results.size(), toReturn.size());
+
         return toReturn;
     }
 

@@ -298,7 +298,7 @@ public class SearchService {
                 toReturn.add(p);
             }
         }
-        
+        logger.info("{}", ids);
         if (CollectionUtils.isNotEmpty(ids)) {
             toReturn.clear();
             for (Resource r : datasetDao.findSkeletonsForSearch(ids.toArray(new Long[0])) ) {
@@ -309,7 +309,6 @@ public class SearchService {
                 toReturn.add(r);
             }
         }
-
         return toReturn;
     }
 
