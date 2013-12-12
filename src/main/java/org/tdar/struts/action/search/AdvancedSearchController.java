@@ -154,7 +154,11 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             @Result(name = INPUT, location = "advanced.ftl") })
     public String search() throws TdarActionException {
         setLookupSource(LookupSource.RESOURCE);
-        setProjectionModel(ProjectionModel.RESOURCE_PROXY);
+        // we need this for tests to be able to change the projection model so we get full objects
+        if (getProjectionModel() == null ) {
+            setProjectionModel(ProjectionModel.RESOURCE_PROXY);
+        }
+
         try {
             if (explore) {
                 return exploreSearch();

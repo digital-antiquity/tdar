@@ -49,7 +49,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private static final long serialVersionUID = 2357805482356017885L;
 
     private String callback;
-    private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
+    private ProjectionModel projectionModel;
     private int minLookupLength = 3;
     private int recordsPerPage = 10;
     private int startRecord = DEFAULT_START;
@@ -503,6 +503,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     public ProjectionModel getProjectionModel() {
+        if (projectionModel == null) {
+            return ProjectionModel.HIBERNATE_DEFAULT;
+        }
         return projectionModel;
     }
 

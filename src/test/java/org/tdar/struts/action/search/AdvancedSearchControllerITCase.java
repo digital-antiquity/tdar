@@ -54,6 +54,7 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
@@ -1060,7 +1061,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     protected void doSearch(Boolean b) {
-        controller.setType(1);
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE, b);
         logger.info("search found: " + controller.getTotalRecords());
     }
