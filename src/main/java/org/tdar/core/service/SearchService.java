@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -267,32 +269,46 @@ public class SearchService {
      */
     private List<Indexable> convertProjectedResultIntoObjects(SearchResultHandler<?> resultHandler, List<String> projections, List<Object[]> list, Person user) {
         List<Indexable> toReturn = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
+        LinkedHashMap<Long,Object[]> ids = new LinkedHashMap<>();
         ProjectionModel projectionModel = resultHandler.getProjectionModel();
         if (projectionModel == null) {
             projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
         }
         for (Object[] obj : list) {
             Indexable p = null;
-            Float score = (Float) obj[projections.indexOf(FullTextQuery.SCORE)];
+            int idIndex = projections.indexOf(ID_FIELD);
+            if (idIndex != -1) {
+                ids.put((Long) obj[idIndex], obj);
+            }
+            if (projectionModel == ProjectionModel.HIBERNATE_DEFAULT) {
+                p = (Indexable) obj[0];
+                ids.put(p.getId(), obj);
+            }
+            toReturn.add(p);
+        }
+        logger.info("{}", ids);
+
+       // iterate over all of the objects and create an objectMap if needed
+       if (CollectionUtils.isNotEmpty(ids.keySet())) {
             switch (projectionModel) {
                 case LUCENE:
-                    if (CollectionUtils.isEmpty(projectionModel.getProjections())) { // if we have no projection, do raw cast, we should have inflated object already
-                        if (p == null) {
-                            logger.warn("Indexable persistable is null!");
-                        }
-                        p = createSpareObjectFromProjection(resultHandler, projections, obj, p);
-                    }
+                    toReturn.clear();
+                    createSpareObjectFromProjection(resultHandler, projections, ids);
                     break;
                 case RESOURCE_PROXY:
-                    Long id = (Long)obj[projections.indexOf(ID_FIELD)];
-                    ids.add(id);
+                    toReturn.clear();
+                    toReturn.addAll(datasetDao.findSkeletonsForSearch(ids.keySet().toArray(new Long[0])));
                     break;
-                case HIBERNATE_DEFAULT:
-                    p = (Indexable) obj[0];
+                default:
                     break;
             }
-            if (p != null) {
+            
+            for (Indexable p : toReturn) {
+                if (Persistable.Base.isNullOrTransient(p)) {
+                    continue;
+                }
+                Object[] obj = ids.get(p.getId());
+                Float score = (Float) obj[projections.indexOf(FullTextQuery.SCORE)];
                 if (resultHandler.isDebug()) {
                     Explanation ex = (Explanation) obj[projections.indexOf(FullTextQuery.EXPLANATION)];
                     p.setExplanation(ex);
@@ -302,18 +318,6 @@ public class SearchService {
                 }
                 getAuthenticationAndAuthorizationService().applyTransientViewableFlag(p, user);
                 p.setScore(score);
-                toReturn.add(p);
-            }
-        }
-        logger.info("{}", ids);
-        if (CollectionUtils.isNotEmpty(ids)) {
-            toReturn.clear();
-            for (Resource r : datasetDao.findSkeletonsForSearch(ids.toArray(new Long[0])) ) {
-                if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() && Persistable.Base.isNullOrTransient(user)) {
-                    obfuscationService.obfuscate((Obfuscatable) r, user);
-                }
-                getAuthenticationAndAuthorizationService().applyTransientViewableFlag(r, user);
-                toReturn.add(r);
             }
         }
         return toReturn;
@@ -324,31 +328,35 @@ public class SearchService {
      * 
      * @param resultHandler
      * @param projections
-     * @param obj
-     * @param p
+     * @param ids
      * @return
      */
-    
+    private List<Indexable> createSpareObjectFromProjection(SearchResultHandler<?> resultHandler, List<String> projections, LinkedHashMap<Long, Object[]> ids) {
+        List<Indexable> toReturn = new ArrayList<>();
+        for (Entry<Long,Object[]> entry : ids.entrySet()) {
+            Object[] obj = entry.getValue();
+            @SuppressWarnings("unchecked")
+            Class<? extends Indexable> cast = (Class<? extends Indexable>) obj[projections.indexOf(FullTextQuery.OBJECT_CLASS)];
 
-    private Indexable createSpareObjectFromProjection(SearchResultHandler<?> resultHandler, List<String> projections, Object[] obj, Indexable p) {
-        @SuppressWarnings("unchecked")
-        Class<? extends Indexable> cast = (Class<? extends Indexable>) obj[projections.indexOf(FullTextQuery.OBJECT_CLASS)];
+            try {
+                Indexable p = cast.newInstance();
+                ProjectionModel projectionModel = resultHandler.getProjectionModel();
+                if (projectionModel == null) {
+                    projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
+                }
 
-        try {
-            p = cast.newInstance();
-            ProjectionModel projectionModel = resultHandler.getProjectionModel();
-            if (projectionModel == null) {
-                projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
+                Collection<String> fields = projectionModel.getProjections();
+                for (String field : fields) {
+                    BeanUtils.setProperty(p, field, obj[projections.indexOf(field)]);
+                }
+                toReturn.add(p);
+            } catch (Exception e) {
+                throw new TdarRecoverableRuntimeException(e);
             }
-
-            Collection<String> fields = projectionModel.getProjections();
-            for (String field : fields) {
-                BeanUtils.setProperty(p, field, obj[projections.indexOf(field)]);
-            }
-        } catch (Exception e) {
-            throw new TdarRecoverableRuntimeException(e);
+            
         }
-        return p;
+                
+        return toReturn;
     }
 
     /**

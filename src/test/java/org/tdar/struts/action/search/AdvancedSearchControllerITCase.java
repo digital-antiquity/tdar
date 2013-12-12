@@ -879,13 +879,18 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         reindex();
 
         controller.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+        genericService.synchronize();
+        searchIndexService.flushToIndexes();
         assertOnlyResultAndProject(doc);
         resetController();
 
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         controller.getUncontrolledSiteTypeKeywords().add(siteTypes.iterator().next().getLabel());
         assertOnlyResultAndProject(doc);
         resetController();
 
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         controller.getSiteNameKeywords().add(siteNames.iterator().next().getLabel());
         assertOnlyResultAndProject(doc);
     }
