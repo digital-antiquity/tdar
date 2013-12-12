@@ -1,5 +1,7 @@
 package org.tdar.search.query;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.tdar.core.bean.Indexable;
@@ -30,6 +32,28 @@ public interface SearchResultHandler<I extends Indexable> {
 
     SortOption getSecondarySortField();
 
+    public enum ProjectionModel {
+        HIBERNATE_DEFAULT,
+        LUCENE,
+        RESOURCE_PROXY;
+        
+        private List<String> projections = new ArrayList<>();
+
+        public List<String> getProjections() {
+            if (this == RESOURCE_PROXY) {
+                return Arrays.asList("id");
+            }
+            return projections;
+        }
+
+        public void setProjections(List<String> projections) {
+            this.projections = projections;
+        }
+        
+    }
+    
+    ProjectionModel getProjectionModel();
+    
     /**
      * Sets the total number of records found by the SearchService.
      * When resultSize is less than startRecord + recordsPerPage, then there are more pages of results available.
@@ -90,8 +114,6 @@ public interface SearchResultHandler<I extends Indexable> {
     int getNextPageStartRecord();
 
     int getPrevPageStartRecord();
-
-    List<String> getProjections();
 
     @SuppressWarnings("rawtypes")
     List<FacetGroup<? extends Facetable>> getFacetFields();

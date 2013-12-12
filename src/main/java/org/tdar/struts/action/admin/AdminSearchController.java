@@ -90,11 +90,10 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
     }
 
     @Override
-    public List<String> getProjections() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+    public ProjectionModel getProjectionModel() {
+        return ProjectionModel.HIBERNATE_DEFAULT;
+    };
+    
     public QueryBuilders getQueryBuilder() {
         return queryBuilder;
     }

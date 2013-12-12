@@ -347,6 +347,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         queryBuilder.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, new DateRange(effectiveFrom, effectiveUntil)));
         int total = 0;
         try {
+            switchProjectionModel(queryBuilder);
             super.handleSearch(queryBuilder);
             total = getTotalRecords();
             List<Long> ids = new ArrayList<>();
@@ -374,6 +375,13 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             logger.debug("an exception happened .. {} ", e);
         }
         return total;
+    }
+
+    private void switchProjectionModel(QueryBuilder queryBuilder) {
+        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+        if (queryBuilder instanceof ResourceQueryBuilder){
+            setProjectionModel(ProjectionModel.RESOURCE_PROXY);
+        }
     }
 
     private Document createDocument() throws ParserConfigurationException {
@@ -832,12 +840,6 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getProjections() {
-        return ListUtils.EMPTY_LIST;
     }
 
     @SuppressWarnings("rawtypes")

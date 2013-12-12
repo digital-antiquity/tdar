@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
@@ -123,12 +122,12 @@ public class BrowseController extends AbstractLookupController {
 
     @Action(COLLECTIONS)
     public String browseCollections() throws ParseException {
-        setType(1);
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
         qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         setMode("browseCollections");
+        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         handleSearch(qb);
         setSearchDescription(getText("browseController.all_tdar_collections"));
         setSearchTitle(getText("browseController.all_tdar_collections"));
@@ -210,6 +209,7 @@ public class BrowseController extends AbstractLookupController {
                 setSearchTitle(descr);
                 setRecordsPerPage(50);
                 try {
+                    setProjectionModel(ProjectionModel.RESOURCE_PROXY);
                     handleSearch(queryBuilder);
                 } catch (SearchPaginationException spe) {
                     throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
@@ -292,24 +292,6 @@ public class BrowseController extends AbstractLookupController {
 
     public void setTimelineData(List<BrowseDecadeCountCache> list) {
         this.timelineData = list;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getProjections() {
-        if (type == 1) {
-        return ListUtils.EMPTY_LIST;
-        } else {
-            return Arrays.asList("id");
-        }
-    }
-    
-    private int type = 0;
-    public void setType(int type) {
-        this.type = type;
-    }
-    public int getType() {
-        return type;
     }
 
     public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {

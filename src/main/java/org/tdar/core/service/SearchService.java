@@ -62,6 +62,7 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
+import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.DynamicQueryComponent;
 import org.tdar.search.query.builder.DynamicQueryComponentHelper;
@@ -88,6 +89,8 @@ import com.opensymphony.xwork2.TextProvider;
 @Service
 @Transactional
 public class SearchService {
+    private static final String ID_FIELD = "id";
+
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -268,22 +271,20 @@ public class SearchService {
         for (Object[] obj : list) {
             Indexable p = null;
             Float score = (Float) obj[projections.indexOf(FullTextQuery.SCORE)];
-            if (CollectionUtils.isEmpty(resultHandler.getProjections())) { // if we have no projection, do raw cast, we should have inflated object already
-                p = (Indexable) obj[0];
-                if (p == null) {
-                    logger.warn("Indexable persistable is null!");
-                }
-            } else {
-                /*
-                 * if we have the ID in the projection list, then we're going to use the new resource projection which can be twice as fast by not binding to
-                 * 40+ tables.
-                 */
-                if (CollectionUtils.isNotEmpty(projections) && projections.contains("id")) {
-                    Long id = (Long)obj[projections.indexOf("id")];
+            switch (resultHandler.getProjectionModel()) {
+                case LUCENE:
+                    if (CollectionUtils.isEmpty(resultHandler.getProjectionModel().getProjections())) { // if we have no projection, do raw cast, we should have inflated object already
+                        p = (Indexable) obj[0];
+                        if (p == null) {
+                            logger.warn("Indexable persistable is null!");
+                        }
+                        p = createSpareObjectFromProjection(resultHandler, projections, obj, p);
+                    }
+                    break;
+                case RESOURCE_PROXY:
+                    Long id = (Long)obj[projections.indexOf(ID_FIELD)];
                     ids.add(id);
-                } else {
-                    p = createSpareObjectFromProjection(resultHandler, projections, obj, p);
-                }
+                    break;
             }
             if (p != null) {
                 if (resultHandler.isDebug()) {
@@ -329,7 +330,7 @@ public class SearchService {
 
         try {
             p = cast.newInstance();
-            Collection<String> fields = resultHandler.getProjections();
+            Collection<String> fields = resultHandler.getProjectionModel().getProjections();
             for (String field : fields) {
                 BeanUtils.setProperty(p, field, obj[projections.indexOf(field)]);
             }
@@ -351,9 +352,9 @@ public class SearchService {
         projections.add(FullTextQuery.THIS); // Hibernate Object
         projections.add(FullTextQuery.OBJECT_CLASS); // class to project
 
-        if (!CollectionUtils.isEmpty(resultHandler.getProjections())) { // OVERRIDE CASE, PROJECTIONS SET IN RESULTS HANDLER
+        if (resultHandler.getProjectionModel() != ProjectionModel.HIBERNATE_DEFAULT) { // OVERRIDE CASE, PROJECTIONS SET IN RESULTS HANDLER
             projections.remove(FullTextQuery.THIS);
-            projections.addAll(resultHandler.getProjections());
+            projections.addAll(resultHandler.getProjectionModel().getProjections());
         }
 
         projections.add(FullTextQuery.SCORE);

@@ -149,24 +149,12 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private Long contentLength;
 
     
-    private int type = 0;
-    public void setType(int type) {
-        this.type = type;
-    }
-    public int getType() {
-        return type;
-    }
-
-    
     @Action(value = "results", results = {
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String search() throws TdarActionException {
         setLookupSource(LookupSource.RESOURCE);
-        if (getType() == 0) {
-            projections = Arrays.asList("id");
-        }
-        
+        setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         try {
             if (explore) {
                 return exploreSearch();
@@ -787,12 +775,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     public void setLetter(String letter) {
         this.letter = letter;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getProjections() {
-        return projections ;
     }
 
     // 'explore' is a more tailored/guided search experience. for example if

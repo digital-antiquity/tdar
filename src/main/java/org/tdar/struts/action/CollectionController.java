@@ -467,24 +467,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         return getSearchTitle();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getProjections() {
-        if (type == 1) {
-        return ListUtils.EMPTY_LIST;
-        } else {
-            return Arrays.asList("id");
-        }
-    }
-    
-    private int type = 0;
-    public void setType(int type) {
-        this.type = type;
-    }
-    public int getType() {
-        return type;
-    }
-
     @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
@@ -521,4 +503,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.selectedResourceTypes = selectedResourceTypes;
     }
 
+    @Override
+    public ProjectionModel getProjectionModel() {
+        return ProjectionModel.RESOURCE_PROXY;
+    }
 }

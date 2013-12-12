@@ -47,7 +47,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private static final long serialVersionUID = -5625084702553576277L;
 
     private String callback;
-
+    private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
     private int totalRecords;
@@ -113,6 +113,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
             getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
 
             try {
+                setProjectionModel(ProjectionModel.RESOURCE_PROXY);
                 getSearchService().handleSearch(qb, this);
             } catch (SearchPaginationException e) {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, e);
@@ -271,24 +272,6 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return getSearchTitle();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getProjections() {
-        if (type == 1) {
-        return ListUtils.EMPTY_LIST;
-        } else {
-            return Arrays.asList("id");
-        }
-    }
-    
-    private int type = 0;
-    public void setType(int type) {
-        this.type = type;
-    }
-    public int getType() {
-        return type;
-    }
-
     public List<SortOption> getSortOptions() {
         List<SortOption> options = SortOption.getOptionsForContext(Resource.class);
         options.remove(SortOption.RESOURCE_TYPE);
@@ -332,6 +315,15 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     public void setSelectedResourceTypes(ArrayList<ResourceType> selectedResourceTypes) {
         this.selectedResourceTypes = selectedResourceTypes;
+    }
+
+    @Override
+    public ProjectionModel getProjectionModel() {
+        return projectionModel;
+    }
+
+    public void setProjectionModel(ProjectionModel projectionModel) {
+        this.projectionModel = projectionModel;
     }
 
 }

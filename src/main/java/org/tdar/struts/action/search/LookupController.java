@@ -64,7 +64,6 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private String term;
 
     private Long sortCategoryId;
-    private List<String> projections = new ArrayList<String>();
     private boolean includeCompleteRecord = false;
     private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
 
@@ -94,7 +93,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
         if (!isIncludeCompleteRecord() || getAuthenticatedUser() == null) {
             logger.info("using projection {}, {}", isIncludeCompleteRecord(), getAuthenticatedUser());
-            projections.add("id");
+            setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
 
         QueryPartGroup valueGroup = new QueryPartGroup();
@@ -141,7 +140,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         q.append(processReservedTerms(this));
         try {
             handleSearch(q);
-            if (CollectionUtils.isNotEmpty(getProjections())) {
+            if (getProjectionModel() != ProjectionModel.HIBERNATE_DEFAULT) {
                 setResults(getGenericService().populateSparseObjectsById(getResults(), Resource.class));
             }
             logger.trace("jsonResults:" + getResults());
@@ -377,11 +376,6 @@ public class LookupController extends AbstractLookupController<Indexable> {
     public void setTitle(String title) {
 
         this.title = StringUtils.trim(title);
-    }
-
-    @Override
-    public List<String> getProjections() {
-        return projections;
     }
 
     public boolean isIncludeCompleteRecord() {
