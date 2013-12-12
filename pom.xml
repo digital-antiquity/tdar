@@ -28,12 +28,12 @@
 		<jetty.stop.port>12919</jetty.stop.port>
 		<use.test.classpath>false</use.test.classpath>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<geotools.version>10.0</geotools.version>
+		<geotools.version>10.2</geotools.version>
 		<tika.version>1.4</tika.version>
 		<batik.version>1.7</batik.version>
 		<odata4j.version>0.7.0</odata4j.version>
-		<jersey.version>1.17.1</jersey.version>
-		<jackson.version>2.2.3</jackson.version>
+		<jersey.version>1.18</jersey.version>
+		<jackson.version>2.3.0</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<http-components.version>4.3.1</http-components.version>
 		<display.port></display.port>
@@ -52,17 +52,6 @@
 	</organization>
 
 	<repositories>
-		<repository>
-			<id>maven.lib.asu.edu</id>
-			<name>ASU Libraries Maven2 repository</name>
-			<url>http://maven.lib.asu.edu/maven</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
 		<repository>
 			<id>imageJ</id>
 			<name>ImageJ Repository</name>
@@ -117,11 +106,6 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>
-		<!-- <repository>
-		    <id>maven2-repository.dev.java.net</id>
-		    <name>Java.net repository</name>
-		    <url>http://download.java.net/maven/2</url>
-		</repository> -->
 		<repository>
 			<id>osgeo</id>
 			<name>Open Source Geospatial Foundation Repository</name>
@@ -224,7 +208,7 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.48f</version>
+			<version>1.48i</version>
 			<!--  LICENSE: PUBLIC DOMAIN -->
 		</dependency>
 		<dependency>
@@ -773,7 +757,7 @@
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>2.0.1</version>
+			<version>2.0.2</version>
 			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<!-- OpenCSV -->
@@ -830,13 +814,13 @@
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-apibinding</artifactId>
-			<version>3.4.5</version>
+			<version>3.4.9</version>
 			<!--  LICENSE: APACHE 2.0  / LGPL -->
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-api</artifactId>
-			<version>3.4.5</version>
+			<version>3.4.9</version>
 			<!--  LICENSE: APACHE 2.0 / LGPL -->
 		</dependency>
 		<!-- CXF for web-services endpoint -->
@@ -1083,7 +1067,7 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>2.35.0</version>
+			<version>2.38.0</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -1447,6 +1431,13 @@
 					<source>1.7</source>
 					<target>1.7</target>
 					<!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> <fork>true</fork> -->
+
+                    <!--
+                        Welcome to Maven World, where 'no' means 'yes' and 'yes' means 'no'!  More info:
+                            https://jira.codehaus.org/browse/MCOMPILER-205
+                            http://jira.codehaus.org/browse/MCOMPILER-209
+                    -->
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
 				</configuration>
 			</plugin>
 			<plugin>
