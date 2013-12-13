@@ -659,8 +659,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
                 new ArrayList<Resource>(), null);
         ResourceCollection collection2 = generateResourceCollection("test 2 public", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), collection1.getId());
-
+        genericService.synchronize();
         searchIndexService.index(collection1, collection2);
+        searchIndexService.flushToIndexes();
         BrowseController browseController = generateNewInitializedController(BrowseController.class);
         browseController.setRecordsPerPage(Integer.MAX_VALUE);
         browseController.browseCollections();

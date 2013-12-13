@@ -282,12 +282,14 @@ public class SearchService {
             }
             if (projectionModel == ProjectionModel.HIBERNATE_DEFAULT) {
                 p = (Indexable) obj[0];
-                ids.put(p.getId(), obj);
-            }
+                if (Persistable.Base.isNullOrTransient(p)) {
+                    logger.error("persistable is null? {} " , obj);
+                } else {
+                    ids.put(p.getId(), obj);
+                }
+            } 
             toReturn.add(p);
         }
-        logger.info("{}", ids);
-
        // iterate over all of the objects and create an objectMap if needed
        if (CollectionUtils.isNotEmpty(ids.keySet())) {
             switch (projectionModel) {
