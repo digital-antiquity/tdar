@@ -393,7 +393,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @IndexedEmbedded(depth = 1)
+    @IndexedEmbedded(depth = 2)
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
     private transient Account account;
