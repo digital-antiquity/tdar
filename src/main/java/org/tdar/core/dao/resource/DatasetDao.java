@@ -242,7 +242,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     public List<Resource> findOld(Long[] ids) {
         Session session = getCurrentSession();
         long time = System.currentTimeMillis();
-        Query query = session.createQuery(QUERY_RESOURCE_FIND_OLD_LIST);
+        Query query = session.getNamedQuery(QUERY_RESOURCE_FIND_OLD_LIST);
         query.setParameterList("ids", Arrays.asList(ids));
         List<Resource> results = (List<Resource>)query.list();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
