@@ -209,27 +209,16 @@ public class DatasetDao extends ResourceDao<Dataset> {
         //distinct prevents duplicates
         //left join res.informationResourceFiles
         long time = System.currentTimeMillis();
-        String queryString = "select res from ResourceProxy res ";
-
+        Query query = session.getNamedQuery(QUERY_PROXY_RESOURCE_SHORT);
         //if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
         if (ids.length > 1) {
-            queryString += "fetch all properties "
-                    + "left join fetch res.resourceCreators rc "
-                    + "left join fetch res.latitudeLongitudeBoxes "
-                    + "left join fetch rc.creator "
-                    + "left join fetch res.informationResourceFileProxies "
-                    + "left join fetch res.resourceCollections col "
-                    + "left join fetch col.authorizedUsers user ";
+            query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
         }
-        queryString += "where res.id in (:ids)";
-        if (logger.isTraceEnabled()) {
-            logger.trace("{} {}", queryString, ids);
-        }
-        Query query = session.createQuery(queryString);
         query.setParameterList("ids", Arrays.asList(ids));
         query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
         List<ResourceProxy> results = (List<ResourceProxy>)query.list();
-        logger.trace("query took: {} ", System.currentTimeMillis() - time);
+        long queryTime = System.currentTimeMillis() - time;
         time = System.currentTimeMillis();
         List<Resource> toReturn = new ArrayList<>();
         Map<Long, Resource> resultMap = new HashMap<>();
@@ -243,16 +232,17 @@ public class DatasetDao extends ResourceDao<Dataset> {
         for (Long id : ids) {
             toReturn.add(resultMap.get(id));
         }
-        
-        logger.info("generation took: {} {}->{}", System.currentTimeMillis() - time, results.size(), toReturn.size());
-
+        if (logger.isDebugEnabled()) {
+            time = System.currentTimeMillis() - time;
+            logger.info("Query: {} ; generation: {} {}->{}", queryTime, time, results.size(), toReturn.size());
+        }
         return toReturn;
     }
-
+    
     public List<Resource> findOld(Long[] ids) {
         Session session = getCurrentSession();
         long time = System.currentTimeMillis();
-        Query query = session.createQuery("select distinct res from Resource res where res.id in (:ids)");
+        Query query = session.createQuery(QUERY_RESOURCE_FIND_OLD_LIST);
         query.setParameterList("ids", Arrays.asList(ids));
         List<Resource> results = (List<Resource>)query.list();
         logger.info("query took: {} ", System.currentTimeMillis() - time);

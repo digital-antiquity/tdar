@@ -383,7 +383,19 @@
             query= "from InformationResourceFile file where status in (:statuses)"),
     @org.hibernate.annotations.NamedQuery(
             name=TdarNamedQueries.QUERY_FILE_SIZE_TOTAL,
-            query= "select vers.extension, sum(vers.fileLength) from InformationResourceFileVersion vers where fileVersionType in (:types) group by extension")
+            query= "select vers.extension, sum(vers.fileLength) from InformationResourceFileVersion vers where fileVersionType in (:types) group by extension"),
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.QUERY_PROXY_RESOURCE_SHORT,
+            query="select res from ResourceProxy res where res.id in (:ids)"
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.QUERY_PROXY_RESOURCE_FULL,
+            query="select res from ResourceProxy res fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies left join fetch res.resourceCollections col left join fetch col.authorizedUsers user where res.id in (:ids)"
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.QUERY_RESOURCE_FIND_OLD_LIST,
+            query="select distinct res from Resource res where res.id in (:ids)"
+    )
 })
 
 package org.tdar.core.dao;
