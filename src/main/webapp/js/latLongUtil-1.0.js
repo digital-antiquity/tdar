@@ -29,7 +29,7 @@
 
 
 /**
- * Creates a point on the earth's surface at the supplied latitude / longitude
+ * Creates a point on the earth's surface at the supplied latitude / longitude.
  *
  * @constructor
  * @param {Number} lat: latitude in numeric degrees

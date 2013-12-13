@@ -9,8 +9,9 @@
 if (!window.console) {
     console = {};
 }
-console.log = console.log || function() {
-};
+
+
+console.log = console.log || function() {};
 console.warn = console.warn || function() {
 };
 console.debug = console.debug || function() {
@@ -21,12 +22,6 @@ console.info = console.info || function() {
 };
 console.trace = function() {
 };
-// To quickly disable all console messages, uncomment the following line
-// console.log = console.debug = console.warn = console.error = console.info =
-// function() {};
-// or simply turn off the mundane console messages
-// console.debug = function(){};
-//
 
 TDAR.ellipsify = function(str, maxlength) {
     if (!str)
