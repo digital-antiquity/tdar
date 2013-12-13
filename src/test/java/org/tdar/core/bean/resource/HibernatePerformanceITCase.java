@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Cache;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -23,6 +24,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.service.resource.ResourceService;
 
+@Ignore(value="performance test cases ... ignore")
 public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
