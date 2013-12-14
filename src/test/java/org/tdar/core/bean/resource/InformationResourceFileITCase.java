@@ -167,21 +167,19 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testDeleteInformationResourceFile() throws InstantiationException, IllegalAccessException {
         InformationResource ir = generateDocumentWithFileAndUser();
-        int count = ir.getInformationResourceFiles().size();
         boolean seen = false;
         try {
-        for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
+            InformationResourceFile irFile = ir.getFirstInformationResourceFile();
             Long id = irFile.getId();
+            logger.info("{}", irFile);
             informationResourceFileService.delete(irFile);
-            // genericService.synchronize();
+            genericService.synchronize();
             InformationResourceFile irFile2 = informationResourceFileService.find(id);
             assertNull("testing whether the IrFile was actually deleted", irFile2);
-            assertEquals(count - 1, ir.getInformationResourceFiles().size());
-            count--;
-        }
-        assertEquals(0, ir.getInformationResourceFiles().size());
-        } catch (Exception e){
-            if (e.getMessage().contains("Should not delete Uploaded or Archival Version")) {
+            assertEquals(0, ir.getInformationResourceFiles().size());
+        } catch (Throwable e) {
+            logger.debug(e.getMessage());
+            if (e.getMessage().contains("method not implemented")) {
                 seen = true;
             }
         }
