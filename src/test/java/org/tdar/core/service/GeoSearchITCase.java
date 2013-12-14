@@ -29,7 +29,7 @@ import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.FreetextQueryPart;
+import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 
@@ -152,8 +152,7 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         FieldQueryPart<ResourceType> qp = new FieldQueryPart<ResourceType>("resourceType", ResourceType.PROJECT);
         q.append(qp);
 
-        FreetextQueryPart ft = new FreetextQueryPart();
-        ft.add("Virginia");
+        GeneralSearchResourceQueryPart ft = new GeneralSearchResourceQueryPart("Virginia");
         q.append(ft);
 
         FullTextQuery ftq = searchService.search(q);

@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +25,8 @@ import org.tdar.tag.Query.Where;
 import org.tdar.tag.SearchResults.Meta;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.dom.Element;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
 
@@ -92,8 +95,19 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         query.setWhat(domestic);
         results = port.getTopRecords(sessionId, query, 5);
         meta = results.getMeta();
-        assertTrue("size should be 6 or 7", meta.getTotalRecords() >= 6); // there should be 6 Project records matching domestic
-        assertTrue("size should be 6 or 7", meta.getTotalRecords() < 8); // there should be 6 Project records matching domestic
+        String[] ids = {"262", "1268", "2420", "3805"};
+        boolean ok = false;
+        for (ResultType result : results.getResults().getResult()) {
+            for (String id : ids) {
+                if (id.equals(result.identifier)) {
+//                    logger.info("ok: {} ", id);
+                    ids = (String[])ArrayUtils.removeElement(ids, id);
+                    ok = true;
+                }
+            }
+//            logger.info("saw: {}", result.identifier);
+        }
+        assertTrue("should see something, missed:" + ids,ok);
         query.setWhat(null);
 
         Where where = new Where(); // look in AZ and NM
