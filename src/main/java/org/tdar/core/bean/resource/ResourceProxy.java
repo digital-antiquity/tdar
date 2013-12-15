@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -22,13 +21,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.converters.DateConverter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Immutable;
@@ -45,13 +40,27 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 
+/**
+ * This ResourceProxy class is designed to handle one of the major performance issues with Hibernate, that being the insane lookup queries that Hibernate
+ * performs to grab all of the relationships for Resource. Basically, from what we can tell, the "@Inheritance(strategy = InheritanceType.JOINED)" for
+ * Resource is causing lots of joins deeper into the resource hierarchy than what we need in Lucene Searches. Thus we've looked at a number of methods for
+ * handling this including: Criteria Queries with Projection, HQL with Projection, and ultimately these proxy objects.
+ * 
+ * With the context of these views, we've seen significant performance boosts using these hibernate proxy objects to back Hibernate Search's Lucene searches. We
+ * also looked at removing the bi-directional relationships between InformationResource <=> InformationResourceFile and InformationResourceFile <=>
+ * InformationResourceFileVersion. 
+ * 
+ * To document a bit of the difference a earch For 500 resources via normal web search (http://localhost:8080/search/results?recordsPerPage=500 ):
+ * - HibernateSearch Native: 19507 ms
+ * - ResourceProxy with bi-directional relationships removed: 18607 ms
+ * - Using the ResourceProxy, InformatonResourceFileProxy, and InformationResourceFileVersionProxy: 5224 ms
+ * 
+ * @author abrin
+ * 
+ */
 @Entity
 @Immutable
 @Subselect(value = "select rp.* , date_created, project_id, inheriting_spatial_information from resource rp left join information_resource ir on rp.id=ir.id")
-//@Table(name="resource_proxy")
-/*
- * performance wise-it appears that the subselect is faster than the view
- */
 public class ResourceProxy implements Serializable {
 
     private static final long serialVersionUID = -2574871889110727564L;
