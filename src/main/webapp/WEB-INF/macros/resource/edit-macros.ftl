@@ -1512,7 +1512,7 @@ $(function() {
 <script id="template-person-autocomplete-li" type="text/x-tmpl">
     <li class="{%=o.addnew?'addnew':''%}">
         <a>
-            <div>
+            <div class="person-{%=_e(o.id)%}">
                 <span class="name">{%=_e(o.properName)%}</span>
                 {% if(o.email)  %}<span class="email">({%=_e(o.email)%})</span>{%
                 %}{% if(o.institution && o.institution.name) { %}, <span class="institution">{%=_e(o.institution.name)%}</span> {% } %}

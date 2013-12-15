@@ -175,9 +175,9 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         setFieldByName("projectId", "-1");
         find("#accessRightsRecordsAddAnotherButton").click();
         find("#accessRightsRecordsAddAnotherButton").click();
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu","person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", VIEW_ALL);
+        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349", VIEW_ALL);
         submitForm();
     }
 
@@ -295,9 +295,9 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find("#accessRightsRecordsAddAnotherButton").click();
         find("#accessRightsRecordsAddAnotherButton").click();
 
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu","person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", VIEW_ALL);
+        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349", VIEW_ALL);
 
         docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
         docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
@@ -386,10 +386,10 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         assertThat(getSource(), containsString(TEST_DOCUMENT_NAME));
     }
 
-    private void addAuthuser(String nameField, String selectField, String name, String email, GeneralPermissions permissions) {
+    private void addAuthuser(String nameField, String selectField, String name, String email, String selector, GeneralPermissions permissions) {
 
         WebElement blankField = find(By.name(nameField)).first();
-        if (!selectAutocompleteValue(blankField, name, email)) {
+        if (!selectAutocompleteValue(blankField, name, email, selector)) {
             String fmt = "Failed to add authuser %s because selenium failed to select a user from the autocomplete " +
                     "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
                     "menu.";

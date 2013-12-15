@@ -173,7 +173,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             if (value.indexOf("(") != -1) {
                 value = value.substring(0, value.indexOf("("));
             }
-            if (!selectAutocompleteValue(ontologyNode, value, value)) {
+            if (!selectAutocompleteValue(ontologyNode, value, value, null)) {
                 String fmt = "Failed to map ontology %s because selenium failed to select a user from the autocomplete " +
                         "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
                         "menu.";
@@ -206,7 +206,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         }
 
         WebElement ontologyField = column.find(By.className("ontologyfield")).first();
-        if (!selectAutocompleteValue(ontologyField, ontologyName, ontologyName)) {
+        if (!selectAutocompleteValue(ontologyField, ontologyName, ontologyName, null)) {
             String fmt = "Failed to add ontology %s because selenium failed to select a user from the autocomplete " +
                     "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
                     "menu.";

@@ -8,13 +8,21 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
@@ -23,7 +31,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -983,7 +1001,7 @@ public abstract class AbstractSeleniumWebITCase {
      *             menu to appear.
      * 
      */
-    public boolean selectAutocompleteValue(WebElement field, String textEntry, String partialMenuItemTest) {
+    public boolean selectAutocompleteValue(WebElement field, String textEntry, String partialMenuItemTest, String idSelector) {
         field.sendKeys(textEntry);
         waitFor(4); // kludge
         field.sendKeys(Keys.ARROW_DOWN);
@@ -994,16 +1012,18 @@ public abstract class AbstractSeleniumWebITCase {
             fail("could not set value on  " + field + " because autocomplete never appeared or was dismissed too soon");
         }
 
-        logger.info("menuItems: {} ({})", menuItems, menuItems.size());
+        logger.info("menuItems: {} ({})", menuItems.getHtml(), menuItems.size());
         String partialText = partialMenuItemTest.toLowerCase();
         WebElement firstMatch = null;
         for (WebElement menuItem : menuItems) {
             String text = menuItem.getText().toLowerCase();
-            logger.info(text);
-            if (text.contains(partialText)) {
+            WebElementSelection wes  = new WebElementSelection(menuItem, getDriver());
+            String html = wes.getHtml();
+            if (text.contains(partialText) || StringUtils.isNotBlank(idSelector) && StringUtils.containsIgnoreCase(html, idSelector)) {
                 firstMatch = menuItem;
                 break;
             }
+            logger.info(text);
         }
 
         boolean wasFound = firstMatch != null;
