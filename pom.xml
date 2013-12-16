@@ -1279,39 +1279,40 @@
 					<keyalg>RSA</keyalg>
 				</configuration>
 			</plugin>
-<!-- 			<plugin> -->
-<!-- 				<groupId>com.atlassian.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-clover2-plugin</artifactId> -->
-<!-- 				<version>${clover.version}</version> -->
-<!-- 				<configuration> -->
-<!-- 					<license><![CDATA[PrONwMWvXwTFNoOAnUHndHXkQQsReQtxxAircrptPwNRAO -->
-<!--                                     mi2K40jqdhAtiGeu1Ay<awpH2Ka70mvufpBxuELnxRWCCi -->
-<!--                                     PQROuvNMMOooOnnqRRMwtpQnrQopmQnPRmxwXsxQXSssvU -->
-<!--                                     XRuVtVSVsXXUSXxtQVwwWwVxTqrmnmqmUUnpqsvqmmmmmm -->
-<!--                                     mUUnpqsvqmmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI -->
-<!--                                     bZloaUUnmm]]></license> -->
-<!-- 					<includes> -->
-<!-- 						<include>**/*.java</include> -->
-<!-- 					</includes> -->
-<!-- 					<excludes> -->
-<!-- 						<exclude>**/SQLExtract.java</exclude> -->
-<!-- 						<exclude>org/tdar/utils/sensorydata/*.java</exclude> -->
-<!-- 						<exclude>org/tdar/utils/sensorydata/enums/*.java</exclude> -->
-<!-- 						<exclude>**/PDFCombiner.java</exclude> -->
-<!-- 						<exclude>**/PDFMergerUtility.java</exclude> -->
-<!-- 						<exclude>**/CommandLineAPITool.java</exclude> -->
-<!-- 						<exclude>**/FilesystemFilestore.java</exclude> -->
-<!-- 						<exclude>**/PairtreeFilestoreMigrator.java</exclude> -->
-<!-- 					</excludes> -->
-<!-- 				</configuration> -->
-<!-- 				<dependencies> -->
-<!-- 					<dependency> -->
-<!-- 						<groupId>com.cenqua.clover</groupId> -->
-<!-- 						<artifactId>clover</artifactId> -->
-<!-- 						<version>${clover.version}</version> -->
-<!-- 					</dependency> -->
-<!-- 				</dependencies> -->
-<!-- 			</plugin> -->
+			<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-clover2-plugin</artifactId>
+				<version>${clover.version}</version>
+				<configuration>
+						<license><![CDATA[rMrNURWpXQHaLRhRdgkEQUkUOOnieVBQFVQPreSbWjkXom
+					mi2KvNPg36OZ1l82HG0ctoyr2K1bkHvvRzbQXkvm7yilg0
+					QoNrTXNRRQpqONnnNqPxxnrNmRnQomRRqQuSsxVQSXuTXW
+					xRVwvwtWuVSvxVxwnvusVTtWsNMmnmqmUUnptuqtsmmmmm
+					mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+					bZloaUUnmm
+					]]></license>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/SQLExtract.java</exclude>
+						<exclude>org/tdar/utils/sensorydata/*.java</exclude>
+						<exclude>org/tdar/utils/sensorydata/enums/*.java</exclude>
+						<exclude>**/PDFCombiner.java</exclude>
+						<exclude>**/PDFMergerUtility.java</exclude>
+						<exclude>**/CommandLineAPITool.java</exclude>
+						<exclude>**/FilesystemFilestore.java</exclude>
+						<exclude>**/PairtreeFilestoreMigrator.java</exclude>
+					</excludes>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.cenqua.clover</groupId>
+						<artifactId>clover</artifactId>
+						<version>${clover.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 			<plugin>
 				<groupId>org.pitest</groupId>
 				<artifactId>pitest-maven</artifactId>
