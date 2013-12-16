@@ -1,6 +1,6 @@
 Articulated Skeleton
 	Articulated Skeleton Complete
-	Articulated Skeleton Nearly Complete
+	Articulated Skeleton Nearly Complete (ASNC)
 	Articulated Skeleton Partial
 		Articulated Skeleton Anterior Portion
 		Articulated Skeleton Posterior Portion
