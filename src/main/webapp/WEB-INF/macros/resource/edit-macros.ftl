@@ -1511,7 +1511,7 @@ $(function() {
 <#macro personAutocompleteTemplate>
 <script id="template-person-autocomplete-li" type="text/x-tmpl">
     <li class="{%=o.addnew?'addnew':''%}">
-        <a>
+        <a><#-- person-{id} class used below to allow the test autocomplete to work without having access to email addresses -->
             <div class="person-{%=_e(o.id)%}">
                 <span class="name">{%=_e(o.properName)%}</span>
                 {% if(o.email)  %}<span class="email">({%=_e(o.email)%})</span>{%
