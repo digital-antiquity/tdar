@@ -6,8 +6,6 @@ import java.util.Collection;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.struts.action.search.SearchFieldType;
 
@@ -18,7 +16,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     protected static final float PHRASE_BOOST = 3.2f;
     protected static final float ANY_FIELD_BOOST = 2f;
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+//    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     public GeneralSearchQueryPart() {
     }

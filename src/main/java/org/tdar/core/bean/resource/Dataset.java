@@ -141,7 +141,7 @@ public class Dataset extends InformationResource {
     @Transient
     public DataTable getDataTableById(Long id) {
         for (DataTable datatable : getDataTables()) {
-            if (datatable.getId() == id) {
+            if (ObjectUtils.equals(datatable.getId() , id)) {
                 return datatable;
             }
         }

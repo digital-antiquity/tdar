@@ -107,7 +107,7 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
             }
 //            logger.info("saw: {}", result.identifier);
         }
-        assertTrue("should see something, missed:" + ids,ok);
+        assertTrue("should see something, missed:" + ArrayUtils.toString(ids),ok);
         query.setWhat(null);
 
         Where where = new Where(); // look in AZ and NM

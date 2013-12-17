@@ -30,9 +30,6 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     @Autowired
     AccountService accountService;
 
-    @Autowired
-    GenericService genericService;
-
     @Test
     @Rollback
     public void testAccountList() throws TdarActionException {

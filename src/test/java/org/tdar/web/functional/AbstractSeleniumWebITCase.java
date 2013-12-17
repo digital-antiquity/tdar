@@ -755,8 +755,12 @@ public abstract class AbstractSeleniumWebITCase {
         login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
     }
 
-    public boolean hasReindexedOnce() {
-        return reindexed;
+    public static boolean hasReindexedOnce() {
+        return AbstractSeleniumWebITCase.reindexed;
+    }
+    
+    public static void setReindexed(boolean val) {
+        AbstractSeleniumWebITCase.reindexed = val;
     }
 
     public void reindex() {
@@ -766,7 +770,7 @@ public abstract class AbstractSeleniumWebITCase {
         find("#idxBtn").click();
         waitFor("#spanDone", 120);
         logout();
-        reindexed = true;
+        AbstractSeleniumWebITCase.setReindexed(true);
     }
 
     /**

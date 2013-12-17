@@ -11,14 +11,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 @RunWith(Parameterized.class)
 public class QunitRunnerITCase extends AbstractBasicSeleniumWebITCase {
 
-    Logger logger = LoggerFactory.getLogger(QunitRunnerITCase.class);
+//    Logger logger = LoggerFactory.getLogger(QunitRunnerITCase.class);
     String path;
 
     public QunitRunnerITCase(String path) {

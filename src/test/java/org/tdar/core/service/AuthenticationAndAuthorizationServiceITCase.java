@@ -34,9 +34,6 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
     @Autowired
     AuthenticationAndAuthorizationService authService;
 
-    @Autowired
-    GenericService genericService;
-
     int tosLatestVersion = TdarConfiguration.getInstance().getTosLatestVersion();
     int contributorAgreementLatestVersion = TdarConfiguration.getInstance().getContributorAgreementLatestVersion();
 

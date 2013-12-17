@@ -321,7 +321,7 @@ public abstract class InformationResource extends Resource {
     public void setDate(Integer dateCreated) {
         this.date = dateCreated;
         if (dateCreated != null) {
-            this.dateNormalized = Math.round(dateCreated / 10) * 10;
+            this.dateNormalized = Math.round(dateCreated.floatValue() / 10f) * 10;
         } else {
             this.dateNormalized = null;
         }

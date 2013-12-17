@@ -27,9 +27,9 @@ import au.com.bytecode.opencsv.CSVReader;
 public class CsvConverter extends SimpleConverter {
 
     protected static final String DB_PREFIX = "csv";
-    protected CSVReader reader;
-    protected String[] headerLine;
-    protected String tableName = "";
+//    protected CSVReader reader;
+//    protected String[] headerLine;
+//    protected String tableName = "";
 
     @Override
     public String getDatabasePrefix() {

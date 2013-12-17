@@ -114,7 +114,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
         // remove the authority record from the selected items
         Dedupable<?> authority = (Dedupable<?>) getGenericService().find(entityType.getType(), authorityId);
-        selectedDuplicates.remove(authority);
+        selectedDuplicates.remove(authority.getId());
         selectedDupeIds.remove(authorityId);
 
         if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 0) {

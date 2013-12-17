@@ -374,14 +374,22 @@ public class ReflectionService {
         Object action = invocation.getAction();
         ActionProxy proxy = invocation.getProxy();
         String methodName = proxy.getMethod();
-        Method method = action.getClass().getMethod(methodName);
+        Method method = null;
 
         if (methodName == null) {
             methodName = EXECUTE;
         }
-        Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
-        Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);
-        return (class_ != null || method_ != null);
+
+        if (action != null) {
+            method = action.getClass().getMethod(methodName);
+        }
+
+        if (method != null) {
+            Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
+            Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);
+            return (class_ != null || method_ != null);
+        }
+        return false;
     }
     
     /**

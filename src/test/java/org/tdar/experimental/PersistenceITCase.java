@@ -1,21 +1,17 @@
 package org.tdar.experimental;
 
-import org.hibernate.Hibernate;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.TestConstants;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.resource.Project;
-import org.tdar.core.service.GenericService;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUtil;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import org.hibernate.Hibernate;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.resource.Project;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,9 +23,6 @@ import static org.junit.Assert.assertThat;
 public class PersistenceITCase extends AbstractIntegrationTestCase {
 
     final Long PROJECT_ID = 3L;
-
-    @Autowired
-    GenericService genericService;
 
     PersistenceUtil persistenceUtil;
 

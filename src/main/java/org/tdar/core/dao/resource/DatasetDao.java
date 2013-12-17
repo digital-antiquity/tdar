@@ -117,7 +117,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     @SuppressWarnings("unchecked")
     public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RECENT);
-        query.setDate("updatedDate", new Date(System.currentTimeMillis() - 86400000 * days));
+        query.setDate("updatedDate", new Date(System.currentTimeMillis() - 86400000l * (long)days));
         return query.list();
     }
 
@@ -131,7 +131,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     @SuppressWarnings("unchecked")
     public List<Long> findRecentlyUpdatedItemsInLastXDaysForExternalIdLookup(int days) {
         Query query = getCurrentSession().getNamedQuery(QUERY_EXTERNAL_ID_SYNC);
-        query.setDate("updatedDate", new Date(System.currentTimeMillis() - 86400000 * days));
+        query.setDate("updatedDate", new Date(System.currentTimeMillis() - 86400000l * (long)days));
         query.setCacheMode(CacheMode.IGNORE);
         return query.list();
     }

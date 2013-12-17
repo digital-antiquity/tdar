@@ -10,21 +10,12 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.EntityService;
-import org.tdar.core.service.GenericService;
 
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
-
-    @Autowired
-    GenericService genericService;
-
-    @Autowired
-    EntityService entityService;
 
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources

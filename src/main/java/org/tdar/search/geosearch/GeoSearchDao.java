@@ -213,10 +213,10 @@ public class GeoSearchDao {
             logger.trace("no results found for query");
         } catch (CannotGetJdbcConnectionException e) {
             logger.error("gis database connection not enabled");
-            databaseEnabled = false;
+            GeoSearchDao.setEnabled( false);
         } catch (Exception e) {
             logger.debug("exception in geosearch:", e);
-            databaseEnabled = false;
+            GeoSearchDao.setEnabled(false);
         }
         return queryForList;
     }

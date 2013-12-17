@@ -49,7 +49,6 @@ import com.vividsolutions.jts.io.WKBReader;
  */
 public class AccessDatabaseConverter extends DatasetConverter.Base {
     private static final String DB_PREFIX = "d";
-    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public String getDatabasePrefix() {

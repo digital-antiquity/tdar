@@ -410,7 +410,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             rules.add(createRule("3", "three", codingSheet));
             genericService.save(codingSheet);
 
-            File bigFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
+//            File bigFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
 
             Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx", Dataset.class);
             Long datasetId = dataset.getId();

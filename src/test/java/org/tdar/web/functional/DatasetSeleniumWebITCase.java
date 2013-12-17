@@ -27,13 +27,13 @@ import org.tdar.core.bean.resource.Language;
 import org.tdar.web.AbstractWebTestCase;
 
 public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
-    public static HashMap<String, String> docValMap;
-    public static HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
-    public static HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();
+    public  HashMap<String, String> docValMap;
+    public  HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
+    public  HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();
     // we will assert the presence of these values, but we don't care what order they appear
-    public static Map<String, String> docUnorderdValMap = new HashMap<String, String>();
-    public static List<String> alternateTextLookup = new ArrayList<String>();
-    public static List<String> alternateCodeLookup = new ArrayList<String>();
+    public  Map<String, String> docUnorderdValMap = new HashMap<String, String>();
+    public  List<String> alternateTextLookup = new ArrayList<String>();
+    public  List<String> alternateCodeLookup = new ArrayList<String>();
 
     public static String REGEX_DATASET_VIEW = ".+\\/dataset\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DATASET_VIEW);

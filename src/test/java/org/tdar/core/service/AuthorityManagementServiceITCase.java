@@ -49,9 +49,6 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
     EntityService entityService;
 
     @Autowired
-    GenericService genericService;
-
-    @Autowired
     GenericKeywordService genericKeywordService;
 
     @Autowired

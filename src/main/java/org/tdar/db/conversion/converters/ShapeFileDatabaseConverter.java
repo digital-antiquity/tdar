@@ -22,8 +22,6 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.PropertyType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -51,7 +49,7 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
     private static final String DB_PREFIX = "s";
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+//    protected Logger logger = LoggerFactory.getLogger(getClass());
     private File databaseFile;
 
     @Override

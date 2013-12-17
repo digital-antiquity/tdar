@@ -17,6 +17,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
@@ -57,7 +58,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         searchIndexService.index(doc);
         controller.setId(institution.getId());
         controller.browseCreators();
-        List<Creator> results = controller.getResults();
+        List<Resource> results = controller.getResults();
         assertTrue(results.contains(doc));
     }
 

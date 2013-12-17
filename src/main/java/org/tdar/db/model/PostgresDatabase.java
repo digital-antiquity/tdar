@@ -84,8 +84,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     // private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=\'%s\'";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     private static final String SELECT_DISTINCT = "SELECT DISTINCT \"%s\" FROM %s ORDER BY \"%s\"";
-    private static final String SELECT_DISTINCT_WITH_COUNT = "SELECT DISTINCT \"%s\", count(" + TargetDatabase.TDAR_ID_COLUMN
-            + ") FROM %s group by \"%s\" ORDER BY \"%s\"";
+    private static final String SELECT_DISTINCT_WITH_COUNT = "SELECT DISTINCT \"%s\" as val, count(" + TargetDatabase.TDAR_ID_COLUMN
+            + ") as count FROM %s group by \"%s\" ORDER BY \"%s\"";
     private static final String SELECT_DISTINCT_NOT_BLANK = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL AND \"%s\" !='' ORDER BY \"%s\"";
     private static final String SELECT_DISTINCT_NOT_BLANK_NUM = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL ORDER BY \"%s\"";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
@@ -267,7 +267,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         query(distinctSql, new RowMapper<Object>() {
             @Override
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-                toReturn.put(rs.getString(0), rs.getLong(1));
+                toReturn.put(rs.getString("val"), rs.getLong("count"));
                 return null;
             }
         });
@@ -737,13 +737,13 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public ModernIntegrationDataResult generateModernIntegrationResult(IntegrationContext proxy) {
         ModernIntegrationDataResult result = new ModernIntegrationDataResult();
-        createTable(String.format(CREATE_TEMPORARY_TABLE, proxy.getTempTableName()));
+        createTable(String.format(CREATE_TEMPORARY_TABLE, proxy.getTempTableName(), ""));
         for (IntegrationColumn column : proxy.getIntegrationColumns()) {
             String deflt = MessageHelper.getMessage("database.null_empty_integration_value");
             if (column.isDisplayColumn()) {
                 deflt = MessageHelper.getMessage("database.null_empty_mapped_value");
             }
-            executeUpdateOrDelete(String.format(ADD_COLUMN + " DEFAULT %s", column.getName(), deflt));
+            executeUpdateOrDelete(String.format(ADD_COLUMN + " DEFAULT %s", proxy.getTempTableName(), column.getName(), deflt));
         }
 
         for (DataTable table : proxy.getDataTables()) {

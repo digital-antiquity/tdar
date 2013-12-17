@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotNullPredicate;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -187,7 +188,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     private void applyTransientEnabledPermission(Person authenticatedUser, List<AuthorizedUser> authorizedUsers, boolean canModify) {
         for (AuthorizedUser au : authorizedUsers) {
-            if (au.equals(authenticatedUser) || !canModify) {
+            if (ObjectUtils.equals(au.getUser(), authenticatedUser) || !canModify) {
                 au.setEnabled(false);
             } else {
                 au.setEnabled(true);
@@ -375,7 +376,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         logger.info("collections to remove: {}", toRemove);
         for (ResourceCollection collection : toRemove) {
             current.remove(collection);
-            resource.getResourceCollections().remove(current);
+            collection.getResources().remove(resource);
+            resource.getResourceCollections().remove(collection);
         }
 
         for (ResourceCollection collection : incoming_) {

@@ -34,13 +34,13 @@ import org.tdar.junit.RunWithTdarConfiguration;
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTestCase {
-    public static HashMap<String, String> docValMap;
-    public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
-    public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
+    public HashMap<String, String> docValMap;
+    public HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
+    public HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
     // we will assert the presence of these values, but we don't care what order they appear
-    public static Map<String, String> docUnorderdValMap = new HashMap<String, String>();
-    public static List<String> alternateTextLookup = new ArrayList<String>();
-    public static List<String> alternateCodeLookup = new ArrayList<String>();
+    public Map<String, String> docUnorderdValMap = new HashMap<String, String>();
+    public List<String> alternateTextLookup = new ArrayList<String>();
+    public List<String> alternateCodeLookup = new ArrayList<String>();
     public static String REGEX_DOCUMENT_VIEW = "\\/document\\/\\d+$";
 
     public CompleteDocumentWebITCase() {

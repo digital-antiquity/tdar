@@ -61,7 +61,7 @@ public class MessageHelper implements Serializable, TextProvider {
 
     @Override
     public boolean hasKey(String key) {
-            return hasKey(key);
+            return checkKey(key);
     }
 
     @Override

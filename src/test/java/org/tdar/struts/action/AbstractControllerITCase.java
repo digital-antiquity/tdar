@@ -16,7 +16,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Assert;
 import org.junit.Before;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Persistable;
@@ -41,8 +40,6 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.SearchIndexService;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
@@ -61,8 +58,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     public static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";
 
     public static final String REASON = "because";
-    @Autowired
-    protected SearchIndexService searchIndexService;
 
     @Before
     public final void init() {
@@ -71,8 +66,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     protected abstract TdarActionSupport getController();
 
-    @Autowired
-    protected ResourceService resourceService;
 
     public void bookmarkResource(Resource r) {
         bookmarkResource(r, false);

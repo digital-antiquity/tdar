@@ -48,6 +48,7 @@ import org.tdar.struts.data.IntegrationDataResult;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import au.com.bytecode.opencsv.CSVWriter;
 
 /**
@@ -343,6 +344,7 @@ public class DataIntegrationService {
      * @return
      */
     @Transactional
+    @SuppressWarnings(value="NP_NULL_ON_SOME_PATH", justification="null check earlier in the method")
     public CodingSheet createGeneratedCodingSheet(DataTableColumn column, Person submitter, Ontology ontology) {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
