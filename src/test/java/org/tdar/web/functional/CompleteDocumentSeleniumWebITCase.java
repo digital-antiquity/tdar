@@ -357,13 +357,13 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
             String val = docValMap.get(key);
 
             // ignore id fields, file uploads, and fields with UPPER CASE VALUES (huh?)
-            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val))
+            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val) || key.contains("email"))
                 continue;
 
             if (docUnorderdValMap.containsKey(key)) {
                 assertTrue("looking for '" + val + "' in text", textContains(val));
             } else {
-                assertEquals(find(By.name(key)).val(), val);
+                assertEquals(val, find(By.name(key)).val());
             }
         }
 
