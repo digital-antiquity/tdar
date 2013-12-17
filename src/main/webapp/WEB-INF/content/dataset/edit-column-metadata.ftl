@@ -465,8 +465,9 @@ function registerCheckboxInfo() {
     mapDetail.hide();
 
     if (dataType == undefined || dataType.indexOf('INT') == -1 && dataType.indexOf('DOUBLE') == -1) {
-      $(".columnEncoding[value='MEASUREMENT']", $target).attr('disabled','disabled');
-      $(".columnEncoding[value='COUNT']", $target).attr('disabled','disabled');
+      //TODO: confirm test coverage, then delete this comment.
+      $(".columnEncoding[value='MEASUREMENT']", $target).prop('disabled', true);
+      $(".columnEncoding[value='COUNT']", $target).prop('disabled',true );
     }
     
     if (val == 'COUNT') {

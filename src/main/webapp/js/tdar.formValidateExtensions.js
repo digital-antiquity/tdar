@@ -161,11 +161,14 @@ $.validator.addMethod(
                 var isValid;
                 if($(row).hasClass("creatorPerson")) {
                     //person must have firstname, lastname specified
-                    var nonBlanks = $(row).find("[name $= 'lastName'][value != ''],[name $= 'firstName'][value != '']");
+
+                    var nonBlanks = $(row).find("[name $= 'lastName'],[name $= 'firstName']").filter(function(){
+                        return $(this).val() != "";
+                    });
                     isValid = nonBlanks.length == 2;
                 } else {
                     //institution must not be blank
-                    isValid = $(row).find("[name $= 'institution.name'][value != '']").length != 0;
+                    isValid = $(row).find("[name $= 'institution.name']").val() != "";
                 }
                 return isValid;
             });
