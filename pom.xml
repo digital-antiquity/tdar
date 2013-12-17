@@ -1127,6 +1127,7 @@
 						<link>http://struts.apache.org/2.x/struts2-core/apidocs</link>
 					</links>
 					<detectLinks>false</detectLinks>
+					<sourcepath>src/main/java:src/test/java</sourcepath>
 				</configuration>
 			</plugin>
 
@@ -1721,7 +1722,8 @@
 					<failOnError>false</failOnError>
 					<findbugsXmlOutput>false</findbugsXmlOutput>
 					<onlyAnalyze>org.tdar.*</onlyAnalyze>
-					<skip>true</skip>
+					<includeTests>false</includeTests>
+					<excludeFilterFile>src/main/resources/findbugs-exclude.xml</excludeFilterFile>
 				</configuration>
 			</plugin>
 			<plugin>
