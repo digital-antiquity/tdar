@@ -1,4 +1,5 @@
-.tdarCommentDescription { /* do not remove */
+.tdarCommentDescription { 
+	/* do not remove */
 	display: none !important;
 	visibility: hidden !important;
 }
@@ -1001,22 +1002,22 @@ h3.collection-mid-black::before {
 	font-size: 70%;
 }
 
-.rotate--90 {
-	-webkit-transform: rotate(-90deg);
-	transform: rotate(-90deg);
-	-moz-transform: rotate(-90deg);
-	-ms-transform: rotate(-90deg);
-	-o-transform: rotate(-90deg);
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2 );
+.rotate-270 {
+	-webkit-transform: rotate(270deg);
+	-moz-transform: rotate(270deg);
+	-ms-transform: rotate(270deg);
+	-o-transform: rotate(270deg);
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2 )";
+	transform: rotate(270deg);
 }
 
 .rotate-90 {
 	-webkit-transform: rotate(90deg);
-	transform: rotate(90deg);
 	-moz-transform: rotate(90deg);
 	-ms-transform: rotate(90deg);
 	-o-transform: rotate(90deg);
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=4 );
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=4 )";
+	transform: rotate(90deg);
 }
 
 .adminbox {
