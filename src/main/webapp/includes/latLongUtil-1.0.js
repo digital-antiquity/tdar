@@ -1,10 +1,3 @@
-
-/*FIXME:  JTD: this file has been modified to replace usage of trim() (which is not supported in IE Jscript)  with $.trim.   This adds a jquery dependency.
- * 
- * See if this is fixed in later versions of latLongUtil
- */
-
-
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  Latitude/longitude spherical geodesy formulae & scripts (c) Chris Veness 2002-2010            */
 /*   - www.movable-type.co.uk/scripts/latlong.html                                                */
@@ -20,7 +13,7 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  Note that minimal error checking is performed in this example code!                           */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
+//FIXME: retain attribution (cc-by) and adopt as first-class module
 
 /**
  * Creates a point on the earth's surface at the supplied latitude / longitude
@@ -540,6 +533,4 @@ Geo.toBrng = function(deg, format, dp) {
   deg = (Number(deg)+360) % 360;  // normalise -ve values to 180º..360º
   var brng =  Geo.toDMS(deg, format, dp);
   return brng.replace('360', '0');  // just in case rounding took us up to 360º!
-}
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+};

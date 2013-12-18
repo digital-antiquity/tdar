@@ -16,7 +16,7 @@
 		<postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
 		<!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
 		<apache.cxf.version>2.7.4</apache.cxf.version>
-		<clover.version>3.1.12</clover.version>
+		<clover.version>3.2</clover.version>
 		<!-- /end managed versions -->
 		<jvm.args>-Xms256m -Xmx2560m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
