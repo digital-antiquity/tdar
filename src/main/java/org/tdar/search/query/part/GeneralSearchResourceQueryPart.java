@@ -1,7 +1,9 @@
 package org.tdar.search.query.part;
 
 import java.util.Collection;
+import java.util.List;
 
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
 public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
@@ -12,7 +14,9 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
     protected static final float PHRASE_BOOST = 3.2f;
     protected static final float ANY_FIELD_BOOST = 2f;
 
-    public GeneralSearchResourceQueryPart() {
+    public GeneralSearchResourceQueryPart(List<String> list, Operator operator) {
+        this(list);
+        setOperator(operator);
     }
 
     public GeneralSearchResourceQueryPart(String... values) {
