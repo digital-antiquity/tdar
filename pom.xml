@@ -1076,12 +1076,13 @@
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>${clover.version}</version>
 				<configuration>
-					<license><![CDATA[PrONwMWvXwTFNoOAnUHndHXkQQsReQtxxAircrptPwNRAO
-									mi2K40jqdhAtiGeu1Ay<awpH2Ka70mvufpBxuELnxRWCCi
-									PQROuvNMMOooOnnqRRMwtpQnrQopmQnPRmxwXsxQXSssvU
-									XRuVtVSVsXXUSXxtQVwwWwVxTqrmnmqmUUnpqsvqmmmmmm
-									mUUnpqsvqmmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
-									bZloaUUnmm]]></license>
+						<license><![CDATA[rMrNURWpXQHaLRhRdgkEQUkUOOnieVBQFVQPreSbWjkXom
+					mi2KvNPg36OZ1l82HG0ctoyr2K1bkHvvRzbQXkvm7yilg0
+					QoNrTXNRRQpqONnnNqPxxnrNmRnQomRRqQuSsxVQSXuTXW
+					xRVwvwtWuVSvxVxwnvusVTtWsNMmnmqmUUnptuqtsmmmmm
+					mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+					bZloaUUnmm
+					]]></license>
 					<includes>
 						<include>**/*.java</include>
 					</includes>
