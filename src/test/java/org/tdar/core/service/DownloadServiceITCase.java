@@ -156,6 +156,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testDownloadController() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
 
         Document doc = generateDocumentWithFileAndUser();
@@ -172,7 +173,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         controller.setInformationResourceFileId(document.getFirstInformationResourceFile().getLatestPDF().getId());
         try {
             assertEquals(TdarActionSupport.SUCCESS, controller.execute());
-            logger.info(controller.getFileName());
+            assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getFileName());
         } catch (TdarActionException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
