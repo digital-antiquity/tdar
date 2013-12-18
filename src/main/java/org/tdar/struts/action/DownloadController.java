@@ -88,7 +88,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         }
         setInformationResourceId(irFileVersion.getInformationResourceId());
         logger.info("user {} downloaded {}",getSessionData().getPerson(), irFileVersion);
-        getDownloadService().handleDownload(getAuthenticatedUser(), this, irFileVersion);
+        getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), irFileVersion);
         return SUCCESS;
     }
 
@@ -114,7 +114,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             return FORBIDDEN;
         }
 
-        getDownloadService().handleDownload(getAuthenticatedUser(), this, irFileVersion);
+        getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), irFileVersion);
         return SUCCESS;
     }
 
@@ -133,8 +133,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             logger.trace("adding: {}", irf.getLatestUploadedVersion());
             versions.add(irf.getLatestUploadedOrArchivalVersion());
         }
-        getDownloadService().handleDownload(getAuthenticatedUser(), this, versions.toArray(new InformationResourceFileVersion[0]));
-        setFileName(String.format("files-%s.zip",getInformationResourceId()));
+        getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), versions.toArray(new InformationResourceFileVersion[0]));
         return SUCCESS;
     }
 

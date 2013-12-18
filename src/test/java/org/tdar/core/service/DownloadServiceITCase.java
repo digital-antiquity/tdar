@@ -1,9 +1,19 @@
 package org.tdar.core.service;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -11,9 +21,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
@@ -23,10 +36,6 @@ import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TConfig;
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TVFS;
-
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
 
 public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
@@ -102,6 +111,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
     // get some files from the test dir and put them into an archive stream
     @Test
+    @Rollback
     public void testDownloadArchiveService() throws IOException {
         Map<File,String> map = new HashMap<>();
         for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
@@ -116,6 +126,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testDownloadArchiveController() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
 
         List<File> files = new ArrayList<>();
@@ -130,6 +141,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
         controller.setInformationResourceId(document.getId());
         assertEquals(TdarActionSupport.SUCCESS, controller.downloadZipArchive());
+        logger.info(controller.getFileName());
         File file = File.createTempFile("test", ".zip");
         FileOutputStream output = new FileOutputStream(file);
         IOUtils.copy(controller.getInputStream(), output);
@@ -141,6 +153,32 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
         //don't do strict test since the downloaded pdf's will have a cover page
         assertArchiveContents(files, file, false);
+    }
+
+    @Test
+    public void testDownloadController() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
+
+        Document doc = generateDocumentWithFileAndUser();
+        genericService.saveOrUpdate(doc);
+        final Long id = doc.getId();
+        logger.debug("{}", doc.getFirstInformationResourceFile().getLatestPDF());
+        genericService.synchronize();
+
+        Document document =genericService.find(Document.class, id);
+        assertTrue(Persistable.Base.isNotNullOrTransient(document));
+        DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
+        // controller.setInformationResourceId(document.getId());
+
+        controller.setInformationResourceFileId(document.getFirstInformationResourceFile().getLatestPDF().getId());
+        try {
+            assertEquals(TdarActionSupport.SUCCESS, controller.execute());
+            logger.info(controller.getFileName());
+        } catch (TdarActionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+
     }
 
 }

@@ -92,12 +92,14 @@ public class DownloadService {
     }
 
     @Transactional
-    public void handleDownload(Person authenticatedUser, DownloadHandler dh, InformationResourceFileVersion... irFileVersions) throws TdarActionException {
+    public void handleDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions) throws TdarActionException {
         if (ArrayUtils.isEmpty((irFileVersions))) {
             throw new TdarRecoverableRuntimeException("unsupported action");
         }
 
         Map<File, String> files = new HashMap<>();
+        String mimeType = null;
+        String fileName = null;
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
             addFileToDownload(files, authenticatedUser, irFileVersion);
             if (!irFileVersion.isDerivative()) {
@@ -105,28 +107,30 @@ public class DownloadService {
                 FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
                 genericService.save(stat);
                 if (irFileVersions.length > 1) {
-                    initDispositionPrefix(irFile.getInformationResourceFileType(), dh);
-                } else {
                     initDispositionPrefix(FileType.FILE_ARCHIVE, dh);
+                    fileName = String.format("files-%s.zip",informationResourceId);
+
+                    mimeType = "application/zip";
+                } else {
+                    initDispositionPrefix(irFile.getInformationResourceFileType(), dh);
+                    mimeType = irFileVersions[0].getMimeType();
+                    fileName = irFileVersions[0].getFilename();
                 }
             }
         }
 
         try {
             File resourceFile = null;
-            String mimeType = null;
             if (irFileVersions.length > 1) {
                 resourceFile = File.createTempFile("archiveDownload", ".zip", TdarConfiguration.getInstance().getTempDirectory());
                 generateZipArchive(files, resourceFile);
-                mimeType = "application/zip";
                 // although in temp, it might be quite large, so let's not leave it lying around
                 dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
             } else {
-                mimeType = irFileVersions[0].getMimeType();
                 resourceFile = (File) files.keySet().toArray()[0];
                 dh.setInputStream(new FileInputStream(resourceFile));
             }
-            dh.setFileName(resourceFile.getName());
+            dh.setFileName(fileName);
             dh.setContentLength(resourceFile.length());
             dh.setContentType(mimeType);
             logger.debug("downloading file:" + resourceFile.getCanonicalPath());
