@@ -77,8 +77,12 @@
     <#if !production> <#local srcs = srcs + ["/js${fakeDirectory}/tdar.test.js"]> </#if> 
 
 <#if combine>
-   <!-- call to http://code.google.com/p/webutilities/wiki/JSCSSMergeServlet#URLs_in_CSS -->
-    <script type="text/javascript" src="<#list srcs as src><#if src_index != 0>,</#if>${src?replace(".js","")}</#list>.js?build=${common.tdarBuildId}"></script>
+    <!-- calls to http://code.google.com/p/webutilities/wiki/JSCSSMergeServlet#URLs_in_CSS -->
+    <!-- IE8 has 2048 char max for url+path, so we split up our merged javascript into two requests -->
+    <#local idx1 = (srcs?size/2)>
+    <#local idx2 = (srcs?size/2 + 1)>
+    <script type="text/javascript" src="<#list srcs[0..idx1] as src><#if src_index != 0>,</#if>${src?replace(".js","")}</#list>.js?build=${common.tdarBuildId}"></script>
+    <script type="text/javascript" src="<#list srcs[idx2..]as src><#if src_index != 0>,</#if>${src?replace(".js","")}</#list>.js?build=${common.tdarBuildId}"></script>
 <#else>
 <#list srcs as src>
   <script type="text/javascript" src="${src}"></script>
