@@ -167,6 +167,13 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
+
+    @Action("user-mailchimp")
+    public String userMailchipInfo() {
+        setRecentUsers(getEntityService().findAllRegisteredUsers());
+        return SUCCESS;
+    }
+
     public List<ContributorRequest> getPendingContributorRequests() {
         if (pendingContributorRequests == null) {
             pendingContributorRequests = getEntityService().findAllPendingContributorRequests();

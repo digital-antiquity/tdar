@@ -40,8 +40,9 @@ $(function() {
 
 <@admin.header />
 
+<a class="button" href="<@s.url value="user-mailchimp" />">Import for Mailchimp</a>
+<br/>
 <@admin.statsTable historicalUserStats "User Statistics" "userstats" />
-
 <h3>Repeated Logins</h3>
 <table class="table tableFormat">
 	<thead>
