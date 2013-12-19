@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +62,10 @@ import org.tdar.struts.data.ResourceCreatorProxy;
 
 @Transactional
 public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
+
+    private static final String CONSTANTINOPLE = "Constantinople";
+
+    private static final String ISTANBUL = "Istanbul";
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -829,6 +834,41 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue(String.format("expecting %s in results", resource), controller.getResults().contains(resource));
     }
 
+    @Test
+    @Rollback
+    public void testBooleanSearch() throws InstantiationException, IllegalAccessException {
+        Document doc1 = generateDocumentWithUser();
+        Document doc2 = generateDocumentWithUser();
+        GeographicKeyword istanbul = new GeographicKeyword();
+        istanbul.setLabel(ISTANBUL);
+        GeographicKeyword constantinople = new GeographicKeyword();
+        constantinople.setLabel(CONSTANTINOPLE);
+        genericKeywordService.save(istanbul);
+        genericKeywordService.save(constantinople);
+        doc1.getGeographicKeywords().add(istanbul);
+        doc2.getGeographicKeywords().add(constantinople);
+        genericService.saveOrUpdate(doc1);
+        genericService.saveOrUpdate(doc2);
+        genericService.synchronize();
+        searchIndexService.index(doc1,doc2);
+        searchIndexService.flushToIndexes();
+        SearchParameters params = new SearchParameters();
+        controller.getG().add(params);
+        params.setAllFields(Arrays.asList(ISTANBUL, CONSTANTINOPLE));
+        params.setOperator(Operator.OR);
+        doSearch();
+        assertTrue(controller.getResults().contains(doc1));
+        assertTrue(controller.getResults().contains(doc2));
+        logger.debug("results:{}", controller.getResults());
+        resetController();
+        controller.getG().add(params);
+        params.setOperator(Operator.AND);
+        doSearch();
+        logger.debug("results:{}", controller.getResults());
+        assertFalse(controller.getResults().contains(doc1));
+        assertFalse(controller.getResults().contains(doc2));
+    }
+    
     @Test
     @Rollback(true)
     public void testCalDateSearch() throws InstantiationException, IllegalAccessException {

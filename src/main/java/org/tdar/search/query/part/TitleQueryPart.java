@@ -20,8 +20,9 @@ public class TitleQueryPart extends FieldQueryPart<String> {
         add(values);
     }
 
-    public TitleQueryPart(Collection<String> values) {
+    public TitleQueryPart(Collection<String> values, Operator operator) {
         add(values.toArray(new String[0]));
+        setOperator(operator);
     }
 
     @Override

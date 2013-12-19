@@ -309,11 +309,11 @@ public class SearchParameters {
         }
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
 
-        queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields()));
-        queryPartGroup.append(new TitleQueryPart(this.getTitles()));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), contents));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, support.getText("searchParameter.file_name"), filenames));
-
+        queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
+        queryPartGroup.append(new TitleQueryPart(this.getTitles(),getOperator()));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, support.getText("searchParameter.file_name"), getOperator(), filenames));
+        
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
         appendKeywordQueryParts(queryPartGroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(this.getSiteNames()));
@@ -331,7 +331,7 @@ public class SearchParameters {
         appendKeywordQueryParts(queryPartGroup, InvestigationType.class, QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, this.getInvestigationTypeIdLists());
         appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, this.getApprovedCultureKeywordIdLists());
 
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID,support.getText("searchParameter.project"), "project.", Resource.class, getProjects()));
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, support.getText("searchParameter.project"), "project.", Resource.class, getOperator(), getProjects()));
         queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, support.getText("searchParameter.id"), Operator.OR, getResourceIds()));
 
         appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, support.getText("searchParameter.resource_type"), getResourceTypes(), Operator.OR,
@@ -343,16 +343,16 @@ public class SearchParameters {
         queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, support.getText("searchParameter.resource_access_type"), Operator.OR,
                 getResourceAccessTypes()));
 
-        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_CREATED, operator, getRegisteredDates()));
-        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, operator, getUpdatedDates()));
-        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, operator, getCreatedDates()));
+        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_CREATED, getOperator(), getRegisteredDates()));
+        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, getOperator(), getUpdatedDates()));
+        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, getOperator(), getCreatedDates()));
 
         queryPartGroup.append(new TemporalQueryPart(getCoverageDates(), getOperator()));
         queryPartGroup.append(new SpatialQueryPart(getLatitudeLongitudeBoxes()));
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
+
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, support.getText("searchParameter.resource_collection"), "resourceCollections.",
-                ResourceCollection.class,
-                getCollections()));
+                ResourceCollection.class,getOperator(), getCollections()));
         queryPartGroup.append(new CreatorQueryPart<Creator>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
 
         // explore: decade
@@ -371,7 +371,7 @@ public class SearchParameters {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <P extends Persistable> SkeletonPersistableQueryPart constructSkeletonQueryPart(String fieldName, String label, String prefix, Class<P> cls,
-            List<P> values) {
+            Operator operator, List<P> values) {
         SkeletonPersistableQueryPart q = new SkeletonPersistableQueryPart(fieldName, label, cls, values);
         if (HasName.class.isAssignableFrom(cls) && StringUtils.isNotBlank(prefix)) {
             TitleQueryPart tqp = new TitleQueryPart();
@@ -383,6 +383,7 @@ public class SearchParameters {
                 }
             }
             q.setTransientFieldQueryPart(tqp);
+            setOperator(operator);
         }
         return q;
     }

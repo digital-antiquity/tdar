@@ -24,7 +24,9 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.DownloadController;
@@ -107,6 +109,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
     // get some files from the test dir and put them into an archive stream
     @Test
+    @Rollback
     public void testDownloadArchiveService() throws IOException {
         Map<File, String> map = new HashMap<>();
         for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
@@ -121,6 +124,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testDownloadArchiveController() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
 
         List<File> files = new ArrayList<>();
@@ -135,6 +139,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
         controller.setInformationResourceId(document.getId());
         assertEquals(TdarActionSupport.SUCCESS, controller.downloadZipArchive());
+        logger.info(controller.getFileName());
         File file = File.createTempFile("test", ".zip");
         FileOutputStream output = new FileOutputStream(file);
         IOUtils.copy(controller.getInputStream(), output);
@@ -145,6 +150,33 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
         // don't do strict test since the downloaded pdf's will have a cover page
         assertArchiveContents(files, file, false);
+    }
+
+    @Test
+    @Rollback
+    public void testDownloadController() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
+
+        Document doc = generateDocumentWithFileAndUser();
+        genericService.saveOrUpdate(doc);
+        final Long id = doc.getId();
+        logger.debug("{}", doc.getFirstInformationResourceFile().getLatestPDF());
+        genericService.synchronize();
+
+        Document document =genericService.find(Document.class, id);
+        assertTrue(Persistable.Base.isNotNullOrTransient(document));
+        DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
+        // controller.setInformationResourceId(document.getId());
+
+        controller.setInformationResourceFileId(document.getFirstInformationResourceFile().getLatestPDF().getId());
+        try {
+            assertEquals(TdarActionSupport.SUCCESS, controller.execute());
+            assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getFileName());
+        } catch (TdarActionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+
     }
 
 }
