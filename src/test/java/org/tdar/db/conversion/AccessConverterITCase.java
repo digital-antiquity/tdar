@@ -1,5 +1,9 @@
 package org.tdar.db.conversion;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -15,6 +19,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,9 +34,19 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
-import static org.junit.Assert.*;
-
 public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
+
+    @Test
+    @Rollback(true)
+    @Ignore
+    public void testDatabase() throws FileNotFoundException, IOException {
+        DatasetConverter converter = convertDatabase(new File("c://Users/abrin/Desktop/rpms.mdb"), 1224L);
+        for (DataTable table : converter.getDataTables()) {
+            logger.info("{}", table);
+        }
+
+        //FIXME: add more depth to testing
+    }
 
     @Override
     public String[] getDataImportDatabaseTables() {
@@ -54,7 +69,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testSpatialDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase("az-paleoindian-point-survey.mdb", 1129L);
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "az-paleoindian-point-survey.mdb"), 1129L);
         for (DataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
@@ -203,7 +218,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testPgmDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase("pgm-tdr-test-docs.mdb", 1124L);
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "pgm-tdr-test-docs.mdb"), 1124L);
         for (DataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
@@ -241,11 +256,12 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDatabaseWithDateTimeAndDuplicateTableNames() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase("a32mo0296-306-1374-1375-mandan-nd.mdb", 1224L);
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "a32mo0296-306-1374-1375-mandan-nd.mdb"), 1224L);
         for (DataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
 
         //FIXME: add more depth to testing
     }
+
 }
