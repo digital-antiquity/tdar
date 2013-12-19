@@ -19,7 +19,7 @@
                  ".bootlint-badkid {outline: 3px dotted red}" +
                  ".bootlint-gridfit-too-big {outline: 3px dotted purple}" +
                  ".bootlint-gridfit-too-small {outline: 3px dotted orange}" +
-         		"</style>");
+                 "</style>");
          $('#bootlint-style').remove();
          $('head').append(stylesheet);
      };

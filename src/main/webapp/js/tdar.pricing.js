@@ -53,7 +53,7 @@ var _initPricing = function(form, ajaxUrl) {
                   var line = TDAR.common.sprintf("<tr><td colspan=4>{0}</td></tr>", "Please enter a number of files and MB above.");
                   $est.append(line);
     
-            	  
+
               } else {
               $("#price").html(item.subtotal);
               

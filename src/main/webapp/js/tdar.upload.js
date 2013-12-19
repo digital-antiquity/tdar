@@ -62,10 +62,10 @@ TDAR.fileupload = function() {
         var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
         
         $fileupload.bind('fileuploadpaste', function (e, data) {
-        	if (data.files.length == 0) {
-        		console.log("interpreting text paste instead of file");
-        		return true;
-        	}
+            if (data.files.length == 0) {
+                console.log("interpreting text paste instead of file");
+                return true;
+            }
             $.each(data.files, function (index, file) {
                 console.log('Pasted file type: ' + file.type);
             });
@@ -248,9 +248,9 @@ TDAR.fileupload = function() {
         var $filesTable = $(data.context).closest("tbody.files");
         console.log($filesTable.length);
         if ($filesTable.length > 0) {
-        	$("#reminder").hide();
+            $("#reminder").hide();
         } else {
-        	$("#reminder").show();
+            $("#reminder").show();
         }
     };
 

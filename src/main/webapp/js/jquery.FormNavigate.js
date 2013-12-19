@@ -67,26 +67,26 @@ and off of window.onbeforeunload event.
         this.each(function() {
             var $this = $(this);
             $this.data(DATA_FIELD, true);
-        	$(window).bind("beforeunload", function (event) {
+            $(window).bind("beforeunload", function (event) {
                     if ($this.data(DATA_FIELD)) {  event.cancelBubble = true;  }  else  { return _options.message;}
-        	});
-        	
-        	var _eventHandler = function(evt) {
+            });
+
+            var _eventHandler = function(evt) {
                 console.log("Form #%s has become dirty. event:%s\t target:%s\t ", $this.attr("id"), evt.type, evt.target);
                 $this.data(DATA_FIELD, false);
-        	};
-        	
-        	$this.one("keyup change", _eventHandler);
-        	if(_options.customEvents) {
-        	    $this.one(_options.customEvents, _eventHandler);
-        	}
-        	
-        	if(_options.cleanOnSubmit) {
+            };
+
+            $this.one("keyup change", _eventHandler);
+            if(_options.customEvents) {
+                $this.one(_options.customEvents, _eventHandler);
+            }
+
+            if(_options.cleanOnSubmit) {
                 $this.find("input:submit, .submitButton").click(function(){
                     $this.data(DATA_FIELD, true);
                 });
-        	}
-        	
+            }
+
         });
         return this;
     };

@@ -34,7 +34,7 @@ TDAR.datatable = function() {
     $dataTable.data('selectedRows', {});
 
     var dataTableOptions = {
-     		"bScrollCollapse": true,
+             "bScrollCollapse": true,
             "bProcessing": true,
             "bServerSide": true,
             // "sAjaxDataProp": sAjaxDataProp,

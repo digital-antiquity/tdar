@@ -543,7 +543,7 @@ TDAR.common = function() {
             var $this = $(this);
             var $top = $this.closest(".repeat-row");
             if ($top == undefined) {
-            	$top = $this.closest(".control-group");
+                $top = $this.closest(".control-group");
             }
             var $toggle = $(".creator-toggle-button input:hidden",$this);
             if ($(event.target).hasClass("personButton")) {
@@ -644,14 +644,14 @@ TDAR.common = function() {
      */
     var _initializeView = function() {
         console.debug('initialize view');
-	        var mapdiv = undefined;
-	        if($('#large-google-map').length) {
-	            mapdiv = $('#large-google-map')[0];
-	        };
-	        if ($(".google-map").length) {
-	            mapdiv = $('.google-map')[0];
-	        }
-	        if (mapdiv != undefined) {
+            var mapdiv = undefined;
+            if($('#large-google-map').length) {
+                mapdiv = $('#large-google-map')[0];
+            };
+            if ($(".google-map").length) {
+                mapdiv = $('.google-map')[0];
+            }
+            if (mapdiv != undefined) {
             var inputContainer = $("#divCoordContainer")[0];
             TDAR.maps.initMapApi();
             TDAR.maps.setupMap(mapdiv, inputContainer);
@@ -711,7 +711,7 @@ TDAR.common = function() {
         return width > 1200 ? 'responsive-large-desktop' :
             width > 979 ? 'responsive-desktop' :
             width > 767 ? 'responsive-tablet' :
-        	width > 500 ? 'responsive-phone' :
+            width > 500 ? 'responsive-phone' :
             width > 1 ? 'responsive-phone-portrait' : '';
     }
 
@@ -1277,5 +1277,3 @@ $(document).ready(function() {
 
 
 });
-
-

@@ -85,11 +85,11 @@ TDAR.maps = function() {
         var map = new google.maps.Map(mapDiv, mapOptions);
 
         if (_defaults.isGeoLocationToBeUsed && navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(function(position) {
-				var initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-				map.setCenter(initialLocation);
-			});
-		}
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                map.setCenter(initialLocation);
+            });
+        }
 
         $mapDiv.data("gmap", map);
 
@@ -116,7 +116,7 @@ TDAR.maps = function() {
 
     //private: look for resource latlongboxes and draw rectangles if found.
     var _setupLatLongBoxes = function(mapDiv, inputContainer){
-    	'use strict';
+        'use strict';
         var style = _defaults.rectStyleOptions.RESOURCE;
         var gmap = $(mapDiv).data("gmap");
         
@@ -322,13 +322,13 @@ TDAR.maps = function() {
         
         //if editing existing rect, populate the values
         if($(mapDiv).data("resourceRect")) {
-        	
+
             _populateLatLngDisplay($(mapDiv).data("resourceRect").getBounds(), $swLatDisplay, $swLngDisplay, $neLatDisplay, $neLngDisplay);
         }
         
         //update the GRect based on current value of inputs.
         var updateRectFromInputs = function() {
-                    	
+
             //trim the input, and if all non-blank then update the region
             var parseErrors = 0;
             $('.sw-lat-display, .sw-lng-display, .ne-lat-display, .ne-lng-display', inputContainer).each(function(){
@@ -413,7 +413,7 @@ TDAR.maps = function() {
     var _setupMapResult = function() {
         //$(".google-map", '#articleBody').one("mapready", function(e, myMap) {
         _deferredMap.done(function(myMap, ignoredRect) {
-        	console.log("setup map results");
+            console.log("setup map results");
           var bounds = new google.maps.LatLngBounds();
           var markers = new Array();
           var infowindows = new Array();
@@ -422,7 +422,7 @@ TDAR.maps = function() {
               i++;
               var $this = $(this);
               if ($this.attr("data-lat") && $this.attr('data-long')) {
-            	  console.log($this.attr("data-lat") + " " +  $this.attr('data-long'));
+                  console.log($this.attr("data-lat") + " " +  $this.attr('data-long'));
                   var infowindow = new google.maps.InfoWindow({
                       content: $this.html()
                   });
@@ -468,7 +468,3 @@ TDAR.maps = function() {
         mapPromise: _deferredMap.promise()
     };
 }();
-
-//todo: "enter / view coordinates"  should be a bootstrap toggle button, not a checkbox.
-
-

@@ -183,8 +183,8 @@ function _initAuthTable() {
 }
 
 return {
-	clearDupeList: _clearDupeList,
-	updateSearchControl: _updateSearchControl,
-	initAuthTable: _initAuthTable
+    clearDupeList: _clearDupeList,
+    updateSearchControl: _updateSearchControl,
+    initAuthTable: _initAuthTable
 };
 }();

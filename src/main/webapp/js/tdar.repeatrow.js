@@ -230,10 +230,3 @@ TDAR.supersecret.registerSplittables = function(rootSelector) {
         });
     });
 };
-/*
-$(function() {
-    $('#metadataForm_temporalKeywords_0_').addClass("splittable");
-    TDAR.supersecret.registerSplittables('body');
-});
-
-*/

@@ -191,18 +191,18 @@ function expandColumn(col) {
     var $col = $(col);
     var $tds = $("#drplist td");
     var small = 80 / $tds.length;
-	$tds.stop(true,true);
+    $tds.stop(true,true);
     if ($tds.length > 8) {
         small = 150 / $tds.length;
     }
-	$tds.removeClass("short");
-	$tds.addClass("short");
-	$tds.css({
+    $tds.removeClass("short");
+    $tds.addClass("short");
+    $tds.css({
             width : small + "%"
     });
 
 
-	$col.stop(true,true).animate({
+    $col.stop(true,true).animate({
         width : "50%"
     }).removeClass("short");
 };
