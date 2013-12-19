@@ -37,13 +37,16 @@
             $doc.data(_settings.dataProp, height);
         }
     };
-    
+
+
+    //FIXME: migrate to TDAR.common
+    //FIXME: instead of polling, listen for events that may change size (e.g. onresize, onorientationchange, textarea.mouseup).
     $.extend({
         "documentHeightEvents": function(arg) {
             
             var _init = function(options) {
                 _settings = $.extend({}, _defaults, options);
-                //console.log("init(%s)", options);
+                console.log("init(%s)", options);
                 $doc.data(_settings.dataProp, $doc.height());
                 _cbid = window.setInterval(_poll, _settings.interval);
             };

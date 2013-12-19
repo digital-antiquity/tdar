@@ -5,49 +5,35 @@
  * Mostly have to do with adding new rows for multi-valued fields, etc.
  */
 
-//Define a dummy console for browsers that don't support logging
-if (!window.console) {
-    console = {};
-}
-
-
-console.log = console.log || function() {};
-console.warn = console.warn || function() {
-};
-console.debug = console.debug || function() {
-};
-console.error = console.error || function() {
-};
-console.info = console.info || function() {
-};
-console.trace = function() {
-};
-
+/**
+ * Returns a copy of a string, terminated by ellipsis if input string exceeds max length
+ * @param str input string
+ * @param maxlength maximum length of the copy string.
+ * @returns {*} copy of string no longer than maxlength.
+ */
 TDAR.ellipsify = function(str, maxlength) {
     if (!str)
         return;
     var newString = str;
-    if (str.length > maxlength - 3) {
+    if (str.length > maxlength) {
         newString = str.substring(0, maxlength - 3) + "...";
     }
     return newString;
 };
 
-function getQSParameterByName(name) {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-    var regexS = "[\\?&]" + name + "=([^&#]*)";
-    var regex = new RegExp(regexS);
-    var results = regex.exec(window.location.href);
-    if (results == null)
-        return "";
-    else
-        return decodeURIComponent(results[1].replace(/\+/g, " "));
-}
 
-// Compare two arrays. return true if A and B contain same elements (
-// http://stackoverflow.com/questions/1773069/using-jquery-to-compare-two-arrays
 jQuery.extend({
+    /**
+     * Compare two arrays. return true if A and B contain same elements
+     *
+     * @param arrayA
+     * @param arrayB
+     * @param ignoreOrder if true, ignore order of the array contents (optional: default true)
+     * @returns {boolean} true if equal, otherwise false.
+     */
     compareArray : function(arrayA, arrayB, ignoreOrder) {
+        //FIXME: break this into two functions (no bool args!)
+        //FIXME: no need to extend jquery, just add to tdar.common.
         if (arrayA.length !== arrayB.length) {
             return false;
         }
@@ -76,18 +62,17 @@ jQuery.extend({
  * trying to move these functions out of global scope and apply strict parsing.
  */
 
-
-TDAR.namespace("common");
 TDAR.common = function() {
     "use strict";
     
     var self = {};
 
-    //sanitize a
-    function _jsEncode(str) {
-        return JSON.stringify(str);
-    }
-    
+    /**
+     * Default settings for form validation in tDAR forms
+     *
+     * @type {{errorLabelContainer: (*|jQuery|HTMLElement), wrapper: string, highlight: highlight, unhighlight: unhighlight, showErrors: showErrors, invalidHandler: invalidHandler}}
+     * @private
+     */
     var _defaultValidateOptions = {
         errorLabelContainer : $("#error ul"),
         wrapper: "li",
@@ -139,29 +124,18 @@ TDAR.common = function() {
             $clientInfo.append($(template("submitCount", submitCount)));
             $(form).append($clientInfo);
         }
-
-                 
     };
-    
-    //TODO: remove redundant code -- this is very similar to repeatrow._clearInputs.
-    var _clearInputs = function($parents) {
-    	
-    	//FIXME: can we just set all of these to disabled instead?
-    	
-        //clear any non-showing creator proxy fields so server knows the actualCreatorType for each
-        console.log("clearing unused proxy fields");
-        // most input elements should have value attribute cleared (but not radiobuttons, checkboxes, or buttons)
-        $parents.find("input[type!=button],textarea").not('input[type=checkbox],input[type=radio]').val("");
-        // uncheck any checkboxes/radios
-        $parents.find("input[type=checkbox],input[type=radio]").prop("checked", false);
-        // remove "selected" from options that were already selected
-        $parents.find("option[selected=selected]").removeAttr("selected");
-        // revert all select inputs to first option. 
-        $parents.find("select").attr("disabled", "disabled");
-    }
 
-
-  //indicate the root context  to use when populateTarget is called. 
+    /**
+     * Specify the target element for any adhoc child windows spawned from the current page.
+     *
+     * Some forms fields allow the user to create a new resource in a child window.  This function allows caller to
+     * specify the element on the parent window. When the user completes the child form,  the tdar will update
+     * the target form field with the ID/name of the resource that the user created in the child window.
+     *
+     * @param elem  context root
+     * @param selector  jqselector which contains the target (optional: default "div")
+     */
     var _setAdhocTarget = function(elem, selector) {
         var _selector = selector;
         if (!_selector) selector = "div";
@@ -169,11 +143,40 @@ TDAR.common = function() {
         $('body').data("adhocTarget", adhocTarget);
         //expose target for use by child window
         TDAR.common.adhocTarget = adhocTarget;
-        //return false; 
+        //return false;
     }
-    
-    
 
+
+
+    /**
+     * Populate a coding sheet / ontology field (aka the adhoctarget) with the id/name of the object created via the
+     * child page.
+     *
+     * Note: tdar cannot handle multiple, simultaneous adhoc child windows (though this is unlikely to happen)
+     *
+     * @param obj jsobject with id + title properties
+     *
+     */
+    var _populateTarget = function(obj) {
+        var $body = $("body");
+        var adhocTarget = $body.data("adhocTarget");
+        if(typeof(adhocTarget) == 'undefined') return;
+
+        console.log("populateTarget called.   adHocTarget:%s", adhocTarget);
+        $('input[type=hidden]', adhocTarget).val(obj.id);
+        $('input[type=text]', adhocTarget).val(obj.title);
+        $body.removeData("adhocTarget");
+        TDAR.common.adhocTarget = null;
+    }
+
+    // FIXME: refactor.  needs better name and it looks brittle
+    /**
+     * Return a sort function that alphabetically sorts an object w/ specified property name.
+     * @param property  name of the property in an object to evaluate when comparing two objects.
+     * @param caseSensitive  true if the sort function should be case sensitive (optional: default false)
+     * @returns {Function} function for use with Array.sort()
+     * @private
+     */
     var _dynamicSort = function(property, caseSensitive) {
         return function(a, b) {
             if (caseSensitive == undefined || caseSensitive == false) {
@@ -187,40 +190,20 @@ TDAR.common = function() {
         };
     }
 
-var _sortFilesAlphabetically= function() {
-        var rowList = new Array();
-        var $table = $("#files tbody");
-        $("tr", $table).each(function() {
-            var row = {};
-            row["id"] = $(this).attr("id");
-            row["filename"] = $(".filename", $(this)).text();
-            rowList[rowList.length] = row;
-        });
-
-        rowList.sort(_dynamicSort("filename"));
-
-        for (var i = 0; i < rowList.length; i++) {
-            $("#" + rowList[i]["id"]).appendTo("#files");
-        }
+    /**
+     * Not implemented  TDAR-3495
+     * @private
+     */
+    var _sortFilesAlphabetically= function() {
+        //FIXME:  implement this and migrate to tdar.fileupload
     }
 
-  //populate a coding sheet / ontology field from an adhoc add-resource child page. 
-  //for now, let's assume there's never more than one adhoc child in play...
-  var _populateTarget = function(obj) {
-      var $body = $("body");
-      var adhocTarget = $body.data("adhocTarget");
-      if(typeof(adhocTarget) == 'undefined') return;
 
-      console.log("populateTarget called.   adHocTarget:%s", adhocTarget);
-      $('input[type=hidden]', adhocTarget).val(obj.id);
-      $('input[type=text]', adhocTarget).val(obj.title);
-      $body.removeData("adhocTarget");
-      TDAR.common.adhocTarget = null;
-  }
-
+    /**
+     * Update display of copyright licenses section when the radio button selection changes
+     * @private
+     */
     var _toggleLicense = function() {
-
-        // update display of licenses when the radio button selection changes
         $("#license_section input[type='radio']").each(
             function(index) {
                 // show or hide the row depending on whether the corresponding radio button is checked
@@ -244,18 +227,11 @@ var _sortFilesAlphabetically= function() {
     }
 
 
-    
-     // FIXME: the jquery validate documentation for onfocusout/onkeyup/onclick
-     // doesn't jibe w/ what we see in practice. supposedly these take a boolean
-     // argument specifying 'true' causes an error. since true is the default for
-     // these three options I'm simply removing those lines from the validate
-     // call
-     // below.
-     // see http://docs.jquery.com/Plugins/Validation/validate#options for
-     // options and defaults
-     // see http://whilefalse.net/2011/01/17/jquery-validation-onkeyup/ for
-     // undocumented feature that lets you specify a function instead of a
-     // boolean.
+    /**
+     * Initialize jquery valiation for the specified tdar edit form
+     *
+     * @param form form element to apply validation rules
+     */
     var _setupFormValidate = function(form) {
         var options = {
             onkeyup : function() {
@@ -266,13 +242,6 @@ var _sortFilesAlphabetically= function() {
             },
             onfocusout : function(element) {
                 return;
-                // I WORK IN CHROME but FAIL in IE & FF
-                // if (!dialogOpen) return;
-                // if ( !this.checkable(element) && (element.name in
-                // this.submitted ||
-                // !this.optional(element)) ) {
-                // this.element(element);
-                // }
             },
             showErrors: function(errorMap, errorList) {
                 this.defaultShowErrors();
@@ -288,19 +257,26 @@ var _sortFilesAlphabetically= function() {
             submitHandler : function(f) {
                 //prevent double submit and dazzle user with animated gif
                 _submitButtonStartWait();
-                _clearInputs($(f).find(".creatorPerson.hidden, .creatorInstitution.hidden")); 
+
+                /* Creator entry controls display one of two field sets if the creator is "person" or
+                    institution". Disable the hidden set so the set's input vals aren't sent to server.
+                  */
+                $(f).find(".creatorPerson.hidden, .creatorInstitution.hidden").find(":input").prop("disabled", true);
+
                 $('#error').hide();
-                
                 $(f).FormNavigate("clean");
                 f.submit();
-                
             }
         };
 
          var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
          $(form).validate(allValidateOptions);
      };
-     
+
+    /**
+     * Specific initialization for the user registration form
+     * @param form
+     */
     var _initRegformValidation = function(form) {
         var $form = $(form);
         var options = {
@@ -344,8 +320,12 @@ var _sortFilesAlphabetically= function() {
 
     };
              
-    //setup other form edit controls
     //FIXME: wny is this broken out from  initEditPage?   If anything, break it out even further w/ smaller private functions
+    /**
+     * Further initialization for tdar "edit" pages
+     *
+     * @param form
+     */
     var _setupEditForm = function (form) {
         var $form = $(form);
         //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
@@ -375,7 +355,6 @@ var _sortFilesAlphabetically= function() {
             $button.siblings(".waitingSpinner").show();
 
             //warn user about leaving before saving
-            //FIXME: FormNavigate.js has bugs and is not being maintained. need to find/write replacement.
             $("#jserror").val("");
             return true;
         });
@@ -440,6 +419,14 @@ var _sortFilesAlphabetically= function() {
   //FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be 
 //         used via $.validator.addClassRules.  The benefit would be that we don't need to register these registration rules each time a date
 //         gets added to the dom.
+    //FIXME: this might be duplicated in tdar.formValidateExtensions.  If not, it should probably be migrated there.
+    /**
+     * Add specific rules to a the text fields associated with a "coverage date" control.
+     *
+     * @param selectElem the select input element associated with the "fromYear" and "toYear" text inputs (must be a
+     *          sibling element in the same container)
+     * @private
+     */
   var _prepareDateFields = function(selectElem) {
       var startElem = $(selectElem).siblings('.coverageStartYear');
       var endElem = $(selectElem).siblings('.coverageEndYear');
@@ -482,9 +469,11 @@ var _sortFilesAlphabetically= function() {
           });
           break;
       }
-  }
+  };
 
-    
+    /**
+     * Initialize an unordered list element (with .tdar-treeview class) so that it renders as a "tree view" control
+     */
     var _applyTreeviews = function() {
         //console.debug("applying tdar-treeviews v3");
         var $treeviews = $(".tdar-treeview");
@@ -494,7 +483,12 @@ var _sortFilesAlphabetically= function() {
         // expand ancestors if any children are selected
         $treeviews.find("input:checked").parentsUntil(".treeview", "li").find("> .hitarea").trigger("click");
     };
-    
+
+    /**
+     * Disable any submit buttons on a form, and display a "please wait" graphic beside the submit buttons.
+     * Useful for  preventing double-submits.
+     * @private
+     */
    var _submitButtonStartWait = function(){
        var $submitDivs = $('#editFormActions, #fakeSubmitDiv');
        var $buttons = $submitDivs.find(".submitButton");
@@ -503,7 +497,11 @@ var _sortFilesAlphabetically= function() {
        //fade in the wait icon
        $submitDivs.find(".waitingSpinner").show();
    };
-   
+
+    /**
+     * re-enable buttons disabled by submitButtonStartWait()
+     * @private
+     */
    var _submitButtonStopWait = function() {
        var $submitDivs = $('#editFormActions, #fakeSubmitDiv');
        var $buttons = $submitDivs.find(".submitButton");
@@ -511,10 +509,16 @@ var _sortFilesAlphabetically= function() {
        
        //fade in the wait icon
        $submitDivs.find(".waitingSpinner").hide();
-   } 
-    
-    
-    //public: initialize the edit page form
+   }
+
+
+    /**
+     * Perform initialization and setup for a typical elements and functionality of a tdar "edit page".  This does not
+     * include initialization tasks for specific edit pages with unique functionality.
+     *
+     * @param form the form to initialize
+     * @private
+     */
     var _initEditPage = function(form) {
 
        //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it. 
@@ -552,7 +556,6 @@ var _sortFilesAlphabetically= function() {
                 $toggle.val("INSTITUTION");
             }
         });    
-        
 
         //wire up autocompletes
         _delegateCreator("#authorshipTable", false, true);
@@ -588,24 +591,17 @@ var _sortFilesAlphabetically= function() {
         //ahad: toggle license
         $(".licenseRadio",$("#license_section")).change(_toggleLicense);
         
-//        //ahad: toggle person/institution for copyright holder
-//        $("#copyright_holder_type_person").change(toggleCopyrightHolder);
-//        $("#copyright_holder_type_institution").change(toggleCopyrightHolder);
-    
-        //if page has a navbar,  wire it up and refresh it whenever something changes page size (e.g. repeatrow additions)
-        
-        //fixme: ths scrollspy is being registered twice (remove data-attributes from scrollspy div?)
-        $('#subnavbar').each(function() {
-            var $scrollspy = $(this).scrollspy();
-            
-            //monitor document height and fire event when it changes
-            $.documentHeightEvents();
-            
+        //monitor document height and fire event when it changes
+        $.documentHeightEvents();
+
+        //Refresh any scrollspies whenever document height changes.
+        $('[data-spy="scroll"]').each(function() {
+            var $scrollspy = $(this);
+
             $(document).bind("repeatrowadded repeatrowdeleted heightchange", function() {
-                //console.log("resizing scrollspy");
+                console.log("resizing scrollspy");
                 $scrollspy.scrollspy("refresh");
             });
-            
         });
         
         
@@ -641,7 +637,11 @@ var _sortFilesAlphabetically= function() {
         });
 
     };
-    
+
+    /**
+     * Perform initialization tasks for a typical tdar "view" page. Elements and functionality that are unique to a
+     * specific page are not addressed by this funtion.
+     */
     var _initializeView = function() {
         console.debug('initialize view');
 	        var mapdiv = undefined;
@@ -657,8 +657,12 @@ var _sortFilesAlphabetically= function() {
             TDAR.maps.setupMap(mapdiv, inputContainer);
         }
     };
-    
-    //display generic wait message for ajax requests
+
+    /**
+     * Register event listener that displays generic wait message for ajax requests. If the ajaxOptions property
+     * of the event contain a "waitmessage" property, display that messages, otherwise the function displays "Loading"
+     * while the request is in flight, and "Done" after the request is complete.
+     */
     var _registerAjaxEvents = function() {
         $('body').bind('ajaxSend', function(e, jqXHR, ajaxOptions){
             if(typeof ajaxOptions.waitMessage === "undefined") {
@@ -672,22 +676,12 @@ var _sortFilesAlphabetically= function() {
         });
         
     };
-    
-    var _index = function(obj, key){
-        if(typeof obj === "undefined") return undefined;
-        return obj[key];
-    };
-    
-    //public: for a given object, return the value of the field specified using 'dot notation'
-    // e.g.:  getObjValue(obj, "foo.bar.baz") will return obj[foo][bar][baz]
-    
-    var _getObjValue = function(obj, strFieldName) {
-        //FIXME: add fallback impl. when  Array.prototype.reduce() not supported (IE8)
-        //https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/Reduce#Compatibility
-        return strFieldName.split(".").reduce(_index, obj);
-    }
-    
-    //return html-encoded copy of provided string
+
+    /**
+     * Return html-encoded copy of provided string
+     * @param value string to encode
+     * @returns {*} html-encoded copy of the provided string (e.g. htmleEncode('you & me') == "&amp;")
+     */
     var _htmlEncode = function(value) {
         if (value == undefined || value == '')
             return "";
@@ -697,11 +691,22 @@ var _sortFilesAlphabetically= function() {
         //            return $('<div></div>').text(str).html();
     }
 
-    //return html-encoded copy of provided string
+    /**
+     * Return string that has been html-encoded twice
+     * @param value string to encode
+     * @returns {*} double-encoded copy of string (e.g. htmlDoubleEncode('&') == "you &amp;amp; me")
+     * @private
+     */
     var _htmlDoubleEncode = function(value) {
         return _htmlEncode(_htmlEncode(value));
     }
 
+    /**
+     * Based on specified window size, return a string label a responsive "profile" title.
+     * @param width size(px) of a window
+     * @returns {string} best-fit profile title for specified width
+     * @private
+     */
     var _determineResponsiveClass = function(width) {
         return width > 1200 ? 'responsive-large-desktop' :
             width > 979 ? 'responsive-desktop' :
@@ -709,16 +714,7 @@ var _sortFilesAlphabetically= function() {
         	width > 500 ? 'responsive-phone' :
             width > 1 ? 'responsive-phone-portrait' : '';
     }
-    
-    //hide the jira button for a week
-    function _delayJiraButton() {
-        //fixme: add function to hide jira button and store choice in cookie
-        //id="" class="atlwdg-trigger atlwdg-TOP"
-        $.cookie("hide_jira_button", true, { expires: 7});
-        console.log("see you next week");
-    
-    }
-    
+
     function _elipsify(text, n, useWordBoundary){
         /* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
         var toLong = text.length>n,
@@ -727,7 +723,15 @@ var _sortFilesAlphabetically= function() {
         return  toLong ? s_ + '...' : s_;
     }
 
-    
+
+    /**
+     * Click event handler used when user clicks on the "bookmark" icon beside a resource. If the resource is 
+     * "bookmarked" it is  tagged as a potential integration source on the "integrate" page.  This function shows the 
+     * correct state (clicking the button togges the state on/off)  and sends an ajax request to update
+     * the bookmark status on the server-side
+     * @returns {boolean}
+     * @private
+     */
     function _applyBookmarks() {
         var $this = $(this);
         var resourceId = $this.attr("resource-id");
@@ -765,7 +769,12 @@ var _sortFilesAlphabetically= function() {
         return false;
     }
 
-    //apply watermark input tags in context with watermark attribute.  'context' can be any valid argument to jQuery(selector[, context])
+    /**
+     *  apply watermark input tags in context with watermark attribute.   'context' can be any valid 
+     *  argument to jQuery(selector[, context])
+     * @param context
+     * @private
+     */
     var _applyWatermarks = function(context) {
         if(!Modernizr.input.placeholder){
             $("input[placeholder]", context).each(function() {
@@ -776,8 +785,11 @@ var _sortFilesAlphabetically= function() {
     }
 
 
-    // show the access rights reminder if any files are marked as confidential or if
-    // the resource is embargoed
+    /**
+     * Show the access rights reminder if any files are marked as confidential or if
+     * the resource is embargoed
+     * @private
+     */
     var _showAccessRightsLinkIfNeeded = function() {
         if ($(".fileProxyConfidential").filter(function(index) {return $(this).val() != "PUBLIC"; }).length > 0) {
             $('#divConfidentialAccessReminder').removeClass("hidden");
@@ -787,8 +799,11 @@ var _sortFilesAlphabetically= function() {
     }
 
 
-
-
+    /**
+     * return a decoded string of  the specified html-encoded text
+     * @param value html-encoded string
+     * @returns {string} decoded version of argument
+     */
     var _htmlDecode = function(value) {
         if (value == undefined || value == '')
             return "";
@@ -796,6 +811,13 @@ var _sortFilesAlphabetically= function() {
     }
 
     // http://stackoverflow.com/questions/1038746/equivalent-of-string-format-in-jquery
+    /**
+     * Simple string format function.
+     * @param {string} format string. e.g.
+     * @param {...string} replacements.
+     * @returns {*} string containing replacements (if provided).  for example,
+     *              sprintf("{0} {0} {0} your {1}, gently down the stream", "row", "boat");
+     */
     var _sprintf = function() {
         var s = arguments[0];
         for ( var i = 0; i < arguments.length - 1; i++) {
@@ -805,21 +827,17 @@ var _sortFilesAlphabetically= function() {
         return s;
     }
 
+
+    //FIXME: move to autocomplete, remove multi-registration bug  TDAR-3496
     /**
-     * Testing Support
+
+     //FIXME: move to autocomplete, remove multi-registration bug  TDAR-3496
+    /**
+     * delegate listener that enables autocomplete for creator input fields when a user clicks in a crator field.
+     * @param id parent element to receive delegated events
+     * @param user if true, use applyPersonAutocomplete, otherwise use applyInstitutionAutocomplete
+     * @param showCreate show a "create new" option at the end of the list.
      */
-
-    function initializeView() {
-        console.debug('initialize view');
-        var maps = $(".google-map, #large-google-map");
-        if(maps.length) {
-            TDAR.maps.initMapApi();
-            maps.each(function() {
-                TDAR.maps.setupMap(this, this);
-            });
-        }
-    }
-
     var _delegateCreator = function(id, user, showCreate) {
         if (user == undefined || user == false) {
             $(id).delegate(
@@ -842,13 +860,31 @@ var _sortFilesAlphabetically= function() {
         }
     }
 
-    // fixme: instead of focusin, look into using a customEvent (e.g. 'rowCreated')
+
+    //FIXME: move to autocomplete, remove multi-registration bug  TDAR-3496
+    /**
+     * delegate listener that enables autocomplete for annotationKey input fields when a user clicks in that
+     * field.
+     * @param id id of parent element to receive delegated events.
+     * @param prefix prefix of classname to use in selector when selecting input fields inside of the parent
+     * @param delim  lookupType to send in ajax request ot search provider
+     * @private
+     */
     var _delegateAnnotationKey = function(id, prefix, delim) {
         $(id).delegate("." + prefix + "AutoComplete", "focusin", function() {
             TDAR.autocomplete.applyKeywordAutocomplete("." + prefix + "AutoComplete", delim, {}, false);
         });
     }
 
+
+    //FIXME: move to autocomplete, remove multi-registration bug  TDAR-3496
+    /**
+     * delegate listener that enables autocomplete for annotationKey input fields when a user clicks in that
+     * @param id id of parent element to receive delegated events.
+     * @param prefix prefix of classname to use in selector when selecting input fields inside of the parent
+     * @param type keyword type
+     * @private
+     */
     var _delegateKeyword = function(id, prefix, type) {
         $(id).delegate(".keywordAutocomplete", "focusin", function() {
             // TODO: these calls re-regester every row after a row is created,
@@ -861,6 +897,10 @@ var _sortFilesAlphabetically= function() {
 
     }
 
+    /**
+     * After certain amount of time,  display a dialog indicating that the users session has expired, then direct
+     * the window to the login page.
+     */
     var _sessionTimeoutWarning = function() {
         // I RUN ONCE A MINUTE
         // sessionTimeout in seconds
@@ -894,22 +934,21 @@ var _sortFilesAlphabetically= function() {
         }
         }
     }
-    /*
-    function getBrowserMajorVersion() {
-        var browserMajorVersion = 1;
-        try {
-            browserMajorVersion = parseInt($.browser.version);
-        } catch (e) {
-        }
-        return browserMajorVersion;
-    }
-    */
+
+    /**
+     * specific initialization for the edit page for "document" resources
+     */
     var _setupDocumentEditForm = function() {
         $(".doctype input[type=radio]").click(function() {_switchDocType(this);});
         _switchDocType($(".doctype input[type=radio]:checked"));
     }
 
 
+    /**
+     * For use with document edit page.  display relevant fieldsets corresponding to the current "document type"
+     * @param radio
+     * @param container
+     */
     var _switchType = function(radio, container) {
         var type = $(radio).val().toLowerCase();
 
@@ -920,9 +959,14 @@ var _sortFilesAlphabetically= function() {
 
     }
 
-
-
-
+    //FIXME: can switchType and switchDocType be refactored? at very least they need better names
+    /**
+     * Similar to switchType, but this (i think)) swaps out labels and descriptions for inputs that are re-used by
+     * multiple document types.
+     *
+     * @param el doctype select element
+     * @private
+     */
     var _switchDocType = function(el) {
         var doctype = $(el).val().toLowerCase();
 
@@ -936,11 +980,12 @@ var _sortFilesAlphabetically= function() {
 
     }
 
-    var _switchLabel = function(field, type) {
-        // console.debug('_switchLabel('+field+','+type+')');
-        $("label",field).text(field.attr(type));
-    }
 
+    //FIXME:migrate to tdar.dataintegration.
+    /**
+     * data integration:  toggle an arcordian style div (i think) and update icon to reflect toggled state
+     * @private
+     */
     var _toggleDiv = function() {
         $(this).next().slideToggle('slow');
         $(this).find("span.ui-icon-triangle-1-e").switchClass(
@@ -949,6 +994,13 @@ var _sortFilesAlphabetically= function() {
                 "ui-icon-triangle-1-s", "ui-icon-triangle-1-e", 700);
     }
 
+
+    /**
+     * specific setup for initializing "supporting resoure" edit forms.
+     * @param totalNumberOfFiles total number of flies that can be associated with the resource
+     * @param rtype resource type name
+     * @private
+     */
     var _setupSupportingResourceForm = function(totalNumberOfFiles, rtype) {
         // the ontology textarea or file upload field is required whenever it is
         // visible AND
@@ -989,44 +1041,13 @@ var _sortFilesAlphabetically= function() {
         _refreshInputDisplay();
     }
 
-    /*
-    function makeMap(json, mapId, type, value_) {
-        var mapString = "";
-
-        if (!json.chartshape) {
-            alert("No map elements");
-            return;
-        }
-        mapString = "<map name='" + mapId + "'>";
-        var area = false;
-        var chart = json.chartshape;
-        var values = value_.split("|");
-        for ( var i = 0; i < chart.length; i++) {
-            area = chart[i];
-            mapString += "\n  <area name='" + area.name + "' shape='" + area.type
-                    + "' coords='" + area.coords.join(",");
-            var val = values[i];
-
-            // FIXME: I don't always consistently work
-            // var offset = values.length - 1;
-            // if (val == undefined && i >= offset && values[i-offset] != undefined)
-            // {
-            // val = values[(i-offset)];
-            // }
-            // console.log(values.length + ' ' + i + "{"+ (i -offset)+ "}" + ' ' +
-            // values[(i-offset)]);
-            if (val != undefined) {
-                mapString += "' href='" + getURI("search/results") + "?" + type
-                        + "=" + val + "&useSubmitterContext=true'";
-            }
-            mapString += " title='" + val + "'>";
-            ;
-        }
-        mapString += "\n</map>";
-        $("#" + mapId + "-img").after(mapString);
-    }
-    */
-
+    /**
+     * Wrapper for triggering custom Google Analytics events.
+     *
+     * @returns {boolean}
+     * @param {...string} values to include in event. "_trackEvent" is implied -- do not include it in arguments.
+     * @private
+     */
     var _gaevent = function() {
         if(!_gaq || arguments.length < 1) {return true;}
         var args = Array.prototype.slice.call(arguments, 0);
@@ -1038,6 +1059,12 @@ var _sortFilesAlphabetically= function() {
         return true;
     }
 
+    /**
+     * emit "file downloaded" google analytics event
+     * @param url
+     * @param tdarId
+     * @private
+     */
     var _registerDownload = function(url, tdarId) {
         if(tdarId) {
             _gaevent("Download", url, tdarId);
@@ -1046,10 +1073,21 @@ var _sortFilesAlphabetically= function() {
         }
     }
 
+    /**
+     * emit "outbound link clicked" event.
+     * @param elem
+     * @private
+     */
     var _outboundLink = function(elem){
         _gaevent("outboundLink", elem.href, window.location);
     }
 
+    /**
+     * for use in edit-column-metadata:  event handler for subcategoroy change event.
+     * @param categoryIdSelect
+     * @param subCategoryIdSelect
+     * @private
+     */
     var _changeSubcategory = function(categoryIdSelect, subCategoryIdSelect) {
         var $categoryIdSelect = $(categoryIdSelect);
         var $subCategoryIdSelect = $(subCategoryIdSelect);
@@ -1070,14 +1108,28 @@ var _sortFilesAlphabetically= function() {
         });
     }
 
-    
-
+    //FIXME: migrate to tdar.integration
+    /**
+     * more black magic used exclusively by data integration.  return the boty of a function as a string.
+     * @param func
+     * @returns {*}
+     * @private
+     */
     var _getFunctionBody = function(func) {
         var m = func.toString().match(/\{([\s\S]*)\}/m)[1];
         return m;
     }
 
-    // replace last occurance of str in attribute with rep
+    //FIXME: migrate to tdar.integration TDAR-3497
+    /**
+     * replace last occurance of str in attribute with rep
+     *
+     * @param elem
+     * @param attrName
+     * @param str
+     * @param rep
+     * @private
+     */
     function _replaceAttribute(elem, attrName, str, rep) {
         if (!$(elem).attr(attrName))
             return;
@@ -1098,6 +1150,10 @@ var _sortFilesAlphabetically= function() {
         }
     }
 
+    /**
+     * Used by ontology and coding-sheet edit pages; show relevant fields based on users choice of "manual text entry"
+     * or "file upload"
+     */
     var _refreshInputDisplay = function() {
         var selectedInputMethod = $('#inputMethodId').val();
         var showUploadDiv = (selectedInputMethod == 'file');
@@ -1105,23 +1161,12 @@ var _sortFilesAlphabetically= function() {
         $('#textInputDiv').toggle(!showUploadDiv);
     }
 
-    /*
-     * 
-    function personAdded(id) {
-//        console.log("person added " + id);
-        $(".creatorInstitution", "#" + id).hide();
-        $(".creatorPerson", "#" + id).show();
-    }
-
-    function institutionAdded(id) {
-//        console.log("institution added " + id);
-        // hide the person record
-        $(".creatorPerson", "#" + id).hide();
-        $(".creatorInstitution", "#" + id).show();
-    }
-
+    /**
+     * document edit page: expand those nodes where children are selected
+     * @param field
+     * @param type
+     * @private
      */
-    // expand those nodes where children are selected
     function _switchLabel(field, type) {
         var label = "#" + $(field).attr('id') + '-label';
         if ($(field).attr(type) != undefined && $(label) != undefined) {
@@ -1129,29 +1174,33 @@ var _sortFilesAlphabetically= function() {
         }
     }
 
-    /*
-    function showTooltip(x, y, contents) {
-        $('<div id="flottooltip">' + contents + '</div>').css({
-            position : 'absolute',
-            display : 'none',
-            top : y + 30,
-            left : x + 5
-        }).appendTo("body").fadeIn(200);
-    }
-    */
 
-
+    //FIXME: this doesn't need to be it's own function.
+    /**
+     * event handler that toggles manual coordinate entry
+     * @param elem
+     * @private
+     */
     function _coordinatesCheckboxClicked(elem) {
-
         $('#explicitCoordinatesDiv').toggle(elem.checked);
     }
 
+    /**
+     * Render list of user's collections as a treeview.
+     * @private
+     */
     var _collectionTreeview = function() {
         $(".collection-treeview")
             .find(".hidden").removeClass("hidden").end()
             .treeview();
     }
 
+    /**
+     * return string that describes size of specified bytes in easier syntax
+     * @param bytes  size in bytes
+     * @param si true if description should be in SI units (e.g. kilobyte, megabyte) vs. IEC (e.g. kibibyte, mebibyte)
+     * @returns {string} size as human readable equivalent of specified bytecount
+     */
     function humanFileSize(bytes, si) {
         var thresh = si ? 1000 : 1024;
         if(bytes < thresh) return bytes + ' B';
@@ -1169,7 +1218,6 @@ var _sortFilesAlphabetically= function() {
         "initFormValidation": _setupFormValidate,
         "applyTreeviews": _applyTreeviews,
         "initializeView": _initializeView,
-        "getObjValue": _getObjValue,
         "initRegformValidation": _initRegformValidation,
         "determineResponsiveClass": _determineResponsiveClass,
         "elipsify":_elipsify,
@@ -1193,7 +1241,6 @@ var _sortFilesAlphabetically= function() {
         "htmlDoubleEncode":_htmlDoubleEncode,
         "applyWatermarks": _applyWatermarks,
         "replaceAttribute": _replaceAttribute,
-        "delayJiraButton": _delayJiraButton,
         "coordinatesCheckboxClicked": _coordinatesCheckboxClicked,
         "refreshInputDisplay": _refreshInputDisplay,
         "maxJavascriptValidationMessages": 25,
