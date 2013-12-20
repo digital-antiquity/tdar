@@ -10,35 +10,77 @@
     if(typeof(TDAR_jsErrorDelim)==='undefined') TDAR_jsErrorDelim = "\r\n";
     var _delim = TDAR_jsErrorDelim;
     var _errors = window.__errorMessages = [];
-
     var _start = Date.now();
 
-    //no now() in ie8
+
+    /**
+     * Return current date  - Date.now() is not supported in IE8
+     * @returns {number} number representing epoch time
+     * @private
+     */
     function _now() {
         return (new Date()).getTime();
     }
 
+    /**
+     * Shortcut for document.getElementById.
+     *
+     * @param id element ID to search for
+     * @returns {HTMLElement} DOM Element if found, otherwise undefined.
+     * @private
+     */
     function _id(id) {
         var elem = document.getElementById(id);
         return elem;
     }
 
+    /**
+     * Wrapper for JSON.stringify(), does not throw error if feature not supported.
+     * @param obj
+     * @returns {string} stringified version of supplied object, or "not supported".
+     * @private
+     */
     function _json(obj) {
-        var str = "stringify not supported";
+        var str = "not supported";
         if(JSON) {
             str =  JSON.stringify(obj);
         }
         return str
     }
 
+    /**
+     * Returns a node that contains a textarea node that we will use to dump error information.
+     * @returns {HTMLElement}
+     * @private
+     */
     function _errorTextarea() {
-        var elem = _id('javascriptErrorLog');
-        if(!elem) {
-            //TODO: create the element if it's not found (make sure it's hidden)
-        }
+        var elem = _id("javascriptErrorLog");
+        //TODO: hold off on dynamically creating the error log textarea.  Haven't decided if it's a good idea.
+        //        if(!elem && !document.forms.length) {
+        //            _el("textarea", document.forms[document.forms.length-1], {id: "javascriptErrorLog", name: "javascriptErrorLog", style:"display:none"});
+        //        }
         return elem;
     }
 
+    /**
+     * convenience method for creating dom node
+     * @param objtype  type of node to create
+     * @param attrs  map of attributes
+     * @private
+     */
+    function _el(objtype, parent, attrs) {
+        var el, attr, val;
+        el = document.createElement(objtype);
+        for(attr in attrs) {
+            el[attr] = attrs[attr];
+        }
+    }
+
+    /**
+     * Append an error to the error log.
+     * @param obj
+     * @private
+     */
     function _addErr(obj) {
         var txt = "";
         if(_errors.length > 0) {
@@ -59,36 +101,78 @@
         }
     }
 
-    window.addEventListener("error", function(e){
+
+    /**
+     * Error handler used if the browser supports the Error event.  Otherwise we use a separate window.onerror handler
+     * Note that the amount of information that we get is based on:
+     *      - type of error: parse errors, runtime errors, uri failure
+     *      - vendor: IE8 uses window.onerror, chrome/FF use "error" event.
+     *      - source:
+     *          inline: reports most information (message,  file, line, col)
+     *          same domain: same, but not as helpful if you use a minifier
+     *          other domain:  uri failures are reported,  but parse/runtime errors have line/message stripped.
+     * @param e
+     * @private
+     */
+    function _errorListener(e) {
+        //if listener was called, assume onerror is redundant and unregister it
+        //console.log("error listener support detected");
+        window.onerror = null;
         var evt = e || window.event;
         var tgt = evt.target;
+        var filename = evt.filename,
+            line = evt.lineno,
+            col = evt.colno;
+
+        //if filename blank but lineno exists, it's an inline script
+        if(!filename && evt.lineno) {
+            filename = window.location.pathname;
+        }
+
+        if(col) {
+            line += ":"  + col;
+        }
+
         var obj = {
             message: "errorEvent::" +  (evt.message || "(no error message)"),
-            filename: evt.filename || "(no filename - probably script from remote host)",
-            line: evt.lineno,
-            tag: "(inline script)",
-            foo: 'bar'
+            filename: filename,
+            line: line,
+            tag: "n/a"
         };
 
         if(tgt !== window) {
             obj.tag = tgt.outerHTML;
         }
         if(!!tgt.tagName && tgt.tagName !== "SCRIPT") {
-            //TODO: not a script issue (e.g. missing css or image), put this in another global error list
+            //error event happened, but not due to javascript (perhaps css or image failed to load. don't report
+            console.log("non-script-related error occured");
         } else {
             _addErr(obj);
         }
-    }, true);
+    }
 
-//TODO: onerror callback is not as helpful, since it isn't called for missing/unloaded files, but it might be necessary for ie8
-//    window.onerror = function(msg, url, line) {
-//        //ignore dom error events, they're handled by the error listener
-//        if(typeof msg !== "string") return;
-//
-//        _addErr({
-//            message: "onerror::" + msg,
-//            filename: url,
-//            line: line
-//        });
-//    }
+    /**
+     * Callback for window.onerror. Instead of an  event object, the error details are passed in as arguments
+     * to the callback
+     * @param msg error message
+     * @param url url, or file name where the error occured
+     * @param line
+     * @private
+     */
+    function _onerror(msg, url, line) {
+        //ignore dom error events, they're handled by the error listener
+        if(typeof msg !== "string") return;
+
+        _addErr({
+            message: "onerror::" + msg,
+            filename: url,
+            line: line
+        });
+    }
+
+    // Register both types of error handlers: event based, and onerror-based. Once we detect that browser supports
+    // the error event we disable window.onerror (so we don't double-up on error messages.
+    window.addEventListener("error", _errorListener, true);
+    window.onerror = _onerror;
+
 })();
