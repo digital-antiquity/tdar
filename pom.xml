@@ -2082,20 +2082,6 @@
 						</execution>
 					</executions>
 				</plugin>
-				<plugin>
-					<groupId>com.cenqua.clover</groupId>
-					<artifactId>clover</artifactId>
-					<version>${clover.version}</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>setup</goal>
-								<!-- <goal>optimize</goal> -->
-								<!-- <goal>snapshot</goal> -->
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
 			</plugins>
 		</build>
 			<dependencies>
