@@ -413,9 +413,11 @@ $(document).ready(function() {
 
 
 
-/* this function manages the display of the checkboxes next to a column field when someone changes one of the values, it changes
-   the color if mapped properly to something */
-
+//FIXME: move this to tdar.dataintegration.js
+/**
+ * this function manages the display of the checkboxes next to a column field when someone changes one of the values,
+ * it changesthe color if mapped properly to something
+ */
 function registerCheckboxInfo() {
     var $target = $($(this).parents(".datatablecolumn").first());
     var val = $('.columnEncoding:checked',$target).val();
