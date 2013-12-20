@@ -1144,6 +1144,7 @@
                     <sourceFile>${baseDir}/src/main/resources/js/classic.js</sourceFile>
                 </sourceFiles>
  -->            
+ <lenient>true</lenient>
 				</configuration>
 			</plugin>
 
@@ -2051,46 +2052,53 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
-			<id>clover</id>
-			<properties>
-				<webapp.deploy.dir>/tmp/tdar-clover</webapp.deploy.dir>
-				<jetty.port>8180</jetty.port>
-				<jetty.ssl.port>8143</jetty.ssl.port>
-				<use.test.classpath>true</use.test.classpath>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
-							<execution>
-								<phase>process-resources</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<configuration>
-									<tasks>
-										<mkdir dir="target" />
-										<mkdir dir="target/generated" />
-										<mkdir dir="target/generated/db" />
-										<mkdir dir="target/generated/webapp" />
-										<mkdir dir="target/generated/webapp-test" />
-									</tasks>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-			<dependencies>
-				<dependency>
+	<profile>
+		<id>clover</id>
+		<properties>
+			<webapp.deploy.dir>/tmp/tdar-clover</webapp.deploy.dir>
+			<jetty.port>8180</jetty.port>
+			<jetty.ssl.port>8143</jetty.ssl.port>
+			<use.test.classpath>true</use.test.classpath>
+		</properties>
+		<build>
+			<plugins>
+				<plugin>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<executions>
+						<execution>
+							<phase>process-resources</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+								<tasks>
+									<mkdir dir="target" />
+									<mkdir dir="target/generated" />
+									<mkdir dir="target/generated/db" />
+									<mkdir dir="target/generated/webapp" />
+									<mkdir dir="target/generated/webapp-test" />
+								</tasks>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
 					<groupId>com.cenqua.clover</groupId>
 					<artifactId>clover</artifactId>
 					<version>${clover.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
+					<executions>
+						<execution>
+							<goals>
+								<goal>setup</goal>
+								<!-- <goal>optimize</goal> -->
+								<!-- <goal>snapshot</goal> -->
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</profile>
 		<profile>
 			<id>checkVersions</id>
 			<build>
