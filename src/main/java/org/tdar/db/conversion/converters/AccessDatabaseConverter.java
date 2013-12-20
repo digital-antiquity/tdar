@@ -148,10 +148,10 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             }
 
             targetDatabase.createTable(dataTable);
-
+            int rowNumber = 0;
             try {
                 int rowCount = getDatabase().getTable(tableName).getRowCount();
-                for (int i = 0; i < rowCount; i++) {
+                for (rowNumber =0; rowNumber < rowCount; rowNumber++) {
                     HashMap<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
                     Map<String, Object> currentRow = currentTable.getNextRow();
                     int j = 0;
@@ -202,7 +202,10 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                 }
             } catch (BufferUnderflowException | IllegalStateException  bex) {
                 throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accessDatabaseConverter.error_corrupt"));
-            } finally {
+            } catch (Exception e) {
+                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accessDatabaseConverter.cannot_read_Row",rowNumber, tableName), e);
+            }
+            finally {
                 completePreparedStatements();
             }
         }
