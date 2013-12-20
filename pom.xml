@@ -2098,6 +2098,13 @@
 				</plugin>
 			</plugins>
 		</build>
+			<dependencies>
+				<dependency>
+					<groupId>com.cenqua.clover</groupId>
+					<artifactId>clover</artifactId>
+					<version>${clover.version}</version>
+				</dependency>
+			</dependencies>
 	</profile>
 		<profile>
 			<id>checkVersions</id>
