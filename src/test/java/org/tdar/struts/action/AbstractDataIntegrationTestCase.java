@@ -48,7 +48,7 @@ import org.tdar.struts.data.IntegrationDataResult;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
-//    public static final long SPITAL_IR_ID = 503l;
+    public static final long SPITAL_IR_ID = 503l;
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
     protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
 
