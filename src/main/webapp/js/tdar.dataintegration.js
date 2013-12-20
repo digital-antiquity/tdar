@@ -1,10 +1,20 @@
-TDAR.integration = (function () {
+(function (TDAR, $) {
     'use strict';
 
+    //HACK jtd - jqueryui relies on $.browser. jQuery 1.10.3 deprecates that.  So,  we add it here w/
+    //bogus value
+    $.browser = "NCSA Mosaic v0.7";
+
     var drpOptions = {
-        drop: dropVariable
+        drop: _dropVariable
     };
 
+    //current status message
+    var msg = "";
+
+    /**
+     * Initialize the data integration UI
+     */
     var _initDataIntegration = function () {
         $("#selectDTColForm").submit(function () {
             var $this = $(this);
@@ -30,19 +40,19 @@ TDAR.integration = (function () {
         $("#drplist td").droppable(drpOptions);
 
         $("#drplist").delegate("td", "mouseenter", function () {
-            expandColumn(this);
+            _expandColumn(this);
         });
 
         $('#drplist').delegate('button', 'click', function () {
             var column = $(this).parent().parent();
             $(this).parent().remove();
-            validateColumn(column);
+            _validateColumn(column);
             return false;
         });
 
-        $("#clear").click(integrationClearAll);
-        $("#autoselect").click(integrationAutoselect);
-        $("#addColumn").click(addColumn);
+        $("#clear").click(_integrationClearAll);
+        $("#autoselect").click(_integrationAutoselect);
+        $("#addColumn").click(_addColumn);
         // autosize the height of the div
         $('.buttontable tr').each(function () {
             var pheight = $(this).height();
@@ -67,10 +77,14 @@ TDAR.integration = (function () {
 
     };
 
-    function setStatus(msg) {
+    /**
+     * Set the current integration status message
+     * @param msg
+     *
+     */
+    function _setStatus(msg) {
         $(".status").html(msg);
         $(".status").show();
-        $(".status").fadeIn(10, true);
 
         $(".status").css("background-color", "lightyellow !important");
         $(".status").css("border", "1px solid red !important");
@@ -79,7 +93,14 @@ TDAR.integration = (function () {
         });
     }
 
-    function validateColumn(column) {
+    /**
+     * Inspect contents of integration table column, determine if it should be displayed as "integration" column
+     * or "display" column.
+     *
+     * @param column
+     * @private
+     */
+    function _validateColumn(column) {
         var integrate = $(column).find("div[hasOntology]");
         var children = $(column).children("div");
         console.log("children:" + children.length);
@@ -110,9 +131,17 @@ TDAR.integration = (function () {
         }
     }
 
-    var msg = "";
-
-    function dropVariable(event, ui) {
+    /**
+     * Event handler, called when a source dataset column is  dropped on the integration table.  Determine if the placement of
+     * the source column placement was valid.  If not, update current status with error message.  If valid,  determine
+     * whether to display the integration table column as an "integration" or "display" column.
+     *
+     * @param event
+     * @param ui
+     * @returns {boolean} true if drop should be accepted. otherwise false.
+     * @private
+     */
+    function _dropVariable(event, ui) {
         var $target = $(event.target);
         var draggable = ui.draggable;
         if (draggable.attr("colnum")) {
@@ -132,13 +161,13 @@ TDAR.integration = (function () {
                     console.log($(this));
                     if ($(this).attr("table") == table) {
                         msg = "you cannot add more than one variable from the same table to any column";
-                        setStatus(msg);
+                        _setStatus(msg);
                         ret = false;
                     }
                 });
         }
 
-        if (ret == false) {
+        if (!ret) {
             return false;
         }
 
@@ -160,7 +189,7 @@ TDAR.integration = (function () {
 
         $(newChild).attr("style", "");
 
-        validateColumn(event.target);
+        _validateColumn(event.target);
         $target.draggable("destroy");
         $(newChild).css("{}");
 
@@ -181,8 +210,12 @@ TDAR.integration = (function () {
             }, 200);
     }
 
-    /* this is the column adjustment UI, mouseenter is not always right */
-    function expandColumn(col) {
+    /**
+     * this is the column adjustment UI, mouseenter is not always right
+     * @param col integration table column to expand
+     * @private
+     */
+    function _expandColumn(col) {
         var $col = $(col);
         var $tds = $("#drplist td");
         var small = 80 / $tds.length;
@@ -202,7 +235,15 @@ TDAR.integration = (function () {
         }).removeClass("short");
     };
 
-    function addColumn(matches) {
+
+    /**
+     * Add a new column to the Integration Table section.
+     *
+     * @param strOntologyId if nonblank, indicates ontology associated with the new column
+     * @returns {boolean} false, sometimes.
+     * @private
+     */
+    function _addColumn(strOntologyId) {
         var colNum = $("#drplist tr").children().length + 1;
         $(
             "<td colNum="
@@ -222,8 +263,8 @@ TDAR.integration = (function () {
             $(this).parent().parent().remove();
             return false;
         });
-        expandColumn($chld);
-        if (matches != undefined && matches.length > 0) {
+        _expandColumn($chld);
+        if (strOntologyId != undefined && strOntologyId.length > 0) {
             var event = {};
             event.target = $chld;
             var tables = $("table.buttontable");
@@ -231,14 +272,17 @@ TDAR.integration = (function () {
                 // fake the drop function
                 var table = tables[i];
                 var ui = {};
-                ui.draggable = $($("[hasontology=" + matches + "]", $(table))[0]);
-                dropVariable(event, ui);
+                ui.draggable = $($("[hasontology=" + strOntologyId + "]", $(table))[0]);
+                _dropVariable(event, ui);
             }
         }
         return false;
     };
 
-    function integrationClearAll() {
+    /**
+     * Clear all columns in Integration Table section
+     */
+    function _integrationClearAll() {
         $("#drplist tbody td")
             .each(
             function () {
@@ -259,7 +303,11 @@ TDAR.integration = (function () {
         }, 400);
     }
 
-    function integrationAutoselect() {
+    /**
+     * Add all integrateable columns to the Integration Tagble
+     * @private
+     */
+    function _integrationAutoselect() {
         var matches = {};
         var tables = [];
         var totalTables = 0;
@@ -289,21 +337,25 @@ TDAR.integration = (function () {
                         $("#drplist td").remove();
                     }
                     okay = true;
-                    addColumn(match);
+                    _addColumn(match);
                 }
             }
         }
         if (!okay) {
-            setStatus("no shared integration columns were found.");
+            _setStatus("no shared integration columns were found.");
         }
 
+        //you know, rumors tell of an html element that implements this.. button-like behavior.
         setTimeout(function () {
             $("#autoselect").attr('checked', false);
         }, 400);
     }
 
     //expose public elements
-    return {
-        "initDataIntegration": _initDataIntegration
+    TDAR.integration = {
+        "initDataIntegration": _initDataIntegration,
+        "setStatus": _setStatus,
+        "integrationClearAll": _integrationClearAll
     };
-})();
+
+})(TDAR, jQuery);

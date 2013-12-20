@@ -1048,7 +1048,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <p class="span4">&nbsp;</p>
     </div>
 
-<!-- <ul id="proj-toolbar" class="projectMenu"><li></li></ul> -->
 </div>
 <div class="row">
     <div class="span9">
