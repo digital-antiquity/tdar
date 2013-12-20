@@ -4,7 +4,6 @@
 
 (function($, TDAR){
     "use strict";
-    TDAR.namespace("charts");
 
     var _defaults = {
         id: 'chart1',
@@ -12,9 +11,15 @@
         title: 'A Chart'
     };
 
-    //convert an array of rawdata into a series as expected by jqplog
-    //colx - name of column which holds x-value or callback in form of function(rawval){}
-    //colx - name of column which holds x-value or callback in form of function(rawval){}
+    /**
+     * Maps an array of objects into a jqplot series
+     *
+     * @param data untranslated array of objects
+     * @param colx name of property which holds x-value or callback that accepts rawval and returns translated value
+     * @param coly  name of property which holds y-value or callback that accepts rawval and returns translated val
+     * @returns {*} jqplot series - array of [x, y] arrays.
+     * @private
+     */
     var _toSeries = function(data, colx, coly) {
         var tdata = $.map(data, function(val){
             var xval = typeof colx === "function" ? colx(val) : val[colx];
@@ -25,11 +30,22 @@
         });
         return tdata;
     }
-    //sort a series by date,  assuming array in the format [[date1, num1], [date2, num2], ...]
+
+    /**
+     * sort a series by date,  assuming array in the format [[date1, num1], [date2, num2], ...]
+     * @param a
+     * @param b
+     * @returns {number}
+     * @private
+     */
     var _datesort = function(a,b) {return a[0] - b[0]};
 
-
     TDAR.charts = {
+
+        /**
+         * Generate admin usage stats graph
+         * @param options
+         */
         adminUsageStats: function(options) {
             var opts = $.extend({}, _defaults, options);
             var $chart = $("#" + opts.id);
@@ -109,8 +125,13 @@
             });
         },
 
-        generateSeriesColors: function(size, hexBackground) {
-
+        /**
+         * generate color palette of specified size that attempts to compliment specified background color
+         * @param size number of colors in palette
+         * @param bgcolor in '#rrggbb' format
+         */
+        generateSeriesColors: function(size, bgcolor) {
+            //TODO: all the awesome stuff that the docs say it does
         }
     }
 

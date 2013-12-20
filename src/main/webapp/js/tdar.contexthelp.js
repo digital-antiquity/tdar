@@ -1,18 +1,33 @@
-
-TDAR.namespace("contexthelp");
+/**
+ * Contextual help service.
+ */
 TDAR.contexthelp = (function() {
     "use strict";
-    
-    var self = {};
-    
+
+    /**
+     * Display contextual help UI for the specified target element.  When displaying help-text, the service will
+     * attempt to display the help-text near the target element without occluding the target element.
+     *
+     * While it can be any element, the expectation is that the target element represents a form field or a form
+     * section. If the user- agent has enough screen space, the context-help appears in the right gutter beside the
+     * target element.  If there is not enough horizontal space,  the context-help will appear as a "pop-up"  text box
+     * above the target element -- occluding the elements that appear before the target.
+     *
+     * The content of the helptext is determined by the value of the target element's "data-tooltipcontent" attribute.
+     * The value of the attribute can either be the help text to display, or  can specify element id prefixed by
+     * hash e.g."#mytooltipdiv".  If an element ID, this this method will copy the html of the specified elemnent
+     * into the context help UI.  Similarly,the target element can specify a label for the context help by supplying a
+     * 'data-tiplabel' attribute.
+     *
+     * @param targetElem the form field or div described by the help text.
+     */
     function setToolTipContents(targetElem) {
         var $targetElem = $(targetElem);
         var fieldOff = $targetElem.offset();
-        
-        // tooltip content can either be in 'tooltipcontent' attribute or in a
-        // separate div
-        var label = "";
-        var content = "";
+        var label;
+        var content;
+
+        // tooltip content can either be in 'data-tooltipcontent' attribute or in a
         if ($targetElem.data('tooltipcontent')) {
             content = $targetElem.data('tooltipcontent');
             // tooltip label can either be in atttribute, otherwise will be set to
@@ -21,7 +36,7 @@ TDAR.contexthelp = (function() {
             if (label) {
                 label = "<h2>" + label + "</h2>";
             }
-            if (content[0] == "#") {
+            if (content[0] === "#") {
                 content = $(content).html();
             }
         } else {
@@ -49,17 +64,20 @@ TDAR.contexthelp = (function() {
             });
         }
     }
-    
+
+    /**
+     * initialize context-help functionality.
+     *
+     * @param form
+     */
     function initializeTooltipContent(form) {
         if(typeof form === "undefined") return;
-        
-        //console.debug('delegating tooltips');
         $(form).on("mouseenter focusin", "[data-tooltipcontent]",  function() {
             setToolTipContents(this);
         });
     }
     
-    self.initializeTooltipContent = initializeTooltipContent;
-
-    return self;    
+    return {
+        initializeTooltipContent: initializeTooltipContent
+    };
 })();
