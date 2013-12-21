@@ -1,6 +1,9 @@
 package org.tdar.db.conversion;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,7 +19,6 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,7 +210,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testPgmDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "pgm-tdr-test-docs.mdb"), 1124L);
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "pgm-tdr-test-docs.mdb"), 1125L);
         for (DataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }

@@ -48,7 +48,7 @@ import org.tdar.struts.data.IntegrationDataResult;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
-    public static final long SPITAL_IR_ID = 503l;
+//    public static final long SPITAL_IR_ID = 503l;
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
     protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
 
@@ -117,7 +117,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     }
 
     protected InformationResourceFileVersion makeFileVersion(File name, long id) throws IOException {
-        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, 1234L, 123L);
+        long infoId = (long) (Math.random() * 10000);
+        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, infoId, 123L);
         version.setId(id);
         filestore.store(name, version);
         version.setTransientFile(name);
@@ -137,7 +138,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
     static Long spitalIrId = (long)(Math.random()* 10000);
     public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), SPITAL_IR_ID);
+        spitalIrId++;
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), spitalIrId);
         return converter;
     }
 
