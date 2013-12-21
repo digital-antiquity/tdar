@@ -1480,6 +1480,7 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
+					
 					<!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> <fork>true</fork> -->
 
                     <!--
@@ -2082,8 +2083,20 @@
 						</execution>
 					</executions>
 				</plugin>
-			</plugins>
-		</build>
+					<plugin>
+						<groupId>com.atlassian.maven.plugins</groupId>
+						<artifactId>maven-clover2-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>setup</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 			<dependencies>
 				<dependency>
 					<groupId>com.cenqua.clover</groupId>
