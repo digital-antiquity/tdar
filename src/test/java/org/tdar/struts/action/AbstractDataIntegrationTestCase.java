@@ -116,12 +116,11 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return taxonValueMap;
     }
 
-    protected InformationResourceFileVersion makeFileVersion(String name, long id) throws IOException {
-        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name, 1, 1234L, 123L);
+    protected InformationResourceFileVersion makeFileVersion(File name, long id) throws IOException {
+        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, 1234L, 123L);
         version.setId(id);
-        File file = new File(getTestFilePath() + "/" + name);
-        filestore.store(file, version);
-        version.setTransientFile(file);
+        filestore.store(name, version);
+        version.setTransientFile(name);
         return version;
     }
 
@@ -137,8 +136,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     // return dataset;
     // }
 
-    public DatasetConverter convertDatabase(String filename, Long irFileId) throws IOException, FileNotFoundException {
-        InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(filename, irFileId);
+    public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
+        InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
         File storedFile = filestore.retrieveFile(accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
@@ -147,7 +146,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     }
 
     public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
-        DatasetConverter converter = convertDatabase(SPITAL_DB_NAME, SPITAL_IR_ID);
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), SPITAL_IR_ID);
         return converter;
     }
 

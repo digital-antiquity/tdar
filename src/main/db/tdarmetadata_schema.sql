@@ -50,6 +50,35 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: archive; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE archive (
+    id bigint NOT NULL,
+    doimportcontent boolean DEFAULT false,
+    importdone boolean DEFAULT false
+);
+
+
+ALTER TABLE public.archive OWNER TO tdar;
+
+--
+-- Name: audio; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE audio (
+    id bigint NOT NULL,
+    audio_codec character varying(255),
+    software character varying(255),
+    bit_depth integer,
+    bit_rate integer,
+    sample_rate integer
+);
+
+
+ALTER TABLE public.audio OWNER TO tdar;
+
+--
 -- Name: authorized_user; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -232,7 +261,8 @@ CREATE TABLE collection (
     date_created timestamp without time zone DEFAULT now(),
     date_updated timestamp without time zone DEFAULT now(),
     sort_order character varying(25),
-    owner_id bigint
+    owner_id bigint,
+    secondary_sort_order character varying(25)
 );
 
 
@@ -368,10 +398,11 @@ CREATE TABLE creator (
     id bigint DEFAULT nextval('creator_id_seq'::regclass) NOT NULL,
     date_created date,
     last_updated timestamp without time zone,
-    location character varying(255),
-    url character varying(64),
+    url character varying(255),
     description text,
-    status character varying(25) DEFAULT 'ACTIVE'::character varying
+    status character varying(25) DEFAULT 'ACTIVE'::character varying,
+    occurrence bigint,
+    location character varying
 );
 
 
@@ -443,7 +474,9 @@ CREATE TABLE culture_keyword (
     selectable boolean NOT NULL,
     parent_id bigint,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
-    merge_keyword_id bigint
+    merge_keyword_id bigint,
+    occurrance bigint,
+    occurrence bigint
 );
 
 
@@ -760,7 +793,9 @@ CREATE TABLE geographic_keyword (
     label character varying(255) NOT NULL,
     level character varying(50),
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
-    merge_keyword_id bigint
+    merge_keyword_id bigint,
+    occurrance bigint,
+    occurrence bigint
 );
 
 
@@ -798,6 +833,21 @@ CREATE TABLE geographic_keyword_synonym (
 
 
 ALTER TABLE public.geographic_keyword_synonym OWNER TO tdar;
+
+--
+-- Name: geospatial; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE geospatial (
+    id bigint NOT NULL,
+    currentnessupdatenotes text,
+    scale character varying(100),
+    spatial_reference_system character varying(50),
+    map_source character varying(500)
+);
+
+
+ALTER TABLE public.geospatial OWNER TO tdar;
 
 --
 -- Name: homepage_cache_geographic_keyword; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
@@ -978,7 +1028,11 @@ CREATE TABLE information_resource_file (
     number_of_parts bigint,
     restriction character varying(50) DEFAULT 'PUBLIC'::character varying,
     date_made_public timestamp without time zone,
-    error_message text
+    error_message text,
+    part_of_composite boolean DEFAULT false,
+    description text,
+    file_created_date date,
+    date_uploaded date
 );
 
 
@@ -1056,7 +1110,8 @@ CREATE TABLE information_resource_file_version (
     width integer,
     information_resource_file_id bigint,
     total_time bigint,
-    effective_size bigint
+    effective_size bigint,
+    primary_file boolean DEFAULT false
 );
 
 
@@ -1108,12 +1163,11 @@ SET default_with_oids = true;
 
 CREATE TABLE institution (
     id bigint NOT NULL,
-    location character varying(255),
     name character varying(255) NOT NULL,
-    url character varying(255),
     parentinstitution_id bigint,
-    status character varying(25) DEFAULT 'ACTIVE'::character varying,
-    merge_creator_id bigint
+    merge_creator_id bigint,
+    location character varying,
+    url character varying
 );
 
 
@@ -1163,7 +1217,9 @@ CREATE TABLE investigation_type (
     definition text,
     label character varying(255) NOT NULL,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
-    merge_keyword_id bigint
+    merge_keyword_id bigint,
+    occurrance bigint,
+    occurrence bigint
 );
 
 
@@ -1228,7 +1284,12 @@ CREATE TABLE latitude_longitude (
     maximum_longitude double precision NOT NULL,
     minimum_latitude double precision NOT NULL,
     minimum_longitude double precision NOT NULL,
-    resource_id bigint
+    resource_id bigint,
+    is_ok_to_show_exact_location boolean DEFAULT false,
+    min_obfuscated_lat double precision,
+    min_obfuscated_long double precision,
+    max_obfuscated_lat double precision,
+    max_obfuscated_long double precision
 );
 
 
@@ -1245,7 +1306,9 @@ CREATE TABLE material_keyword (
     definition text,
     label character varying(255) NOT NULL,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
-    merge_keyword_id bigint
+    merge_keyword_id bigint,
+    occurrance bigint,
+    occurrence bigint
 );
 
 
@@ -1362,7 +1425,9 @@ CREATE TABLE other_keyword (
     definition text,
     label character varying(255) NOT NULL,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
-    merge_keyword_id bigint
+    merge_keyword_id bigint,
+    occurrance bigint,
+    occurrence bigint
 );
 
 
@@ -1438,7 +1503,14 @@ CREATE TABLE person (
     phone_public boolean DEFAULT false NOT NULL,
     email_public boolean DEFAULT false NOT NULL,
     username character varying(255),
-    merge_creator_id bigint
+    merge_creator_id bigint,
+    proxy_note text,
+    proxy_institution_id bigint,
+    proxyinstitution_id bigint,
+    tos_version integer DEFAULT 0 NOT NULL,
+    contributor_agreement_version integer DEFAULT 0 NOT NULL,
+    tos_level integer DEFAULT 0 NOT NULL,
+    creator_agreement_version integer DEFAULT 0 NOT NULL
 );
 
 
@@ -1653,6 +1725,47 @@ ALTER SEQUENCE pos_billing_model_id_seq OWNED BY pos_billing_model.id;
 
 
 --
+-- Name: pos_coupon; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE pos_coupon (
+    id bigint NOT NULL,
+    code character varying(255),
+    date_created timestamp without time zone,
+    date_expires timestamp without time zone,
+    number_of_files bigint,
+    number_of_mb bigint,
+    one_time_use boolean,
+    account_id bigint,
+    user_id bigint,
+    date_redeemed timestamp without time zone
+);
+
+
+ALTER TABLE public.pos_coupon OWNER TO tdar;
+
+--
+-- Name: pos_coupon_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE pos_coupon_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.pos_coupon_id_seq OWNER TO tdar;
+
+--
+-- Name: pos_coupon_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE pos_coupon_id_seq OWNED BY pos_coupon.id;
+
+
+--
 -- Name: pos_group_members; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -1689,7 +1802,8 @@ CREATE TABLE pos_invoice (
     number_of_files bigint,
     number_of_mb bigint,
     transaction_id character varying(255),
-    response_id bigint
+    response_id bigint,
+    coupon_id bigint
 );
 
 
@@ -1807,7 +1921,8 @@ SET default_with_oids = true;
 CREATE TABLE project (
     id bigint NOT NULL,
     sort_order character varying(50) DEFAULT 'RESOURCE_TYPE'::character varying,
-    orientation character varying(50) DEFAULT 'LIST'::character varying
+    orientation character varying(50) DEFAULT 'LIST'::character varying,
+    secondary_sort_order character varying(25)
 );
 
 
@@ -2146,6 +2261,51 @@ CREATE TABLE resource_other_keyword (
 ALTER TABLE public.resource_other_keyword OWNER TO tdar;
 
 --
+-- Name: resource_proxy; Type: VIEW; Schema: public; Owner: tdar
+--
+
+CREATE VIEW resource_proxy AS
+    SELECT rp.id, rp.date_registered, rp.description, rp.resource_type, rp.title, rp.submitter_id, rp.url, rp.updater_id, rp.date_updated, rp.status, rp.external_id, rp.uploader_id, rp.account_id, rp.previous_status, rp.total_files, rp.total_space_in_bytes, ir.date_created, ir.project_id, ir.inheriting_spatial_information FROM (resource rp LEFT JOIN information_resource ir ON ((rp.id = ir.id)));
+
+
+ALTER TABLE public.resource_proxy OWNER TO tdar;
+
+--
+-- Name: resource_relationship; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE resource_relationship (
+    id bigint NOT NULL,
+    relationship_type character varying(255),
+    sourceresource_id bigint,
+    targetresource_id bigint
+);
+
+
+ALTER TABLE public.resource_relationship OWNER TO tdar;
+
+--
+-- Name: resource_relationship_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE resource_relationship_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.resource_relationship_id_seq OWNER TO tdar;
+
+--
+-- Name: resource_relationship_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE resource_relationship_id_seq OWNED BY resource_relationship.id;
+
+
+--
 -- Name: resource_revision_log_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
 --
 
@@ -2276,7 +2436,10 @@ CREATE TABLE sensory_data (
     survey_date_end timestamp without time zone,
     planimetric_map_filename character varying(255),
     control_data_filename character varying(255),
-    registration_method character varying(255)
+    registration_method character varying(255),
+    scanner_technology character varying(50),
+    rgb_capture character varying(255),
+    camera_details character varying(255)
 );
 
 
@@ -2375,7 +2538,9 @@ CREATE TABLE site_name_keyword (
     definition text,
     label character varying(255) NOT NULL,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
-    merge_keyword_id bigint
+    merge_keyword_id bigint,
+    occurrance bigint,
+    occurrence bigint
 );
 
 
@@ -2427,7 +2592,9 @@ CREATE TABLE site_type_keyword (
     selectable boolean NOT NULL,
     parent_id bigint,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
-    merge_keyword_id bigint
+    merge_keyword_id bigint,
+    occurrance bigint,
+    occurrence bigint
 );
 
 
@@ -2545,7 +2712,9 @@ CREATE TABLE temporal_keyword (
     definition text,
     label character varying(255) NOT NULL,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
-    merge_keyword_id bigint
+    merge_keyword_id bigint,
+    occurrance bigint,
+    occurrence bigint
 );
 
 
@@ -2858,6 +3027,13 @@ ALTER TABLE ONLY pos_billing_model ALTER COLUMN id SET DEFAULT nextval('pos_bill
 -- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
 --
 
+ALTER TABLE ONLY pos_coupon ALTER COLUMN id SET DEFAULT nextval('pos_coupon_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
 ALTER TABLE ONLY pos_invoice ALTER COLUMN id SET DEFAULT nextval('pos_invoice_id_seq'::regclass);
 
 
@@ -2921,6 +3097,13 @@ ALTER TABLE ONLY resource_note ALTER COLUMN id SET DEFAULT nextval('resource_not
 -- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
 --
 
+ALTER TABLE ONLY resource_relationship ALTER COLUMN id SET DEFAULT nextval('resource_relationship_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
 ALTER TABLE ONLY sensory_data_image ALTER COLUMN id SET DEFAULT nextval('sensory_data_image_id_seq'::regclass);
 
 
@@ -2978,6 +3161,22 @@ ALTER TABLE ONLY upgrade_task ALTER COLUMN id SET DEFAULT nextval('upgradetask_i
 --
 
 ALTER TABLE ONLY user_session ALTER COLUMN id SET DEFAULT nextval('user_session_id_seq'::regclass);
+
+
+--
+-- Name: archive_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY archive
+    ADD CONSTRAINT archive_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: audio_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY audio
+    ADD CONSTRAINT audio_pkey PRIMARY KEY (id);
 
 
 --
@@ -3154,6 +3353,14 @@ ALTER TABLE ONLY explore_cache_year
 
 ALTER TABLE ONLY geographic_keyword
     ADD CONSTRAINT geographic_keyword_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: geospatial_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY geospatial
+    ADD CONSTRAINT geospatial_pkey PRIMARY KEY (id);
 
 
 --
@@ -3365,6 +3572,22 @@ ALTER TABLE ONLY pos_billing_model
 
 
 --
+-- Name: pos_coupon_code_key; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_coupon
+    ADD CONSTRAINT pos_coupon_code_key UNIQUE (code);
+
+
+--
+-- Name: pos_coupon_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_coupon
+    ADD CONSTRAINT pos_coupon_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: pos_group_members_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -3498,6 +3721,14 @@ ALTER TABLE ONLY resource_other_keyword
 
 ALTER TABLE ONLY resource
     ADD CONSTRAINT resource_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: resource_relationship_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY resource_relationship
+    ADD CONSTRAINT resource_relationship_pkey PRIMARY KEY (id);
 
 
 --
@@ -4030,6 +4261,22 @@ CREATE INDEX temporal_label_lc ON temporal_keyword USING btree (lower((label)::t
 
 
 --
+-- Name: archive_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY archive
+    ADD CONSTRAINT archive_fkey FOREIGN KEY (id) REFERENCES information_resource(id);
+
+
+--
+-- Name: audio_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY audio
+    ADD CONSTRAINT audio_fkey FOREIGN KEY (id) REFERENCES information_resource(id);
+
+
+--
 -- Name: category_variable_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -4235,6 +4482,14 @@ ALTER TABLE ONLY resource_creator
 
 ALTER TABLE ONLY resource_creator
     ADD CONSTRAINT fk5b43fcfb67ffc561 FOREIGN KEY (creator_id) REFERENCES creator(id);
+
+
+--
+-- Name: fk5b47609397ff4d65; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY geospatial
+    ADD CONSTRAINT fk5b47609397ff4d65 FOREIGN KEY (id) REFERENCES dataset(id);
 
 
 --
@@ -4518,6 +4773,30 @@ ALTER TABLE ONLY resource_annotation
 
 
 --
+-- Name: fksdscan_sd; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY sensory_data_scan
+    ADD CONSTRAINT fksdscan_sd FOREIGN KEY (sensory_data_id) REFERENCES sensory_data(id);
+
+
+--
+-- Name: fksfile_sd; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY sensory_data_scan
+    ADD CONSTRAINT fksfile_sd FOREIGN KEY (sensory_data_id) REFERENCES sensory_data(id);
+
+
+--
+-- Name: fksimage_sd; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY sensory_data_image
+    ADD CONSTRAINT fksimage_sd FOREIGN KEY (sensory_data_id) REFERENCES sensory_data(id);
+
+
+--
 -- Name: geographic_keyword_merge_keyword_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -4686,6 +4965,22 @@ ALTER TABLE ONLY person
 
 
 --
+-- Name: person_proxy_institution_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY person
+    ADD CONSTRAINT person_proxy_institution_id_fkey FOREIGN KEY (proxy_institution_id) REFERENCES institution(id);
+
+
+--
+-- Name: person_proxyinstitution_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY person
+    ADD CONSTRAINT person_proxyinstitution_id_fkey FOREIGN KEY (proxyinstitution_id) REFERENCES institution(id);
+
+
+--
 -- Name: pos_account_account_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -4734,6 +5029,22 @@ ALTER TABLE ONLY pos_billing_activity
 
 
 --
+-- Name: pos_coupon_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_coupon
+    ADD CONSTRAINT pos_coupon_account_id_fkey FOREIGN KEY (account_id) REFERENCES pos_account(id);
+
+
+--
+-- Name: pos_coupon_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_coupon
+    ADD CONSTRAINT pos_coupon_user_id_fkey FOREIGN KEY (user_id) REFERENCES person(id);
+
+
+--
 -- Name: pos_group_members_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -4755,6 +5066,14 @@ ALTER TABLE ONLY pos_group_members
 
 ALTER TABLE ONLY pos_invoice
     ADD CONSTRAINT pos_invoice_address_id_fkey FOREIGN KEY (address_id) REFERENCES creator_address(id);
+
+
+--
+-- Name: pos_invoice_coupon_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_invoice
+    ADD CONSTRAINT pos_invoice_coupon_id_fkey FOREIGN KEY (coupon_id) REFERENCES pos_coupon(id);
 
 
 --
@@ -4923,6 +5242,22 @@ ALTER TABLE ONLY resource_other_keyword
 
 ALTER TABLE ONLY resource_other_keyword
     ADD CONSTRAINT resource_other_keyword_resource_id_fkey FOREIGN KEY (resource_id) REFERENCES resource(id);
+
+
+--
+-- Name: resource_relationship_sourceresource_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY resource_relationship
+    ADD CONSTRAINT resource_relationship_sourceresource_id_fkey FOREIGN KEY (sourceresource_id) REFERENCES resource(id);
+
+
+--
+-- Name: resource_relationship_targetresource_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY resource_relationship
+    ADD CONSTRAINT resource_relationship_targetresource_id_fkey FOREIGN KEY (targetresource_id) REFERENCES resource(id);
 
 
 --
