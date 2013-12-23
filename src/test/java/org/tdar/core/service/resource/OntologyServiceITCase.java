@@ -85,15 +85,17 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
             }
         });
         for (OntologyNode node : ontology.getOntologyNodes()) {
-            logger.info("{} : {} ({}); {} [{} - {}]", node.getImportOrder(), node.getDisplayName(), node.getId(), node.getIndex(), node.getIntervalStart(), node.getIntervalEnd());
+            logger.info("{} : {} ({}); {} [{} - {}]", node.getImportOrder(), node.getDisplayName(), node.getId(), node.getIri(), node.getIntervalStart(), node.getIntervalEnd());
         }
         OntologyNode node0 = nodes.get(0);
         assertEquals("Articulated Skeleton", node0.getDisplayName());
+        assertEquals("description", node0.getDescription());
         OntologyNode node1 = nodes.get(1);
         assertEquals("Articulated Skeleton Complete", node1.getDisplayName());
         assertEquals(2, node1.getNumberOfParents());
         assertEquals(node0.getIndex() + "."+ node1.getIntervalStart(), node1.getIndex());
         assertEquals("Articulated Skeleton Nearly Complete", nodes.get(2).getDisplayName());
+        assertEquals("another description", nodes.get(2).getDescription());
         assertTrue(nodes.get(2).getSynonyms().contains("ASNC"));
         assertEquals("Articulated Skeleton Partial", nodes.get(3).getDisplayName());
         assertEquals("Articulated Skeleton Anterior Portion", nodes.get(4).getDisplayName());

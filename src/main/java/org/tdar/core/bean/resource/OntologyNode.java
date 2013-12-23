@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -21,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.configuration.JSONTransient;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -72,6 +74,10 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @JoinTable(name = "ontology_node_synonym")
     private Set<String> synonyms;
 
+    private transient OntologyNode parentNode;
+
+    private transient Set<OntologyNode> synonymNodes = new HashSet<>();
+
     @Index(name = "ontology_node_index")
     private String index;
 
@@ -84,6 +90,11 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     private Long importOrder;
 
     public OntologyNode() {
+    }
+
+    public OntologyNode(String iri, String label) {
+        this.iri = iri;
+        this.displayName = label;
     }
 
     public OntologyNode(Long id) {
@@ -147,7 +158,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     @Override
     public List<?> getEqualityFields() {
-        // ab probably okay as not nullable fields
         return Arrays.asList(iri);
     }
 
@@ -248,6 +258,26 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
             }
         }
         return false;
+    }
+
+    @XmlTransient
+    @JSONTransient
+    public OntologyNode getParentNode() {
+        return parentNode;
+    }
+
+    public void setParentNode(OntologyNode parentNode) {
+        this.parentNode = parentNode;
+    }
+
+    @XmlTransient
+    @JSONTransient
+    public Set<OntologyNode> getSynonymNodes() {
+        return synonymNodes;
+    }
+
+    public void setSynonymNodes(Set<OntologyNode> synonymNodes) {
+        this.synonymNodes = synonymNodes;
     }
 
     @Transient

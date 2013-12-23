@@ -135,6 +135,10 @@ public class OwlApiHierarchyParser implements OntologyParser {
         node.setOntology(ontology);
         IRI iri = owlClass.getIRI();
         node.setImportOrder(extractImportOrder(owlClass));
+        node.setDescription(extractDescription(owlClass));
+        if (node.getDescription() != null) {
+        logger.debug(node.getDescription());
+        }
         node.setIri(iri.getFragment());
         String uri_string = iri.toURI().toString();
         //FIXME: the OWL API does not appear to support IRIs that start with numbers... 
@@ -142,21 +146,22 @@ public class OwlApiHierarchyParser implements OntologyParser {
         // this is a workaround
 
         // this is a backup for parsing older ontologies that have degenerate IRIs eg. those with  () in them
+        logger.trace("node: {}", node.getIri());
         if (StringUtils.isBlank(node.getIri()) && StringUtils.indexOf(uri_string, "#")> 0){
-//            logger.info(iri);
-//            logger.info(owlClass);
           node.setIri(StringUtils.substring(uri_string, uri_string.indexOf("#")+1));
         logger.info(uri_string);
         }
         String displayName = extractNodeLabel(owlClass);
-        if (allSynonymLabels.contains(displayName))
+        if (allSynonymLabels.contains(displayName)) {
+            logger.trace("skipping: {}", displayName);
             return index;
+        }
         for (OWLClassExpression equiv : owlClass.getEquivalentClasses(owlOntology)) {
-            // making the assumption that we see the "real" node before we see
-            // the synonyms
-            for (OWLClass clas : equiv.getClassesInSignature()) {
-                synonymLabels.add(extractNodeLabel(clas));
-                logger.trace(clas.getIRI().getFragment() + " - " + iri.getFragment());
+            // making the assumption that we see the "real" node before we see the synonyms
+            for (OWLClass syn : equiv.getClassesInSignature()) {
+                String label = extractNodeLabel(syn);
+                synonymLabels.add(label);
+                logger.trace(syn.getIRI().getFragment() + " - " + iri.getFragment() + " ["+label+"]");
             }
         }
         node.setSynonyms(synonymLabels);
@@ -218,7 +223,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
                 logger.trace("{}", ann.getValue());
                 String annTxt = ann.getValue().toString();
                 annTxt = StringUtils.replace(annTxt, "\"", ""); // owl parser
-                                                                // adds quotes
+                // adds quotes
 
                 if (annTxt.startsWith(OwlOntologyConverter.TDAR_ORDER_PREFIX)) {
                     txt = annTxt.substring(OwlOntologyConverter.TDAR_ORDER_PREFIX.length());
@@ -231,6 +236,24 @@ public class OwlApiHierarchyParser implements OntologyParser {
         } else {
             return -1L;
         }
+    }
+
+    private String extractDescription(OWLClass owlClass) {
+        String txt = "";
+        for (OWLAnnotation ann : owlClass.getAnnotations(owlOntology)) {
+            if (ann.getProperty().isComment()) {
+                logger.trace("{}", ann.getValue());
+                String annTxt = ann.getValue().toString();
+                annTxt = StringUtils.replace(annTxt, "\"", ""); // owl parser
+                // adds quotes
+
+                if (annTxt.startsWith(OwlOntologyConverter.TDAR_DESCRIPTION_PREFIX)) {
+                    txt = annTxt.substring(OwlOntologyConverter.TDAR_DESCRIPTION_PREFIX.length());
+                }
+            }
+        }
+        logger.trace(txt);
+        return txt;
     }
 
 }

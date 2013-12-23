@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -24,6 +25,7 @@ import org.tdar.core.dao.resource.OntologyDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.parser.OwlApiHierarchyParser;
+import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.utils.MessageHelper;
 
@@ -42,6 +44,9 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class OntologyService extends AbstractInformationResourceService<Ontology, OntologyDao> {
 
     private OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
+
+    @Autowired
+    FreemarkerService freemarkerService;
 
     /**
      * Find all ontologies, but return them with sparse objects (Title, Description only)
@@ -247,7 +252,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
      */
     public String toOwlXml(Long id, String fileTextInput) {
         OwlOntologyConverter converter = new OwlOntologyConverter();
-        return converter.toOwlXml(id, fileTextInput);
+        return converter.toOwlXml(id, fileTextInput, freemarkerService);
     }
 
 }
