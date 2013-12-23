@@ -6,9 +6,6 @@
  */
 package org.tdar.core.service.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Comparator;
@@ -29,6 +26,8 @@ import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.action.resource.OntologyController;
 
 import edu.emory.mathcs.backport.java.util.Collections;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin
@@ -118,6 +117,31 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         String timeString = OntologyController.formatTime(1000 * 60 * 60 * 1 + 1000 * 60 * 2 + 1000 * 3 + 456);
         logger.debug("time: {}", timeString);
         assertEquals("expecting 1h 2m 3s 456ms", "01:02:03.456", timeString);
+    }
+
+    @Test
+    public void testValidTextToOwlXml() {
+        String ontologyTextInput = "Parent\n\tFirst Child\n\t\tFirst Child's Child1\n\t\tFirst Child's Second Child\n\t\tFirst Child's Child\n"
+                + "\tSecond Child\n" + "\tThird Child\n\t\tThird Child's Child\n\t\tThird Child's Child2\n"
+                + "\tFourth Child\n\t\tFourth Child's Child\n\t\tFourth Child's Nondegenerate Child\n"
+                + "Second Root Parent\n\tSecond Root Parent's Degenerate Child ";
+        String owlXml = ontologyService.toOwlXml(237L, ontologyTextInput);
+        // FIXME: make assertions on the generated OWL XML.
+        assertNotNull(owlXml);
+    }
+
+    @Test
+    public void testDegenerateTextToOwlXml() {
+        String ontologyTextInput = "Parent\n\tFirst Child\n\t\tFirst Child's Child\n\t\tFirst Child's Second Child\n\t\tFirst Child's Child\n"
+                + "\tSecond Child\n" + "\tThird Child\n\t\tThird Child's Child\n\t\tThird Child's Child\n"
+                + "\tFourth Child\n\t\t\t\tFourth Child's Degenerate Child\n\t\tFourth Child's Nondegenerate Child\n"
+                + "Second Root Parent\n\t\tSecond Root Parent's Degenerate Child ";
+
+        try {
+            logger.info(ontologyService.toOwlXml(238L, ontologyTextInput));
+            fail("Should raise an java.lang.IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException successException) {
+        }
     }
 
 }

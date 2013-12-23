@@ -24,16 +24,9 @@ import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
  */
 public class OntologyServiceTest {
 
-    @Autowired
-    private OntologyService ontologyService;
 
     private Logger logger = Logger.getLogger(getClass());
 
-    @Before
-    public void setUp() {
-        ontologyService = new OntologyService();
-        // no set up
-    }
 
     @Test
     public void testSuggestions() {
@@ -96,28 +89,4 @@ public class OntologyServiceTest {
         }
     }
 
-    @Test
-    public void testValidTextToOwlXml() {
-        String ontologyTextInput = "Parent\n\tFirst Child\n\t\tFirst Child's Child1\n\t\tFirst Child's Second Child\n\t\tFirst Child's Child\n"
-                + "\tSecond Child\n" + "\tThird Child\n\t\tThird Child's Child\n\t\tThird Child's Child2\n"
-                + "\tFourth Child\n\t\tFourth Child's Child\n\t\tFourth Child's Nondegenerate Child\n"
-                + "Second Root Parent\n\tSecond Root Parent's Degenerate Child ";
-        String owlXml = ontologyService.toOwlXml(237L, ontologyTextInput);
-        // FIXME: make assertions on the generated OWL XML.
-        assertNotNull(owlXml);
-    }
-
-    @Test
-    public void testDegenerateTextToOwlXml() {
-        String ontologyTextInput = "Parent\n\tFirst Child\n\t\tFirst Child's Child\n\t\tFirst Child's Second Child\n\t\tFirst Child's Child\n"
-                + "\tSecond Child\n" + "\tThird Child\n\t\tThird Child's Child\n\t\tThird Child's Child\n"
-                + "\tFourth Child\n\t\t\t\tFourth Child's Degenerate Child\n\t\tFourth Child's Nondegenerate Child\n"
-                + "Second Root Parent\n\t\tSecond Root Parent's Degenerate Child ";
-
-        try {
-            logger.info(ontologyService.toOwlXml(238L, ontologyTextInput));
-            fail("Should raise an java.lang.IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException successException) {
-        }
-    }
 }
