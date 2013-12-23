@@ -2,9 +2,9 @@
 <FindBugsFilter>
 	<!--  http://findbugs.sourceforge.net/manual/filter.html#d0e2249  -->
      <!-- All bugs in test classes, except for JUnit-specific bugs -->
-     <Match>
+<!--      <Match>
       <Class name="~.*\.*__CLR3*" />
       <Class name="~.*?__CLR3*"/>
      </Match>
-
+ -->
 </FindBugsFilter>
