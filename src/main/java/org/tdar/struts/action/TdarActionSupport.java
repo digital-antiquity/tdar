@@ -1,5 +1,7 @@
 package org.tdar.struts.action;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +13,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -27,6 +36,7 @@ import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.Localizable;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.ActivityManager;
@@ -66,6 +76,9 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * $Id$
@@ -720,7 +733,36 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return super.getText(aTextName, Arrays.asList(args));
     }
 
-    public boolean isJSCSSMergeServletEnabled() {
-        return getTdarConfiguration().isJSCSSMergeServletEnabled();
+    public List<String> getJavascriptFiles() throws TdarActionException {
+        return parseWroXML("js");
+    }
+
+    public List<String> getCssFiles() throws TdarActionException  {
+        List<String> toReturn = new ArrayList<>();
+        parseWroXML("css");
+        return toReturn;
+    }
+
+    private List<String> parseWroXML(String prefix) throws TdarActionException {
+        List<String> toReturn = new ArrayList<>();
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            // use the factory to take an instance of the document builder
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            // parse using the builder to get the DOM mapping of the
+            // XML file
+            Document dom = db.parse(getClass().getClassLoader().getResourceAsStream("wro.xml"));
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            // Create XPath object from XPathFactory
+            XPath xpath = xPathFactory.newXPath();
+            XPathExpression xPathExpr = xpath.compile(".//" + prefix);
+            NodeList nodes = (NodeList)xPathExpr.evaluate(dom, XPathConstants.NODESET);
+            for (int i = 0; i < nodes.getLength(); i++) {
+                toReturn.add(nodes.item(i).getTextContent());
+            }
+        } catch (Exception e) {
+            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "could not read javascript/css config file",e);
+        }
+        return toReturn;
     }
 }

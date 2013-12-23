@@ -7,6 +7,7 @@ target
 bin
 src/main/resources/*.properties
 src/main/resources/*-local-settings.xml
+src/main/webapp/wro*
 googlemaps-api-key.js
 logs
 *.jpage

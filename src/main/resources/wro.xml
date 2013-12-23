@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<groups xmlns="http://www.isdc.ro/wro">
+    <group name='default'>
+        <css>/css/tdar-bootstrap.css</css>
+        <css>/css/famfamfam.css</css>
+        <css>/includes/ivaynberg-select2-817453b/select2.css</css>
+        <css>/includes/blueimp-jquery-file-upload-5.31.6/css/jquery.fileupload-ui.css</css>
+        <css>/includes/jquery-treeview/jquery.treeview.css</css>
+        <css>/includes/jqplot-1.08/jquery.jqplot.min.css</css>
+        <css>/includes/jquery.orgChart/jquery.orgchart.css</css>
+        <css>/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css</css>
+        <css>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css</css>
+        <js>/includes/jquery.cookie.js</js>
+        <!-- LICENSE: MIT /GPL 2.0 -->
+        <js>/includes/jquery.metadata.2.1/jquery.metadata.js</js>
+        <!-- LICENSE: MIT /GPL 2.0 -->
+        <js>/includes/jquery.maphilight-1.2.2.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/includes/jquery.textarearesizer.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/js/jquery.FormNavigate.js</js>
+        <js>/includes/jquery.watermark-3.1.3.min.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js</js>
+        <!-- LICENSE: BSD /GPL 2.0 -->
+        <js>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js</js>
+        <!-- LICENSE: BSD /GPL 2.0 -->
+        <js>/includes/jquery-treeview/jquery.treeview.js</js>
+        <!-- LICENSE: MIT /GPL 2.0 -->
+        <js>/includes/blueimp-javascript-templates/tmpl.min.js</js>
+        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/vendor/jquery.ui.widget.js</js>
+        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.iframe-transport.js</js>
+        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload.js</js>
+        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-process.js</js>
+        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-validate.js</js>
+        <js>/includes/blueimp-jquery-file-upload-5.31.6/js/jquery.fileupload-ui.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/includes/jquery.populate.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/includes/jquery.tabby-0.12.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/js/latLongUtil-1.0.js</js>
+        <!-- LICENSE:CC Attribution 3.0 Unported -->
+        <js>/includes/jquery.orgChart/jquery.orgchart.js</js>
+        <!-- LICENSE: MIT /GPL 2.0 --><js>/includes/jqplot-1.08/jquery.jqplot.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/includes/jqplot-1.08/plugins/jqplot.cursor.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.logAxisRenderer.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.highlighter.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.dateAxisRenderer.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.barRenderer.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.categoryAxisRenderer.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.canvasTextRenderer.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.canvasAxisTickRenderer.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.canvasAxisLabelRenderer.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.enhancedLegendRenderer.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.pieRenderer.js</js>
+        <js>/includes/jqplot-1.08/plugins/jqplot.pointLabels.js</js>
+        <js>/js/tdar.gmaps.js</js>
+        <js>/js/tdar.common.js</js>
+        <js>/js/tdar.upload.js</js>
+        <js>/js/tdar.repeatrow.js</js>
+        <js>/js/tdar.autocomplete.js</js>
+        <js>/js/tdar.datatable.js</js>
+        <js>/js/tdar.dataintegration.js</js>
+        <js>/js/tdar.advanced-search.js</js>
+        <js>/js/tdar.authority-management.js</js>
+        <js>/js/tdar.inheritance.js</js>
+        <js>/js/tdar.pricing.js</js>
+        <js>/js/tdar.heightevents.js</js>
+        <js>/js/tdar.contexthelp.js</js><js>/js/tdar.formValidateExtensions.js</js><js>/js/tdar.jquery-upload-validation.js</js>
+        <js>/includes/bindWithDelay.js</js>
+        <!-- LICENSE: MIT -->
+    </group>
+</groups>
