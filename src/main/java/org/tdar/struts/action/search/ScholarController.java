@@ -1,10 +1,15 @@
 package org.tdar.struts.action.search;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.SortField;
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.joda.time.DateTime;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,12 +22,6 @@ import org.tdar.struts.data.DateRange;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Created by abrin on 12/23/13.
- */
 @SuppressWarnings("rawtypes")
 @Namespace("/scholar")
 @ParentPackage("default")
@@ -31,7 +30,7 @@ import java.util.List;
 @HttpOnlyIfUnauthenticated
 public class ScholarController extends AbstractLookupController {
 
-
+    private static final long serialVersionUID = -4680630242612817779L;
     private int year;
 
     public int getYear() {
@@ -42,6 +41,7 @@ public class ScholarController extends AbstractLookupController {
         this.year = year;
     }
 
+    @Override
     @Actions({
             @Action(value = "scholar", results = { @Result(name = SUCCESS, location = "scholar.ftl") }),
     })
@@ -51,7 +51,7 @@ public class ScholarController extends AbstractLookupController {
         statuses.add(Status.ACTIVE);
         param.setStatuses(statuses);
         setSortField(SortOption.DATE_UPDATED);
-        setRecordsPerPage(1000);
+        setRecordsPerPage(250);
         DateTime dt = new DateTime();
         DateTime start = dt.withYear(getYear()).withDayOfYear(1);
         DateTime end = dt.withYear(getYear() +1).withDayOfYear(1);

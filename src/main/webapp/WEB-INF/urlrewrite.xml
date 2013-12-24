@@ -114,17 +114,10 @@
 	</rule>
 
     <!-- support old rewrite -->
-    <rule>
+    <rule >
         <from>^/year-(\d+)$</from>
-        <to>/scholar/scholar?year=$1</to>
+        <to type="temporary-redirect">/scholar/scholar?year=$1</to>
     </rule>
-
-
-    <rule>
-        <from>^/scholar/(\d+)</from>
-        <to>/scholar/scholar?year=$1</to>
-    </rule>
-
 
     <rule>
 		<from>^/browse/(.+)/(\d+)/?$</from>
