@@ -1096,12 +1096,12 @@
             <artifactId>wro4j-core</artifactId>
             <version>${wro4j.version}</version>
         </dependency>
-        <dependency>
+<!--         <dependency>
             <groupId>ro.isdc.wro4j</groupId>
             <artifactId>wro4j-extensions</artifactId>
             <version>${wro4j.version}</version>
         </dependency>
-	</dependencies>
+ -->	</dependencies>
 
 	<reporting>
 		<plugins>
