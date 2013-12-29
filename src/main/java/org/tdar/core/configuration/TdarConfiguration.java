@@ -421,6 +421,9 @@ public class TdarConfiguration {
         if (dir.startsWith("/")) {
             dir = dir.substring(1);
         }
+        if (dir.endsWith("/")) {
+            dir = dir.substring(0,dir.length() -1);
+        }
         return dir;
     }
 
