@@ -237,7 +237,7 @@ $(document).ready(function() {
 var ontology = [
 {id:"", name:" -- All Values -- "},
 <#list ontologyNodes as ont>
-   <#if (ont_index > 0 )>,</#if> {id:"${ont.id?c}",  name:"<@repeat num="${ont.numberOfParents-1}" />- <#noescape>${ont.displayName?js_string}</#noescape>"} 
+   <#if (ont_index > 0 )>,</#if> {id:"${ont.id?c}",  name:"<@repeat num="${ont.numberOfParents-1}" />- <#noescape>${(ont.displayName!ont.iri)?js_string}</#noescape>"} 
 </#list>
 ];
 

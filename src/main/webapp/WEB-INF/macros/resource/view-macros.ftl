@@ -32,7 +32,7 @@ View freemarker macros
     </#if>
     <#global numParents = parentCount />
     <li class="<#if (previewSize <=count)>hidden-nodes</#if>">
-    <a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/${ontologyNode.iri}"/>">${ontologyNode.displayName} 
+    <a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/${ontologyNode.iri}"/>">${ontologyNode.displayName!ontologyNode.iri} 
     <#if ontologyNode.synonyms?has_content>
         (<#t>
       <#list ontologyNode.synonyms as synonym><#t>
