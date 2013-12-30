@@ -709,6 +709,6 @@ public class TdarConfiguration {
     }
     
     public boolean isWebFilePreprocessingEnabled() {
-        return assistant.getBooleanProperty("use.WebFilePreprocessing", true);
+        return assistant.getBooleanProperty("use.WebFilePreprocessing", false);
     }
 }

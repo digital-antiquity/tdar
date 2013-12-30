@@ -20,7 +20,7 @@
     <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 
 
-    <#if creator?? && nodeModel?has_content>
+    <#if creator??&& ( keywords?has_content || collaborators?has_content)>
         <link rel="meta" type="application/rdf+xml" title="FOAF" href="/browse/creators/${creator.id?c}/rdf"/>
     </#if>
 </head>
@@ -32,8 +32,7 @@
 
     <@view.pageStatusCallout />
 
-    <#if creator??>
-            <#if keywords?has_content || collaborators?has_content>
+    <#if creator??&& ( keywords?has_content || collaborators?has_content)>
             <div id="sidebar-right" parse="true">
                 <br/>
                 <br/>
@@ -45,84 +44,44 @@
                 <br/>
                 <br/>
             <#-- fixme -- some of these may show the h3 w/o contents if count == 1 -->
-                <#assign num = results?size />
-                <#if (num > recordsPerPage)>
-                    <#assign num = recordsPerPage />
-                </#if>
-                <#assign sz = (num / 2)?ceiling >
-                <#if (sz < 10)>
-                    <#assign sz = 10 >
-                </#if>
-                <#assign seen_creators = 0/>
-                <#assign seen_kwds = 0/>
                 <#if collaborators?has_content>
                     <div id="related-creators">
-                        <!-- sz: ${sz} - num: ${num} - colab ${collaborators?size} -->
                         <h3>Related Creators</h3>
                         <ul>
                             <#list collaborators as collab>
-                                <#if (seen_creators > sz) >
-                                    <#break/>
-                                </#if>
-                                <#if (collab.@count?number >= creatorMedian && collab.@count?number  >1)>
-                                    <#assign seen_creators = seen_creators +1 />
-                                    <li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a>
-                                    </li>
-                                </#if>
+                                <li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a>
+                                </li>
                             </#list>
                         </ul>
                     </div>
                 </#if>
 
                 <#if keywords?has_content>
-                    <!-- sz: ${sz} - num: ${num} - keywords ${keywords?size} -->
                     <div id="related-keywords">
                         <h3>Related Keywords</h3>
                         <ul>
                             <#list keywords as keyword>
-                                <#if (seen_kwds > sz) >
-                                    <#break/>
-                                </#if>
-                                <#if (keyword.@count?number >= keywordMedian && keyword.@count?number > 1)>
-
-                                    <#if keyword.@name?has_content >
-                                        <#assign seen_kwds = seen_kwds +1 />
-                                        <#assign tst = keyword.@simpleClassName!"" />
-                                        <#if keywordTypeBySimpleName[tst]?? >
-                                            <#assign keywordType = keywordTypeBySimpleName[tst] />
-                                            <li>
-                                                <#assign term = keyword.@id />
-                                                <#if !keywordType.fieldName?contains("IdList")>
-                                                    <#assign term = keyword.@name?url />
-                                                </#if>
-                                                <a href="<@s.url value="/search/results?groups%5B0%5D.operator=AND&groups%5B0%5D.${keywordType.fieldName}%5B0%5D=${term}&groups%5B0%5D.fieldTypes%5B0%5D=${keywordType}"/>">${keyword.@name}</a>
-                                            </li>
-                                        </#if>
+                                <#if keyword.@name?has_content >
+                                    <#assign tst = keyword.@simpleClassName!"" />
+                                    <#if keywordTypeBySimpleName[tst]?? >
+                                        <#assign keywordType = keywordTypeBySimpleName[tst] />
+                                        <li>
+                                            <#assign term = keyword.@id />
+                                            <#if !keywordType.fieldName?contains("IdList")>
+                                                <#assign term = keyword.@name?url />
+                                            </#if>
+                                            <a href="<@s.url value="/search/results?groups%5B0%5D.operator=AND&groups%5B0%5D.${keywordType.fieldName}%5B0%5D=${term}&groups%5B0%5D.fieldTypes%5B0%5D=${keywordType}"/>">${keyword.@name}</a>
+                                        </li>
                                     </#if>
                                 </#if>
                             </#list>
                         </ul>
                     </div>
-                </#if>
                 <div>
                     <small>Related Keywords and Creators are determined by looking at all of the Creators and Keywords
                         associated with a Creator and highlighting the most commonly used.
                     </small>
                 </div>
-                <script>
-                    $(document).ready(function () {
-                        <#if seen_kwds == 0 && seen_creators == 0>
-                            $("#sidebar-right").hide();
-                            $("#articleBody").toggleClass("span9", "span12");
-                        </#if>
-                        <#if seen_kwds == 0>
-                            $("#related-keywords").hide();
-                        </#if>
-                        <#if seen_creators == 0>
-                            $("#related-creators").hide();
-                        </#if>
-                    });
-                </script>
             </div>
         </#if>
 

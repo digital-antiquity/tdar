@@ -59,6 +59,7 @@ import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -113,15 +114,14 @@ public class BrowseController extends AbstractLookupController {
 
     private transient InputStream inputStream;
     private Long contentLength;
-    private NodeModel nodeModel;
     private XPathFactory xPathFactory;
     private Document dom;
-    private long keywordMedian;
-    private long creatorMedian;
-    private long creatorMean;
-    private long keywordMean;
-    private List<Node> keywords;
-    private List<Node> collaborators;
+    private float keywordMedian = 0;
+    private float creatorMedian = 0;
+    private float creatorMean = 0;
+    private float keywordMean = 0;
+    private List<NodeModel> keywords;
+    private List<NodeModel> collaborators;
 
     // private Keyword keyword;
 
@@ -191,20 +191,6 @@ public class BrowseController extends AbstractLookupController {
             creator = getGenericService().find(Creator.class, getId());
             QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser(),this);
 
-            if (Persistable.Base.isNotNullOrTransient(creator)) {
-                try {
-                    File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + XML);
-                    openCreatorInfoLog(foafFile);
-                    setKeywordMedian(Long.parseLong(dom.getAttributes().getNamedItem("keywordMedian").getTextContent()));
-                    setKeywordMean(Long.parseLong(dom.getAttributes().getNamedItem("keywordMean").getTextContent()));
-                    setCreatorMedian(Long.parseLong(dom.getAttributes().getNamedItem("creatorMedian").getTextContent()));
-                    setCreatorMean(Long.parseLong(dom.getAttributes().getNamedItem("creatorMean").getTextContent()));
-                    getKeywords();
-                    getCollaborators();
-                } catch (Exception e) {
-                    logger.debug("{}", e);
-                }
-            }
             if (isEditor()) {
                 if (creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
                     Person person = (Person) creator;
@@ -244,6 +230,21 @@ public class BrowseController extends AbstractLookupController {
                     logger.warn("search parse exception: {}", e.getMessage());
                 }
             }
+            try {
+                File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + XML);
+                openCreatorInfoLog(foafFile);
+                getKeywords();
+                getCollaborators();
+                NamedNodeMap attributes = dom.getElementsByTagName("creatorInfoLog").item(0).getAttributes();
+                logger.info("attributes: {}", attributes);
+                setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
+                setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));
+                setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));
+                setCreatorMean(Float.parseFloat(attributes.getNamedItem("creatorMean").getTextContent()));
+            } catch (Exception e) {
+                logger.debug("{}", e);
+            }
+
         }
         // reset fields which can be broken by the searching hydration obfuscating things
         creator = getGenericService().find(Creator.class, getId());
@@ -411,14 +412,6 @@ public class BrowseController extends AbstractLookupController {
         this.inputStream = inputStream;
     }
 
-    public NodeModel getNodeModel() {
-        return nodeModel;
-    }
-
-    public void setNodeModel(NodeModel nodeModel) {
-        this.nodeModel = nodeModel;
-    }
-
     public Map<String, SearchFieldType> getKeywordTypeBySimpleName() {
         if (CollectionUtils.isEmpty(searchFieldLookup.keySet())) {
             for (SearchFieldType type : SearchFieldType.values()) {
@@ -438,33 +431,24 @@ public class BrowseController extends AbstractLookupController {
         this.foafFile = foafFile;
     }
 
-    public List<Node> getCollaborators() throws TdarActionException {
+    public List<NodeModel> getCollaborators() throws TdarActionException {
         if (collaborators != null) {
             return collaborators;
         }
-        collaborators = parseCreatorInfoLog("creatorInfoLog/collaborators/*");
+        collaborators = parseCreatorInfoLog("creatorInfoLog/collaborators/*",false,getCreatorMean());
         return collaborators;
     }
 
-    public List<Node> getKeywords() throws TdarActionException {
+    public List<NodeModel> getKeywords() throws TdarActionException {
         if (keywords != null) {
             return keywords;
         }
-        keywords = new ArrayList<>();
-        for (Node node : parseCreatorInfoLog("creatorInfoLog/keywords/*") ) {
-            String name = node.getAttributes().getNamedItem("name").getTextContent();
-            if (StringUtils.contains(name, GeographicKeyword.Level.COUNTRY.getLabel()) ||
-                    StringUtils.contains(name, GeographicKeyword.Level.CONTINENT.getLabel()) ||
-                    StringUtils.contains(name, GeographicKeyword.Level.FIPS_CODE.getLabel()) 
-                    ) {
-                continue;
-            }
-            keywords.add(node);
-        }
+        keywords = parseCreatorInfoLog("creatorInfoLog/keywords/*",true, getKeywordMean());
         return keywords;
     }
 
     public void openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
+        logger.info("opening {}", filename);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         // use the factory to take an instance of the document builder
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -473,52 +457,82 @@ public class BrowseController extends AbstractLookupController {
         xPathFactory = XPathFactory.newInstance();
     }
     
-    private List<Node> parseCreatorInfoLog(String prefix) throws TdarActionException {
-        List<Node> toReturn = new ArrayList<>();
+    private List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean) throws TdarActionException {
+        List<NodeModel> toReturn = new ArrayList<>();
         try {
             // Create XPath object from XPathFactory
             XPath xpath = xPathFactory.newXPath();
-            XPathExpression xPathExpr = xpath.compile(".//" + prefix);
+            XPathExpression xPathExpr = xpath.compile(prefix);
             NodeList nodes = (NodeList)xPathExpr.evaluate(dom, XPathConstants.NODESET);
+            logger.info("xpath returned: {}", nodes.getLength());
             for (int i = 0; i < nodes.getLength(); i++) {
-                toReturn.add(nodes.item(i));
+                Node node = nodes.item(i);
+                String name = node.getAttributes().getNamedItem("name").getTextContent();
+                Float count = Float.parseFloat(node.getAttributes().getNamedItem("count").getTextContent());
+                if (getSidebarValuesToShow() < toReturn.size()) {
+                    return toReturn;
+                }
+                if (limit || count < mean) {
+                    if (StringUtils.contains(name, GeographicKeyword.Level.COUNTRY.getLabel()) ||
+                        StringUtils.contains(name, GeographicKeyword.Level.CONTINENT.getLabel()) ||
+                        StringUtils.contains(name, GeographicKeyword.Level.FIPS_CODE.getLabel()) 
+                        ) {
+                    continue;
+                    }
+                }
+                
+                toReturn.add(NodeModel.wrap(nodes.item(i)));
             }
         } catch (Exception e) {
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "could not read javascript/css config file",e);
+            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, getText("browseController.parse_creator_log"),e);
         }
         return toReturn;
     }
 
-    public long getKeywordMedian() {
+    public float getKeywordMedian() {
         return keywordMedian;
     }
 
-    public void setKeywordMedian(long keywordMedian) {
+    public void setKeywordMedian(float keywordMedian) {
         this.keywordMedian = keywordMedian;
     }
 
-    public long getCreatorMedian() {
+    public float getCreatorMedian() {
         return creatorMedian;
     }
 
-    public void setCreatorMedian(long creatorMedian) {
+    public void setCreatorMedian(float creatorMedian) {
         this.creatorMedian = creatorMedian;
     }
 
-    public long getCreatorMean() {
+    public float getCreatorMean() {
         return creatorMean;
     }
 
-    public void setCreatorMean(long creatorMean) {
+    public void setCreatorMean(float creatorMean) {
         this.creatorMean = creatorMean;
     }
 
-    public long getKeywordMean() {
+    public float getKeywordMean() {
         return keywordMean;
     }
 
-    public void setKeywordMean(long keywordMean) {
+    public void setKeywordMean(float keywordMean) {
         this.keywordMean = keywordMean;
     }
 
+    
+    public int getSidebarValuesToShow() {
+        int num = getResults().size();
+        // start with how many records are being shown on the current page
+        if (num > getRecordsPerPage())  {
+            num = getRecordsPerPage();
+        }
+        // if less than 20, then show 20
+        if (num < 20) {
+            num = 20;
+        }
+        num = (int) Math.ceil((float)num / 2.0);
+        return num;
+    }
 }
