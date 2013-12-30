@@ -1606,7 +1606,7 @@
 					<stopKey>tdar</stopKey>
 					<webApp>
 					    <baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-					      <resourcesAsCSV>src/main/webapp,${project.build.directory}/${project.build.finalName}</resourcesAsCSV>
+					      <resourcesAsCSV>src/main/webapp,${project.build.directory}/generated/webapp</resourcesAsCSV>
     					</baseResource>
     				</webApp>
 					<stopPort>${jetty.stop.port}</stopPort>
@@ -2089,6 +2089,28 @@
 							</execution>
 						</executions>
 					</plugin>
+                    <plugin>
+                        <groupId>ro.isdc.wro4j</groupId>
+                        <artifactId>wro4j-maven-plugin</artifactId>
+                        <version>${wro4j.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <targetGroups>default</targetGroups>
+                            <minimize>true</minimize>
+                            <destinationFolder>${project.build.directory}/generated/webapp/wro</destinationFolder>
+                            <contextFolder>${basedir}/src/main/webapp/</contextFolder>
+                            <wroFile>src/main/resources/wro.xml</wroFile>
+                            <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+                            <ignoreMissingResources>false</ignoreMissingResources>
+                        </configuration>
+                    </plugin>
 				</plugins>
 			</build>
 			<dependencies>

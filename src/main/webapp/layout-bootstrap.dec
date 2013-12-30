@@ -60,7 +60,7 @@
     <#if (uri != '' && uri != '/about')>
         <#assign bodyid = "alt" />
     </#if>
-    <@header.css (production ) />
+    <@header.css (production || webFilePreprocessingEnabled ) />
         
     ${head}
 
@@ -293,7 +293,7 @@ ${_stacktrace?html}
 	        TDAR.common.applyWatermarks($('form.searchheader, form[name=searchheader]'));
         });
         </script>
-    <@header.scripts (production ) />
+    <@header.scripts (production || webFilePreprocessingEnabled) />
     <script type="text/javascript">
 	    TDAR.maps.googleApiKey = "${googleMapsApiKey!''}";
 	    TDAR.maps.defaults.center.lat = ${mapDefaultLat};

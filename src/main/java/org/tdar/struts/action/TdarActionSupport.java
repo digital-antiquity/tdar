@@ -1,7 +1,5 @@
 package org.tdar.struts.action;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -71,14 +68,13 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * $Id$
@@ -743,6 +739,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return toReturn;
     }
 
+    public boolean isWebFilePreprocessingEnabled() {
+        return getTdarConfiguration().isWebFilePreprocessingEnabled();
+    }
+    
     private List<String> parseWroXML(String prefix) throws TdarActionException {
         List<String> toReturn = new ArrayList<>();
         try {
