@@ -19,7 +19,7 @@
 		<jena.version>2.11.0</jena.version>
 		<clover.version>3.2.0</clover.version>
 		<!-- /end managed versions -->
-		<jvm.args>-Xms256m -Xmx2560m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
+		<jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
 		<generated.schema.file>schema.sql</generated.schema.file>
         <wro4j.version>1.6.3</wro4j.version>
@@ -1292,7 +1292,7 @@
 				<!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>keytool-maven-plugin</artifactId>
-				<version>1.3</version>
+				<version>1.4</version>
 				<executions>
 					<execution>
 						<phase>generate-resources</phase>
