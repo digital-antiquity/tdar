@@ -33,9 +33,6 @@
     <@view.pageStatusCallout />
 
     <#if creator??>
-        <#if nodeModel?has_content>
-            <#assign collaborators=nodeModel["creatorInfoLog/collaborators/*"] />
-            <#assign keywords= nodeModel["creatorInfoLog/keywords/*"] />
             <#if keywords?has_content || collaborators?has_content>
             <div id="sidebar-right" parse="true">
                 <br/>
@@ -67,7 +64,7 @@
                                 <#if (seen_creators > sz) >
                                     <#break/>
                                 </#if>
-                                <#if (collab.@count?number >= nodeModel.creatorInfoLog.@creatorMedian?number && collab.@count?number  >1)>
+                                <#if (collab.@count?number >= creatorMedian && collab.@count?number  >1)>
                                     <#assign seen_creators = seen_creators +1 />
                                     <li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a>
                                     </li>
@@ -86,9 +83,9 @@
                                 <#if (seen_kwds > sz) >
                                     <#break/>
                                 </#if>
-                                <#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
+                                <#if (keyword.@count?number >= keywordMedian && keyword.@count?number > 1)>
 
-                                    <#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !keyword.@name?contains("Fips "))>
+                                    <#if keyword.@name?has_content >
                                         <#assign seen_kwds = seen_kwds +1 />
                                         <#assign tst = keyword.@simpleClassName!"" />
                                         <#if keywordTypeBySimpleName[tst]?? >
@@ -127,7 +124,6 @@
                     });
                 </script>
             </div>
-            </#if>
         </#if>
 
     <h1><#if creator.properName??>${creator.properName}</#if></h1>

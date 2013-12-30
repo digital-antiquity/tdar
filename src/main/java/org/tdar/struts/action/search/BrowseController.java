@@ -3,12 +3,21 @@ package org.tdar.struts.action.search;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +38,7 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
@@ -48,6 +58,10 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import freemarker.ext.dom.NodeModel;
 
@@ -100,6 +114,14 @@ public class BrowseController extends AbstractLookupController {
     private transient InputStream inputStream;
     private Long contentLength;
     private NodeModel nodeModel;
+    private XPathFactory xPathFactory;
+    private Document dom;
+    private long keywordMedian;
+    private long creatorMedian;
+    private long creatorMean;
+    private long keywordMean;
+    private List<Node> keywords;
+    private List<Node> collaborators;
 
     // private Keyword keyword;
 
@@ -172,11 +194,13 @@ public class BrowseController extends AbstractLookupController {
             if (Persistable.Base.isNotNullOrTransient(creator)) {
                 try {
                     File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + XML);
-                    if (foafFile.exists()) {
-                        setNodeModel(NodeModel.parse(foafFile));
-                    } else {
-                        logger.debug("foaf file did not exist {} ", foafFile);
-                    }
+                    openCreatorInfoLog(foafFile);
+                    setKeywordMedian(Long.parseLong(dom.getAttributes().getNamedItem("keywordMedian").getTextContent()));
+                    setKeywordMean(Long.parseLong(dom.getAttributes().getNamedItem("keywordMean").getTextContent()));
+                    setCreatorMedian(Long.parseLong(dom.getAttributes().getNamedItem("creatorMedian").getTextContent()));
+                    setCreatorMean(Long.parseLong(dom.getAttributes().getNamedItem("creatorMean").getTextContent()));
+                    getKeywords();
+                    getCollaborators();
                 } catch (Exception e) {
                     logger.debug("{}", e);
                 }
@@ -413,4 +437,88 @@ public class BrowseController extends AbstractLookupController {
     public void setFoafFile(File foafFile) {
         this.foafFile = foafFile;
     }
+
+    public List<Node> getCollaborators() throws TdarActionException {
+        if (collaborators != null) {
+            return collaborators;
+        }
+        collaborators = parseCreatorInfoLog("creatorInfoLog/collaborators/*");
+        return collaborators;
+    }
+
+    public List<Node> getKeywords() throws TdarActionException {
+        if (keywords != null) {
+            return keywords;
+        }
+        keywords = new ArrayList<>();
+        for (Node node : parseCreatorInfoLog("creatorInfoLog/keywords/*") ) {
+            String name = node.getAttributes().getNamedItem("name").getTextContent();
+            if (StringUtils.contains(name, GeographicKeyword.Level.COUNTRY.getLabel()) ||
+                    StringUtils.contains(name, GeographicKeyword.Level.CONTINENT.getLabel()) ||
+                    StringUtils.contains(name, GeographicKeyword.Level.FIPS_CODE.getLabel()) 
+                    ) {
+                continue;
+            }
+            keywords.add(node);
+        }
+        return keywords;
+    }
+
+    public void openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        // use the factory to take an instance of the document builder
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        // parse using the builder to get the DOM mapping of the  XML file
+        dom = db.parse(filename);
+        xPathFactory = XPathFactory.newInstance();
+    }
+    
+    private List<Node> parseCreatorInfoLog(String prefix) throws TdarActionException {
+        List<Node> toReturn = new ArrayList<>();
+        try {
+            // Create XPath object from XPathFactory
+            XPath xpath = xPathFactory.newXPath();
+            XPathExpression xPathExpr = xpath.compile(".//" + prefix);
+            NodeList nodes = (NodeList)xPathExpr.evaluate(dom, XPathConstants.NODESET);
+            for (int i = 0; i < nodes.getLength(); i++) {
+                toReturn.add(nodes.item(i));
+            }
+        } catch (Exception e) {
+            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "could not read javascript/css config file",e);
+        }
+        return toReturn;
+    }
+
+    public long getKeywordMedian() {
+        return keywordMedian;
+    }
+
+    public void setKeywordMedian(long keywordMedian) {
+        this.keywordMedian = keywordMedian;
+    }
+
+    public long getCreatorMedian() {
+        return creatorMedian;
+    }
+
+    public void setCreatorMedian(long creatorMedian) {
+        this.creatorMedian = creatorMedian;
+    }
+
+    public long getCreatorMean() {
+        return creatorMean;
+    }
+
+    public void setCreatorMean(long creatorMean) {
+        this.creatorMean = creatorMean;
+    }
+
+    public long getKeywordMean() {
+        return keywordMean;
+    }
+
+    public void setKeywordMean(long keywordMean) {
+        this.keywordMean = keywordMean;
+    }
+
 }
