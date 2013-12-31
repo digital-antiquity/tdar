@@ -60,7 +60,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     public static final String REASON = "because";
 
     @Before
-    public final void init() {
+    public void init() {
         init(getController());
     }
 

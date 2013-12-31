@@ -195,7 +195,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     };
 
     @Before
-    public final void announceTestStarting() {
+    public  void announceTestStarting() {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
 
@@ -210,7 +210,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     @After
-    public final void announceTestOver() {
+    public  void announceTestOver() {
 
         int errorCount = 0;
         List<String> errors = new ArrayList<>();
