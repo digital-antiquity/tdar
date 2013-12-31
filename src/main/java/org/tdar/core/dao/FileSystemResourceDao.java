@@ -34,7 +34,7 @@ public class FileSystemResourceDao {
             template = new File(TESTING_PATH_FOR_INCLUDES_DIRECTORY + path);
             logger.debug("{}", path);
             if (!template.exists()) {
-                throw new FileNotFoundException(path);
+                throw new FileNotFoundException(template.getAbsolutePath());
             }
         }
         return template;

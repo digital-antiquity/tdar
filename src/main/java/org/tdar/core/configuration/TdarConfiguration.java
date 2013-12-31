@@ -418,12 +418,13 @@ public class TdarConfiguration {
      */
     public String getThemeDir() {
         String dir = assistant.getStringProperty("app.theme.dir", "includes/themes/tdar/");
-        if (dir.startsWith("/")) {
+        if (dir.startsWith("/") || dir.startsWith("\\")) {
             dir = dir.substring(1);
         }
-        if (dir.endsWith("/")) {
+        if (dir.endsWith("/") || dir.startsWith("\\")) {
             dir = dir.substring(0,dir.length() -1);
         }
+        logger.debug("dir:{}", dir);
         return dir;
     }
 

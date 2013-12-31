@@ -71,7 +71,7 @@ public class PdfService implements Serializable {
             if (version.getExtension().equalsIgnoreCase("PDF") && informationResource instanceof Document) {
                 // get the tDAR document and get the path to the template
                 Document document = (Document) version.getInformationResourceFile().getInformationResource();
-                String path = String.format("%s%s%s", TdarConfiguration.getInstance().getThemeDir(), COVER_PAGE, DOT_PDF);
+                String path = String.format("%s/%s%s", TdarConfiguration.getInstance().getThemeDir(), COVER_PAGE, DOT_PDF);
 
                 // get the template
                 File template = fileDao.loadTemplate(path);
