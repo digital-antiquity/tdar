@@ -100,6 +100,10 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Length(max = 255)
     private String firstName;
 
+    @Column(name="orcid_id")
+    private String orcidId;
+    //http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
+    
     @Column(unique = true, nullable = true)
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
@@ -550,5 +554,13 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public void setTosVersion(Integer tosVersion) {
         this.tosVersion = tosVersion;
+    }
+
+    public String getOrcidId() {
+        return orcidId;
+    }
+
+    public void setOrcidId(String orcidId) {
+        this.orcidId = orcidId;
     }
 }

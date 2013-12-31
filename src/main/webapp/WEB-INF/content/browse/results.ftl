@@ -186,6 +186,10 @@
                         </td>
                     </tr>
                     <tr>
+                    	<td><#if creator.url?has_content><b>URL:</b> <a href="${creator.url}">${creator.urL}</a></#if></td>
+                    	<td><b>ORCID Identifier:</b> <#if creator.orcidId?has_content><a href="http://orcid.org/${creator.orcidId}">${creator.orcidId}</a></#if></td>
+                    </tr>
+                    <tr>
                         <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
                             <td itemprop="email">
                                 <@view.textfield "Email" creator.email />

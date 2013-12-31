@@ -43,3 +43,5 @@ alter table sensory_data_scan
     add constraint FK_bbetp1cmjicvtydwd0hfepab1
     foreign key (sensory_data_id)
     references sensory_data;
+
+alter table person add column orcid_id varchar(50) default null;
