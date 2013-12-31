@@ -114,6 +114,7 @@ import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.DontIndexWhenNotReadyInterceptor;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.query.QueryFieldNames;
@@ -1226,13 +1227,19 @@ public class Resource extends JsonModel.Base implements Persistable,
     public String getAdditonalKeywords() {
         return "";
     }
+    
+    private transient String keywords = null;
 
     @SuppressWarnings("unchecked")
     @JSONTransient
     @Fields({
             @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
+            @Field(name = QueryFieldNames.SITE_CODE, analyzer = @Analyzer(impl = SiteCodeTokenizingAnalyzer.class)),
             @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
     public String getKeywords() {
+        if (isReadyToIndex() && keywords != null) {
+            return keywords;
+        }
         // note, consider using a transient field here, as the getter is called
         // multiple items (once for each @Field annotation)
         logger.trace("get keyword contents: {}", getId());
@@ -1277,7 +1284,13 @@ public class Resource extends JsonModel.Base implements Persistable,
         for (SourceCollection src : getSourceCollections()) {
             sb.append(src.getText()).append(" ");
         }
-        return sb.toString();
+        
+        if (readyToIndex) {
+            keywords = sb.toString();
+        } else {
+            return sb.toString();
+        }
+        return keywords;
     }
 
     @XmlTransient

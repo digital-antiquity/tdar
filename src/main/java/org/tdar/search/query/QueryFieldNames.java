@@ -89,5 +89,6 @@ public interface QueryFieldNames {
     static final String FILENAME = "filename";
     static final String DATA_VALUE_PAIR = "dataValuePair";
     static final String COLLECTION_TREE = "collection.parentTree";
+    static final String SITE_CODE = "siteCode";
 
 }
