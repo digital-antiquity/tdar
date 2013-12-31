@@ -29,6 +29,15 @@ public class SiteNameIndexingITCase {
         assertMatches(compile, "24AA9999");
         assertMatches(compile, "22:22:13-0000");
         assertMatches(compile, "RI-0000");
+        assertMatches(compile, "AZ U:9:1(ASM)");
+        assertMatches(compile, "NA18,009(MNA)");
+        assertMatches(compile, "AZ N:16:45 (PC)");
+        assertMatches(compile, "AR-03-12-06-193(USFS)");
+//        assertMatches(compile, "59(SIU)");
+        assertMatches(compile, "LA 9219");
+        assertMatches(compile, "AR-03-12-01-1927");
+        assertMatches(compile, "38AK933");
+        
     }
 
     @Test
@@ -48,5 +57,6 @@ public class SiteNameIndexingITCase {
         logger.debug("\"{}\" --> {}", text, pattern.pattern());
         assertTrue("String matches:" + text, pattern.matcher(text).matches());
         Assert.assertFalse(StringUtils.containsIgnoreCase(text,"q"));
+        Assert.assertFalse(StringUtils.containsIgnoreCase(text,"sa"));
     }
 }
