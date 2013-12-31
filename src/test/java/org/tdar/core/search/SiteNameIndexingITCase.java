@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -37,10 +37,11 @@ public class SiteNameIndexingITCase {
         SiteCodeTokenizingAnalyzer tokenizer = new SiteCodeTokenizingAnalyzer();
         TokenStream tokenStream = tokenizer.tokenStream("test", reader);
         while(tokenStream.incrementToken()) {
-            String term = tokenStream.getAttribute(TermAttribute.class).term();
+            String term = tokenStream.getAttribute(CharTermAttribute.class).toString();
             logger.debug(term);
             assertMatches(SiteCodeTokenizingAnalyzer.pattern, term);
         }
+        tokenizer.close();
     }
     
     public void assertMatches(Pattern pattern, String text) {
