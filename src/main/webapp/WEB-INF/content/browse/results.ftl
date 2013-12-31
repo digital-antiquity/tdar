@@ -32,7 +32,7 @@
 
     <@view.pageStatusCallout />
 
-    <#if creator??&& ( keywords?has_content || collaborators?has_content)>
+    <#if creator?? && ( keywords?has_content || collaborators?has_content)>
             <div id="sidebar-right" parse="true">
                 <br/>
                 <br/>
@@ -77,6 +77,7 @@
                             </#list>
                         </ul>
                     </div>
+		        </#if>
                 <div>
                     <small>Related Keywords and Creators are determined by looking at all of the Creators and Keywords
                         associated with a Creator and highlighting the most commonly used.
@@ -204,7 +205,6 @@
             <br/>
         </#if>
     </div>
-    </#if>
     <#if ( results?? && results?size > 0) >
     <div id="divResultsSortControl">
         <div class="row">

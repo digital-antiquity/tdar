@@ -189,7 +189,7 @@ public class BrowseController extends AbstractLookupController {
     public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser(),this);
+            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
             if (isEditor()) {
                 if (creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
@@ -232,15 +232,17 @@ public class BrowseController extends AbstractLookupController {
             }
             try {
                 File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + XML);
-                openCreatorInfoLog(foafFile);
-                getKeywords();
-                getCollaborators();
-                NamedNodeMap attributes = dom.getElementsByTagName("creatorInfoLog").item(0).getAttributes();
-                logger.info("attributes: {}", attributes);
-                setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
-                setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));
-                setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));
-                setCreatorMean(Float.parseFloat(attributes.getNamedItem("creatorMean").getTextContent()));
+                if (foafFile.exists()) {
+                    openCreatorInfoLog(foafFile);
+                    getKeywords();
+                    getCollaborators();
+                    NamedNodeMap attributes = dom.getElementsByTagName("creatorInfoLog").item(0).getAttributes();
+                    logger.info("attributes: {}", attributes);
+                    setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
+                    setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));
+                    setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));
+                    setCreatorMean(Float.parseFloat(attributes.getNamedItem("creatorMean").getTextContent()));
+                }
             } catch (Exception e) {
                 logger.debug("{}", e);
             }
@@ -435,7 +437,7 @@ public class BrowseController extends AbstractLookupController {
         if (collaborators != null) {
             return collaborators;
         }
-        collaborators = parseCreatorInfoLog("creatorInfoLog/collaborators/*",false,getCreatorMean());
+        collaborators = parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean());
         return collaborators;
     }
 
@@ -443,7 +445,7 @@ public class BrowseController extends AbstractLookupController {
         if (keywords != null) {
             return keywords;
         }
-        keywords = parseCreatorInfoLog("creatorInfoLog/keywords/*",true, getKeywordMean());
+        keywords = parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean());
         return keywords;
     }
 
@@ -452,18 +454,23 @@ public class BrowseController extends AbstractLookupController {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         // use the factory to take an instance of the document builder
         DocumentBuilder db = dbf.newDocumentBuilder();
-        // parse using the builder to get the DOM mapping of the  XML file
-        dom = db.parse(filename);
-        xPathFactory = XPathFactory.newInstance();
+        // parse using the builder to get the DOM mapping of the XML file
+        if (filename.exists()) {
+            dom = db.parse(filename);
+            xPathFactory = XPathFactory.newInstance();
+        }
     }
-    
+
     private List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean) throws TdarActionException {
         List<NodeModel> toReturn = new ArrayList<>();
+        if (dom == null || xPathFactory == null) {
+            return toReturn;
+        }
         try {
             // Create XPath object from XPathFactory
             XPath xpath = xPathFactory.newXPath();
             XPathExpression xPathExpr = xpath.compile(prefix);
-            NodeList nodes = (NodeList)xPathExpr.evaluate(dom, XPathConstants.NODESET);
+            NodeList nodes = (NodeList) xPathExpr.evaluate(dom, XPathConstants.NODESET);
             logger.info("xpath returned: {}", nodes.getLength());
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node node = nodes.item(i);
@@ -474,17 +481,16 @@ public class BrowseController extends AbstractLookupController {
                 }
                 if (limit || count < mean) {
                     if (StringUtils.contains(name, GeographicKeyword.Level.COUNTRY.getLabel()) ||
-                        StringUtils.contains(name, GeographicKeyword.Level.CONTINENT.getLabel()) ||
-                        StringUtils.contains(name, GeographicKeyword.Level.FIPS_CODE.getLabel()) 
-                        ) {
-                    continue;
+                            StringUtils.contains(name, GeographicKeyword.Level.CONTINENT.getLabel()) ||
+                            StringUtils.contains(name, GeographicKeyword.Level.FIPS_CODE.getLabel())) {
+                        continue;
                     }
                 }
-                
+
                 toReturn.add(NodeModel.wrap(nodes.item(i)));
             }
         } catch (Exception e) {
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, getText("browseController.parse_creator_log"),e);
+            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, getText("browseController.parse_creator_log"), e);
         }
         return toReturn;
     }
@@ -521,18 +527,17 @@ public class BrowseController extends AbstractLookupController {
         this.keywordMean = keywordMean;
     }
 
-    
     public int getSidebarValuesToShow() {
         int num = getResults().size();
         // start with how many records are being shown on the current page
-        if (num > getRecordsPerPage())  {
+        if (num > getRecordsPerPage()) {
             num = getRecordsPerPage();
         }
         // if less than 20, then show 20
         if (num < 20) {
             num = 20;
         }
-        num = (int) Math.ceil((float)num / 2.0);
+        num = (int) Math.ceil((float) num / 2.0);
         return num;
     }
 }

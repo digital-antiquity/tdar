@@ -6,13 +6,8 @@ import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.KeywordTokenizer;
-import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.util.Version;
 import org.apache.solr.analysis.PatternTokenizer;
-import org.apache.solr.analysis.PatternTokenizerFactory;
 import org.apache.solr.analysis.TrimFilter;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
@@ -26,9 +21,10 @@ public final class SiteCodeTokenizingAnalyzer extends Analyzer {
      * Treats entire field value as a single Keyword Token
      */
     
-    public static final String PATTERN_SMITHSONIAN_ALPHA = "(\\w\\w\\s)?((\\w\\w)(([\\s\\:\\-]?)(\\w{1,3}))?([\\s\\:\\-]?)(\\d+))(\\(\\w\\w\\w\\))?";
+    public static final String PATTERN_SMITHSONIAN_ALPHA = "([A-Z][A-Z]\\s)?(([A-Z][A-Z])(([\\s\\:\\-]?)([A-Z]{1,3}))?([\\s\\:\\-]?)(\\d+))";
+    public static final String PATTERN_SMITHSONIAN_ARIZONA = "([A-Z]{2})([\\s\\:\\-])?([A-Z]{2})([\\s\\:\\-])?(\\d+)([\\s\\:\\-])?(\\d+)(\\([A-Z]{3}\\))?";
     public static final String PATTERN_SMITHSONIAN_NUMERIC = "(\\d{1,2})([\\s\\:\\-]?)(\\w{2,3})([\\s\\:\\-]?)(\\d+)([\\s\\:\\-]?)(\\d+)?";
-    public static final Pattern pattern = Pattern.compile("("+PATTERN_SMITHSONIAN_NUMERIC + "|"+ PATTERN_SMITHSONIAN_ALPHA+")");
+    public static final Pattern pattern = Pattern.compile("("+PATTERN_SMITHSONIAN_NUMERIC + "|"+ PATTERN_SMITHSONIAN_ARIZONA+"|"+ PATTERN_SMITHSONIAN_ALPHA+")");
     
     @Override
     public TokenStream tokenStream(String fieldName, Reader reader) {

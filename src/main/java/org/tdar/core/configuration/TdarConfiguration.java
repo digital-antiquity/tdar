@@ -424,7 +424,6 @@ public class TdarConfiguration {
         if (dir.endsWith("/") || dir.startsWith("\\")) {
             dir = dir.substring(0,dir.length() -1);
         }
-        logger.debug("dir:{}", dir);
         return dir;
     }
 
