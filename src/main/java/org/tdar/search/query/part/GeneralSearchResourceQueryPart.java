@@ -10,6 +10,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
 
     protected static final float TITLE_BOOST = 6f;
     protected static final float CREATOR_BOOST = 5f;
+    protected static final float SITE_CODE_BOOST = 5f;
     protected static final float DESCRIPTION_BOOST = 4f;
     protected static final float PHRASE_BOOST = 3.2f;
     protected static final float ANY_FIELD_BOOST = 2f;
@@ -42,6 +43,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         String cleanedQueryString = getCleanedQueryString(value);
 
         FieldQueryPart<String> creatorPart = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, cleanedQueryString);
+        FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, cleanedQueryString);
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, cleanedQueryString);
         FieldQueryPart<String> linkedContent = new FieldQueryPart<String>(QueryFieldNames.DATA_VALUE_PAIR, cleanedQueryString);
 
@@ -49,6 +51,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
             creatorPart.setProximity(2);
         }
         queryPart.append(creatorPart.setBoost(CREATOR_BOOST));
+        queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
         queryPart.append(content);
         queryPart.append(linkedContent);
         return queryPart;
