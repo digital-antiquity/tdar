@@ -141,7 +141,7 @@
 
         <#if creator.institution??>
 
-            <a itemprop="affiliation" href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
+            <a itemprop="affiliation" href="<@s.url value="/browse/creators/${creator.institution.id?c}"/>">${creator.institution}</a>
         </#if>
 
         <@common.description creator.description />
@@ -159,7 +159,7 @@
 
                 <h3>Future Contact Information</h3>
                 <#if creator.proxyInstitution?has_content>
-                    <a href="<@s.url value="${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
+                    <a href="<@s.url value="/browse/creators/${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
                 <#else>
                     None Specified
                 </#if>
@@ -209,6 +209,18 @@
                         <td colspan=2>
                             <#escape x as x?html>
                     <@view.textfield "Contributor Reason" creator.contributorReason true />
+                    </#escape>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <#escape x as x?html>
+                    <@view.textfield "TOS Version" creator.tosVersion true />
+                    </#escape>
+                        </td>
+                        <td>
+                            <#escape x as x?html>
+                    <@view.textfield "Agreement Version" creator.contributorAgreementVersion true />
                     </#escape>
                         </td>
                     </tr>
