@@ -167,7 +167,7 @@
                 <table class='tableFormat table'>
                     <tr>
                         <td>
-                            <B>Registered Public Archaeologist</B>:${creator.rpaNumber!"no"}
+                            <B>Registered Professional Archaeologist</B>:${creator.rpaNumber!"no"}
                         </td>
                         <td>
                             <#assign registered = false />
