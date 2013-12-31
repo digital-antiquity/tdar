@@ -27,7 +27,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.DataIntegrationITCase;
 
-//@Ignore
+@Ignore
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
     private static final String BONE_COMMON_NAME = "Bone Common name";
