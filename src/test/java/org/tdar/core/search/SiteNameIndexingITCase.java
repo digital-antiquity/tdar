@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,5 +46,6 @@ public class SiteNameIndexingITCase {
     public void assertMatches(Pattern pattern, String text) {
         logger.debug("\"{}\" --> {}", text, pattern.pattern());
         assertTrue("String matches:" + text, pattern.matcher(text).matches());
+        Assert.assertFalse(StringUtils.containsIgnoreCase(text,"q"));
     }
 }
