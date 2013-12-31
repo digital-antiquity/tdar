@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -19,6 +20,7 @@ import org.openqa.selenium.interactions.MoveTargetOutOfBoundsException;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 /**
  * This class represents a collection of WebElement objects, and attempts to emulate the WebElement interface while also using the jQuery convention
@@ -70,6 +72,9 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return first element of the selection, or null if this selection is empty.
      */
     public WebElement first() {
+        if (CollectionUtils.isEmpty(elements)) {
+            throw new TdarRecoverableRuntimeException("First called on empty set of elements");
+        }
         return iterator().next();
     }
 
