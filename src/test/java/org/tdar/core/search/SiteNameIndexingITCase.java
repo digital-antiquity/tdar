@@ -33,7 +33,7 @@ public class SiteNameIndexingITCase {
         assertMatches(compile, "NA18,009(MNA)");
         assertMatches(compile, "AZ N:16:45 (PC)");
         assertMatches(compile, "AR-03-12-06-193(USFS)");
-//        assertMatches(compile, "59(SIU)");
+        assertMatches(compile, "NM-H-46-62 (NN)");
         assertMatches(compile, "LA 9219");
         assertMatches(compile, "AR-03-12-01-1927");
         assertMatches(compile, "38AK933");
