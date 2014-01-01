@@ -684,6 +684,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 String exactMatch = getPageCode().subSequence(matcher.start(), matcher.end()).toString();
 
                 if (!encodingErrorExclusions.contains(exactMatch)) {
+                    logger.debug(getPageCode());
                     Assert.fail(String.format(msg, entry.getKey(), matcher.start(), matcher.end(), matchAndContext));
                 }
             }

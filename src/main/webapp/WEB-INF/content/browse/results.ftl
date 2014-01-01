@@ -32,7 +32,8 @@
 
     <@view.pageStatusCallout />
 
-    <#if creator?? && ( keywords?has_content || collaborators?has_content)>
+<#if creator?? >
+    <#if  keywords?has_content || collaborators?has_content >
             <div id="sidebar-right" parse="true">
                 <br/>
                 <br/>
@@ -205,6 +206,8 @@
             <br/>
         </#if>
     </div>
+    	</#if>
+    
     <#if ( results?? && results?size > 0) >
     <div id="divResultsSortControl">
         <div class="row">
