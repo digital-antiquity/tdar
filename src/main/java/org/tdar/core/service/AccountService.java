@@ -641,7 +641,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
     
     @Transactional
-    public void redeemCode(Invoice persistable, Person user, String code) {
+    public void redeemCode(Invoice invoice, Person user, String code) {
         if (StringUtils.isEmpty(code)) {
             return;
         }
@@ -649,8 +649,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (coupon == null) {
             throw new TdarRecoverableRuntimeException(CANNOT_REDEEM_COUPON);
         }
-        if (Persistable.Base.isNotNullOrTransient(persistable.getCoupon())) {
-            if (Persistable.Base.isEqual(coupon, persistable.getCoupon())) {
+        if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
+            if (Persistable.Base.isEqual(coupon, invoice.getCoupon())) {
                 return;
             } else {
                 throw new TdarRecoverableRuntimeException(COUPON_ALREADY_APPLIED);
@@ -659,9 +659,17 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (coupon.getDateExpires().before(new Date())) {
             throw new TdarRecoverableRuntimeException(COUPON_HAS_EXPIRED);
         }
-        persistable.setCoupon(coupon);
+        invoice.setCoupon(coupon);
         coupon.setUser(user);
         coupon.setDateRedeemed(new Date());
+        
+        if (coupon.getNumberOfFiles() > invoice.getNumberOfFiles()) {
+            invoice.setNumberOfFiles(coupon.getNumberOfFiles());
+        }
+        if (coupon.getNumberOfMb() > invoice.getNumberOfMb()) {
+            invoice.setNumberOfMb(coupon.getNumberOfMb());
+        }
+        
         getDao().saveOrUpdate(coupon);
     }
 
