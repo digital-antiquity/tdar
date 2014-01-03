@@ -93,9 +93,9 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         Invoice invoice = setupAccountWithCouponForFiles(numFilesForCoupon, numFiles);
         logger.info("{} {} ", invoice.getTotalNumberOfFiles(), invoice.getTotal());
         assertNotEquals(0.0, invoice.getTotal().floatValue());
-        assertNotEquals(numFilesForCoupon, invoice.getTotalNumberOfFiles().longValue());
+        assertEquals(numFilesForCoupon, invoice.getTotalNumberOfFiles().longValue());
         assertEquals(0.0, invoice.getTotal().floatValue(), 0);
-        assertEquals(numFiles, invoice.getTotalNumberOfFiles().longValue());
+        assertNotEquals(numFiles, invoice.getTotalNumberOfFiles().longValue());
     }
 
     private Invoice setupAccountWithCouponForFiles(long numFilesForCoupon, long numberOfFilesForInvoice) throws TdarActionException {

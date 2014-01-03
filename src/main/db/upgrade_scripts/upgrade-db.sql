@@ -77,5 +77,5 @@ alter table sensory_data_scan
     foreign key (sensory_data_id)
     references sensory_data;
 
--- abrin 12/5/2013 -- adding view    
-create view resource_proxy as (select rp.* , date_created, project_id, inheriting_spatial_information from resource rp left join information_resource ir on rp.id=ir.id);
+-- abrin 12/31/2013
+alter table person add column orcid_id varchar(50) default null;
