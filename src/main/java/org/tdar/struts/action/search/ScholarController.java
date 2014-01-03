@@ -58,7 +58,7 @@ public class ScholarController extends AbstractLookupController {
         param.getRegisteredDates().add(new DateRange(start.toDate(), end.toDate()));
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         queryBuilder.setOperator(QueryParser.Operator.AND);
-        queryBuilder.append(param);
+        queryBuilder.append(param.toQueryPartGroup(this));
         try {
             handleSearch(queryBuilder);
         } catch (ParseException e) {
@@ -66,11 +66,6 @@ public class ScholarController extends AbstractLookupController {
             return INPUT;
         }
         return SUCCESS;
-    }
-
-    @Override
-    public List<String> getProjections() {
-        return null;
     }
 
     @Override
