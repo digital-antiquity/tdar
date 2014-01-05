@@ -101,6 +101,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             getInvoice().getItems().add(new BillingItem(act, quantity));
         }
 
+        getAccountService().redeemCode(persistable, persistable.getOwner(), code);
         List<BillingItem> items = new ArrayList<BillingItem>();
         if (getPricingType() != null) {
             items = getAccountService().calculateActivities(getInvoice(), getPricingType()).getItems();
@@ -120,7 +121,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
         getInvoice().setTransactedBy(getAuthenticatedUser());
         processOwner();
-        getAccountService().redeemCode(persistable, persistable.getOwner(), code);
 
         setSaveSuccessPath(SIMPLE);
 

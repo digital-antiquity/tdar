@@ -117,14 +117,13 @@
 		<to>/dashboard/dashboard</to>
 	</rule>
 
-	<rule>
-		<from>^/year-20([0-9][0-9])$</from>
-		<to>/search/results?groups%5B0%5D.operator=AND&amp;groups%5B0%5D.fieldTypes%5B0%5D=DATE_REGISTERED&amp;groups%5B0%5D.registeredDates%5B0%5D.start=1%2F1%2F$1&amp;groups%5B0%5D.registeredDates%5B0%5D.end=12%2F31%2F$1&amp;sortField=DATE_UPDATED&amp;hideFacetsAndSort=true
-		</to>
-	</rule>
+    <!-- support old rewrite -->
+    <rule >
+        <from>^/year-(\d+)$</from>
+        <to type="temporary-redirect">/scholar/scholar?year=$1</to>
+    </rule>
 
-
-	<rule>
+    <rule>
 		<from>^/browse/(.+)/(\d+)/?$</from>
 		<to>/browse/$1?id=$2</to>
 	</rule>

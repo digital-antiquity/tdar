@@ -21,7 +21,7 @@
    <#list scholarData?sort_by("key") as key>
 
 	<#assign tdarYear = key.key?substring(3) />
-	<span class="bullet"> <a href="<@s.url value="/year-${key.key?c}"/>">${key.key?c}</a> </span>
+	<span class="bullet"> <a href="<@s.url value="/scholar/scholar?year=${key.key?c}"/>">${key.key?c}</a> </span>
 	</#list>
 <br/>
 </div>

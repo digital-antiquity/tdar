@@ -141,7 +141,7 @@
 
         <#if creator.institution??>
 
-            <a itemprop="affiliation" href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
+            <a itemprop="affiliation" href="<@s.url value="/browse/creators/${creator.institution.id?c}"/>">${creator.institution}</a>
         </#if>
 
         <@common.description creator.description />
@@ -159,7 +159,7 @@
 
                 <h3>Future Contact Information</h3>
                 <#if creator.proxyInstitution?has_content>
-                    <a href="<@s.url value="${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
+                    <a href="<@s.url value="/browse/creators/${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
                 <#else>
                     None Specified
                 </#if>
@@ -167,7 +167,7 @@
                 <table class='tableFormat table'>
                     <tr>
                         <td>
-                            <B>Registered Public Archaeologist</B>:${creator.rpaNumber!"no"}
+                            <B>Registered Professional Archaeologist</B>:${creator.rpaNumber!"no"}
                         </td>
                         <td>
                             <#assign registered = false />
@@ -184,6 +184,10 @@
                             <@view.boolean "Registered User" registered />
                         </#if>
                         </td>
+                    </tr>
+                    <tr>
+                    	<td><#if creator.url?has_content><b>URL:</b> <a href="${creator.url}">${creator.urL}</a></#if></td>
+                    	<td><b>ORCID Identifier:</b> <#if creator.orcidId?has_content><a href="http://orcid.org/${creator.orcidId}">${creator.orcidId}</a></#if></td>
                     </tr>
                     <tr>
                         <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
@@ -209,6 +213,18 @@
                         <td colspan=2>
                             <#escape x as x?html>
                     <@view.textfield "Contributor Reason" creator.contributorReason true />
+                    </#escape>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <#escape x as x?html>
+                    <@view.textfield "TOS Version" creator.tosVersion true />
+                    </#escape>
+                        </td>
+                        <td>
+                            <#escape x as x?html>
+                    <@view.textfield "Agreement Version" creator.contributorAgreementVersion true />
                     </#escape>
                         </td>
                     </tr>
