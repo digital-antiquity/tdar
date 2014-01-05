@@ -595,9 +595,7 @@
 			<!--  LICENSE: BSD -->
 		</dependency>
 		<!-- Apache POI / HSSF - included via tika <dependency> <groupId>org.apache.poi</groupId> 
-			<artifactId>poi-ooxml</artifactId> <version>3.7</version> </dependency> <dependency> 
-			<groupId>org.apache.pdfbox</groupId> <artifactId>pdfbox</artifactId> <version>1.6.0</version> 
-			</dependency> -->
+			<artifactId>poi-ooxml</artifactId> <version>3.7</version> </dependency>  -->
 		<!-- hibernate and JPA persistence -->
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
@@ -863,6 +861,12 @@
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>1.8.3</version>
+			<!--  LICENSE: APACHE 2.0 -->
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
 			<version>${tika.version}</version>
@@ -873,6 +877,12 @@
 			<artifactId>tika-parsers</artifactId>
 			<version>${tika.version}</version>
 			<!--  LICENSE: APACHE 2.0 -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.pdfbox</groupId>
+					<artifactId>pdfbox</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
