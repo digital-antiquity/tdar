@@ -202,7 +202,7 @@ View freemarker macros
                     <@translatedFileSection irfile />
                 </li>
             </@fileInfoSection>
-                <#if (resource.informationResourceFiles?size > 1)>
+                <#if (resource.totalNumberOfActiveFiles > 1)>
                     <li class="archiveLink media">
                         <i class="iconf page-white-zip pull-left"></i>
                         <div class="media-body"><@createArchiveFileLink resource=resource /></div>
