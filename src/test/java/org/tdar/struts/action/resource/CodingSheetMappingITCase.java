@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -322,7 +323,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testXLSCodingSheetUploadDoesNotGoThroughDatasetWorkflow() throws Exception {
-        CodingSheet codingSheet = setupCodingSheet("semidegen.xlsx", TestConstants.TEST_CODING_SHEET_DIR + "semidegen.xlsx", null);
+        CodingSheet codingSheet = setupCodingSheet("semidegen.xlsx", TestConstants.TEST_CODING_SHEET_DIR + "semidegen.xlsx", null, null);
         for (InformationResourceFile file : codingSheet.getInformationResourceFiles()) {
             Dataset transientDataset = (Dataset) file.getWorkflowContext().getTransientResource();
             logger.info("file: {} ", file);
@@ -373,7 +374,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testCodingSheetMappingReplace2() throws Exception {
-        CodingSheet codingSheet = setupCodingSheet(PERIOD_1.getName(), PERIOD_1.getAbsolutePath(), null);
+        CodingSheet codingSheet = setupCodingSheet(null, null, null, PERIOD_1);
         Long codingId = codingSheet.getId();
         Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
         codingSheet = null;
@@ -383,12 +384,14 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         codingSheetController.prepare();
         codingSheet = codingSheetController.getCodingSheet();
 
-        List<File> uploadedFiles = new ArrayList<File>();
-        List<String> uploadedFileNames = new ArrayList<String>();
-        uploadedFiles.add(PERIOD_2);
-        uploadedFileNames.add(PERIOD_2.getName());
-        codingSheetController.setUploadedFilesFileName(uploadedFileNames);
-        codingSheetController.setUploadedFiles(uploadedFiles);
+//        List<File> uploadedFiles = new ArrayList<File>();
+//        List<String> uploadedFileNames = new ArrayList<String>();
+//        uploadedFiles.add(PERIOD_2);
+//        uploadedFileNames.add(PERIOD_2.getName());
+//        codingSheetController.setUploadedFilesFileName(uploadedFileNames);
+//        codingSheetController.setUploadedFiles(uploadedFiles);
+        codingSheetController.setFileTextInput(FileUtils.readFileToString(PERIOD_2));
+        codingSheetController.setFileInputMethod(CodingSheetController.FILE_INPUT_METHOD);
         codingSheetController.setServletRequest(getServletPostRequest());
         codingSheetController.save();
         assertNotNull(codingId);
@@ -552,24 +555,29 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
      * @return
      * @throws TdarActionException
      */
-    private CodingSheet setupCodingSheet() throws TdarActionException {
-        return setupCodingSheet(EXCEL_FILE_NAME, EXCEL_FILE_PATH, null);
+    private CodingSheet setupCodingSheet() throws Exception {
+        return setupCodingSheet(EXCEL_FILE_NAME, EXCEL_FILE_PATH, null, null);
     }
 
-    private CodingSheet setupCodingSheet(String fileName, String filePath, Ontology ontology) throws TdarActionException {
+    private CodingSheet setupCodingSheet(String fileName, String filePath, Ontology ontology, File textFile) throws TdarActionException, IOException {
         CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
         codingSheetController.prepare();
         CodingSheet codingSheet = codingSheetController.getCodingSheet();
         codingSheet.setTitle("test coding sheet");
         codingSheet.setDescription("test description");
 
-        List<File> uploadedFiles = new ArrayList<File>();
-        List<String> uploadedFileNames = new ArrayList<String>();
-        uploadedFiles.add(new File(filePath));
         codingSheet.setDefaultOntology(ontology);
-        uploadedFileNames.add(fileName);
-        codingSheetController.setUploadedFilesFileName(uploadedFileNames);
-        codingSheetController.setUploadedFiles(uploadedFiles);
+        if (textFile != null) {
+            codingSheetController.setFileTextInput(FileUtils.readFileToString(textFile));
+            codingSheetController.setFileInputMethod(CodingSheetController.FILE_INPUT_METHOD);
+        } else {
+            List<File> uploadedFiles = new ArrayList<File>();
+            List<String> uploadedFileNames = new ArrayList<String>();
+            uploadedFiles.add(new File(filePath));
+            uploadedFileNames.add(fileName);
+            codingSheetController.setUploadedFilesFileName(uploadedFileNames);
+            codingSheetController.setUploadedFiles(uploadedFiles);
+        }
         codingSheetController.setServletRequest(getServletPostRequest());
         codingSheetController.save();
         Long codingId = codingSheet.getId();

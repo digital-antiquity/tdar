@@ -120,7 +120,8 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
             if (stream != null)
                 IOUtils.closeQuietly(stream);
         }
-
+        logger.debug("{} rules found, {} duplicates", incomingCodingRules.size(), duplicates.size());
+        
         if (CollectionUtils.isNotEmpty(duplicates)) {
             throw new CodingSheetParserException(ERROR_PARSE_DUPLICATE_CODES, duplicates);
         }
