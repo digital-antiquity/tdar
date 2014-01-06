@@ -4,6 +4,7 @@
         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
         xmlns:owl="http://www.w3.org/2002/07/owl#"
+        xmlns:dc="http://purl.org/dc/elements/1.1/"
         xmlns="${baseUrl}/ontologies/${id?c}"
         xmlns:tdar="${baseUrl}/ontologies#"
         xmlns:base="${baseUrl}/ontologies/${id?c}">
@@ -19,6 +20,7 @@
             </#list>
             <rdfs:comment>TDAROrder-${node.importOrder?c}</rdfs:comment>
             <rdfs:comment><![CDATA[TDARDescription-${node.description!""}]]></rdfs:comment>
+            <dc:description><![CDATA[${node.description!""}]]></dc:description>
         </owl:Class>
         <#list node.synonymNodes as synonym>
             <owl:Class rdf:ID="${synonym.iri}">
