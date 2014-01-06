@@ -735,7 +735,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public List<String> getCssFiles() throws TdarActionException  {
         List<String> toReturn = new ArrayList<>();
-        parseWroXML("css");
+        toReturn.addAll(parseWroXML("css"));
         return toReturn;
     }
 
