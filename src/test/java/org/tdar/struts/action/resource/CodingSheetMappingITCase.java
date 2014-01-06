@@ -15,7 +15,6 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,12 +59,11 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
     private static final String TEST_DATASET_FILENAME = "total-number-of-bones-per-period.xlsx";
 
-    private static final String TEST_DATA_SET_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME;
-
-    private static final File TEST_DATASET_FILE = new File(TEST_DATA_SET_FILE_PATH);
     private static final String EXCEL_FILE_NAME = "periods-modified-sm-01182011.xlsx";
     private static final String EXCEL_FILE_NAME2 = "periods-modified-sm-01182011-2.xlsx";
     private static final String EXCEL_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + EXCEL_FILE_NAME;
+    private static final File PERIOD_1 = new File(TestConstants.TEST_CODING_SHEET_DIR + "period.csv");
+    private static final File PERIOD_2 = new File(TestConstants.TEST_CODING_SHEET_DIR + "period2.csv");
     private static final String EXCEL_FILE_PATH2 = TestConstants.TEST_DATA_INTEGRATION_DIR + EXCEL_FILE_NAME2;
     private String codingSheetFileName = "/coding sheet/csvCodingSheetText.csv";
 
@@ -369,7 +367,36 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testCodingSheetMapping() throws Exception {
         CodingSheet codingSheet = setupCodingSheet();
+        Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
+	}
 
+    @Test
+    @Rollback
+    public void testCodingSheetMappingReplace2() throws Exception {
+        CodingSheet codingSheet = setupCodingSheet(PERIOD_1.getName(), PERIOD_1.getAbsolutePath(), null);
+        Long codingId = codingSheet.getId();
+        Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
+        codingSheet = null;
+        CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
+        genericService.synchronize();
+        codingSheetController.setId(codingId);
+        codingSheetController.prepare();
+        codingSheet = codingSheetController.getCodingSheet();
+
+        List<File> uploadedFiles = new ArrayList<File>();
+        List<String> uploadedFileNames = new ArrayList<String>();
+        uploadedFiles.add(PERIOD_2);
+        uploadedFileNames.add(PERIOD_2.getName());
+        codingSheetController.setUploadedFilesFileName(uploadedFileNames);
+        codingSheetController.setUploadedFiles(uploadedFiles);
+        codingSheetController.setServletRequest(getServletPostRequest());
+        codingSheetController.save();
+        assertNotNull(codingId);
+        assertFalse(codingSheet.getCodingRules().isEmpty());
+
+    }
+
+    private Dataset setupDatasetWithCodingSheet(CodingSheet codingSheet) throws TdarActionException {
         Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME, Dataset.class);
         Long datasetId = dataset.getId();
         assertNotNull(datasetId);
@@ -382,6 +409,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         datasetController.saveColumnMetadata();
         dataset = null;
         dataset = genericService.find(Dataset.class, datasetId);
+        assertTrue(CollectionUtils.isNotEmpty(dataset.getDataTables()));
         for (DataTable table : dataset.getDataTables()) {
             for (DataTableColumn dtc : table.getDataTableColumns()) {
                 logger.debug(dtc.getName());
@@ -391,6 +419,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             }
         }
         tranlatedIRFile = datasetService.createTranslatedFile(dataset);
+        return dataset;
     }
 
     @Test
