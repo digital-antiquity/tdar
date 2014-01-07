@@ -399,7 +399,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             files = resource.getFilesUsed();
             space = resource.getSpaceInBytesUsed();
         }
-        logger.debug(String.format(" HELPER: space:%s(%s) files:%s(%s) r:%s", helper.getSpaceUsedInBytes(), space, helper.getFilesUsed(), files,
+        logger.trace(String.format(" HELPER: space:%s(%s) files:%s(%s) r:%s", helper.getSpaceUsedInBytes(), space, helper.getFilesUsed(), files,
                 resource.getId()));
         helper.setSpaceUsedInBytes(helper.getSpaceUsedInBytes() + space);
         helper.setFilesUsed(helper.getFilesUsed() + files);
@@ -420,16 +420,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             logger.debug("Skipping {} in eval b/c it's not counted", resource.getId());
             return true;
         }
-        logger.info("mode: {}", mode);
+        logger.trace("mode: {}", mode);
         Object[] log = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() , space, files, resource.getId(), resource.getStatus()};
-        logger.info("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})", log);
+        logger.debug("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})", log);
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes
         if (helper.getModel().getCountingSpace() && helper.getAvailableSpaceInBytes() - space < 0) {
-            logger.info("OVERAGE ==> space used:{} space available:{} resourceId:{}", space, helper.getAvailableSpaceInBytes(), resource.getId());
+            logger.debug("OVERAGE ==> space used:{} space available:{} resourceId:{}", space, helper.getAvailableSpaceInBytes(), resource.getId());
             return false;
         }
         if (helper.getModel().getCountingFiles() && helper.getAvailableNumberOfFiles() - files < 0) {
-            logger.info("files used:{} files available:{} resourceId:{}", files, helper.getAvailableNumberOfFiles(), resource.getId());
+            logger.trace("files used:{} files available:{} resourceId:{}", files, helper.getAvailableNumberOfFiles(), resource.getId());
             return false;
         }
         return true;
