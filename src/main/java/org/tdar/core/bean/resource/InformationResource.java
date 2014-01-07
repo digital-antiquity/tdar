@@ -838,7 +838,16 @@ public abstract class InformationResource extends Resource {
                 sb.append(" ");
             }
         }
-
+        
+        if (CollectionUtils.isNotEmpty(getActiveInformationResourceFiles())) {
+            for (InformationResourceFile file :getActiveInformationResourceFiles()) {
+                sb.append(file.getFileName());
+                sb.append(" ");
+                sb.append(file.getDescription());
+                sb.append(" ");
+            }
+        }
+        
         // if (getProject() != null) {
         // getProject().getTitle();
         // }
