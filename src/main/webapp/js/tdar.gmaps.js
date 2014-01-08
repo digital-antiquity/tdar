@@ -4,8 +4,11 @@
  * Requires:  jquery,  latLongUtil-1.0.js
  */
 TDAR.namespace("maps");
-TDAR.maps = function() {
+//FIXME: TDAR.maps.googleApiKey is defined in layout-bootstrap.dec. Move googleApiKey definition here, and expose getter that layout-bootstrap can use instead. (then remove namespace() call above)
+TDAR.maps = function($, TDAR ) {
     "use strict";
+
+    //default map canvas properties
     var _defaults = {
         isGeoLocationToBeUsed: false,
         center: {
@@ -31,22 +34,35 @@ TDAR.maps = function() {
         }
     };
 
-    //deferred representing api init process.  resolved when google api calls our _apiLoaded callback
+    //$.Deferred object for the init process.  initGmapApi() returns a promise, which _apiLoaded() resolves when the
+    // google maps api loading is complete (and calls our _apiLoaded() callback)
     var _deferredApi = null;
     
     //deferred representing map preparation. resolved when map is loaded and becomes 'idle' 
     var _deferredMap = $.Deferred();
-    
-    var _apiLoaded = function() {
+
+    /**
+     * Notify TDAR.maps API that the Google Maps API is available.  Technically this is a "public" method, but it
+     * should really only be called by the dynamically-generated <script> element that we receive from Google.
+     */
+    var apiLoaded = function() {
         _deferredApi.resolve();
     };
-    
-    //public: dynamically load the gmap v3 api
-    var _initGmapApi = function() {
+
+    /**
+     * Asynchronously initialize the Google Maps v3 API.  This method returns a jQuery Promise object.  The method
+     * resolves the promise when
+     *
+     *
+     * @returns {*} jQuery Promise object.
+     */
+    var initGmapApi = function() {
+        //FIXME: reject promise if this process fails (harder problem: how do we detect failure?)
+        // At the very least we need a timeout of some kind, where we indicate failure if gmap api doesn't load in less than N seconds.
         if(_deferredApi) return _deferredApi.promise();
         _deferredApi = $.Deferred();
 
-        var gmapUrl = "//maps.googleapis.com/maps/api/js?libraries=drawing&sensor=false&callback=TDAR.maps._apiLoaded";
+        var gmapUrl = "//maps.googleapis.com/maps/api/js?libraries=drawing&sensor=false&callback=TDAR.maps.apiLoaded";
         if(TDAR.maps.googleApiKey) {
             gmapUrl +="&key=" + TDAR.maps.googleApiKey;
         }
@@ -105,11 +121,21 @@ TDAR.maps = function() {
         });
         return map;
     };
-    
-    //public: initialize a gmap inside of the specified div element.  If hidden inputs define spatial bounds,  draw
-    //          a box and pan/zoom the map to fit the bounds.
-    var _setupMap = function(mapDiv, inputContainer) {
-        _initGmapApi().done(function() {
+
+    /**
+     * Initialize a gmap inside of the specified div element.  If hidden inputs define spatial bounds,
+     * draw a box and pan/zoom the map to fit the bounds. This method is non-blocking and may be called at any time,
+     * but the method will not begin until the Google Map API initializtion is complete.
+     *
+     * @param mapDiv DIV element that will contain the Google map control
+     * @param inputContainer (optional) element that contains manual latlong input fields.  If defined,  the map API will
+     *                  1) Listen to changes to the latlong inputs, so that the API can redraw any effected bounding
+     *                     boxes.
+     *                  2) Conversely, modify the value of the latlong inputs if the user modifies a bounding box using
+     *                     GUI controls.
+     */
+    var setupMap = function(mapDiv, inputContainer) {
+        initGmapApi().done(function() {
             _setupMapInner(mapDiv, inputContainer);
         });
     };
@@ -175,7 +201,7 @@ TDAR.maps = function() {
 
     //public: setup a map in an editing context (after map has been initialized for viewing)
     var _setupEditMap = function(mapDiv, inputContainer) {
-        _initGmapApi().done(function(){
+        initGmapApi().done(function(){
             _setupMapInner(mapDiv, inputContainer);
             var gmap = $(mapDiv).data("gmap");
     
@@ -386,8 +412,17 @@ TDAR.maps = function() {
             _fireBoundsModified(mapDiv, rect);
         });
     };
-    
-    var _updateResourceRect = function(mapDiv, swlat, swlng, nelat, nelng) {
+
+    /**
+     * Create a bounding box (or modify a bounding box, if it already exists) in the map conatained by the specified
+     * DIV, given the specified latlong coordinates
+     * @param mapDiv DIV that contains the google map control
+     * @param swlat lattitude, southwest corner
+     * @param swlng longitude, southwest corner
+     * @param nelat lattitude, northeast corner
+     * @param nelng longitude, northeast corner
+     */
+    var updateResourceRect = function(mapDiv, swlat, swlng, nelat, nelng) {
         var gmap = $(mapDiv).data("gmap");
         var rect = $(mapDiv).data("resourceRect");
         if(!rect) {
@@ -402,7 +437,13 @@ TDAR.maps = function() {
         gmap.fitBounds(rect.getBounds());
     };
 
-    var _clearResourceRect = function(mapDiv) {
+    /**
+     * Remove a bounding box, if present.
+     *
+     * @param mapDiv DIV element that contains the Google map control
+     * @returns {boolean} true if a bounding box was present, otherwise false.
+     */
+    var clearResourceRect = function(mapDiv) {
         var rect = $(mapDiv).data("resourceRect");
         if(rect) {
             rect.setMap();
@@ -455,16 +496,16 @@ TDAR.maps = function() {
     };
     
     return {
-        _apiLoaded: _apiLoaded,
-        initMapApi: _initGmapApi,
-        setupMap: _setupMap,
+        apiLoaded: apiLoaded,
+        initMapApi: initGmapApi,
+        setupMap: setupMap,
         googleApiKey: false,
         defaults: _defaults,
-        updateResourceRect: _updateResourceRect,
-        clearResourceRect: _clearResourceRect,
+        updateResourceRect: updateResourceRect,
+        clearResourceRect: clearResourceRect,
         setupEditMap: _setupEditMap,
         setupMapResult: _setupMapResult,
         addBound: _addBound,
         mapPromise: _deferredMap.promise()
     };
-}();
+}(jQuery, TDAR);
