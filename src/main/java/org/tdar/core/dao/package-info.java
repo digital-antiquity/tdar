@@ -381,7 +381,10 @@
             query= "from InformationResourceFile file where status in (:statuses)"),
     @org.hibernate.annotations.NamedQuery(
             name=TdarNamedQueries.QUERY_FILE_SIZE_TOTAL,
-            query= "select vers.extension, sum(vers.fileLength) from InformationResourceFileVersion vers where fileVersionType in (:types) group by extension")
+            query= "select vers.extension, sum(vers.fileLength) from InformationResourceFileVersion vers where fileVersionType in (:types) group by extension"),
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE,
+            query= "select account from Account account join account.invoices as invoice where invoice.id = :id")
 })
 
 package org.tdar.core.dao;

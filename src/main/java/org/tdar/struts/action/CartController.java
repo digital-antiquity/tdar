@@ -59,6 +59,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private String billingPhone;
     public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
+    private Account account;
     public static final String SUCCESS_ADD_ADDRESS = "add-address";
     public static final String SUCCESS_ADD_PAY = "add-payment";
     public static final String INVOICE = "invoice";
@@ -432,6 +433,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Override
     public String loadViewMetadata() {
+        setAccount(getAccountService().getAccountForInvoice(getInvoice()));
         return SUCCESS;
     }
 
@@ -628,6 +630,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
 }

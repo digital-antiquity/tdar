@@ -182,4 +182,15 @@ public class AccountDao extends Dao.HibernateBase<Account> {
             throw new TdarRecoverableRuntimeException("Coupon is assigned to wrong invoice");
         }
     }
+
+    public Account getAccountForInvoice(Invoice invoice) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE);
+        query.setParameter("id", invoice.getId());
+        Object obj = query.uniqueResult();
+        if (obj != null) {
+            logger.debug("{}", obj);
+            return (Account)obj;
+        }
+        return null;
+    }
 }

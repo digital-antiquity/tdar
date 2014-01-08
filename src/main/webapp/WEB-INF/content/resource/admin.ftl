@@ -103,7 +103,7 @@
     <tr>
         <td colspan="2">${file.fileName!"unnamed file"}
         <#if file.latestThumbnail?has_content>
- 	       <br><img src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"/>
+ 	       <br><img src="<@s.url value="/filestore/${file.latestThumbnail.id?c}/thumbnail"/>"/>
         </#if>
         </td>
         <td>${file.informationResourceFileType}</td>
