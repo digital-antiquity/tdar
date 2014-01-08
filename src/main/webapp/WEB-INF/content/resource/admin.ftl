@@ -101,7 +101,11 @@
     </tr>
 <#list resource.informationResourceFiles as file>
     <tr>
-        <td colspan="2">${file.fileName!"unnamed file"}</td>
+        <td colspan="2">${file.fileName!"unnamed file"}
+        <#if file.latestThumbnail?has_content>
+ 	       <br><img src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"/>
+        </#if>
+        </td>
         <td>${file.informationResourceFileType}</td>
         <td>${file.latestVersion}</td>
         <td>${file.restriction}</td>
