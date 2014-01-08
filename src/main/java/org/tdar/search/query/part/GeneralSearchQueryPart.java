@@ -42,7 +42,6 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         FieldQueryPart<String> titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE, cleanedQueryString);
         FieldQueryPart<String> descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, cleanedQueryString);
         FieldQueryPart<String> allFields = new FieldQueryPart<String>(QueryFieldNames.ALL, cleanedQueryString).setBoost(ANY_FIELD_BOOST);
-        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, Arrays.asList(StringUtils.split(cleanedQueryString))).setBoost(ANY_FIELD_BOOST);
 
         List<String> fields = new ArrayList<String>();
         for (String txt : StringUtils.split(cleanedQueryString)) {
