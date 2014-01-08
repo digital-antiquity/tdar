@@ -49,6 +49,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     private Long contentLength;
     private Long informationResourceFileId;
     private Integer version;
+    private boolean coverPageIncluded = true;
     private VersionType type;
     private Long informationResourceId;
 
@@ -219,6 +220,15 @@ public class DownloadController extends AuthenticationAware.Base implements Down
 
     public void setInformationResourceId(Long informationResourceId) {
         this.informationResourceId = informationResourceId;
+    }
+
+    @Override
+    public boolean isCoverPageIncluded() {
+        return coverPageIncluded;
+    }
+
+    public void setCoverPageIncluded(boolean coverPageIncluded) {
+        this.coverPageIncluded = coverPageIncluded;
     }
 
 }

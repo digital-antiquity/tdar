@@ -1,8 +1,10 @@
 package org.tdar.search.query.part;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
@@ -40,8 +42,17 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         FieldQueryPart<String> titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE, cleanedQueryString);
         FieldQueryPart<String> descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, cleanedQueryString);
         FieldQueryPart<String> allFields = new FieldQueryPart<String>(QueryFieldNames.ALL, cleanedQueryString).setBoost(ANY_FIELD_BOOST);
-        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, Arrays.asList(StringUtils.split(cleanedQueryString)))
-                .setBoost(ANY_FIELD_BOOST);
+        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, Arrays.asList(StringUtils.split(cleanedQueryString))).setBoost(ANY_FIELD_BOOST);
+
+        List<String> fields = new ArrayList<String>();
+        for (String txt : StringUtils.split(cleanedQueryString)) {
+            if (!ArrayUtils.contains(QueryPart.LUCENE_RESERVED_WORDS, txt)) {
+                fields.add(txt);
+            }
+        }
+        
+        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, fields).setBoost(ANY_FIELD_BOOST);
+
         allFieldsAsPart.setOperator(Operator.AND);
         allFieldsAsPart.setPhraseFormatters(PhraseFormatter.ESCAPED);
 

@@ -17,4 +17,6 @@ public interface DownloadHandler extends ActionMessageErrorSupport {
     void setContentLength(long length);
 
     void setDispositionPrefix(String string);
+
+    boolean isCoverPageIncluded();
 }

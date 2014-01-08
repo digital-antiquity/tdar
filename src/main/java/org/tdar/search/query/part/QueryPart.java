@@ -12,6 +12,8 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
  */
 public interface QueryPart<T> {
 
+    String[] LUCENE_RESERVED_WORDS = {"AND", "OR", "NOT","TO"};
+
     abstract String generateQueryString();
 
     abstract boolean isDescriptionVisible();
