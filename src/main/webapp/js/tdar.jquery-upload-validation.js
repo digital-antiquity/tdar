@@ -1,13 +1,23 @@
 /**
- * $Id$
+ * Validation enhancements for the Fileupload
  *
- * jQuery Validator Plugin extension for jQuery File Upload Plugin
+ * TODO: basic overview of the file upload validation workflow  (spoiler: it borrows heavily from jQuery Validation Plugin)
+ *
+ * TODO: description of concepts (highlighting, when-callbacks, rules, methods, group-methods, etc.)
+ *
+ *
  */
 var FileuploadValidator;
-(function(console) {
+(function($, console) {
     "use strict";
 
-    //creates when-callback that returns true when file list has at least file with provided extension (in varargs)
+    /**
+     * Creates a "when-callback" that returns true when file list has at least file with provided extension (in varargs)
+     * @param {String[]} list of extensions
+     * @returns {Function} callback function that accepts a list of files. The callback function returns true if any of
+     *                      the files use an extension in the extension list.
+     * @private
+     */
     var _hasFileWithExtension = function() {
         //copy current scope's arguments
         var varargs = Array.prototype.slice.call(arguments, 0);
@@ -18,6 +28,12 @@ var FileuploadValidator;
         }
     };
 
+    /**
+     * Unhighlight the files that no longer have errors (due to the last call to validate() )
+     * @param validator
+     * @param files
+     * @private
+     */
     var _updateHighlighting = function(validator, files) {
         $.each(files, function(idx, file) {
             validator.unhighlight(file);
@@ -30,7 +46,13 @@ var FileuploadValidator;
         });
     };
 
-    //if group method rule specifies ignored files, return trimmed list.  Otherwise, return ref to same files list
+    /**
+     * If group method rule specifies ignored files, return trimmed list.  Otherwise, return ref to same files list
+     * @param files
+     * @param settings
+     * @returns {*}
+     * @private
+     */
     var _trimIgnoredFiles = function(files, settings) {
         if(!settings.ignores) {return files}
         var _files = $.grep(files, function(file) {
@@ -52,17 +74,47 @@ var FileuploadValidator;
         return _files;
     }
 
+    /**
+     *  Default settings for the FiluploadValidator constructor
+     * @private
+     */
     var _defaults = {
+        /** selector that identifies the container element for the error messages  */
         errorContainer: "#fileuploadErrors",
+
+        /** html snippet used as wrapper for each error message. Default wrapper is an LI element w/ css class of
+         * "fileupload-error".  The error message is always a text node */
         errorWrapper: "<li class='fileupload-error'></li>",
+
+        /** name of the css class the validator adds to a fileupload table row when the file has at least one
+         * validation error.  The validator removes this class once the file for that row is error-free  */
         errorClass: "fileupload-error",
+
+        /** name of the css class added to a fileupload that had errors but was 'fixed' (i.e subsequent call to validate() yielded no errors)  */
         okayClass:  "fileupload-okay",
 
-        //execute validate() whenever the user updates the fileupload list
+        /** implicitly execute validate() whenever the user updates the fileupload list. If false, handlers must call validate() explicitly */
         validateOnChange: true,
+
+        /** When true, this setting alters the *jQuery Validation Plugin* validator so that it only considers the form valid if the
+         *  Fileupload section contains no errors.
+         *
+         *  If false,   $.Validator.validate() will return true (and therefore submit the form) even if the Fileupload
+         *  section contains errors.
+         **/
         registerJqueryValidateMethod: true,
 
+        /** built-in validation methods. True==valid,   false==invalid */
         methods: {
+
+            /**
+             * Returns false if supplied filename matches any other files. in the list (case-insensitive, does not
+             * include file extension.
+             *
+             * @param file
+             * @param files
+             * @returns {boolean}
+             */
             "nodupes": function(file, files) {
                 var dupes = $.grep(files, function(_file){
                     return file.filename.toLowerCase() === _file.filename.toLowerCase();
@@ -70,6 +122,14 @@ var FileuploadValidator;
                 return dupes.length < 2;
             },
 
+            /**
+             * Returns false the fileupload sections contains two-or-more files with the same extension (even if
+             * they have different base-names.
+             *
+             * @param file
+             * @param files
+             * @returns {boolean}
+             */
             "nodupes-ext": function(file, files) {
                 var dupes = $.grep(files, function(_file) {
                     //already lowecase
@@ -78,6 +138,14 @@ var FileuploadValidator;
                 return dupes.length < 2;
             },
 
+            /**
+             * Group method. Returns false  if not all of the specified file extensions is present in the list of uploaded
+             * files.
+             * @param files
+             * @param settings settings object.  settings.extension specifies the required extension name (can also
+             *          be an array of extension names)
+             * @returns {boolean}
+             */
             "required": function(files, settings) {
                 var _files = files;
                 if(settings.extension) {
@@ -89,8 +157,15 @@ var FileuploadValidator;
                 return _files.length > 0;
             },
 
-            //Fileupload component already has maxFileUpload feature.  Use this method only if you want to limit
-            //consideration to a certain set of file extensions.
+            /**
+             * Fileupload init already has maxFileUpload setting.  Use this method only if you want to
+             * limit the occurance number of files that have the same extension
+             *
+             * @param file
+             * @param files
+             * @param settings
+             * @returns {boolean}
+             */
             "filecount": function(file, files, settings) {
                 var opts = $.extend({min:0, max:100, extension:[]}, settings);
                 var filecount = $.grep(files, function(file){
@@ -101,10 +176,17 @@ var FileuploadValidator;
 
         },
 
+        /** designates which methods are "group-methods".  Whereas a normal validation method gets called once per
+         * file in the file list,  the group-methods evaluate all of files as a whole and are called only once
+         * per call to validate()  */
         groupMethods: ["required"],
+
 
         rules: [],
 
+        /**
+         * default error messages for the built-in validation methods. Can be over-ridden with optional parameter to addRule
+         */
         messages: {
             "nodupes": $.validator.format("Files with duplicated filenames are not allowed."),
             "required": $.validator.format("A file attachment is required."),
@@ -113,23 +195,28 @@ var FileuploadValidator;
         }
     };
 
+    /**
+     *
+     * @type {Class|*}
+     */
     FileuploadValidator = Class.extend({
-        //errors resulting from the last validate()
+
+        /** list of errors resulting from the most recent call validate() call */
         errors: null,
 
-        //suggestions are a subset of errors that, when present, will show error  messages but not cause uploud to be 'invalid'
+        /** suggestions are a subset of errors that, when present, will show error  messages but not cause uploud to be 'invalid' */
         suggestions: null,
 
-        //similar to $.validator methods. defines for given context whether a file is valid, e.g. 'duplicate-name'
+        /** similar to jQuery Validation Plugin methods. defines for given context whether a file is valid, e.g. 'duplicate-name' */
         methods: null,
 
-        //group methods are applied once for all files 
+        /** list of "group" methods group methods are invoked once for all files  */
         groupMethods: null,
 
-        //rules designate which methods are applied to the fileupload container.
+        /** list of valiation rules. similar to jQuery validation Plugin,  a "rule" specifies a validation method, custom settings for that validation method, as well as custom error messages  */
         rules: null,
 
-        //default error messages, keyed by method name
+        // default error messages, keyed by method name
         messages: null,
 
         //fileupload helper class we created in tdar.upload.js
@@ -449,4 +536,4 @@ var FileuploadValidator;
         TDAR.fileupload.addDataTableValidation(validator);
     };
 
-})(console);
+})(jQuery, console);
