@@ -111,7 +111,7 @@ TDAR.namespace = function() {
 
 /**
  * Load a script asynchronously. If jQuery is available, this function returns a promise object.  If the caller
- * provides a callback function
+ * provides a callback function, this function will call it once after the client successfully loads the resource.
  * @param url url containing the javascript file.
  * @param cb
  * @returns {*}

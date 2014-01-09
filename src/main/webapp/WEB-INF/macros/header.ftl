@@ -6,10 +6,6 @@
 
 <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="<@s.url value="/includes/jqplot-1.08/excanvas.js"/>"></script><![endif]-->
 
-<#if !production>
-    <script type="text/javascript" src="/js/tdar.test.js"></script>
-</#if>
-
 <#if combine>
     <script type="text/javascript" src="/wro/default.js"></script>
 <#else>

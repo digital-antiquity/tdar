@@ -1,14 +1,24 @@
 /**
- * Validation enhancements for the Fileupload
+ * The FileuploadValidator attempts to mimic the API and workflow of the jQuery Validation Plugin for the Blueimp
+ * jQuery File Upload Plugin.
  *
- * TODO: basic overview of the file upload validation workflow  (spoiler: it borrows heavily from jQuery Validation Plugin)
+ * The jQuery Fileupload Plugin comes with a simple validation callback.  However, this validation does not integrate
+ * with well the jQuery Validation Plugin. For example,  Fileupload validation failures
+ * do not prevent form submissions, and file upload validation error messages do not appear alongside the jQuery Validation
+ * error messages.
  *
- * TODO: description of concepts (highlighting, when-callbacks, rules, methods, group-methods, etc.)
+ * That's where FileuploadValidator comes in: it mimics jQuery Validation's concepts of "methods" and "rules", and
+ * allows them to be applied to async fileuploads using the Blueimp File Upload plugin.  Furthermore, the
+ * FileuploadValidator can act part of the jQuery Validation Plugin workflow (this is helpful if you want invalid
+ * files to prevent a form submission)
  *
+ * The FileuploadValidator class is created using "Simple JavaScript Inheritance" function defined in tdar.core.js.
+ * (for more info: http://ejohn.org/blog/simple-javascript-inheritance/)
  *
  */
 var FileuploadValidator;
-(function($, console) {
+//FIXME: Jim, do we really need inheritance, or is this something you read in a blog and decided to throw into tDAR?  Sincerely, future-Jim
+(function(TDAR, $, console) {
     "use strict";
 
     /**
@@ -201,37 +211,49 @@ var FileuploadValidator;
      */
     FileuploadValidator = Class.extend({
 
-        /** list of errors resulting from the most recent call validate() call */
+        /**
+         * Note: most fields in this class are not "private" in that they may provide helpful information, but they
+         * should  not be modified.
+         */
+
+        // list of error objects resulting from the most recent call to validate()
+        // error object format is {message:string, file:{filename:string, base:string, ext:string, idx:number}}
         errors: null,
 
-        /** suggestions are a subset of errors that, when present, will show error  messages but not cause uploud to be 'invalid' */
+        // list of warnings (aka suggestions) resulting from most recent call to validate().  suggestions are displayed do not effect  whether an upload is considered "valid".
         suggestions: null,
 
-        /** similar to jQuery Validation Plugin methods. defines for given context whether a file is valid, e.g. 'duplicate-name' */
+        // similar to jQuery Validation Plugin methods. defines for given context whether a file is valid, e.g. 'duplicate-name'
         methods: null,
 
-        /** list of "group" methods group methods are invoked once for all files  */
+        // list of "group" methods group methods are invoked once for all files
         groupMethods: null,
 
-        /** list of valiation rules. similar to jQuery validation Plugin,  a "rule" specifies a validation method, custom settings for that validation method, as well as custom error messages  */
+        //list of validation rules. similar to jQuery validation Plugin,  a "rule" specifies a validation method, custom settings for that validation method, as well as custom error messages
         rules: null,
 
         // default error messages, keyed by method name
         messages: null,
 
-        //fileupload helper class we created in tdar.upload.js
+        // fileupload helper class we created in tdar.upload.js
         helper: null,
 
-        //element representing the 'container' of the fileupload widget (usually top-level form)
+        // element representing the 'container' of the fileupload widget (usually top-level form)
         fileupload: null,
 
+        /**
+         *
+         * @param formId ID of the form associated with the Blueimp File Upload control
+         * @param settings constructor settings - see _default settings above (FIXME: how do I document a 'settings' object?)
+         * @constructs FileValidator
+         */
         init: function(formId, settings) {
             var self = this;
             console.log("init");
             var errs = [];
             this.fileupload = $("#" + formId)[0];
 
-            //note the deep copy of defaults is necessary
+            //note the deep copy of defaults is necessary - otherwise modifications to instance properties will change the defaults
             $.extend(true, this, _defaults);
             $.extend(this, settings);
 
@@ -260,6 +282,11 @@ var FileuploadValidator;
             }
         },
 
+        /**
+         * Perform validation on the files contained in the Fileupload table.  Display any error messages in the
+         * errorContainer,  and highlight the invalid files in the Fileupload table.
+         * @returns {boolean} true if all validation rules passed. Otherwise false.
+         */
         validate: function() {
             console.log("validating %s   rulecount:%s", this.fileupload, this.rules.length);
             var self = this;
@@ -330,12 +357,18 @@ var FileuploadValidator;
             return this.errors.length === 0 || this.errors.length === this.suggestions.length;
         },
 
+        /**
+         * Remove messages from the errorContainer.  This does not reset the errors list.
+         */
         clearErrorDisplay: function() {
             $(this.errorContainer)
                 .find("ul").empty()
                 .end().hide();
         },
 
+        /**
+         * Display error messages
+         */
         showErrors: function() {
             var self = this;
             var $container = $(this.errorContainer);
@@ -351,6 +384,24 @@ var FileuploadValidator;
             $container.show();
         },
 
+
+        /**
+         * Register Fileupload Validation method. The validator invokes method for each file in the table,
+         * for each 'rule' added to the validator. The arguments passed to the method are:
+         *      file: the file object for the file the method should evaluate
+         *      files: the complete list of file objects
+         *      settings:  the settings object (if a settings object was provided via validator.addRule() )
+         *
+         * @param name unique identifier for the validation method.  must be unique.
+         * @param method validation function. receives (file, files, settings) as arguments. Return true to indicate
+         *              that the specified file is 'valid' for this method. return false or undefined to indicate
+         *              an invalid file.
+         * @param message  The default error message. Format parameters are:
+         *                      "{0}": file.filename
+         *                      "{1}": file.base (filename minus extension)
+         *                      "{2}": file.ext (file extension not including '.')
+         *                      "{3}": idx, index of the row in the file table
+         */
         addMethod: function(name, method, message)  {
             console.log("addMethod name:%s   method:%s    message:%s", name, typeof method, message);
             this.methods[name] = method;
@@ -361,11 +412,32 @@ var FileuploadValidator;
             }
         },
 
+
+        /**
+         * Register Fileupload Validation "group" method.
+         * @param name unique identifier for the validation method.  must be unique.
+         * @param method validation function. receives (file, files, settings) as arguments. Return true to indicate
+         *              that the specified file is 'valid' for this method. return false or undefined to indicate
+         *              an invalid file.
+         * @param message  The default error message. Format parameters are:
+         *                      "{0}": file.filename
+         *                      "{1}": file.base (filename minus extension)
+         *                      "{2}": file.ext (file extension not including '.')
+         *                      "{3}": idx, index of the row in the file table
+         */
         addGroupMethod: function(name, method, message) {
             this.groupMethods.push(name);
             this.addMethod(name, method, message);
         },
 
+        /**
+         * Add a new validation rule.
+         *
+         * @param methodName name of the validation method that the validator will apply
+         * @param settings custom settings for the method
+         * @param customMessage customized error message (overrides the method's default error message)
+         * @returns {{methodName: *, method: *, settings: (*|{}), message: *, suggestion: boolean}}
+         */
         addRule: function(methodName, settings, customMessage){
             console.log("add rule: %s", methodName);
             var message = this.messages[methodName];
@@ -383,16 +455,33 @@ var FileuploadValidator;
             return rule;
         },
 
+        /**
+         * Add a 'suggestion'.  Similar to validator.addRule() but have no effect on the file table's 'validity' status.
+         * In other words ,they will not prevent form submission.
+         * @param methodName
+         * @param settings
+         * @param customMessage custom error message
+         */
         addSuggestion: function(methodName, settings, customMessage) {
             var rule = this.addRule( methodName, settings, customMessage);
             rule.suggestion = true;
         },
 
+        /**
+         * Highlight the rows in the file table that have errors, using the css class name defined in
+         * settings.errorClass.
+         * @param file
+         */
         highlight: function(file) {
             console.log("highlighting: %s", file.filename);
             file.context.removeClass(this.okayClass).addClass(this.errorClass);
         },
 
+        /**
+         * Remove all highlighting from the file table.
+         *
+         * @param file
+         */
         unhighlight: function(file) {
             console.log("unhighlighting: %s", file.filename);
             file.context.removeClass(this.errorClass).addClass(this.okayClass);
@@ -422,19 +511,23 @@ var FileuploadValidator;
     });
 
 
-
-    
+    //FIXME: move this function to tdar.dataintegration.js
+    /**
+     * Add validation dataset-specific validation rules to the specified validator.
+     * @param FileuploadValidator the validator instance
+     */
     TDAR.fileupload.addDataTableValidation = function(validator) {
-
         //only one image metadata file
         validator.addRule("filecount",
             {max: 1, extension:["accdb", "mdb", "xls", "xlsx","gdb"]},
             "You may only upload one spreadsheet or access database (MDB, ACCDB, XLS, GDB, XLSX)");
+   };
 
-    };
-
-
-    //FIXME: move me to a component that only gets added to GIS
+    //FIXME: move this function to a gis-specific js file (also, create a gis-specific js file)
+    /**
+     * Add GIS-specific validation rules to the specified validator.
+     * @param validator the validator instance
+     */
     TDAR.fileupload.addGisValidation = function(validator) {
         var fileinfo = {
             shapefile: ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
@@ -536,4 +629,4 @@ var FileuploadValidator;
         TDAR.fileupload.addDataTableValidation(validator);
     };
 
-})(jQuery, console);
+})(TDAR, jQuery, console);

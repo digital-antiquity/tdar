@@ -1,13 +1,15 @@
 /* ASYNC FILE UPLOAD SUPPORT */
 
-TDAR.namespace("fileupload");
-
-TDAR.fileupload = function() {
-    'use strict';
-    
+TDAR.fileupload = (function(TDAR, $) {
+    "use strict";
 
     var _nextRowId = 0;
     var _nextRowVisibility = true;
+    /**
+     *
+     * @type {{formSelector: string, inputSelector: string, fileuploadSelector: string, dropZone: string, pasteZone: string}}
+     * @private
+     */
     var _defaults = {
         //selector to the page's form
         formSelector: "#metadataForm",
@@ -21,7 +23,25 @@ TDAR.fileupload = function() {
         pasteZone:  "#divFileUpload input[type=file]"
     }
 
-    //main file upload registration function
+    /**
+     * Initialize a jQuery File Upload control on the form, using specified options.
+     * @param options
+     *      formSelector: selector to the form element
+     *
+     *      fileuploadSelector: selector to the element that we will bind the fileupload widget to.  It can be any
+     *          element so long as it contains the file input element and the files table. (default:
+     *                      #fileAsyncUpload)
+     *      inputSelector: selector to the file input element (default:#fileAsyncUpload)
+     *
+     *      dropZone:  selector to a div that will receive file-drag-drop events (default: #divFileUpload)
+     *
+     *      pasteZone: selector that identifies the recipient of "paste" events
+     *          (default: '#divFileUpload input[type=file]')
+     *
+     *
+     * @returns {*} the element associated with the new file upload control
+     * @private
+     */
     var _registerUpload  = function(options) {
 
         //FIXME: workaround for ie10 doubleclick bug.  remove this once fixed (https://github.com/blueimp/jQuery-File-Upload/issues/1180)
@@ -83,16 +103,27 @@ TDAR.fileupload = function() {
         //note: unlike in jquery.bind(), you cant use space-separated event names here.
         $fileupload.bind("fileuploadcompleted fileuploadfailed", _updateSequenceNumbers);
 
+        //FIXME: break this out as a separate class so that it's easier to be seen by jsdoc
+        /**
+         * Helper object for the Fileupload control. We add the helper as 'data' property to both the form
+         * of the current page as well as the fileupload input element.  The property is named 'fileuploadHelper'.
+         * (e.g. "var helper = $("form").data("fileuploadHelper")
+         * @type {*}
+         */
         var helper = $.extend({}, _options, {
-                //reference back to fileupload widget's container element
+                /** reference back to fileupload widget's container element */
                 context: $fileupload[0],
+
                 updateFileAction: _updateFileAction,
 
                 //list of existing and new files that are not deleted or serving as a file replacement
                 //FIXME: needs to not include files that were uploaded but failed part way.
                 validFiles: function() {
+
+                    /** jquery selection containing the all fileupload table rows for 'active' files (e.g not deleted or replaced) */
                     var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file, .hidden');
-                    
+
+                    /** {id:string, action:string, filename:string, sequence:number, ext:string, base:string, context:string}[] array of file objects */
                     var files = $rows.map(function(){
                         var file = {};
                         $(this).find('[type="hidden"]').each(function(){
@@ -177,8 +208,13 @@ TDAR.fileupload = function() {
 
         return helper;
     };
-    
-    //update file proxy actionto indicate that the values have changed
+
+    /**
+     * update file proxy action to indicate to the server that we have modified metadata for this file proxy
+     *
+     * @param elemInRow element contained by the row
+     * @private
+     */
     var _updateFileAction = function(elemInRow) {
         console.log("updateFileAction(%s)", elemInRow);
         var $hdnAction = $(elemInRow).closest("tr").find(".fileAction");
@@ -187,7 +223,13 @@ TDAR.fileupload = function() {
         }
     }
 
-    //convert json returned from tDAR into something understood by upload-plugin, as well as fileproxy fields to send back to server
+    /**
+     * convert json returned from tDAR into something understood by upload-plugin, as well as fileproxy fields to send back to server
+     *
+     * @param fileProxies elements that contain file-proxy  input fields
+     * @returns {*} list of "file" objects
+     * @private
+     */
     var _translateIrFiles = function(fileProxies) {
         return $.map(fileProxies, function(proxy, i) {
             var file = $.extend({
@@ -206,7 +248,16 @@ TDAR.fileupload = function() {
         });
     };
 
-    //mark a file as deleted/undeleted and properly set appearance and fileproxy state
+    /**
+     * custom _destroy function that overrides the fileupload plugin's "destroy" handler.  Instead of removing the row,  we
+     * this handler toggles the "deleted" state of the file-proxy and updates.  When "deleted", we change the file
+     * proxy action to "delete" and replace the delete button in the row with an "undelete" button. conversely, if the
+     * row is already in the 'deleted' state, we replace the undelete button with a delete button and revert the
+     * file proxy action to the value it had prior to being "deleted"
+     * @param e
+     * @param data
+     * @private
+     */
     var _destroy = function(e, data){
         // data.context: download row,
         // data.url: deletion url,
@@ -242,7 +293,13 @@ TDAR.fileupload = function() {
         console.log("destroy called. context:%s", data.context[0]);
     };
 
-    //TODO: replace this with a custom event
+    //FIXME: this could/should be replaced with a "suggestion" validation rule
+    /**
+     * If the the user has not uploaded any files,  show the "Don't forget to add some files" reminder.
+     * @param e
+     * @param data
+     * @private
+     */
     var _updateReminder = function(e, data) {
         console.log("_updateReminder")
         var $filesTable = $(data.context).closest("tbody.files");
@@ -254,29 +311,50 @@ TDAR.fileupload = function() {
         }
     };
 
+    /**
+     * Enable form elements in the specified row
+     * @param row
+     * @private
+     */
     var _enableRow = function(row) {
         $('button:not(.delete-button), select', row).prop('disabled', false);
         $('.delete-button', row).removeClass('btn-warning').addClass('btn-danger');
     };
-    
+
+    /**
+     * Disable the form elements in  the specified table row
+     * @param row
+     * @private
+     */
     var _disableRow = function(row) {
         $('button:not(.delete-button), select', row).prop('disabled', true);
         $('.delete-button', row).addClass('btn-warning').removeClass('btn-danger');
     };
-    
-    // kludge for dealing w/ fileupload's template system, which doesn't have a good way to pass the row number of the table the template will be rendered to
+
+    /**
+     * kludge for dealing w/ fileupload's template system, which doesn't have a good way to pass the row number of the table the template will be rendered to
+     * @private
+     */
     var _getRowId = function() {
         return _nextRowId++;
     }
 
     /**
-     * another kludge:  indicate to fileupload-ui template that we don't want uploaded file to appear in files section
-     * (e.g. when the user is using the "replace file" feature).
+     * another kludge:  indicate to fileupload-ui template that we don't want uploaded file to appear in files section (e.g. when the user is using the "replace file" feature).
+     * @private
      */
     var _getRowVisibility = function() {
         return _nextRowVisibility;
     }
 
+    /**
+     * Update the file proxy  fields in the specified rows to indicate that one file (the original) is to be replaced
+     * by another file (the target)
+     *
+     * @param $originalRow row containing the file user wishes to replace
+     * @param $targetRow row containing the replacement file
+     * @private
+     */
     var _replaceFile = function($originalRow, $targetRow) {
         var targetFilename = $targetRow.find("input.fileReplaceName").val();
         var originalFilename = $originalRow.find("input.fileReplaceName").val();
@@ -295,8 +373,11 @@ TDAR.fileupload = function() {
         $originalRow.find(".replace-file-button, .undo-replace-button").toggle();
     }
 
-    //to 'cancel' a file replacement, we need to restore state of the fileproxy,  and then create a new file proxy
-    //telling the server to ignore the replacement file.
+    /**
+     * Revert the state file proxy fields that were modified from a previous call to _replaceFile()
+     * @param $row row that served as the originalRow argument in the prior call to _repaceFile()
+     * @private
+     */
     var _cancelReplaceFile = function($row) {
         var $fileReplaceName = $row.find(".fileReplaceName");
         var $fileAction = $row.find(".fileAction");
@@ -315,6 +396,11 @@ TDAR.fileupload = function() {
         $row.find(".replace-file-button, .undo-replace-button").toggle();
     }
 
+    /**
+     * Register all the necessary listeners/handlers for the "Replace" button in a file upload row.
+     * @param fileuploadSelector
+     * @private
+     */
     var _registerReplaceButton = function(fileuploadSelector) {
 
         console.log("registering replace button")
@@ -372,6 +458,13 @@ TDAR.fileupload = function() {
         $elements.datepicker({dateFormat: "mm/dd/yy"});
     }
 
+    /**
+     * kludge that gets us the IE version (if user-agent is IE).  This is used in conjunction with the
+     * double-click button label workarond  (in IE11, the upload button must be double-clicked, so we change the
+     * button label from "Upload a file" to  "Double-click to Upload"
+     * @returns {*}  object with major: and minor: version numbers
+     * @private
+     */
     function _getIEVersion(){
         var agent = navigator.userAgent;
         var reg = /MSIE\s?(\d+)(?:\.(\d+))?/i;
@@ -389,4 +482,4 @@ TDAR.fileupload = function() {
         "getRowId": _getRowId,
         "getRowVisibility": _getRowVisibility
     };
-}();
+})(TDAR, jQuery);
