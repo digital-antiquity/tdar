@@ -1,9 +1,5 @@
-TDAR.namespace("inheritance");
-TDAR.inheritance = function() {
+TDAR.inheritance = (function() {
     "use strict";
-
-
-// INHERITANCE
 
 /*
  * DOWNWARD INHERITANCE SUPPORT
@@ -11,16 +7,23 @@ TDAR.inheritance = function() {
 var indexExclusions = [ 'investigationTypeIds', 'approvedSiteTypeKeywordIds', 'materialKeywordIds', 'approvedCultureKeywordIds' ];
 
 
-function _populateSection(elemSelector, formdata) {
+    /**
+     * convenience function for $.populate()
+     *
+     * @param elemSelector form element sent to $.populate() (NOTE: must be form element due to bug in $.populate plugin, no matter what their documentation may say)
+     * @param formdata  pojo to send to $.populate()
+     * @private
+     */
+    function _populateSection(elemSelector, formdata) {
 
-    $(elemSelector).populate(formdata, {
-        resetForm : false,
-        phpNaming : false,
-        phpIndices : true,
-        strutsNaming : true,
-        noIndicesFor : indexExclusions
-    });
-}
+        $(elemSelector).populate(formdata, {
+            resetForm : false,
+            phpNaming : false,
+            phpIndices : true,
+            strutsNaming : true,
+            noIndicesFor : indexExclusions
+        });
+    }
 
 // convert a serialized project into the json format needed by the form.
 function _convertToFormJson(rawJson) {
@@ -334,7 +337,7 @@ function _inheritTemporalInformation(formId, json) {
     _disableSection(sectionId);
 }
 
-function _applyInheritance(formSelector) {
+function applyInheritance(formSelector) {
     var $form = $(formSelector);
     //collection of 'options' objects for each inheritance section. options contain info about
     //the a section (checkbox selector, div selector,  callbacks for isSafe, inheritSection, enableSection);
@@ -846,7 +849,14 @@ function _enableMap() {
     }
 }
 
-    var _resetRepeatable = function(repeatableSelector, newSize) {
+    /**
+     * "Reset" a repeat-row table so that it contains N blank rows.  Any non-default input field values are destroyed.
+     * If the specified repeat-row table contains more that N rows, this function destroys the extraneous rows.
+     *
+     * @param repeatableSelector selector for the repeatrow table.
+     * @param newSize the number of rows the table will contain.
+     */
+    var resetRepeatable = function(repeatableSelector, newSize) {
         $(repeatableSelector).find(".repeat-row:not(:first)").remove();
         var $firstRow = $('.repeat-row', repeatableSelector);
         _resetIndexedAttributes($firstRow); 
@@ -854,20 +864,36 @@ function _enableMap() {
             TDAR.repeatrow.cloneSection($('.repeat-row:last', repeatableSelector)[0]);
         }
     };
-    
-    var _resetKeywords = function(keywords, repeatableSelector) {
+
+    /**
+     * Convenience function, equivalent to resetRepeatable(repeatableSelector, keywords.length)
+     *
+     * @param keywords array of strings. length of the array dictates the rowcount after the reset.
+     * @param repeatableSelector selector for the repeatrow table
+     */
+    var resetKeywords = function(keywords, repeatableSelector) {
         var $repeatable = $(repeatableSelector);
-        _resetRepeatable(repeatableSelector, keywords.length);
+        resetRepeatable(repeatableSelector, keywords.length);
     };
-    
-    //default function for enabling an inheritance section
+
+    /**
+     * Enable inputs and remove disabled styling for labels  inside the specified container
+     * @param idSelector element that contains the inputs/labels to enable.
+     * @private
+     */
     var _enableSection = function (idSelector) {
         $(':input', idSelector).prop('disabled', false);
         $('label', idSelector).removeClass('disabled');
         $('.addAnother, .minus', idSelector).show();
     };
 
-    //wrapper for modal inheritance confirm
+    /**
+     * Display a confirm prompt and call a callback corresponding to the user's choice
+     * @param msg message to display in the prompt.
+     * @param okaySelected  handler to call if user clicks "okay"
+     * @param cancelSelected handler to call if user clicks "cancel" or dismisses prompt
+     * @private
+     */
     var _confirm = function(msg, okaySelected, cancelSelected) {
         var confirmed = confirm(msg);
         if(confirmed) {
@@ -876,8 +902,20 @@ function _enableMap() {
             cancelSelected();
         }
     };
-    
-    var _registerInheritSection = function(options) {
+
+    /**
+     * Register a section of a form that support inheritance.  When registered,  the input fields in the section
+     * appear disabled and cannot be modified directly by the user.  Instead, the values of the input fields
+     * are dictated by the values of the corresponding fields in the currently-selected "parent project".  If the user
+     * specifies a different parent project,  the registered section updates its field values accordingly.
+     *
+     * @param options  settings object (all properties required)
+     *          cbSelector: selector for the checkbox element that enables/disables inheritance for the section,
+     *          sectionName: string used for the label beside the section checkbox
+     *          divSelector: selector for the DIV that contains all of the elements in the inheritence section
+     *
+     */
+    var registerInheritSection = function(options) {
         var $checkbox = $(options.cbSelector);
         if($checkbox.length === 0 ) return;
         
@@ -926,9 +964,9 @@ function _enableMap() {
     };
 
     return{
-        resetRepeatable: _resetRepeatable,
-        resetKeywords: _resetKeywords,
-        registerInheritSection: _registerInheritSection,
-        applyInheritance: _applyInheritance
+        resetRepeatable: resetRepeatable,
+        resetKeywords: resetKeywords,
+        registerInheritSection: registerInheritSection,
+        applyInheritance: applyInheritance
     };
-}();
+})();

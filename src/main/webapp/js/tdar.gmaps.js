@@ -71,7 +71,14 @@ TDAR.maps = function($, TDAR ) {
         var prm = TDAR.loadScript(gmapUrl);
         return _deferredApi.promise();
     };
-    
+
+    /**
+     * Map initialization functionality common to setupMap() and setupEditMap()
+     * @param mapDiv DIV element that will contain map control
+     * @param inputContainer element that contains  the "manual latlong entry" fields
+     * @returns {goog.structs.Map} a google maps v3 Map object.
+     * @private
+     */
     var _setupMapInner = function(mapDiv, inputContainer) {
         console.log("running  setupmap");
         var mapOptions = $.extend({}, _defaults.mapOptions, {
@@ -129,10 +136,7 @@ TDAR.maps = function($, TDAR ) {
      *
      * @param mapDiv DIV element that will contain the Google map control
      * @param inputContainer (optional) element that contains manual latlong input fields.  If defined,  the map API will
-     *                  1) Listen to changes to the latlong inputs, so that the API can redraw any effected bounding
-     *                     boxes.
-     *                  2) Conversely, modify the value of the latlong inputs if the user modifies a bounding box using
-     *                     GUI controls.
+     *        Listen to changes to the latlong inputs, so that the API can redraw any effected bounding boxes.
      */
     var setupMap = function(mapDiv, inputContainer) {
         initGmapApi().done(function() {
@@ -140,7 +144,14 @@ TDAR.maps = function($, TDAR ) {
         });
     };
 
-    //private: look for resource latlongboxes and draw rectangles if found.
+    /**
+     * Setup bindings that Create/Modify a bounding box  if the fields in the specified inputContainer contain
+     * valid bounding coordinates.
+     *
+     * @param mapDiv DIV element that will contain the map control
+     * @param inputContainer element that contains the "manual latlong entry" fields.
+     * @private
+     */
     var _setupLatLongBoxes = function(mapDiv, inputContainer){
         'use strict';
         var style = _defaults.rectStyleOptions.RESOURCE;
@@ -167,12 +178,19 @@ TDAR.maps = function($, TDAR ) {
         //TODO: add "snap back" control, for when the user pans/zooms away from resource bounds
     };
 
-    //private: add rect to map, returns: google.maps.Rectangle
+    /**
+     * Add a bounding box overlay to a map.
+     *
+     * @param mapDiv  map container element
+     * @param rectStyleOptions options used when calling google.maps.Rectangle()
+     * @param lat1 southwest latitude
+     * @param lng1 southwest longitude
+     * @param lat2 northeast lattitude
+     * @param lng2 northeast longitude
+     * @returns {google.maps.Rectangle} new gmapv3 Rectangle instance
+     * @private
+     */
     var _addBound = function(mapDiv, rectStyleOptions, lat1, lng1, lat2, lng2) {
-//        console.debug("%s %s %s %s", lat1, lng1, lat2, lng2);
-//        if (!(parseInt(lat1) && parseInt(lat2) && parseInt(lng1) && parseInt(lng2))) 
-//            return;
-        
         var p1 = new google.maps.LatLng(lat1, lng1);
         var p2 = new google.maps.LatLng(lat2, lng2);
         var bounds = new google.maps.LatLngBounds(p1, p2);
@@ -184,14 +202,19 @@ TDAR.maps = function($, TDAR ) {
             }, rectStyleOptions);
        
         var rect = new google.maps.Rectangle(rectOptions);
-        
-        console.debug("added rect:%s  to map:%s", rect, map);
-        
-        //move/pan the map to contain the rectangle w/ context
         return rect;
             
     };
-    
+
+    /**
+     * Modify size/position of a google.maps.Rectangle
+     * @param rect google.maps.Rectangle to modify
+     * @param lat1 southwest latitude
+     * @param lng1 southwest longitude
+     * @param lat2 northeast lattitude
+     * @param lng2 northeast longitude
+     * @private
+     */
     var _updateBound = function(rect, lat1, lng1, lat2, lng2) {
         var p1 = new google.maps.LatLng(lat1, lng1);
         var p2 = new google.maps.LatLng(lat2, lng2);
@@ -199,8 +222,21 @@ TDAR.maps = function($, TDAR ) {
         rect.setBounds(bounds);
     };
 
-    //public: setup a map in an editing context (after map has been initialized for viewing)
-    var _setupEditMap = function(mapDiv, inputContainer) {
+    /**
+     * Initialize an "editable" Google Map v3 control inside of the specified div element.  An editable map control
+     * includes simple drawing controls which allow the user to create/modify bounding boxes. This method is non-blocking
+     * and has no restrictions on when it may be called, however this method will not execute until the Google Map
+     * API is ready.
+     *
+     * @param mapDiv DIV element that will contain the Google map control
+     * @param inputContainer (optional) element that contains "manual entry" latlong input fields.  If defined,
+     *        this method performs binding in two ways:
+     *              1) Listen to changes to the latlong inputs, so that the API can redraw any effected bounding
+     *                 boxes.
+     *              2) Conversely, modify the value of the latlong inputs if the user modifies a bounding box using
+     *                 GUI controls.
+     */
+    var setupEditMap = function(mapDiv, inputContainer) {
         initGmapApi().done(function(){
             _setupMapInner(mapDiv, inputContainer);
             var gmap = $(mapDiv).data("gmap");
@@ -256,7 +292,14 @@ TDAR.maps = function($, TDAR ) {
 
     });};
 
-    //gmap events are not 'seen' by the DOM.  bubble them up by firing custom event on the container div
+    /**
+     * Fire a "resourceboundschanged" event. Gmap events are not 'seen' by the DOM. We trigger this event so that other
+     * parts of the code hook into map changes without having to directly interact with the gmaps api.
+     *
+     * @param mapDiv DIV that contains the map.  This will be the event target.
+     * @param rect bounding box rectangle, if present.  This is passed to the event handler via the  "extraParameters" argument.
+     * @private
+     */
     var _fireBoundsModified = function(mapDiv, rect) {
         console.log("resource rect created/changed:: map:%s,  rect:%s", mapDiv.id, rect);
         var bounds = null;
@@ -266,6 +309,14 @@ TDAR.maps = function($, TDAR ) {
         $(mapDiv).trigger("resourceboundschanged", bounds);
     };
 
+
+    /**
+     * Initialize the DrawingManager control (for editing bounding boxes)
+     *
+     * @param mapDiv
+     * @returns {google.maps.drawing.DrawingManager}
+     * @private
+     */
     var _setupDrawingManager = function(mapDiv){
         var gmap = $(mapDiv).data("gmap");
 
@@ -300,8 +351,16 @@ TDAR.maps = function($, TDAR ) {
         $(mapDiv).data("drawingManager", drawingManager);
         return drawingManager;
     };
-    
-    //private: populate the latlon display input boxes
+
+    /**
+     * Populate the latlon "manual entry" display fields based on the provided latLngBounds object.
+     * @param latLngBounds
+     * @param $swLatDisplay
+     * @param $swLngDisplay
+     * @param $neLatDisplay
+     * @param $neLngDisplay
+     * @private
+     */
     var _populateLatLngDisplay = function(latLngBounds, $swLatDisplay, $swLngDisplay, $neLatDisplay, $neLngDisplay) {
         var sw = latLngBounds.getSouthWest();
         var ne = latLngBounds.getNorthEast();
@@ -313,9 +372,10 @@ TDAR.maps = function($, TDAR ) {
     } ;
 
     //public: update input boxes  when bounds change, and vice versa
-    //FIXME:  there's gotta be a better way to do this.
-    //FIXME: requires latLongUtil.js
+    //FIXME: requires latLongUtil.js - this dependency should be declared via require() or as an argument to the IIFE that creates this module
     var _registerInputs = function(mapDiv, inputContainer) {
+
+        //FIXME:  This is super-brittle.  Try to refactor so that it doesn't rely on hard-coded selectors for the manual-entry form fields.
         var $swLatInput = $('.sw-lat', inputContainer);
         var $swLngInput = $('.sw-lng', inputContainer);
         var $neLatInput = $('.ne-lat', inputContainer);
@@ -351,8 +411,10 @@ TDAR.maps = function($, TDAR ) {
 
             _populateLatLngDisplay($(mapDiv).data("resourceRect").getBounds(), $swLatDisplay, $swLngDisplay, $neLatDisplay, $neLngDisplay);
         }
-        
-        //update the GRect based on current value of inputs.
+
+        /**
+         * update the bounding box overlay  based on current value of manual-entry input fields
+         */
         var updateRectFromInputs = function() {
 
             //trim the input, and if all non-blank then update the region
@@ -398,15 +460,31 @@ TDAR.maps = function($, TDAR ) {
         $neLatDisplay.change(updateRectFromInputs);
         $neLngDisplay.change(updateRectFromInputs);
     };
-    
-    
+
+    /**
+     * Convenience function for creating a google.maps.LatLngBounds object.
+     *
+     * @param swlat
+     * @param swlng
+     * @param nelat
+     * @param nelng
+     * @returns {google.maps.LatLngBounds}
+     * @private
+     */
     var _bounds = function(swlat, swlng, nelat, nelng) {
         var sw = new google.maps.LatLng(swlat, swlng);
         var ne = new google.maps.LatLng(nelat, nelng);
         var bounds = new google.maps.LatLngBounds(sw, ne);
         return bounds;
     };
-    
+
+    /**
+     * Bind the google "bounds_changed" event to a jquery custom event.
+     *
+     * @param mapDiv
+     * @param rect
+     * @private
+     */
     var _bindRectEvents = function (mapDiv, rect) {
         google.maps.event.addDomListener(rect, 'bounds_changed', function() {
             _fireBoundsModified(mapDiv, rect);
@@ -450,8 +528,22 @@ TDAR.maps = function($, TDAR ) {
         }
         return !!rect;
     };
-    
-    var _setupMapResult = function() {
+
+    /**
+     * Render map "pins" that correspond to the bounding boxes of resources listed on a search results page. This method
+     * has no arguments. Instead, the page embeds pin locations via data-attributes in ordered-list elements.
+     *
+     * To ensure proper rendering, the page should:
+     *
+     * - specify the "MAP" css class in the top-level OL node containing the search result list
+     * - for each list-item node, specify the bounding box centerpoint latitude using a "data-lat" attribute
+     * - for each list-item node, specify the bounding box centerpoing longitude using a "data-long" attribute
+     *
+     * Note: Callers of setupMapResult() must also call either setupEditMap() or setupMap(), as setupMapResult() will
+     * not execute until the page contains a fully-initialized map control.
+     *
+     */
+    var setupMapResult = function() {
         //$(".google-map", '#articleBody').one("mapready", function(e, myMap) {
         _deferredMap.done(function(myMap, ignoredRect) {
             console.log("setup map results");
@@ -503,9 +595,14 @@ TDAR.maps = function($, TDAR ) {
         defaults: _defaults,
         updateResourceRect: updateResourceRect,
         clearResourceRect: clearResourceRect,
-        setupEditMap: _setupEditMap,
-        setupMapResult: _setupMapResult,
+        setupEditMap: setupEditMap,
+        setupMapResult: setupMapResult,
         addBound: _addBound,
+
+        /**
+         * A jQuery promise object bound to the progress of setupMap() and setupEditMap().  Use this promise to
+         * perform any operations that must only occur after a map has successfully rendered on the page.
+         */
         mapPromise: _deferredMap.promise()
     };
 }(jQuery, TDAR);

@@ -42,6 +42,23 @@
     //FIXME: migrate to TDAR.common
     //FIXME: instead of polling, listen for events that may change size (e.g. onresize, onorientationchange, textarea.mouseup).
     $.extend({
+        /**
+         * Begin polling for window height changes.  If the plugin detects a change,  fire a custom  event.
+         * - calling with no arguments initiates the plugin with all-default options
+         * @param arg it depends...
+         *
+         *  if arg is an  object, the object specifies initialization options:
+         *          - interval: polling interval in milliseconds (default: 1000)
+         *          - eventName:  name of custom event to fire (default: 'heightchange')
+         *          - dataProp:  name of the data-attribute that stores the last-recorded height //FIXME: Adam - is this correct? If so a closure might work better than exposing this value.
+         *
+         *  if arg is string, the specifies method name:
+         *          - "disable"  temporarily stop polling
+         *          - "enable" resume polling
+         *          - "destroy" stop polling permanently
+         *
+         *
+         */
         "documentHeightEvents": function(arg) {
             
             var _init = function(options) {
@@ -50,7 +67,7 @@
                 $doc.data(_settings.dataProp, $doc.height());
                 _cbid = window.setInterval(_poll, _settings.interval);
             };
-            
+
             var _disable = function() {
                 _active = false;
             }
