@@ -113,21 +113,6 @@ View freemarker macros
             </#if>
             <li><a href="<@s.url value='/${resource.urlNamespace}/reprocess'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Reprocess all derivatives for this resource</a></li>
         </#if>
-        
-        <#assign processingErrors = "">
-        <#list resource.informationResourceFiles as irfile>
-            <#if irfile.errored>
-                <#assign processingErrors>
-                ${processingErrors}<li><strong>${irfile.latestUploadedVersion.filename}</strong> : ${irfile.errorMessage!""} </li>
-                </#assign>    
-            </#if>
-        </#list>        
-        <#if processingErrors?has_content>
-        <B>The Following Files had Processing Errors</B>
-        <ol>
-            <#noescape>${processingErrors}</#noescape>
-        </ol>
-        </#if>
     </#if>
 
 </#macro>

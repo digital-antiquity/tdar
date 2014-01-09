@@ -114,7 +114,7 @@
            <td></td>
            <td></td>
            <td></td>
-        <td><#if file.errorMessage?has_content>${file.errorMessage}</#if></td>
+        <td><#if !file.processed && file.errorMessage?has_content>${file.errorMessage}</#if></td>
     </tr>
     <#list file.informationResourceFileVersions as vers>
         <#if vers.uploaded >
