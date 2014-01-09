@@ -17,7 +17,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro chooseProjectSection>
     <#local _projectId = 'project.id' />
     <#if resource.id == -1 >
-    <#local _projectId = request.getParameter('projectId')!'-1' />
+    <#local _projectId = request.getParameter('projectId')!'' />
     </#if>
         <div id="projectTipText" style="display:none;">
         Select a project with which your <@resourceTypeLabel /> will be associated. This is an important choice because it  will allow metadata to be inherited from the project further down this form
