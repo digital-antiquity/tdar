@@ -136,6 +136,7 @@ public class WorkflowContextService {
             if (ctx.isProcessedSuccessfully()) {
                 logger.info("clearing status?: {}", irFile.getStatus());
                 irFile.setStatus(FileStatus.PROCESSED);
+                irFile.setErrorMessage(null);
             } else {
                 if (ctx.isErrorFatal()) {
                     irFile.setStatus(FileStatus.PROCESSING_ERROR);

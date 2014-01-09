@@ -58,6 +58,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     AuthenticationAndAuthorizationService authService;
 
     /**
+     * Find the account (if exists) associated with the invoice
+     * @param invoice
+     * @return
+     */
+    public Account getAccountForInvoice(Invoice invoice) {
+        return getDao().getAccountForInvoice(invoice);
+    }
+
+    /**
      * Find all accounts for user: return accounts that are active and have not met their quota
      * @param user
      * @param statuses

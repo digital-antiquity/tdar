@@ -395,7 +395,10 @@
     @org.hibernate.annotations.NamedQuery(
             name=TdarNamedQueries.QUERY_RESOURCE_FIND_OLD_LIST,
             query="select distinct res from Resource res where res.id in (:ids)"
-    )
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE,
+            query= "select account from Account account join account.invoices as invoice where invoice.id = :id")
 })
 
 package org.tdar.core.dao;

@@ -112,6 +112,8 @@ public interface TdarNamedQueries {
     static final String QUERY_PROXY_RESOURCE_FULL = "resourceProxy.full";
     static final String QUERY_PROXY_RESOURCE_SHORT = "resourceProxy.short";
     static final String QUERY_RESOURCE_FIND_OLD_LIST = "resource.old";
+    static final String FIND_ACCOUNT_FOR_INVOICE = "account.forInvoice";
+
     // raw SQL/HQL queries
 
     /**
