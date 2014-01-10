@@ -22,9 +22,9 @@ TDAR.autocomplete = (function() {
      * easier for situations where a user intends make repeated references to an adhoc record in a form.
      *
      *
-     * @param acOptions {
+     * @param acOptions
      *  url: the url used by the ajax lookup - used to filter which adhoc records are returned by a search
-     *  objectMapper:  function used to map an a set of form fields to record object}
+     *  objectMapper:  function used to map an a set of form fields to record object
      *
      * @constructor
      */
@@ -93,7 +93,7 @@ TDAR.autocomplete = (function() {
      * @param term search term
      * @param key name of the property to compare to the search term. if no key supplied, this function
      *      evaluates all fields properties
-     * @returns {*[]} list of objects that have partial matches to the specified term and key
+     * @returns {*} array of objects that have partial matches to the specified term and key
      */
     ObjectCache.basicSearch = function(term, key) {
         var values = this.getValues();

@@ -129,7 +129,7 @@
     /**
      * Used with tdar "coverage date" control.  If the coverage date type is "NONE", the start and
      * end values must be blank.
-     * @param {start: *, end:*} object.start is the "startYear" input element, object.end is the "endYear" input element
+     * @param {*} object.start is the "startYear" input element, object.end is the "endYear" input element
      */
     $.validator.addMethod('blankCoverageDate', function (value, element, param) {
         var concatval = "" + $(param.start).val() + $(param.end).val();

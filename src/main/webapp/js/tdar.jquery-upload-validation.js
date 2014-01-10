@@ -23,7 +23,7 @@ var FileuploadValidator;
 
     /**
      * Creates a "when-callback" that returns true when file list has at least file with provided extension (in varargs)
-     * @param {String[]} list of extensions
+     * @param {...String} var_args list of extensions
      * @returns {Function} callback function that accepts a list of files. The callback function returns true if any of
      *                      the files use an extension in the extension list.
      * @private
@@ -186,7 +186,8 @@ var FileuploadValidator;
 
         },
 
-        /** designates which methods are "group-methods".  Whereas a normal validation method gets called once per
+        /**
+         * designates which methods are "group-methods".  Whereas a normal validation method gets called once per
          * file in the file list,  the group-methods evaluate all of files as a whole and are called only once
          * per call to validate()  */
         groupMethods: ["required"],
@@ -397,10 +398,10 @@ var FileuploadValidator;
          *              that the specified file is 'valid' for this method. return false or undefined to indicate
          *              an invalid file.
          * @param message  The default error message. Format parameters are:
-         *                      "{0}": file.filename
-         *                      "{1}": file.base (filename minus extension)
-         *                      "{2}": file.ext (file extension not including '.')
-         *                      "{3}": idx, index of the row in the file table
+         *                      "\{0\}": file.filename
+         *                      "\{1\}": file.base (filename minus extension)
+         *                      "\{2\}": file.ext (file extension not including '.')
+         *                      "\{3\}": idx, index of the row in the file table
          */
         addMethod: function(name, method, message)  {
             console.log("addMethod name:%s   method:%s    message:%s", name, typeof method, message);
@@ -420,10 +421,10 @@ var FileuploadValidator;
          *              that the specified file is 'valid' for this method. return false or undefined to indicate
          *              an invalid file.
          * @param message  The default error message. Format parameters are:
-         *                      "{0}": file.filename
-         *                      "{1}": file.base (filename minus extension)
-         *                      "{2}": file.ext (file extension not including '.')
-         *                      "{3}": idx, index of the row in the file table
+         *                      "{0\}": file.filename
+         *                      "{1\}": file.base (filename minus extension)
+         *                      "{2\}": file.ext (file extension not including '.')
+         *                      "{3\}": idx, index of the row in the file table
          */
         addGroupMethod: function(name, method, message) {
             this.groupMethods.push(name);

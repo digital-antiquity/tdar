@@ -150,13 +150,12 @@ TDAR.advancedSearch = (function() {
     }
 
 
-    //FIXME: bake this functionality into TDAR.common.sprintf and use remove this fuction.
     /**
      * Perform a stringformat on the specified element attribute value,  using a map to serve as
      * the search/replace values.
      * @param $elem  element
      * @param attr name of attribute value to format
-     * @param map  jsobject with replacement mappings.  if map is {"{name}, "Bob"},  the attribute value "greetings {name}"
+     * @param map  jsobject with replacement mappings.
      * @private
      */
     function _replaceAttributeValues($elem, attr, map) {
