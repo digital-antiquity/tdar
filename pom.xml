@@ -39,7 +39,7 @@
 		<http-components.version>4.3.1</http-components.version>
 		<display.port></display.port>
 		<warfile.name>ROOT</warfile.name>
-		<!-- following points to the profile directory to use for filtering resources -->
+		<!-- Following points to the profile directory to use for filtering resources -->
 		<!-- override by redefining in a profile. don't forget to 'clean' when redefining -->
 		<!-- Be warned: Eclipse may have a different active profile in play to the command line -->
 		<build.profile.id>default</build.profile.id>
