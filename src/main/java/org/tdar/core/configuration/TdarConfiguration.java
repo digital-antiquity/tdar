@@ -271,16 +271,11 @@ public class TdarConfiguration {
     }
 
     public String getFileStoreLocation() {
-        return assistant.getStringProperty("file.store.location",
-                "/home/tdar/filestore");
+        return assistant.getStringProperty("file.store.location", "/home/tdar/filestore");
     }
 
     public String getPersonalFileStoreLocation() {
-        return assistant.getStringProperty("personal.file.store.location", "/home/tdar/pfs");
-    }
-
-    public String getWebRoot() {
-        return assistant.getStringProperty("web.root", "src/main/webapp");
+        return assistant.getStringProperty("personal.file.store.location", "/home/tdar/personal-filestore");
     }
 
     public String getSmtpHost() {
