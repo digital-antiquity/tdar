@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -69,6 +71,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
     protected String extractPage(int pageNum, InformationResourceFileVersion originalFile, PDDocument document) {
         // File pdfFile = new File(sourceFile);
+        ImageIO.scanForPlugins();
         @SuppressWarnings("unused")
         File pdfFile = originalFile.getTransientFile();
         String imageFormat = "jpg";

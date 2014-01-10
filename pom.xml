@@ -782,6 +782,11 @@
 			<version>1.8.3</version>
 		</dependency>
 		<dependency>
+			<groupId>de.intarsys.opensource</groupId>
+			<artifactId>jbig2</artifactId>
+			<version>5.5.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
 			<version>${tika.version}</version>
