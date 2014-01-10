@@ -114,7 +114,7 @@ var FileuploadValidator;
          **/
         registerJqueryValidateMethod: true,
 
-        /** built-in validation methods. True==valid,   false==invalid */
+        /* built-in validation methods */
         methods: {
 
             /**
