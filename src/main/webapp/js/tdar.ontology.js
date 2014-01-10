@@ -21,31 +21,33 @@
         } );
     }
 
+    /**
+     * init the ontology view by displaying the ontology 'org chart' and registering necessary click events
+     */
+    function _view()  {
+        _registerOrgChart($("#ontology-nodes-root"));
+
+        //register the 'show hidden nodes' feature
+        $('#btnOntologyShowMore').click(function() {
+            $('#divOntologyShowMore').hide();
+            $('#ontology-nodes .hidden-nodes').removeClass("hidden-nodes");
+            return false;
+        });
+    }
+
+    /**
+     * Render the elements in the ontologyViewer container using the jQuery orgchart plugin
+     * @param $elem
+     */
+    function _registerOrgChart($elem) {
+        //Removing 'draggable' behavior for now since it doesn't work will with expandable nodes.
+        //_makedraggable();
+        $elem.orgChart({container: $("#ontologyViewerPan"), interactive:true, showLevels:2, stack:true});
+    }
+
     TDAR.ontology = {
-            /**
-             * init the ontology view by displaying the ontology 'org chart' and registering necessary click events
-             */
-            view: function() {
-                ontology.registerOrgChart($("#ontology-nodes-root"));
+            view: _view,
+            registerOrgChart: _registerOrgChart
+    };
 
-                //register the 'show hidden nodes' feature
-                $('#btnOntologyShowMore').click(function() {
-                    $('#divOntologyShowMore').hide();
-                    $('#ontology-nodes .hidden-nodes').removeClass("hidden-nodes");
-                    return false;
-                });
-
-            },
-
-            /**
-             * Render the elements in the ontologyViewer container using the jQuery orgchart plugin
-             * @param $elem
-             */
-            registerOrgChart: function($elem) {
-
-                //Removing 'draggable' behavior for now since it doesn't work will with expandable nodes.
-                //_makedraggable();
-                $elem.orgChart({container: $("#ontologyViewerPan"), interactive:true, showLevels:2, stack:true});
-            }
-        };
 })(TDAR, jQuery);
