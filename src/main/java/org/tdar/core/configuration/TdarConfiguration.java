@@ -702,8 +702,5 @@ public class TdarConfiguration {
     public boolean isJaiImageJenabled() {
         return assistant.getBooleanProperty("jai.imagej.enabled", true);
     }
-    
-    public boolean isWebFilePreprocessingEnabled() {
-        return assistant.getBooleanProperty("use.WebFilePreprocessing", false);
-    }
+
 }
