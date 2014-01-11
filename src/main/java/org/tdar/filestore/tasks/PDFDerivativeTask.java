@@ -56,7 +56,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         try {
             PDDocument document = openPDF("", originalFile);
             File imageFile = new File(extractPage(1, version, document));
-            getLogger().info("output file is: {} {}", imageFile, imageFile.length());
+            getLogger().warn("output file is: {} {}", imageFile, imageFile.length());
             // extractText(originalFile, document);
             closePDF(document);
             if (imageFile.exists()) {
