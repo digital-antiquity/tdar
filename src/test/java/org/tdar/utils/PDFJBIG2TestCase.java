@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ public class PDFJBIG2TestCase {
     private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @Test
+    @Ignore("test for PDFBox issue, not tDAR issue")
     public void testJBIG2() throws IOException {
         File pdfFile = new File("src/test/resources/documents/pia-09-lame-1980-small.pdf");
         String imageFormat = "jpg";
