@@ -52,6 +52,7 @@ public class PDFJBIG2TestCase {
                     log.info("Error: no writer found for image format '" + imageFormat + "'");
                 }
             } catch (NullPointerException npe) {
+                log.error("encountered NPE", npe);
                 fail("encountered NPE in proccessing JBIG2 file");
             } catch (Throwable e) {
                log.debug("PDF image extraction failed", e);
