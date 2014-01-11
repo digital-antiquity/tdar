@@ -32,6 +32,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.FileSystemResourceDao;
 import org.tdar.core.exception.Localizable;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -156,6 +157,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private transient EmailService emailService;
     @Autowired
     private transient XmlService xmlService;
+    @Autowired
+    private transient FileSystemResourceDao filesystemResourceDao;
     @Autowired
     private transient AccountService accountService;
     @Autowired
@@ -740,7 +743,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public boolean isWebFilePreprocessingEnabled() {
-        return getTdarConfiguration().isWebFilePreprocessingEnabled();
+        return filesystemResourceDao.testWRO();
     }
     
     private List<String> parseWroXML(String prefix) throws TdarActionException {

@@ -2078,8 +2078,6 @@
 					</configuration>
 				</plugin>
 			</plugins>
-
-		</plugins>
 		</build>
 	</profile>
 	<profile>
@@ -2124,6 +2122,7 @@
 							</execution>
 						</executions>
 					</plugin>
+		</plugins>
 			</build>
 			<dependencies>
 				<dependency>
