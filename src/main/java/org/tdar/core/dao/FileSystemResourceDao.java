@@ -20,12 +20,19 @@ public class FileSystemResourceDao {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String TESTING_PATH_FOR_INCLUDES_DIRECTORY = "target/ROOT/";
 
+    public static Boolean wroExists;
+    
     public boolean testWRO() {
+        if (wroExists != null) {
+            return wroExists;
+        }
         Resource resource = resourceLoader.getResource("wro/default.js");
-        if (resource.exists()) {
-            logger.debug("wro found? true");
+        wroExists = resource.exists();
+        if (wroExists) {
+            logger.debug("WRO found? true");
             return true;
         }
+        logger.debug("WRO found? false");
         return false;
     }
     
