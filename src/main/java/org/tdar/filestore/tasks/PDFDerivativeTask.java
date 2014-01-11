@@ -59,7 +59,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             File imageFile = new File(extractPage(1, version, document));
             // extractText(originalFile, document);
             closePDF(document);
-            if (imageFile.exists()) {
+            if (imageFile.exists() && imageFile.length() > 2) {
                 processImage(version, imageFile);
             }
         } catch (Throwable t) {
