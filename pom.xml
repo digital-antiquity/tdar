@@ -860,6 +860,7 @@
 			<type>jar</type>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
@@ -2051,6 +2052,37 @@
 			</build>
 		</profile>
 	<profile>
+		<id>minify-web-resources</id>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>ro.isdc.wro4j</groupId>
+					<artifactId>wro4j-maven-plugin</artifactId>
+					<version>${wro4j.version}</version>
+					<executions>
+						<execution>
+							<phase>compile</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<targetGroups>default</targetGroups>
+						<minimize>true</minimize>
+						<destinationFolder>${project.build.directory}/generated/webapp/wro</destinationFolder>
+						<contextFolder>${basedir}/src/main/webapp/</contextFolder>
+						<wroFile>src/main/resources/wro.xml</wroFile>
+						<wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+						<ignoreMissingResources>false</ignoreMissingResources>
+					</configuration>
+				</plugin>
+			</plugins>
+
+		</plugins>
+		</build>
+	</profile>
+	<profile>
 		<id>clover</id>
 		<properties>
 			<webapp.deploy.dir>/tmp/tdar-clover</webapp.deploy.dir>
@@ -2092,29 +2124,6 @@
 							</execution>
 						</executions>
 					</plugin>
-                    <plugin>
-                        <groupId>ro.isdc.wro4j</groupId>
-                        <artifactId>wro4j-maven-plugin</artifactId>
-                        <version>${wro4j.version}</version>
-                        <executions>
-                            <execution>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <targetGroups>default</targetGroups>
-                            <minimize>true</minimize>
-                            <destinationFolder>${project.build.directory}/generated/webapp/wro</destinationFolder>
-                            <contextFolder>${basedir}/src/main/webapp/</contextFolder>
-                            <wroFile>src/main/resources/wro.xml</wroFile>
-                            <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
-                            <ignoreMissingResources>false</ignoreMissingResources>
-                        </configuration>
-                    </plugin>
-				</plugins>
 			</build>
 			<dependencies>
 				<dependency>
