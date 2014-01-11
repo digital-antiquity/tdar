@@ -82,6 +82,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         String fn = originalFile.getFilename();
         String outputPrefix = fn.substring(0, fn.lastIndexOf('.'));
         outputPrefix = new File(getWorkflowContext().getWorkingDirectory(), outputPrefix).toString();
+        String outputFilename = outputPrefix + pageNum + "." + imageFormat;
 
         if (document != null) {
             int imageType = determineImageType(color);
@@ -94,12 +95,17 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 if (!success) {
                     getLogger().info("Error: no writer found for image format '" + imageFormat + "'");
                 }
+                File outputFile = new File(outputFilename);
+                getLogger().debug("output file is: {} {}", outputFile, outputFile.length());
+//                if (outputFile.exists() && outputFile.length() < 50) {
+//                    
+//                }
             } catch (Throwable e) {
                 getLogger().debug("PDF image extraction failed", e);
             }
         }
 
-        return outputPrefix + pageNum + "." + imageFormat;
+        return outputFilename;
     }
 
     private void closePDF(PDDocument document) {
