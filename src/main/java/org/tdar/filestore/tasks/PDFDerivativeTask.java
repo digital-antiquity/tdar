@@ -59,10 +59,8 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             getLogger().warn("output file is: {} {}", imageFile, imageFile.length());
             // extractText(originalFile, document);
             closePDF(document);
-            if (imageFile.exists()) {
-              if (imageFile.exists() && imageFile.length() > 2) {
-                  processImage(version, imageFile);
-              }
+            if (imageFile.exists() && imageFile.length() > 2) {
+                processImage(version, imageFile);
             }
         } catch (Throwable t) {
             throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("pdfDerivativeTask.processing_error"), t);
