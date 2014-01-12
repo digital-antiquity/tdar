@@ -59,8 +59,16 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             File imageFile = new File(extractPage(1, version, document));
             // extractText(originalFile, document);
             closePDF(document);
-            if (imageFile.exists() && imageFile.length() > 2) {
-                processImage(version, imageFile);
+            if (imageFile.exists()) {
+                if (imageFile.length() > 2) {
+                    processImage(version, imageFile);
+                } else {
+                    try {
+                        imageFile.delete();
+                    } catch (Exception e) {
+                        getLogger().debug("could not delete image file that was missprocessed");
+                    }
+                }
             }
         } catch (Throwable t) {
             throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, t);
