@@ -8,8 +8,15 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageWriterSpi;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
@@ -18,12 +25,15 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.media.imageioimpl.plugins.clib.CLibImageWriter;
+import com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriterSpi;
+
 public class PDFJBIG2TestCase {
 
     private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @Test
-    @Ignore("test for PDFBox issue, not tDAR issue")
+//    @Ignore("test for PDFBox issue, not tDAR issue")
     public void testJBIG2() throws IOException {
         File pdfFile = new File("src/test/resources/documents/pia-09-lame-1980-small.pdf");
         String imageFormat = "jpg";
@@ -38,13 +48,55 @@ public class PDFJBIG2TestCase {
 
         String fn = pdfFile.getName();
         int pageNum = 1;
+        
+//        reg.registerApplicationClasspathSpis();
+////        IIORegistry.getDefaultInstance().deregisterServiceProvider(ImageWriter.class);
+//        IIORegistry reg = IIORegistry.getDefaultInstance();
+//        Iterator<ImageWriterSpi> lookupProviders = IIORegistry.lookupProviders(ImageWriterSpi.class);
+//        
+//        while  (lookupProviders.hasNext()) {
+//            ImageWriterSpi cls = lookupProviders.next();
+//            log.debug("{}",cls.getClass().getCanonicalName());
+//        }
+//
+//        try {
+//            Class<?> cJpgWriter = Class.forName("com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriter");
+//            Class<?> cJpgWriter2 = Class.forName("com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriterSpi");
+//            IIORegistry.getDefaultInstance().deregisterServiceProvider(cJpgWriter);
+//            IIORegistry.getDefaultInstance().deregisterServiceProvider(cJpgWriter);
+//            
+//        } catch (ClassNotFoundException cnf) {
+//            log.debug("class not found: {}", cnf);
+//        }
+
+        Iterator<ImageWriter> ir = ImageIO.getImageWritersByFormatName("jpeg");
+        while(ir.hasNext()) {
+            ImageWriter w = ir.next();
+            ImageWriteParam writerParams = w.getDefaultWriteParam();
+            ImageTypeSpecifier type;
+//            if (writerParams.getDestinationType() != null)
+//            {
+                type = writerParams.getDestinationType();
+//            }
+//            else
+//            {
+//                type = ImageTypeSpecifier.createFrom
+//            }
+       
+           log.debug("writer: {}", w);
+//           if (w.getClass().getName().contains("CLibJPEGImageWriter")) {
+//               ir.remove();
+//           }
+//            log.debug("getDefaultImageMetadata():  {}", w.getDefaultImageMetadata(type, writerParams));
+        }
+        
         String outputPrefix = fn.substring(0, fn.lastIndexOf('.'));
         outputPrefix = new File(System.getProperty("java.io.tmpdir"), outputPrefix).toString();
         PDDocument document = openPDF("", pdfFile);
 
         if (document != null) {
+            
             int imageType = determineImageType(color);
-
             try {
                 PDFImageWriter imageWriter = new PDFImageWriter();
                 // The following library call will write "Writing: " + the file name to the System.out stream. Naughty!

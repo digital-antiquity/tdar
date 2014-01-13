@@ -2279,6 +2279,9 @@
 			</build>
 		</profile>
 		<profile>
+			<id>minify-web-resources</id>
+		</profile>
+		<profile>
 			<id>setup-new-instance</id>
 			<build>
 				<plugins>
