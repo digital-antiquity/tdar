@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.media.imageioimpl.plugins.clib.CLibImageWriter;
 import com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriterSpi;
 
+@Ignore
 public class PDFJBIG2TestCase {
 
     private final transient Logger log = LoggerFactory.getLogger(getClass());
