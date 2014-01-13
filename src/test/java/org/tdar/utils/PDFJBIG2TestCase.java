@@ -16,6 +16,7 @@ import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageWriterSpi;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
@@ -23,6 +24,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriterSpi;
 
 public class PDFJBIG2TestCase {
 
@@ -45,10 +48,15 @@ public class PDFJBIG2TestCase {
         String fn = pdfFile.getName();
         int pageNum = 1;
         
-        ImageIO.scanForPlugins();
-        IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
+        IIORegistry reg = IIORegistry.getDefaultInstance();
+        reg.registerApplicationClasspathSpis();
         Iterator<ImageWriter> ir = ImageIO.getImageWritersByFormatName("jpeg");
-//        IIORegistry.getDefaultInstance().getServiceProviderByClass(providerClass)
+        reg.deregisterServiceProvider(CLibJPEGImageWriterSpi.class);
+        Iterator<ImageWriterSpi> lookupProviders = IIORegistry.lookupProviders(ImageWriterSpi.class);
+        while  (lookupProviders.hasNext()) {
+            ImageWriterSpi cls = lookupProviders.next();
+            log.debug("{}",cls.getClass().getCanonicalName());
+        }
         while(ir.hasNext()) {
             ImageWriter w = ir.next();
             ImageWriteParam writerParams = w.getDefaultWriteParam();
