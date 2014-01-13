@@ -4,9 +4,13 @@
 $Id:Exp$
 Common macros used in multiple contexts
 -->
-<#assign mb = 1048576 />
-<#macro convertFileSize filesize=0><#compress>
-<#assign kb = 1024 />
+
+<#-- emit specified number of bytes in human-readable form  -->
+<#-- @parm filesize:number? file size in bytes -->
+<#macro convertFileSize filesize=0><#t>
+<#compress>
+<#local mb = 1048576 />
+<#local kb = 1024 />
 <#if (filesize > mb)>
 ${(filesize / mb)?string(",##0.00")}mb
 <#elseif (filesize > kb)>
@@ -14,28 +18,37 @@ ${(filesize / kb)?string(",##0.00")}kb
 <#else>
 ${filesize?string(",##0.00")}b
 </#if>
-</#compress></#macro>
+</#compress><#t>
+</#macro>
+<#-- string representing current tdar version/build number -->
 <#assign tdarBuildId><#include  "/version.txt" parse=false/></#assign>
 <#assign tdarBuildId = tdarBuildId?trim?replace("+", ".001") />
 
+<#--
+//Emit Javascript intended for every page in tDAR (regardless of login status)
+-->
 <#macro globalJavascript>
 <script type="text/javascript">
-
     <@baseUriJavascript />
-    
     <@googleAnalyticsJavascript />
-
 </script>
 </#macro>
 
+<#--define global getBaseURI(), getURI(path), TDAR.uri -->
 <#macro baseUriJavascript>
+//FIXME: replace occurances with TDAR.uri
+//Return the application base URL, including context path
 function getBaseURI() {
     return "<@s.url value='/' />";
 }
+
+//return absolute URL to for the specified relative path
 function getURI(path) {
     return getBaseURI() + path;
 }
 
+//return absolute URL for the specified relative path,  including context path.
+//if no path specified, return the base URL.
 TDAR.uri = function(path) {
     var uri = "<@s.url value='/' />";
     if(path) {uri += path;}
@@ -43,6 +56,7 @@ TDAR.uri = function(path) {
 }
 </#macro>
 
+<#-- emit the javascript necessary for google analytics -->
 <#macro googleAnalyticsJavascript>
 <#noescape>
   var _gaq = _gaq || [];
@@ -104,11 +118,14 @@ TDAR.uri = function(path) {
     //here we explicitly hook into 'onload' since DOM timing stats are incomplete upon 'ready'.
     $(window).load(_reportPerfStats);
 })();
-    
-
 </#noescape>
 </#macro>
 
+<#--
+    Emit login button link.
+    If current page is home page, link has no querystring arguments.  Otherwise,  include the current url in the
+    querystring (in parameter named 'url).
+-->
 <#macro loginButton class="">
     <#local _current = (currentUrl!'/') >
     <#if _current == '/' || currentUrl?starts_with('/login')>
@@ -118,6 +135,7 @@ TDAR.uri = function(path) {
     </#if>
 </#macro>
 
+<#-- Emit the global navigation bar. Should only be called on authenticated pages -->
 <#macro bootstrapNavbar>
             <div class="navbar">
               <div class="navbar-inner">
@@ -214,7 +232,11 @@ TDAR.uri = function(path) {
             </div>
 </#macro>
 
-
+<#--Render the "Access Permissions" section of a resource view page.  Specifically, this section shows
+  the collections associated with the resource and the users + permission assigned to the resource. -->
+<#-- @param collections:list? a list of resourceCollections -->
+<#-- @param owner:object? Person object representing the collection owner
+<#-- FIXME:  both of these parameters have invalid defaults. consider making them mandatory  -->
 <#macro resourceCollectionsRights collections=effectiveResourceCollections_ owner="">
     <#if collections?has_content>
     <h3>Access Permissions</h3>
@@ -267,6 +289,10 @@ TDAR.uri = function(path) {
     </#if>
 </#macro>
 
+<#--FIXME: the controller should gnerate this json (part of TDAR-3415) -->
+<#-- Emit script tag that defines the js object used for the home page resource piechartenerate the json for pie -->
+<#-- @param ilist:map<string, number>  map of datapoints  -->
+<#-- @param name:string  name of the global varialble to define that contains the object defined by this instance -->
 <#macro generatePieJson ilist name>
 <script>
     <#assign ikeys=ilist?keys />
@@ -292,6 +318,17 @@ TDAR.uri = function(path) {
 </script>
 </#macro>
 
+<#-- FIXME: move the function definition to en external js file.  (part of TDAR-3415)  -->
+<#-- Emit the DIV container for a piechart and the, and emit a document.onready script that renders the piechart
+in the container.  If the user clicks on a datapoint, the click handler redirects the browser to a search page associated
+with that datapoint -->
+<#-- @param data:string? name of the global object that contains the data for the chart (see #generatePieJson) -->
+<#-- @param searchKey:string? name of the datapoint key querystring parameter used by the clickhandler (see #clickPlot for more info) -->
+<#-- @param graphWidth:number? width of chart container in pixels -->
+<#-- @param graphHeight:number? height of chart container in pixels -->
+<#-- @param context:boolean? value of the 'context'  querystring parameter used by the clickhandler (see #clickPlot for more info) -->
+<#-- @param config:string?  json containing specific parameters to use for the jqPlot initialization function -->
+<#-- @param graphLabel:string? title for this graph -->
 <#macro pieChart data="data" searchKey="" graphWidth=300 graphHeight=150 context=false config="" graphLabel="">
     <#local id= "${data}Id">
     <div id="graph${id}"  style="width:${graphWidth}px;height:${graphHeight}px;"></div>
@@ -364,6 +401,9 @@ $(document).ready(function(){
 
 </#macro>
 
+<#--emit the specified string, truncating w/ ellipses if length exceeds specified max -->
+<#-- @param text:string the text to render -->
+<#-- @param len:number? maximum length of the string-->
 <#macro truncate text len=80>
 <#compress>
   <#if text??>
@@ -385,6 +425,7 @@ $(document).ready(function(){
 </#compress>
 </#macro>
 
+<#-- Emit the container and script for a bar graph -->
 <#macro resourceBarGraph>
     <script>
         var resourceGraphData = [];
@@ -411,7 +452,16 @@ $(document).ready(function(){
     </#if>
 </#macro>
 
-
+<#-- FIXME: move the function definition to en external js file.  (part of TDAR-3415)  -->
+<#-- Emit the container and script for a line graph -->
+<#-- @param data:string? name of the global object that contains the data for the chart (see #generatePieJson) -->
+<#-- @param graphWidth:number? width of chart container in pixels -->
+<#-- @param graphHeight:number? height of chart container in pixels -->
+<#-- @param graphLabel:string? title for this graph -->
+<#-- @param searchKey:string? name of the datapoint key querystring parameter used by the clickhandler (see #clickPlot for more info) -->
+<#-- @param id:string? value of the ID attribute for the graph container DIV -->
+<#-- @param config:string  json containing specific parameters to use for the jqPlot initialization function -->
+<#-- @param context:boolean? value of the 'context'  querystring parameter used by the clickhandler (see #clickPlot for more info) -->
 <#macro lineChart data="data" graphWidth=360 graphHeight=800 graphLabel="" searchKey="resourceTypes" id="" config="" context=false>
 <#noescape>
 <#if id == "">
@@ -490,8 +540,21 @@ $(document).ready(function(){
 </script>
 <div id="graph${id}" style="height:120px"></div>
 </#noescape>
-
 </#macro>
+
+
+<#-- FIXME: move the function definition to en external js file.  (part of TDAR-3415)  -->
+<#-- Emit the container and script for a line graph -->
+<#-- @param data:string? name of the global object that contains the data for the chart (see #generatePieJson) -->
+<#-- @param graphWidth:number? width of chart container in pixels -->
+<#-- @param graphHeight:number? height of chart container in pixels -->
+<#-- @param graphLabel:string? title for this graph -->
+<#-- @param labelRotation:number? number of degrees to rotate the graph label
+<#-- @param minWidth:numbeer? minimum width of the graph container DIV, in pixels -->
+<#-- @param searchKey:string? name of the datapoint key querystring parameter used by the clickhandler (see #clickPlot for more info) -->
+<#-- @param id:string? value of the ID attribute for the graph container DIV -->
+<#-- @param config:string  json containing specific parameters to use for the jqPlot initialization function -->
+<#-- @param context:boolean? value of the 'context'  querystring parameter used by the clickhandler (see #clickPlot for more info) -->
 <#macro barGraph  data="data" graphWidth=360 graphHeight=800 graphLabel="" labelRotation=0 minWidth=50 searchKey="resourceTypes" id="" config="" context=false rotate=0 xaxis="" yaxis="">
 <#if id == "">
     <#local id=data+"id" />
@@ -578,7 +641,12 @@ $(document).ready(function(){
     </script>
 </#macro>
 
-     <#macro clickPlot id searchKey context>
+<#-- Emit a partial javascript that registers a datapoint click handler.  The handler redirects the browser to a tdar
+search page associated with the datapoint -->
+<#-- @param id:string name of the graph that, when appended with "graph", forms the id of the graph container -->
+<#-- @param searchKey:string name of the datapoint querystring parameter key -->
+<#-- @param context:boolean if true, search results page will limit results to resources that extend modification rights to the currently-authenticated user -->
+<#macro clickPlot id searchKey context>
         $('#graph${id}').bind('jqplotDataClick', 
             function (ev, seriesIndex, pointIndex, data) {
                 $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
@@ -587,6 +655,14 @@ $(document).ready(function(){
         );
 </#macro>
 
+
+
+<#-- Emit container div and script for the worldmap control. The worldmap control shows the number of registeresd
+ resources for a country as the user hovers their mouse over a country.  If the user clicks on a country,
+ the browser redirects to a search results that limits results to show only ressources that have geographic boundaries
+ that lie within the selected country -->
+<#-- @param forceAddSchemeHostAndPort:boolean if true, clickhandler always includes hostname and port when bulding
+            the redirect url.  If false,   the clickhandler builds a url based on the current hostname and port -->
 <#macro worldMap forceAddSchemeHostAndPort=false>
 <div class="mapcontainer" style="">
 <script type="text/javascript">
@@ -633,9 +709,8 @@ $('.worldmap').maphilight({
     $(element).data('maphilight',data).trigger('alwaysOn.maphilight');
   }
 
-  
 <#-- 
-FIXME: why not do this logic in the controller?
+FIXME: refactor this macro so that it relies on less dark magic (TDAR-3415)
 this bit of freemarker is voodoo:
   1. it iterates through our country code hash
   2. it creates a template which is the hash contents {"US":5, "CA":25}
