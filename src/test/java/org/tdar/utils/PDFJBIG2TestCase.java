@@ -49,21 +49,25 @@ public class PDFJBIG2TestCase {
         String fn = pdfFile.getName();
         int pageNum = 1;
         
-        IIORegistry reg = IIORegistry.getDefaultInstance();
-        reg.registerApplicationClasspathSpis();
-        try {
-            Class<?> cJpgWriter = Class.forName("com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriter");
-            reg.deregisterServiceProvider(cJpgWriter);
-            
-        } catch (ClassNotFoundException cnf) {
-            log.debug("class not found: {}", cnf);
-        }
-        Iterator<ImageWriterSpi> lookupProviders = IIORegistry.lookupProviders(ImageWriterSpi.class);
-        while  (lookupProviders.hasNext()) {
-            ImageWriterSpi cls = lookupProviders.next();
-            log.debug("{}",cls.getClass().getCanonicalName());
-            reg.registerServiceProvider(cls);
-        }
+//        reg.registerApplicationClasspathSpis();
+////        IIORegistry.getDefaultInstance().deregisterServiceProvider(ImageWriter.class);
+//        IIORegistry reg = IIORegistry.getDefaultInstance();
+//        Iterator<ImageWriterSpi> lookupProviders = IIORegistry.lookupProviders(ImageWriterSpi.class);
+//        
+//        while  (lookupProviders.hasNext()) {
+//            ImageWriterSpi cls = lookupProviders.next();
+//            log.debug("{}",cls.getClass().getCanonicalName());
+//        }
+//
+//        try {
+//            Class<?> cJpgWriter = Class.forName("com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriter");
+//            Class<?> cJpgWriter2 = Class.forName("com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriterSpi");
+//            IIORegistry.getDefaultInstance().deregisterServiceProvider(cJpgWriter);
+//            IIORegistry.getDefaultInstance().deregisterServiceProvider(cJpgWriter);
+//            
+//        } catch (ClassNotFoundException cnf) {
+//            log.debug("class not found: {}", cnf);
+//        }
 
         Iterator<ImageWriter> ir = ImageIO.getImageWritersByFormatName("jpeg");
         while(ir.hasNext()) {
