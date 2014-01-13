@@ -54,6 +54,10 @@
 
 	<repositories>
 		<repository>
+			<id>local-dev</id>
+			<url>http://dev.tdar.org/repo/</url>
+		</repository>
+		<repository>
 			<id>imageJ</id>
 			<name>ImageJ Repository</name>
 			<url>http://maven.imagej.net/content/repositories/releases</url>
@@ -116,10 +120,6 @@
 		<repository>
 			<id>Laughing Panda</id>
 			<url>http://maven.laughingpanda.org/maven2</url>
-		</repository>
-		<repository>
-			<id>local-dev</id>
-			<url>http://dev.tdar.org/repo/</url>
 		</repository>
 	</repositories>
 
@@ -860,13 +860,13 @@
 			<type>jar</type>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
-		
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
-			<version>1.8.3</version>
+			<version>1.8.3-snapshot</version>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
@@ -2277,9 +2277,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
-			<id>minify-web-resources</id>
 		</profile>
 		<profile>
 			<id>setup-new-instance</id>
