@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.media.imageioimpl.plugins.clib.CLibImageWriter;
 import com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriterSpi;
 
 public class PDFJBIG2TestCase {
@@ -50,13 +51,21 @@ public class PDFJBIG2TestCase {
         
         IIORegistry reg = IIORegistry.getDefaultInstance();
         reg.registerApplicationClasspathSpis();
-        Iterator<ImageWriter> ir = ImageIO.getImageWritersByFormatName("jpeg");
-        reg.deregisterServiceProvider(CLibJPEGImageWriterSpi.class);
+        try {
+            Class<?> cJpgWriter = Class.forName("com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriter");
+            reg.deregisterServiceProvider(cJpgWriter);
+            
+        } catch (ClassNotFoundException cnf) {
+            log.debug("class not found: {}", cnf);
+        }
         Iterator<ImageWriterSpi> lookupProviders = IIORegistry.lookupProviders(ImageWriterSpi.class);
         while  (lookupProviders.hasNext()) {
             ImageWriterSpi cls = lookupProviders.next();
             log.debug("{}",cls.getClass().getCanonicalName());
+            reg.registerServiceProvider(cls);
         }
+
+        Iterator<ImageWriter> ir = ImageIO.getImageWritersByFormatName("jpeg");
         while(ir.hasNext()) {
             ImageWriter w = ir.next();
             ImageWriteParam writerParams = w.getDefaultWriteParam();
