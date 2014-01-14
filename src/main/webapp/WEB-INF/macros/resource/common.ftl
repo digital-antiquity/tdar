@@ -871,8 +871,8 @@ this bit of freemarker is voodoo:
 </map>
  </div> 
 
+<#--"private" macro used by #worldMap.  I have no idea what it does. FIXME: adam, help me! -->
 </#macro>
-
 <#macro renderMap code coords title forceAddSchemeHostAndPort=false>
  <#local val=codes[code]?default(0)/>
  <#local logCode= code+'_'/>
@@ -923,7 +923,9 @@ this bit of freemarker is voodoo:
     <#nested />
 </#macro>
 
-<#-- FIXME: freemarker docs advise against setting locals w/ macro contents -->
+<#--FIXME: persistable getType() doesn't exist. define it, then override  in Resource.  -->
+<#-- Emit the specified persistable's 'type' in uppercase (e.g. DOCUMENT, SENSORYDATA, COLLECTION...) -->
+<#-- @param persistable:Persistable either a persistable instance or object instance or dedupable instance -->
 <#macro upperPersistableTypeLabel persistable>
     <#if persistable.resourceType?has_content><#t>
         ${persistable.resourceType?replace("_", " ")?upper_case} <#t>
@@ -934,7 +936,8 @@ this bit of freemarker is voodoo:
     </#if>
 </#macro>
 
-
+<#-- emit login menu list items -->
+<#-- @param showMenu:boolean if true,  wrap list items in UL tag, otherwise just emit LI's -->
 <#macro loginMenu showMenu=false>
  <#if showMenu>
     <ul class="subnav-rht hidden-phone hidden-tablet">
@@ -950,26 +953,31 @@ this bit of freemarker is voodoo:
  </#if>
 </#macro>
 
+<#-- Render the "Resourse Usage" section of a view page.   -->
 <#macro resourceUsageInfo>
+<#local _isProject =  ((persistable.resourceType)!'') == "PROJECT" >
 <#if uploadedResourceAccessStatistic?has_content >
         <table class="table tableFormat">
             <tr>
-                <#if !persistable?has_content || !persistable.resourceType?has_content || persistable.resourceType == 'PROJECT' ><th>Total # of Resource</th></#if>
+                <#if _isProject ><th>Total # of Resources</th></#if>
                 <th>Total # of Files</th>
                 <th>Total Space (Uploaded Only)</th>
             </tr>
             <tr>
-                <#if !persistable?has_content || !persistable.resourceType?has_content || persistable.resourceType == 'PROJECT' ><td>${uploadedResourceAccessStatistic.countResources!0}</td></#if>
+                <#if _isProject><td>${uploadedResourceAccessStatistic.countResources!0}</td></#if>
                 <td>${uploadedResourceAccessStatistic.countFiles!0}</td>
                 <td><@convertFileSize uploadedResourceAccessStatistic.totalSpace!0 /></td>
             </tr>
         </table>
-    
 </#if>
 </#macro>
 
+<#-- emit a div that lists the addresses for the specified person.-->
+<#-- @param entity:Person person object containing addresses to render -->
+<#-- @param entityType:string type of entity ("person" or "institution" )-->
+<#-- @param choiceField:string FIXME: no clue what this means.  parsed as boolean,  caller supplies a number, compared to a string -->
+<#-- @addressId:number id of the address to be considered the 'current' address in the context of the page displaying this macro  -->
 <#macro listAddresses entity=person entityType="person" choiceField="" addressId=-1>
-
 <div class="row">
     <#list entity.addresses  as address>
         <div class="span3">
@@ -977,12 +985,11 @@ this bit of freemarker is voodoo:
         <#if address.type?has_content>
         <#local label = address.type.label>
         </#if>
-            <#if choiceField?has_content>
+        <#if choiceField?has_content>
         <label class="radio inline">
         <input type="radio" name="invoice.address.id" label="${label}" 
         value="${address.id}"  <#if address.id==addressId || (!addressId?has_content || addressId == -1) && address_index==0>checked=checked</#if>/>
-
-    </#if>
+        </#if>
 
         <@printAddress  address=address creatorId=entity.id modifiable=true showLabel=false >
             <b><#if address.type?has_content>${address.type.label!""}</#if></b>
@@ -997,6 +1004,13 @@ this bit of freemarker is voodoo:
 </div>
 </#macro>
 
+<#-- emit a single formatted address -->
+<#-- @param address:Address? address object to render (default: valueStack.address) -->
+<#-- @param creatorId:number? id for persisted value (default: -1) -->
+<#-- @param creatorType:string?  either "person" or "institution"  (default: "person") -->
+<#-- @param modifiable:boolean? render as a editable form fields (default:false)-->
+<#-- @param deletable:boolean? render a delete button  (default:false) -->
+<#-- @param showLabel:boolean? show the address.addressType.label value (default:false) -->
 <#macro printAddress address=address creatorId=-1 creatorType='person'  modifiable=false deletable=false showLabel=true>
         <p itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
 <#if address.type?has_content && showLabel><b>${address.type.label!""}</b><br></#if>
@@ -1012,23 +1026,28 @@ this bit of freemarker is voodoo:
         </p>
 </#macro>
 
-
+<#-- emit "checked" if arg1==arg2 -->
 <#macro checkedif arg1 arg2><#t>
 <@valif "checked='checked'" arg1 arg2 />
 </#macro>
 
+<#-- emit "selected" if arg1==arg2 -->
 <#macro selectedif arg1 arg2>
 <@valif "selected='selected'" arg1 arg2 />
 </#macro>
 
+<#-- emit val if arg1==arg2 -->
 <#macro valif val arg1 arg2><#t>
 <#if arg1=arg2>${val}</#if><#t>
 </#macro>
 
+<#-- emit a boolean form field. -->
+<#-- FIXME: I don't think this should be a macro-->
 <#macro boolfield name label id  value labelPosition="left" type="checkbox" labelTrue="Yes" labelFalse="No" cssClass="">
     <@boolfieldCheckbox name label id  value labelPosition cssClass />
 </#macro>
 
+<#-- FIXME: I don't think this should be a macro-->
 <#macro boolfieldCheckbox name label id value labelPosition cssClass>
 <#if value?? && value?string == 'true'>
     <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" 
@@ -1038,6 +1057,7 @@ this bit of freemarker is voodoo:
 </#if>
 </#macro>
 
+<#-- FIXME: I don't think this should be a macro-->
 <#macro boolfieldRadio name label id value labelPosition labelTrue labelFalse>
     <label>${label}</label>
     <input type="radio" name="${name}" id="${id}-true" value="true"  <@checkedif true value />  />
@@ -1051,6 +1071,7 @@ this bit of freemarker is voodoo:
     </#if>
 </#macro>
 
+<#-- FIXME: I don't think this should be a macro-->
 <#macro boolfieldSelect name label id value labelPosition labelTrue labelFalse>
     <label>${label}</label>
     <select id="${id}" name="${name}">
@@ -1101,12 +1122,6 @@ this bit of freemarker is voodoo:
         
     </div>
 </#macro>
-
-<#--//  TODO: actually implement this-->
-<#function fileSize sizeInBytes>
-    <#return "${sizeInByptes} bytes" />    
-</#function>
-
 
 <#--Collapse action messages them when in dev mode; they are typically annoying struts exceptions -->
 <#macro actionmessage>
