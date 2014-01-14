@@ -19,7 +19,7 @@
 		<jena.version>2.11.0</jena.version>
 		<clover.version>3.2.0</clover.version>
 		<!-- /end managed versions -->
-		<jvm.args>-Xms256m -Xmx2560m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
+		<jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
 		<generated.schema.file>schema.sql</generated.schema.file>
 		<jetty.version>8.1.11.v20130520</jetty.version>
@@ -45,7 +45,7 @@
 		<build.profile.id>default</build.profile.id>
 	</properties>
 	<prerequisites>
-		<maven>2.2.0</maven>
+		<maven>3.0.0</maven>
 	</prerequisites>
 	<organization>
 		<name>The Digital Archaeological Record</name>
@@ -2052,6 +2052,9 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>minify-web-resources</id>
 		</profile>
 		<profile>
 			<id>setup-new-instance</id>

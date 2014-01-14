@@ -113,21 +113,6 @@ View freemarker macros
             </#if>
             <li><a href="<@s.url value='/${resource.urlNamespace}/reprocess'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Reprocess all derivatives for this resource</a></li>
         </#if>
-        
-        <#assign processingErrors = "">
-        <#list resource.informationResourceFiles as irfile>
-            <#if irfile.errored>
-                <#assign processingErrors>
-                ${processingErrors}<li><strong>${irfile.latestUploadedVersion.filename}</strong> : ${irfile.errorMessage!""} </li>
-                </#assign>    
-            </#if>
-        </#list>        
-        <#if processingErrors?has_content>
-        <B>The Following Files had Processing Errors</B>
-        <ol>
-            <#noescape>${processingErrors}</#noescape>
-        </ol>
-        </#if>
     </#if>
 
 </#macro>
@@ -206,7 +191,7 @@ View freemarker macros
                     <@translatedFileSection irfile />
                 </li>
             </@fileInfoSection>
-                <#if (resource.informationResourceFiles?size > 1)>
+                <#if (resource.totalNumberOfActiveFiles > 1)>
                     <li class="archiveLink media">
                         <i class="iconf page-white-zip pull-left"></i>
                         <div class="media-body"><@createArchiveFileLink resource=resource /></div>

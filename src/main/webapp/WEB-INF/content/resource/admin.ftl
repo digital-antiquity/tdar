@@ -101,7 +101,11 @@
     </tr>
 <#list resource.informationResourceFiles as file>
     <tr>
-        <td colspan="2">${file.fileName!"unnamed file"}</td>
+        <td colspan="2">${file.fileName!"unnamed file"}
+        <#if file.latestThumbnail?has_content>
+ 	       <br><img src="<@s.url value="/filestore/${file.latestThumbnail.id?c}/thumbnail"/>"/>
+        </#if>
+        </td>
         <td>${file.informationResourceFileType}</td>
         <td>${file.latestVersion}</td>
         <td>${file.restriction}</td>
@@ -110,14 +114,14 @@
            <td></td>
            <td></td>
            <td></td>
-        <td><#if file.errorMessage?has_content>${file.errorMessage}</#if></td>
+        <td><#if !file.processed && file.errorMessage?has_content>${file.errorMessage}</#if></td>
     </tr>
     <#list file.informationResourceFileVersions as vers>
         <#if vers.uploaded >
         <tr>
             <td></td>
             <td>
-          <a href="<@s.url value='/filestore/${vers.id?c}/get'/>" onClick="TDAR.common.registerDownload('<@s.url value='/filestore/${vers.id?c}/get'/>', '${id?c}')" >${vers.filename}</a></td>
+          <a href="<@s.url value='/filestore/${vers.id?c}/get'/>?coverPageIncluded=false" onClick="TDAR.common.registerDownload('<@s.url value='/filestore/${vers.id?c}/get'/>', '${id?c}')" >${vers.filename}</a></td>
             <td>${vers.fileVersionType} </td>
             <td>${vers.version}</td>
             <td></td>

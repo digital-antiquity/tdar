@@ -14,6 +14,8 @@ public interface QueryPart<T> {
 
     abstract String generateQueryString();
 
+    String[] LUCENE_RESERVED_WORDS = {"AND", "OR", "NOT","TO"};
+
     abstract boolean isDescriptionVisible();
 
     abstract void setDescriptionVisible(boolean visible);

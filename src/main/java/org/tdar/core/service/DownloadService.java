@@ -101,7 +101,7 @@ public class DownloadService {
         String mimeType = null;
         String fileName = null;
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
-            addFileToDownload(files, authenticatedUser, irFileVersion);
+            addFileToDownload(files, authenticatedUser, irFileVersion, dh.isCoverPageIncluded());
             if (!irFileVersion.isDerivative()) {
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
                 FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
@@ -143,7 +143,7 @@ public class DownloadService {
         }
     }
 
-    private void addFileToDownload(Map<File, String> downloadMap, Person authenticatedUser, InformationResourceFileVersion irFileVersion)
+    private void addFileToDownload(Map<File, String> downloadMap, Person authenticatedUser, InformationResourceFileVersion irFileVersion, boolean includeCoverPage)
             throws TdarActionException {
         File resourceFile = null;
         try {
@@ -156,7 +156,7 @@ public class DownloadService {
         }
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
-        if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
+        if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && includeCoverPage) {
             try {
                 // this will be in the temp directory, so it will be scavenged at some stage.
                 resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);

@@ -798,6 +798,21 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertEquals("only one result expected", 1L, controller.getResults().size());
         assertEquals(doc, controller.getResults().iterator().next());
     }
+    
+    @Test
+    @Rollback
+    public void testLuceneOperatorInSearch() throws InstantiationException, IllegalAccessException, ParseException {
+        Document doc = createDocumentWithContributorAndSubmitter();
+        String title = "the archaeology of class ( AND ) war";
+        doc.setTitle(title);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        firstGroup().getAllFields().add(title);
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
+        logger.info("{}", controller.getResults());
+        assertEquals("only one result expected", 1L, controller.getResults().size());
+        assertEquals(doc, controller.getResults().iterator().next());
+    }
 
     @Test
     @Rollback

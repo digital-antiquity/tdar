@@ -105,6 +105,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY = "sparseCodingSheets.ontology";
     public static final String QUERY_FILE_SIZE_TOTAL ="file.total_size";
     public static final String QUERY_RELATED_RESOURCES = "resource.related";
+    public static final String FIND_ACCOUNT_FOR_INVOICE = "account.forInvoice";
     // raw SQL/HQL queries
 
     public static final String QUERY_SQL_DASHBOARD =

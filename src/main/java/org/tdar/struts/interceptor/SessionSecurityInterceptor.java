@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
@@ -95,7 +96,11 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             String invoke = invocation.invoke();
             return invoke;
         } catch (TdarActionException exception) {
-            logger.warn("caught TdarActionException", exception);
+            if (exception.getStatusCode() == StatusCode.FORBIDDEN.getHttpStatusCode()) {
+                logger.warn("caught TdarActionException", exception.getMessage());
+            } else {
+                logger.warn("caught TdarActionException", exception);
+            }
             HttpServletResponse response = ServletActionContext.getResponse();
             response.setStatus(exception.getStatusCode());
             logger.debug("clearing session due to {} -- returning to {}", exception.getResponseStatusCode(), exception.getResultName());
