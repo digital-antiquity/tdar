@@ -33,7 +33,7 @@ public class PDFJBIG2TestCase {
     private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @Test
-//    @Ignore("test for PDFBox issue, not tDAR issue")
+    @Ignore("test for PDFBox issue, not tDAR issue")
     public void testJBIG2() throws IOException {
         File pdfFile = new File("src/test/resources/documents/pia-09-lame-1980-small.pdf");
         String imageFormat = "jpg";
