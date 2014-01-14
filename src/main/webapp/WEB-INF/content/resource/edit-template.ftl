@@ -1,44 +1,36 @@
 -<#escape _untrusted as _untrusted?html>
+<#--
+   This template is designed to try and reduce duplicated code in each of the tDAR resource-edit pages.  As we have almost 10 of them, 
+   it becomes a challenge to maintain them in parallel without introducing bugs. The goal and function of this template is to (a) centralize logic
+   (b) set basic defaults (c) provide variables to turn on/off various settings and (d) allow for methods to override functions as needed.
+
+-->
+
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/WEB-INF/content/${namespace}/edit.ftl" as local_ />
-<#import "/${themeDir}/local-helptext.ftl" as  helptext>
+<#-- We define local_ as a reference to the actual template in question. It's going to define for us any functions/methods that get overriden 
+	 in the form. if local_.method?? && local_.method?is_macro ... then execute it...  -->
 
+<#import "/${themeDir}/local-helptext.ftl" as  helptext>
+<#-- helptext can be overriden by the theme so we import it, it, in turn override the default helptext -->
 <head>
 <@edit.title />
 
 <meta name="lastModifiedDate" content="$Date$"/>
 
-<#noescape>
-<#assign _filesJson = "''">
-<#if filesJson?has_content>
-<#assign _filesJson = filesJson>
-</#if>
-<script type="text/javascript">
-$(function(){
-    if(TDAR) {
-        TDAR.filesJson = ${_filesJson!"''"};
-    }
-    
-    $("#fileUploadField").change(function(){
-            if ($("#fileUploadField").val().length > 0) {
-                $("#reminder").hide();
-            }        
-    });
-});
-</script>
-</#noescape>
-
 </head>
 <body>
 <@edit.sidebar />
 <@edit.subNavMenu>
+	<#-- include local scrollspy menu details -->
 	<#if local_.subNavMenu?? && local_.subNavMenu?is_macro>
 		<@local_.subNavMenu />
 	</#if>
 
 </@edit.subNavMenu>
 
+<#-- allow for overriding of the page title -->
 <#if  local_.customH1?? && local_.customH1?is_macro>
 	<@local_.customH1 />
 <#else>
@@ -48,8 +40,11 @@ $(function(){
 
 <#assign fileReminder=true />
 <#assign prefix="${resource.resourceType.label?lower_case}" />
+
 <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
 	<@common.jsErrorLog />
+
+	<#-- custom section ahead of the basic information -->
     <#if local_.topSection?? && local_.topSection?is_macro>
 		<@local_.topSection />
 	</#if>
@@ -64,9 +59,9 @@ $(function(){
 	  <@s.hidden name="startTime" value="${currentTime?c}" />
 	
 	        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
-	        <#if editor && !administrator>
-		        <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to DRAFT</p>
-	        </#if>
+		        <#if editor && !administrator>
+			        <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to DRAFT</p>
+		        </#if>
 	            <label class="control-label">Status</label>
 	            <div class="controls">
 		            <#if guestUserId != -1 && guestUserId == authenticatedUser.id>
@@ -81,6 +76,8 @@ $(function(){
 	        </div>
 	    
 	        <@helptext.status />
+
+	<#-- the bulk upload hides some common fields, but the validator requires them, so we set the values to hidden ones -->
 	<#if bulkUpload >
 	
 	    <@s.hidden labelposition='left' id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
@@ -105,12 +102,13 @@ $(function(){
 	    </div>
 	    </#if>
 	</#if>
-	
+
+	<#-- add custom basic information if needed -->	
 	<#if local_.basicInformation?? && local_.basicInformation?is_macro>
 		<@local_.basicInformation />
 	</#if>
 
-
+	<#-- if we're an editor or administrator, we allow them to set the submitter of the resource to 'not them' -->
     <#if editor>
         <div class="control-group" id="divSubmitter">
             <label class="control-label">Submitter</label>
@@ -136,13 +134,14 @@ $(function(){
 	<div id="citationInformation" class="well-alt"> 
 	    <h2>Additional Citation Information</h2>
 	
-     <#if resource.resourceType.hasLanguage && resource.resourceType != 'DOCUMENT'>
+     <#if resource.resourceType.hasLanguage && !resource.resourceType.document >
 		<@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
      </#if>
 
+	<#-- ontologies and coding sheets have fewer fields -->
      <#if !resource.resourceType.codingSheet && !resource.resourceType.ontology>
 	
-	    <#if resource.resourceType != 'PROJECT'>
+	    <#if !resource.resourceType.project>
 	    <div data-tiplabel="Department / Publisher Location" data-tooltipcontent="Department name, or City,State (and Country, if relevant)">
 	        <span id="publisher-hints"  book="Publisher" book_section="Publisher" journal_article="Publisher"  conference_presentation="Conference" thesis="Institution" other="Publisher">
 	            <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
@@ -153,7 +152,8 @@ $(function(){
 	        </span>
 	    </div>
 	    </#if>
-	
+
+		<#-- if the resource type include citation information -->	
 		<#if local_.citationInformation?? && local_.citationInformation?is_macro>
 			<@local_.citationInformation />
 		</#if>
@@ -176,25 +176,28 @@ $(function(){
 		</div>
     </#if>
 
+	<#-- if tdarConfiguration has copyright holders enabled -->
     <#if resource.resourceType.label?lower_case != 'project'>
         <@edit.copyrightHolders 'Primary Copyright Holder' copyrightHolderProxies />
     </#if>
 
 
-
+	<#-- allow for more content before file uploads -->
 	<#if local_.beforeUpload?? && local_.beforeUpload?is_macro>
 		<@local_.beforeUpload />
 	</#if>
 	
-	
+	<#-- if the resource allows for file uploads -- this is set to something that's not null -->
 	<#if multipleUpload??>
+		<#-- if true -- we use the async file upload / otherwise we use the traditional file field -->
 		<#if multipleUpload>
 			<@edit.asyncFileUpload  uploadLabel="Attach ${resource.resourceType.label} Files" showMultiple=multipleUpload />
 		<#else>
 			<@edit.upload "${resource.resourceType.label} file" />
 		</#if>
 	</#if>
-	
+
+	<#-- allow for additional content after the file upload -->	
 	<#if local_.localSection?? && local_.localSection?is_macro>
 		<@local_.localSection />
 	</#if>
@@ -261,8 +264,10 @@ $(function(){
     </#if>
 </@s.form>
 
+<#-- include any JS templates -->
 <@edit.asyncUploadTemplates />
 
+<#-- include footer on resource page -->
 <#if local_.footer?? && local_.footer?is_macro>
 	<@local_.footer />
 </#if>
@@ -278,7 +283,7 @@ var includeInheritance = ${inheritanceEnabled?string("true", "false")};
 var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;
 /*
 
- * FIXME: move to common.js
+ * FIXME: move to common.js once we figure out how to control and set javascript based on freemarker values that have "Rights" implications.
  */
 $(function(){
     'use strict';
@@ -292,7 +297,6 @@ $(function(){
 	       informationResourceId: id, 
 	       acceptFileTypes: acceptFileTypes, 
 	       formSelector: formSelector,
-//	       inputSelector: '#divFileUpload',
 	       inputSelector: '#fileAsyncUpload',
            fileuploadSelector: '#divFileUpload'
 	       });
@@ -345,6 +349,22 @@ TDAR.inheritance.applyInheritance(formSelector);
     <#if local_.localJavascript?? && local_.localJavascript?is_macro>
 	<@local_.localJavascript />
 	</#if>
+
+	<#assign _filesJson = "''">
+	<#if filesJson?has_content>
+	<#assign _filesJson = filesJson>
+	</#if>
+	<#-- setup the page; if the page has files, include the JSON data for those files -->
+	    if(TDAR) {
+	        TDAR.filesJson = ${_filesJson!"''"};
+	    }
+	    
+	    $("#fileUploadField").change(function(){
+	            if ($("#fileUploadField").val().length > 0) {
+	                $("#reminder").hide();
+	            }        
+	    });
+
 });
 </#noescape>
 </script>

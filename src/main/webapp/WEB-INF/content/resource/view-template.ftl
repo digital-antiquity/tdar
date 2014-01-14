@@ -29,7 +29,7 @@
 	        </#if>
 	    </#list>
 	    <#assign publisherFieldName = "DC.publisher" />
-	    <#if resource.resourceType == 'DOCUMENT'>
+	    <#if resource.resourceType.document>
 	         <#if document.documentType == 'CONFERENCE_PRESENTATION'>
 	           <#assign publisherFieldName="citation_conference_title" />
 	         <#elseif document.documentType == 'JOURNAL_ARTICLE' && document.journalName??>
