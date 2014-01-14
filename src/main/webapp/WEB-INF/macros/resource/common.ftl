@@ -730,7 +730,7 @@ this bit of freemarker is voodoo:
     <#if (max < key.count)><#assign max = key.count /></#if>
    </#list>}</#assign>
   
-<#assign codes= {} + templateSource?eval />
+<#assign codes= {} + (templateSource?eval) />
 
 </script> 
 <!-- div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px" -->
@@ -908,7 +908,7 @@ this bit of freemarker is voodoo:
 <!-- [${code} : ${percent} ] -->
 <#local term>geographicKeywords=${keywordId}</#local>
      <area coords="${coords}" shape="poly" title="${title} (${val})" alt="${title} (${val})" target="_top"  href='<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/search/results?${term}"/>' iso="${code}"
-     class="{alwaysOn:true,strokeColor:'666666',strokeWidth:'.5',fillColor:'${color}',fillOpacity:1}" ></area>
+     class="{alwaysOn:true,strokeColor:'666666',strokeWidth:'.5',fillColor:'${color}',fillOpacity:1}" >
  </#if>
 </#macro>
 
@@ -1169,7 +1169,7 @@ this bit of freemarker is voodoo:
 </#macro>
 
 <#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#-- return true if the system should show contributor-oriented menu items / buttons /links
+<#-- return true if the system should show contributor-oriented menu items / buttons /links -->
 <#function showContributorMenuItems>
     <#-- show the 'upload' (even when logged out)  unless user.contributor flag is off -->
     <#return (authenticatedUser.contributor)!true >
