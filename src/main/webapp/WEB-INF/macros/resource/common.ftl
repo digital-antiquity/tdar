@@ -1042,12 +1042,12 @@ this bit of freemarker is voodoo:
 </#macro>
 
 <#-- emit a boolean form field. -->
-<#-- FIXME: I don't think this should be a macro-->
+<#-- FIXME: FTLREFACTOR remove:rarely used(1) -->
 <#macro boolfield name label id  value labelPosition="left" type="checkbox" labelTrue="Yes" labelFalse="No" cssClass="">
     <@boolfieldCheckbox name label id  value labelPosition cssClass />
 </#macro>
 
-<#-- FIXME: I don't think this should be a macro-->
+<#-- FIXME: FTLREFACTOR remove:rarely used(1) -->
 <#macro boolfieldCheckbox name label id value labelPosition cssClass>
 <#if value?? && value?string == 'true'>
     <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" 
@@ -1057,31 +1057,8 @@ this bit of freemarker is voodoo:
 </#if>
 </#macro>
 
-<#-- FIXME: I don't think this should be a macro-->
-<#macro boolfieldRadio name label id value labelPosition labelTrue labelFalse>
-    <label>${label}</label>
-    <input type="radio" name="${name}" id="${id}-true" value="true"  <@checkedif true value />  />
-    <label for="${id}-true" class="datatable-cell-unstyled"> ${labelTrue}</label>
-    <#if (labelPosition=="top")><br />
-    <input type="radio" name="${name}" id="${id}-false" value="false" <@checkedif false value />   />
-    <label for="${id}-false" class="datatable-cell-unstyled"> ${labelFalse}</label>
-    <#else>
-    <input type="radio" name="${name}" id="${id}-false" value="false"   />
-    <label for="${id}-false" class="datatable-cell-unstyled"> ${labelFalse}</label>
-    </#if>
-</#macro>
-
-<#-- FIXME: I don't think this should be a macro-->
-<#macro boolfieldSelect name label id value labelPosition labelTrue labelFalse>
-    <label>${label}</label>
-    <select id="${id}" name="${name}">
-    <#if (labelPosition=="top")><br /></#if>
-        <option id="${id}-true" value="true" <@selectedif true value/> />${labelTrue}</option>
-        <option id="${id}-false" value="false" <@selectedif false value/> />${labelFalse}</option>
-    </select>
-</#macro>
-
-
+<#-- emit a "combobox" control.  A combobox is essentially text field element that features both autocomplete support as
+ as the ability to view a list of all possible values (by clicking on a 'dropdown' button beside the text box)-->
 <#macro combobox name target autocompleteIdElement placeholder value cssClass autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="">
             <#if bootstrapControl>
             <div class="control-group">
@@ -1106,41 +1083,23 @@ this bit of freemarker is voodoo:
             </#if>
 </#macro>
 
-<#--TODO: generify this so that you can choose radios or checkboxes -->
-<#-- FIXME: not finished!!! -->
-<#macro inlineCheckboxlist  name list id="inlineCheckboxList" listValue='label' label="">
-    <div class="control-group" >
-        <#if label != "" ><label class="control-label">${label}</label></#if>
-        <div class="controls">
-            <#list list as listItem>
-                <label class="checkbox inline">
-                    <@s.checkbox theme="simple" name="${name}" id="${id}_${listItem_index}" value="" />
-                </label>
-            </#list>
-        </div>
-        
-        
-    </div>
-</#macro>
-
-<#--Collapse action messages them when in dev mode; they are typically annoying struts exceptions -->
+<#-- emit the actionmessage section.  If many action messages present,  then wrap them in a collapsed accordian div  -->
 <#macro actionmessage>
-    <#if production!false>
-    <@s.actionmessage  />
-    <#else>
-        <#if (actionMessages?size>0) >
-        <!-- FIXME: make this smarter to show messages that don't match "struts.devMode to false" -->
-        <div class="alert alert-info">
-            <span class="badge badge-info">${actionMessages?size}</span> 
-            <a href="#" data-toggle="collapse" data-target="#actionmessageContainer">System Notifications</a>
-        </div>
-        <div id="actionmessageContainer" class="collapse">
-        <@s.actionmessage />
-        </div>   
-        </#if>
-    </#if>
+<#if (actionMessages?size>5) >
+<div class="alert alert-info">
+    <span class="badge badge-info">${actionMessages?size}</span>
+    <a href="#" data-toggle="collapse" data-target="#actionmessageContainer">System Notifications</a>
+</div>
+<div id="actionmessageContainer" class="collapse">
+<@s.actionmessage />
+</div>
+<#else>
+<@s.actionmessage  />
+</#if>
 </#macro>
 
+<#-- emit the billing account list section -->
+<#-- @param accountList:List<Account> list of accounts to render -->
 <#macro billingAccountList accountList>
 <#if (payPerIngestEnabled!false)>
 <h2>Your Billing Accounts</h2>
@@ -1158,6 +1117,9 @@ this bit of freemarker is voodoo:
 </#if>        
 </#macro>
 
+
+<#-- FIXME: FTLREFACTOR remove:rarely used(1) -->
+<#-- emit notice indicating that the system is currently reindexing the lucene database -->
 <#macro reindexingNote>
  <#if reindexing!false >
     <div class=" alert">
@@ -1167,7 +1129,7 @@ this bit of freemarker is voodoo:
 </#macro>
 
 
-
+<#-- Emit a resource description (replace crlf's with <p> tags-->
 <#macro description description_="No description specified." >
   <#assign description = description_!"No description specified."/>
 <p itemprop="description">
@@ -1177,7 +1139,7 @@ this bit of freemarker is voodoo:
 </p>
 </#macro>
 
-
+<#-- emit html for single collection list item -->
 <#macro collectionListItem depth=0 collection=collection showOnlyVisible=false >
     <#if collection.visible || collection.viewable || showOnlyVisible==false >
     <#local clsHidden = "", clsClosed="" >
@@ -1196,6 +1158,7 @@ this bit of freemarker is voodoo:
         </#if>
 </#macro>
 
+<#-- emit the collections list in a 'treeview' control -->
 <#macro listCollections collections=resourceCollections_ showOnlyVisible=false>
   <ul class="collection-treeview">
     <#list collections as collection>
@@ -1205,11 +1168,14 @@ this bit of freemarker is voodoo:
   </ul>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- return true if the system should show contributor-oriented menu items / buttons /links
 <#function showContributorMenuItems>
     <#-- show the 'upload' (even when logged out)  unless user.contributor flag is off -->
     <#return (authenticatedUser.contributor)!true >
 </#function>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#macro jsErrorLog>
     <textarea style="display:none" name="javascriptErrorLog"  id="javascriptErrorLog" class="devconsole oldschool input-block-level" rows="10" cols="20" maxlength="${(160 * 80 * 2)?c}">${javascriptErrorLogDefault!'NOSCRIPT'}</textarea>
     <script>document.getElementById('javascriptErrorLog').value="";</script>

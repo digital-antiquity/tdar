@@ -345,7 +345,6 @@ TDAR.inheritance.applyInheritance(formSelector);
     TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
 	</#if>
 
-    <#-- //FIXME: I don't like this convention because it is invisible to syntax highlighting / code analysis tools -->
     <#if local_.localJavascript?? && local_.localJavascript?is_macro>
 	<@local_.localJavascript />
 	</#if>
