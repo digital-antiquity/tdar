@@ -68,10 +68,17 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertFalse(statuses.isEmpty());
     }
 
-    
     @Test
     @Rollback
     public void testDocumentProjectRights() throws TdarActionException {
+        /*
+         * Collection
+         *  |_ Authorized User with Rights
+         *  |_ Child Collection
+         *      |_ Project
+         *      
+         *  Issue -- project doesn't show up in AbstractInformationResourceController.getPotentialParents()
+         */
         Project project = new Project();
         project.setTitle("test rights project");
         project.setDescription(project.getTitle());
@@ -85,19 +92,30 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         collection.setDescription(collection.getTitle());
         collection.markUpdated(getAdminUser());
         genericService.saveOrUpdate(collection);
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
-        project.getResourceCollections().add(collection);
-        collection.getResources().add(project);
         genericService.saveOrUpdate(collection);
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
+        genericService.saveOrUpdate(collection);
+
+        ResourceCollection collectionChild = new ResourceCollection();
+        collectionChild.setName("test rights");
+        collectionChild.setSortBy(SortOption.RELEVANCE);
+        collectionChild.setParent(collection);
+        collectionChild.setOrientation(DisplayOrientation.GRID);
+        collectionChild.setType(CollectionType.SHARED);
+        collectionChild.setDescription(collectionChild.getTitle());
+        collectionChild.markUpdated(getAdminUser());
+        project.getResourceCollections().add(collectionChild);
+        collectionChild.getResources().add(project);
+        genericService.saveOrUpdate(collectionChild);
         genericService.saveOrUpdate(project);
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         String add = dc.add();
         assertEquals(TdarActionSupport.SUCCESS, add);
         assertTrue(dc.getPotentialParents().contains(project));
-        
-        }
-    
+
+    }
+
     @Test
     @Rollback
     public void testSubmitterChangeRights() throws TdarActionException {
