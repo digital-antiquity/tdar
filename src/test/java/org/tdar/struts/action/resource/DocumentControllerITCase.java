@@ -16,7 +16,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
@@ -36,6 +38,7 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UploadController;
@@ -65,6 +68,36 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertFalse(statuses.isEmpty());
     }
 
+    
+    @Test
+    @Rollback
+    public void testDocumentProjectRights() throws TdarActionException {
+        Project project = new Project();
+        project.setTitle("test rights project");
+        project.setDescription(project.getTitle());
+        project.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(project);
+        ResourceCollection collection = new ResourceCollection();
+        collection.setName("test rights");
+        collection.setSortBy(SortOption.RELEVANCE);
+        collection.setOrientation(DisplayOrientation.GRID);
+        collection.setType(CollectionType.SHARED);
+        collection.setDescription(collection.getTitle());
+        collection.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(collection);
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
+        project.getResourceCollections().add(collection);
+        collection.getResources().add(project);
+        genericService.saveOrUpdate(collection);
+        genericService.saveOrUpdate(project);
+        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.prepare();
+        String add = dc.add();
+        assertEquals(TdarActionSupport.SUCCESS, add);
+        assertTrue(dc.getPotentialParents().contains(project));
+        
+        }
+    
     @Test
     @Rollback
     public void testSubmitterChangeRights() throws TdarActionException {
