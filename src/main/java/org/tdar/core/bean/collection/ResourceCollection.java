@@ -137,6 +137,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
+    @Column(name="description_admin")
+    private String adminDescription;
+
     @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY,
             mappedBy = "resourceCollections", targetEntity = Resource.class)
@@ -687,5 +692,13 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setSecondarySortBy(SortOption secondarySortBy) {
         this.secondarySortBy = secondarySortBy;
+    }
+
+    public String getAdminDescription() {
+        return adminDescription;
+    }
+
+    public void setAdminDescription(String adminDescription) {
+        this.adminDescription = adminDescription;
     }
 }

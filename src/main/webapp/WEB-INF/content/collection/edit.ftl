@@ -67,11 +67,15 @@
 
 
 
-<p class='field'>
-</p>
 <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'
      cssClass='resizable input-xxlarge' title="Please enter the description " />
 
+
+<#if administrator>
+<p><b>Note:</b> Only fill out this or the description above, not both</p>
+<@s.textarea rows="4" labelposition='top' label='Collection Description (allows html)' name='resourceCollection.adminDescription'
+     cssClass='resizable input-xxlarge' title="Please enter the description " />
+</#if>
 
 </div>
 

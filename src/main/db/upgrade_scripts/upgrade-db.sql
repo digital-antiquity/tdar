@@ -45,3 +45,4 @@ alter table sensory_data_scan
     references sensory_data;
 
 alter table person add column orcid_id varchar(50) default null;
+alter table collection add column description_admin text default null;
