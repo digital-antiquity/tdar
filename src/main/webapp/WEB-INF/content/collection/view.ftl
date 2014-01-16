@@ -57,10 +57,19 @@
 	</div>
 </#if>
 
-<#if resourceCollection.parent?? || resourceCollection.description?? || collections??>
+<#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
     <div class="glide">
         <#if resourceCollection.parent??><p><b>Part of:</b> <a href="/collection/${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
         <@common.description resourceCollection.description />
+
+		<#if resourceCollection.adminDescription??>
+		<p itemprop="description">
+		  <#noescape>
+		    ${(resourceCollection.adminDescription)?replace("[\r\n]++","</p><p>","r")}
+		  </#noescape>
+		</p>
+		</#if>
+		
   </div>
 </#if>
 

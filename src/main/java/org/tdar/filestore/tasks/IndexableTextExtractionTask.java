@@ -73,11 +73,14 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 BodyContentHandler handler = new BodyContentHandler(indexedFileOutputStream);
                 //If we're dealing with a zip, read only the beginning of the file
                     stream = new FileInputStream(file);
-
-                parser.parse(stream, handler, metadata, parseContext);
-                IOUtils.closeQuietly(indexedFileOutputStream);
-                if (indexFile.length() > 0) {
-                    addDerivativeFile(version, indexFile, VersionType.INDEXABLE_TEXT);
+                try { // FIXME: Remove when PDFBox is upgraded to 1.8.4
+                    parser.parse(stream, handler, metadata, parseContext);
+                    IOUtils.closeQuietly(indexedFileOutputStream);
+                    if (indexFile.length() > 0) {
+                        addDerivativeFile(version, indexFile, VersionType.INDEXABLE_TEXT);
+                    }
+                } catch (NullPointerException npe) {
+                    getLogger().debug("NPE from PDF issue" , npe);
                 }
             }
 

@@ -79,3 +79,6 @@ alter table sensory_data_scan
 
 -- abrin 12/31/2013
 alter table person add column orcid_id varchar(50) default null;
+
+-- abrin 1/15/2014
+alter table collection add column description_admin text default null;>>>>>>> theirs
