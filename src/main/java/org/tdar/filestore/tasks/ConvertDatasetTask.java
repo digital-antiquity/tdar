@@ -51,9 +51,9 @@ public class ConvertDatasetTask extends AbstractTask {
 
         try {
             for (InformationResourceFileVersion versionToConvert : filesToProcess) {
-                file = versionToConvert.getTransientFile();
+                File version = versionToConvert.getTransientFile();
 
-                if (file == null) {
+                if (version == null) {
                     getLogger().warn("No datasetFile specified, returning");
                     return;
                 }

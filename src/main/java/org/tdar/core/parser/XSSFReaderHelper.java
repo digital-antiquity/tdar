@@ -8,6 +8,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
@@ -78,7 +79,11 @@ public class XSSFReaderHelper {
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(MessageHelper.getMessage("xssfReaderHelpher.sax_parser_broken",e.getMessage()));
         }
-        sheetInputStream.close();
+        finally {
+            if (sheetInputStream != null) {
+                IOUtils.closeQuietly(sheetInputStream);
+            }
+        }
         return currentSheetName;
     }
 

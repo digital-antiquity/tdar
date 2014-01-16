@@ -110,13 +110,13 @@ public class FileAnalyzer {
     }
 
     public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
+        if (informationResourceFileVersions == null) {
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("filestore.file_version_null"));
+        }
         Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null) {
             String message = MessageHelper.getMessage("fileAnalyzer.no_workflow_found", java.util.Arrays.toString(informationResourceFileVersions));
             throw new TdarRecoverableRuntimeException(message);
-        }
-        if (informationResourceFileVersions == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("filestore.file_version_null"));
         }
         checkFilesExist(informationResourceFileVersions);
 

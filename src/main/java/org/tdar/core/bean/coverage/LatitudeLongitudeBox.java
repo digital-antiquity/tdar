@@ -27,6 +27,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
@@ -176,7 +177,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         Random r = new Random();
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
-        
+
+        if (num1 == null || num2 == null) {
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("latLong.one_null"));
+        }
         // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
         Double numTwo = (num2 != null) ? num2: num1 + salt / 2;
         if (Math.abs(num1.doubleValue() - numTwo.doubleValue()) < salt) {

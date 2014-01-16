@@ -39,7 +39,7 @@ public class BulkUploadTemplate implements Serializable {
 
     private static final String EXCEL_MAX_NUM = "99999999999999";
     private static final String EXCEL_MIN_NUM = "-99999999999999";
-    private ExcelService excelService;
+    private transient ExcelService excelService;
     public static final String BULK_TEMPLATE_TITLE = "BULK_TEMPLATE_TITLE";
     public static final String EXAMPLE_TIFF = "TDAR_EXAMPLE.TIFF";
     public static final String EXAMPLE_PDF = "TDAR_EXAMPLE.PDF";

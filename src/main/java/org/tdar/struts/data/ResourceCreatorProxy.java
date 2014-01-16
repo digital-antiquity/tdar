@@ -128,7 +128,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
         if (institution == null && person == null) {
             throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCreatorProxy.err_determine_creator_insufficient_info"));
         }
-        if (institution.hasNoPersistableValues() && person.hasNoPersistableValues()) {
+        if (institution != null && institution.hasNoPersistableValues() && person != null && person.hasNoPersistableValues()) {
             return null;
         }
         if (!institution.hasNoPersistableValues() && !person.hasNoPersistableValues()) {

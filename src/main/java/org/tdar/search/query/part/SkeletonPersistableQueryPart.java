@@ -60,7 +60,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
             }
         }
 
-        if (!transientFieldQueryPart.isEmpty()) {
+        if (transientFieldQueryPart != null && !transientFieldQueryPart.isEmpty()) {
             sb.insert(0, "(");
             if (sb.length() > 1) {
                 sb.append(" OR ");
