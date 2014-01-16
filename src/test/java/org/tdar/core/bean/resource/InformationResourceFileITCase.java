@@ -71,8 +71,8 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertNotNull("IrFile is null", irFile);
         assertEquals(1, irFile.getLatestVersion().intValue());
         int size = irFile.getLatestVersions().size();
-        if (size != 3 && size != 6) {
-            Assert.fail("wrong number of derivatives found");
+        if (size != 6) {
+            Assert.fail("wrong number of derivatives found, Perhaps PDF Processing issue?");
         }
 
         InformationResourceFileVersion irFileVersion = irFile.getLatestVersions().iterator().next();
@@ -124,8 +124,8 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertNotNull("IrFile is null", irFile);
         assertEquals(1, irFile.getLatestVersion().intValue());
         int size = irFile.getLatestVersions().size();
-        if (size != 3 && size != 6) {
-            Assert.fail("wrong number of derivatives found");
+        if (size != 6) {
+            Assert.fail("wrong number of derivatives found, Perhaps PDF Issue?");
         }
 
         InformationResourceFileVersion irFileVersion = irFile.getLatestVersions().iterator().next();
