@@ -6,8 +6,11 @@ import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
@@ -17,7 +20,7 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 
-import com.sun.xml.txw2.annotation.XmlElement;
+//import com.sun.xml.txw2.annotation.XmlElement;
 
 /**
  * $Id$
@@ -28,7 +31,9 @@ import com.sun.xml.txw2.annotation.XmlElement;
  * @version $Rev$
  */
 @MappedSuperclass
-@XmlElement
+//@XmlElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlType(name = "hierKwdbase")
 public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> extends Keyword.Base<HierarchicalKeyword<T>> {
 
     private static final long serialVersionUID = -9098940417785842655L;
