@@ -1,7 +1,6 @@
 package org.tdar.struts.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
@@ -36,8 +35,6 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
  * @version $Rev$
  */
 public class AuthenticationInterceptor implements SessionDataAware, Interceptor {
-
-    private static final String CACHE_CONTROL = "Cache-control";
 
     private static final long serialVersionUID = -3147151913316273258L;
 
@@ -121,16 +118,6 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             result = invocation.invoke();
         }
         return result;
-    }
-
-    protected void setCacheControl(String cacheControlHeaders) {
-        logger.debug("Setting cache control headers to {}", cacheControlHeaders);
-        HttpServletResponse response = ServletActionContext.getResponse();
-        if (response == null) {
-            logger.warn("No http servlet response available to set headers: {}", cacheControlHeaders);
-            return;
-        }
-        response.setHeader(CACHE_CONTROL, cacheControlHeaders);
     }
 
     protected void setReturnUrl(ActionInvocation invocation) {

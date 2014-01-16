@@ -32,9 +32,9 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService.Auth
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.WriteableSession;
+import org.tdar.struts.interceptor.CacheControl;
 import org.tdar.struts.interceptor.HttpsOnly;
 import org.tdar.struts.interceptor.PostOnly;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -56,6 +56,7 @@ import com.opensymphony.xwork2.Preparable;
 // @InterceptorRef("paramsPrepareParamsStack")
 // @Result(name = "new", type = "redirect", location = "new")
 @HttpsOnly
+@CacheControl
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
 
 

@@ -76,6 +76,12 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
         }
         logger.debug("<< activity begin: {} ", activity);
 
+        if (ReflectionService.methodOrActionContainsAnnotation(invocation, CacheControl.class)) {
+            HttpServletResponse response = ServletActionContext.getResponse();
+            response.setHeader("Cache-Control", "no-store,no-Cache");
+            response.setHeader("Pragma", "no-cache");
+            response.setDateHeader("Expires", 0);
+        }
         
         SessionType mark = SessionType.READ_ONLY;
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {

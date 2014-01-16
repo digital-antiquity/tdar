@@ -14,6 +14,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
 import org.tdar.struts.WriteableSession;
+import org.tdar.struts.interceptor.CacheControl;
 import org.tdar.struts.interceptor.HttpsOnly;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -34,6 +35,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 @Results({
         @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.REDIRECT, location = URLConstants.DASHBOARD),
         @Result(name = TdarActionSupport.INPUT, location = "/WEB-INF/content/login.ftl") })
+@CacheControl
 public class LoginController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = -1219398494032484272L;
