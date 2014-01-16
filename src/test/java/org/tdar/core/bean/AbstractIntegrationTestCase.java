@@ -200,6 +200,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
 
         emailService.setMailSender(mockMailSender);
+        String base = "src/test/resources/xml/schemaCache";
+        schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
+        schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
+        schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));
+        schemaMap.put("http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(base, "oaipmh.xsd"));
 
         getControllers().clear();
         setIgnoreActionErrors(false);
@@ -723,10 +728,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     private static Map<String, File> schemaMap = new HashMap<String, File>();
 
+    
     private void addSchemaToValidatorWithLocalFallback(Validator v, String url, File schemaFile) {
         File schema = null;
         if (schemaMap.containsKey(url)) {
             schema = schemaMap.get(url);
+            logger.debug("using cache of: {}", url);
         } else {
             logger.debug("attempting to add schema to validation list: " + url);
             try {
@@ -748,12 +755,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
 
         if (schema != null) {
-            // try {
-            // // testValidXMLSchemaResponse(schema);
-            // } catch (Exception e) {
-            // logger.debug("schema setup exception ", e);
-            // assertTrue(false);
-            // }
             v.addSchemaSource(new StreamSource(schema));
             for (Object err : v.getSchemaErrors()) {
                 logger.error(err.toString());
