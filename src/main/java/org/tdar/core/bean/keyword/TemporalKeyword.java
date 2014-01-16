@@ -12,8 +12,6 @@ import javax.persistence.Table;
 import org.hibernate.search.annotations.Indexed;
 
 /**
- * $Id$
- * 
  * Temporal term coverage
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>

@@ -41,8 +41,6 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
- * $Id$
- * 
  * Metadata for a column in a data table.
  * 
  * 

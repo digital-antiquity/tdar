@@ -13,6 +13,12 @@ import javax.persistence.Transient;
 import org.tdar.core.bean.Persistable;
 import org.tdar.utils.MessageHelper;
 
+/**
+ * Controller token for managing the session's logged-in user.
+ * 
+ * @author abrin
+ *
+ */
 @Entity
 @Table(name = "user_session")
 public class AuthenticationToken extends Persistable.Base {

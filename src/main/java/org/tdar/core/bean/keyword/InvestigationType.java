@@ -12,8 +12,7 @@ import javax.persistence.Table;
 import org.hibernate.search.annotations.Indexed;
 
 /**
- * $Id$
- * 
+ * Represents the type of Investigation or research described by the resource. 
  * 
  * @author Matt Cordial
  * @version $Rev$

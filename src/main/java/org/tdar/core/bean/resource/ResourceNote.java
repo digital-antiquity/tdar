@@ -22,8 +22,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**
- * $Id$
- * <p>
+ * <p> ResourceNotes allow for free-text notes about a resource.
  * 
  * @author Adam Brin
  * @version $Revision$

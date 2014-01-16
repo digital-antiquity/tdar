@@ -17,7 +17,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 
 /**
- * $Id$
  * <p>
  * A persistable pointer to a resource, stored by a registered user of tDAR.
  * 

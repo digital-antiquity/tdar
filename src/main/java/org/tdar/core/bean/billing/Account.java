@@ -40,7 +40,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 /**
  * $Id$
  * 
- * An Account maintains a set of Invoices and is the entity against which people can charge resource uploads.
+ * An Account maintains a set of Invoices and is the entity against which people can charge resource uploads. It also tracks a set of users who can charge against those invoices.
  * 
  * @author TDAR
  * @version $Rev$

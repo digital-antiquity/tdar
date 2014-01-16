@@ -3,6 +3,12 @@ package org.tdar.core.bean.resource.datatable;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.utils.MessageHelper;
 
+/**
+ * Manages the column type that the user tells us.
+ * 
+ * @author abrin
+ *
+ */
 public enum DataTableColumnEncodingType implements HasLabel {
     UNCODED_VALUE(MessageHelper.getMessage("dataTableColumnEncodingType.uncoded"), false, true, false),
     CODED_VALUE(MessageHelper.getMessage("dataTableColumnEncodingType.coded"), true, true, false),

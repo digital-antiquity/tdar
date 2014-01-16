@@ -11,6 +11,11 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.SensoryData;
 
+/**
+ * represents an image
+ * @author abrin
+ *
+ */
 @Entity
 @Table(name = "sensory_data_image")
 public class SensoryDataImage extends Persistable.Sequence<SensoryDataImage> implements HasResource<SensoryData> {

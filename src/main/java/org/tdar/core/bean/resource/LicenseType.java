@@ -2,6 +2,11 @@ package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
 
+/**
+ * Represents a type of License for a Resource
+ * @author abrin
+ *
+ */
 public enum LicenseType implements HasLabel {
     PUBLIC_DOMAIN("Public Domain", "Public Domain", "This option dictates that the work in question has no applicable attribution and can be reused freely.",
             "http://en.wikipedia.org/wiki/Public_domain", ""),

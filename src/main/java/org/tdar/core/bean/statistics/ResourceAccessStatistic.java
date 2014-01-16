@@ -17,6 +17,12 @@ import org.tdar.core.bean.resource.Resource;
         @Index(name="resource_access_stats_count_id", columnNames = {"id", "resource_id"}),
         @Index(name="resource_access_stats_id", columnNames = {"resource_id"})
 })
+/**
+ * Tracks anonymous view statistics for tDAR
+ * 
+ * @author abrin
+ *
+ */
 public class ResourceAccessStatistic extends AbstractResourceStatistic<Resource> {
     private static final long serialVersionUID = 3754152671288642718L;
 

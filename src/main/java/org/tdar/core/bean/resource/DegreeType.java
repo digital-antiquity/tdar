@@ -3,6 +3,12 @@ package org.tdar.core.bean.resource;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.utils.MessageHelper;
 
+/**
+ * The type of degree
+ * 
+ * @author abrin
+ *
+ */
 public enum DegreeType implements HasLabel {
     UNDERGRADUATE(MessageHelper.getMessage("degreeType.undergraduate")), 
     MASTERS(MessageHelper.getMessage("degreeType.masters")), 

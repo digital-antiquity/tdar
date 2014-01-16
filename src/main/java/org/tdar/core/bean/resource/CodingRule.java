@@ -24,6 +24,8 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
+ * Key, Description, and Mapping for each entry in a coding-sheet
+ * 
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision$
  * @latest $Id$

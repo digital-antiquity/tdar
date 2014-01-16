@@ -19,8 +19,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
- * $Id$
- * 
+ * Represents a Culture described by a resource.  
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$

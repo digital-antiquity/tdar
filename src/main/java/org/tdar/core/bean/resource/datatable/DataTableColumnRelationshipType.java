@@ -5,7 +5,9 @@ import org.tdar.utils.MessageHelper;
 
 public enum DataTableColumnRelationshipType implements HasLabel {
 
-    /*
+    /**
+     * Maps database relationship types
+     * 
      * NB these were not really types of relationship
      * FOREIGN_KEY("Foreign Key"),
      * PRIMARY_KEY("Primary Key");

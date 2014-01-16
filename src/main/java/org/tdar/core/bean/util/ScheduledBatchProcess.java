@@ -14,6 +14,13 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.Pair;
 
+/**
+ * Abstract class to help with batch processes, track errors, and managing the batches.
+ * 
+ * @author abrin
+ *
+ * @param <P>
+ */
 public abstract class ScheduledBatchProcess<P extends Persistable> extends ScheduledProcess.Base<P> {
 
     private static final long serialVersionUID = -8936499060533204646L;

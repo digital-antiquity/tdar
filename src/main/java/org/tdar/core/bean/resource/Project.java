@@ -28,7 +28,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 
 /**
- * $Id$
+ * Represents a Project. Projects allow for inheritance of metadata from the project to resources within the project and thus simplifying metadata entry.
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$

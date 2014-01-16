@@ -31,11 +31,15 @@ import org.tdar.utils.MessageHelper;
 @Indexed
 @Table(name = "sensory_data")
 @XmlRootElement(name = "sensoryData")
+
+/**
+ * Represnts a 3-D scan or sensory-data scan of an object.
+ * 
+ * @author abrin
+ *
+ */
 public class SensoryData extends Dataset {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -568320714686809099L;
 
     /** toplevel metadata fields **/

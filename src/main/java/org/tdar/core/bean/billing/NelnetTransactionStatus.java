@@ -5,6 +5,12 @@ import java.util.List;
 
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.utils.MessageHelper;
+
+/**
+ * Enum to track NelNet Transaction Status
+ * @author abrin
+ *
+ */
 public enum NelnetTransactionStatus {
     CC_PAYMENT_ACCEPTED(1, MessageHelper.getMessage("nelnetTransactionStatus.accepted"), TransactionStatus.TRANSACTION_SUCCESSFUL),
     CC_PAYMENT_REJECTED(2, MessageHelper.getMessage("nelnetTransactionStatus.cc_rejected"), TransactionStatus.TRANSACTION_FAILED),

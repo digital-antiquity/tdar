@@ -13,7 +13,7 @@ import org.hibernate.search.annotations.Indexed;
 /**
  * $Id$
  * <p>
- * (What kind of files are allowed to be Images?
+ * Represents any type of geospatial object, ShapeFile, GeoDatabase, and Georectified image
  * </p>
  * 
  * @author Adam Brin

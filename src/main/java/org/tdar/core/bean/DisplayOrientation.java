@@ -2,6 +2,11 @@ package org.tdar.core.bean;
 
 import org.tdar.utils.MessageHelper;
 
+/**
+ * Controls the display type for a collection, project, or any resource list.
+ * @author abrin
+ *
+ */
 public enum DisplayOrientation implements HasLabel {
     LIST(MessageHelper.getMessage("displayOrientation.list")),
     LIST_FULL(MessageHelper.getMessage("displayOrientation.list_full")),

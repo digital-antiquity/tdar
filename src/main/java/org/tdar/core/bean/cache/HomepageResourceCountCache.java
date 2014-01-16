@@ -10,6 +10,11 @@ import org.apache.commons.lang.ObjectUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.ResourceType;
 
+/**
+ * This caches the counts of resource types for the homepage.
+ * @author abrin
+ *
+ */
 @Entity
 @Table(name = "homepage_cache_resource_type")
 public class HomepageResourceCountCache extends Persistable.Base implements Comparable<HomepageResourceCountCache>, ResourceCache<ResourceType> {

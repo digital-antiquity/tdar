@@ -1,5 +1,10 @@
 package org.tdar.core.bean.resource;
 
+/**
+ * The type of data in the ResourceAnnotation value
+ * @author abrin
+ *
+ */
 public enum ResourceAnnotationDataType {
 
     NUMERIC,

@@ -24,8 +24,6 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**
- * $Id$
- * 
  * Represents a Document information resource.
  * 
  * The design decision was made to have null fields instead of overloading fields to mean different things for different

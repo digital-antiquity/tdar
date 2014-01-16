@@ -10,6 +10,12 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 
+/**
+ * This caches the count of geographic keywords for the world map on the homepage.
+ * 
+ * @author abrin
+ *
+ */
 @Entity
 @Table(name = "homepage_cache_geographic_keyword")
 public class HomepageGeographicKeywordCache extends Base implements ResourceCache<String> {

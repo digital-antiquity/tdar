@@ -11,6 +11,12 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.tdar.core.bean.Persistable;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
+/**
+ * Represents a relationship between two data-tables via columns
+ * 
+ * @author abrin
+ *
+ */
 @Entity
 @Table(name = "data_table_column_relationship")
 public class DataTableColumnRelationship extends Persistable.Base {

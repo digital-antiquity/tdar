@@ -34,7 +34,7 @@ import org.tdar.utils.MessageHelper;
 /**
  * $Id$
  * 
- * Represents a credit card swipe to purchase space and number of resources for a given Account.
+ * Represents a financial transaction to purchase space and number of resources for a given Account.
  * 
  * @author TDAR
  * @version $Rev$

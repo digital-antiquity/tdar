@@ -13,6 +13,12 @@ import org.hibernate.validator.constraints.Length;
 @Indexed
 @Table(name = "video")
 @XmlRootElement(name = "video")
+
+/**
+ * Represents a "video" resource.
+ * @author abrin
+ *
+ */
 public class Video extends InformationResource {
 
     public Video() {

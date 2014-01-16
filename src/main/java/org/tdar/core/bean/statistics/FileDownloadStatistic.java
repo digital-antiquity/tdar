@@ -16,6 +16,11 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 @org.hibernate.annotations.Table( appliesTo = "information_resource_file_download_statistics", indexes = {
         @Index(name="file_download_stats_count_id", columnNames={"information_resource_file_id", "id"})
 })
+/**
+ * Tracks anonymous download statistics
+ * @author abrin
+ *
+ */
 public class FileDownloadStatistic extends AbstractResourceStatistic<InformationResourceFile> {
     private static final long serialVersionUID = 3754152671288642718L;
 

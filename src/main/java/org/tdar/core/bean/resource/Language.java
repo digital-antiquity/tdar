@@ -4,9 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
 
 /**
- * $Id$
- * 
- * Controlled vocabulary for document types.
+ * Controlled vocabulary for languages
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$

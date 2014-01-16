@@ -19,7 +19,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 
 /**
- * $Id$
+ * Tracks administrative changes. When the UI changes a resource, a log entry should be added. 
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$

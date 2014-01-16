@@ -2,6 +2,12 @@ package org.tdar.core.bean;
 
 import java.util.List;
 
+/**
+ * allows for abstraction of all resources that can be obfuscated
+ * 
+ * @author abrin
+ *
+ */
 public interface Obfuscatable {
 
     /**

@@ -4,6 +4,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+/**
+ * This caches the resource-count-per-decade on the homepage.
+ * 
+ * @author abrin
+ *
+ */
 @Entity
 @Table(name = "explore_cache_decade")
 public class BrowseDecadeCountCache extends AbstractCountCache<BrowseDecadeCountCache, Integer> {

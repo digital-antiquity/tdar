@@ -16,8 +16,9 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.MessageHelper;
 
-/*
- * an Activity + quantity
+/**
+ * an Activity + quantity for a financial transaction. Multiple activities may be associated with a single financial transaction. 
+ * 
  */
 @Entity
 @Table(name = "pos_item")

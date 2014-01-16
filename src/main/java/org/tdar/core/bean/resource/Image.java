@@ -10,7 +10,7 @@ import org.hibernate.search.annotations.Indexed;
 /**
  * $Id$
  * <p>
- * (What kind of files are allowed to be Images?
+ * Represnts an image object in TDAR
  * </p>
  * 
  * @author Adam Brin

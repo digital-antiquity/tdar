@@ -11,7 +11,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlAttribute;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
@@ -19,6 +18,12 @@ import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Proxy object for InformationResourceFileVersion difference from original is that it has no back-references
+ * 
+ * @author abrin
+ *
+ */
 @Entity
 @Immutable
 @Subselect(value="select * from information_resource_file_version")

@@ -15,9 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlAttribute;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.converters.DateConverter;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -31,8 +28,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 /**
  * $Id$
  * 
- * Represents a 1:1 container for any file submitted to tDAR. All children (InformationResourceFileVersions represent different manifestations of this file, the
- * uploaded (SIP), archival (if different AIP), and any derivatives (DIP)s.
+ * Represents a 1:1 proxy with an InformationResourceFile, but it has no back-references.
  * 
  * 
  * @author Adam Brin

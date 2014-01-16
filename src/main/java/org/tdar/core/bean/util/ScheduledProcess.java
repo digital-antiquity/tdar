@@ -7,6 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.TdarConfiguration;
 
+/**
+ * Class to manage scheduled processes, both upgrade tasks and scheduled tasks.  It allows for batch processing. 
+ * @author abrin
+ *
+ * @param <P>
+ */
 public interface ScheduledProcess<P extends Persistable> extends Serializable {
 
     /**

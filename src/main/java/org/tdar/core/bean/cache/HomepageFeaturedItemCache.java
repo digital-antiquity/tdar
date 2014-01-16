@@ -7,6 +7,12 @@ import javax.persistence.Table;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
 
+/**
+ * This caches a one or a set of Resources on the homepage.
+ * 
+ * @author abrin
+ *
+ */
 @Entity
 @Table(name = "homepage_featured_item_cache")
 public class HomepageFeaturedItemCache extends Persistable.Base implements Comparable<HomepageFeaturedItemCache>, ResourceCache<InformationResource> {

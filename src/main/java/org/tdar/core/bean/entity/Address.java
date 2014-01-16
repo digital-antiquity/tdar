@@ -18,6 +18,12 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.MessageHelper;
 
+/**
+ * Represents a physical address for a person or institution.
+ * 
+ * @author abrin
+ *
+ */
 @Entity
 @Table(name = "creator_address")
 public class Address extends Base implements Persistable, Validatable {

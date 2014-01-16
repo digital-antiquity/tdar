@@ -12,6 +12,12 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.utils.MessageHelper;
 
+/**
+ * Controls the types of objects that can be deduped.
+ * 
+ * @author abrin
+ *
+ */
 //domain of entity types that we allow users to 'de-dupe'
 // FIXME: consider using an INTERFACE instead of a ENUM and then autowiring a list of the thing that support that interface
 @SuppressWarnings("rawtypes")

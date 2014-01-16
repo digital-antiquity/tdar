@@ -19,8 +19,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
- * $Id$
- * 
+ * Describes the type of site in the resource 
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$

@@ -15,6 +15,12 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.SensoryData;
 
+/**
+ * Represents a sensory-data scan.
+ * 
+ * @author abrin
+ *
+ */
 @Entity
 @Table(name = "sensory_data_scan")
 public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> implements HasResource<SensoryData> {

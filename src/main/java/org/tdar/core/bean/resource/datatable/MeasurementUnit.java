@@ -3,6 +3,12 @@ package org.tdar.core.bean.resource.datatable;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.utils.MessageHelper;
 
+/**
+ * Represents a measurement unit
+ * 
+ * @author abrin
+ *
+ */
 public enum MeasurementUnit implements HasLabel {
     KILOGRAM(MessageHelper.getMessage("measurementUnit.kilogram"), "kg"),
     GRAM(MessageHelper.getMessage("measurementUnit.gram"), "g"),

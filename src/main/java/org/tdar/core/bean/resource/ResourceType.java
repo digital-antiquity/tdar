@@ -7,7 +7,6 @@ import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
 import org.tdar.utils.MessageHelper;
 
 /**
- * $Id$
  * 
  * Controlled vocabulary for resource types.
  * 

@@ -12,6 +12,8 @@ import org.odata4j.edm.EdmSimpleType;
 import org.tdar.core.bean.HasLabel;
 
 /**
+ * Enum to manage the type of column between tDAR internal types, and database and other types
+ * 
  * @author Adam Brin
  * 
  */

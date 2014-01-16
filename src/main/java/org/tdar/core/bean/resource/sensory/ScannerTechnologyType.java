@@ -5,6 +5,13 @@ import java.util.List;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.utils.MessageHelper;
+
+/**
+ * The type of scan controlls the type of metadata that we display
+ * 
+ * @author abrin
+ *
+ */
 public enum ScannerTechnologyType implements HasLabel {
     NONE(MessageHelper.getMessage("scannerTechnologyType.none")),
     TIME_OF_FLIGHT(MessageHelper.getMessage("scannerTechnologyType.none")),

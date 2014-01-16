@@ -12,8 +12,7 @@ import javax.persistence.Table;
 import org.hibernate.search.annotations.Indexed;
 
 /**
- * $Id$
- * 
+ * Material Type keyword (controlled). 
  * 
  * @author Matt Cordial
  * @version $Rev$

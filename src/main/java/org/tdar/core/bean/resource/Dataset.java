@@ -31,8 +31,6 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
 /**
- * $Id$
- * 
  * A Dataset information resource can currently be an Excel file, Access MDB file, or plaintext CSV file.
  * 
  * 

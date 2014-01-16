@@ -4,6 +4,12 @@ import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.utils.MessageHelper;
 
+/**
+ * Status for resources within tDAR, controls permissions and how they're indexed.
+ * 
+ * @author abrin
+ *
+ */
 public enum Status implements HasLabel {
     DRAFT(MessageHelper.getMessage("status.draft")),
     ACTIVE(MessageHelper.getMessage("status.active")),
