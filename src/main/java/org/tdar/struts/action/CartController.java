@@ -35,10 +35,10 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
-import org.tdar.struts.interceptor.PostOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.MessageHelper;
 
 @Component

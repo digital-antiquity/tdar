@@ -16,8 +16,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.action.resource.AbstractResourceController;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.web.SessionDataAware;
 
 /**

@@ -20,7 +20,7 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.data.DateRange;
 import org.tdar.struts.data.FacetGroup;
-import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 @SuppressWarnings("rawtypes")
 @Namespace("/scholar")

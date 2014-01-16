@@ -23,9 +23,9 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
-import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 /**
  * $Id$

@@ -13,9 +13,9 @@ import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.geosearch.GeoSearchDao.SpatialTables;
 import org.tdar.search.geosearch.GeoSearchService;
-import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.SvgMapWrapper;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 @Component
 @Scope("prototype")

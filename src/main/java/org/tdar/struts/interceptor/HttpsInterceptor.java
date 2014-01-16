@@ -11,6 +11,8 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.UrlService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.ActionInvocation;

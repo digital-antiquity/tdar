@@ -11,9 +11,9 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UserAgreementController;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.struts.WriteableSession;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 /**
  * $Id$

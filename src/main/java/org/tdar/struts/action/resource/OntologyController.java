@@ -22,7 +22,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.MessageHelper;
 
 /**

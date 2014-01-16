@@ -34,10 +34,10 @@ import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.MessageHelper;
 
 /**

@@ -22,8 +22,8 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.RssService;
-import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
-import org.tdar.struts.interceptor.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 

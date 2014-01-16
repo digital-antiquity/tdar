@@ -57,7 +57,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
-import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;

@@ -71,11 +71,11 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
-import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.KeywordNode;
-import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 /**
  * Eventual replacement for LuceneSearchController. extending

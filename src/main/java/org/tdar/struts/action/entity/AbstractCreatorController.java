@@ -12,10 +12,10 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.PostOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 public abstract class AbstractCreatorController<T extends Creator> extends AbstractPersistableController<T> {
 

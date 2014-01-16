@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
-import org.tdar.struts.WriteableSession;
-import org.tdar.struts.interceptor.CacheControl;
-import org.tdar.struts.interceptor.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.CacheControl;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;

@@ -1,4 +1,4 @@
-package org.tdar.struts;
+package org.tdar.struts.interceptor.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

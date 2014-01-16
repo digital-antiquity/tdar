@@ -30,11 +30,11 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
 import org.tdar.core.service.external.RecaptchaService;
-import org.tdar.struts.DoNotObfuscate;
-import org.tdar.struts.WriteableSession;
-import org.tdar.struts.interceptor.CacheControl;
-import org.tdar.struts.interceptor.HttpsOnly;
-import org.tdar.struts.interceptor.PostOnly;
+import org.tdar.struts.interceptor.annotation.CacheControl;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 

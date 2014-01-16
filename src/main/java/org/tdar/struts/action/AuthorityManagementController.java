@@ -24,8 +24,8 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.AuthorityManagementService.DupeMode;
-import org.tdar.struts.RequiresTdarUserGroup;
-import org.tdar.struts.WriteableSession;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Preparable;

@@ -20,9 +20,9 @@ import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.search.AbstractLookupController;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 @Component
 @Scope("prototype")

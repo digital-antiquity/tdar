@@ -24,8 +24,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ScheduledProcessService;
-import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 

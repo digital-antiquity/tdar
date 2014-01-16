@@ -12,11 +12,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.dao.external.auth.TdarGroup;
-import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.AggregateDownloadStatistic;
 import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 /**
  * $Id$

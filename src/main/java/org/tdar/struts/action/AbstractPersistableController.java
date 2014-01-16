@@ -27,10 +27,10 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
-import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
-import org.tdar.struts.interceptor.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.struts.WriteableSession;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Preparable;

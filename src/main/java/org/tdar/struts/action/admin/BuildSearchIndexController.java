@@ -25,8 +25,8 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.IgnoreActivity;
 

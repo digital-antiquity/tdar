@@ -9,7 +9,7 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.struts.DoNotObfuscate;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.Action;
