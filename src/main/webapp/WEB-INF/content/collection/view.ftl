@@ -65,7 +65,7 @@
 		<#if resourceCollection.adminDescription??>
 		<p itemprop="description">
 		  <#noescape>
-		    ${(resourceCollection.adminDescription)?replace("[\r\n]++","</p><p>","r")}
+		    ${resourceCollection.adminDescription}
 		  </#noescape>
 		</p>
 		</#if>
