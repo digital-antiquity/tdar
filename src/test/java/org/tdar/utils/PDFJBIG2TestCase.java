@@ -33,7 +33,7 @@ public class PDFJBIG2TestCase {
     private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @Test
-//    @Ignore("test for PDFBox issue, not tDAR issue")
+    @Ignore("test for PDFBox issue, not tDAR issue")
     public void testJBIG2() throws IOException {
         File pdfFile = new File("src/test/resources/documents/pia-09-lame-1980-small.pdf");
         String imageFormat = "jpg";
@@ -49,25 +49,6 @@ public class PDFJBIG2TestCase {
         String fn = pdfFile.getName();
         int pageNum = 1;
         
-//        reg.registerApplicationClasspathSpis();
-////        IIORegistry.getDefaultInstance().deregisterServiceProvider(ImageWriter.class);
-//        IIORegistry reg = IIORegistry.getDefaultInstance();
-//        Iterator<ImageWriterSpi> lookupProviders = IIORegistry.lookupProviders(ImageWriterSpi.class);
-//        
-//        while  (lookupProviders.hasNext()) {
-//            ImageWriterSpi cls = lookupProviders.next();
-//            log.debug("{}",cls.getClass().getCanonicalName());
-//        }
-//
-//        try {
-//            Class<?> cJpgWriter = Class.forName("com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriter");
-//            Class<?> cJpgWriter2 = Class.forName("com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriterSpi");
-//            IIORegistry.getDefaultInstance().deregisterServiceProvider(cJpgWriter);
-//            IIORegistry.getDefaultInstance().deregisterServiceProvider(cJpgWriter);
-//            
-//        } catch (ClassNotFoundException cnf) {
-//            log.debug("class not found: {}", cnf);
-//        }
 
         Iterator<ImageWriter> ir = ImageIO.getImageWritersByFormatName("jpeg");
         while(ir.hasNext()) {
