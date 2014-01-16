@@ -224,11 +224,6 @@
 			<version>1.48a</version>
 		</dependency>
 		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>ij</artifactId>
-			<version>1.48a</version>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.ij_io</groupId>
 			<artifactId>ij_io</artifactId>
 			<version>1.2.4</version>
