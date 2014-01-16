@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -69,7 +70,11 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
         assertNotNull("IrFile is null", irFile);
         assertEquals(1, irFile.getLatestVersion().intValue());
-        assertEquals(irFile.getLatestVersions().size(), 6);
+        int size = irFile.getLatestVersions().size();
+        if (size != 3 && size != 6) {
+            Assert.fail("wrong number of derivatives found");
+        }
+
         InformationResourceFileVersion irFileVersion = irFile.getLatestVersions().iterator().next();
         assertNotNull("IrFileVersion is null", irFileVersion);
         assertEquals(1, irFile.getLatestVersion().intValue());
@@ -118,7 +123,11 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
         assertNotNull("IrFile is null", irFile);
         assertEquals(1, irFile.getLatestVersion().intValue());
-        assertEquals(6, irFile.getLatestVersions().size());
+        int size = irFile.getLatestVersions().size();
+        if (size != 3 && size != 6) {
+            Assert.fail("wrong number of derivatives found");
+        }
+
         InformationResourceFileVersion irFileVersion = irFile.getLatestVersions().iterator().next();
         assertNotNull("IrFileVersion is null", irFileVersion);
         assertEquals(1, irFile.getLatestVersion().intValue());

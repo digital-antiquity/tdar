@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -244,9 +245,13 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     public void testThumbnailControllerInvalid() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupBadFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
-        InformationResourceFileVersion currentVersion = doc.getInformationResourceFiles().iterator().next()
-                .getCurrentVersion(VersionType.WEB_SMALL);
+        InformationResourceFile irFile = doc.getInformationResourceFiles().iterator().next();
+        InformationResourceFileVersion currentVersion = irFile.getCurrentVersion(VersionType.WEB_SMALL);
         logger.info("{}", currentVersion.getId());
+        if (irFile.getInformationResourceFileVersions().size() == 3 && irFile.getCurrentVersion(VersionType.WEB_SMALL) == null) {
+            Assert.fail("Transient failure due to wrong JPEG Processor being used by PDFBox");
+        }
+
         controller.setInformationResourceFileId(currentVersion.getId());
         assertEquals(DownloadController.FORBIDDEN, controller.thumbnail());
     }
@@ -256,8 +261,11 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     public void testThumbnailController() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
-        controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next()
-                .getCurrentVersion(VersionType.WEB_SMALL).getId());
+        InformationResourceFile irFile = doc.getInformationResourceFiles().iterator().next();
+        if (irFile.getInformationResourceFileVersions().size() == 3 && irFile.getCurrentVersion(VersionType.WEB_SMALL) == null) {
+            Assert.fail("Transient failure due to wrong JPEG Processor being used by PDFBox");
+        }
+        controller.setInformationResourceFileId(irFile.getCurrentVersion(VersionType.WEB_SMALL).getId());
         assertEquals(DownloadController.SUCCESS, controller.thumbnail());
     }
 
