@@ -77,7 +77,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
             return invocation.invoke();
         } catch (TdarActionException exception) {
-            if (exception.getStatusCode() == StatusCode.FORBIDDEN.getHttpStatusCode()) {
+            if (StatusCode.shouldShowException(exception.getStatusCode())) {
                 logger.warn("caught TdarActionException", exception.getMessage());
             } else {
                 logger.warn("caught TdarActionException", exception);
