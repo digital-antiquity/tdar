@@ -14,7 +14,7 @@
 <body>
 <h1>Invoice <span class="small">{${invoice.transactionStatus}}</span></h1>
 <#if account?has_content>
-	<p><b>Account:</b><a href="<@s.url value="/billing/${account.id}" />">${account.name}</a></p>
+	<p><b>Account:</b><a href="<@s.url value="/billing/${account.id?c}" />">${account.name}</a></p>
 </#if>
 <#if invoice.otherReason?has_content>
 <p>${invoice.otherReason}</p>
