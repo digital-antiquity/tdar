@@ -403,13 +403,13 @@
     @org.hibernate.annotations.NamedQuery(
             name=TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED,
             query=  " SELECT distinct new Resource(res.id, res.title, res.resourceType) FROM Resource as res  where " +
-                    " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
-                    " (res.submitter.id=:userId or exists (" +
-                    " from ResourceCollection rescol  " +
-                    " join rescol.resources as colres " +
-                    " where " +
-                    " colres.id = res.id and " +
-                    " (TRUE=:admin or rescol.id in (:rescolIds) )))  " +
+                    " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) "
+                    + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
+                    " (res.submitter.id=:userId or exists "
+                        + "( from ResourceCollection rescol join rescol.resources as colres where colres.id = res.id and " +
+                            " (TRUE=:admin or rescol.id in (:rescolIds) )"
+                        + ")"
+                    + ")  " +
                     " order by res.title, res.id")
 
 })

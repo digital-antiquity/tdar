@@ -2,6 +2,7 @@ package org.tdar.core.dao.entity;
 
 import java.util.*;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
@@ -110,6 +111,10 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
     public List<Resource> findEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin, boolean sorted, List<Long> collectionIds) {
         //Hey guess what - you always get sorted results.
+        if (CollectionUtils.isEmpty(collectionIds)) {
+            collectionIds = new ArrayList<>();
+            collectionIds.add(null);
+        }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED);
 
         query.setLong("userId", person.getId());

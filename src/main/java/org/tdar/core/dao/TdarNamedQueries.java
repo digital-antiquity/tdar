@@ -109,7 +109,7 @@ public interface TdarNamedQueries {
 
     public static final String COLLECTION_LIST_WITH_AUTHUSER = "collection.idlest.with.authuser";
     public static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited" ;
-    public static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted" ;
+    public static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted";
 
 
     // raw SQL/HQL queries
