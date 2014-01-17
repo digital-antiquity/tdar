@@ -6,10 +6,15 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.*;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ServiceInterface;
 
 /**
@@ -26,6 +31,9 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
+
+    @Autowired
+    private ResourceCollectionService resourceCollectionService;
 
     @Transactional(readOnly = true)
     public Project find(Long id) {
@@ -86,8 +94,26 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().findEmptyProjects(updater);
     }
 
+
+    @Transactional(readOnly = true)
+    public List<Resource> findSparseTitleIdProjectListByPersonOld(Person person, boolean isAdmin) {
+        return authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true);
+    }
+
     @Transactional(readOnly = true)
     public List<Resource> findSparseTitleIdProjectListByPerson(Person person, boolean isAdmin) {
+        //get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user
+        Set<ResourceCollection> collections = resourceCollectionService.findFlattenedCollections(person, GeneralPermissions.MODIFY_METADATA);
+
+        //find all of the editable projects for the user (either directly assigned or via the specified collections)
+        List<Long> collectionIds = Persistable.Base.extractIds(collections);
+        List<Resource> editableResources = authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true, collectionIds);
+
+        return editableResources;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Resource> findSparseTitleIdProjectListByPerson2(Person person, boolean isAdmin) {
         return authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true);
     }
 

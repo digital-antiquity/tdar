@@ -384,7 +384,34 @@
             query= "select vers.extension, sum(vers.fileLength) from InformationResourceFileVersion vers where fileVersionType in (:types) group by extension"),
     @org.hibernate.annotations.NamedQuery(
             name=TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE,
-            query= "select account from Account account join account.invoices as invoice where invoice.id = :id")
+            query= "select account from Account account join account.invoices as invoice where invoice.id = :id"),
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER,
+            query="select rescol from ResourceCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId"),
+
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED,
+            query=  " SELECT distinct new Resource(res.id, res.title, res.resourceType) FROM Resource as res  where " +
+                    " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
+                    " (res.submitter.id=:userId or exists (" +
+                    " from ResourceCollection rescol  " +
+                    " join rescol.resources as colres " +
+                    " where " +
+                    " colres.id = res.id and " +
+                    " (TRUE=:admin or rescol.id in (:rescolIds) )))  "),
+
+    @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED,
+            query=  " SELECT distinct new Resource(res.id, res.title, res.resourceType) FROM Resource as res  where " +
+                    " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
+                    " (res.submitter.id=:userId or exists (" +
+                    " from ResourceCollection rescol  " +
+                    " join rescol.resources as colres " +
+                    " where " +
+                    " colres.id = res.id and " +
+                    " (TRUE=:admin or rescol.id in (:rescolIds) )))  " +
+                    " order by res.title, res.id")
+
 })
 
 package org.tdar.core.dao;

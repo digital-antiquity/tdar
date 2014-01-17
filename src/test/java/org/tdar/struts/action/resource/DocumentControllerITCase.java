@@ -29,13 +29,9 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
-import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.*;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
-import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.ResourceNote;
-import org.tdar.core.bean.resource.ResourceNoteType;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.search.query.SortOption;
@@ -85,7 +81,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         project.markUpdated(getAdminUser());
         genericService.saveOrUpdate(project);
         ResourceCollection collection = new ResourceCollection();
-        collection.setName("test rights");
+        collection.setName("parent collection with rights");
         collection.setSortBy(SortOption.RELEVANCE);
         collection.setOrientation(DisplayOrientation.GRID);
         collection.setType(CollectionType.SHARED);
@@ -97,7 +93,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(collection);
 
         ResourceCollection collectionChild = new ResourceCollection();
-        collectionChild.setName("test rights");
+        collectionChild.setName("child collection with project");
         collectionChild.setSortBy(SortOption.RELEVANCE);
         collectionChild.setParent(collection);
         collectionChild.setOrientation(DisplayOrientation.GRID);
@@ -112,8 +108,10 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         dc.prepare();
         String add = dc.add();
         assertEquals(TdarActionSupport.SUCCESS, add);
-        assertTrue(dc.getPotentialParents().contains(project));
+        List<Resource> potentialParents = dc.getPotentialParents();
 
+        logger.debug("my parents:  size:{}  contents:{}", potentialParents.size(), potentialParents);
+        assertTrue(potentialParents.contains(project));
     }
 
     @Test

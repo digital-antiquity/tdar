@@ -105,4 +105,12 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return (List<Resource>) query.list();
     }
 
+    public List<ResourceCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
+        int permission = generalPermissions.getEffectivePermissions() - 1;
+        Query query = getCurrentSession().getNamedQuery(COLLECTION_LIST_WITH_AUTHUSER);
+        query.setInteger("effectivePermission", permission);
+        query.setLong("userId", user.getId());
+        return query.list();
+    }
+
 }

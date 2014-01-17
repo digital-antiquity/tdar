@@ -6,22 +6,13 @@
  */
 package org.tdar.core.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotNullPredicate;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextQuery;
@@ -378,6 +369,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *            the parent collection
      * @param collectionType
      *            the type of collections to return (e.g. internal, shared, public)
+     * @param authenticatedUser  authuser instance to serve as a frame of reference when deriving the approprate
+     *                           value for the 'viewable' property of each child ResourceCollection in the returned
+     *                           list.
      * @return a list containing the provided 'parent' collection and any descendant collections (if any). Futhermore
      *         this method iteratively populates the transient children resource collection fields of the specified
      *         collection.
@@ -395,6 +389,57 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             toEvaluate.addAll(child.getTransientChildren());
         }
         return collections;
+    }
+
+    /**
+     * Recursively build the transient child collection fields of a specified resource collection, and return a list
+     * containing the parent collection and all descendants.
+     *
+     * This method has no side-effects.  That is, this method does not populate any transient properties of the
+     * returned collections.
+     *
+     * @param collection
+     *            the parent collection
+     * @param collectionType
+     *            the type of collections to return (e.g. internal, shared, public)
+     * @return a list containing the provided 'parent' collection and any descendant collections (if any).
+     */
+    public List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection, CollectionType collectionType) {
+        List<ResourceCollection> collections = new LinkedList<>();
+        List<ResourceCollection> toEvaluate = new LinkedList<>();
+        toEvaluate.add(collection);
+        while (!toEvaluate.isEmpty()) {
+            ResourceCollection child = toEvaluate.get(0);
+            collections.add(child);
+            toEvaluate.remove(0);
+            toEvaluate.addAll((findDirectChildCollections(child.getId(), null, collectionType)));
+        }
+        return collections;
+    }
+
+    /**
+     * Return a collection of all (shared) collections that convey permissions to the specified user that are equal
+     * or greater to the specified permission, regardless of whether the permissions are directly associated with
+     * the collection  or whether the collection's permissions are inherited from a parent collection.
+     *
+     * Note: This method does not populate any of the transient properties of the collections in the returned set.
+     *
+     * @param user
+     * @param generalPermissions
+     * @return
+     */
+    public Set<ResourceCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions) {
+        Set<ResourceCollection>allCollections = new HashSet<>();
+
+        //get all collections that grant explicit edit permissions to person
+        List<ResourceCollection> collections = getDao().findInheritedCollections(user, generalPermissions);
+
+        for(ResourceCollection rc : collections) {
+            allCollections.addAll(findAllChildCollectionsOnly(rc, ResourceCollection.CollectionType.SHARED));
+            allCollections.add(rc);
+        }
+
+        return allCollections;
     }
 
     private ResourceCollection getRootResourceCollection(ResourceCollection node) {
