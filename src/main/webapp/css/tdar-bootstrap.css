@@ -255,18 +255,18 @@ table.legend {
 	padding: 0px;
 }
 
-.countColumn,.buttontable div[hasCount],.columnSquare.count {
+.countColumn,.buttontable div[data-count],.columnSquare.count {
 	background: #e5e696; /* Old browsers */
 	border: 1px solid #999999;
 }
 
-.measurementColumn,.buttontable div[hasMeasurement],.columnSquare.measurement
+.measurementColumn,.buttontable div[data-measurement],.columnSquare.measurement
 	{
 	background: #deefff; /* Old browsers */
 	border: 1px solid #999999;
 }
 
-.integrationColumn,.buttontable div[hasOntology],.columnSquare.integration
+.integrationColumn,.buttontable div[data-ontology],.columnSquare.integration
 	{
 	background: #e4efc0; /* Old browsers */
 	border: 1px solid #999999;

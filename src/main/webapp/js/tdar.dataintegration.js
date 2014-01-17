@@ -101,7 +101,9 @@
      * @private
      */
     function _validateColumn(column) {
-        var integrate = $(column).find("div[hasOntology]");
+        var integrate = $(column).find("div[data-ontology]");
+        console.log(column);
+        console.log(integrate);
         var children = $(column).children("div");
         console.log("children:" + children.length);
         console.log("integrate:" + integrate.length);
@@ -110,9 +112,9 @@
         var ontologyName = "";
         $(integrate).each(function () {
             if (ontology == -1) {
-                ontology = $(this).attr("hasOntology");
+                ontology = $(this).data("ontology");
                 ontologyName = $(".ontology", $(this)).html();
-            } else if (ontology != $(this).attr("hasOntology")) {
+            } else if (ontology != $(this).data("ontology")) {
                 ontology = -1000;
             }
         });
@@ -144,13 +146,13 @@
     function _dropVariable(event, ui) {
         var $target = $(event.target);
         var draggable = ui.draggable;
-        if (draggable.attr("colnum")) {
+        if (draggable.data("colnum")) {
             return false;
         }
         $(draggable).css("z-index", 100);
-        var table = draggable.attr("table");
+        var table = draggable.data("table");
         var ret = true;
-        var children = $target.children("div [table]");
+        var children = $target.children("div [data-table]");
         console.log(draggable);
         console.log(table);
         console.log(children);
@@ -159,7 +161,7 @@
                 .each(
                 function () {
                     console.log($(this));
-                    if ($(this).attr("table") == table) {
+                    if ($(this).data("table") == table) {
                         msg = "you cannot add more than one variable from the same table to any column";
                         _setStatus(msg);
                         ret = false;
@@ -172,12 +174,12 @@
         }
 
         var newChild = $("<div/>").appendTo($target);
-        newChild.attr("hasOntology", draggable.attr("hasOntology"));
-        newChild.attr("table", draggable.attr("table"));
+        newChild.data("ontology", draggable.data("ontology"));
+        newChild.data("table", draggable.data("table"));
         $target.find(".info").detach();
-        newChild.append(draggable.html());
+        draggable.clone(true,true).appendTo(newChild);
         newChild.append("&nbsp;&nbsp;&nbsp;&nbsp;<button>X</button>");
-        var colNum = $target.attr('colNum');
+        var colNum = $target.data('colnum');
         var children = $target.find("div");
 
         newChild.find('*').each(function () {
@@ -187,7 +189,7 @@
             TDAR.common.replaceAttribute(elem, "name", '{CELLNUM}', children.length - 2);
         });
 
-        $(newChild).attr("style", "");
+        $(newChild).children().removeAttr("style");
 
         _validateColumn(event.target);
         $target.draggable("destroy");
@@ -246,7 +248,7 @@
     function _addColumn(strOntologyId) {
         var colNum = $("#drplist tr").children().length + 1;
         $(
-            "<td colNum="
+            "<td data-colnum="
                 + (colNum - 1)
                 + " class='displayColumn'><div class='label'>Column "
                 + colNum
@@ -272,7 +274,7 @@
                 // fake the drop function
                 var table = tables[i];
                 var ui = {};
-                ui.draggable = $($("[hasontology=" + strOntologyId + "]", $(table))[0]);
+                ui.draggable = $($("[data-ontology=" + strOntologyId + "]", $(table))[0]);
                 _dropVariable(event, ui);
             }
         }
@@ -287,7 +289,7 @@
             .each(
             function () {
                 var $this = $(this);
-                if ($this.attr("colnum") == 0) {
+                if ($this.data("colnum") == 0) {
                     $this.empty();
                     $this
                         .html(
@@ -313,9 +315,9 @@
         var totalTables = 0;
         var okay = false;
 
-        $("[hasontology]").each(function () {
-            var ont = $(this).attr('hasontology');
-            var table = $(this).attr('table');
+        $("[data-ontology]").each(function () {
+            var ont = $(this).data('ontology');
+            var table = $(this).data('table');
             if (matches[ont] == undefined) {
                 matches[ont] = [];
             }
