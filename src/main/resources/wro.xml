@@ -63,6 +63,7 @@
         <js>/js/tdar.repeatrow.js</js>
         <js>/js/tdar.autocomplete.js</js>
         <js>/js/tdar.datatable.js</js>
+        <js>/js/tdar.dataset-metadata.js</js>
         <js>/js/tdar.dataintegration.js</js>
         <js>/js/tdar.advanced-search.js</js>
         <js>/js/tdar.authority-management.js</js>
