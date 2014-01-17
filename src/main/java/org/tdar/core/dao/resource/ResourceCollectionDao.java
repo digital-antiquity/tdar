@@ -7,7 +7,10 @@
 package org.tdar.core.dao.resource;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Query;
@@ -111,6 +114,33 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         query.setInteger("effectivePermission", permission);
         query.setLong("userId", user.getId());
         return query.list();
+    }
+
+    public Set<ResourceCollection> findFlattendCollections(Person user, GeneralPermissions generalPermissions) {
+        Set<ResourceCollection>allCollections = new HashSet<>();
+
+        //get all collections that grant explicit edit permissions to person
+        List<ResourceCollection> collections = findInheritedCollections(user, generalPermissions);
+
+        for(ResourceCollection rc : collections) {
+            allCollections.addAll(findAllChildCollectionsOnly(rc, ResourceCollection.CollectionType.SHARED));
+            allCollections.add(rc);
+        }
+
+        return allCollections;
+    }
+
+    public List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection, CollectionType collectionType) {
+        List<ResourceCollection> collections = new LinkedList<>();
+        List<ResourceCollection> toEvaluate = new LinkedList<>();
+        toEvaluate.add(collection);
+        while (!toEvaluate.isEmpty()) {
+            ResourceCollection child = toEvaluate.get(0);
+            collections.add(child);
+            toEvaluate.remove(0);
+            toEvaluate.addAll(findCollectionsOfParent(child.getId(), null, collectionType));
+        }
+        return collections;
     }
 
 }

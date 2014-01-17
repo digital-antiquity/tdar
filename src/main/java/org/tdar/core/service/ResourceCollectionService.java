@@ -6,13 +6,22 @@
  */
 package org.tdar.core.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotNullPredicate;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextQuery;
@@ -405,16 +414,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return a list containing the provided 'parent' collection and any descendant collections (if any).
      */
     public List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection, CollectionType collectionType) {
-        List<ResourceCollection> collections = new LinkedList<>();
-        List<ResourceCollection> toEvaluate = new LinkedList<>();
-        toEvaluate.add(collection);
-        while (!toEvaluate.isEmpty()) {
-            ResourceCollection child = toEvaluate.get(0);
-            collections.add(child);
-            toEvaluate.remove(0);
-            toEvaluate.addAll((findDirectChildCollections(child.getId(), null, collectionType)));
-        }
-        return collections;
+        return getDao().findAllChildCollectionsOnly(collection, collectionType);
     }
 
     /**
@@ -429,17 +429,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     public Set<ResourceCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions) {
-        Set<ResourceCollection>allCollections = new HashSet<>();
-
-        //get all collections that grant explicit edit permissions to person
-        List<ResourceCollection> collections = getDao().findInheritedCollections(user, generalPermissions);
-
-        for(ResourceCollection rc : collections) {
-            allCollections.addAll(findAllChildCollectionsOnly(rc, ResourceCollection.CollectionType.SHARED));
-            allCollections.add(rc);
-        }
-
-        return allCollections;
+        return getDao().findFlattendCollections(user,generalPermissions);
     }
 
     private ResourceCollection getRootResourceCollection(ResourceCollection node) {

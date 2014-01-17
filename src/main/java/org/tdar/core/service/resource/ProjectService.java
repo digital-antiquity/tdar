@@ -1,6 +1,10 @@
 package org.tdar.core.service.resource;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +14,14 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.*;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ServiceInterface;
 
 /**
@@ -33,7 +40,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     private AuthorizedUserDao authorizedUserDao;
 
     @Autowired
-    private ResourceCollectionService resourceCollectionService;
+    private ResourceCollectionDao resourceCollectionDao;
 
     @Transactional(readOnly = true)
     public Project find(Long id) {
@@ -103,7 +110,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     @Transactional(readOnly = true)
     public List<Resource> findSparseTitleIdProjectListByPerson(Person person, boolean isAdmin) {
         //get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user
-        Set<ResourceCollection> collections = resourceCollectionService.findFlattenedCollections(person, GeneralPermissions.MODIFY_METADATA);
+        Set<ResourceCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA);
 
         //find all of the editable projects for the user (either directly assigned or via the specified collections)
         List<Long> collectionIds = Persistable.Base.extractIds(collections);

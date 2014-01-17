@@ -1,6 +1,11 @@
 package org.tdar.core.dao.entity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -16,7 +21,6 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 /**
  * $Id$
  * 
