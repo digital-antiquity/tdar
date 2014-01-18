@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
@@ -73,6 +74,9 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
                 break;
         }
         setMode("admin lookup");
+        if (q == null) {
+            throw new TdarRecoverableRuntimeException("cannot determine QueryBuilder");
+        }
         q.setRawQuery(rawQuery);
         try {
             handleSearch(q);

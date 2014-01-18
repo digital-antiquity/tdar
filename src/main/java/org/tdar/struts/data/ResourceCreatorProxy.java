@@ -14,6 +14,8 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
 
+import com.drew.lang.annotations.SuppressWarnings;
+
 /**
  * $Id$
  * 
@@ -124,20 +126,29 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
      * 
      * @return creatorType, if system can figure out based on available info. otherwise null.
      */
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value="NP_NULL_ON_SOME_PATH", justification="ignoring null derefernece because findbugs is not paying attention to the null-check above")
     private CreatorType determineActualCreatorType() {
-        if (institution == null && person == null) {
+        boolean instValid = false;
+        boolean persValid = false;
+        if (institution != null) {
+            instValid = !institution.hasNoPersistableValues();
+        }
+
+        if (person != null) {
+            instValid = !person.hasNoPersistableValues();
+        }
+
+        if (instValid == false && persValid == false) {
             throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCreatorProxy.err_determine_creator_insufficient_info"));
         }
-        if (institution != null && institution.hasNoPersistableValues() && person != null && person.hasNoPersistableValues()) {
-            return null;
-        }
-        if (!institution.hasNoPersistableValues() && !person.hasNoPersistableValues()) {
+
+        if (instValid && persValid) {
             String err = MessageHelper.getMessage("resourceCreatorProxy.err_fmt2_determine_creator_too_much_info", getPerson(), getInstitution(), getType());
             logger.warn(err);
             return type;
         }
 
-        if (!person.hasNoPersistableValues()) {
+        if (persValid) {
             return CreatorType.PERSON;
         } else {
             return CreatorType.INSTITUTION;

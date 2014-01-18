@@ -64,7 +64,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     private Long ticketId;
 
     @Autowired
-    private PersonalFilestoreService filestoreService;
+    private transient PersonalFilestoreService filestoreService;
     private List<IntegrationDataResult> integrationDataResults = new ArrayList<IntegrationDataResult>();
     private String integrationDataResultsFilename;
     private long integrationDataResultsContentLength;

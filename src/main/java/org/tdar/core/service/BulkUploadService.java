@@ -444,19 +444,24 @@ public class BulkUploadService {
      * @param count
      * @return
      */
-    private float processFileProxiesIntoResources(final InformationResource image, final BulkManifestProxy manifestProxy,
-            AsyncUpdateReceiver receiver, float count) {
+    private float processFileProxiesIntoResources(final InformationResource image, final BulkManifestProxy manifestProxy, AsyncUpdateReceiver receiver,
+            float count) {
 
         if (StringUtils.isBlank(image.getTitle())) {
             image.setTitle(BulkUploadTemplate.BULK_TEMPLATE_TITLE);
         }
 
+        if (manifestProxy == null) {
+            return count;
+        }
+        
         for (FileProxy fileProxy : manifestProxy.getFileProxies()) {
-            logger.debug("processing:" + fileProxy + " |" + fileProxy.getAction());
+            logger.trace("processing: {}", fileProxy);
             try {
                 if (fileProxy == null || fileProxy.getAction() != FileAction.ADD) {
                     continue;
                 }
+                logger.debug("processing: {} | {}" , fileProxy , fileProxy.getAction());
                 String fileName = fileProxy.getFilename();
                 // if there is not an exact match in the manifest file then, skip it. If there is no manifest file, then go merrily along
                 if (manifestProxy != null && !manifestProxy.containsFilename(fileName)) {
@@ -464,7 +469,7 @@ public class BulkUploadService {
                     continue;
                 }
 
-                logger.info("inspecting ..." + fileName);
+                logger.info("inspecting ... {}", fileName);
                 count++;
                 float percent = (count / Float.valueOf(manifestProxy.getFileProxies().size())) * 50;
                 receiver.update(percent, " processing " + fileName);

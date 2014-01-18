@@ -46,7 +46,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
     private Map<String, String[]> responseParams = new HashMap<String, String[]>();
 
     @Autowired
-    private NelNetPaymentDao nelnet;
+    private transient NelNetPaymentDao nelnet;
 
     @Override
     public void setParameters(Map<String, String[]> arg0) {

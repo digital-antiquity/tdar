@@ -178,9 +178,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
 
-//        if (num1 == null || num2 == null) {
-//            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("latLong.one_null"));
-//        }
+        if (num1 == null) {
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("latLong.one_null"));
+        }
         // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
         Double numTwo = (num2 != null) ? num2: num1 + salt / 2;
         if (Math.abs(num1.doubleValue() - numTwo.doubleValue()) < salt) {

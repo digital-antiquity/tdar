@@ -1,5 +1,6 @@
 package org.tdar.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +23,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Pair<R, S> {
+public class Pair<R, S> implements Serializable {
 
+    private static final long serialVersionUID = -2511232129063917716L;
     private R first;
     private S second;
 

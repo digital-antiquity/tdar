@@ -25,7 +25,7 @@ public class SheetProxy implements Serializable {
 
     private static final long serialVersionUID = -8358849369052680733L;
     private String name;
-    private Workbook workbook;
+    private transient Workbook workbook;
     List<String> headerLabels = new ArrayList<String>();
     private int startRow = ExcelService.FIRST_ROW;
     private int startCol = ExcelService.FIRST_COLUMN;

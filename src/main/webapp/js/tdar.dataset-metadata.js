@@ -106,6 +106,9 @@
         }
     }
 
+    /**
+     * used to bind to a select element to jump to a specific part of the page
+     */
     function _gotoColumn($el) {
         var idVal = $el.val();
         document.getElementById(idVal).scrollIntoView();
@@ -113,6 +116,9 @@
 
     var pageInitialized = false;
 
+    /**
+     * Init the data-table-column metadata page to setup the status table and data validation
+     */
     function _init(formId) {
 
         var $form = $(formId);
@@ -167,6 +173,9 @@
         TDAR.common.initFormValidation($("#edit-metadata-form")[0]);
     }
 
+    /**
+     * Updates the SummaryTable based on column validation
+     */
     function _updateSummaryTable() {
         var $summary = $("#summaryTable");
         $(".integration_label", $summary).html($("div.datatablecolumn .columnSquare.integration").length);

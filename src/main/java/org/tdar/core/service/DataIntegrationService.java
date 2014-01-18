@@ -176,13 +176,15 @@ public class DataIntegrationService {
      * @param column
      */
     public void updateMappedCodingRules(DataTableColumn column) {
+        if (column == null) 
+            return;
         CodingSheet codingSheet = column.getDefaultCodingSheet();
         logger.info("col {}", column);
         logger.info("sheet {}", codingSheet);
         if (codingSheet != null) {
             logger.info("any rules {}", CollectionUtils.isEmpty(codingSheet.getCodingRules()));
         }
-        if (column == null || codingSheet == null || CollectionUtils.isEmpty(codingSheet.getCodingRules()))
+        if (codingSheet == null || CollectionUtils.isEmpty(codingSheet.getCodingRules()))
             return;
         logger.info("select distinct values");
         List<String> values = tdarDataImportDatabase.selectDistinctValues(column);

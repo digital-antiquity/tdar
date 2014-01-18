@@ -43,6 +43,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
 import org.tdar.utils.MessageHelper;
@@ -66,7 +67,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * class to help with marshalling and unmarshalling of resources
  */
 @Service
-public class XmlService implements Serializable {
+public class XmlService {
 
     private static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
     private static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
@@ -80,8 +81,6 @@ public class XmlService implements Serializable {
     private static final String TDAR_SCHEMA = "tdar-schema";
     private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
 
-    private static final long serialVersionUID = -7304234425123193412L;
-
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Class<?>[] jaxbClasses;
@@ -90,10 +89,10 @@ public class XmlService implements Serializable {
     private UrlService urlService;
 
     @Autowired
-    JaxbPersistableConverter persistableConverter;
+    private JaxbPersistableConverter persistableConverter;
 
     @Autowired
-    ObfuscationService obfuscationService;
+    private ObfuscationService obfuscationService;
 
     /** 
      * Convert the existing object to an XML representation using JAXB
@@ -277,6 +276,10 @@ public class XmlService implements Serializable {
                 rdf = addPerson(model, baseUrl, (Person) creator);
                 break;
         }
+        if (rdf == null) {
+            throw new TdarRecoverableRuntimeException("cannot determine whether creator is person or institution");
+        }
+        
         for (LogPart part : log.getCollaboratorLogPart()) {
             com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
             if (part.getSimpleClassName().equals(INSTITUTION)) {

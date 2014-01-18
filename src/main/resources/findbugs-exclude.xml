@@ -6,4 +6,15 @@
       <Class name="~.*\.*__CLR3*" />
       <Class name="~.*?__CLR3*"/>
      </Match>
+
+  <Match>
+    <Class name="~.*Test$"/>
+  </Match>
+  <Match>
+    <Class name="~.*TestCase$"/>
+  </Match>
+  <Match>
+    <Class name="~.*ITCase$"/>
+  </Match>
+
 </FindBugsFilter>

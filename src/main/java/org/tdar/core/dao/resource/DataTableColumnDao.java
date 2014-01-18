@@ -38,6 +38,7 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
     }
 
     @SuppressWarnings("unchecked")
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value="NP_NULL_ON_SOME_PATH", justification="ignoring null derefernece because findbugs is not paying attention to the null-check above")
     public List<CodingRule> findMappedCodingRules(CodingSheet sheet, List<String> valuesToMatch) {
         if (Persistable.Base.isNullOrTransient(sheet) || CollectionUtils.isEmpty(valuesToMatch)) {
             getLogger().debug("no mapped coding rules available for sheet {} and values {}", sheet, valuesToMatch);

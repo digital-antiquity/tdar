@@ -58,7 +58,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     public static final String FORBIDDEN = "forbidden";
 
     @Autowired
-    private PdfService pdfService;
+    private transient PdfService pdfService;
 
     @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-download.ftl") })
     public String confirm() throws TdarActionException {

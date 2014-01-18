@@ -114,8 +114,13 @@ public class AuthorizedUser extends Base implements Persistable {
     @Transient
     // is the authorizedUser valid not taking into account whether a collection is present
     public boolean isValid() {
-        logger.trace("calling validate collection for user/permission/registered: [{} / {} / {}]",
-                new Object[] { user != null, generalPermission != null, user.isRegistered() });
+        boolean registered = false;
+        String name = "";
+        if (user != null) {
+            registered = user.isRegistered();
+            name = user.toString();
+        }
+        logger.trace("calling validate collection for user/permission/registered: [{} / {} / {}]", name, generalPermission != null, registered);
         return user != null && generalPermission != null && user.isRegistered();
     }
 

@@ -143,7 +143,7 @@ public class ResourceProxy implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s %s %s %s %s %s", id, title, getLatitudeLongitudeBoxes(), getResourceCreators(), getProjectProxy(), getInformationResourceFileProxies(), submitter);
+        return String.format("%s %s %s %s %s %s %s", id, title, getLatitudeLongitudeBoxes(), getResourceCreators(), getProjectProxy(), getInformationResourceFileProxies(), submitter);
     }
 
     public String getDescription() {

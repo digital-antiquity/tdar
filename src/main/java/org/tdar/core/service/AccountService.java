@@ -704,7 +704,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             spaceInMb = spaceInMb_;
         }
 
-        if (numFiles == 0 && spaceInMb == 0) {
+        if (numFiles.longValue() == 0L && spaceInMb.longValue() == 0L) {
             return null;
         }
 

@@ -45,7 +45,7 @@ import org.tdar.utils.Pair;
 public class DataIntegrationWorkbook  implements Serializable {
 
     private static final long serialVersionUID = -2452046179173301666L;
-    private ExcelService excelService;
+    private transient ExcelService excelService;
     private Workbook workbook;
     private List<IntegrationColumn> integrationColumns;
     private List<IntegrationDataResult> integrationDataResults;

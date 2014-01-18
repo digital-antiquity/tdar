@@ -39,9 +39,8 @@ import org.tdar.utils.MessageHelper;
  */
 
 @Service
-public class PdfService implements Serializable {
+public class PdfService {
 
-    private static final long serialVersionUID = 2111947231803271925L;
     private static final String DOT_PDF = ".pdf";
     private static final String COVER_PAGE = "cover_page";
     private static final int LEFT_MARGIN = 73;
@@ -50,7 +49,7 @@ public class PdfService implements Serializable {
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    FileSystemResourceDao fileDao;
+    private FileSystemResourceDao fileDao;
 
     @Autowired
     private UrlService urlService;
