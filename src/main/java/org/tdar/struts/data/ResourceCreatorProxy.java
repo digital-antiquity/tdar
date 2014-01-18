@@ -128,32 +128,26 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
      */
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value="NP_NULL_ON_SOME_PATH", justification="ignoring null derefernece because findbugs is not paying attention to the null-check above")
     private CreatorType determineActualCreatorType() {
-        boolean instValid = false;
-        boolean persValid = false;
-        if (institution != null) {
-            instValid = !institution.hasNoPersistableValues();
-        }
-
-        if (person != null) {
-            instValid = !person.hasNoPersistableValues();
-        }
-
-        if (instValid == false && persValid == false) {
+        if (institution == null && person == null) {
             throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCreatorProxy.err_determine_creator_insufficient_info"));
         }
-
-        if (instValid && persValid) {
+        boolean hasNoPersistableValues = institution.hasNoPersistableValues();
+        if (hasNoPersistableValues && person.hasNoPersistableValues()) {
+            return null;
+        }
+        if (!hasNoPersistableValues && !person.hasNoPersistableValues()) {
             String err = MessageHelper.getMessage("resourceCreatorProxy.err_fmt2_determine_creator_too_much_info", getPerson(), getInstitution(), getType());
             logger.warn(err);
             return type;
         }
 
-        if (persValid) {
+        if (!person.hasNoPersistableValues()) {
             return CreatorType.PERSON;
         } else {
             return CreatorType.INSTITUTION;
         }
     }
+
 
     @Transient
     public CreatorType getActualCreatorType() {
