@@ -677,6 +677,10 @@ public class TdarConfiguration {
         return assistant.getIntProperty("tos.version", 0);
     }
 
+    public boolean isJSCSSMergeServletEnabled() {
+        return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
+    }
+
     public boolean isJaiImageJenabled() {
         return assistant.getBooleanProperty("jai.imagej.enabled", true);
     }

@@ -59,7 +59,7 @@
     <#if (uri != '' && uri != '/about')>
         <#assign bodyid = "alt" />
     </#if>
-    <@header.css production />
+    <@header.css (production && JSCSSMergeServletEnabled) />
         
     ${head}
 
@@ -193,7 +193,7 @@
                 <#list stackTraces as _stacktrace>
 <#--don't indent this pre section  -->
 <pre class="pre-scrollable">
-<em>Stacktrace ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
+<em><@s.text name="error.stacktrace"/> ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
 ${_stacktrace?html}
 </pre>
                 </#list>
@@ -294,7 +294,7 @@ ${_stacktrace?html}
 	        TDAR.common.applyWatermarks($('form.searchheader, form[name=searchheader]'));
         });
         </script>
-    <@header.scripts production />
+    <@header.scripts (production && JSCSSMergeServletEnabled) />
     <script type="text/javascript">
 	    TDAR.maps.googleApiKey = "${googleMapsApiKey!''}";
 	    TDAR.maps.defaults.center.lat = ${mapDefaultLat};

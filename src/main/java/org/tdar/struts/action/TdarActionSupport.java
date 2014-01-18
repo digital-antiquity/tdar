@@ -682,5 +682,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getJavascriptErrorLog() {
         return javascriptErrorLog;
     }
-
+        
+    public boolean isJSCSSMergeServletEnabled() {
+        return getTdarConfiguration().isJSCSSMergeServletEnabled();
+    }
 }
