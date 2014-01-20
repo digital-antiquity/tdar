@@ -610,6 +610,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             return "http:";
         }
     }
+    
+    public String getStaticHost() {
+        return String.format("%s//%s",getProtocol(), getTdarConfiguration().getStaticContentHost());
+    }
 
     public boolean getShowJiraLink() {
         return getTdarConfiguration().getShowJiraLink();

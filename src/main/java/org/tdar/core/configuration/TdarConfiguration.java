@@ -244,7 +244,11 @@ public class TdarConfiguration {
     }
 
     public String getHostName() {
-        return assistant.getStringProperty("app.hostname", DEFAULT_HOSTNAME);
+        String host = "localhost";
+        if (isProductionEnvironment()) {
+            host = DEFAULT_HOSTNAME;
+        }
+        return assistant.getStringProperty("app.hostname", host);
     }
 
     public String getEmailHostName() {
@@ -683,5 +687,9 @@ public class TdarConfiguration {
 
     public boolean isJaiImageJenabled() {
         return assistant.getBooleanProperty("jai.imagej.enabled", true);
+    }
+
+    public String getStaticContentHost() {
+        return assistant.getStringProperty("static.content.host",getHostName());
     }
 }

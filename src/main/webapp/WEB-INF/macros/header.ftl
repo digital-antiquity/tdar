@@ -70,7 +70,7 @@
     <script type="text/javascript" src="<#list srcs[idx2..]as src><#if src_index != 0>,</#if>${src?replace(".js","")}</#list>.js?build=${common.tdarBuildId}"></script>
 <#else>
 <#list srcs as src>
-  <script type="text/javascript" src="${src}"></script>
+  <script type="text/javascript" src="${staticHost}${src}"></script>
 </#list>
 
 </#if>
@@ -99,7 +99,7 @@
 
 <#else>
 <#list srcs as src>
-  <link rel="stylesheet" type="text/css" href="${src}" data-version="${common.tdarBuildId}">
+  <link rel="stylesheet" type="text/css" href="${staticHost}${src}" data-version="${common.tdarBuildId}">
 </#list>
 
 </#if>
