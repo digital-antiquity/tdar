@@ -689,6 +689,17 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("jai.imagej.enabled", true);
     }
 
+    public boolean isStaticContentEnabled() {
+        return assistant.getBooleanProperty("static.content.enabled", false);
+    }
+    
+    public int getStaticContentSSLPort() {
+        return assistant.getIntProperty("static.content.sslPort", 443);
+    }
+    public int getStaticContentPort() {
+        return assistant.getIntProperty("static.content.port", 80);
+    }
+    
     public String getStaticContentHost() {
         return assistant.getStringProperty("static.content.host",getHostName());
     }
