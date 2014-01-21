@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -360,6 +361,8 @@ public class ReflectionService {
         return findCandidateComponents;
     }
 
+    private static Map<String, Boolean> annotationLookupCache = new ConcurrentHashMap<String, Boolean>();
+    
     /**
      * Check whether the identified Method or Action has the annotation
      * 
@@ -380,6 +383,14 @@ public class ReflectionService {
             methodName = EXECUTE;
         }
 
+        String key = action.getClass().getCanonicalName() + "$" + methodName;
+        Boolean found = annotationLookupCache.get(key);
+        if (found != null) {
+            return found;
+        }
+        
+        found = Boolean.FALSE;
+        
         if (action != null) {
             method = action.getClass().getMethod(methodName);
         }
@@ -387,9 +398,11 @@ public class ReflectionService {
         if (method != null) {
             Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
             Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);
-            return (class_ != null || method_ != null);
+            found = (class_ != null || method_ != null);
         }
-        return false;
+        annotationLookupCache.put(key, found);
+
+        return found;
     }
     
     /**
