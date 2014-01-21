@@ -23,6 +23,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
+import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
@@ -41,6 +42,7 @@ import org.tdar.struts.interceptor.PostOnly;
 public class BillingAccountController extends AbstractPersistableController<Account> {
 
     public static final String UPDATE_QUOTAS = "updateQuotas";
+    public static final String FIX_FOR_DELETE_ISSUE = "fix";
     public static final String CHOOSE = "choose";
     public static final String VIEW_ID = "view?id=${id}";
     public static final String RIGHTS_TO_ASSIGN_THIS_INVOICE = "you do not have the rights to assign this invoice";
@@ -174,6 +176,44 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     })
     public String updateQuotas() {
         getAccountService().updateQuota(getAccount(), getAccount().getResources());
+        return TdarActionSupport.SUCCESS;
+    }
+
+    
+    /**
+     * Temporary controller to fix issue where deleted items were counted wrong/differently before
+     * we're changing the values here automatically
+     * @return
+     */
+    @SkipValidation
+    @WriteableSession
+    @Action(value = FIX_FOR_DELETE_ISSUE, results = {
+            @Result(name = SUCCESS, location = "view?id=${id}", type = REDIRECT)
+    })
+    public String fix() {
+        logger.debug(">>>>> F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
+        getAccountService().updateQuota(getAccount(), getAccount().getResources());
+        getGenericService().refresh(getAccount());
+        logger.debug(":::: F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
+        if (CollectionUtils.isNotEmpty(getAccount().getInvoices()) && getAccount().getInvoices().size() == 1) {
+            Invoice invoice = getAccount().getInvoices().iterator().next();
+            Long space = getAccount().getSpaceUsedInMb() + 10l;
+            Long files = getAccount().getFilesUsed() + 1l;
+            for (BillingItem item : invoice.getItems()) {
+                if (item.getActivity().isSpaceOnly()) {
+                    logger.debug("changing space from: {} to {}",item.getQuantity(), space);
+                    item.setQuantity(space.intValue());
+                }
+
+                if (item.getActivity().isFilesOnly()) {
+                    logger.debug("changing files from: {} to {}",item.getQuantity(), files);
+                    item.setQuantity(files.intValue());
+                }
+            }
+            getGenericService().saveOrUpdate(invoice.getItems());
+        }
+        getAccountService().updateQuota(getAccount(), getAccount().getResources());
+        logger.debug("<<<<<< F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
         return TdarActionSupport.SUCCESS;
     }
 
