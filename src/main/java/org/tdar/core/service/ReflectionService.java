@@ -70,6 +70,7 @@ public class ReflectionService {
     private static final String GET = "get";
     private static final String ORG_TDAR = "org.tdar.";
     public transient Logger logger = LoggerFactory.getLogger(getClass());
+    public static transient Logger staticLogger = LoggerFactory.getLogger(ReflectionService.class);
     private Map<String, Class<Persistable>> persistableLookup;
 
     /**
@@ -383,8 +384,9 @@ public class ReflectionService {
             methodName = EXECUTE;
         }
 
-        String key = action.getClass().getCanonicalName() + "$" + methodName;
+        String key = annotationClass.getCanonicalName() + "|" + action.getClass().getCanonicalName() + "$" + methodName;
         Boolean found = annotationLookupCache.get(key);
+        staticLogger.debug("key: {}, found: {}", key,found);
         if (found != null) {
             return found;
         }
