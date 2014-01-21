@@ -820,7 +820,7 @@
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-api</artifactId>
-			<version>3.4.9</version>
+			<version>3.4.10</version>
 			<!--  LICENSE: APACHE 2.0 / LGPL -->
 		</dependency>
 		<!-- CXF for web-services endpoint -->
