@@ -7,7 +7,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
-		<struts2.version>2.3.15.3</struts2.version>
+		<struts2.version>2.3.16</struts2.version>
 		<hibernate.version>4.2.8.Final</hibernate.version>
 		<hibernate.search.version>4.4.1.Final</hibernate.search.version>
 		<spring.framework.version>3.2.4.RELEASE</spring.framework.version>
@@ -19,10 +19,10 @@
 		<jena.version>2.11.0</jena.version>
 		<clover.version>3.2.0</clover.version>
 		<!-- /end managed versions -->
-		<jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
+		<jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -X6X:MaxPermSize=512m</jvm.args>
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
 		<generated.schema.file>schema.sql</generated.schema.file>
-        <wro4j.version>1.6.3</wro4j.version>
+        <wro4j.version>1.7.2</wro4j.version>
 		<jetty.version>8.1.11.v20130520</jetty.version>
 		<jetty.port>8080</jetty.port>
 		<jetty.ssl.port>8443</jetty.ssl.port>
@@ -148,7 +148,7 @@
 		<dependency>
 			<groupId>com.jgeppert.struts2.bootstrap</groupId>
 			<artifactId>struts2-bootstrap-plugin</artifactId>
-			<version>1.6.1</version>
+			<version>1.7.0</version>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
@@ -601,7 +601,7 @@
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<version>1.0.0.Final</version>
+			<version>1.0.1.Final</version>
 			<type>pom</type>
 			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
@@ -814,7 +814,7 @@
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-apibinding</artifactId>
-			<version>3.4.9</version>
+			<version>3.4.10</version>
 			<!--  LICENSE: APACHE 2.0  / LGPL -->
 		</dependency>
 		<dependency>
