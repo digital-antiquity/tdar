@@ -118,6 +118,13 @@ public class SheetEvaluator {
 
     public String getCellValueAsString(Cell cell) {
         try {
+
+            if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
+                throw new TdarRecoverableRuntimeException(String.format(
+                        "Row: %s column %s of your dataset has an Error in it, please review and correct the error prior to submitting ",
+                        cell.getRowIndex() + 1, cell.getColumnIndex() + 1));
+            }
+
             return formatter.formatCellValue(cell, evaluator);
         } catch (IndexOutOfBoundsException e) {
             logger.trace("row {} col: {}", cell.getRowIndex(), cell.getColumnIndex());
@@ -130,11 +137,11 @@ public class SheetEvaluator {
                     return Boolean.toString(cell.getBooleanCellValue());
                 default:
                     throw new TdarRecoverableRuntimeException(String.format("there was a problem processing your dataset at row: %s column %s",
-                            cell.getRowIndex(), cell.getColumnIndex()));
+                            cell.getRowIndex() + 1, cell.getColumnIndex() + 1));
             }
-        } catch (RuntimeException re ) {
+        } catch (RuntimeException re) {
             throw new TdarRecoverableRuntimeException(String.format("there was a problem processing your dataset at row: %s column %s",
-                    cell.getRowIndex(), cell.getColumnIndex()));            
+                    cell.getRowIndex() + 1, cell.getColumnIndex() + 1));
         }
     }
 
