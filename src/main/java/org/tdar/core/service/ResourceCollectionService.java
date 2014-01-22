@@ -459,6 +459,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *            the parent collection
      * @param collectionType
      *            the type of collections to return (e.g. internal, shared, public)
+     * @param authenticatedUser  authuser instance to serve as a frame of reference when deriving the approprate
+     *                           value for the 'viewable' property of each child ResourceCollection in the returned
+     *                           list.
      * @return a list containing the provided 'parent' collection and any descendant collections (if any). Futhermore
      *         this method iteratively populates the transient children resource collection fields of the specified
      *         collection.
@@ -476,6 +479,38 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             toEvaluate.addAll(child.getTransientChildren());
         }
         return collections;
+    }
+
+    /**
+     * Recursively build the transient child collection fields of a specified resource collection, and return a list
+     * containing the parent collection and all descendants.
+     *
+     * This method has no side-effects.  That is, this method does not populate any transient properties of the
+     * returned collections.
+     *
+     * @param collection
+     *            the parent collection
+     * @param collectionType
+     *            the type of collections to return (e.g. internal, shared, public)
+     * @return a list containing the provided 'parent' collection and any descendant collections (if any).
+     */
+    public List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection, CollectionType collectionType) {
+        return getDao().findAllChildCollectionsOnly(collection, collectionType);
+    }
+
+    /**
+     * Return a collection of all (shared) collections that convey permissions to the specified user that are equal
+     * or greater to the specified permission, regardless of whether the permissions are directly associated with
+     * the collection  or whether the collection's permissions are inherited from a parent collection.
+     *
+     * Note: This method does not populate any of the transient properties of the collections in the returned set.
+     *
+     * @param user
+     * @param generalPermissions
+     * @return
+     */
+    public Set<ResourceCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions) {
+        return getDao().findFlattendCollections(user,generalPermissions);
     }
 
     /**

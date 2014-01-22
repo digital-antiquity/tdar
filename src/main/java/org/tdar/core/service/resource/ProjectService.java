@@ -1,17 +1,15 @@
 package org.tdar.core.service.resource;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -19,6 +17,8 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ServiceInterface;
 
 /**
@@ -35,6 +35,9 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
+
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
 
 //    /**
 //     * Find Project by Id
@@ -86,20 +89,6 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().findAllEditableProjects(person);
     }
 
-    /**
-     * Find all @link Project resources that were submitted by the person, or if admin, all. Return sparse entities (title, description).
-     * @param person
-     * @param isAdmin
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public List<Resource> findSparseTitleIdProjectListByPerson(Person person, boolean isAdmin) {
-        if (Persistable.Base.isNullOrTransient(person)) {
-            return Collections.emptyList();
-        }
-        return authorizedUserDao.findSpaseEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true);
-    }
-
 
     /**
      * Find all @link Project resources, but only return sparse objects (title, description)
@@ -145,6 +134,26 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     public List<Project> findEmptyProjects(Person updater) {
         return getDao().findEmptyProjects(updater);
     }
+
+
+    // @Transactional(readOnly = true)
+    // public List<Resource> findSparseTitleIdProjectListByPersonOld(Person person, boolean isAdmin) {
+    //     return authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true);
+    // }
+
+    @Transactional(readOnly = true)
+    public List<Resource> findSparseTitleIdProjectListByPerson(Person person, boolean isAdmin) {
+        //get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user
+        Set<ResourceCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA);
+
+        //find all of the editable projects for the user (either directly assigned or via the specified collections)
+        List<Long> collectionIds = Persistable.Base.extractIds(collections);
+        List<Resource> editableResources = authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true, collectionIds);
+
+        return editableResources;
+    }
+    
+
 
     /**
      * Check if specified @link Project contains a @link Dataset entity that has mapped @link CodingSheet entries and @link Ontology entities.

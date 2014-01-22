@@ -626,6 +626,24 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return "http:";
     }
 
+    public String getStaticHost() {
+        if (!getTdarConfiguration().isStaticContentEnabled()) {
+            //expecting that default requests are relative to root; so / becomes //
+            return "";
+        }
+        
+        String port ="";
+        if (isSecure() && getTdarConfiguration().getStaticContentSSLPort() != 443) {
+            port = ":" + getTdarConfiguration().getStaticContentSSLPort();
+        }
+
+        if (!isSecure() && getTdarConfiguration().getStaticContentPort() != 80) {
+            port = ":" + getTdarConfiguration().getStaticContentPort();
+        }
+
+        return String.format("%s//%s%s",getProtocol(), getTdarConfiguration().getStaticContentHost(),port);
+    }
+
     public boolean getShowJiraLink() {
         return getTdarConfiguration().getShowJiraLink();
     }
@@ -701,6 +719,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public String getJavascriptErrorLog() {
         return javascriptErrorLog;
+    }
+
+    public boolean isJSCSSMergeServletEnabled() {
+        return getTdarConfiguration().isJSCSSMergeServletEnabled();
     }
     
     /**

@@ -248,4 +248,25 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
             return ObjectUtils.compare(getName(), o.getName());
         }
     }
+
+    private boolean isNullOrZero(Number number) {
+        if (number == null || number.floatValue() == 0.0) {
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean isSpaceOnly() {
+        if (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources()) && getNumberOfBytes() != null && getNumberOfBytes() > 0 && isNullOrZero(getNumberOfFiles()) ) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isFilesOnly() {
+        if (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources()) && getNumberOfFiles() != null && getNumberOfFiles() > 0 && isNullOrZero(getNumberOfBytes()) ) {
+            return true;
+        }
+        return false;
+    }
 }

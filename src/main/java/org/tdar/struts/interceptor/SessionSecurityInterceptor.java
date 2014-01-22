@@ -103,7 +103,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             String invoke = invocation.invoke();
             return invoke;
         } catch (TdarActionException exception) {
-            if (exception.getStatusCode() == StatusCode.FORBIDDEN.getHttpStatusCode()) {
+            if (StatusCode.shouldShowException(exception.getStatusCode())) {
                 logger.warn("caught TdarActionException", exception.getMessage());
             } else {
                 logger.warn("caught TdarActionException", exception);

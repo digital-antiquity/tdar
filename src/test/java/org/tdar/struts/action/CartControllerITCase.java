@@ -87,6 +87,17 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
+    public void testCartCouponNone() throws TdarActionException {
+        long numFiles = 10L;
+        Invoice invoice = setupAccountWithCouponForFiles(numFiles, 0L);
+        logger.info("{} {} ", invoice.getTotalNumberOfFiles(), invoice.getTotal());
+        assertEquals(0.0, invoice.getTotal().floatValue(), 0);
+        assertEquals(numFiles, invoice.getTotalNumberOfFiles().longValue());
+    }
+
+
+    @Test
+    @Rollback
     public void testCartCouponLargertThanAmmount() throws TdarActionException {
         long numFiles = 5L;
         long numFilesForCoupon = 10L;

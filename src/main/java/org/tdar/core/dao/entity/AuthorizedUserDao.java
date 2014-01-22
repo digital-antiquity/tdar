@@ -1,11 +1,13 @@
 package org.tdar.core.dao.entity;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
@@ -18,7 +20,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
-
+import org.tdar.core.dao.TdarNamedQueries;
 /**
  * $Id$
  * 
@@ -127,6 +129,30 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         query.setParameter("allStatuses", false);
         query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
         return query.list();
+    }
+
+    public List<Resource> findEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin, boolean sorted, List<Long> collectionIds) {
+        //Hey guess what - you always get sorted results.
+        if (CollectionUtils.isEmpty(collectionIds)) {
+            collectionIds = new ArrayList<>();
+            collectionIds.add(null);
+        }
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED);
+
+        query.setLong("userId", person.getId());
+        query.setParameter("admin", isAdmin);
+        query.setParameterList("resourceTypes", resourceTypes);
+        if (resourceTypes.size() == ResourceType.values().length) {
+            query.setParameter("allResourceTypes", true);
+        } else {
+            query.setParameter("allResourceTypes", false);
+        }
+        query.setParameter("allStatuses", false);
+        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
+        query.setParameterList("rescolIds", collectionIds);
+        List results = query.list();
+
+        return results;
     }
 
     

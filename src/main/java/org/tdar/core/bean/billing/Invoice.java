@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -475,6 +476,21 @@ public class Invoice extends Base implements Updatable {
     @Override
     public String toString() {
         return String.format("%s files, %s mb, %s resources [$%s] %s", totalFiles, totalSpaceInMb, totalResources, calculatedCost, coupon);
+    }
+
+    public boolean hasValidValue() {
+        if (isLessThan(getNumberOfFiles(), 1) && isLessThan(getNumberOfMb(), 1) && getCoupon() == null) {
+            return false;
+        } 
+        return true;
+    }
+
+
+    private boolean isLessThan(Long val, long comp) {
+        if (val == null) {
+            return false;
+        }
+        return val.longValue() < comp;
     }
 
 }

@@ -835,10 +835,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         coupon.setUser(user);
         coupon.setDateRedeemed(new Date());
         
-        if (coupon.getNumberOfFiles() > invoice.getNumberOfFiles()) {
+        Long files = invoice.getNumberOfFiles();
+        Long mb = invoice.getNumberOfMb();
+        if (files == null || coupon.getNumberOfFiles() > files.longValue()) {
             invoice.setNumberOfFiles(coupon.getNumberOfFiles());
         }
-        if (coupon.getNumberOfMb() > invoice.getNumberOfMb()) {
+        if (mb == null || coupon.getNumberOfMb() > mb.longValue()) {
             invoice.setNumberOfMb(coupon.getNumberOfMb());
         }
         

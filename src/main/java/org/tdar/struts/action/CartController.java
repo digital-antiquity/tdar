@@ -69,7 +69,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Autowired
     PaymentTransactionProcessor paymentTransactionProcessor;
-
+    
     @Override
     protected String save(Invoice persistable) {
         if (!getInvoice().isModifiable()) {
@@ -77,8 +77,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
         loadEditMetadata();
 
-        if ((persistable.getNumberOfFiles() == null || persistable.getNumberOfFiles() < 1) &&
-                (persistable.getNumberOfMb() == null || persistable.getNumberOfMb() < 1) &&
+        if (!persistable.hasValidValue() && StringUtils.isBlank(code) && 
                 !getAuthenticationAndAuthorizationService().isBillingManager(getAuthenticatedUser())) {
             addActionError(SPECIFY_SOMETHING);
             return INPUT;

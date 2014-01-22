@@ -114,6 +114,9 @@ public interface TdarNamedQueries {
     static final String QUERY_RESOURCE_FIND_OLD_LIST = "resource.old";
     static final String FIND_ACCOUNT_FOR_INVOICE = "account.forInvoice";
 
+    static final String COLLECTION_LIST_WITH_AUTHUSER = "collection.idlest.with.authuser";
+    static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited" ;
+    static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted" ;
     // raw SQL/HQL queries
 
     /**

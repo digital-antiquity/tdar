@@ -247,7 +247,11 @@ public class TdarConfiguration {
     }
 
     public String getHostName() {
-        return assistant.getStringProperty("app.hostname", DEFAULT_HOSTNAME);
+        String host = "localhost";
+        if (isProductionEnvironment()) {
+            host = DEFAULT_HOSTNAME;
+        }
+        return assistant.getStringProperty("app.hostname", host);
     }
 
     public String getEmailHostName() {
@@ -699,8 +703,26 @@ public class TdarConfiguration {
         return assistant.getStringProperty("email.default.from", FROM_EMAIL_NAME + getEmailHostName());
     }
     
+    public boolean isJSCSSMergeServletEnabled() {
+        return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
+    }
+
     public boolean isJaiImageJenabled() {
         return assistant.getBooleanProperty("jai.imagej.enabled", true);
     }
 
+    public boolean isStaticContentEnabled() {
+        return assistant.getBooleanProperty("static.content.enabled", false);
+    }
+    
+    public int getStaticContentSSLPort() {
+        return assistant.getIntProperty("static.content.sslPort", 443);
+    }
+    public int getStaticContentPort() {
+        return assistant.getIntProperty("static.content.port", 80);
+    }
+    
+    public String getStaticContentHost() {
+        return assistant.getStringProperty("static.content.host",getHostName());
+    }
 }
