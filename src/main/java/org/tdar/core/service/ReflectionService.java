@@ -386,7 +386,7 @@ public class ReflectionService {
 
         String key = annotationClass.getCanonicalName() + "|" + action.getClass().getCanonicalName() + "$" + methodName;
         Boolean found = annotationLookupCache.get(key);
-        staticLogger.debug("key: {}, found: {}", key,found);
+        staticLogger.trace("key: {}, found: {}", key,found);
         if (found != null) {
             return found;
         }
