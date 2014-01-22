@@ -412,11 +412,11 @@ public class BrowseController extends AbstractLookupController {
     }
 
     public boolean isShowBasicInfo() {
-        boolean registered = false;
-        if (getCreator() instanceof Person) {
-            registered = ((Person)getCreator()).isRegistered();
-        }
-        return registered && (isEditor() ||  ObjectUtils.equals(getId(), getAuthenticatedUser().getId() ));
+//        boolean registered = false;
+//        if (getCreator() instanceof Person) {
+//            registered = ((Person)getCreator()).isRegistered();
+//        }
+        return isAuthenticated() && (isEditor() ||  ObjectUtils.equals(getId(), getAuthenticatedUser().getId() ));
     }
 
 }
