@@ -71,6 +71,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             RestCrowdClientFactory factory = new RestCrowdClientFactory();
             securityServerClient = factory.newInstance(clientProperties);
             httpAuthenticator = new CrowdHttpAuthenticatorImpl(securityServerClient, clientProperties, CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
+            logger.debug("maxHttpConnections: {} timeout: {}",clientProperties.getHttpMaxConnections(), clientProperties.getHttpTimeout());
         } catch (Exception e) {
             logger.error("exception: {}", e);
         }
