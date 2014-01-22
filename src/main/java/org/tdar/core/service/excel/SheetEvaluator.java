@@ -117,6 +117,9 @@ public class SheetEvaluator {
     }
 
     public String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return null;
+        }
         try {
 
             if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
