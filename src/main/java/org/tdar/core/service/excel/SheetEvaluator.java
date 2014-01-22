@@ -132,6 +132,9 @@ public class SheetEvaluator {
                     throw new TdarRecoverableRuntimeException(String.format("there was a problem processing your dataset at row: %s column %s",
                             cell.getRowIndex(), cell.getColumnIndex()));
             }
+        } catch (RuntimeException re ) {
+            throw new TdarRecoverableRuntimeException(String.format("there was a problem processing your dataset at row: %s column %s",
+                    cell.getRowIndex(), cell.getColumnIndex()));            
         }
     }
 

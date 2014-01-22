@@ -24,6 +24,7 @@ import com.atlassian.crowd.exception.InvalidAuthenticationException;
 import com.atlassian.crowd.exception.InvalidCredentialException;
 import com.atlassian.crowd.exception.InvalidTokenException;
 import com.atlassian.crowd.exception.InvalidUserException;
+import com.atlassian.crowd.exception.MembershipAlreadyExistsException;
 import com.atlassian.crowd.exception.ObjectNotFoundException;
 import com.atlassian.crowd.exception.OperationFailedException;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticator;
@@ -219,6 +220,8 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             logger.error("Unable to add user (operation failed): " + login, e);
         } catch (InvalidAuthenticationException e) {
             logger.error("Unable to add user (invalid authentication): " + login, e);
+        } catch (MembershipAlreadyExistsException e) {
+            // we'll ignore it if membership already exissts
         }
         return true;
     }
