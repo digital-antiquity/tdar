@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
@@ -98,8 +99,6 @@ public class BrowseController extends AbstractLookupController {
     private transient InputStream inputStream;
     private Long contentLength;
     private NodeModel nodeModel;
-
-    // private Keyword keyword;
 
     @Action(EXPLORE)
     public String explore() {
@@ -407,4 +406,17 @@ public class BrowseController extends AbstractLookupController {
         }
         return searchFieldLookup;
     }
+
+    public boolean isShowAdminInfo() {
+        return isAuthenticated() && (isEditor() ||  ObjectUtils.equals(getId(), getAuthenticatedUser().getId() ));
+    }
+
+    public boolean isShowBasicInfo() {
+        boolean registered = false;
+        if (getCreator() instanceof Person) {
+            registered = ((Person)getCreator()).isRegistered();
+        }
+        return registered && (isEditor() ||  ObjectUtils.equals(getId(), getAuthenticatedUser().getId() ));
+    }
+
 }

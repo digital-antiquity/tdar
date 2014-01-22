@@ -155,26 +155,36 @@
         </#if>
         <br/>
         <#if creator.creatorType.person>
-            <#if authenticated && (editor ||  id == authenticatedUser.id ) >
-
-                <h3>Future Contact Information</h3>
-                <#if creator.proxyInstitution?has_content>
-                    <a href="<@s.url value="/browse/creators/${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
-                <#else>
-                    None Specified
-                </#if>
-                <p>${creator.proxyNote!""}</p>
+				<#if creator.url?has_content || creator.orcidId?has_content>
                 <table class='tableFormat table'>
                     <tr>
-                        <td>
+                    	<td><b>URL:</b> <#if creator.url?has_content><a href="${creator.url}">${creator.urL}</a></#if></td>
+                    	<td><b>ORCID Identifier:</b> <#if creator.orcidId?has_content><a href="http://orcid.org/${creator.orcidId}">${creator.orcidId}</a></#if></td>
+                    </tr>
+                </table>
+                </#if>
+	        <#if showBasicInfo >
+                <table class='tableFormat table'>
+                    <#assign registered = false />
+                    <#if creator.registered?has_content>
+                        <#assign registered = creator.registered>
+                    </#if>
+					<#if showAdminInfo>
+	            		<tr>
+	            			<td>
+	            				<B>Username</b>: ${creator.username}
+	            			</td>
+	            			<td>
+	            				<B>Registered</b>: ${registered?string}
+            				</td>
+	        			</tr>
+        			</#if>
+                    <tr>
+                        <td <#if !showAdminInfo>colspan=2</#if>>
                             <B>Registered Professional Archaeologist</B>:${creator.rpaNumber!"no"}
                         </td>
                         <td>
-                            <#assign registered = false />
-                        <#if creator.registered?has_content>
-                            <#assign registered = creator.registered>
-                        </#if>
-                        <#if registered && (editor || id == authenticatedUser.id)>
+                        <#if showAdminInfo>
                             <#if creator.lastLogin?has_content>
                                 <@view.datefield "Last Login"  creator.lastLogin />
                             <#else>
@@ -184,10 +194,6 @@
                             <@view.boolean "Registered User" registered />
                         </#if>
                         </td>
-                    </tr>
-                    <tr>
-                    	<td><#if creator.url?has_content><b>URL:</b> <a href="${creator.url}">${creator.urL}</a></#if></td>
-                    	<td><b>ORCID Identifier:</b> <#if creator.orcidId?has_content><a href="http://orcid.org/${creator.orcidId}">${creator.orcidId}</a></#if></td>
                     </tr>
                     <tr>
                         <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
@@ -229,6 +235,13 @@
                         </td>
                     </tr>
                 </table>
+                <h3>Future Contact Information</h3>
+                <#if creator.proxyInstitution?has_content>
+                    <a href="<@s.url value="/browse/creators/${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
+                <#else>
+                    None Specified
+                </#if>
+                <p>${creator.proxyNote!""}</p>
 
 
                 <@common.resourceUsageInfo />
