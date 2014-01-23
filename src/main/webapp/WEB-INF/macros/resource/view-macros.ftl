@@ -447,10 +447,9 @@ No coding rules have been entered for this coding sheet yet.
 
 <#macro browse creator role=""><#compress>
 <#if creator.creator?has_content && creator.role?has_content>
-	<#local role=creator.role.label?lower_case />
-	<#local creator=creator.creator />
+	<#local c=creator.creator />
 </#if>
-<#if creator??> <a <#if role?has_content>itemprop="${role}"</#if> href="<@s.url value="/browse/creators/${creator.id?c}"/>">${creator.properName}</a></#if>
+<#if c??> <a <#if creator.role?has_content && creator.role.partOfSchemaOrg >itemprop="${creator.role.schemaOrgLabel }"</#if> href="<@s.url value="/browse/creators/${c.id?c}"/>">${c.properName}</a></#if>
 </#compress>
 </#macro>
 

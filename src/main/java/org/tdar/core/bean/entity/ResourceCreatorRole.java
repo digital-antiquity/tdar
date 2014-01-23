@@ -211,4 +211,25 @@ public enum ResourceCreatorRole implements HasLabel {
         this.type = type;
     }
 
+    public String getSchemaOrgLabel() {
+        switch (this) {
+            case COPYRIGHT_HOLDER:
+                return "copyrightHolder";
+            default:
+                return this.name().toLowerCase();
+        }
+    }
+    
+    public boolean isPartOfSchemaOrg() {
+        switch (this) {
+            case AUTHOR:
+            case EDITOR:
+            case CREATOR:
+            case COPYRIGHT_HOLDER:
+            case PUBLISHER:
+                return true;
+            default:
+                return false;
+        }
+    }
 }
