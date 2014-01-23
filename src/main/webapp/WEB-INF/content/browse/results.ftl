@@ -172,11 +172,11 @@
 					<#if showAdminInfo>
 	            		<tr>
 	            			<td>
-	            				<B>Username</b>: ${creator.username}
-	            			</td>
-	            			<td>
 	            				<B>Registered</b>: ${registered?string}
             				</td>
+	            			<td>
+	            				<B>Username</b>: ${creator.username!"N/A"}
+	            			</td>
 	        			</tr>
         			</#if>
                     <tr>
