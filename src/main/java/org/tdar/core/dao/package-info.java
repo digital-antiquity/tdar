@@ -415,7 +415,7 @@
                     " (TRUE=:admin or rescol.id in (:rescolIds) )))  "),
 
     @org.hibernate.annotations.NamedQuery(
-            name=TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED,
+            name=TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY,
             query=  " SELECT distinct new Resource(res.id, res.title, res.resourceType) FROM Resource as res  where " +
                     " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) "
                     + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
@@ -424,7 +424,11 @@
                             " (TRUE=:admin or rescol.id in (:rescolIds) )"
                         + ")"
                     + ")  " +
-                    " order by res.title, res.id")
+                    " order by res.title, res.id"),
+        @org.hibernate.annotations.NamedQuery(
+                name=TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED,
+                query=  "DELETE InformationResourceFileVersion WHERE id = :id"
+                )                    
 
 })
 

@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
+import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.Dao.HibernateBase;
 
 @Component
@@ -65,9 +66,6 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     }
 
     public void deleteTranslatedFiles(Dataset dataset) {
-        // FIXME: CALLING THIS REPEATEDLY WILL CAUSE SQL ERRORS DUE TO KEY
-        // ISSUES (DELETE NOT
-        // HAPPENING BEFORE INSERT)
         for (InformationResourceFile irFile : dataset.getInformationResourceFiles()) {
             logger.debug("deleting {}", irFile);
             deleteTranslatedFiles(irFile);
@@ -75,14 +73,13 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     }
 
     public void deleteTranslatedFiles(InformationResourceFile irFile) {
-        // FIXME: CALLING THIS REPEATEDLY WILL CAUSE SQL ERRORS DUE TO KEY
-        // ISSUES (DELETE NOT
-        // HAPPENING BEFORE INSERT)
         for (InformationResourceFileVersion version : irFile.getLatestVersions()) {
             logger.debug("deleting version:{}  isTranslated:{}", version, version.isTranslated());
             if (version.isTranslated()) {
-                //we don't need safeguards on a translated file, so tell the dao to delete no matter what.
-                informationResourceFileVersionDao.forceDelete(version);
+                //HQL here avoids issue where hibernate delays the delete
+                getCurrentSession().createQuery(TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY).setLong("id", version.getId()).executeUpdate();
+                // we don't need safeguards on a translated file, so tell the dao to delete no matter what.
+                // informationResourceFileVersionDao.forceDelete(version);
             }
         }
     }

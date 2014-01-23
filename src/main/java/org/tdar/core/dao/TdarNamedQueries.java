@@ -113,7 +113,7 @@ public interface TdarNamedQueries {
     static final String QUERY_PROXY_RESOURCE_SHORT = "resourceProxy.short";
     static final String QUERY_RESOURCE_FIND_OLD_LIST = "resource.old";
     static final String FIND_ACCOUNT_FOR_INVOICE = "account.forInvoice";
-
+    static final String DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY ="irfv.delete";
     static final String COLLECTION_LIST_WITH_AUTHUSER = "collection.idlest.with.authuser";
     static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited" ;
     static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted" ;
@@ -171,6 +171,7 @@ public interface TdarNamedQueries {
             " join rescol.resources as colres " +
             " where colres.id = res.id and " +
             "(TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
+
     static final String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
     static final String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
     static final String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";

@@ -20,6 +20,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
@@ -122,8 +124,6 @@ public class BrowseController extends AbstractLookupController {
     private float keywordMean = 0;
     private List<NodeModel> keywords;
     private List<NodeModel> collaborators;
-
-    // private Keyword keyword;
 
     @Action(EXPLORE)
     public String explore() {
@@ -425,6 +425,7 @@ public class BrowseController extends AbstractLookupController {
         return searchFieldLookup;
     }
 
+
     public File getFoafFile() {
         return foafFile;
     }
@@ -540,4 +541,13 @@ public class BrowseController extends AbstractLookupController {
         num = (int) Math.ceil((float) num / 2.0);
         return num;
     }
+
+    public boolean isShowAdminInfo() {
+        return isAuthenticated() && (isEditor() ||  ObjectUtils.equals(getId(), getAuthenticatedUser().getId() ));
+    }
+
+    public boolean isShowBasicInfo() {
+        return isAuthenticated() && (isEditor() ||  ObjectUtils.equals(getId(), getAuthenticatedUser().getId() ));
+    }
+
 }
