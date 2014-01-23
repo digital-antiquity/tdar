@@ -77,7 +77,8 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
             logger.debug("deleting version:{}  isTranslated:{}", version, version.isTranslated());
             if (version.isTranslated()) {
                 //HQL here avoids issue where hibernate delays the delete
-                getCurrentSession().createQuery(TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY).setLong("id", version.getId()).executeUpdate();
+                Query query = getCurrentSession().createQuery(TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY);
+                query.setParameter("id", version.getId()).executeUpdate();
                 // we don't need safeguards on a translated file, so tell the dao to delete no matter what.
                 // informationResourceFileVersionDao.forceDelete(version);
             }
