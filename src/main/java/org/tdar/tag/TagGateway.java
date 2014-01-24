@@ -90,7 +90,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
     @Override
     public SearchResults getTopRecords(String sessionId, Query query, int numberOfRecords) {
 
-        logger.debug("Called getTopRecords.");
+        logger.debug("TAGGateway: Called getTopRecords...");
 
         // grab relevant parts of the query
         What what = query.getWhat();
