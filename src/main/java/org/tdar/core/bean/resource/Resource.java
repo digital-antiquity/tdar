@@ -133,6 +133,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
         //can't use @Index on entity fields - they have to go here
         @Index(name = "res_submitterid", columnNames = {"submitter_id"}),
+        @Index(name = "res_uploaderid", columnNames = {"uploader_id"}),
         @Index(name = "res_updaterid", columnNames = {"updater_id"})
 
 })
