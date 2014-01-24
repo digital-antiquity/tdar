@@ -11,21 +11,6 @@
 </head>
 <body>
 <#escape _untrusted as _untrusted?html >
-<#--
-<div class="row">
-    <div class="<#if !sessionData?? || !sessionData.authenticated>span8</#if>">
-    <h3>About</h3>
-    <#include "/${themeDir}notice.ftl">
-    </div>
-
-    <#if !sessionData?? || !sessionData.authenticated>
-        <div class="span4">
-        <h3>Login</h3>
-         <@nav.loginForm />
-        </div>
-    </#if>
-</div>
--->
 <hr>
 <#if payPerIngestEnabled >
 <div class="row">
