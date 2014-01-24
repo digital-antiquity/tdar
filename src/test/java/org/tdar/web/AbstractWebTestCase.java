@@ -796,21 +796,24 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         webClient.setCssErrorHandler(new ErrorHandler() {
             @Override
             public void warning(CSSParseException exception) throws CSSException {
-                if (exception.getURI().contains(getBaseUrl())) {
+                String uri = exception.getURI();
+                if (uri.contains(getBaseUrl()) && uri.contains("/css/")) {
                     logger.trace("CSS Warning:",exception);
                 }
             }
             
             @Override
             public void fatalError(CSSParseException exception) throws CSSException {
-                if (exception.getURI().contains(getBaseUrl())) {
+                String uri = exception.getURI();
+                if (uri.contains(getBaseUrl()) && uri.contains("/css/")) {
                     logger.warn("CSS Fatal Error:",exception);
                 }
             }
             
             @Override
             public void error(CSSParseException exception) throws CSSException {
-                if (exception.getURI().contains(getBaseUrl())) {
+                String uri = exception.getURI();
+                if (uri.contains(getBaseUrl()) && uri.contains("/css/")) {
                     logger.debug("CSS Error: {} ; message: {} line: {} ", exception.getURI(), exception.getMessage(), exception.getLineNumber());
                 }
             }
