@@ -7,6 +7,7 @@
 package org.tdar.core.dao.resource;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
@@ -109,6 +111,9 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     public List<ResourceCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
+        if (Persistable.Base.isTransient(user)) {
+            return Collections.EMPTY_LIST;
+        }
         int permission = generalPermissions.getEffectivePermissions() - 1;
         Query query = getCurrentSession().getNamedQuery(COLLECTION_LIST_WITH_AUTHUSER);
         query.setInteger("effectivePermission", permission);
