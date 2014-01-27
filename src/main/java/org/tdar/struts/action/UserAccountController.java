@@ -241,6 +241,15 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             }
             person.setInstitution(institution);
 
+            //work-around for TDAR-3537: user record created in rdbms even if crowd operation fails
+            boolean success = true;
+            try {
+                success = getAuthenticationAndAuthorizationService().getAuthenticationProvider().addUser(person, password);
+            } catch(RuntimeException rex) {
+                addActionError("The system was unable to process your request.  Please try again, or report the issue to an administrator");
+                return INPUT;
+            }
+
             getEntityService().saveOrUpdate(person);
             // after the person has been saved, create a contributor request for
             // them as needed.
@@ -263,7 +272,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
             getLogger().debug("Trying to add user to auth service...");
 
-            boolean success = getAuthenticationAndAuthorizationService().getAuthenticationProvider().addUser(person, password);
             if (success) {
                 sendWelcomeEmail();
                 getLogger().info("Added user to auth service successfully.");
