@@ -314,7 +314,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 person.setStatus(Status.ACTIVE);
                 person_.setStatus(Status.ACTIVE);
             } else {
-                logger.error("user is not valid");
+                logger.debug("user is not valid");
                 throw new TdarRecoverableRuntimeException(error);
             }
 

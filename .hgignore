@@ -3,6 +3,7 @@ syntax:glob
 .checkstyle
 .settings
 .classpath
+.checkstyle
 indexes
 target
 bin
