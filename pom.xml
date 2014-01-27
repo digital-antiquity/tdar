@@ -1128,16 +1128,17 @@
 					<configLocation>src/main/resources/check_style.xml</configLocation>
 				</configuration>
 			</plugin>
+<!-- 
 			 <plugin>
                 <groupId>org.nanoko.coffee-mill</groupId>
                 <artifactId>coffee-mill-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
                 <configuration>
+                
 	             <javaScriptDir>src/main/webapp/js/</javaScriptDir>
 	             <stylesheetsDir>src/main/webapp/css/</stylesheetsDir>
                 </configuration>
             </plugin>
-<!-- 
 	      <plugin>
 	         <groupId>gr.abiss.mvn.plugins</groupId>
 	         <artifactId>maven-jstools-plugin</artifactId>
@@ -1165,8 +1166,8 @@
 	          <rulesets>
 	          	<!--  http://pmd.sourceforge.net/pmd-5.0.5/rules/index.html -->
 	            <!-- Two rule sets that come bundled with PMD -->
-	            <ruleset>/rulesets/braces.xml</ruleset>
-	            <ruleset>/rulesets/naming.xml</ruleset>
+	            <ruleset>rulesets/java/braces.xml</ruleset>
+	            <ruleset>rulesets/java/naming.xml</ruleset>
 	            <!-- Custom local file system rule set 
 	            <ruleset>d:\rulesets\strings.xml</ruleset>
 	             Custom remote rule set accessed via a URL 
