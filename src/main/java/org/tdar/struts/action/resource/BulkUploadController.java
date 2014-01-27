@@ -135,7 +135,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     public String templateValidate() {
 
         logger.info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
-        if (CollectionUtils.isEmpty(getUploadedFiles())) {
+        if (CollectionUtils.isEmpty(getUploadedFiles()) || getUploadedFiles().get(0) == null) {
             addActionError("Please upload your template");
             return INPUT;
         }

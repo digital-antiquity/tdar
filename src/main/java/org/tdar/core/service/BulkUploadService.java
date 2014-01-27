@@ -47,7 +47,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.BulkImportField;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
