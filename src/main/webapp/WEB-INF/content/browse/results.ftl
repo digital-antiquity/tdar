@@ -158,7 +158,7 @@
 				<#if creator.url?has_content || creator.orcidId?has_content>
                 <table class='tableFormat table'>
                     <tr>
-                    	<td><b>URL:</b> <#if creator.url?has_content><a href="${creator.url}">${creator.urL}</a></#if></td>
+                    	<td><b>URL:</b> <#if creator.url?has_content><a href="${creator.url}">${creator.url}</a></#if></td>
                     	<td><b>ORCID Identifier:</b> <#if creator.orcidId?has_content><a href="http://orcid.org/${creator.orcidId}">${creator.orcidId}</a></#if></td>
                     </tr>
                 </table>
