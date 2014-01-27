@@ -63,6 +63,8 @@ public interface Persistable extends Serializable {
     @MappedSuperclass
     @XmlAccessorType(XmlAccessType.PROPERTY)
     @XmlType(name = "base")
+    @SuppressWarnings({
+        "PMD.ShortVariable"  })
     public abstract static class Base extends JsonModel.Base implements Persistable {
 
         private static final long serialVersionUID = -458438238558572364L;
