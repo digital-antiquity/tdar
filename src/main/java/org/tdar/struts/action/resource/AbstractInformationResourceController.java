@@ -83,7 +83,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private Long projectId;
 
     // previously uploaded files list in json format, needed by blueimp jquery file upload
-    private String filesJson = "";
+    private String filesJson = null;
 
     private Boolean isAbleToUploadFiles = null;
 

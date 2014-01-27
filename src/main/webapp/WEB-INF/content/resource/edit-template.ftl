@@ -288,7 +288,10 @@ var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;
 $(function(){
     'use strict';
     var form = $(formSelector)[0];
-    
+
+    //information needed re: existing file uploads - needed by TDAR.upload library
+    TDAR.filesJson = ${filesJson!"false"};
+
     <#if multipleUpload??>
     //init fileupload
     var id = $('input[name=id]').val();
@@ -349,20 +352,11 @@ TDAR.inheritance.applyInheritance(formSelector);
 	<@local_.localJavascript />
 	</#if>
 
-	<#assign _filesJson = "''">
-	<#if filesJson?has_content>
-	<#assign _filesJson = filesJson>
-	</#if>
-	<#-- setup the page; if the page has files, include the JSON data for those files -->
-	    if(TDAR) {
-	        TDAR.filesJson = ${_filesJson!"''"};
-	    }
-	    
-	    $("#fileUploadField").change(function(){
-	            if ($("#fileUploadField").val().length > 0) {
-	                $("#reminder").hide();
-	            }        
-	    });
+    $("#fileUploadField").change(function(){
+            if ($("#fileUploadField").val().length > 0) {
+                $("#reminder").hide();
+            }
+    }).change();
 
 });
 </#noescape>
