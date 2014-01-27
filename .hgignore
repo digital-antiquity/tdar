@@ -1,5 +1,6 @@
 syntax:glob
 .project
+.checkstyle
 .settings
 .classpath
 indexes

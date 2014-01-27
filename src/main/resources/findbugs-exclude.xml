@@ -6,6 +6,9 @@
       <Class name="~.*\.*__CLR3*" />
       <Class name="~.*?__CLR3*"/>
      </Match>
+     <Match>
+       <Class name="~.*_.*" />
+     </Match>
 
   <Match>
     <Class name="~.*Test$"/>
