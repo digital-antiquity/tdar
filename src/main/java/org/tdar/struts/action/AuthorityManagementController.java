@@ -26,7 +26,6 @@ import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.AuthorityManagementService.DupeMode;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Preparable;
 
