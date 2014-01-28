@@ -19,6 +19,8 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.Dao.HibernateBase;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 @Component
 public class InformationResourceFileDao extends HibernateBase<InformationResourceFile> {
@@ -77,12 +79,19 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
             logger.debug("deleting version:{}  isTranslated:{}", version, version.isTranslated());
             if (version.isTranslated()) {
                 //HQL here avoids issue where hibernate delays the delete
-                Query query = getCurrentSession().createQuery(TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY);
-                query.setParameter("id", version.getId()).executeUpdate();
+                deleteVersionImmediately(version);
                 // we don't need safeguards on a translated file, so tell the dao to delete no matter what.
                 // informationResourceFileVersionDao.forceDelete(version);
             }
         }
+    }
+
+    public void deleteVersionImmediately(InformationResourceFileVersion version) {
+        if (version.isUploadedOrArchival()) {
+            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.cannot_delete_archival"));
+        }
+        Query query = getCurrentSession().createQuery(TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY);
+        query.setParameter("id", version.getId()).executeUpdate();
     }
 
     @SuppressWarnings("unchecked")

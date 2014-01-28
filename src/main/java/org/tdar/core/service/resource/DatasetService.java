@@ -185,7 +185,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         informationResourceFileDao.deleteTranslatedFiles(dataset);
         // FIXME: remove synchronize once Hibernate learns more about unique constraints
         // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
-        getDao().synchronize();
+
+        //        getDao().synchronize();
 
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
@@ -322,7 +323,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         datasetFile.setInformationResource(dataset);
 
         getDao().merge(dataset);
-        getDao().synchronize();
+//        getDao().synchronize();
     }
 
     /*

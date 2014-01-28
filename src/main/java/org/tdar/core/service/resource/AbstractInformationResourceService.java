@@ -350,13 +350,13 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 InformationResourceFileVersion version = iterator.next();
                 if (!version.equals(original) && !version.isUploaded() && !version.isArchival()) {
                     iterator.remove();
-                    informationResourceFileDao.delete(version);
+                    informationResourceFileDao.deleteVersionImmediately(version);
                 }
             }
         }
         processFiles(ir, latestVersions);
         // this is a known case where we need to purge the session
-        getDao().synchronize();
+//        getDao().synchronize();
 
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             final WorkflowContext workflowContext = irFile.getWorkflowContext();
