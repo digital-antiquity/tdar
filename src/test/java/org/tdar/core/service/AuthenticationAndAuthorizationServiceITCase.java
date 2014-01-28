@@ -6,12 +6,14 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +22,17 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.AuthNotice;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.external.auth.AuthenticationProvider;
+import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.UserAccountController;
 import org.tdar.struts.action.UserAgreementController;
 
 // jtd 9/5:  this doesn't need to be an integration test atm, but I figure we'll eventually want to add tests that
