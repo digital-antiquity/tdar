@@ -1125,6 +1125,7 @@
 					<enableRSS>false</enableRSS>
 					<includes>org/tdar/**/*.java</includes>
 					<enableRulesSummary>true</enableRulesSummary>
+					<sourceDirectory>src/main/resources</sourceDirectory>
 					<configLocation>src/main/resources/check_style.xml</configLocation>
 				</configuration>
 			</plugin>

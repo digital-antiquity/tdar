@@ -19,7 +19,9 @@
       <property name="severity" value="ignore"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
-    <module name="JavadocStyle"/>
+    <module name="JavadocStyle">
+	   <property name="checkFirstSentence" value="false"/>
+    </module>
     <module name="ConstantName"/>
     <module name="LocalFinalVariableName"/>
     <module name="LocalVariableName"/>
@@ -36,7 +38,9 @@
     <module name="MethodLength"/>
     <module name="ParameterNumber"/>
     <module name="LineLength">
+      <property name="severity" value="ignore"/>
       <property name="max" value="200"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="EmptyForIteratorPad">
       <property name="severity" value="ignore"/>
@@ -52,6 +56,7 @@
     </module>
     <module name="NoWhitespaceBefore">
       <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="OperatorWrap">
       <property name="severity" value="ignore"/>
@@ -63,6 +68,7 @@
     </module>
     <module name="TypecastParenPad">
       <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="WhitespaceAfter">
       <property name="severity" value="ignore"/>
@@ -76,9 +82,15 @@
     <module name="RedundantModifier"/>
     <module name="AvoidNestedBlocks"/>
     <module name="EmptyBlock"/>
-    <module name="LeftCurly"/>
+    <module name="LeftCurly">
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+    </module>
     <module name="NeedBraces"/>
-    <module name="RightCurly"/>
+    <module name="RightCurly">
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+    </module>
     <module name="AvoidInlineConditionals"/>
     <module name="EmptyStatement"/>
     <module name="EqualsHashCode"/>
