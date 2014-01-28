@@ -95,33 +95,39 @@ public class LoginController extends AuthenticationAware.Base {
             return status.name().toLowerCase();
         }
 
-        if (getSessionData().getReturnUrl() != null || !StringUtils.isEmpty(url)) {
-            if (StringUtils.isNotBlank(getSessionData().getReturnUrl())) {
-                setReturnUrl(getSessionData().getReturnUrl());
-            } else {
-                setReturnUrl(UrlUtils.urlDecode(url));
-            }
-            logger.info("url {} ", getReturnUrl());
-            if (getReturnUrl().contains("filestore/")) {
-                logger.info("download redirect");
-                if (getReturnUrl().contains("/get?") || getReturnUrl().endsWith("/get")) {
-                    setReturnUrl(getReturnUrl().replace("/get", "/confirm"));
-                    logger.debug(getReturnUrl());
-                } else if (getReturnUrl().matches("^(.+)filestore/(\\d+)$")) {
-                    setReturnUrl(getReturnUrl() + "/confirm");
-                    logger.debug(getReturnUrl());
-                }
-                logger.info(getReturnUrl());
-            }
-            if (getReturnUrl().contains("/lookup") || getReturnUrl().contains("/check") || getReturnUrl().contains("/bookmark")) {
-                return AUTHENTICATED;
-            }
-
-            logger.debug("Redirecting to return url: " + getReturnUrl());
-            return REDIRECT;
-        }
-        getSessionData().setReturnUrl(null);
+        
+        getSessionData().setReturnUrl(parseReturnUrl());
         return AUTHENTICATED;
+    }
+
+    private String parseReturnUrl() {
+        if (getSessionData().getReturnUrl() == null && StringUtils.isEmpty(url))
+            return null;
+
+        String url_ = getSessionData().getReturnUrl();
+        if (StringUtils.isBlank(url_)) {
+            url_ = UrlUtils.urlDecode(url);
+        }
+
+        logger.info("url {} ", url_);
+        if (url_.contains("filestore/")) {
+            logger.info("download redirect");
+            if (url_.contains("/get?") || url_.endsWith("/get")) {
+                url_ = url_.replace("/get", "/confirm");
+            } else if (url_.matches("^(.+)filestore/(\\d+)$")) {
+                url_ = url_ + "/confirm";
+            }
+            logger.info(url_);
+        }
+
+        // ignore AJAX/JSON requests
+        if (url_.contains("/lookup") || url_.contains("/check")
+                || url_.contains("/bookmark")) {
+            return null;
+        }
+
+        logger.debug("Redirecting to return url: " + url_);
+        return url_;
     }
 
     public String getLoginUsername() {
