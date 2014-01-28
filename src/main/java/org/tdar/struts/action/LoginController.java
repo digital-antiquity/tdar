@@ -95,8 +95,11 @@ public class LoginController extends AuthenticationAware.Base {
             return status.name().toLowerCase();
         }
 
-        
-        getSessionData().setReturnUrl(parseReturnUrl());
+        setReturnUrl(parseReturnUrl());
+        if (StringUtils.isNotBlank(getReturnUrl())) {
+        getSessionData().setReturnUrl(getReturnUrl());
+        return REDIRECT;
+        }
         return AUTHENTICATED;
     }
 

@@ -72,13 +72,13 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // the logged in creator should be able to see the image
         String path = internalPage.getUrl().getPath().toLowerCase();
         assertTrue("expecting to be on view page. Actual path:" + path, path.matches(REGEX_IMAGE_VIEW));
-        logger.debug("source of view page: {}", getPageCode());
+        logger.trace("source of view page: {}", getPageCode());
         assertTextPresent(RESTRICTED_ACCESS_TEXT);
         String viewPage = path;
         String editPage = path + "/edit";
         logger.debug("view:" + viewPage);
         logger.debug("edit:" + editPage);
-        logger.info(getPageText());
+        logger.trace(getPageText());
         // we're dealing with a confidential file, should not be there
         assertTextNotPresent("/thumbnail");
         String pageCode = getPageCode();
