@@ -247,21 +247,23 @@
 		 <h4>Data Table Relationships:</h4>
 		  <table class="tableFormat table table-striped table-bordered">
 		  	<thead class="highlight">
-		  		<th>Type</th>
-		  		<th>Local Table</th>
-		  		<th>Foreign Table</th>
-		  		<th>Column Relationships</th>
+			  	<tr>
+			  		<th>Type</th>
+			  		<th>Local Table</th>
+			  		<th>Foreign Table</th>
+			  		<th>Column Relationships</th>
+			  	</tr>
 		  	</thead>
 				<#list dataset.relationships as relationship>
 					<tr>
-					<td>${relationship.type}</td>
-					<td>${relationship.localTable.displayName}</td>
-					<td>${relationship.foreignTable.displayName}</td>
-					<td>
-					<#list relationship.columnRelationships as colRel>
-						${colRel.localColumn.displayName} <i class="icon-arrow-right"></i> ${colRel.foreignColumn.displayName} 
-					</#list>
-					</td>
+						<td>${relationship.type}</td>
+						<td>${relationship.localTable.displayName}</td>
+						<td>${relationship.foreignTable.displayName}</td>
+						<td>
+							<#list relationship.columnRelationships as colRel>
+								${colRel.localColumn.displayName} <i class="icon-arrow-right"></i> ${colRel.foreignColumn.displayName} 
+							</#list>
+						</td>
 					</tr>
 				</#list>
 		  </table>
