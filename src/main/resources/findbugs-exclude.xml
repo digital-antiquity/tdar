@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
-	<!--  http://findbugs.sourceforge.net/manual/filter.html#d0e2249  -->
-     <!-- All bugs in test classes, except for JUnit-specific bugs -->
-      <Match>
-      <Class name="~.*\.*__CLR3*" />
-      <Class name="~.*?__CLR3*"/>
-     </Match>
-     <Match>
-       <Class name="~.*_.*" />
-     </Match>
+	<!-- ignore generated classes from Clover -->
+	<Match>
+		<Class name="~.*\.*__CLR3*" />
+		<Class name="~.*?__CLR3*" />
+	</Match>
+	<Match>
+		<Class name="~.*_.*" />
+	</Match>
 
-  <Match>
-    <Class name="~.*Test$"/>
-  </Match>
-  <Match>
-    <Class name="~.*TestCase$"/>
-  </Match>
-  <Match>
-    <Class name="~.*ITCase$"/>
-  </Match>
+	<!-- ignore generated classes from Clover -->
+	<Match>
+		<Class name="~.*Test$" />
+	</Match>
+	<Match>
+		<Class name="~.*TestCase$" />
+	</Match>
+	<Match>
+		<Class name="~.*ITCase$" />
+	</Match>
+
+	<!-- ignore nonsensical warnings that don't show in eclipse version -->
+	<Match>
+		<Bug pattern="BIT_AND_ZZ" />
+	</Match>
+	<Match>
+		<Bug pattern="BIT_IOR" />
+	</Match>
 
 </FindBugsFilter>
