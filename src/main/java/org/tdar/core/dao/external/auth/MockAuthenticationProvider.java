@@ -80,12 +80,12 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public boolean addUser(Person person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
         if (users.containsKey(person.getEmail())) {
-            return false;
+            return AuthenticationResult.REMOTE_EXCEPTION;
         } else {
             users.put(person.getEmail(), password);
-            return true;
+            return AuthenticationResult.VALID;
         }
     }
 

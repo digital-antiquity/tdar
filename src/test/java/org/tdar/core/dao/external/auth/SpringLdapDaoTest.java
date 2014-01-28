@@ -1,8 +1,6 @@
 package org.tdar.core.dao.external.auth;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 import javax.naming.Name;
 
@@ -103,7 +101,7 @@ public class SpringLdapDaoTest {
                 will(returnValue(person));
             }
         });
-        assertFalse(dao.addUser(person, password, TdarGroup.TDAR_USERS));
+        assertEquals(AuthenticationResult.ACCOUNT_EXISTS, dao.addUser(person, password, TdarGroup.TDAR_USERS));
         context.assertIsSatisfied();
     }
 
@@ -121,7 +119,7 @@ public class SpringLdapDaoTest {
                 oneOf(template).modifyAttributes(with(any(DirContextOperations.class))); // add the group
             }
         });
-        assertTrue(dao.addUser(person, password, TdarGroup.TDAR_USERS));
+        assertEquals(AuthenticationResult.VALID, dao.addUser(person, password, TdarGroup.TDAR_USERS));
         context.assertIsSatisfied();
     }
 

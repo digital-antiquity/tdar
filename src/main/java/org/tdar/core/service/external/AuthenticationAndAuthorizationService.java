@@ -3,8 +3,11 @@ package org.tdar.core.service.external;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -27,8 +30,10 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthenticationToken;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -37,6 +42,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
+import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
@@ -57,6 +63,9 @@ import org.tdar.web.SessionData;
 @Service
 public class AuthenticationAndAuthorizationService extends AbstractConfigurableService<AuthenticationProvider> implements Accessible {
 
+
+    private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
+
     /*
      * we use a weak hashMap of the group permissions to prevent tDAR from constantly hammering the auth system with the group permissions. The hashMap will
      * track these permissions for short periods of time. Logging out and logging in should reset this
@@ -71,6 +80,12 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
     @Autowired
     private PersonDao personDao;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private InstitutionDao institutionDao;
 
     @Override
     public boolean isServiceRequired() {
@@ -794,4 +809,113 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
     }
 
+        
+    @Transactional(readOnly=false)
+    public AuthenticationResult addAnAuthenticateUser(Person person_, String password, String institutionName, HttpServletRequest request, HttpServletResponse response, SessionData sessionData, boolean contributor) {
+        Person person = person_;
+        Person findByUsername = personDao.findByUsername(person.getUsername());
+        // short circut the login process -- if there username and password are registered and valid -- just move on.
+        if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
+            try {
+                AuthenticationStatus status = authenticatePerson(findByUsername.getUsername(), password, request, response,sessionData);
+                if (status == AuthenticationStatus.AUTHENTICATED) {
+                    return AuthenticationResult.VALID;
+                }
+            } catch (Exception e) {
+                logger.warn("could not authenticate", e);
+            }
+        }
+        person = reconcilePersonWithTransient(person, findByUsername, MessageHelper.getMessage("userAccountController.error_username_already_registered"));
+        person = reconcilePersonWithTransient(person, personDao.findByEmail(person.getEmail()), MessageHelper.getMessage("userAccountController.error_duplicate_email"));
+        person.setRegistered(true);
+        ContributorRequest contributorRequest  = null;
+        Institution institution = institutionDao.findByName(institutionName);
+        if (institution == null && !StringUtils.isBlank(institutionName)) {
+            institution = new Institution();
+            institution.setName(institutionName);
+            personDao.save(institution);
+        }
+        person.setInstitution(institution);
+
+        AuthenticationResult addResult = getAuthenticationProvider().addUser(person, password);
+        if (!addResult.isValid()) {
+            throw new TdarRecoverableRuntimeException(addResult.getMessage());
+        }
+        personDao.saveOrUpdate(person);
+        // after the person has been saved, create a contributor request for
+        // them as needed.
+            if (contributor) {
+                contributorRequest = createContributorRequest(person);
+                person.setContributor(true);
+                satisfyPrerequisite(person, AuthNotice.CONTRIBUTOR_AGREEMENT);
+                addResult.setContributorRequest(contributorRequest);
+        }
+        satisfyPrerequisite(person, AuthNotice.TOS_AGREEMENT);
+
+        // add user to Crowd
+        person.setStatus(Status.ACTIVE);
+        personDao.saveOrUpdate(person);
+
+        logger.debug("Trying to add user to auth service...");
+
+        sendWelcomeEmail(person);
+        logger.info("Added user to auth service successfully.");
+//        } else {
+//            // we assume that the add operation failed because user was already in crowd. Common scenario for dev/alpha, but not prod.
+//            logger.error("user {} already existed in auth service.  Not unusual unless it happens in prod context ", person);
+//        }
+        // log person in.
+        AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, person.getUsername(), password);
+        result.setPerson(person);
+        result.setContributorRequest(contributorRequest);
+        return result;
+
+    }
+
+    private void sendWelcomeEmail(Person person) {
+        Map<String, Object> result = new HashMap<>();
+        final TdarConfiguration config = TdarConfiguration.getInstance();
+        result.put("user", person);
+        result.put("config", config);
+        try {
+            String subject = MessageHelper.getMessage("userAccountController.welcome",TdarConfiguration.getInstance().getSiteAcronym());
+            emailService.sendWithFreemarkerTemplate(EMAIL_WELCOME_TEMPLATE, result, subject, person);
+        } catch (Exception e) {
+            // we don't want to ruin the new user's experience with a nasty error message...
+            logger.error("Suppressed error that occurred when trying to send welcome email", e);
+        }
+    }
+
+    private Person reconcilePersonWithTransient(Person person, Person person_, String error) {
+        if (person_ != null && Persistable.Base.isNullOrTransient(person)) {
+
+            if (person_.isRegistered()) {
+                throw new TdarRecoverableRuntimeException(error);
+            }
+
+            if (person_.getStatus() != Status.FLAGGED && person_.getStatus() != Status.DELETED && person_.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) {
+                person.setStatus(Status.ACTIVE);
+                person_.setStatus(Status.ACTIVE);
+            } else {
+                logger.debug("user is not valid");
+                throw new TdarRecoverableRuntimeException(error);
+            }
+
+            person.setId(person_.getId());
+            return personDao.merge(person);
+        }
+        return person;
+    }
+
+
+    @Transactional
+    public ContributorRequest createContributorRequest(Person person) {
+        // create an account request for the administrator..
+        ContributorRequest request = new ContributorRequest(person, person.getContributorReason());
+        // FIXME: eventually, this should only happen after being approved (and giving us money)
+        person.setContributor(true);
+        personDao.saveOrUpdate(request);
+        personDao.saveOrUpdate(person);
+        return request;
+    }
 }

@@ -233,7 +233,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
         setupValidUserInController(controller);
-        Map<String, Object> welcomeEmailValues = controller.getWelcomeEmailValues();
         MockMailSender mms = (MockMailSender) controller.getEmailService().getMailSender();
         ArrayList<SimpleMailMessage> messages = mms.getMessages();
         // we assume that the message sent was the registration one. If it wasn't we will soon find out...
@@ -248,13 +247,16 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
-        String email = "test+user@gmail.com";
+        String email = "test++++++user@gmail.com";
         Person findByEmail = entityService.findByEmail(email);
         if (findByEmail != null) { // this should rarely happen, but it'll clear out the test before we run it if the last time it failed...
-            genericService.delete(entityService.findContributorRequest(findByEmail));
+            ContributorRequest findContributorRequest = entityService.findContributorRequest(findByEmail);
+            if (findContributorRequest != null) {
+                genericService.delete(findContributorRequest);
+            }
             genericService.delete(findByEmail);
-            authService.getAuthenticationProvider().deleteUser(findByEmail);
         }
+        genericService.synchronize();
         String execute = setupValidUserInController(controller, email);
         final Person p = controller.getPerson();
         final ContributorRequest request = controller.getContributorRequest();

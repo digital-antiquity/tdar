@@ -16,7 +16,7 @@ public interface AuthenticationProvider extends Configurable {
 
     abstract boolean isAuthenticated(HttpServletRequest request, HttpServletResponse response);
 
-    abstract boolean addUser(Person person, String password, TdarGroup... groups);
+    abstract AuthenticationResult addUser(Person person, String password, TdarGroup... groups);
 
     abstract boolean deleteUser(Person person);
 

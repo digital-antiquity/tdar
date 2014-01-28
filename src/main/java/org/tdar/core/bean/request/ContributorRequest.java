@@ -48,6 +48,15 @@ public class ContributorRequest extends Persistable.Base implements Comparable<C
 
     private String comments;
 
+    public ContributorRequest() {
+        
+    }
+    public ContributorRequest(Person person, String contributorReason2) {
+        setApplicant(person);
+        setContributorReason(contributorReason2);
+        setTimestamp(new Date());
+    }
+
     public boolean isApproved() {
         return approved;
     }

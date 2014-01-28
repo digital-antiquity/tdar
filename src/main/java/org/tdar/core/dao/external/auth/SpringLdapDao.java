@@ -134,7 +134,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * .core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public boolean addUser(Person person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
         String username = person.getUsername();
 
         PersonLdapDao ldapDAO = new PersonLdapDao();
@@ -150,14 +150,14 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
                     + person.toString()
                     + "]\n Returning and attempting to authenticate them.");
             // just check if authentication works then.
-            return false;
+            return AuthenticationResult.ACCOUNT_EXISTS;
         } catch (NameNotFoundException e) {
             logger.debug("Object not found, as expected.");
         }
 
         logger.debug("Adding LDAP user : " + username);
         ldapDAO.create(person, password);
-        return true;
+        return AuthenticationResult.VALID;
     }
 
     /*

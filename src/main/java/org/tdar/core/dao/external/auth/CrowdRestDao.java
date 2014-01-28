@@ -170,7 +170,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#addUser(org.tdar.core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public boolean addUser(Person person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
         String login = person.getUsername();
         try {
             
@@ -181,18 +181,18 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             // just authenticate to edit their account / profile.
             logger.warn("XXX: Trying to add a user that already exists: [" + person.toString() + "]\n Returning and attempting to authenticate them.");
             // just check if authentication works then.
-            return false;
+            return AuthenticationResult.ACCOUNT_EXISTS;
         } catch (ObjectNotFoundException expected) {
             logger.debug("Object not found, as expected.");
         } catch (OperationFailedException e) {
             logger.error("Caught RemoteException while trying to contact the crowd server", e);
-            throw new RuntimeException(e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (ApplicationPermissionException e) {
             logger.error("Caught Permissions Exception while trying to contact the crowd server", e);
-            throw new RuntimeException(e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidAuthenticationException e) {
             logger.error("Invalid auth token", e);
-            throw new RuntimeException(e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         }
         logger.debug("Adding user : " + person);
         PasswordEntity passwordEntity = new PasswordEntity(password);
@@ -210,21 +210,27 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             }
         } catch (ApplicationPermissionException e) {
             logger.error("Crowd server does not permit this application to connect", e);
-            throw new RuntimeException(e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidCredentialException e) {
             logger.debug("invalid credentials", e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidUserException e) {
             logger.error("Unable to add user (invalid user): " + login, e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (ObjectNotFoundException e) {
             logger.error("Unable to add principal " + user + " to group", e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (OperationFailedException e) {
             logger.error("Unable to add user (operation failed): " + login, e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidAuthenticationException e) {
             logger.error("Unable to add user (invalid authentication): " + login, e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (MembershipAlreadyExistsException e) {
             // we'll ignore it if membership already exissts
         }
-        return true;
+
+        return AuthenticationResult.VALID;
     }
 
     /*
