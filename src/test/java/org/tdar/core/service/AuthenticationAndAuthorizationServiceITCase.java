@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,4 +121,55 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         });
 
     }
+    
+    @Test
+    @Rollback
+    public void testCrowdDisconnected() {
+        // Create a user ... replace crowd witha  "broken crowd" and then 
+        Person person = new Person("Thomas", "Angell", "tangell@pvd.state.ri.us");
+        person.setUsername(person.getEmail());
+        person.setContributor(true);
+        List<AuthenticationProvider> allServices = new ArrayList<AuthenticationProvider>(authenticationAndAuthorizationService.getAllServices());
+        authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(person);
+        authenticationAndAuthorizationService.getAllServices().clear();
+        Properties crowdProperties = new Properties();
+        crowdProperties.put("application.name","tdar.test");
+        crowdProperties.put("application.password","tdar.test");
+        crowdProperties.put("application.login.url","http://localhost/crowd");
+        crowdProperties.put("crowd.server.url","http://localhost/crowd");
+
+        authenticationAndAuthorizationService.getAllServices().add(new CrowdRestDao(crowdProperties));
+
+
+        String password = "super.secret";
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
+
+
+        // create account, making sure the controller knows we're legit.
+        controller.setTimeCheck(System.currentTimeMillis() - 10000);
+        controller.setRequestingContributorAccess(true);
+        controller.setPassword(password);
+        controller.setConfirmPassword(password);
+        controller.setConfirmEmail(person.getEmail());
+        controller.setPerson(person);
+        controller.setServletRequest(getServletPostRequest());
+        controller.setServletResponse(getServletResponse());
+        controller.validate();
+        String execute = null;
+        // technically this is more appropriate -- only call create if validate passes
+        if (CollectionUtils.isEmpty(controller.getActionErrors())) {
+            execute = controller.create();
+        } else {
+            logger.error("errors: {} ", controller.getActionErrors());
+        }
+
+        logger.info("errors: {}", controller.getActionErrors());
+        assertEquals("result is not input :" + execute, execute , TdarActionSupport.INPUT);
+        logger.info("person:{}", person);
+        assertTrue("person should not have an id", Persistable.Base.isTransient(person));
+        authenticationAndAuthorizationService.getAllServices().clear();
+        authenticationAndAuthorizationService.getAllServices().addAll(allServices);
+        setIgnoreActionErrors(true);
+    }
+    
 }
