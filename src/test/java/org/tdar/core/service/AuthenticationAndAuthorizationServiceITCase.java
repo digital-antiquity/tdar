@@ -170,12 +170,12 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
             logger.error("errors: {} ", controller.getActionErrors());
         }
 
-        logger.info("errors: {}", controller.getActionErrors());
-        assertEquals("result is not input :" + execute, execute , TdarActionSupport.INPUT);
-        logger.info("person:{}", person);
-        assertTrue("person should not have an id", Persistable.Base.isTransient(person));
         authenticationAndAuthorizationService.getAllServices().clear();
         authenticationAndAuthorizationService.getAllServices().addAll(allServices);
+        logger.info("errors: {}", controller.getActionErrors());
+        assertEquals("result is not input :" + execute, execute , TdarActionSupport.ERROR);
+        logger.info("person:{}", person);
+        assertTrue("person should not have an id", Persistable.Base.isTransient(person));
         setIgnoreActionErrors(true);
     }
     
