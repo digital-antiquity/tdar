@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.external;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -28,7 +28,7 @@ import org.tdar.core.bean.resource.Image;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.AbstractConfigurableService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionSupport;
@@ -136,16 +136,17 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         Person person = new Person("Thomas", "Angell", "tangell@pvd.state.ri.us");
         person.setUsername(person.getEmail());
         person.setContributor(true);
-        List<AuthenticationProvider> allServices = new ArrayList<AuthenticationProvider>(authenticationAndAuthorizationService.getAllServices());
+        AbstractConfigurableService<AuthenticationProvider> prov = (AbstractConfigurableService<AuthenticationProvider>) authenticationAndAuthorizationService.getProviders();
+        List<AuthenticationProvider> allServices = new ArrayList<>(prov.getAllServices());
         authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(person);
-        authenticationAndAuthorizationService.getAllServices().clear();
+        prov.getAllServices().clear();
         Properties crowdProperties = new Properties();
         crowdProperties.put("application.name","tdar.test");
         crowdProperties.put("application.password","tdar.test");
         crowdProperties.put("application.login.url","http://localhost/crowd");
         crowdProperties.put("crowd.server.url","http://localhost/crowd");
 
-        authenticationAndAuthorizationService.getAllServices().add(new CrowdRestDao(crowdProperties));
+        prov.getAllServices().add(new CrowdRestDao(crowdProperties));
 
 
         String password = "super.secret";
@@ -170,8 +171,8 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
             logger.error("errors: {} ", controller.getActionErrors());
         }
 
-        authenticationAndAuthorizationService.getAllServices().clear();
-        authenticationAndAuthorizationService.getAllServices().addAll(allServices);
+        prov.getAllServices().clear();
+        prov.getAllServices().addAll(allServices);
         logger.info("errors: {}", controller.getActionErrors());
         assertEquals("result is not input :" + execute, execute , TdarActionSupport.ERROR);
         logger.info("person:{}", person);

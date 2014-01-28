@@ -146,7 +146,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     }
 
     @Autowired
-    public void setAllServices(List<ExternalIDProvider> providers) {
+    private void setAllServices(List<ExternalIDProvider> providers) {
         ((AbstractConfigurableService<ExternalIDProvider>) this.providers).setAllServices(providers);
     }
 

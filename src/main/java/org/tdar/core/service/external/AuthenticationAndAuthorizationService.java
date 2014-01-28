@@ -48,8 +48,10 @@ import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AbstractConfigurableService;
+import org.tdar.core.service.ConfigurableService;
 import org.tdar.struts.action.search.ReservedSearchParameters;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
@@ -61,7 +63,7 @@ import org.tdar.web.SessionData;
  * (c) getting file access and resource access permissions
  */
 @Service
-public class AuthenticationAndAuthorizationService extends AbstractConfigurableService<AuthenticationProvider> implements Accessible {
+public class AuthenticationAndAuthorizationService  implements Accessible {
 
 
     private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
@@ -87,10 +89,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     @Autowired
     private InstitutionDao institutionDao;
 
-    @Override
-    public boolean isServiceRequired() {
-        return true;
-    };
+//    @Override
+//    public boolean isServiceRequired() {
+//        return true;
+//    };
 
     public enum AuthenticationStatus {
         AUTHENTICATED,
@@ -918,4 +920,30 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         personDao.saveOrUpdate(person);
         return request;
     }
+
+
+    private ConfigurableService<AuthenticationProvider> providers = new AbstractConfigurableService<AuthenticationProvider>() {
+        @Override
+        public boolean isServiceRequired() {
+            return true;
+        }
+    };
+    
+    /**
+     * Used in testing
+     * @return the providers
+     */
+    protected ConfigurableService<AuthenticationProvider> getProviders() {
+        return providers;
+    }
+
+    @Autowired
+    private void setAllServices(List<AuthenticationProvider> providers) {
+        ((AbstractConfigurableService<AuthenticationProvider>) this.providers).setAllServices(providers);
+    }
+
+    public AuthenticationProvider getProvider() {
+        return providers.getProvider();
+    }
+    
 }
