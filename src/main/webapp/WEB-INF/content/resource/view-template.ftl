@@ -206,7 +206,7 @@
 		         <th>Data Type</th>
 		         <th>Type</th>
 		         <th>Category</th>
-		         <th>Coding Sheet</th>
+ 		         <th>Coding Sheet</th>
 		         <th>Ontology</th>
 		         </tr>
 		         </thead>
@@ -243,6 +243,29 @@
 		            </tr>
 		            </#list>
 		         </table>
+		<#if dataset.relationships?size != 0>
+		 <h4>Data Table Relationships:</h4>
+		  <table class="tableFormat table table-striped table-bordered">
+		  	<thead class="highlight">
+		  		<th>Type</th>
+		  		<th>Local Table</th>
+		  		<th>Foreign Table</th>
+		  		<th>Column Relationships</th>
+		  	</thead>
+				<#list dataset.relationships as relationship>
+					<tr>
+					<td>${relationship.type}</td>
+					<td>${relationship.localTable.displayName}</td>
+					<td>${relationship.foreignTable.displayName}</td>
+					<td>
+					<#list relationship.columnRelationships as colRel>
+						${colRel.localColumn.displayName} <i class="icon-arrow-right"></i> ${colRel.foreignColumn.displayName} 
+					</#list>
+					</td>
+					</tr>
+				</#list>
+		  </table>
+        </#if>
 		 
 		</#list>
 	</#if>
