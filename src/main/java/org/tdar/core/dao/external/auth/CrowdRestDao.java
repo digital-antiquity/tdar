@@ -87,7 +87,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             return false;
         }
         try {
-0
+            securityServerClient.testConnection();
         } catch (Exception e) {
             logger.info("{}", e);
             return false;
