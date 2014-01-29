@@ -40,7 +40,7 @@
 
 <#macro footer>
     <table style="display:none;visibility:hidden" id="queuedFileTemplate">
-        <@edit.fileProxyRow />
+        <@edit._fileProxyRow />
     </table>
 </#macro>
 
