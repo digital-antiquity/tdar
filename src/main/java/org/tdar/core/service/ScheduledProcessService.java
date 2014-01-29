@@ -160,8 +160,9 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * @param processes
      */
     @Autowired
-    public void setAllScheduledProcesses(List<ScheduledProcess<Persistable>> processes) {
-        for (ScheduledProcess<Persistable> process : processes) {
+    public void setAllScheduledProcesses(List<ScheduledProcess<?>> processes) {
+        for (ScheduledProcess<?> process_ : processes) {
+            ScheduledProcess<Persistable> process = (ScheduledProcess<Persistable>)process_;
             if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
                 scheduledProcessMap.clear();
                 logger.warn("current tdar configuration doesn't support running scheduled processes, skipping {}", processes);
