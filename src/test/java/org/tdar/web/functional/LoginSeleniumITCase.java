@@ -42,7 +42,7 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
     public void testInvalidLogin() {
         logout();
         login("BADUSERNAME", "BADPASSWORD");
-        logger.info(getDom());
+        logger.trace(getDom());
         assertTrue(getDom().contains(AuthenticationResult.INVALID_PASSWORD.getMessage()));
         assertFalse(getText().contains("Your submitted projects"));
     }

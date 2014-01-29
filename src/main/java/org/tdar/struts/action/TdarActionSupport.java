@@ -26,7 +26,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.FileSystemResourceDao;
 import org.tdar.core.exception.Localizable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
@@ -35,6 +34,7 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
@@ -149,7 +149,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     @Autowired
     private transient XmlService xmlService;
     @Autowired
-    private transient FileSystemResourceDao filesystemResourceDao;
+    private transient FileSystemResourceService filesystemResourceService;
     @Autowired
     private transient AccountService accountService;
     @Autowired
@@ -746,15 +746,15 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public List<String> getJavascriptFiles() throws TdarActionException {
-        return filesystemResourceDao.parseWroXML("js");
+        return filesystemResourceService.parseWroXML("js");
     }
 
     public List<String> getCssFiles() throws TdarActionException  {
-        return filesystemResourceDao.parseWroXML("css");
+        return filesystemResourceService.parseWroXML("css");
     }
 
     public boolean isWebFilePreprocessingEnabled() {
-        return filesystemResourceDao.testWRO();
+        return filesystemResourceService.testWRO();
     }
     
 }
