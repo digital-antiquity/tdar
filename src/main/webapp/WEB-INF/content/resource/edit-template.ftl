@@ -280,7 +280,7 @@
 
 var formSelector = "#metadataForm";
 var includeInheritance = ${inheritanceEnabled?string("true", "false")};
-var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;
+var acceptFileTypes  = <@edit._acceptedFileTypesRegex />;
 /*
 
  * FIXME: move to common.js once we figure out how to control and set javascript based on freemarker values that have "Rights" implications.

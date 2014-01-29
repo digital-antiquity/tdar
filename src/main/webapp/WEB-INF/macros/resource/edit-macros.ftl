@@ -14,6 +14,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- Emit choose-project section:  including project dropdown and inheritance checkbox -->
 <#macro chooseProjectSection>
     <#local _projectId = 'project.id' />
     <#if resource.id == -1 >
@@ -54,6 +56,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
 </#macro>
 
+<#-- Emit the choose-a-collection section -->
 <#macro resourceCollectionSection>
     <#local _resourceCollections = [blankResourceCollection] />
     <#if (resourceCollections?? && !resourceCollections.empty)>
@@ -75,6 +78,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit a single row of the choose-a-collection section -->
 <#macro resourceCollectionRow resourceCollection collection_index = 0 type="internal">
     <div id="resourceCollectionRow_${collection_index}_" class="controls-row repeat-row">
             <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
@@ -85,20 +90,25 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
 </#macro>
 
+<#-- emit a div containing "repeatable"  keyword fields
+    @param label:string label associated with the section  (e.g. "Geographic Keywords")
+    @param keywordList:list<Keyword> collection of Keyword objects.  this macro will populate the section with
+            input fields for each element in the list, with the value of the element pre-populated with the keyword.label value
+    @param keywordField:string prefix to use when generating the name-attribute for the input fields in this section.
+-->
 <#macro keywordRows label keywordList keywordField showDelete=true addAnother="add another keyword">
     <div class="control-group repeatLastRow" id="${keywordField}Repeatable" data-add-another="${addAnother}">
         <label class="control-label">${label}</label>
         <#if keywordList.empty >
-          <@keywordRow keywordField />
+          <@_keywordRow keywordField />
         <#else>
         <#list keywordList as keyword>
-          <@keywordRow keywordField keyword_index showDelete />
+          <@_keywordRow keywordField keyword_index showDelete />
         </#list>
         </#if>
     </div>
 </#macro>
-
-<#macro keywordRow keywordField keyword_index=0 showDelete=true>
+<#macro _keywordRow keywordField keyword_index=0 showDelete=true>
     <div class="controls controls-row" id='${keywordField}Row_${keyword_index}_'>
         <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]'  maxlength=255 cssClass='input-xlarge keywordAutocomplete' placeholder="enter keyword"/>
         <#if showDelete>
@@ -108,10 +118,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- render the "spatial information" section:geographic keywords, map, coordinates, etc. -->
 <#macro spatialContext showInherited=true>
 <div class="well-alt" id="spatialSection">
     <h2>Spatial Terms</h2>
-    <@inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited />
+    <@_inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited />
     <div id="divSpatialInformation">
  
         <div data-tiplabel="Spatial Terms: Geographic" data-tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;." >
@@ -171,6 +183,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit resource.resourceType.lable
+    @requires resource:Resource
+-->
 <#macro resourceTypeLabel>
 <#if bulkUpload>
 	Resource
@@ -179,6 +195,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#if>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit resourceProvider section -->
 <#macro resourceProvider showInherited=true>
 <div class="well-alt" id="divResourceProvider" data-tiplabel="Resource Provider" data-tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
     <h2>Institution Authorizing Upload of this <@resourceTypeLabel /></h2>
@@ -187,27 +205,44 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
-
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit the "temporal context" section (temporal coverage, temporal keywords) -->
 <#macro temporalContext showInherited=true>
 <div class="well-alt" id="temporalSection">
     <h2>Temporal Coverage</h2>
-    <@inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
+    <@_inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
     <div  id="divTemporalInformation">
         <div data-tiplabel="Temporal Terms" data-tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
             <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' true "add another temporal keyword" />
         </div>
-        <@coverageDatesSection />
+        <@_coverageDatesSection />
     </div>
 </div>
 </#macro>
+<#macro _coverageDatesSection>
+    <#local _coverageDates=coverageDates />
+    <#if _coverageDates.empty><#local _coverageDates = [blankCoverageDate] /></#if>
+    <@helptext.coverageDates />
+<div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date" data-tiplabel="Coverage Dates" data-tooltipcontent="#coverageDatesTip">
+    <label class="control-label">Coverage Dates</label>
 
+    <#list _coverageDates as coverageDate>
+        <#if coverageDate??>
+            <@dateRow coverageDate coverageDate_index/>
+        </#if>
+    </#list>
+</div>
+</#macro>
+
+
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit the "general keywords" repeatable fields -->
 <#macro generalKeywords showInherited=true>
-
 <div  
     data-tiplabel="General Keywords"
     data-tooltipcontent="Keyword list: Select the artifact types discussed in the document.">   
     <h2>General Keywords</h2>
-    <@inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited />
+    <@_inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited />
     <div id="divOtherInformation">
         <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
     </div>
@@ -234,51 +269,15 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 
-<#macro sharedUploadFile divTitle="Upload">
-<div class="well-alt" id="uploadSection">
-    <h2>${divTitle}</h2>
-    <div class='fileupload-content'>
-        <#nested />
-        <#-- XXX: verify logic for rendering this -->
-        <#if multipleFileUploadEnabled || resource.hasFiles()>
-            <!-- not sure this is ever used -->
-            <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
-        
-            <div class="">
-            <p><span class="label">Note:</span> You can only have <strong><#if !multipleFileUploadEnabled>1 file<#else>${maxUploadFilesPerRecord} files</#if> </strong> per record</p> 
-            </div>
-            <table id="uploadFiles" class="files table tableFormat">
-            </table>
-            <table id="files" class="files sortable">
-                <thead>
-                    <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
-                    <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <#list fileProxies as fileProxy>
-                        <#if fileProxy??>
-                            <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
-                        </#if>
-                    </#list>
-                    <#if fileProxies.empty>
-                        <tr class="noFiles newRow">
-                            <td><em>no files uploaded</em></td>
-                        </tr>
-                    </#if>
-                </tbody>
-            </table>
-        </#if>
-    </div>
-    <@helptext.confidentialFile />
-</div>
-</#macro>
-
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit the "Site Information" section of an edit page; controlled/uncontrolled site types, site names.
+     @see hier.checkboxlist for information on how hierarchical checkboxlists work
+ -->
 <#macro siteKeywords showInherited=true divTitle="Site Information">
 <@helptext.siteName />
 <div id="siteSection" data-tooltipcontent="#siteinfohelp">
     <h2>${divTitle}</h2>
-    <@inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
+    <@_inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
     <div id="divSiteInformation" >
         <@keywordRows "Site Name" siteNameKeywords 'siteNameKeywords' />
         
@@ -295,24 +294,38 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- render material types section as a list of keywords
+    @param showInherited:boolean  if true, show the "inherit from project" checkbox
+    @requires  allMaterialKeywords:list<Keyword>  list of keywords to populate the checkboxlist key=keyword.id,
+                    value=keyword.label
+    @requires materialKeywordIds:list<long>  list of ids corresponding to checkboxes that chould be "checked"
+ -->
 <#macro materialTypes showInherited=true>
 <div data-tooltipcontent="#materialtypehelp">
 <@helptext.materialType />
     <h2>Material Types</h2>
-    <@inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
+    <@_inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
     <div id="divMaterialInformation">
         <@s.checkboxlist theme="bootstrap" name='materialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
             spanClass="span2" numColumns="3" />
     </div>      
 </div>
-
 </#macro>
 
+
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- render material types section: repeatable keyword text fields and checkboxlist of approved keywords
+    @param showInherited:boolean  if true, show the "inherit from project" checkbox
+    @param inline:boolean not used
+    @requires  approvedkeywordIds:list<long>
+    @requires  approvedCultureKeywords:list<Keyword>
+ -->
 <#macro culturalTerms showInherited=true inline=false>
 <div data-tooltipcontent="#culturehelp">
 <@helptext.cultureTerms />
     <h2>${culturalTermsLabel!"Cultural Terms"}</h2>
-    <@inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
+    <@_inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
     <div id="divCulturalInformation" >
         <div class="control-group">
             <label class="control-label">${culturalTermsLabel!"Culture"}</label>
@@ -320,27 +333,23 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <@s.checkboxlist theme="hier" name="approvedCultureKeywordIds" keywordList="approvedCultureKeywords" />
             </div>
         </div>
-        
         <!--"add another cultural term" -->
         <@keywordRows "Other" uncontrolledCultureKeywords 'uncontrolledCultureKeywords' />
     </div>
 </div>
 </#macro>
 
-<#--
-<#macro uncontrolledCultureKeywordRow uncontrolledCultureKeyword_index=0>
-            <tr id='uncontrolledCultureKeywordRow_${uncontrolledCultureKeyword_index}_'>
-            <td>
-                <@s.textfield name='uncontrolledCultureKeywords[${uncontrolledCultureKeyword_index}]' cssClass=' input-xxlarge cultureKeywordAutocomplete' autocomplete="off" />
-                </td><td><@nav.clearDeleteButton id="uncontrolledCultureKeywordRow" />
-            </td>
-            </tr>
-</#macro>
--->
+
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit investigation types
+    @param showInherited:boolean
+    @requires  allInvestigationTypes:list<Keyword>
+    @requires  investigationTypeIds:list<long>
+ -->
 <#macro investigationTypes showInherited=true >
 <div data-tiplabel="Investigation Types" data-tooltipcontent="#investigationtypehelp" id="investigationSection">
     <h2>Investigation Types</h2>
-    <@inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited />
+    <@_inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited />
     <div id="divInvestigationInformation">
     
         <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" spanClass="span3" 
@@ -393,7 +402,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
-
+<#-- emit the category & subcategory SELECT fields
+    @requires allDomainCategories:List<CategoryVariable>
+    @requires subcategories:List<CategoryVariable>
+-->
 <#macro categoryVariable>
 <div class="control-group">
     <label class="control-label"><small>Category / Subcategory</small></label>
@@ -411,25 +423,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
-
-<#macro singleFileUpload typeLabel="${resource.resourceType.label}">
-<#if !ableToUploadFiles>
-	<b>note:</b> you have not been granted permission to upload or modify files<br/>
-<#else>
-	<div class="control-group"
-	        data-tiplabel="Upload your ${typeLabel}" 
-	        data-tooltipcontent="The metadata entered on this form will be associated with this file. We accept the following formats: 
-	                        <@join sequence=validFileExtensions delimiter=", "/>">
-	    <label for="fileUploadField" class="control-label">${typeLabel}</label>
-	    <div class="controls">
-	        <@s.file theme="simple" name='uploadedFiles' cssClass="validateFileType input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
-	        <span class="help-block">Valid file types include: <@join sequence=validFileExtensions delimiter=", "/></span>
-	    </div>
-	    <#nested>
-	</div>
-</#if>
-</#macro>
-
+<#-- emit the manual-text-entry section (i.e. for ontology or coding-sheet values) -->
 <#macro manualTextInput typeLabel type uploadOptionText manualEntryText>
 <#-- show manual option by default -->
 <#local usetext=(resource.getLatestVersions().isEmpty() || (fileTextInput!"") != "")>
@@ -451,7 +445,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <#nested 'upload'>
             </div>
         </div>
-        <@singleFileUpload />
+        <@_singleFileUpload />
     </div>
     
     <div id='textInputDiv'>
@@ -466,6 +460,15 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 </#macro>
 
+<#-- emit the section containing an edit form's "save" button,  including stubs for error messages and reminders
+    @param label:string label of the actual save button
+    @param fileReminder:boolean if true, render the 'did you upload a file yet?' reminder
+    @param buttonid:string  element id value for the actual save button
+    @param span:string  css class name specifying the column-sizing of the DIV for this section, using Bootstrap v2
+        syntax
+    @nested any additional html/freemarker content - will be injected in div#editFormActions prior to the save button
+        element
+-->
 <#macro submit label="Save" fileReminder=true buttonid="submitButton" span="span9">
 <div class="errorsection row">
     <div class="${span}">
@@ -498,20 +501,23 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class="modal-footer">
         <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     </div>
-</div> 
-
+</div>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#macro submitButton label="submit" id="">
     <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  <#if id?has_content>id="${id}"</#if>>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#macro parentContextHelp element="div" resourceType="resource" valueType="values">
 <${element} data-tiplabel="Inherited Values" data-tooltipcontent="The parent project for this ${resourceType} defines ${valueType} for this section.  You may also define your own, but note that they will not override the values defined by the parent.">
 <#nested>
 </${element}>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit related collections section-->
 <#macro relatedCollections showInherited=true>
 <#local _sourceCollections = sourceCollections />
 <#local _relatedComparativeCollections = relatedComparativeCollections />
@@ -519,7 +525,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#if _relatedComparativeCollections.empty><#local _relatedComparativeCollections = [blankRelatedComparativeCollection] /></#if>
 <div class="well-alt" id="relatedCollectionsSectionGlide">
     <h2>Museum or Archive Collections</h2>
-    <@inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited />
+    <@_inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited />
     <div id="relatedCollectionsSection">
         <div id="divSourceCollectionControl" class="control-group repeatLastRow">
             <label class="control-label">Source Collections</label>
@@ -539,6 +545,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit source collections section-->
 <#macro sourceCollectionRow sourceCollection prefix index=0>
 <#local plural = "${prefix}s" />
     <div class="controls controls-row repeat-row" id="${prefix}Row_${index}_">
@@ -550,7 +558,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
 </#macro>
 
-<#macro inheritsection checkboxId name showInherited=true  label="Inherit this section" >
+<#-- emit an 'inherit from parent project' checkbox for a subsection of an edit form-->
+<#macro _inheritsection checkboxId name showInherited=true  label="Inherit this section" >
     <div class='divInheritSection'>
     <#if showInherited>
         <div class="control-group alwaysEnabled">
@@ -563,14 +572,18 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
             
     <#elseif resource??>
-         <@inheritTips id="${checkboxId}" />
+        <div id="${checkboxId}hint" class="inherit-tips">
+            <em>Note: This section supports <strong>inheritance</strong>: values can be re-used by resources associated with your project.</em>
+        </div>
     </#if>
     </div>    
 </#macro>
 
 
-
-
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit 'resource notes' section
+    @requires resourceNotes:list<ResourceNote>
+-->
 <#macro resourceNoteSection showInherited=true>
 <div id="resourceNoteSectionGlide" data-tiplabel="Notes" data-tooltipcontent="Use this section to append any notes that may help clarify certain aspects of the resource.  For example, 
     a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document.">
@@ -579,16 +592,36 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#local _resourceNotes = [blankResourceNote] />
     </#if>
     <h2>Notes</h2>
-    <@inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited />
+    <@_inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited />
     <div id="resourceNoteSection" class="control-group repeatLastRow">
         <label class="control-label">Type / Contents</label>
         <#list _resourceNotes as resourceNote>
-        <#if resourceNote??><@noteRow resourceNote resourceNote_index/></#if>
+        <#if resourceNote??><@_noteRow resourceNote resourceNote_index/></#if>
         </#list>
     </div>
 </div>
 </#macro>
+    <#macro _noteRow proxy note_index=0>
+    <div id="resourceNoteRow_${note_index}_" class="repeat-row">
+        <div class="controls controls-row">
+            <div class="span6">
+                <div class="controls-row">
+                    <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" />
+                </div>
+                <div class="controls-row">
+                    <@s.textarea rows="4" theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='span6 resizable resize-vertical'
+                    maxlength='5000' />
+                </div>
+            </div>
+            <div class="span1">
+                <@nav.clearDeleteButton id="resourceNoteRow" />
+            </div>
+        </div>
+    </div>
+    </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit account information section -->
 <#macro accountSection>
 <#if payPerIngestEnabled>
     <#if activeAccounts?size == 1>
@@ -611,45 +644,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </#if>
 </#if>
 </#macro>
-
-<#macro noteRow proxy note_index=0>
-<div id="resourceNoteRow_${note_index}_" class="repeat-row">
-    <div class="controls controls-row">
-        <div class="span6">
-            <div class="controls-row">
-                <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" />
-            </div>
-            <div class="controls-row">
-                <@s.textarea rows="4" theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='span6 resizable resize-vertical' 
-                    maxlength='5000' />
-            </div>
-        </div>
-        <div class="span1">
-            <@nav.clearDeleteButton id="resourceNoteRow" />
-        </div>
-    </div>
-</div>
-</#macro>
-
-
-
-
-<#macro coverageDatesSection>
-<#local _coverageDates=coverageDates />
-<#if _coverageDates.empty><#local _coverageDates = [blankCoverageDate] /></#if>
-<@helptext.coverageDates />
-<div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date" data-tiplabel="Coverage Dates" data-tooltipcontent="#coverageDatesTip">
-    <label class="control-label">Coverage Dates</label>
-    
-    <#list _coverageDates as coverageDate>
-    <#if coverageDate??>
-    <@dateRow coverageDate coverageDate_index/>
-    </#if>
-    </#list>
-</div>
-
-</#macro>
-
 
 
 <#macro dateRow proxy=proxy proxy_index=0>
@@ -712,7 +706,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <div class="controls controls-row">
             <#--assuming we are in a span9 and that a controls-div is 2 cells narrower, our width should be span 7 -->
             <div class="span6">
-                <@userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies" 
+                <@_userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies"
                     includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION") 
                     required=(required) leadTitle="${leadTitle}"/>
 
@@ -729,7 +723,67 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
     </#if>
 </#macro>
+    <#macro _userRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
+    includeRepeatRow=false includeRights=false  hidden=false isUser=false leadTitle="">
+        <#local disabled =  isDisabled?string("disabled", "") />
+        <#local readonly = isDisabled?string("readonly", "") />
+        <#local lookupType="nameAutoComplete"/>
+        <#if isUser><#local lookupType="userAutoComplete notValidIfIdEmpty"/></#if>
+        <#local _index=""/>
+        <#if _indexNumber?string!=''><#local _index="[${_indexNumber?c}]" /></#if>
+        <#local personPrefix="" />
+        <#if _personPrefix!=""><#local personPrefix=".${_personPrefix}"></#if>
+        <#local strutsPrefix="${prefix}${_index}" />
+        <#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
+        <#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
+        <#local requiredClass><#if required>required</#if></#local>
+        <#local firstnameTitle>A ${leadTitle}first name<#if required> is required</#if></#local>
+        <#local surnameTitle>A ${leadTitle}last name<#if required> is required</#if></#local>
+    <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
+        <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()" autocompleteParentElement="#${rowIdElement}"   />
+        <div class="controls-row">
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
+            autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
+            name="${strutsPrefix}${personPrefix}.lastName" maxlength="255"
+            title="${surnameTitle}"
+            />
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
+            name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
+            autocompleteIdElement="#${idIdElement}"
+            autocompleteParentElement="#${rowIdElement}"
+            title="${firstnameTitle}"
+            />
 
+            <#if includeRole || includeRights>
+                <#if includeRole>
+                    <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles
+                    cssClass="creator-role-select span2" />
+                <#else>
+                    <@s.select theme="tdar" cssClass="creator-rights-select span2" name="${strutsPrefix}.generalPermission" emptyOption='false'
+                    listValue='label' list='%{availablePermissions}' disabled=isDisabled />
+                <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
+                    <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
+                </#if>
+            <#else>
+                <span class="span2">&nbsp;</span>
+            </#if>
+        </div>
+        <div class="controls-row">
+            <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
+            autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
+            name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
+                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
+        autocompleteIdElement="#${idIdElement}"
+        autocompleteName="institution"
+        autocompleteParentElement="#${rowIdElement}"
+        name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
+
+        </div>
+    </div>
+    </#macro>
+
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit the custom identifiers section of a resource edit page-->
 <#macro identifiers showInherited=true>
     <#local _resourceAnnotations = resourceAnnotations />
     <#if _resourceAnnotations.empty>
@@ -738,14 +792,14 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id="divIdentifiersGlide" data-tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" data-tooltipcontent="#divIdentifiersTip">
         <@helptext.identifiers />
         <h2><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
-        <@inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
+        <@_inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
         <div id="divIdentifiers" class="repeatLastRow">
             <div class="control-group">
                 <label class="control-label">Name / Value</label>
                 <div class="controls">
                     <div id="resourceAnnotationsTable"  addAnother="add another identifier" >
                         <#list _resourceAnnotations as annotation>
-                        <@displayAnnotation annotation annotation_index/>
+                        <@_displayAnnotation annotation annotation_index/>
                         </#list>
                     </div>
                 </div>
@@ -754,8 +808,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
 
 </#macro>
-
-<#macro displayAnnotation annotation annotation_index=0>
+<#macro _displayAnnotation annotation annotation_index=0>
     <div id="resourceAnnotationRow_${annotation_index}_" class="controls-row repeat-row">
         <@s.textfield theme="tdar" placeholder="Name"  maxlength=128 cssClass="annotationAutoComplete span3" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
         <@s.textfield theme="tdar" placeholder="Value" cssClass="span3" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
@@ -763,6 +816,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
 </#macro>
 
+<#--
+  emit the  joined string values of a collection, same as
+    <#list mylist as item>${item}<#if item_has_next>,</#if></#list>
+-->
 <#macro join sequence=[] delimiter=",">
   <#if sequence?has_content>
     <#list sequence as item>
@@ -777,9 +834,10 @@ to singleFileUpload, continue lifting useful logic here into singleFileUpload (e
 jquery validation hooks?)
 MARTIN: it's also used by the FAIMS Archive type on edit.
 -->
+<#-- emit file upload section for non-async uploads -->
 <#macro upload uploadLabel="File" showMultiple=false divTitle="Upload File" showAccess=true>
-    <@sharedUploadFile>
-      <@singleFileUpload>
+    <@_sharedUploadFile>
+      <@_singleFileUpload>
           <div class="field indentFull singleFileUpload">
           <@s.select name="fileProxies[0].restriction" id="cbConfidential" labelposition="right" label="This item has access restrictions" listValue="label" list=fileAccessRestrictions />
           <div><b>NOTE:</b> by changing this from 'public', all of the metadata will be visible to users, they will not be able to view or download this file.  
@@ -793,13 +851,75 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 	          Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" />
           
           </div>
-      </@singleFileUpload>
-    </@sharedUploadFile>
+      </@_singleFileUpload>
+    </@_sharedUploadFile>
+</#macro>
+<#macro _sharedUploadFile divTitle="Upload">
+<div class="well-alt" id="uploadSection">
+    <h2>${divTitle}</h2>
+    <div class='fileupload-content'>
+        <#nested />
+    <#-- XXX: verify logic for rendering this -->
+        <#if multipleFileUploadEnabled || resource.hasFiles()>
+            <!-- not sure this is ever used -->
+            <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
+
+            <div class="">
+                <p><span class="label">Note:</span> You can only have <strong><#if !multipleFileUploadEnabled>1 file<#else>${maxUploadFilesPerRecord} files</#if> </strong> per record</p>
+            </div>
+            <table id="uploadFiles" class="files table tableFormat">
+            </table>
+            <table id="files" class="files sortable">
+                <thead>
+                <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
+                    <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
+                </tr>
+                </thead>
+                <tbody>
+                    <#list fileProxies as fileProxy>
+                        <#if fileProxy??>
+                            <@_fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
+                        </#if>
+                    </#list>
+                    <#if fileProxies.empty>
+                    <tr class="noFiles newRow">
+                        <td><em>no files uploaded</em></td>
+                    </tr>
+                    </#if>
+                </tbody>
+            </table>
+        </#if>
+    </div>
+    <@helptext.confidentialFile />
+</div>
+</#macro>
+<#macro _singleFileUpload typeLabel="${resource.resourceType.label}">
+    <#if !ableToUploadFiles>
+    <b>note:</b> you have not been granted permission to upload or modify files<br/>
+    <#else>
+    <div class="control-group"
+         data-tiplabel="Upload your ${typeLabel}"
+         data-tooltipcontent="The metadata entered on this form will be associated with this file. We accept the following formats:
+                        <@join sequence=validFileExtensions delimiter=", "/>">
+        <label for="fileUploadField" class="control-label">${typeLabel}</label>
+        <div class="controls">
+            <@s.file theme="simple" name='uploadedFiles' cssClass="validateFileType input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
+            <span class="help-block">Valid file types include: <@join sequence=validFileExtensions delimiter=", "/></span>
+        </div>
+        <#nested>
+    </div>
+    </#if>
 </#macro>
 
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit the file upload section for async uploads
+    @param showMultiple:boolean (not used?)
+    @param divTitle:string (not used?)
+    @param divId:string prefix for element ids used in this section
+    @param inputFileCss:string  string to inject in the actual file input[class] attribute
+-->
 <#macro asyncFileUpload uploadLabel="Attach Files" showMultiple=false divTitle="Upload" divId="divFileUpload" inputFileCss="" >
-
 <div id="${divId}Help" style="display:none">
     <div class="">
         <h3>Adding Files</h3>
@@ -890,7 +1010,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             <tbody id="fileProxyUploadBody" class="files">
             <#list fileProxies as fileProxy>
                 <#if fileProxy??>
-                <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
+                <@_fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
                 </#if>
             </#list>
             </tbody>
@@ -900,8 +1020,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </div>
 </div>
 </#macro>
-
-<#macro fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1 proxy=blankFileProxy >
+<#macro _fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1 proxy=blankFileProxy >
 <tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable fade existing-file in">
 
             <td class="preview"></td>
@@ -947,6 +1066,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </tr>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit the resource title section of an edit page
+    @requires resource.title:string
+    @requires resource.id:number
+-->
 <#macro title>
 <#-- expose pageTitle so edit pages can use it elsewhere -->
 <#assign pageTitle>Create a new <@resourceTypeLabel /></#assign>
@@ -956,6 +1080,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 <title>${pageTitle}</title>
 </#macro>
 
+
+<#-- emit the right-sidebar section.  Note this gets parsed by sitemesh, so more content will go inside.
+    @requires resource:Resource
+-->
 <#macro sidebar>
 <div id="sidebar-right" parse="true">
     <div id="notice">
@@ -967,13 +1095,13 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 </div>
 </#macro>
 
-
-<#macro inheritTips id>
-    <div id="${id}hint" class="inherit-tips">
-        <em>Note: This section supports <strong>inheritance</strong>: values can be re-used by resources associated with your project.</em>
-    </div>
-</#macro>
-
+<#-- emit a 'datatable' with a list of resources
+    @requires allSumbittedProjects:list<Project> list of projects created by user (goes in separate select optgroup)
+    @requires fullUserProjects:list<Project> list of other editable projects (goes in separate select optgroup)
+    @param showDescription:boolean (unused)
+    @param selectable:boolean render resources in the list with "selectable" rows,  which will render a checkbox
+        as the first column in each row of the data table
+-->
 
 <#macro resourceDataTable showDescription=true selectable=false>
 <div class="well tdar-widget"> <#--you are in a span9, but assume span8 so we fit inside well -->
@@ -1019,8 +1147,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         </div>
     </div>
 
-
-    
     <div class="row">
 
         <div class="span4">
@@ -1086,12 +1212,10 @@ var checked = $('#resource_datatable td input[type=checkbox]:checked');
     $(checked).click();
   }
 }
-
 </script>
-
 </#macro>
 
-
+<#-- emit $.ready javascript snippet that registers is responsible for wiring up a table element as a datatable widget -->
 <#macro resourceDataTableJavascript showDescription=true selectable=false >
 <script type="text/javascript">
 $(function() {
@@ -1103,29 +1227,11 @@ $(function() {
 });
 <#nested>
 </script>
-
 </#macro>
 
 
-<#macro repeat count>
-    <#list 1..count as idx> <#t>
-        <#nested><#t>
-    </#list><#t>
-</#macro>
-
-
-<#macro keywordNodeOptions node selectedKeyword>
-    <option>not implemented</option>
-</#macro>
-
-<#macro keywordNodeSelect label node selectedKeywordId selectTagId='keywordSelect'>
-    <label for="${selectTagId}">${label}</label>
-    <select id="${selectTagId}">
-        <@keywordNodeOptions node selectedKeywordId />
-    </select>
-</#macro>
-
-
+<#-- FIXME: FTLREFACTOR  jtd: macro only used once.  We could/should either inline this content instead of using it as a macro, or simply move the macro to file that references it-->
+<#-- emit the copyright holders section -->
 <#macro copyrightHolders sectionTitle copyrightHolderProxies >
     <#if copyrightMandatory>
         <@helptext.copyrightHoldersTip />
@@ -1139,6 +1245,8 @@ $(function() {
     </#if>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR  jtd: macro only used once.  We could/should either inline this content instead of using it as a macro, or simply move the macro to file that references it-->
+<#-- emit the license section -->
 <#macro license>
 <#assign currentLicenseType = defaultLicenseType/>
 <#if resource.licenseType?has_content>
@@ -1178,6 +1286,9 @@ $(function() {
 </div>
 </#macro>
 
+<#--emit the 'templates' used to render the parts of the asyc-upload section. The jQuery FileUpload plugin
+ builds it's certain elements dynamically  using the Blueimp template library.
+ -->
 <#macro asyncUploadTemplates formId="resourceMetadataForm">
 
 <!-- The template to display files available for upload (uses tmpl.min.js) -->
@@ -1263,7 +1374,7 @@ $(function() {
         <td style="width:10%">
 
             {%if (file.fileId) { %}
-            <@fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button btn btn-small btn-warning btn-block"/>
+            <@_fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button btn btn-small btn-warning btn-block"/>
             <button type="button" style="display:none; text-align:left" class="btn btn-small btn-warning undo-replace-button btn-block" title="Restore Original File">Restore</button>
             {% } %}
 
@@ -1286,14 +1397,21 @@ $(function() {
     </tr>
 {% } %}
 </script>
-
+</#macro>
+<#macro _fileuploadButton id="fileuploadButton" name="" label="" cssClass="" buttonCssClass="">
+<span class="btn fileinput-button ${buttonCssClass}" id="${id}Wrapper" style="width:6em;text-align:left">
+    <i class="icon-refresh icon-white"> </i>
+    <span>${label}</span>
+    <input type="file" name="uploadFile" id="${id}" class="${cssClass}">
+</span>
 </#macro>
 
-<#macro acceptedFileTypesRegex>
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#macro _acceptedFileTypesRegex>
 /\.(<@join sequence=validFileExtensions delimiter="|"/>)$/i<#t>
 </#macro>
 
-
+<#--emit the sub-navmenu of a resource edit page -->
 <#macro subNavMenu>
     <#local supporting = resource.resourceType.supporting >
     <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen"  data-offset-top="250" data-spy="affix" >
@@ -1328,7 +1446,7 @@ $(function() {
     </div>
 </#macro>
 
-
+<#-- FIXME: FTLREFACTOR move to commin-invoice.ftl -->
 <#macro listMemberUsers >
 <#local _authorizedUsers=account.authorizedMembers />
 <#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
@@ -1355,72 +1473,10 @@ $(function() {
 
 </#macro>
 
-<#--render person control assumed to be directly inside of a grid-sized element and inside of a control group -->
-<#macro personControl person person_index isDisabled namePrefix >
-</#macro>
 
-
-<#macro userRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
-    includeRepeatRow=false includeRights=false  hidden=false isUser=false leadTitle="">
-<#local disabled =  isDisabled?string("disabled", "") />
-<#local readonly = isDisabled?string("readonly", "") />
-<#local lookupType="nameAutoComplete"/>
-<#if isUser><#local lookupType="userAutoComplete notValidIfIdEmpty"/></#if>
-<#local _index=""/>
-<#if _indexNumber?string!=''><#local _index="[${_indexNumber?c}]" /></#if>
-<#local personPrefix="" />
-<#if _personPrefix!=""><#local personPrefix=".${_personPrefix}"></#if>
-<#local strutsPrefix="${prefix}${_index}" />
-<#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
-<#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
-<#local requiredClass><#if required>required</#if></#local>
-<#local firstnameTitle>A ${leadTitle}first name<#if required> is required</#if></#local>
-<#local surnameTitle>A ${leadTitle}last name<#if required> is required</#if></#local>
-    <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
-        <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()" autocompleteParentElement="#${rowIdElement}"   />
-        <div class="controls-row">
-                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
-                    autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
-                    name="${strutsPrefix}${personPrefix}.lastName" maxlength="255"
-                    title="${surnameTitle}"
-                     />
-                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
-                    name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
-                    autocompleteIdElement="#${idIdElement}"
-                    autocompleteParentElement="#${rowIdElement}"
-                     title="${firstnameTitle}"
-                    />
-
-            <#if includeRole || includeRights>
-                    <#if includeRole>
-                        <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles
-                            cssClass="creator-role-select span2" />
-                    <#else>
-                        <@s.select theme="tdar" cssClass="creator-rights-select span2" name="${strutsPrefix}.generalPermission" emptyOption='false'
-                            listValue='label' list='%{availablePermissions}' disabled=isDisabled />
-                        <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
-                        <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
-                    </#if>
-            <#else>
-                <span class="span2">&nbsp;</span> 
-            </#if>
-        </div>
-        <div class="controls-row">
-                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
-                    autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
-                    name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
-                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
-                    autocompleteIdElement="#${idIdElement}"
-                    autocompleteName="institution"
-                    autocompleteParentElement="#${rowIdElement}"
-                    name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
-
-        </div>
-    </div>
-</#macro>
-
-
-
+<#-- emit one "row" of a registered user table.  Each row contains an text input field that will be initialized
+    with the jquery-ui autocomplete plugin
+-->
 <#macro registeredUserRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" 
     includeRepeatRow=false includeRights=false  hidden=false leadTitle="">
 <#local disabled =  isDisabled?string("disabled", "") />
@@ -1458,7 +1514,9 @@ $(function() {
     </div>
 </#macro>
 
-<#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix=""  
+
+<#-- emit a single row of a table that contains institution autocomplete fields -->.
+<#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix=""
     hidden=false leadTitle="">
 <#local _index=""/>
 <#if _indexNumber?string!=''><#local _index="[${_indexNumber}]" /></#if>
@@ -1491,14 +1549,8 @@ $(function() {
     </div>
 </#macro>
 
-<#macro fileuploadButton id="fileuploadButton" name="" label="" cssClass="" buttonCssClass="">
-<span class="btn fileinput-button ${buttonCssClass}" id="${id}Wrapper" style="width:6em;text-align:left">
-    <i class="icon-refresh icon-white"> </i>
-    <span>${label}</span>
-    <input type="file" name="uploadFile" id="${id}" class="${cssClass}">
-</span>
-</#macro>
-
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- emit a text input field intended for use as a date-entry control-->
 <#macro datefield date name="" id=name cssClass="" label="" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" >
     <#local val = "">
     <#if date?has_content>
@@ -1507,6 +1559,7 @@ $(function() {
     <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" />
 </#macro>
 
+<#--emit x-tmpl template for use when rendering results menu for person autocomplete fields -->
 <#macro personAutocompleteTemplate>
 <script id="template-person-autocomplete-li" type="text/x-tmpl">
     <li class="{%=o.addnew?'addnew':''%}">
