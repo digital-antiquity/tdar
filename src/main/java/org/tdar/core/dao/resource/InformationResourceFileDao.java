@@ -11,6 +11,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
@@ -87,10 +88,14 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     }
 
     public void deleteVersionImmediately(InformationResourceFileVersion version) {
+        if (Persistable.Base.isNullOrTransient(version)) {
+            throw new TdarRecoverableRuntimeException("cannot delete transient object");
+        }
+        
         if (version.isUploadedOrArchival()) {
             throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.cannot_delete_archival"));
         }
-        Query query = getCurrentSession().createQuery(TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY);
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY);
         query.setParameter("id", version.getId()).executeUpdate();
     }
 
