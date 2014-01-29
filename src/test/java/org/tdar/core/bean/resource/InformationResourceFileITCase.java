@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -63,6 +64,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
+    @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testCreateInformationResourceFile() throws InstantiationException, IllegalAccessException {
         InformationResource ir = generateDocumentWithFileAndUser();
 
@@ -116,6 +118,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
+    @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testReprocessInformationResourceFile() throws Exception {
         InformationResource ir = generateDocumentWithFileAndUser();
 
