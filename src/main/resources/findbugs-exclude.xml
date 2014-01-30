@@ -20,12 +20,12 @@
 		<Class name="~.*ITCase$" />
 	</Match>
 
-	<!-- ignore nonsensical warnings that don't show in eclipse version 
+	<!-- ignore nonsensical warnings that don't show in eclipse version	-->
 	<Match>
 		<Bug pattern="BIT_AND_ZZ" />
 	</Match>
 	<Match>
 		<Bug pattern="BIT_IOR" />
-	</Match>-->
+	</Match>
 
 </FindBugsFilter>

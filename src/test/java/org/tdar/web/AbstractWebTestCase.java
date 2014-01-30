@@ -1221,7 +1221,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
         gotoPage("/");
         clickLinkOnPage("Sign Up");
-        logger.info(getPageCode());
+        logger.trace(getPageCode());
         for (String key : values.keySet()) {
             setInput(key, values.get(key));
         }
