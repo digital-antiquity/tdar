@@ -338,7 +338,6 @@ public abstract class AbstractSeleniumWebITCase {
      */
     @After
     public final void shutdownSelenium() {
-        logger.debug("after");
         takeScreenshot();
         try {
             driver.quit();
