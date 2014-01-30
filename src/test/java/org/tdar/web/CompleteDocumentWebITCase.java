@@ -183,7 +183,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         submitForm();
 
         String path = internalPage.getUrl().getPath().toLowerCase();
-        logger.info(getPageText());
+        logger.trace(getPageText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
         assertTextPresent(ORIGINAL_START_DATE);
@@ -195,7 +195,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         submitForm();
 
         path = internalPage.getUrl().getPath().toLowerCase();
-        logger.info(getPageText());
+        logger.trace(getPageText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
         assertTextPresent(NEW_START_DATE);
         assertTextNotPresent(ORIGINAL_START_DATE);
@@ -237,7 +237,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         // e.printStackTrace();
         // }
 
-        logger.info(getPageText());
+        logger.trace(getPageText());
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just
             // the top of the lat/long

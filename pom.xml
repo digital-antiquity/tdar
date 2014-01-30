@@ -1248,7 +1248,8 @@
 					bZloaUUnmm
 					]]></license>
 					<configuration>
-						<cloverDatabase>/tmp/clover-database</cloverDatabase>
+						<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase>
+						<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
 					</configuration>
 					<includes>
 						<include>**/*.java</include>
@@ -2154,7 +2155,7 @@
 	<profile>
 		<id>clover</id>
 		<properties>
-			<webapp.deploy.dir>/tmp/tdar-clover</webapp.deploy.dir>
+			<webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
 			<use.test.classpath>true</use.test.classpath>
 		</properties>
 		<build>
@@ -2163,7 +2164,8 @@
 					<groupId>com.atlassian.maven.plugins</groupId>
 					<artifactId>maven-clover2-plugin</artifactId>
 					<configuration>
-						<cloverDatabase>/tmp/clover-database</cloverDatabase>
+						<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase>
+						<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
 					</configuration>
 					<executions>
 						<execution>
