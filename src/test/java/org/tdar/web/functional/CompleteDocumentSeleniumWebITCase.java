@@ -208,7 +208,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[1]", ResourceCreatorRole.CONTACT);
 
         submitForm();
-        logger.info(getText());
+        logger.trace(getText());
         assertTrue(getText().contains(JONES));
         assertTrue(getText().contains(INDIANA));
         assertTrue(getText().contains("UC"));
@@ -241,7 +241,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         submitForm();
 
         String path = getDriver().getCurrentUrl();
-        logger.info(find("body").getText());
+        logger.trace(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));
         assertTrue("expected value on view page", sourceContains(ORIGINAL_START_DATE));
         assertTrue("expected value on view page", sourceContains(ORIGINAL_END_DATE));
@@ -255,7 +255,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         submitForm();
 
         path = getDriver().getCurrentUrl();
-        logger.info(find("body").getText());
+        logger.trace(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));
         assertTrue(sourceContains(NEW_START_DATE));
         assertFalse(sourceContains(ORIGINAL_START_DATE));
@@ -309,7 +309,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         // add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person(LOBLAW, ROBERT, "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
 
-        logger.info(getDriver().getPageSource());
+        logger.trace(getDriver().getPageSource());
         submitForm();
 
         String path = getDriver().getCurrentUrl();
