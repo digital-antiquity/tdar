@@ -6,6 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -26,7 +27,8 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
 
     private static final long serialVersionUID = 6891881586235180640L;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    @Transient
+    private transient final Logger logger = LoggerFactory.getLogger(getClass());
 
     public enum BillingActivityType {
         PRODUCTION, TEST;
