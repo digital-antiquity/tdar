@@ -13,14 +13,21 @@
   <module name="TreeWalker">
     <module name="JavadocMethod">
       <property name="suppressLoadErrors" value="true"/>
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
-    <module name="JavadocType"/>
+    <module name="JavadocType">
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+    </module>
     <module name="JavadocVariable">
       <property name="severity" value="ignore"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="JavadocStyle">
 	   <property name="checkFirstSentence" value="false"/>
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="ConstantName"/>
     <module name="LocalFinalVariableName"/>
@@ -126,7 +133,10 @@
     <module name="TodoComment"/>
     <module name="UpperEll"/>
   </module>
-  <module name="JavadocPackage"/>
+  <module name="JavadocPackage">
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+  </module>
   <module name="NewlineAtEndOfFile">
     <property name="severity" value="ignore"/>
     <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
