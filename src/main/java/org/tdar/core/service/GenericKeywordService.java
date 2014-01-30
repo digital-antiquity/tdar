@@ -41,7 +41,7 @@ public class GenericKeywordService extends GenericService {
 
     @Autowired
     @Qualifier("genericKeywordDao")
-    GenericKeywordDao genericKeywordDao;
+    private GenericKeywordDao genericKeywordDao;
 
     /**
      * Find all approved keywords without the cache

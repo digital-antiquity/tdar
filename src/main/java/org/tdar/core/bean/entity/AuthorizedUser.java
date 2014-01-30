@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Index;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -39,6 +41,9 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 public class AuthorizedUser extends Base implements Persistable {
 
     private static final long serialVersionUID = -6747818149357146542L;
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /* Right now not used */
     enum AdminPermissions {

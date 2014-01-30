@@ -7,6 +7,8 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.Query;
 import org.hibernate.type.StandardBasicTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
@@ -25,6 +27,8 @@ import org.tdar.core.bean.resource.Status;
 @Component("projectDao")
 @SuppressWarnings("unchecked")
 public class ProjectDao extends ResourceDao<Project> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public ProjectDao() {
         super(Project.class);

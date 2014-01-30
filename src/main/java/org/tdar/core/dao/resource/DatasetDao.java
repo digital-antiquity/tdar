@@ -19,6 +19,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -52,6 +54,8 @@ import org.tdar.db.model.abstracts.TargetDatabase;
  */
 @Component
 public class DatasetDao extends ResourceDao<Dataset> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public DatasetDao() {
         super(Dataset.class);

@@ -3,6 +3,8 @@ package org.tdar.core.dao.resource;
 import java.io.IOException;
 
 import org.hibernate.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
@@ -15,7 +17,10 @@ import org.tdar.utils.MessageHelper;
 
 @Component
 public class InformationResourceFileVersionDao extends HibernateBase<InformationResourceFileVersion> {
+
     private static final Filestore filestore = TdarConfiguration.getInstance().getFilestore();
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public InformationResourceFileVersionDao() {
         super(InformationResourceFileVersion.class);

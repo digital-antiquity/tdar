@@ -18,6 +18,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
@@ -53,8 +55,11 @@ import org.tdar.struts.data.ResourceSpaceUsageStatistic;
  * @param <E>
  */
 public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<E> {
+
     @Autowired
     private AuthenticationAndAuthorizationService authenticationService;
+    
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public ResourceDao(Class<E> resourceClass) {
         super(resourceClass);

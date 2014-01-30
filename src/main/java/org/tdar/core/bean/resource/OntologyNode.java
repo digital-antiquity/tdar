@@ -21,6 +21,8 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 import org.hibernate.validator.constraints.Length;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -40,6 +42,9 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 public class OntologyNode extends Persistable.Base implements Comparable<OntologyNode> {
 
     private static final long serialVersionUID = 6997306639142513872L;
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final OntologyNode NULL = new OntologyNode() {
         private static final long serialVersionUID = 2863511954419520195L;

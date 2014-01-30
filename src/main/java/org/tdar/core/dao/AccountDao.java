@@ -14,6 +14,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
@@ -39,6 +41,8 @@ import org.tdar.utils.MessageHelper;
  */
 @Component
 public class AccountDao extends Dao.HibernateBase<Account> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public AccountDao() {
         super(Account.class);

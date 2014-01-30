@@ -14,6 +14,8 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
@@ -31,6 +33,8 @@ import org.tdar.core.dao.TdarNamedQueries;
  */
 @Component
 public class PersonDao extends Dao.HibernateBase<Person> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public PersonDao() {
         super(Person.class);

@@ -21,6 +21,8 @@ import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Store;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
@@ -52,6 +54,9 @@ import org.tdar.utils.MessageHelper;
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 2605563277326422859L;
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final double MAX_LATITUDE = 90d;
     public static final double MIN_LATITUDE = -90d;

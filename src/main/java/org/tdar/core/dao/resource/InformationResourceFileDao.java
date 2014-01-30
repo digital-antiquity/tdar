@@ -9,6 +9,8 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -25,6 +27,8 @@ import org.tdar.utils.MessageHelper;
 
 @Component
 public class InformationResourceFileDao extends HibernateBase<InformationResourceFile> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public InformationResourceFileDao() {
         super(InformationResourceFile.class);

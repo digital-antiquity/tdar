@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
@@ -49,6 +51,9 @@ import org.tdar.utils.MessageHelper;
 public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>,Obfuscatable {
 
     private static final long serialVersionUID = 7641781600023145104L;
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @IndexedEmbedded

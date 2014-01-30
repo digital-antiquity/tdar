@@ -43,7 +43,7 @@ import org.tdar.utils.MessageHelper;
 public class OwlApiHierarchyParser implements OntologyParser {
 
     private final OWLOntology owlOntology;
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     
     private final List<OWLClass> rootClasses = new ArrayList<OWLClass>();
     private final HashMap<OWLClass, Set<OWLClass>> owlHierarchyMap = new HashMap<OWLClass, Set<OWLClass>>();

@@ -56,7 +56,7 @@ public class GenericService {
     private GenericDao genericDao;
 
     public static final int MINIMUM_VALID_ID = 0;
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * A 2nd-level cache of objects that don't change frequently. 

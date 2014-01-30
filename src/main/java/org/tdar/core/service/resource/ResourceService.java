@@ -17,6 +17,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.tools.ant.filters.StringInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +59,9 @@ import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 
 @Service
 public class ResourceService extends GenericService {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     public enum ErrorHandling {
         NO_VALIDATION,
         VALIDATE_SKIP_ERRORS,

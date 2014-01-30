@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 
@@ -38,6 +40,9 @@ import org.tdar.core.bean.Viewable;
 public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension {
 
     private static final long serialVersionUID = 3768354809654162949L;
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private transient File transientFile;
     @ManyToOne()

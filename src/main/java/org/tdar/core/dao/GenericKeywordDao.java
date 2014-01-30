@@ -14,6 +14,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,7 @@ public class GenericKeywordDao extends GenericDao {
 
     public static final String NAME = "name";
     public static final String INHERITANCE_TOGGLE_FIELDNAME = "INHERITANCE_TOGGLE";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Transactional
     public <K extends HierarchicalKeyword<K>> List<K> findAllDescendants(Class<K> cls, K keyword) {

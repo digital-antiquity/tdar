@@ -16,6 +16,8 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -32,6 +34,8 @@ import org.tdar.core.dao.Dao;
  */
 @Component
 public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public ResourceCollectionDao() {
         super(ResourceCollection.class);

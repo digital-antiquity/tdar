@@ -54,7 +54,7 @@ public class GenericDao {
         FIND_FIRST_OR_CREATE;
     }
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient SessionFactory sessionFactory;

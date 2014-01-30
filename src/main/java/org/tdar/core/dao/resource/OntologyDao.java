@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.Persistable;
@@ -19,6 +21,8 @@ import org.tdar.core.dao.TdarNamedQueries;
  */
 @Component
 public class OntologyDao extends ResourceDao<Ontology> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public OntologyDao() {
         super(Ontology.class);

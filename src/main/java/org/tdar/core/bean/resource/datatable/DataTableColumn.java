@@ -26,6 +26,8 @@ import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -53,6 +55,9 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 public class DataTableColumn extends Persistable.Sequence<DataTableColumn> implements Validatable {
 
     private static final long serialVersionUID = 430090539610139732L;
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final DataTableColumn TDAR_ROW_ID = new DataTableColumn() {
 

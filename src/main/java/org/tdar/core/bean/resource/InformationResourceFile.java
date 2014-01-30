@@ -33,6 +33,8 @@ import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
@@ -57,6 +59,9 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> implements Viewable {
 
     private static final long serialVersionUID = -6957336216505367012L;
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private transient WorkflowContext workflowContext;
 

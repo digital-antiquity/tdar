@@ -25,7 +25,8 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 public class BillingActivity extends Persistable.Base implements Comparable<BillingActivity> {
 
     private static final long serialVersionUID = 6891881586235180640L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public enum BillingActivityType {
         PRODUCTION, TEST;

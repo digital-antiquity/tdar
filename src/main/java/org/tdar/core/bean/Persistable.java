@@ -72,7 +72,7 @@ public interface Persistable extends Serializable {
         protected final static String[] DEFAULT_JSON_PROPERTIES = { "id" };
 
         @Transient
-        protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+        private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
         /**
          * Uses GenerationType.IDENTITY, which translates to the (big)serial column type for
