@@ -126,7 +126,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("groups[0].fieldTypes[0]",
                 SearchFieldType.FFK_SITE_TYPE.name());
         createTextInput("groups[0].uncontrolledSiteTypes[0]", keyword);
-        logger.debug("page code\n\n {}\n\n", getPageCode());
+        logger.trace("page code\n\n {}\n\n", getPageCode());
         submitForm("Search");
         assertTextPresent(title);
     }
@@ -1017,7 +1017,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(ADVANCED_SEARCH_BASE_URL);
         createTextInput("groups[0].registeredDates[0].start", "1/1/10");
         createTextInput("groups[0].registeredDates[0].end", "1/1/12");
-        logger.debug(getPageText());
+        logger.trace(getPageText());
         submitForm("Search");
         // FIXME: I can tell from looking that this search is failing, but this
         // assert isn't failing... basically we should not be on the INPUT page
