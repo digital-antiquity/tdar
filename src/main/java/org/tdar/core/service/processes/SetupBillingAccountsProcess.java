@@ -46,16 +46,16 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     private static final long serialVersionUID = -2313655718394118279L;
 
     @Autowired
-    private AccountService accountService;
+    private transient AccountService accountService;
 
     @Autowired
-    private EntityService entityService;
+    private transient EntityService entityService;
 
     @Autowired
-    private ResourceService resourceService;
+    private transient ResourceService resourceService;
 
     @Autowired
-    private GenericService genericService;
+    private transient GenericService genericService;
 
     @Override
     public String getDisplayName() {

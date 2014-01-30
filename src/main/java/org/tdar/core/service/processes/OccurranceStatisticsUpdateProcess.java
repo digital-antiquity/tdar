@@ -14,13 +14,13 @@ public class OccurranceStatisticsUpdateProcess extends ScheduledProcess.Base<Hom
     private static final long serialVersionUID = 8726938824021007982L;
 
     @Autowired
-    private SearchIndexService searchIndexService;
+    private transient SearchIndexService searchIndexService;
 
     @Autowired
-    private GenericKeywordService genericKeywordService;
+    private transient GenericKeywordService genericKeywordService;
 
     @Autowired
-    private EntityService entityService;
+    private transient EntityService entityService;
 
     int batchCount = 0;
     boolean run = false;

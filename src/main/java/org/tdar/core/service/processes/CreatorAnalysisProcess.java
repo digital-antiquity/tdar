@@ -57,25 +57,25 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     private static final long serialVersionUID = 581887107336388520L;
 
     @Autowired
-    private EmailService emailService;
+    private transient EmailService emailService;
 
     @Autowired
-    private SearchService searchService;
+    private transient SearchService searchService;
 
     @Autowired
-    private GenericKeywordService genericKeywordService;
+    private transient GenericKeywordService genericKeywordService;
 
     @Autowired
-    private EntityService entityService;
+    private transient EntityService entityService;
 
     @Autowired
-    private DatasetDao datasetDao;
+    private transient DatasetDao datasetDao;
 
     @Autowired
-    private ProjectDao projectDao;
+    private transient ProjectDao projectDao;
 
     @Autowired
-    private XmlService xmlService;
+    private transient XmlService xmlService;
 
     private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
 

@@ -19,12 +19,10 @@ import org.tdar.core.service.resource.ResourceService;
 @Component
 public class SerializeResourceRecordToXml extends ScheduledBatchProcess<Resource> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 7024941986161148001L;
+
     @Autowired
-    private ResourceService resourceService;
+    private transient ResourceService resourceService;
 
     @Override
     public String getDisplayName() {

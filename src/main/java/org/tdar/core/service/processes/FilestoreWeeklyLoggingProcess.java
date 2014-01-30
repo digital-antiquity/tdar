@@ -28,13 +28,13 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
     private static final long serialVersionUID = -6196804675468219433L;
 
     @Autowired
-    private InformationResourceFileVersionService informationResourceFileVersionService;
+    private transient InformationResourceFileVersionService informationResourceFileVersionService;
 
     @Autowired
-    private FreemarkerService freemarkerService;
+    private transient FreemarkerService freemarkerService;
 
     @Autowired
-    private EmailService emailService;
+    private transient EmailService emailService;
 
     int batchCount = 0;
     boolean run = false;

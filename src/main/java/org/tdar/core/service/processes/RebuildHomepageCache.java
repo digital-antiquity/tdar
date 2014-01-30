@@ -32,11 +32,12 @@ import org.tdar.core.service.resource.ResourceService;
 public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
 
     private static final long serialVersionUID = 7987123045870435222L;
-    @Autowired
-    private ResourceService resourceService;
 
     @Autowired
-    private InformationResourceService informationResourceService;
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient InformationResourceService informationResourceService;
 
     @Override
     public String getDisplayName() {

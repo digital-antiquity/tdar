@@ -22,7 +22,7 @@ public class RebuildDatasetProcess extends ScheduledBatchProcess<Dataset> {
     private static final long serialVersionUID = -7637484880673479889L;
 
     @Autowired
-    private WorkflowContextService workflowContextService;
+    private transient WorkflowContextService workflowContextService;
 
     @Override
     public String getDisplayName() {

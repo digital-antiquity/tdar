@@ -30,13 +30,13 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
     private static final long serialVersionUID = 561910508692901053L;
 
     @Autowired
-    private ResourceService resourceService;
+    private transient ResourceService resourceService;
     @Autowired
-    private GenericService genericService;
+    private transient GenericService genericService;
     @Autowired
-    private ResourceCollectionService resourceCollectionService;
+    private transient ResourceCollectionService resourceCollectionService;
     @Autowired
-    private UrlService urlService;
+    private transient UrlService urlService;
 
     int batchCount = 0;
     boolean run = false;

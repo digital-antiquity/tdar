@@ -19,10 +19,10 @@ public enum PdfFontHelper {
         private int fontSize;
         private int lineHeight;
         private int charsPerLine;
-        private PDType1Font font;
-        private PDType1Font bold;
-        private PDType1Font italic;
-        private Encoding encoding;
+        private transient PDType1Font font;
+        private transient PDType1Font bold;
+        private transient PDType1Font italic;
+        private transient Encoding encoding;
 
         private PdfFontHelper(PDType1Font font, PDType1Font boldVariant, PDType1Font italicVariant, Encoding encoding, int size, int charsPerLine) {
             setFont(font);

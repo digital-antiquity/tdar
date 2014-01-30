@@ -12,7 +12,7 @@ public class RebuildGeographicKeywordProcess extends ScheduledBatchProcess<Resou
     private static final long serialVersionUID = -1389096329990660324L;
 
     @Autowired
-    private ResourceService resourceService;
+    private transient ResourceService resourceService;
 
     @Override
     public boolean isSingleRunProcess() {

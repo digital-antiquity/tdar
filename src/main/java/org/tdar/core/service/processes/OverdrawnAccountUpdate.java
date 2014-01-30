@@ -18,12 +18,11 @@ import org.tdar.core.service.external.EmailService;
 public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
 
     public static final String SUBJECT = "overdrawn accounts";
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 1198012881593988016L;
+
     @Autowired
-    private EmailService emailService;
+    private transient EmailService emailService;
 
     @Override
     public String getDisplayName() {

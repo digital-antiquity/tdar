@@ -35,11 +35,11 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     public static final String DOI_KEY = "DOI";
 
     @Autowired
-    private UrlService urlService;
+    private transient UrlService urlService;
     @Autowired
-    private DatasetDao datasetDao;
+    private transient DatasetDao datasetDao;
     @Autowired
-    private EmailService emailService;
+    private transient EmailService emailService;
 
     private ConfigurableService<ExternalIDProvider> providers = new AbstractConfigurableService<ExternalIDProvider>() {
         @Override

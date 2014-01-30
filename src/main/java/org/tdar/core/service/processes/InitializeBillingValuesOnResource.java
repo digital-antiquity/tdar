@@ -26,13 +26,13 @@ public class InitializeBillingValuesOnResource extends ScheduledBatchProcess<Res
     private static final long serialVersionUID = -4223808692952181718L;
 
     @Autowired
-    private ResourceService resourceService;
+    private transient ResourceService resourceService;
 
     @Autowired
-    private AccountService accountService;
+    private transient AccountService accountService;
 
     @Autowired
-    private GenericService genericService;
+    private transient GenericService genericService;
 
     @Override
     public String getDisplayName() {

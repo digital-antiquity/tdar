@@ -24,16 +24,16 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
     private static final long serialVersionUID = 6866081834770368244L;
 
     @Autowired
-    private ResourceService resourceService;
+    private transient ResourceService resourceService;
 
     @Autowired
-    private GenericService genericService;
+    private transient GenericService genericService;
 
     @Autowired
-    private EntityService entityService;
+    private transient EntityService entityService;
 
     @Autowired
-    private ResourceCollectionService resourceCollectionService;
+    private transient ResourceCollectionService resourceCollectionService;
 
     int batchCount = 0;
     boolean run = false;
