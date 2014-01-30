@@ -1404,6 +1404,8 @@
 					mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
 					bZloaUUnmm
 					]]></license>
+					<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase>
+					<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
 					<includes>
 						<include>**/*.java</include>
 					</includes>
