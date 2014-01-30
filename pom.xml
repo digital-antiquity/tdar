@@ -1247,6 +1247,9 @@
 					mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
 					bZloaUUnmm
 					]]></license>
+					<configuration>
+						<cloverDatabase>/tmp/clover-database</cloverDatabase>
+					</configuration>
 					<includes>
 						<include>**/*.java</include>
 					</includes>
@@ -2152,44 +2155,25 @@
 		<id>clover</id>
 		<properties>
 			<webapp.deploy.dir>/tmp/tdar-clover</webapp.deploy.dir>
-			<jetty.port>8180</jetty.port>
-			<jetty.ssl.port>8143</jetty.ssl.port>
 			<use.test.classpath>true</use.test.classpath>
 		</properties>
 		<build>
 			<plugins>
 				<plugin>
-					<artifactId>maven-antrun-plugin</artifactId>
+					<groupId>com.atlassian.maven.plugins</groupId>
+					<artifactId>maven-clover2-plugin</artifactId>
+					<configuration>
+						<cloverDatabase>/tmp/clover-database</cloverDatabase>
+					</configuration>
 					<executions>
 						<execution>
-							<phase>process-resources</phase>
+							<phase>generate-sources</phase>
 							<goals>
-								<goal>run</goal>
+								<goal>setup</goal>
 							</goals>
-							<configuration>
-								<tasks>
-									<mkdir dir="target" />
-									<mkdir dir="target/generated" />
-									<mkdir dir="target/generated/db" />
-									<mkdir dir="target/generated/webapp" />
-									<mkdir dir="target/generated/webapp-test" />
-								</tasks>
-							</configuration>
 						</execution>
 					</executions>
 				</plugin>
-					<plugin>
-						<groupId>com.atlassian.maven.plugins</groupId>
-						<artifactId>maven-clover2-plugin</artifactId>
-						<executions>
-							<execution>
-								<phase>generate-sources</phase>
-								<goals>
-									<goal>setup</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
 		</plugins>
 			</build>
 			<dependencies>
