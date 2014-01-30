@@ -1270,7 +1270,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected void reindex() {
         gotoPage("/admin/searchindex/build");
         gotoPage("/admin/searchindex/checkstatus");
-        logger.info(getPageCode());
+        logger.trace(getPageCode());
         int count = 0;
         while (!getPageCode().contains("\"percentDone\" : 100")) {
             try {
@@ -1279,7 +1279,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 fail("InterruptedException during reindex.  sorry.");
             }
             gotoPage("/admin/searchindex/checkstatus?userId=" + getAdminUserId());
-            logger.info(getPageCode());
+            if (count % 10 == 5) { 
+                logger.info(getPageCode());
+            }
             if (count == 1000) {
                 fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");
             }
