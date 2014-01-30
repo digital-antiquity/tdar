@@ -14,7 +14,7 @@ View freemarker macros
 	<link rel="canonical" href="http://${hostName}/${object.urlNamespace}/${object.id?c}" /> 
 </#macro>
 
-
+<#-- emit ontology as hierarchical list -->
 <#macro ontology sectionTitle="Parsed Ontology Nodes" previewSize=10 triggerSize=15>
 <#if resource.sortedOntologyNodesByImportOrder?has_content>
 	<#local allNodes = resource.sortedOntologyNodesByImportOrder />

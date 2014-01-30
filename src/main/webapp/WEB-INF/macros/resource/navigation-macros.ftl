@@ -5,9 +5,9 @@ navigation freemarker macros
 <#escape _untrusted as _untrusted?html>
 <#import "list-macros.ftl" as list>
 
-
+<#-- FIXME: FTLREFACTOR remove: rarely used -->
+<#-- emit a partial login form -->
 <#macro loginForm cssClass="">
-
 <script type="text/javascript">
 $(document).ready(function() {
   $('#loginForm').validate({
@@ -54,6 +54,18 @@ $(document).ready(function() {
 <div id="error"></div>
 </#macro>
 
+<#-- emit a toolbar for use on a resource view page
+  @param namespace:string prefix of the action urls for the buttons on the toolbar (e.g. "dataset" becomes "dataset/delete"
+  @param current:string value of the action of the page being rendered
+  @requires resource.id:Long a non-transient resource ID
+  @requires resource.resourceType:string
+  @requires sessionData:SessionData the current authenticated session
+  @requires editable:boolean is resource editable by the authenticated user
+  @requires persistable:Resource alias to the resource associated with the current view
+  @requries ableToEditAnything:boolean override boolean indicating that the view page should render edit/delete links even if the authorized user
+                would otherwise not be able to edit the current resource were they not an admin user.
+  @requires authenticatedUser:Person person object of the authenticated user
+-->
 <#macro toolbar namespace current="view">
   <#if resource??>
     <#if resource.id == -1>
