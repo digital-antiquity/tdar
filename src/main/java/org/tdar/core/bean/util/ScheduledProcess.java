@@ -57,7 +57,7 @@ public interface ScheduledProcess<P extends Persistable> extends Serializable {
 
         private static final long serialVersionUID = -8630791495469441646L;
 
-        protected final Logger logger = LoggerFactory.getLogger(getClass());
+        private final Logger logger = LoggerFactory.getLogger(getClass());
 
         private Long lastId;
 

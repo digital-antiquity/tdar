@@ -30,7 +30,7 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public abstract class QueryBuilder extends QueryPartGroup {
     private static final String _AUTO = "_auto";
-    protected final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = Logger.getLogger(getClass());
     private Class<?>[] classes;
     private List<DynamicQueryComponent> overrides = new ArrayList<DynamicQueryComponent>();
     // private List<String> omitContainedLabels = Arrays.asList("_auto");

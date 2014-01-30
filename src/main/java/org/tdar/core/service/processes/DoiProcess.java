@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResource;
@@ -27,6 +29,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
     public static final String SUBJECT = " DOI Creation Info";
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final long serialVersionUID = 6004534173920064945L;
 
     public static final String DELETED = "deleted";

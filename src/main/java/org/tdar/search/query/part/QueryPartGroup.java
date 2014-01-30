@@ -32,7 +32,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         this.descriptionVisible = descriptionVisible;
     }
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public QueryPartGroup() {
     }

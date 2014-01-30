@@ -3,6 +3,8 @@ package org.tdar.core.service;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
@@ -21,6 +23,8 @@ import org.tdar.core.dao.resource.BookmarkedResourceDao;
 @Transactional
 @Service
 public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<BookmarkedResource, BookmarkedResourceDao> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Transactional(readOnly = true)
     public boolean isAlreadyBookmarked(Resource resource, Person person) {

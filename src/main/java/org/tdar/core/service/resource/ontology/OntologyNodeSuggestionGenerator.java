@@ -20,7 +20,7 @@ import org.tdar.utils.Pair;
  */
 public class OntologyNodeSuggestionGenerator {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private int defaultAcceptableEditDistance = 4;
 

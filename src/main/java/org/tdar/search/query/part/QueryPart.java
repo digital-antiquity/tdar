@@ -14,18 +14,18 @@ public interface QueryPart<T> {
 
     String[] LUCENE_RESERVED_WORDS = {"AND", "OR", "NOT","TO"};
 
-    abstract String generateQueryString();
+    String generateQueryString();
 
-    abstract boolean isDescriptionVisible();
+    boolean isDescriptionVisible();
 
-    abstract void setDescriptionVisible(boolean visible);
+    void setDescriptionVisible(boolean visible);
 
-    abstract String getDescription();
+    String getDescription();
 
-    abstract String getDescriptionHtml();
+    String getDescriptionHtml();
 
-    abstract boolean isEmpty();
+    boolean isEmpty();
 
-    abstract Operator getOperator();
+    Operator getOperator();
 
 }

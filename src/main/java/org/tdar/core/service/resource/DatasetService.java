@@ -23,6 +23,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
@@ -78,6 +80,8 @@ import org.tdar.utils.Pair;
  */
 @Service
 public class DatasetService extends AbstractInformationResourceService<Dataset, DatasetDao> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private TargetDatabase tdarDataImportDatabase;

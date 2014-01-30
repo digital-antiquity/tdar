@@ -27,7 +27,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
 
     private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
     protected final List<Pair<P, Throwable>> errors = new ArrayList<Pair<P, Throwable>>();
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     // this seems really weird to have @Autowired fields in beans...

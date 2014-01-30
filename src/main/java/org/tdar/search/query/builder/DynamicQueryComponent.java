@@ -22,10 +22,10 @@ import org.apache.log4j.Logger;
  */
 
 public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> {
-    String label;
-    Class<?> analyzer;
-    String parent;
-    public static Logger logger = Logger.getLogger(DynamicQueryComponent.class);
+    private String label;
+    private Class<?> analyzer;
+    private String parent;
+    private Logger logger = Logger.getLogger(DynamicQueryComponent.class);
 
     /**
      * Basic constructor

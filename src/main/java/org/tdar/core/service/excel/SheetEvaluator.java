@@ -26,7 +26,7 @@ import org.tdar.utils.MessageHelper;
  * of the data and then use that to find the actual headers that we care about.
  */
 public class SheetEvaluator {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private int startAt = ExcelService.FIRST_ROW;
     private int maxCellCount = -1;
     private FormulaEvaluator evaluator;

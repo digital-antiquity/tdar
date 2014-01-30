@@ -6,6 +6,8 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
@@ -28,6 +30,7 @@ import com.redfin.sitemapgenerator.WebSitemapUrl;
 public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
 
     private static final long serialVersionUID = 561910508692901053L;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient ResourceService resourceService;

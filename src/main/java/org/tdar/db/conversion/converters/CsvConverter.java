@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -27,9 +29,7 @@ import au.com.bytecode.opencsv.CSVReader;
 public class CsvConverter extends SimpleConverter {
 
     protected static final String DB_PREFIX = "csv";
-//    protected CSVReader reader;
-//    protected String[] headerLine;
-//    protected String tableName = "";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public String getDatabasePrefix() {

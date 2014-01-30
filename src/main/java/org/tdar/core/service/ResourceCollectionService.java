@@ -21,6 +21,8 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotNullPredicate;
 import org.apache.commons.lang.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,8 @@ import org.tdar.utils.MessageHelper;
 
 @Service
 public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<ResourceCollection, ResourceCollectionDao> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     AuthenticationAndAuthorizationService authenticationAndAuthorizationService;

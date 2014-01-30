@@ -15,6 +15,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
@@ -46,6 +48,7 @@ import org.tdar.utils.MessageHelper;
 @Transactional
 public class CodingSheetService extends AbstractInformationResourceService<CodingSheet, CodingSheetDao> {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public List<CodingSheet> findSparseCodingSheetList() {
         return getDao().findSparseResourceBySubmitterType(null, ResourceType.CODING_SHEET);

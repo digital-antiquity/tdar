@@ -7,20 +7,20 @@ import org.tdar.core.bean.billing.Invoice;
 
 public interface PaymentTransactionProcessor {
 
-    abstract void initializeTransaction();
+    void initializeTransaction();
 
-    abstract String getTransactionPostUrl();
+    String getTransactionPostUrl();
 
-    abstract String prepareRequest(Invoice invoice) throws URIException;
+    String prepareRequest(Invoice invoice) throws URIException;
 
-    abstract NelNetTransactionResponseTemplate processResponse(Map<String, String[]> parameters);
+    NelNetTransactionResponseTemplate processResponse(Map<String, String[]> parameters);
 
-    abstract boolean validateResponse(TransactionResponse response);
+    boolean validateResponse(TransactionResponse response);
 
-    abstract Invoice locateInvoice(TransactionResponse response);
+    Invoice locateInvoice(TransactionResponse response);
 
-    abstract void updateInvoiceFromResponse(TransactionResponse response, Invoice invoice);
+    void updateInvoiceFromResponse(TransactionResponse response, Invoice invoice);
 
-    abstract TransactionResponse setupTransactionResponse(Map<String, String[]> map);
+    TransactionResponse setupTransactionResponse(Map<String, String[]> map);
 
 }

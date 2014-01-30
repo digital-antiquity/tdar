@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Dedupable;
@@ -18,6 +20,7 @@ import org.tdar.utils.MessageHelper;
 public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQueryPart<C> {
 
     private List<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @SuppressWarnings("unchecked")
     public CreatorQueryPart(String fieldName, Class<C> creatorClass, C creator, List<ResourceCreatorProxy> proxyList) {

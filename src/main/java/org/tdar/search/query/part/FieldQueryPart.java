@@ -26,7 +26,7 @@ import org.tdar.utils.MessageHelper;
 public class FieldQueryPart<C> implements QueryPart<C> {
     private static final String NOT = " NOT ";
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String fieldName;
     private String displayName;
@@ -52,39 +52,39 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         getFieldValues().add(obj);
     }
 
-    public FieldQueryPart(String fieldName, String displayName, Collection<C> fieldValues_) {
+    public FieldQueryPart(String fieldName, String displayName, Collection<C> incomingValues) {
         this.fieldName = fieldName;
-        setFieldValues(fieldValues_);
+        setFieldValues(incomingValues);
         setDisplayName(displayName);
     }
 
-    public FieldQueryPart(String fieldName, String displayName, Operator oper, Collection<C> fieldValues_) {
-        this(fieldName, displayName, fieldValues_);
+    public FieldQueryPart(String fieldName, String displayName, Operator oper, Collection<C> incomingValues) {
+        this(fieldName, displayName, incomingValues);
         this.operator = oper;
     }
 
     @SuppressWarnings("unchecked")
-    public FieldQueryPart(String fieldName, String displayName, Operator oper, C... fieldValues_) {
-        this(fieldName, displayName, Arrays.asList(fieldValues_));
+    public FieldQueryPart(String fieldName, String displayName, Operator oper, C... incomingValues) {
+        this(fieldName, displayName, Arrays.asList(incomingValues));
         this.operator = oper;
     }
 
     @SuppressWarnings("unchecked")
-    public FieldQueryPart(String fieldName, C... fieldValues_) {
-        this(fieldName, "", Arrays.asList(fieldValues_));
+    public FieldQueryPart(String fieldName, C... incomingValues) {
+        this(fieldName, "", Arrays.asList(incomingValues));
     }
 
-    public FieldQueryPart(String fieldName, Collection<C> fieldValues_) {
-        this(fieldName, "", fieldValues_);
+    public FieldQueryPart(String fieldName, Collection<C> incomingValues) {
+        this(fieldName, "", incomingValues);
     }
 
-    public FieldQueryPart(String fieldName, Operator oper, Collection<C> fieldValues_) {
-        this(fieldName, "", oper, fieldValues_);
+    public FieldQueryPart(String fieldName, Operator oper, Collection<C> incomingValues) {
+        this(fieldName, "", oper, incomingValues);
     }
 
     @SuppressWarnings("unchecked")
-    public FieldQueryPart(String fieldName, Operator oper, C... fieldValues_) {
-        this(fieldName, "", oper, fieldValues_);
+    public FieldQueryPart(String fieldName, Operator oper, C... incomingValues) {
+        this(fieldName, "", oper, incomingValues);
     }
 
     public FieldQueryPart<C> setPhraseFormatters(PhraseFormatter... phraseFormatters) {

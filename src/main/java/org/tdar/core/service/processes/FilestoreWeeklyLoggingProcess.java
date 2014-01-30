@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
@@ -24,6 +26,7 @@ import org.tdar.filestore.Filestore.LogType;
 public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
 
     public static final String PROBLEM_FILES_REPORT = "Problem Files Report";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final long serialVersionUID = -6196804675468219433L;
 

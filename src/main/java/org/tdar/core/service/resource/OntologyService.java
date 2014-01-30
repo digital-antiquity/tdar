@@ -12,6 +12,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class OntologyService extends AbstractInformationResourceService<Ontology, OntologyDao> {
 
     private OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     FreemarkerService freemarkerService;

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
@@ -40,9 +42,10 @@ import org.tdar.struts.data.PricingOption;
 public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     private static final String INVOICE_NOTE = "This invoice was generated on %s to cover %s resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    final static long EXTRA_MB = 10l;
-    final static long EXTRA_FILES = 1l;
+    final long EXTRA_MB = 10l;
+    final long EXTRA_FILES = 1l;
     private static final long serialVersionUID = -2313655718394118279L;
 
     @Autowired

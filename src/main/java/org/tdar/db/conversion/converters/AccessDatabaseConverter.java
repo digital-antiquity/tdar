@@ -16,6 +16,8 @@ import java.util.Set;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -47,6 +49,7 @@ import com.vividsolutions.jts.io.WKBReader;
  */
 public class AccessDatabaseConverter extends DatasetConverter.Base {
     private static final String DB_PREFIX = "d";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public String getDatabasePrefix() {

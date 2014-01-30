@@ -80,7 +80,7 @@ public interface DatasetConverter {
         private String filename = "";
         private Long irFileId;
         private Database database = null;
-        protected final Logger logger = LoggerFactory.getLogger(getClass());
+        private final Logger logger = LoggerFactory.getLogger(getClass());
         protected InformationResourceFileVersion informationResourceFileVersion;
         protected TargetDatabase targetDatabase;
         protected Connection connection;

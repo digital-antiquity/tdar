@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -26,6 +28,7 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
     protected CSVReader reader;
     protected String[] headerLine;
     protected String tableName = "";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public SimpleConverter() {
     }

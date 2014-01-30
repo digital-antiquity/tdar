@@ -31,6 +31,8 @@ import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Creator;
@@ -55,6 +57,8 @@ import com.google.common.primitives.Doubles;
 public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     private static final long serialVersionUID = 581887107336388520L;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient EmailService emailService;

@@ -1,5 +1,7 @@
 package org.tdar.core.service.processes;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
@@ -10,6 +12,7 @@ import org.tdar.core.service.resource.ResourceService;
 public class RebuildGeographicKeywordProcess extends ScheduledBatchProcess<Resource> {
 
     private static final long serialVersionUID = -1389096329990660324L;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient ResourceService resourceService;

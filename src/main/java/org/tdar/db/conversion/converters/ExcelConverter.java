@@ -19,6 +19,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -44,6 +46,7 @@ public class ExcelConverter extends DatasetConverter.Base {
     private static final String DB_PREFIX = "e";
     private Workbook workbook;
     private DataFormatter formatter = new HSSFDataFormatter();
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public String getDatabasePrefix() {

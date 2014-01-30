@@ -9,12 +9,12 @@ import org.tdar.core.bean.resource.Addressable;
  */
 public interface OaiDcProvider extends Addressable {
 
-    abstract Date getDateCreated();
+    Date getDateCreated();
 
-    abstract Date getDateUpdated();
+    Date getDateUpdated();
 
-    abstract String getTitle();
+    String getTitle();
 
-    abstract String getDescription();
+    String getDescription();
 
 }

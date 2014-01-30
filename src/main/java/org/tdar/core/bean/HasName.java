@@ -14,5 +14,5 @@ package org.tdar.core.bean;
  */
 public interface HasName {
 
-    abstract String getName();
+    String getName();
 }

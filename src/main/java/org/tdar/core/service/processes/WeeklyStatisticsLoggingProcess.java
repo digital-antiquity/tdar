@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
@@ -22,6 +24,7 @@ import org.tdar.core.service.resource.ResourceService;
 public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
 
     private static final long serialVersionUID = 6866081834770368244L;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient ResourceService resourceService;

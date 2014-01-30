@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -52,6 +54,7 @@ import org.tdar.utils.MessageHelper;
 
 public abstract class AbstractInformationResourceService<T extends InformationResource, R extends ResourceDao<T>> extends ServiceInterface.TypedDaoBase<T, R> {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     // FIXME: this should be injected
     private static final Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 

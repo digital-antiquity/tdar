@@ -28,7 +28,7 @@ public interface ExternalIDProvider extends Configurable {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    abstract boolean connect() throws ClientProtocolException, IOException;
+    boolean connect() throws ClientProtocolException, IOException;
 
     /**
      * Logout from the external id provider
@@ -37,7 +37,7 @@ public interface ExternalIDProvider extends Configurable {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    abstract boolean logout() throws ClientProtocolException, IOException;
+    boolean logout() throws ClientProtocolException, IOException;
 
     /**
      * returns a map of identifiers and values created by the system
@@ -48,7 +48,7 @@ public interface ExternalIDProvider extends Configurable {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    abstract Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException;
+    Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException;
 
     /**
      * returns a map of all of the information the ID server has on the resource
@@ -58,7 +58,7 @@ public interface ExternalIDProvider extends Configurable {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    abstract Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException;
+    Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException;
 
     /**
      * returns a map of identifiers and values created by the system
@@ -70,7 +70,7 @@ public interface ExternalIDProvider extends Configurable {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    abstract Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException;
+    Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException;
 
     /**
      * returns a map of identifiers and values created by the system
@@ -82,6 +82,6 @@ public interface ExternalIDProvider extends Configurable {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    abstract Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException;
+    Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException;
 
 }

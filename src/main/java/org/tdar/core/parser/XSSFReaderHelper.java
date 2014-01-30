@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 public class XSSFReaderHelper {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private ReadOnlySharedStringsTable strings;
     private StylesTable styles;
     private XSSFReader xssfReader;

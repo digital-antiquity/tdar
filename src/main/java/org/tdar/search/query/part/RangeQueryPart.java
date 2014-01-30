@@ -12,6 +12,8 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.struts.data.Range;
 import org.tdar.utils.MessageHelper;
@@ -21,6 +23,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
     private String descriptionLabel;
     private boolean inclusive = true;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMdd");
 

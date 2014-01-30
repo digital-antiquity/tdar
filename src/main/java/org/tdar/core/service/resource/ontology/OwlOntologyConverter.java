@@ -34,7 +34,7 @@ public class OwlOntologyConverter {
 
     private OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public final static String IRI_INVALID_CHARACTERS_REGEX = "[^\\w~.-]";
     public final static Pattern TAB_PREFIX_PATTERN = Pattern.compile("^(\\t+).*$");

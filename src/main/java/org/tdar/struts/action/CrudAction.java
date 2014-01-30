@@ -12,7 +12,7 @@ public interface CrudAction<P extends Persistable> {
      * 
      * @throws TdarActionException
      */
-    abstract boolean isCreatable() throws TdarActionException;
+    boolean isCreatable() throws TdarActionException;
 
     /**
      * @return true if model objects governed by this controller supports 'edit' semantics (i.e. if 'edit' a valid action
@@ -20,7 +20,7 @@ public interface CrudAction<P extends Persistable> {
      * 
      * @throws TdarActionException
      */
-    abstract boolean isEditable() throws TdarActionException;
+    boolean isEditable() throws TdarActionException;
 
     /**
      * @return true if model objects governed by this controller supports 'save' semantics (i.e. if 'save' a valid action
@@ -28,7 +28,7 @@ public interface CrudAction<P extends Persistable> {
      * 
      * @throws TdarActionException
      */
-    abstract boolean isSaveable() throws TdarActionException;
+    boolean isSaveable() throws TdarActionException;
 
     /**
      * @return true if model objects governed by this controller supports 'delete' semantics (i.e. if 'delete' a valid action
@@ -36,7 +36,7 @@ public interface CrudAction<P extends Persistable> {
      * 
      * @throws TdarActionException
      */
-    abstract boolean isDeleteable() throws TdarActionException;
+    boolean isDeleteable() throws TdarActionException;
 
     /**
      * @return true if model objects governed by this controller supports 'view' semantics (i.e. if 'view' a valid action
@@ -44,12 +44,12 @@ public interface CrudAction<P extends Persistable> {
      * 
      * @throws TdarActionException
      */
-    abstract boolean isViewable() throws TdarActionException;
+    boolean isViewable() throws TdarActionException;
 
     /**
      * @return Person object representing the user currently logged-in
      */
-    abstract Person getAuthenticatedUser();
+    Person getAuthenticatedUser();
 
     /**
      * @return the model object instance

@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.search.index.TdarIndexNumberFormatter;
@@ -22,6 +24,7 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
 
     // FIXME: there's a possibility that lucene is not going to do what we think it's going to do when
     // binding to multiple values see TDAR-1163
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String TEMPORAL_QUERY_FORMAT = QueryFieldNames.ACTIVE_START_DATE + ":[00000000000 TO %2$s] AND " + QueryFieldNames.ACTIVE_END_DATE
             + ":[%1$s TO 19999999999] AND " + QueryFieldNames.ACTIVE_COVERAGE_TYPE + ":%3$s ";

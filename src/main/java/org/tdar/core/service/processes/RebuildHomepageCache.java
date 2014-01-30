@@ -3,6 +3,8 @@ package org.tdar.core.service.processes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
@@ -32,6 +34,7 @@ import org.tdar.core.service.resource.ResourceService;
 public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
 
     private static final long serialVersionUID = 7987123045870435222L;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient ResourceService resourceService;

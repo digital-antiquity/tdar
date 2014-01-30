@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
 
 public class AutocompleteTitleQueryPart implements QueryPart<String> {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final float TITLE_BOOST = 6f;
 
     private String title;

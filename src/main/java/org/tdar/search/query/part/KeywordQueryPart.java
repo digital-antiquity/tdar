@@ -28,7 +28,7 @@ import org.tdar.utils.MessageHelper;
 @Deprecated
 public class KeywordQueryPart implements QueryPart<Keyword> {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private List<String> terms;
     private boolean includeChildren = true;
 
