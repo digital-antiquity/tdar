@@ -9,44 +9,11 @@ View freemarker macros
 <#import "navigation-macros.ftl" as nav>
 <#setting url_escaping_charset='UTF-8'>
 
+<#--Emit rel=canonical element.  The "canonical" url points to the preferred version of a set of pages with similar content -->
 <#macro canonical object>
 	<link rel="canonical" href="http://${hostName}/${object.urlNamespace}/${object.id?c}" /> 
 </#macro>
 
-<#macro displayNode ontologyNode previewSize count size>
-	    <#if count == 0><ul id="ontology-nodes-root"><li>${resource.name}<ul></#if>
-    <#if !(numParents?has_content)>
-    	<#global numParents = 1/>
-    </#if>
-    <#local parentCount = ontologyNode.numberOfParents />
-    <#if ontologyNode.index != ontologyNode.intervalStart?string && numParents == parentCount >
-			</li>
-	</#if>
-    <#if (numParents < parentCount)>
-		<#list 1.. (parentCount -numParents) as x ><ul></#list>
-    </#if>
-    <#if (parentCount < numParents )>
-		<#list 1..(numParents -parentCount) as x >
-			</li></ul>
-		</#list>
-    </#if>
-    <#global numParents = parentCount />
-    <li class="<#if (previewSize <=count)>hidden-nodes</#if>">
-    <a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/${ontologyNode.iri}"/>">${ontologyNode.displayName!ontologyNode.iri} 
-    <#if ontologyNode.synonyms?has_content>
-        (<#t>
-      <#list ontologyNode.synonyms as synonym><#t>
-        ${synonym}<#t>
-        <#if synonym_has_next>, </#if><#t>
-      </#list><#t>
-      )<#t>
-    </#if><!-- (${ontologyNode.index})-->
-</a>
-<#if count == (size -1)>			<#list 1.. (numParents) as x ></li></ul></#list>
-</li></ul>
-</#if>
-
-</#macro>
 
 <#macro ontology sectionTitle="Parsed Ontology Nodes" previewSize=10 triggerSize=15>
 <#if resource.sortedOntologyNodesByImportOrder?has_content>
@@ -57,7 +24,7 @@ View freemarker macros
 	    <div id="ontologyNodesContainer" class="ontology-nodes-container">
 		    <div id="ontology-nodes">
 		    <#list allNodes as node>
-			        <@displayNode node previewSize node_index size/>
+			        <@_displayNode node previewSize node_index size/>
 		    </#list>
 		    </div>
 		    <#if (size >= previewSize)>
@@ -70,7 +37,41 @@ View freemarker macros
 		</div>
 </#if>
 </#macro>
+<#macro _displayNode ontologyNode previewSize count size>
+    <#if count == 0><ul id="ontology-nodes-root"><li>${resource.name}<ul></#if>
+    <#if !(numParents?has_content)>
+        <#global numParents = 1/>
+    </#if>
+    <#local parentCount = ontologyNode.numberOfParents />
+    <#if ontologyNode.index != ontologyNode.intervalStart?string && numParents == parentCount >
+    </li>
+    </#if>
+    <#if (numParents < parentCount)>
+        <#list 1.. (parentCount -numParents) as x ><ul></#list>
+    </#if>
+    <#if (parentCount < numParents )>
+        <#list 1..(numParents -parentCount) as x >
+            </li></ul>
+        </#list>
+    </#if>
+    <#global numParents = parentCount />
+<li class="<#if (previewSize <=count)>hidden-nodes</#if>">
+    <a href="<@s.url value="/ontology/${ontologyNode.ontology.id?c}/${ontologyNode.iri}"/>">${ontologyNode.displayName!ontologyNode.iri}
+        <#if ontologyNode.synonyms?has_content>
+            (<#t>
+            <#list ontologyNode.synonyms as synonym><#t>
+            ${synonym}<#t>
+                <#if synonym_has_next>, </#if><#t>
+            </#list><#t>
+            )<#t>
+        </#if><!-- (${ontologyNode.index})-->
+    </a>
+    <#if count == (size -1)>			<#list 1.. (numParents) as x ></li></ul></#list>
+    </li></ul>
+    </#if>
+</#macro>
 
+<#-- Emit a download link for an information resource file -->
 <#macro createFileLink irfile newline=false showDownloadCount=true showSize=true >
     <#assign version=irfile />
          <#if version.latestUploadedVersion?? >
@@ -92,6 +93,7 @@ View freemarker macros
         <#if showDownloadCount><@downloadCount version /></#if>
 </#macro>
 
+<#-- similar to createFileLink,  but creates a download link to a zip of containing all accessible files in a resource -->
 <#macro createArchiveFileLink resource newline=false >
           <#--<a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"-->
           <#-- fixme:should we change the google analytics event name, or will this be a pain? -->
@@ -102,6 +104,10 @@ View freemarker macros
          </#if>
 </#macro>
 
+<#--emit links to admin-only dataset actions
+    @requires resource.id
+    @requires resource.urlNamespace
+-->
 <#macro adminFileActions>
   <#if (resource.totalNumberOfFiles?has_content && resource.totalNumberOfFiles > 0)>
         <#if ableToReprocessDerivatives>
@@ -114,9 +120,14 @@ View freemarker macros
             <li><a href="<@s.url value='/${resource.urlNamespace}/reprocess'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Reprocess all derivatives for this resource</a></li>
         </#if>
     </#if>
-
 </#macro>
 
+<#-- emit a list of files for display in a "file information" section.  This macro calls out to #nested for rendering
+    html for each individual file
+    @requires resource.informationResourceFiles
+    @nested irfile:InformationResourceFile the current irFile in the loop
+    @nested showAll:String css class that the #nested section should use when rendering an individual file link
+-->
 <#macro fileInfoSection extended windowSize=4>
         <#local showAll = ""/>
         <#local visibleCount = 0>
@@ -127,7 +138,7 @@ View freemarker macros
         </#list>
 </#macro>
 
-
+<#-- emit download link for translated dataset file -->
 <#macro translatedFileSection irfile>
     <#if irfile.hasTranslatedVersion >
     <blockquote>
@@ -140,6 +151,7 @@ View freemarker macros
     </#if>
 </#macro>
 
+<#-- emit the correct icon for a particular information resource file -->
 <#macro fileIcon irfile=file extraClass="" >
         <#local extensionMap = {
                         'pdf':'page-white-acrobat',
@@ -170,6 +182,8 @@ View freemarker macros
               <i class="iconf ${ext} ${extraClass!""}"></i>
 </#macro>
 
+<#--show summary information about the uploaded files for th current resource (appears in the right sidebar)
+    file list is truncated if it takes up too much space-->
 <#macro uploadedFileInfo >
     <#local showAll = "">
     <h3 class="downloads">
@@ -209,15 +223,20 @@ View freemarker macros
     </div>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove: rarely used -->
+<#-- return true if the current resource has any restricted files -->
 <#function hasRestrictedFiles>
  <#return !(resource.publicallyAccessible)>
 <#--  <#return !(resource.publicallyAccessible) && !ableToViewConfidentialFiles> -->
 </#function>
 
+<#-- FIXME: FTLREFACTOR remove: rarely used -->
+<#-- return true if current resource is has contact person/institution -->
 <#function contactInformationAvailable>
     <#return !contactProxies.empty>
 </#function>
 
+<#--display more detailed information about the files associated with the current resource -->
 <#macro extendedFileInfo>
     <#if (resource.informationResourceFiles?has_content)>
     <#local showDownloads = authenticatedUser?? />
@@ -245,7 +264,7 @@ View freemarker macros
                 <td <#if twoRow>rowspan=2</#if>><@fileIcon irfile=irfile /></td>
                 <td><@createFileLink irfile false false false /></td>
                 <td><@common.convertFileSize version.fileLength /></td>
-                <td><@printCreatedDate irfile /></td>
+                <td><@_printCreatedDate irfile /></td>
                 <td>${irfile.latestUploadedVersion.dateCreated} </td>
                 <td>${irfile.restriction.label}</td>
                 
@@ -275,12 +294,15 @@ View freemarker macros
         </#if>
 
     </div>
-
-
-
     </#if>
 </#macro>
+<#-- FIXME: FTLREFACTOR remove: rarely used (if we want formatting consistency, consider constant stringformat instead)-->
+<#macro _printCreatedDate irfile>
+    <#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")}</#if>
+</#macro>
 
+<#-- FIXME: FTLREFACTOR move to common.ftl -->
+<#-- emit the coding rules section for the current coding-sheet resource. Used on view page and edit page -->
 <#macro codingRules>
 <#if codingSheet.id != -1>
 <#nested>
@@ -308,13 +330,10 @@ No coding rules have been entered for this coding sheet yet.
 </table>
 </div>
 </#if>
-
-
 </#if>
-
 </#macro>
 
-
+<#-- emit div displaying the category/subcategory of the current resource -->
 <#macro categoryVariables>
 <div>
 <#if resource.categoryVariable??>
@@ -334,9 +353,9 @@ No coding rules have been entered for this coding sheet yet.
 </div>
 </#macro>
 
-
+<#-- FIXME: FTLREFACTOR move to view-template.ftl -->
+<#--emit the Spatial Coverage section of a view page -->
 <#macro spatialCoverage>
-
   <#if (resource.activeLatitudeLongitudeBoxes?has_content )>
         <h2>Spatial Coverage</h2>
             <div class="title-data">
@@ -363,15 +382,8 @@ No coding rules have been entered for this coding sheet yet.
   </#if>
 </#macro>
 
-<#macro keywordSection label keywordList searchParam>
-    <#if keywordList?has_content>
-        <p>
-            <strong>${label}</strong><br>
-             <@keywordSearch keywordList searchParam false />
-        </p>
-    </#if>
-</#macro>
-
+<#-- emit the keywords section of a view page -->
+<#-- FIXME: FTLREFACTOR move to view-template.ftl -->
 <#macro keywords showParentProjectKeywords=true>
   <#if resource.containsActiveKeywords >
         <h2>Keywords</h2>
@@ -391,28 +403,28 @@ No coding rules have been entered for this coding sheet yet.
                         </div><div class="span45">
                     </#if>
                     <#if prop == "activeSiteNameKeywords">
-                        <@keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
+                        <@_keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
                     </#if>
                     <#if prop == "activeSiteTypeKeywords">
-                        <@keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
+                        <@_keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
                     </#if>
                     <#if prop == "activeCultureKeywords">
-                        <@keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
+                        <@_keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
                     </#if>                    
                     <#if prop == "activeMaterialKeywords">
-                        <@keywordSection "Material" resource.activeMaterialKeywords "query" />
+                        <@_keywordSection "Material" resource.activeMaterialKeywords "query" />
                     </#if>
                     <#if prop == "activeInvestigationTypes">
-                        <@keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
+                        <@_keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
                     </#if>
                     <#if prop == "activeOtherKeywords">
-                        <@keywordSection "General" resource.activeOtherKeywords "query" />
+                        <@_keywordSection "General" resource.activeOtherKeywords "query" />
                     </#if>
                     <#if prop == "activeTemporalKeywords">
-                        <@keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
+                        <@_keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
                     </#if>
                     <#if prop == "activeGeographicKeywords">
-                           <@keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
+                           <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
                     </#if>
                 </#list>
                 <#if (resource.keywordProperties?size > 0)>        
@@ -422,8 +434,17 @@ No coding rules have been entered for this coding sheet yet.
         <hr/>
   </#if>
 </#macro>
+<#macro _keywordSection label keywordList searchParam>
+    <#if keywordList?has_content>
+    <p>
+        <strong>${label}</strong><br>
+        <@keywordSearch keywordList searchParam false />
+    </p>
+    </#if>
+</#macro>
 
-
+<#-- FIXME: FTLREFACTOR move to view-template.ftl -->
+<#--emit the temporal coverage section of a view page -->
 <#macro temporalCoverage showParentCoverage=true>
     <#if resource.activeCoverageDates?has_content>
         <h2>Temporal Coverage</h2>
@@ -439,6 +460,9 @@ No coding rules have been entered for this coding sheet yet.
     </#if>
 </#macro>
 
+
+<#-- FIXME: FTLREFACTOR move to view-template.ftl -->
+<#-- emit the resource provider section of a view page -->
 <#macro resourceProvider>
   <#if resource.resourceProviderInstitution?? && resource.resourceProviderInstitution.id != -1>
     <li>
@@ -448,6 +472,7 @@ No coding rules have been entered for this coding sheet yet.
   </#if>
 </#macro>
 
+<#--emit a link to a resource creator information page -->
 <#macro browse creator role=""><#compress>
 <#local c=creator />
 <#if creator.creator?has_content >
@@ -462,6 +487,10 @@ No coding rules have been entered for this coding sheet yet.
 </#compress>
 </#macro>
 
+<#--emit a link to a seach page with a predefined query.  The contents of the supplied #nested block become the text node
+    of the link and also the value of the "q" querystring parameter for the link URL
+    @nested search terms
+-->
 <#macro search fieldName="query" quoted=true>
 <#assign q=''>
 <#if quoted>
@@ -471,12 +500,14 @@ No coding rules have been entered for this coding sheet yet.
 <#noescape><a href="<@s.url value="/search/search?${fieldName?url}=${q?url}${term?url}${q?url}"/>">${term}</a></#noescape>
 </#macro>
 
+<#-- emit a link to the search page for the label of the supplied keyword (see @search)-->
 <#macro keywordSearch _keywords fieldName="query" quoted=true>
 <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
  <@search fieldName quoted>${_keyword.label}</@search> <#if _keyword_has_next>&bull;</#if> 
 </#list>
 </#macro>
 
+<#--emit the download count for the supplied information resource file -->
 <#macro downloadCount irfile>
     <#assign downloads = 0 />
     <#if (irfile.transientDownloadCount?has_content && irfile.transientDownloadCount > 0 )>
@@ -496,7 +527,7 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 
-
+<#-- emit the access rights section of a view page -->
 <#macro accessRights>
   <#if sessionData?? && sessionData.authenticated>
 <h2>Administrative Information</h2>
@@ -531,10 +562,12 @@ No coding rules have been entered for this coding sheet yet.
     </#if>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#macro authorizedUsers collection >
     <@common.resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#macro infoResourceAccessRights>
     <@accessRights>
         <div>
@@ -546,21 +579,24 @@ No coding rules have been entered for this coding sheet yet.
     </@accessRights>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#macro indvidualInstitutionalCredit>
     <#if creditProxies?has_content >
         <h3>Individual &amp; Institutional Roles</h3>
         <@showCreatorProxy proxyList=creditProxies />
         <hr/>
     </#if>
-
 </#macro>
 
+<#--emit a key/value pair -->
 <#macro kvp key="" val="" noescape=false>
 	<#if val?has_content && val != 'NULL' >
        <p class="sml"><strong>${key}:</strong> <#if noescape><#noescape>${val}</#noescape><#else>${val}</#if></p>
     </#if>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#--emit resource notes section of view page -->
 <#macro resourceNotes>
     <#if resource.activeResourceNotes?has_content>
         <h2>Notes</h2>
@@ -571,6 +607,8 @@ No coding rules have been entered for this coding sheet yet.
     </#if>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#--emit resource annotations section of view page -->
 <#macro resourceAnnotations>
     <#if ! resource.activeResourceAnnotations.isEmpty()>
     <h3>Record Identifiers</h3>
@@ -582,6 +620,8 @@ No coding rules have been entered for this coding sheet yet.
 
 </#macro>
 
+<#-- FIXME: FTLREFACTOR move to view-template.ftl -->
+<#--emit a list of related items (e.g. list of source collections or list of comparative collections -->
 <#macro relatedSimpleItem listitems label>
   <#if ! listitems.isEmpty()>
         <h3>${label}</h3>
@@ -593,15 +633,7 @@ No coding rules have been entered for this coding sheet yet.
   </#if>
 </#macro>
 
-
-<#macro statusCallout onStatus cssClass>
-<#if persistable.status.toString().equalsIgnoreCase(onStatus) >
-<div class="alert-${cssClass} alert">
-    <p><#nested></p>
-</div>
-</#if>
-</#macro>
-
+<#--emit a list of resouce creator proxies -->
 <#macro showCreatorProxy proxyList=authorshipProxies>
     <#if proxyList?has_content>
     <#list allResourceCreatorRoles as role>
@@ -619,7 +651,7 @@ No coding rules have been entered for this coding sheet yet.
     </#if>
 </#macro>
 
-
+<#-- emit a warning callout if the current resource is DRAFT or DELETED -->
 <#macro pageStatusCallout>
 <#local status="error">
 <#if (persistable.status)?has_content && !persistable.active >
@@ -627,22 +659,23 @@ No coding rules have been entered for this coding sheet yet.
   <#local status="info"/>
 </#if>
 
-<@statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
+<@_statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
     This record has been marked as <strong>${persistable.status.label}</strong> <#if authorityForDup?has_content> of 
     <a href="<@s.url value="/${authorityForDup.urlNamespace}/${authorityForDup.id?c}"/>">${authorityForDup.name}</a></#if>. 
     <#if !persistable.draft> While ${siteAcronym} will retain this record, it will not appear in search results.</#if>
-</@statusCallout>
+</@_statusCallout>
 
 </#if> 
 </#macro>
-<#macro altText irfile>
-${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if>
-<#if irfile.fileCreatedDate??>(<@printCreatedDate irfile/>)</#if>
+<#macro _statusCallout onStatus cssClass>
+    <#if persistable.status.toString().equalsIgnoreCase(onStatus) >
+    <div class="alert-${cssClass} alert">
+        <p><#nested></p>
+    </div>
+    </#if>
 </#macro>
 
-<#macro printCreatedDate irfile>
-	<#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")}</#if>
-</#macro>
+<#-- emit an image gallery for the accessible image/video files for the current resource -->
 <#macro imageGallery>
 <div class="slider">
  <#local numIndicatorsPerSection = 4 />
@@ -679,7 +712,7 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 				  <div class="span3">
 				  <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>">
 				  	<span class="thumbnail-center-spacing "></span>
-				  <img class="thumbnailLink img-polaroid" alt="<@altText irfile />" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" style="max-width:100%;" 
+				  <img class="thumbnailLink img-polaroid" alt="<@_altText irfile />" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" style="max-width:100%;"
 				  	onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"  <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>/>
 				  	                </span>
 				  	</div>
@@ -707,7 +740,7 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 			<span id="confidentialLabel"><#if !irfile.public>This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</#if></span>
 			</div>
 			<div id="downloadText">
-			<@altText irfile/> 
+			<@_altText irfile/>
 			</span>
 			</div>
 			<#break>
@@ -731,14 +764,19 @@ $(document).ready(function() {
 		});
 });
 </script>
-
+</#macro>
+<#macro _altText irfile>
+${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if>
+    <#if irfile.fileCreatedDate??>(<@_printCreatedDate irfile/>)</#if>
 </#macro>
 
+<#--emit the unapi 'link' for the specified resource (see: http://unapi.info/specs/) -->
 <#macro unapiLink resource>
     <abbr class="unapi-id" title="${resource.id?c}"></abbr>
 </#macro>
 
 
+<#--emit a warning message  if the current resource we are rendering is under embargo -->
 <#macro embargoCheck showNotice=true>
     <#if resource.totalNumberOfFiles != 0>
   <!-- FIXME: CHECK -->
@@ -765,6 +803,8 @@ $(document).ready(function() {
     </#if>
 </#macro>
 
+<#-- emit a specified date in our notion of a "short" format -->
+<#-- FIXME: FTLREFACTOR date format should be specified in theme or config file (TDAR-3550) -->
 <#macro shortDate _date includeTime=false>
 <#if includeTime>
 ${_date?string.medium}<#t>
@@ -774,6 +814,8 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#macro>
 
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#--emit list of related resources (or datasets) for the current resource -->
 <#macro relatedResourceSection label="">
     <#if relatedResources?? && !relatedResources.empty>
     <h3>This ${label} is Used by the Following Datasets:</h3>
@@ -785,10 +827,13 @@ ${_date?string('MM/dd/yyyy')}<#t>
     </#if>
 </#macro>
 
+<#--emit a link tag for the specified resource and title-->
 <#macro linkToResource resource title target='resourcedetail'>
 <a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="${target}" >${title}</a>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#--emit table listing resources associated with the current resource collection  -->
 <#macro resourceCollectionTable removeable=false tbid="tblCollectionResources">
     <table class="table table-condensed table-hover" id="${tbid}">
         <colgroup>
@@ -823,6 +868,8 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#macro>
 
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#--emit list of resourceCollections associated with the current resource  -->
 <#macro resourceCollections>
     <#if !viewableResourceCollections.empty>
         <h3>This Resource is Part of the Following Collections</h3>
@@ -836,6 +883,8 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#--emit additional dataset metadata as a list of key/value pairs  -->
 <#macro additionalInformation resource_>
     <#if resource_.resourceType != 'PROJECT'>
         <#assign map = resource_.relatedDatasetData />
@@ -850,7 +899,8 @@ ${_date?string('MM/dd/yyyy')}<#t>
     </#if>
 </#macro>
 
-
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
+<#-- FIXME: jim: this is the worst thing you've ever written.  -->
 <#macro boolean _label _val _show=true trueString="Yes" falseString="No">
 <#if _show>
     <b>${_label}:</b>
@@ -858,12 +908,14 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#if>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used (actually, probably best replaced with @kvp) -->
 <#macro textfield _label _val="" _alwaysShow=true>
 <#if _alwaysShow || _val?has_content >
     <b>${_label}:</b> ${_val}
 </#if>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#macro datefield _label _val="" _alwaysShow=true>
     <#if _alwaysShow || _val?is_date>
         <b>${_label}</b>
@@ -873,7 +925,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
     </#if>
 </#macro>
 
-
+<#--FIXME: currently broken (TDAR-3531). also,  this should go into external javascript -->
 <#macro datatableChildJavascript>
     if(window.opener && window.opener.TDAR.common.adhocTarget)  {
         window.opener.TDAR.common.populateTarget({
@@ -899,6 +951,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
     }
 </#macro>
 
+<#-- emit markup for a single thumbnail representing the specified resource (e.g. for use in search results or project/collection contents  -->
 <#macro firstThumbnail resource_ forceAddSchemeHostAndPort=true>
     <#-- if you don't test if the resource hasThumbnails -- then you start showing the Image Unavailable on Projects, Ontologies... -->
 	<#local seenThumbnail = false/>
@@ -917,21 +970,12 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#macro>
 
 
-<#function staticGoogleMapUrl boundingBox apikey>
-    <#local bb=boundingBox>
-    <#local bbvals="${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}">
-    <#local apikeyval="">
-    <#if googleMapsApiKey?has_content>
-        <#local apikeyval="&key=${googleMapsApiKey}">
-    </#if>
-    <#return "//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bbvals}&sensor=false${apikeyval}">
-</#function>
-
+<#--emit the citation section of a view page (including map depicting bounding box, if bounding box defined) -->
 <#macro tdarCitation resource=resource showLabel=true count=0 forceAddSchemeHostAndPort=false>
   <div class="item <#if count==0>active</#if>">
       <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
-    <img alt="map" class="pull-right" src="${staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}" />
+    <img alt="map" class="pull-right" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}" />
 <#else>
       <a href="${url}" target="_top"><@firstThumbnail resource true /></a> 
 </#if>
@@ -949,7 +993,17 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
   </div>
 </#macro>
+<#function _staticGoogleMapUrl boundingBox apikey>
+    <#local bb=boundingBox>
+    <#local bbvals="${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}">
+    <#local apikeyval="">
+    <#if googleMapsApiKey?has_content>
+        <#local apikeyval="&key=${googleMapsApiKey}">
+    </#if>
+    <#return "//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bbvals}&sensor=false${apikeyval}">
+</#function>
 
+<#-- emit OpenURL format url for the specified resource (for use with COIN citation) -->
 <#macro toOpenURL resource>
 <#noescape>
     <#assign openUrl>ctx_ver=Z39.88-2004&amp;rfr_id=info:sid/${hostName}&amp;rft.doi=${resource.externalId!""?url}</#assign>
@@ -975,7 +1029,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
     </#noescape>
 </#macro>
 
-
+<#-- emit COIN microformat link -->
 <#macro coin resource>
     <#if resource??>
     <#noescape>
@@ -984,7 +1038,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
     </#if>
 </#macro>
 
-
+<#-- emit license information section -->
 <#macro license>
     <#if (resource.licenseType??) >
         <h3>License</h3>
