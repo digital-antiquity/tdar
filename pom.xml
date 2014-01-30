@@ -1248,7 +1248,7 @@
 					bZloaUUnmm
 					]]></license>
 					<configuration>
-						<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase>
+<!-- 						<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
 						<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
 					</configuration>
 					<includes>
@@ -1404,7 +1404,7 @@
 					mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
 					bZloaUUnmm
 					]]></license>
-					<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase>
+<!-- 						<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
 					<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
 					<includes>
 						<include>**/*.java</include>
@@ -2166,7 +2166,7 @@
 					<groupId>com.atlassian.maven.plugins</groupId>
 					<artifactId>maven-clover2-plugin</artifactId>
 					<configuration>
-						<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase>
+<!-- 						<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
 						<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
 					</configuration>
 					<executions>
