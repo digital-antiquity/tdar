@@ -52,10 +52,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
     @Autowired
-    SearchService searchService;
+    private SearchService searchService;
 
     /**
      * Reconcile an existing set of @link Resource entities on a @link ResourceCollection with a set of incomming @link Resource entities, remove unmatching

@@ -69,8 +69,8 @@ public class ReflectionService {
     private static final String SET = "set";
     private static final String GET = "get";
     private static final String ORG_TDAR = "org.tdar.";
-    public transient Logger logger = LoggerFactory.getLogger(getClass());
-    public static transient Logger staticLogger = LoggerFactory.getLogger(ReflectionService.class);
+    private transient Logger logger = LoggerFactory.getLogger(getClass());
+    private static transient Logger staticLogger = LoggerFactory.getLogger(ReflectionService.class);
     private Map<String, Class<Persistable>> persistableLookup;
 
     /**
