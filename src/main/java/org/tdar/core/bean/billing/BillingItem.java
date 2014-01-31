@@ -25,7 +25,7 @@ import org.tdar.utils.MessageHelper;
 public class BillingItem extends Base implements Validatable {
 
     private static final long serialVersionUID = -2775737509085985555L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "activity_id")

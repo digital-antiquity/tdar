@@ -45,7 +45,7 @@ import org.tdar.utils.MessageHelper;
 public class Invoice extends Base implements Updatable {
 
     private static final long serialVersionUID = -3613460318580954253L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Transient
     private final static String[] JSON_PROPERTIES = { "id", "paymentMethod", "transactionStatus", "totalFiles", "totalResources", "totalSpace",

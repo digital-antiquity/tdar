@@ -224,7 +224,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         try {
             updateResults = getDatasetService().updateColumnMetadata(getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
-            logger.error(tde.getMessage(), tde);
+            getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT_COLUMNS;
         }
@@ -338,7 +338,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
      * @return
      */
     public DataTable getDataTable() {
-        logger.trace(dataTable + " dtID:" + dataTableId);
+        getLogger().trace(dataTable + " dtID:" + dataTableId);
         if (dataTable == null) {
             if (dataTableId != null) {
                 this.dataTable = getDataTableService().find(dataTableId);
@@ -354,7 +354,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     public void setDataTableId(Long dataTableId) {
         if (Persistable.Base.isNullOrTransient(dataTableId)) {
-            logger.error("Trying to set data table id to null or -1: " + dataTableId);
+            getLogger().error("Trying to set data table id to null or -1: " + dataTableId);
             return;
         }
         this.dataTableId = dataTableId;
@@ -380,7 +380,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     public void setColumnId(Long columnId) {
         if (Persistable.Base.isNullOrTransient(columnId)) {
-            logger.warn("Trying to set data table column id to null or -1: " + columnId);
+            getLogger().warn("Trying to set data table column id to null or -1: " + columnId);
             return;
         }
         this.dataTableColumn = getDataTableService().findDataTableColumn(columnId);
@@ -435,7 +435,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             String status = getOntologyService().isOntologyMapped(column) ? "" : "unmapped";
             ontologyMappedColumnStatus.add(status);
         }
-        logger.trace("{}", ontologyMappedColumnStatus);
+        getLogger().trace("{}", ontologyMappedColumnStatus);
         return ontologyMappedColumnStatus;
     }
 

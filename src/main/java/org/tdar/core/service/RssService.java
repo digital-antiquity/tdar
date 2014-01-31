@@ -80,7 +80,7 @@ public class RssService implements Serializable {
 
     private static final long serialVersionUID = 8223380890944917677L;
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     public static final Pattern INVALID_XML_CHARS = Pattern.compile("[\u0001\u0009\u0018\\u000A\\u000D\uD800\uDFFF]");
 
     // \uDC00-\uDBFF -\uD7FF\uE000-\uFFFD

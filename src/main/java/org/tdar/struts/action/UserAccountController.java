@@ -129,7 +129,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             return "new";
         if (getAuthenticatedUser().equals(person))
             return SUCCESS;
-        logger.warn("User {}(id:{}) attempted to access account view page for {}(id:{})", new Object[] { getAuthenticatedUser(),
+        getLogger().warn("User {}(id:{}) attempted to access account view page for {}(id:{})", new Object[] { getAuthenticatedUser(),
                 getAuthenticatedUser().getId(), person, personId });
         return UNAUTHORIZED;
     }
@@ -189,7 +189,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             if (result.isValid()) {
                 setPerson(result.getPerson());
                 setContributorRequest(result.getContributorRequest());
-                logger.debug("contrib request:{} " , getContributorRequest());
+                getLogger().debug("contrib request:{} " , getContributorRequest());
                 getLogger().debug("Authenticated successfully with auth service.");
                 getEntityService().registerLogin(person);
                 getAuthenticationAndAuthorizationService().createAuthenticationToken(person, getSessionData());
@@ -205,7 +205,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return ERROR;
 //            }
         } catch (Throwable t) {
-            logger.debug("authentication error", t);
+            getLogger().debug("authentication error", t);
             addActionErrorWithException(getText("userAccountController.could_not_create_account"), t);
         }
         return ERROR;
@@ -222,7 +222,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
 
     public boolean isUsernameRegistered(String username) {
-        logger.trace("testing username:", username);
+        getLogger().trace("testing username:", username);
         if (StringUtils.isBlank(username)) {
             addActionError(getText("userAccountController.error_missing_username"));
             return true;
@@ -233,12 +233,12 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     @Override
     public void validate() {
-        logger.trace("calling validate");
+        getLogger().trace("calling validate");
 
         if (person.getUsername() != null) {
             String normalizedUsername = getAuthenticationAndAuthorizationService().normalizeUsername(person.getUsername());
             if (!normalizedUsername.equals(person.getUsername())) {
-                logger.info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
+                getLogger().info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
                 person.setUsername(normalizedUsername);
             }
 
@@ -255,7 +255,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
         if (StringUtils.length(person.getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
-            logger.debug("contributor reason too long");
+            getLogger().debug("contributor reason too long");
             addActionError(String.format(getText("userAccountController.could_not_authenticate_at_this_time"), "Contributor Reason", MAXLENGTH_CONTRIBUTOR));
         }
         // FIXME: replace with visitor field validation on Person?
@@ -268,7 +268,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
         // validate email + confirmation
         if (isUsernameRegistered(person.getUsername())) {
-            logger.debug("username was already registered: ", person.getUsername());
+            getLogger().debug("username was already registered: ", person.getUsername());
             addActionError(getText("userAccountController.error_username_already_registered"));
         } else if (StringUtils.isBlank(getConfirmEmail())) {
             addActionError(getText("userAccountController.error_confirm_email"));
@@ -296,7 +296,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         // 2 - check whether someone is adding characters that should not be there
         // 3 - check for known spammer - fname == lname & phone = 123456
         if (StringUtils.isNotBlank(getComment())) {
-            logger.debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
+            getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
             addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
             return true;
         }
@@ -306,7 +306,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 if (getPerson().getEmail().endsWith("\\r") ||
                         getPerson().getFirstName().equals(getPerson().getLastName())
                         && getPerson().getPhone().equals("123456")) {
-                    logger.debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
+                    getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
                     addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
                     return true;
                 }
@@ -316,16 +316,16 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
         long now = System.currentTimeMillis();
 
-        logger.debug("timcheck:{}", getTimeCheck());
+        getLogger().debug("timcheck:{}", getTimeCheck());
         if (getTimeCheck() == null) {
-            logger.debug("internal time check was null, this should never happen for real users");
+            getLogger().debug("internal time check was null, this should never happen for real users");
             addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
             return true;
         }
 
         now -= timeCheck;
         if (now < FIVE_SECONDS_IN_MS || now > ONE_HOUR_IN_MS) {
-            logger.debug(String.format("we think this user was a spammer, due to the time taken " +
+            getLogger().debug(String.format("we think this user was a spammer, due to the time taken " +
                     "to complete the form field: %s  -- %s", getConfirmEmail(), now));
             addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
             return true;

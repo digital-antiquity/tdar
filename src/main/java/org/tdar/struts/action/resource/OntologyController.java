@@ -94,7 +94,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     }
 
     public List<OntologyNode> getChildElements(OntologyNode node) {
-        logger.trace("get children:" + node);
+        getLogger().trace("get children:" + node);
         return getOntologyService().getChildren(getPersistable().getOntologyNodes(), node);
     }
 
@@ -118,7 +118,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     }
 
     public List<OntologyNode> getChildElements(String index) {
-        logger.trace("get children:" + index);
+        getLogger().trace("get children:" + index);
         for (OntologyNode node : getPersistable().getOntologyNodes()) {
             if (node.getIndex().equals(index))
                 return getOntologyService().getChildren(getPersistable().getOntologyNodes(), node);

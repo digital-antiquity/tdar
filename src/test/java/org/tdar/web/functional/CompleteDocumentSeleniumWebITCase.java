@@ -31,6 +31,8 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -42,6 +44,7 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
 
 public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private static final String IJ_BLANK_COM = "ij@blank.com";
     private static final String INDIANA = "indiana";
     private static final String JONES = "jones";

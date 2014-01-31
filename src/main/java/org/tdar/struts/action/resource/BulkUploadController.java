@@ -76,18 +76,18 @@ public class BulkUploadController extends AbstractInformationResourceController<
      */
     @Override
     protected String save(Image image) {
-        logger.info("saving batches...");
+        getLogger().info("saving batches...");
 
         if (Persistable.Base.isNullOrTransient(getTicketId())) {
             addActionError(getText("bulkUploadController.no_files"));
             return INPUT;
         }
-        logger.debug("ticketId: {} ", getTicketId());
-        logger.debug("proxy:    {}", getFileProxies());
+        getLogger().debug("ticketId: {} ", getTicketId());
+        getLogger().debug("proxy:    {}", getFileProxies());
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
         File excelManifest = null;
-        logger.info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
+        getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
         PersonalFilestoreTicket ticket = filestoreService.findPersonalFilestoreTicket(getTicketId());
         PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
         if (!CollectionUtils.isEmpty(getUploadedFilesFileName())) {
@@ -106,15 +106,15 @@ public class BulkUploadController extends AbstractInformationResourceController<
             }
         }
 
-        logger.debug("excel manifest is: {}", excelManifest);
+        getLogger().debug("excel manifest is: {}", excelManifest);
         handleAsyncUploads();
         Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
         setupAccountForSaving();
         if (isAsync()) {
-            logger.info("running asyncronously");
+            getLogger().info("running asyncronously");
             bulkUploadService.saveAsync(image, getAuthenticatedUser().getId(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         } else {
-            logger.info("running inline");
+            getLogger().info("running inline");
             bulkUploadService.save(image, getAuthenticatedUser().getId(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         }
         getGenericService().markReadOnly(getPersistable());
@@ -135,7 +135,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @SkipValidation
     public String templateValidate() {
 
-        logger.info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
+        getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
         if (CollectionUtils.isEmpty(getUploadedFiles()) || getUploadedFiles().get(0) == null) {
             addActionError(getText("bulkUploadController.upload_template"));
             return INPUT;
@@ -204,7 +204,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             setBulkContentLength(getTemplateFile().length());
             setTemplateInputStream(new FileInputStream(getTemplateFile()));
         } catch (Exception iox) {
-            logger.error("an error ocurred creating the template file", iox);
+            getLogger().error("an error ocurred creating the template file", iox);
             throw new TdarRecoverableRuntimeException(getText("bulkUploadController.could_not_store_file"));
         }
         return SUCCESS;

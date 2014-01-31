@@ -16,7 +16,7 @@ import org.tdar.search.query.SearchResultHandler;
 public class PaginationHelper {
     public static final int DEFAULT_ITEMS_PER_WINDOW = 20;
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private int totalNumberOfItems;
     private int itemsPerPage;
@@ -36,7 +36,7 @@ public class PaginationHelper {
     // index of current page within window
     private int currentPageIndex;
 
-    int padding;
+    private int padding;
 
     public static PaginationHelper withStartRecord(int totalItems, int itemsPerPage, int maxVisiblePages, int startRecord) {
         // lock the startRecord to the first record in a page

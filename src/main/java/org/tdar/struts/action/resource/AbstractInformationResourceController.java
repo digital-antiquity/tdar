@@ -172,7 +172,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         try {
             getLogger().debug("handling uploaded files for {}", getPersistable());
             proxies = getFileProxiesToProcess();
-            logger.debug("Final proxy set: {}", proxies);
+            getLogger().debug("Final proxy set: {}", proxies);
 
             for (FileProxy proxy : proxies) {
                 if (proxy != null && proxy.getAction() != FileAction.NONE) {
@@ -280,7 +280,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
         if (isCopyrightMandatory() && copyrightHolderProxies != null) {
             ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
-            logger.debug("setting copyright holder to:  {} ", transientCreator);
+            getLogger().debug("setting copyright holder to:  {} ", transientCreator);
             getResource().setCopyrightHolder(getEntityService().findOrSaveCreator(transientCreator.getCreator()));
         }
     }
@@ -369,7 +369,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         try {
             filesJson = xmlService.convertToJson(fileProxies);
         } catch (IOException e) {
-            logger.error("could not convert file list to json", e);
+            getLogger().error("could not convert file list to json", e);
             filesJson = "[]";
         }
     }
@@ -393,7 +393,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         try {
             getDatasetService().assignMappedDataForInformationResource(getResource());
         } catch (Exception e) {
-            logger.error("could not attach additional dataset data to resource", e);
+            getLogger().error("could not attach additional dataset data to resource", e);
         }
     }
 
@@ -449,7 +449,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void setProjectId(Long projectId_) {
         // remove me?
         if (projectId_ == null) {
-            logger.trace("Tried to set null project id, no-op.");
+            getLogger().trace("Tried to set null project id, no-op.");
             return;
         }
         this.projectId = projectId_;
@@ -465,7 +465,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      */
     @DoNotObfuscate(reason="always called by edit pages, so it shouldn't matter, also bad if called when user is anonymous")
     public List<Resource> getPotentialParents() {
-        logger.info("get potential parents");
+        getLogger().info("get potential parents");
         if (potentialParents == null) {
             Person submitter = getAuthenticatedUser();
             potentialParents = new LinkedList<>();
@@ -478,7 +478,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             // Collections.sort(potentialParents);
             potentialParents.add(0, Project.NULL);
         }
-        logger.trace("Returning all editable projects: {}", potentialParents);
+        getLogger().trace("Returning all editable projects: {}", potentialParents);
         return potentialParents;
     }
 
@@ -567,10 +567,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     protected void setFileProxyAction(FileProxy proxy) {
         if (getPersistable().hasFiles()) {
-            logger.debug("Replacing existing files {} for {}", getPersistable().getInformationResourceFiles(), getPersistable());
+            getLogger().debug("Replacing existing files {} for {}", getPersistable().getInformationResourceFiles(), getPersistable());
             proxy.setAction(FileAction.REPLACE);
             proxy.setFileId(getPersistable().getFirstInformationResourceFile().getId());
-            logger.debug("set primary file proxy irf id to {}", proxy.getFileId());
+            getLogger().debug("set primary file proxy irf id to {}", proxy.getFileId());
         } else {
             proxy.setAction(FileAction.ADD);
         }
@@ -608,7 +608,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void validate() {
         super.validate();
         if (getPersistable().getDate() == null) {
-            logger.debug("Invalid date created for {}", getPersistable());
+            getLogger().debug("Invalid date created for {}", getPersistable());
             String resourceTypeLabel = getPersistable().getResourceType().getLabel();
             addActionError("Please enter a valid creation year for " + resourceTypeLabel);
         }
@@ -616,9 +616,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             // first check to see if the form has copyright holders specified
             if (copyrightHolderProxies != null && copyrightHolderProxies.getActualCreatorType() != null) {
                 ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
-                logger.info("{} {}", copyrightHolderProxies, transientCreator);
+                getLogger().info("{} {}", copyrightHolderProxies, transientCreator);
                 if (transientCreator != null && StringUtils.isEmpty(transientCreator.getCreator().getProperName().trim())) {
-                    logger.debug("No copyright holder set for {}", getPersistable());
+                    getLogger().debug("No copyright holder set for {}", getPersistable());
                     addActionError(getText("abstractInformationResourceController.add_copyright_holder"));
                 }
                 // and if not on a form (the reprocess below, for example, then check the persistable itself

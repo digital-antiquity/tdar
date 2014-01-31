@@ -44,7 +44,7 @@ public class FilestoreTest {
     public static String baseIrPath = File.separator + "12" + File.separator + "34" + File.separator + "5" + File.separator + PairtreeFilestore.CONTAINER_NAME
             + File.separator;
 
-    protected Logger logger = Logger.getLogger(getClass());
+    private Logger logger = Logger.getLogger(getClass());
 
     @Before
     public void cleanup() {

@@ -22,7 +22,7 @@ import org.tdar.utils.MessageHelper;
 public class NelNetTransactionRequestTemplate implements Serializable {
 
     private static final long serialVersionUID = -6993533612215066367L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public enum ItemType {
         NUMERIC,

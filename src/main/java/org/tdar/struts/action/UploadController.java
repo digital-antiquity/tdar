@@ -77,15 +77,15 @@ public class UploadController extends AuthenticationAware.Base {
     })
     public String upload() {
         PersonalFilestoreTicket ticket = null;
-        logger.info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
+        getLogger().info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
         if (ticketRequested) {
             grabTicket();
             ticketId = personalFilestoreTicket.getId();
             ticket = personalFilestoreTicket;
-            logger.debug("UPLOAD CONTROLLER: on-demand ticket requested: {}", ticket);
+            getLogger().debug("UPLOAD CONTROLLER: on-demand ticket requested: {}", ticket);
         } else {
             ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
-            logger.debug("UPLOAD CONTROLLER: upload request with ticket included: {}", ticket);
+            getLogger().debug("UPLOAD CONTROLLER: upload request with ticket included: {}", ticket);
             if (ticket == null) {
                 addActionError(getText("uploadController.require_valid_ticket"));
             }
@@ -107,7 +107,7 @@ public class UploadController extends AuthenticationAware.Base {
                     } catch (Exception e) { /* OK, JUST USED FOR DEBUG */
                     }
                     Object[] out = { fileName, file.length(), contentType, ticketId };
-                    logger.debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
+                    getLogger().debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
                     PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
                     try {
                         filestore.store(ticket, file, fileName);
@@ -120,7 +120,7 @@ public class UploadController extends AuthenticationAware.Base {
         if (CollectionUtils.isEmpty(getActionErrors())) {
             return SUCCESS;
         } else {
-            logger.error("{}", getActionErrors());
+            getLogger().error("{}", getActionErrors());
             getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ERROR;
         }
@@ -180,7 +180,7 @@ public class UploadController extends AuthenticationAware.Base {
         StringWriter sw = new StringWriter();
         xmlService.convertToJson(fileProxies, sw);
         String json = sw.toString();
-        logger.trace("file list as json: {}", json);
+        getLogger().trace("file list as json: {}", json);
         byte[] jsonBytes = json.getBytes();
         jsonInputStream = new ByteArrayInputStream(jsonBytes);
         jsonContentLength = jsonBytes.length;

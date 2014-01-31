@@ -92,7 +92,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         setMode("resourceLookup");
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
         if (!isIncludeCompleteRecord() || getAuthenticatedUser() == null) {
-            logger.info("using projection {}, {}", isIncludeCompleteRecord(), getAuthenticatedUser());
+            getLogger().info("using projection {}, {}", isIncludeCompleteRecord(), getAuthenticatedUser());
             setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
 
@@ -143,7 +143,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             if (getProjectionModel() != ProjectionModel.HIBERNATE_DEFAULT) {
                 setResults(getGenericService().populateSparseObjectsById(getResults(), Resource.class));
             }
-            logger.trace("jsonResults:" + getResults());
+            getLogger().trace("jsonResults:" + getResults());
         } catch (ParseException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;
@@ -191,7 +191,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         setMode("annotationLookup");
 
         this.setLookupSource(LookupSource.KEYWORD);
-        logger.trace("looking up:'" + term + "'");
+        getLogger().trace("looking up:'" + term + "'");
 
         // only return results if query length has enough characters
         if (checkMinString(term)) {
@@ -215,7 +215,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         setMinLookupLength(0);
 
         this.setLookupSource(LookupSource.COLLECTION);
-        logger.trace("looking up:'" + term + "'");
+        getLogger().trace("looking up:'" + term + "'");
         setMode("collectionLookup");
 
         // only return results if query length has enough characters

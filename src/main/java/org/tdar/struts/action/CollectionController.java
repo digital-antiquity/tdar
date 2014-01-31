@@ -102,8 +102,8 @@ public class CollectionController extends AbstractPersistableController<Resource
 
         List<Resource> rehydratedIncomingResources = getResourceCollectionService().reconcileIncomingResourcesForCollection(persistable,
                 getAuthenticatedUser(), resources);
-        logger.trace("{}", rehydratedIncomingResources);
-        logger.debug("RESOURCES {}", persistable.getResources());
+        getLogger().trace("{}", rehydratedIncomingResources);
+        getLogger().debug("RESOURCES {}", persistable.getResources());
         return SUCCESS;
     }
 
@@ -124,7 +124,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public List<? extends Persistable> getDeleteIssues() {
         List<ResourceCollection> findAllChildCollections = getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED);
-        logger.info("we still have children: {}", findAllChildCollections);
+        getLogger().info("we still have children: {}", findAllChildCollections);
         return findAllChildCollections;
     }
 
@@ -394,7 +394,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     public void setCollections(List<ResourceCollection> findAllChildCollections) {
-        logger.info("child collections: {}", findAllChildCollections);
+        getLogger().info("child collections: {}", findAllChildCollections);
         this.collections = findAllChildCollections;
     }
 
@@ -409,7 +409,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public void setResults(List<Resource> toReturn) {
-        logger.trace("setResults: {}", toReturn);
+        getLogger().trace("setResults: {}", toReturn);
         this.results = toReturn;
     }
 

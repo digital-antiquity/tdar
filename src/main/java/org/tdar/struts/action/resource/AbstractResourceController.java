@@ -202,7 +202,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             if (Persistable.Base.isNotNullOrTransient(getResource()) && Persistable.Base.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
-            logger.info("setting active accounts to {} ", getActiveAccounts());
+            getLogger().info("setting active accounts to {} ", getActiveAccounts());
         }
         return SUCCESS;
     }
@@ -397,17 +397,17 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getResource().isActive()
                 || userCan(InternalTdarRights.VIEW_ANYTHING) || getAuthenticationAndAuthorizationService().canView(getAuthenticatedUser(), getPersistable())
                 || isEditable()) {
-            logger.trace("{} is viewable: {}", getId(), getPersistableClass().getSimpleName());
+            getLogger().trace("{} is viewable: {}", getId(), getPersistableClass().getSimpleName());
             return true;
         }
 
         if (getResource().isDeleted()) {
-            logger.debug("resource not viewable because it is deleted: {}", getPersistable());
+            getLogger().debug("resource not viewable because it is deleted: {}", getPersistable());
             throw new TdarActionException(StatusCode.GONE, getText("abstractResourceController.resource_deleted"));
         }
         // don't judge me I hate this code too.
         if (getResource().isDraft()) {
-            logger.trace("resource not viewable because it is draft: {}", getPersistable());
+            getLogger().trace("resource not viewable because it is draft: {}", getPersistable());
             throw new TdarActionException(StatusCode.OK.withResultName(DRAFT), getText("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
         }
 
@@ -415,10 +415,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     protected void saveKeywords() {
-        logger.debug("siteNameKeywords=" + siteNameKeywords);
-        logger.debug("materialKeywords=" + materialKeywordIds);
-        logger.debug("otherKeywords=" + otherKeywords);
-        logger.debug("investigationTypes=" + investigationTypeIds);
+        getLogger().debug("siteNameKeywords=" + siteNameKeywords);
+        getLogger().debug("materialKeywords=" + materialKeywordIds);
+        getLogger().debug("otherKeywords=" + otherKeywords);
+        getLogger().debug("investigationTypes=" + investigationTypeIds);
         Resource res = getPersistable();
         GenericKeywordService gks = getGenericKeywordService();
 
@@ -567,7 +567,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             allProxies.addAll(authorshipProxies);
         if (creditProxies != null)
             allProxies.addAll(creditProxies);
-        logger.info("ResourceCreators before DB lookup: {} ", allProxies);
+        getLogger().info("ResourceCreators before DB lookup: {} ", allProxies);
         int sequence = 0;
         List<ResourceCreator> incomingResourceCreators = new ArrayList<>();
         // convert the list of proxies to a list of resource creators
@@ -575,11 +575,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             if (proxy != null && proxy.isValid()) {
                 ResourceCreator resourceCreator = proxy.getResourceCreator();
                 resourceCreator.setSequenceNumber(sequence++);
-                logger.trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
+                getLogger().trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
 
                 getEntityService().findOrSaveResourceCreator(resourceCreator);
                 incomingResourceCreators.add(resourceCreator);
-                logger.trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
+                getLogger().trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
             } else {
                 getLogger().debug("can't create creator from proxy {} {}", proxy);
             }
@@ -691,7 +691,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public void setResource(R resource) {
-        logger.debug("setResource: {}", resource);
+        getLogger().debug("setResource: {}", resource);
         setPersistable(resource);
     }
 
@@ -1045,7 +1045,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
     @WriteableSession
     public String reprocess() throws TdarActionException {
-        logger.info("reprocessing");
+        getLogger().info("reprocessing");
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         // FIXME: trying to avoid concurrent modification exceptions
         // NOTE: this processes deleted ones again too
@@ -1164,7 +1164,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         try {
             json = getXmlService().convertToJson(new UsageStats(usageStatsForResources, downloadStats));
         } catch (IOException e) {
-            logger.error("failed to convert stats to json", e);
+            getLogger().error("failed to convert stats to json", e);
             json =  String.format("{'error': '%s'}", StringEscapeUtils.escapeEcmaScript(e.getMessage()));
         }
         return json;

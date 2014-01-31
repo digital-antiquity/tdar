@@ -102,7 +102,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         getLogger().debug("loading ontology mapped columns for {}", getPersistable());
         Ontology ontology = getCodingSheet().getDefaultOntology();
         setOntologyNodes(ontology.getSortedOntologyNodesByImportOrder());
-        logger.debug("{}", getOntologyNodes());
+        getLogger().debug("{}", getOntologyNodes());
         setCodingRules(new ArrayList<CodingRule>(getCodingSheet().getSortedCodingRules()));
 
         // generate suggestions for all distinct column values or only those columns that aren't already mapped?
@@ -135,7 +135,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
             }
             getGenericService().save(getCodingSheet().getCodingRules());
         } catch (Throwable tde) {
-            logger.error(tde.getMessage(), tde);
+            getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT;
         }

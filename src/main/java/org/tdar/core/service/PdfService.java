@@ -46,7 +46,7 @@ public class PdfService {
     private static final int LEFT_MARGIN = 73;
 
     @Transient
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private FileSystemResourceDao fileDao;

@@ -44,7 +44,7 @@ public class SitemapController extends AuthenticationAware.Base {
             try {
                 setInputStream(new FileInputStream(file));
             } catch (FileNotFoundException e) {
-                logger.error("file not found {}", e);
+                getLogger().error("file not found {}", e);
             }
             return SUCCESS;
         }

@@ -99,7 +99,7 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         boolean ok = false;
         for (ResultType result : results.getResults().getResult()) {
             for (String id : ids) {
-                if (id.equals(result.identifier)) {
+                if (id.equals(result.getIdentifier())) {
 //                    logger.info("ok: {} ", id);
                     ids = (String[])ArrayUtils.removeElement(ids, id);
                     ok = true;

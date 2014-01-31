@@ -54,7 +54,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
         }
         getPersistable().getAddresses().add(address2);
         getGenericService().saveOrUpdate(getPersistable());
-        logger.info("{}", address2.getId());
+        getLogger().info("{}", address2.getId());
         if (StringUtils.isNotBlank(getReturnUrl())) {
             return RETURN_URL;
         }
@@ -70,9 +70,9 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     public String deleteAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Address toDelete = getAddress();
-        logger.info("to delete: {} ", toDelete);
+        getLogger().info("to delete: {} ", toDelete);
         boolean remove = getPersistable().getAddresses().remove(toDelete);
-        logger.info("did it work: {} ", remove);
+        getLogger().info("did it work: {} ", remove);
         // this is likely superflouous, but I'm tired
         getGenericService().delete(toDelete);
         getGenericService().saveOrUpdate(getPersistable());
@@ -102,7 +102,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
             setAddress(new Address());
             getAddress().setType(AddressType.BILLING);
         }
-        logger.info("returning address {}", address);
+        getLogger().info("returning address {}", address);
         return address;
     }
 

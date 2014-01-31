@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class LatitudeLongitudeBoxTest {
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Should always be true.

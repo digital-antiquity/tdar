@@ -64,7 +64,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 public class ResourceProxy implements Serializable {
 
     private static final long serialVersionUID = -2574871889110727564L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Column(name = "date_created")
     private Integer date = -1;

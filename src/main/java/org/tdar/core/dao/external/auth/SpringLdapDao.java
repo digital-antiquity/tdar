@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.AuthenticationException;
@@ -42,6 +44,7 @@ import org.tdar.utils.MessageHelper;
  */
 @Service
 public class SpringLdapDao extends BaseAuthenticationProvider {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     protected final LdapOperations ldapTemplate;
     private String passwordResetURL;

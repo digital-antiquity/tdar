@@ -96,7 +96,7 @@ public abstract class AbstractSeleniumWebITCase {
     // protect against infinite loops killing our disk space
     static int MAX_SCREENSHOTS_PER_TEST = 100;
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     // Predicates that can be used as arguments for FluentWait.until.
     private Predicate<WebDriver> pageReady = new Predicate<WebDriver>() {

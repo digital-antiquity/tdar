@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class BaseAuthenticationProvider implements AuthenticationProvider {
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private boolean enabled;
 

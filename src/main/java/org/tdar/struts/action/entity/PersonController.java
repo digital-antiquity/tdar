@@ -113,19 +113,19 @@ public class PersonController extends AbstractCreatorController<Person> {
             // FIXME: logout?
         }
         if (hasErrors()) {
-            logger.info("errors present, returning INPUT");
-            logger.info("actionErrors:{}", getActionErrors());
-            logger.info("fieldErrors:{}", getFieldErrors());
+            getLogger().info("errors present, returning INPUT");
+            getLogger().info("actionErrors:{}", getActionErrors());
+            getLogger().info("fieldErrors:{}", getFieldErrors());
             return INPUT;
         }
-        logger.debug("saving person: {} with institution {} ", person, institutionName);
+        getLogger().debug("saving person: {} with institution {} ", person, institutionName);
         if (StringUtils.isBlank(institutionName)) {
             person.setInstitution(null);
         }
         else {
             // if the user changed the person's institution, find or create it
             Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(institutionName));
-            logger.debug("setting institution to persistent: " + persistentInstitution);
+            getLogger().debug("setting institution to persistent: " + persistentInstitution);
             person.setInstitution(persistentInstitution);
         }
 
@@ -135,7 +135,7 @@ public class PersonController extends AbstractCreatorController<Person> {
         else {
             // if the user changed the person's institution, find or create it
             Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
-            logger.debug("setting institution to persistent: " + persistentInstitution);
+            getLogger().debug("setting institution to persistent: " + persistentInstitution);
             person.setProxyInstitution(persistentInstitution);
         }
 
@@ -219,7 +219,7 @@ public class PersonController extends AbstractCreatorController<Person> {
         try {
             getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) getPersistable()));
         } catch (Throwable e) {
-            logger.error("problem communicating with crowd getting user info for {} ", getPersistable(), e);
+            getLogger().error("problem communicating with crowd getting user info for {} ", getPersistable(), e);
         }
         return SUCCESS;
     }

@@ -99,7 +99,7 @@ public class IndexAction extends AuthenticationAware.Base {
         try {
             setRssEntries(rssService.parseFeed(new URL(getTdarConfiguration().getNewsRssFeed())));
         } catch (Exception e) {
-            logger.warn("RssParsingException happened", e);
+            getLogger().warn("RssParsingException happened", e);
         }
         try {
             for (HomepageFeaturedItemCache cache : getGenericService().findAll(HomepageFeaturedItemCache.class)) {
@@ -113,7 +113,7 @@ public class IndexAction extends AuthenticationAware.Base {
                 getFeaturedResources().add(key);
             }
         } catch (IndexOutOfBoundsException ioe) {
-            logger.debug("no featured resources found");
+            getLogger().debug("no featured resources found");
         }
         Iterator<HomepageResourceCountCache> iterator = homepageResourceCountCache.iterator();
         while (iterator.hasNext()) {

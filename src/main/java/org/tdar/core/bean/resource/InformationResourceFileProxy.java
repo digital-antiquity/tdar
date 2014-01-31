@@ -40,7 +40,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 public class InformationResourceFileProxy implements Serializable {
 
     private static final long serialVersionUID = -1321714940676599837L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
 
     @Column(name = "sequence_number")

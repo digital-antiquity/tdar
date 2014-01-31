@@ -17,7 +17,7 @@ import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 
 public class SiteNameIndexingITCase {
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void testRegexp() {

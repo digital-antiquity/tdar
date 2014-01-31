@@ -54,12 +54,12 @@ public class LoginController extends AuthenticationAware.Base {
     })
     @HttpsOnly
     public String execute() {
-        logger.debug("Executing /login/ .");
+        getLogger().debug("Executing /login/ .");
         if (isAuthenticated()) {
-            logger.debug("already authenticated, redirecting to project listing.");
+            getLogger().debug("already authenticated, redirecting to project listing.");
             return AUTHENTICATED;
         }
-        logger.debug("Not authenticated for some reason: " + getSessionData());
+        getLogger().debug("Not authenticated for some reason: " + getSessionData());
         return SUCCESS;
     }
 
@@ -71,14 +71,14 @@ public class LoginController extends AuthenticationAware.Base {
     @HttpsOnly
     @WriteableSession
     public String authenticate() {
-        logger.debug("Trying to authenticate username:{}", getLoginUsername());
+        getLogger().debug("Trying to authenticate username:{}", getLoginUsername());
         if (StringUtils.isNotBlank(getComment())) {
-            logger.debug(String.format("we think this user was a spammer: %s  -- %s", getLoginUsername(), getComment()));
+            getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getLoginUsername(), getComment()));
             addActionError("Could not authenticate");
             return INPUT;
         }
         if (!isPostRequest()) {
-            logger.warn("Returning INPUT because login requested via GET request for user:{}", getLoginUsername());
+            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getLoginUsername());
             return INPUT;
         }
 
@@ -112,15 +112,15 @@ public class LoginController extends AuthenticationAware.Base {
             url_ = UrlUtils.urlDecode(url);
         }
 
-        logger.info("url {} ", url_);
+        getLogger().info("url {} ", url_);
         if (url_.contains("filestore/")) {
-            logger.info("download redirect");
+            getLogger().info("download redirect");
             if (url_.contains("/get?") || url_.endsWith("/get")) {
                 url_ = url_.replace("/get", "/confirm");
             } else if (url_.matches("^(.+)filestore/(\\d+)$")) {
                 url_ = url_ + "/confirm";
             }
-            logger.info(url_);
+            getLogger().info(url_);
         }
 
         // ignore AJAX/JSON requests
@@ -129,7 +129,7 @@ public class LoginController extends AuthenticationAware.Base {
             return null;
         }
 
-        logger.debug("Redirecting to return url: " + url_);
+        getLogger().debug("Redirecting to return url: " + url_);
         return url_;
     }
 

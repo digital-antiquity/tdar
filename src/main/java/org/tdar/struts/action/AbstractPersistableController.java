@@ -238,7 +238,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 indexPersistable();
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
-                    logger.debug("Action errors found {}; Replacing return status of {} with {}", getActionErrors(), actionReturnStatus, INPUT);
+                    getLogger().debug("Action errors found {}; Replacing return status of {} with {}", getActionErrors(), actionReturnStatus, INPUT);
                     // FIXME: if INPUT -- should I just "return"?
                     actionReturnStatus = INPUT;
                 }
@@ -260,9 +260,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             editTime = -1L;
         }
         if (isNew && getPersistable() != null) {
-            logger.debug("Created Id: {}", getPersistable().getId());
+            getLogger().debug("Created Id: {}", getPersistable().getId());
         }
-        logger.debug("EDIT TOOK: {} SAVE TOOK: {} (edit:{}  save:{})", new Object[] { editTime, saveTime, formatTime(editTime), formatTime(saveTime) });
+        getLogger().debug("EDIT TOOK: {} SAVE TOOK: {} (edit:{}  save:{})", new Object[] { editTime, saveTime, formatTime(editTime), formatTime(saveTime) });
 
         // don't allow SUCCESS response if there are actionErrors, but give the other callbacks leeway in setting their own error message.
         if (CollectionUtils.isNotEmpty(getActionErrors()) && SUCCESS.equals(actionReturnStatus)) {
@@ -306,9 +306,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         try {
             email_ = getAuthenticatedUser().getEmail().toUpperCase();
         } catch (Exception e) {
-            logger.debug("something weird happend, authenticated user is null");
+            getLogger().debug("something weird happend, authenticated user is null");
         }
-        logger.info(String.format(msg, email_, action_, getPersistableClass().getSimpleName().toUpperCase(), id_, name_));
+        getLogger().info(String.format(msg, email_, action_, getPersistableClass().getSimpleName().toUpperCase(), id_, name_));
     }
 
     protected void preSaveCallback() {
@@ -424,7 +424,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             throws TdarActionException {
         // first check the session
         Object[] msg = { action.getAuthenticatedUser(), userAction, action.getPersistableClass().getSimpleName() };
-        logger.info("user {} is TRYING to {} a {}", msg);
+        getLogger().info("user {} is TRYING to {} a {}", msg);
 
         if (userAction.isAuthenticationRequired()) {
             try {
@@ -441,7 +441,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         Persistable persistable = action.getPersistable();
         if (Persistable.Base.isNullOrTransient(persistable)) {
             // deal with the case that we have a new or not found resource
-            logger.debug("Dealing with transient persistable {}", persistable);
+            getLogger().debug("Dealing with transient persistable {}", persistable);
             switch (userAction) {
                 case CREATE:
                 case SAVE:
@@ -607,7 +607,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public void prepare() {
 
         if (isPersistableIdSet()) {
-            logger.error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
+            getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
         }
         if (Persistable.Base.isNullOrTransient(getId())) {
             setPersistable(createPersistable());
@@ -616,7 +616,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             P p = loadFromId(getId());
             // from a permissions standpoint... being really strict, we should mark this as read-only
             // getGenericService().markReadOnly(p);
-            logger.info("id:{}, persistable:{}", getId(), p);
+            getLogger().info("id:{}, persistable:{}", getId(), p);
             setPersistable(p);
         }
 
@@ -710,16 +710,16 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      *            the startTime to set
      */
     public void setStartTime(Long startTime) {
-        logger.info("set start time: " + startTime);
+        getLogger().info("set start time: " + startTime);
         this.startTime = startTime;
     }
 
     @Override
     public void validate() {
         reportAnyJavascriptErrors();
-        logger.debug("validating resource {} - {}", getPersistable(), getPersistableClass().getSimpleName());
+        getLogger().debug("validating resource {} - {}", getPersistable(), getPersistableClass().getSimpleName());
         if (getPersistable() == null) {
-            logger.warn("Null being validated.");
+            getLogger().warn("Null being validated.");
             addActionError(getText("abstactPersistableController.could_not_find"));
             return;
         }

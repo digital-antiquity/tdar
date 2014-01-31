@@ -79,7 +79,7 @@ public class DashboardController extends AuthenticationAware.Base {
         // getResourceCollectionService().reconcileCollectionTree2(getResourceCollections(), getAuthenticatedUser(), collectionIds);
         // getResourceCollectionService().reconcileCollectionTree2(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
         // } catch (ParseException e1) {
-        // logger.error("parse exception: {} ", e1);
+        // getLogger().error("parse exception: {} ", e1);
         // }
         try {
             Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
@@ -88,13 +88,13 @@ public class DashboardController extends AuthenticationAware.Base {
                 try {
                     properName = indexingTask.getUser().getProperName();
                 } catch (Exception e) {
-                    logger.warn("reindexing user could not be determined");
+                    getLogger().warn("reindexing user could not be determined");
                 }
                 String msg = String.format("%s is RE-INDEXING %s (%s)", properName, getSiteAcronym(), indexingTask.getStartDate());
                 addActionMessage(msg);
             }
         } catch (Throwable t) {
-            logger.error("what???", t);
+            getLogger().error("what???", t);
         }
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);

@@ -172,7 +172,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             }
 
             if (verbToHandle == null) {
-                logger.warn("NO VERB PROVIDED");
+                getLogger().warn("NO VERB PROVIDED");
                 throw new OAIException(getText("oaiControler.bad_verb"), OaiErrorCode.BAD_VERB);
             } else {
                 switch (verbToHandle) {
@@ -199,7 +199,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 setErrorCode(OaiErrorCode.BAD_ARGUMENT);
             }
             errorCode.setMessage(e.getMessage());
-            logger.debug(e.getMessage(), e);
+            getLogger().debug(e.getMessage(), e);
         }
         return ERROR;
     }
@@ -368,11 +368,11 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 }
                 records.add(proxy);
             }
-            logger.info("ALL IDS: {}", ids);
+            getLogger().info("ALL IDS: {}", ids);
         } catch (TdarRecoverableRuntimeException e) {
             // this is expected as the cursor follows the "max" results for person/inst/resource so, whatever the max is
             // means that the others will throw this error.
-            logger.debug("an exception happened .. {} ", e);
+            getLogger().debug("an exception happened .. {} ", e);
         }
         return total;
     }
@@ -420,7 +420,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 } else {
                     jaxbDocument = DcTransformer.transformAny((Resource) object);
                     JaxbDocumentWriter.write(jaxbDocument, document, true);
-                    logger.trace("case:document: {} ", jaxbDocument);
+                    getLogger().trace("case:document: {} ", jaxbDocument);
                 }
                 break;
             case MODS:
@@ -429,7 +429,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 }
                 jaxbDocument = ModsTransformer.transformAny((Resource) object);
                 JaxbDocumentWriter.write(jaxbDocument, document, true);
-                logger.trace("case:document: {} ", jaxbDocument);
+                getLogger().trace("case:document: {} ", jaxbDocument);
                 break;
         }
 
@@ -795,7 +795,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     @Override
     public boolean acceptableParameterName(String parameterName) {
         // Called by Struts framework to ask if the parameter name is acceptable
-        logger.trace("OAI parameter:" + parameterName);
+        getLogger().trace("OAI parameter:" + parameterName);
         try {
             OAIParameter.fromString(parameterName);
             return true;

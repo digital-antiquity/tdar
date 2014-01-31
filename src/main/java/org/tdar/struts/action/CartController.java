@@ -88,11 +88,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         for (int i = 0; i < getExtraItemIds().size(); i++) {
             BillingActivity act = actIdMap.get(getExtraItemIds().get(i));
             Integer quantity = getExtraItemQuantities().get(i);
-            logger.info("{} {} {}", getExtraItemIds().get(i), act, quantity);
+            getLogger().info("{} {} {}", getExtraItemIds().get(i), act, quantity);
             if (act == null || quantity == null || quantity < 1) {
                 continue;
             }
-            logger.info("adding {}", act);
+            getLogger().info("adding {}", act);
             getInvoice().getItems().add(new BillingItem(act, quantity));
         }
 
@@ -306,7 +306,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getGenericService().saveOrUpdate(invoice);
         // finalize the cost and cache it
         invoice.markFinal();
-        logger.info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", invoice.getId(), invoice.getTotal());
+        getLogger().info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", invoice.getId(), invoice.getTotal());
 
         // if the discount brings the total cost down to 0, then skip the credit card process
         if (invoice.getTotal() <= 0 && CollectionUtils.isNotEmpty(invoice.getItems())) {
@@ -329,7 +329,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                 try {
                     setRedirectUrl(paymentTransactionProcessor.prepareRequest(invoice));
                 } catch (URIException e) {
-                    logger.warn("error happend {}", e);
+                    getLogger().warn("error happend {}", e);
                 }
                 return POLLING;
             case INVOICE:
@@ -357,7 +357,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             })
     public String processPaymentResponse() throws TdarActionException {
         try {
-            logger.trace("PROCESS RESPONSE {}", getParameters());
+            getLogger().trace("PROCESS RESPONSE {}", getParameters());
             TransactionResponse response = paymentTransactionProcessor.setupTransactionResponse(getParameters());
             // if transaction is valid (hashKey matches) then mark the session as writeable and go on
             if (paymentTransactionProcessor.validateResponse(response)) {
@@ -377,13 +377,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     }
                     if (!found) {
                         p.getAddresses().add(addressToSave);
-                        logger.info(addressToSave.getAddressSingleLine());
+                        getLogger().info(addressToSave.getAddressSingleLine());
                         getGenericService().saveOrUpdate(addressToSave);
                         invoice.setAddress(addressToSave);
                     }
                     paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                     invoice.setResponse(billingResponse);
-                    logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
+                    getLogger().info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
                     Map<String, Object> map = new HashMap<String, Object>();
                     map.put("invoice", invoice);
                     map.put("date", new Date());
@@ -398,13 +398,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                         }
                         getEmailService().sendWithFreemarkerTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + getText("cartController.subject"), people.toArray(new Person[0]));
                     } catch (Exception e) {
-                        logger.error("could not send email: {} ", e);
+                        getLogger().error("could not send email: {} ", e);
                     }
                     getGenericService().saveOrUpdate(invoice);
                 }
             }
         } catch (Exception e) {
-            logger.error("{}", e);
+            getLogger().error("{}", e);
         }
         return INVOICE;
     }
@@ -505,7 +505,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Override
     public void setParameters(Map<String, String[]> arg0) {
         this.parameters = arg0;
-        logger.trace("parameters: {} ", getParameters());
+        getLogger().trace("parameters: {} ", getParameters());
     }
 
     public Map<String, String[]> getParameters() {
@@ -526,7 +526,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (account != null) {
             successPath = String.format("%s&id=%d", successPath, account.getId());
         }
-        logger.trace("successpath: {} ", successPath);
+        getLogger().trace("successpath: {} ", successPath);
         return successPath;
     }
 

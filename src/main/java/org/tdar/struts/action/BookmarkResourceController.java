@@ -79,21 +79,21 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
     private boolean bookmarkResource() {
         Resource resource = getResourceService().find(resourceId);
         if (resource == null) {
-            logger.trace("no resource with id: " + resourceId);
+            getLogger().trace("no resource with id: " + resourceId);
             return false;
         }
         Person person = getAuthenticatedUser();
-        logger.debug("checking if resource is already bookmarked for resource:" + resource.getId());
+        getLogger().debug("checking if resource is already bookmarked for resource:" + resource.getId());
         return getBookmarkedResourceService().bookmarkResource(resource, person);
     }
 
     private boolean removeBookmark() {
         Resource resource = getResourceService().find(resourceId);
         if (resource == null) {
-            logger.warn("no resource with id: " + resourceId);
+            getLogger().warn("no resource with id: " + resourceId);
             return false;
         }
-        logger.trace("removing bookmark for resource: " + resource.getId());
+        getLogger().trace("removing bookmark for resource: " + resource.getId());
         Person person = getAuthenticatedUser();
         return getBookmarkedResourceService().removeBookmark(resource, person);
     }

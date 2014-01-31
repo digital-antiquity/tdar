@@ -134,7 +134,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     @Override
     protected String save(Account persistable) {
-        logger.info("invoiceId {}", getInvoiceId());
+        getLogger().info("invoiceId {}", getInvoiceId());
 
         // if we're coming from "choose" and we want a "new account"
         if (Persistable.Base.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
@@ -146,7 +146,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
         if (Persistable.Base.isNotNullOrTransient(invoiceId)) {
             Invoice invoice = getInvoice();
-            logger.info("attaching invoice: {} ", invoice);
+            getLogger().info("attaching invoice: {} ", invoice);
             // if we have rights
             if (Persistable.Base.isTransient(getAccount())) {
                 getAccount().setOwner(invoice.getOwner());
@@ -161,7 +161,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         getAccount().getAuthorizedMembers().clear();
         getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), Person.class));
 
-        logger.info("authorized members: {}", getAccount().getAuthorizedMembers());
+        getLogger().info("authorized members: {}", getAccount().getAuthorizedMembers());
         return SUCCESS;
     }
 
@@ -192,35 +192,35 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             @Result(name = SUCCESS, location = "view?id=${id}", type = REDIRECT)
     })
     public String fix() {
-        logger.debug(">>>>> F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
+        getLogger().debug(">>>>> F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
         getAccountService().updateQuota(getAccount(), getAccount().getResources());
         getGenericService().refresh(getAccount());
-        logger.debug(":::: F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
+        getLogger().debug(":::: F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
         if (CollectionUtils.isNotEmpty(getAccount().getInvoices()) && getAccount().getInvoices().size() == 1) {
             Invoice invoice = getAccount().getInvoices().iterator().next();
             Long space = getAccount().getSpaceUsedInMb() + 10l;
             Long files = getAccount().getFilesUsed() + 1l;
             for (BillingItem item : invoice.getItems()) {
                 if (item.getActivity().isSpaceOnly()) {
-                    logger.debug("changing space from: {} to {}",item.getQuantity(), space);
+                    getLogger().debug("changing space from: {} to {}",item.getQuantity(), space);
                     item.setQuantity(space.intValue());
                 }
 
                 if (item.getActivity().isFilesOnly()) {
-                    logger.debug("changing files from: {} to {}",item.getQuantity(), files);
+                    getLogger().debug("changing files from: {} to {}",item.getQuantity(), files);
                     item.setQuantity(files.intValue());
                 }
             }
             getGenericService().saveOrUpdate(invoice.getItems());
         }
         getAccountService().updateQuota(getAccount(), getAccount().getResources());
-        logger.debug("<<<<<< F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
+        getLogger().debug("<<<<<< F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
         return TdarActionSupport.SUCCESS;
     }
 
     @Override
     public boolean isViewable() throws TdarActionException {
-        logger.info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
+        getLogger().info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
         if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;
         }

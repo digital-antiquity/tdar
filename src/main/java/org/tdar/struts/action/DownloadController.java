@@ -88,7 +88,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             return FORBIDDEN;
         }
         setInformationResourceId(irFileVersion.getInformationResourceId());
-        logger.info("user {} downloaded {}",getSessionData().getPerson(), irFileVersion);
+        getLogger().info("user {} downloaded {}",getSessionData().getPerson(), irFileVersion);
         getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), irFileVersion);
         return SUCCESS;
     }
@@ -131,7 +131,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
                 getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
                 return FORBIDDEN;
             }
-            logger.trace("adding: {}", irf.getLatestUploadedVersion());
+            getLogger().trace("adding: {}", irf.getLatestUploadedVersion());
             versions.add(irf.getLatestUploadedOrArchivalVersion());
         }
         getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), versions.toArray(new InformationResourceFileVersion[0]));

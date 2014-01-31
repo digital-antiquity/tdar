@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 @Subselect(value="select * from information_resource_file_version")
 public class InformationResourceFileVersionProxy  implements Serializable {
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Id
     private Long id;

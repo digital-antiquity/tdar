@@ -4,11 +4,14 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * tests for business rules surrounding encrypted and non-encrypted pages o
  */
 public class HttpsSeleniumWebITCase extends AbstractSeleniumWebITCase {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void testAttemptToVisitDocumentEdit() throws InterruptedException {

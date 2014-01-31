@@ -214,7 +214,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @Override
     public void setResults(List<Resource> results) {
-        logger.trace("setResults: {}", results);
+        getLogger().trace("setResults: {}", results);
         this.results = results;
     }
 

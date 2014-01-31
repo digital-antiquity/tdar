@@ -41,15 +41,15 @@ import javax.xml.bind.annotation.XmlType;
 public class ResultType {
 
     @XmlElement(required = true)
-    protected String title;
+    private String title;
     @XmlElement(required = true)
-    protected String identifier;
+    private String identifier;
     @XmlElement(required = true)
-    protected String summary;
+    private String summary;
     @XmlElement(required = true)
-    protected String url;
+    private String url;
     @XmlElement(required = true)
-    protected String publisher;
+    private String publisher;
 
     /**
      * Gets the value of the title property.

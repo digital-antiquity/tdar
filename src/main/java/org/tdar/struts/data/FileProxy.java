@@ -51,7 +51,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private List<FileProxy> additionalVersions = new ArrayList<FileProxy>();
     private List<FileProxy> supportingProxies = new ArrayList<FileProxy>();
 
-    private transient final static Logger LOGGER = LoggerFactory.getLogger(FileProxy.class);
+    private transient final static Logger logger = LoggerFactory.getLogger(FileProxy.class);
 
     public FileProxy() {
     }
@@ -68,7 +68,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
             this.filename = latestVersion.getFilename();
             this.size = latestVersion.getFileLength();
         } else {
-            LOGGER.warn("No version number available for file {}", file);
+            logger.warn("No version number available for file {}", file);
         }
     }
 

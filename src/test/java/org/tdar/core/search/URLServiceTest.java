@@ -9,7 +9,7 @@ import org.tdar.core.service.UrlService;
 
 public class URLServiceTest {
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void testViewReplace() {

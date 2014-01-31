@@ -16,7 +16,7 @@ import org.tdar.core.exception.TdarRuntimeException;
  * with slight modifications to ensure we don't delete things out of our filestore
  */
 public class DeleteOnCloseFileInputStream extends FileInputStream {
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private File file;
 
     public DeleteOnCloseFileInputStream(String fileName) throws FileNotFoundException {

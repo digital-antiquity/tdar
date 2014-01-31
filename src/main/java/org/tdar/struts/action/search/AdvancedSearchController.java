@@ -166,13 +166,13 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             boolean resetSearch = processLegacySearchParameters();
 
             if (StringUtils.isNotBlank(query) && !resetSearch) {
-                logger.trace("running basic search");
+                getLogger().trace("running basic search");
                 return basicSearch();
             } else {
                 return advancedSearch();
             }
         } catch (TdarRecoverableRuntimeException trex) {
-            logger.error("an error happened", trex);
+            getLogger().error("an error happened", trex);
             addActionError(trex.getMessage());
             return INPUT;
         }
@@ -250,14 +250,14 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         queryBuilder.append(qpg);
 
         try {
-            logger.trace("queryBuilder: {}", queryBuilder);
+            getLogger().trace("queryBuilder: {}", queryBuilder);
             getSearchService().handleSearch(queryBuilder, this);
 
         } catch (TdarRecoverableRuntimeException tdre) {
-            logger.warn("search parse exception: {}", tdre.getMessage());
+            getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
         } catch (ParseException e) {
-            logger.warn("search parse exception: {}", e.getMessage());
+            getLogger().warn("search parse exception: {}", e.getMessage());
             addActionErrorWithException(getText("advancedSearchController.error_parsing_failed"), e);
         }
         
@@ -275,7 +275,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String viewRss() throws TdarActionException {
         try {
             setDefaultSort(SortOption.ID_REVERSE);
-            logger.info("sort field {} ", getSortField());
+            getLogger().info("sort field {} ", getSortField());
             if (getSortField() == null) {
                 setSecondarySortField(SortOption.TITLE);
             }
@@ -292,7 +292,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 setInputStream(new ByteArrayInputStream("".getBytes()));
             }
         } catch (Exception e) {
-            logger.error("rss error", e);
+            getLogger().error("rss error", e);
             addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
         }
         return SUCCESS;
@@ -317,7 +317,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
         // legacy search by id?
         if (Persistable.Base.isNotNullOrTransient(getId())) {
-            logger.trace("legacy api:  tdar id");
+            getLogger().trace("legacy api:  tdar id");
             groups.clear();
             groups.add(new SearchParameters());
             groups.get(0).getResourceIds().add(getId());
@@ -349,7 +349,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 || !getUncontrolledCultureKeywords().isEmpty()
                 || !getUncontrolledSiteTypeKeywords().isEmpty()
                 || !getGeographicKeywords().isEmpty()) {
-            logger.trace("legacy api: uncontrolled keyword");
+            getLogger().trace("legacy api: uncontrolled keyword");
             groups.clear();
             setLegacyFieldtypes(SearchFieldType.FFK_SITE, getSiteNameKeywords());
             setLegacyFieldtypes(SearchFieldType.FFK_CULTURAL, getUncontrolledCultureKeywords());
@@ -409,15 +409,15 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         queryBuilder.append(reservedQueryPart);
 
         try {
-            logger.trace("queryBuilder: {}", queryBuilder);
+            getLogger().trace("queryBuilder: {}", queryBuilder);
             getSearchService().handleSearch(queryBuilder, this);
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
         } catch (TdarRecoverableRuntimeException tdre) {
-            logger.warn("search parse exception: {}", tdre.getMessage());
+            getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
         } catch (ParseException e) {
-            logger.warn("search parse exception: {}", e.getMessage());
+            getLogger().warn("search parse exception: {}", e.getMessage());
             addActionError(getText("advancedSearchController.error_parsing_failed"));
         }
 

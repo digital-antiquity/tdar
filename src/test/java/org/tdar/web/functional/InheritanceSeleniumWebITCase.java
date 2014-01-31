@@ -11,9 +11,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Project;
 
 public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     // FIXME: make this more generic (it was generated from selenium IDE)
     private void fillOUtProjectForm(WebDriver driver, Project project) {

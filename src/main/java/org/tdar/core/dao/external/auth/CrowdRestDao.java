@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +55,7 @@ import com.atlassian.crowd.service.client.CrowdClient;
  */
 @Service
 public class CrowdRestDao extends BaseAuthenticationProvider {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private CrowdClient securityServerClient;
     private CrowdHttpAuthenticator httpAuthenticator; 

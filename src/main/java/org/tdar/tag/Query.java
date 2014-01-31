@@ -76,13 +76,13 @@ import javax.xml.bind.annotation.XmlType;
 public class Query {
 
     @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema")
-    protected Query.What what;
+    private Query.What what;
     @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema")
-    protected Query.When when;
+    private Query.When when;
     @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema")
-    protected Query.Where where;
+    private Query.Where where;
     @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema")
-    protected String freetext;
+    private String freetext;
 
     /**
      * Gets the value of the what property.
@@ -200,7 +200,7 @@ public class Query {
     public static class What {
 
         @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema", required = true)
-        protected List<SubjectType> subjectTerm;
+        private List<SubjectType> subjectTerm;
 
         /**
          * Gets the value of the subjectTerm property.
@@ -261,9 +261,9 @@ public class Query {
     public static class When {
 
         @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema")
-        protected int minDate;
+        private int minDate;
         @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema")
-        protected int maxDate;
+        private int maxDate;
 
         /**
          * Gets the value of the minDate property.
@@ -333,13 +333,13 @@ public class Query {
     public static class Where {
 
         @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema", required = true, defaultValue = "0")
-        protected BigDecimal minLatitude;
+        private BigDecimal minLatitude;
         @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema", required = true, defaultValue = "0")
-        protected BigDecimal minLongitude;
+        private BigDecimal minLongitude;
         @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema", required = true, defaultValue = "0")
-        protected BigDecimal maxLatitude;
+        private BigDecimal maxLatitude;
         @XmlElement(namespace = "http://archaeologydataservice.ac.uk/tag/schema", required = true, defaultValue = "0")
-        protected BigDecimal maxLongitude;
+        private BigDecimal maxLongitude;
 
         /**
          * Gets the value of the minLatitude property.

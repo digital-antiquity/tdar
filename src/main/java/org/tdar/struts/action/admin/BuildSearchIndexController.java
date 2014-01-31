@@ -72,9 +72,9 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     @Action(value = "build", results = { @Result(name = "success", location = "build.ftl") })
     public String build() {
         try {
-            logger.info("{} IS REBUILDING SEARCH INDEXES", getAuthenticatedUser().getEmail().toUpperCase());
+            getLogger().info("{} IS REBUILDING SEARCH INDEXES", getAuthenticatedUser().getEmail().toUpperCase());
         } catch (Exception e) {
-            logger.error("weird exception {} ", e);
+            getLogger().error("weird exception {} ", e);
         }
         return SUCCESS;
     }
@@ -82,7 +82,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private void buildIndex() {
         Date date = new Date();
         List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
-        logger.info("{}", getIndexesToRebuild());
+        getLogger().info("{}", getIndexesToRebuild());
         for (LookupSource source : getIndexesToRebuild()) {
             if (source == LookupSource.RESOURCE) {
                 toReindex.add(Resource.class);
@@ -91,7 +91,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
             }
         }
 
-        logger.info("to reindex: {}", toReindex);
+        getLogger().info("to reindex: {}", toReindex);
         Person person = null;
         if (Persistable.Base.isNotNullOrTransient(getUserId())) {
             person = getEntityService().find(getUserId());
@@ -115,7 +115,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     @Override
     public void setStatus(String status) {
-        logger.debug("indexing status: {}", status);
+        getLogger().debug("indexing status: {}", status);
         this.phase = "Current Status: " + status;
     }
 
@@ -131,7 +131,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     public void addError(Throwable t) {
         setStatus(t.getMessage());
         errors.addFirst(t);
-        logger.error(t.getMessage(), t);
+        getLogger().error(t.getMessage(), t);
     }
 
     @Override

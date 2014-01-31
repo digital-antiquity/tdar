@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
@@ -31,6 +33,7 @@ import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractWebTestCase;
 
 public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     public  HashMap<String, String> docValMap;
     public  HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
     public  HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();

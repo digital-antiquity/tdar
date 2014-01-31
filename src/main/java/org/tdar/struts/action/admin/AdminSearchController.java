@@ -80,7 +80,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
         q.setRawQuery(rawQuery);
         try {
             handleSearch(q);
-            logger.trace("jsonResults:" + getResults());
+            getLogger().trace("jsonResults:" + getResults());
         } catch (ParseException e) {
             addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
             return ERROR;

@@ -7,6 +7,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 
 /**
@@ -16,6 +18,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
  * 
  */
 public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Before
     public void setup() {

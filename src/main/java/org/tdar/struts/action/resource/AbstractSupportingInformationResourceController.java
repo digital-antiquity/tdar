@@ -77,10 +77,10 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         if (latestUploadedTextVersion != null
                 && latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR) {
             if (ObjectUtils.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
-                logger.info("incoming and current file input text is the same, skipping further actions");
+                getLogger().info("incoming and current file input text is the same, skipping further actions");
                 return null;
             } else {
-                logger.info("processing updated text input for {}", getPersistable());
+                getLogger().info("processing updated text input for {}", getPersistable());
             }
         }
 
@@ -88,7 +88,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             // process the String uploaded via the fileTextInput box verbatim as the UPLOADED_TEXT version
             // 2013-22-04 AB: if our validation rules for Struts are working, this is not needed as the title already is checked way before this
             // if (StringUtils.isBlank(getPersistable().getTitle())) {
-            // logger.error("Resource title was empty, client side validation failed for {}", getPersistable());
+            // getLogger().error("Resource title was empty, client side validation failed for {}", getPersistable());
             // addActionError("Please enter a title for your " + getPersistable().getResourceType().getLabel());
             // return null;
             // }
@@ -131,7 +131,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     protected void saveCategories() {
         if (getPersistable() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) getPersistable();
-            logger.info("Category: {} ; subcategory: {} ", categoryId, subcategoryId);
+            getLogger().info("Category: {} ; subcategory: {} ", categoryId, subcategoryId);
             if (Persistable.Base.isNullOrTransient(subcategoryId)) {
                 supporting.setCategoryVariable(getCategoryVariableService().find(categoryId));
             } else {
@@ -202,7 +202,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             try {
                 versionText = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
             } catch (IOException e) {
-                logger.debug("an error occurred when trying to load the text version of a file", e);
+                getLogger().debug("an error occurred when trying to load the text version of a file", e);
             }
         }
         return versionText;

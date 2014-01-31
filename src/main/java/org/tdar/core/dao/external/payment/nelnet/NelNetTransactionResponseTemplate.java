@@ -28,7 +28,7 @@ import org.tdar.utils.MessageHelper;
 public class NelNetTransactionResponseTemplate implements Serializable, TransactionResponse {
 
     private static final long serialVersionUID = -5575891484534148580L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<String, String[]> values = new HashMap<String, String[]>();
     private String secret = "";

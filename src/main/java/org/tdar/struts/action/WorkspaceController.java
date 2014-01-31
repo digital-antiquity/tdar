@@ -118,7 +118,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
         try {
             // each column could have its own distinct ontology in the future. at the moment we assume that
             // each pair of columns has a shared common ontology
-            logger.debug("integration columns: {}", getIntegrationColumns());
+            getLogger().debug("integration columns: {}", getIntegrationColumns());
 
             for (IntegrationColumn integrationColumn : getIntegrationColumns()) {
                 if (integrationColumn.isDisplayColumn()) {
@@ -128,13 +128,13 @@ public class WorkspaceController extends AuthenticationAware.Base {
                 // rehydrate all of the resources being passed in, we just had empty beans with ids
                 List<DataTableColumn> hydrated = getGenericService().loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class);
                 integrationColumn.setColumns(hydrated);
-                logger.info("hydrated columns {}", hydrated);
+                getLogger().info("hydrated columns {}", hydrated);
                 Ontology defaultOntology = null;
 
                 // for each DataTableColumn, grab the shared ontology if it exists; setup mappings
                 for (DataTableColumn column : hydrated) {
-                    logger.info("{} ({})", column, column.getDefaultOntology());
-                    logger.info("{} ({})", column, column.getDefaultCodingSheet());
+                    getLogger().info("{} ({})", column, column.getDefaultOntology());
+                    getLogger().info("{} ({})", column, column.getDefaultCodingSheet());
                     defaultOntology = column.getDefaultOntology();
                     if (defaultOntology != null) {
                         getLogger().debug("default ontology: {}", defaultOntology.getTitle());
@@ -144,8 +144,8 @@ public class WorkspaceController extends AuthenticationAware.Base {
                     getDataIntegrationService().updateMappedCodingRules(column);
                 }
             }
-            if (logger.isTraceEnabled()) {
-                logger.trace("intermediate: {}",
+            if (getLogger().isTraceEnabled()) {
+                getLogger().trace("intermediate: {}",
                         getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getGenericService().merge(getAuthenticatedUser())));
             }
         } catch (Exception e) {
@@ -168,7 +168,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
                     getGenericService().merge(getAuthenticatedUser()));
             logResourceModification(null, "display filtered results (payload: tableToDisplayColumns)", integrationContextXml);
         } catch (Exception e) {
-            logger.error("could not serialize to XML", e);
+            getLogger().error("could not serialize to XML", e);
         }
 
         try {
@@ -322,7 +322,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
         while (iterator.hasNext()) {
             IntegrationColumn column = iterator.next();
             if (column == null || column.getColumns().size() == 0) {
-                logger.debug("removing null column");
+                getLogger().debug("removing null column");
                 iterator.remove();
             }
         }

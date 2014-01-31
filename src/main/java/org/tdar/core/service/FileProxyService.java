@@ -30,7 +30,7 @@ import org.tdar.utils.HashQueue;
 public class FileProxyService {
 
     @Transient
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     PersonalFilestoreService filestoreService;

@@ -47,7 +47,7 @@ public class SchemaController extends TdarActionSupport {
             File file = xmlService.generateSchema();
             setInputStream(new FileInputStream(file));
         } catch (Exception e) {
-            logger.error("could not create schema", e);
+            getLogger().error("could not create schema", e);
             return ERROR;
         }
         return SUCCESS;

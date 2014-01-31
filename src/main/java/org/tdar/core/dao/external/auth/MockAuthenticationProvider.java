@@ -13,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
@@ -32,6 +34,7 @@ import org.tdar.core.service.EntityService;
  */
 @Service
 public class MockAuthenticationProvider extends BaseAuthenticationProvider {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<String, String> users = new ConcurrentHashMap<String, String>();
 

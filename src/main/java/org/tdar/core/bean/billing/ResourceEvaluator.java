@@ -38,7 +38,7 @@ public class ResourceEvaluator implements Serializable {
     private long resourcesUsed = 0;
     private long filesUsed = 0;
     private long spaceUsedInBytes = 0;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private Set<Long> resourceIds = new HashSet<Long>();
     private BillingActivityModel model;
 

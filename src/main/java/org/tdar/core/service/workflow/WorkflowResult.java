@@ -23,7 +23,7 @@ public class WorkflowResult implements Serializable {
     private List<ExceptionWrapper> exceptions = new ArrayList<>();
 
     @Transient
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private boolean success = true; // deliberately assume the happy case
 

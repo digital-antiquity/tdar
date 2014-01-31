@@ -52,7 +52,7 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
 
         handleUploadedFiles();
 
-        // logger.debug("{}", getFileProxies());
+        // getLogger().debug("{}", getFileProxies());
         resolvePostSaveAction(dataset);
         return SUCCESS;
     }

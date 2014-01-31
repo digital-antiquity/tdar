@@ -41,7 +41,7 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
     private Operator operator = Operator.AND;
 
     @Transient
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /*
      * trying to say either:

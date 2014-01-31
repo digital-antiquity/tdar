@@ -22,6 +22,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
@@ -29,6 +31,7 @@ import org.tdar.struts.action.DataIntegrationITCase;
 
 @Ignore
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String BONE_COMMON_NAME = "Bone Common name";
     private static final String MAIN_TABLE = "Main table";

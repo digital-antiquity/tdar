@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class PaginationHelperTest {
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     // return new ph and log the method/line that created it
     private PaginationHelper newPaginationHelper(int itemCount, int itemsPerPage, int visiblePages, int currentPage) {

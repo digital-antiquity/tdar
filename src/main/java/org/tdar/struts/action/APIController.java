@@ -70,7 +70,7 @@ public class APIController extends AuthenticationAware.Base {
     public final static String msg_ = "%s is %s %s (%s): %s";
 
     private void logMessage(String action_, Class<?> cls, Long id_, String name_) {
-        logger.info(String.format(msg_, getAuthenticatedUser().getEmail(), action_, cls.getSimpleName().toUpperCase(), id_, name_));
+        getLogger().info(String.format(msg_, getAuthenticatedUser().getEmail(), action_, cls.getSimpleName().toUpperCase(), id_, name_));
     }
 
     @Action(value = "view", results = {
@@ -99,10 +99,10 @@ public class APIController extends AuthenticationAware.Base {
         if (fileAccessRestriction == null) {
             // If there is an error setting this field in the OGNL layer this method is still called...
             // This check means that if there was such an error, then we are not going to default to a weaker access restriction.
-            logger.info("file access restrictions not set");
+            getLogger().info("file access restrictions not set");
             return errorResponse(StatusCode.BAD_REQUEST);
         } else if (StringUtils.isEmpty(getRecord())) {
-            logger.info("no record defined");
+            getLogger().info("no record defined");
             return errorResponse(StatusCode.BAD_REQUEST);
         }
         List<FileProxy> proxies = new ArrayList<>();
