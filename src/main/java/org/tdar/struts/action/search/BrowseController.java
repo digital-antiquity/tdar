@@ -3,7 +3,6 @@ package org.tdar.struts.action.search;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,16 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
@@ -40,7 +32,6 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
@@ -62,9 +53,6 @@ import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import freemarker.ext.dom.NodeModel;
 
@@ -197,7 +185,7 @@ public class BrowseController extends AbstractLookupController {
                     try {
                         getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(person));
                     } catch (Throwable e) {
-                        logger.error("problem communicating with crowd getting user info for {} ", creator, e);
+                        getLogger().error("problem communicating with crowd getting user info for {} ", creator, e);
                     }
                     getAccounts().addAll(
                             getAccountService().listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
@@ -205,7 +193,7 @@ public class BrowseController extends AbstractLookupController {
                 try {
                     setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
                 } catch (Exception e) {
-                    logger.error("error: {}", e);
+                    getLogger().error("error: {}", e);
                 }
 
             }
@@ -224,27 +212,27 @@ public class BrowseController extends AbstractLookupController {
                 } catch (SearchPaginationException spe) {
                     throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
                 } catch (TdarRecoverableRuntimeException tdre) {
-                    logger.warn("search parse exception: {}", tdre.getMessage());
+                    getLogger().warn("search parse exception: {}", tdre.getMessage());
                     addActionError(tdre.getMessage());
                 } catch (ParseException e) {
-                    logger.warn("search parse exception: {}", e.getMessage());
+                    getLogger().warn("search parse exception: {}", e.getMessage());
                 }
             }
             try {
                 File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + XML);
                 if (foafFile.exists()) {
-                    openCreatorInfoLog(foafFile);
+                    dom = getFileSystemResourceService().openCreatorInfoLog(foafFile);
                     getKeywords();
                     getCollaborators();
                     NamedNodeMap attributes = dom.getElementsByTagName("creatorInfoLog").item(0).getAttributes();
-                    logger.info("attributes: {}", attributes);
+                    getLogger().info("attributes: {}", attributes);
                     setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
                     setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));
                     setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));
                     setCreatorMean(Float.parseFloat(attributes.getNamedItem("creatorMean").getTextContent()));
                 }
             } catch (Exception e) {
-                logger.debug("{}", e);
+                getLogger().debug("{}", e);
             }
 
         }
@@ -438,7 +426,7 @@ public class BrowseController extends AbstractLookupController {
         if (collaborators != null) {
             return collaborators;
         }
-        collaborators = parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean());
+        collaborators = getFileSystemResourceService().parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(), dom);
         return collaborators;
     }
 
@@ -446,55 +434,10 @@ public class BrowseController extends AbstractLookupController {
         if (keywords != null) {
             return keywords;
         }
-        keywords = parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean());
+        keywords = getFileSystemResourceService().parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
         return keywords;
     }
 
-    public void openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
-        logger.info("opening {}", filename);
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        // use the factory to take an instance of the document builder
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        // parse using the builder to get the DOM mapping of the XML file
-        if (filename.exists()) {
-            dom = db.parse(filename);
-            xPathFactory = XPathFactory.newInstance();
-        }
-    }
-
-    private List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean) throws TdarActionException {
-        List<NodeModel> toReturn = new ArrayList<>();
-        if (dom == null || xPathFactory == null) {
-            return toReturn;
-        }
-        try {
-            // Create XPath object from XPathFactory
-            XPath xpath = xPathFactory.newXPath();
-            XPathExpression xPathExpr = xpath.compile(prefix);
-            NodeList nodes = (NodeList) xPathExpr.evaluate(dom, XPathConstants.NODESET);
-            logger.info("xpath returned: {}", nodes.getLength());
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Node node = nodes.item(i);
-                String name = node.getAttributes().getNamedItem("name").getTextContent();
-                Float count = Float.parseFloat(node.getAttributes().getNamedItem("count").getTextContent());
-                if (getSidebarValuesToShow() < toReturn.size()) {
-                    return toReturn;
-                }
-                if (limit || count < mean) {
-                    if (StringUtils.contains(name, GeographicKeyword.Level.COUNTRY.getLabel()) ||
-                            StringUtils.contains(name, GeographicKeyword.Level.CONTINENT.getLabel()) ||
-                            StringUtils.contains(name, GeographicKeyword.Level.FIPS_CODE.getLabel())) {
-                        continue;
-                    }
-                }
-
-                toReturn.add(NodeModel.wrap(nodes.item(i)));
-            }
-        } catch (Exception e) {
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, getText("browseController.parse_creator_log"), e);
-        }
-        return toReturn;
-    }
 
     public float getKeywordMedian() {
         return keywordMedian;

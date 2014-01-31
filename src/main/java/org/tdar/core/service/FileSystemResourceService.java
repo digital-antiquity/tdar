@@ -5,10 +5,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.dao.FileSystemResourceDao;
 import org.tdar.struts.action.TdarActionException;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import freemarker.ext.dom.NodeModel;
 
 /**
  * This Service provides support for getting resources off of the filesystem and
@@ -35,6 +41,14 @@ public class FileSystemResourceService {
 
     public List<String> parseWroXML(String prefix) throws TdarActionException {
         return fileSystemResourceDao.parseWroXML(prefix);
+    }
+
+    public Document openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
+        return fileSystemResourceDao.openCreatorInfoLog(filename);
+    }
+    
+    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) throws TdarActionException {
+        return fileSystemResourceDao.parseCreatorInfoLog(prefix, limit, mean, sidebarValuesToShow, dom);
     }
 
 }

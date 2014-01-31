@@ -136,7 +136,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      * 
      */
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient DownloadService downloadService;
@@ -537,7 +537,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     @Override
     public void addActionError(String message) {
-        logger.debug("ACTIONERROR:: {}", message);
+        getLogger().debug("ACTIONERROR:: {}", message);
         super.addActionError(message);
     }
 
@@ -562,6 +562,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return statisticService;
     }
 
+    public FileSystemResourceService getFileSystemResourceService() {
+        return filesystemResourceService;
+    }
+    
     protected HttpServletRequest getServletRequest() {
         return servletRequest;
     }
@@ -694,11 +698,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     public void reportAnyJavascriptErrors() {
         if (StringUtils.isBlank(javascriptErrorLog)) {
-            logger.trace("No javascript errors reported by the client");
+            getLogger().trace("No javascript errors reported by the client");
         } else {
             String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
-            if(logger.isErrorEnabled()) {
-                logger.error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length, StringUtils.join(errors, "\n\t - "));
+            if(getLogger().isErrorEnabled()) {
+                getLogger().error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length, StringUtils.join(errors, "\n\t - "));
             }
         }
 
@@ -709,7 +713,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             lines.add(line);
         }
         if(!lines.isEmpty()) {
-            logger.info("the client reported validation errors: \n {}", StringUtils.join(lines, "\n\t"));
+            getLogger().info("the client reported validation errors: \n {}", StringUtils.join(lines, "\n\t"));
         }
     }
 
