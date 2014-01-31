@@ -38,7 +38,7 @@
 		<jersey.version>1.18</jersey.version>
 		<jackson.version>2.3.0</jackson.version>
 		<slf4j.version>1.7.5</slf4j.version>
-		<http-components.version>4.3.1</http-components.version>
+		<http-components.version>4.3.2</http-components.version>
 		<display.port></display.port>
 		<warfile.name>ROOT</warfile.name>
 		<!-- Following points to the profile directory to use for filtering resources -->
@@ -132,6 +132,16 @@
 		<repository>
 			<id>Laughing Panda</id>
 			<url>http://maven.laughingpanda.org/maven2</url>
+		</repository>
+		<repository>
+			<id>dataone.org</id>
+			<url>http://dev-testing.dataone.org/maven</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
@@ -306,21 +316,34 @@
 		    <artifactId>crowd-integration-client-rest</artifactId>
 			<version>2.7.1</version>
 			<!--  LICENSE: APACHE 2.0 -->
-		</dependency>
-<!-- 
-		<dependency>
-			<groupId>com.atlassian.crowd</groupId>
-			<artifactId>crowd-api</artifactId>
-			<version>2.1.0</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>junit</artifactId>
-					<groupId>junit</groupId>
+					<artifactId>commons-httpclient</artifactId>
+					<groupId>commons-httpclient</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
-
- -->
+		<dependency>
+		   <groupId>org.dataone</groupId>
+		   <artifactId>d1_libclient_java</artifactId>
+		   <version>1.2.5</version>
+		   <type>jar</type>
+		   <!--  LICENSE: APACHE 2.0 -->
+		   <exclusions>
+		   	<exclusion>
+		   		<artifactId>httpclient</artifactId>
+		   		<groupId>org.apache.httpcomponents</groupId>
+		   	</exclusion>
+		   	<exclusion>
+		   		<artifactId>httpmime</artifactId>
+		   		<groupId>org.apache.httpcomponents</groupId>
+		   	</exclusion>
+		   	<exclusion>
+		   		<artifactId>httpcore</artifactId>
+		   		<groupId>org.apache.httpcomponents</groupId>
+		   	</exclusion>
+		   </exclusions>
+		</dependency>
  		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
@@ -343,6 +366,14 @@
 				</exclusion>
 				<exclusion>
 					<artifactId>httpclient</artifactId>
+					<groupId>org.apache.httpcomponents</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>httpmime</artifactId>
+					<groupId>org.apache.httpcomponents</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>httpcore</artifactId>
 					<groupId>org.apache.httpcomponents</groupId>
 				</exclusion>
 			</exclusions>
@@ -522,6 +553,10 @@
 			<exclusions>
 			<exclusion>
 				<artifactId>httpclient</artifactId>
+				<groupId>org.apache.httpcomponents</groupId>
+			</exclusion>
+			<exclusion>
+				<artifactId>httpmime</artifactId>
 				<groupId>org.apache.httpcomponents</groupId>
 			</exclusion>
 			</exclusions>

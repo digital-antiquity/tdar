@@ -46,7 +46,7 @@ public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestC
         assertTextPresentInCode("action-error");
         // we should be dumped back to the edit page with (at least) an error
         // message re: the blank coding rules
-        logger.info(getPageText());
+        logger.trace(getPageText());
         // assertTextPresent(ERROR_MESSAGE_BLANK_CODING_RULES);
         assertTrue("nothing to see here... everything works just fine.", true);
 
@@ -68,7 +68,7 @@ public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestC
 
         submitForm();
         // we should be on the INPUT page.
-        logger.debug("\n\n\n\n {} \n\n\n", getPageBodyCode());
+        logger.trace("\n\n\n\n {} \n\n\n", getPageBodyCode());
         assertTrue("expecting to still be on INPUT page.  actual page is " + htmlPage.getUrl(), htmlPage.getUrl().toString().contains("save.action"));
         assertNoErrorTextPresent();
     }
