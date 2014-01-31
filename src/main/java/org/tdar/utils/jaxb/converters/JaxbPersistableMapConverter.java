@@ -20,7 +20,7 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
     public final static class PersistableMapAdapter<K extends Persistable, V> {
 
         @XmlElement
-        protected List<PersistableMapEntry<K, V>> key = new LinkedList<PersistableMapEntry<K, V>>();
+        private List<PersistableMapEntry<K, V>> key = new LinkedList<PersistableMapEntry<K, V>>();
 
         @SuppressWarnings("unused")
         private PersistableMapAdapter() {
@@ -28,30 +28,53 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
 
         public PersistableMapAdapter(Map<K, V> original) {
             for (Map.Entry<K, V> entry : original.entrySet()) {
-                key.add(new PersistableMapEntry<K, V>(entry));
+                getKey().add(new PersistableMapEntry<K, V>(entry));
             }
+        }
+
+        public List<PersistableMapEntry<K, V>> getKey() {
+            return key;
+        }
+
+        public void setKey(List<PersistableMapEntry<K, V>> key) {
+            this.key = key;
         }
 
     }
 
-    // @XmlType
     @XmlRootElement
     public final static class PersistableMapEntry<K extends Persistable, V> {
 
         @XmlElement
         @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-        protected K key;
+        private  K key;
 
         @XmlElement
-        protected V value;
+        private V value;
 
         @SuppressWarnings("unused")
         private PersistableMapEntry() {
         }
 
         public PersistableMapEntry(Map.Entry<K, V> original) {
-            key = original.getKey();
-            value = original.getValue();
+            setKey(original.getKey());
+            setValue(original.getValue());
+        }
+
+        public V getValue() {
+            return value;
+        }
+
+        public void setValue(V value) {
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public void setKey(K key) {
+            this.key = key;
         }
 
     }
