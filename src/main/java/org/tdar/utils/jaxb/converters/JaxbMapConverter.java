@@ -25,16 +25,8 @@ public class JaxbMapConverter<K, V>
 
         public SimpleMapAdapter(Map<K, V> original) {
             for (Map.Entry<K, V> entry : original.entrySet()) {
-                getKey().add(new SimpleMapEntry<K, V>(entry));
+                key.add(new SimpleMapEntry<K, V>(entry));
             }
-        }
-
-        public List<SimpleMapEntry<K, V>> getKey() {
-            return key;
-        }
-
-        public void setKey(List<SimpleMapEntry<K, V>> key) {
-            this.key = key;
         }
 
     }
@@ -56,22 +48,6 @@ public class JaxbMapConverter<K, V>
         public SimpleMapEntry(Map.Entry<K, V> original) {
             key = original.getKey();
             value = original.getValue();
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-        public void setKey(K key) {
-            this.key = key;
-        }
-
-        public V getValue() {
-            return value;
-        }
-
-        public void setValue(V value) {
-            this.value = value;
         }
 
     }

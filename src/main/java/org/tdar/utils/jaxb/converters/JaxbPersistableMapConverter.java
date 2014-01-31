@@ -28,16 +28,8 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
 
         public PersistableMapAdapter(Map<K, V> original) {
             for (Map.Entry<K, V> entry : original.entrySet()) {
-                getKey().add(new PersistableMapEntry<K, V>(entry));
+                key.add(new PersistableMapEntry<K, V>(entry));
             }
-        }
-
-        public List<PersistableMapEntry<K, V>> getKey() {
-            return key;
-        }
-
-        public void setKey(List<PersistableMapEntry<K, V>> key) {
-            this.key = key;
         }
 
     }
@@ -57,24 +49,8 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
         }
 
         public PersistableMapEntry(Map.Entry<K, V> original) {
-            setKey(original.getKey());
-            setValue(original.getValue());
-        }
-
-        public V getValue() {
-            return value;
-        }
-
-        public void setValue(V value) {
-            this.value = value;
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-        public void setKey(K key) {
-            this.key = key;
+            key = original.getKey();
+            value = original.getValue();
         }
 
     }
