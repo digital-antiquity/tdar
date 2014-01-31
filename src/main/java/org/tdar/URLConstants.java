@@ -12,14 +12,14 @@ package org.tdar;
  */
 public interface URLConstants {
 
-    final String HOME = "/";
-    final String DASHBOARD = "/dashboard";
-    final String WORKSPACE = "/workspace/list";
-    final String ADMIN = "/admin/internal";
-    final String PAGE_NOT_FOUND = "/page-not-found";
-    final String BOOKMARKS = DASHBOARD + "#bookmarks";
-    final String ENTITY_NAMESPACE = "browse/creators";
-    final String CART_ADD = "/cart/add";
-    final String COLUMNS_RESOURCE_ID = "columns?id=${resource.id}";
-    final String VIEW_RESOURCE_ID = "view?id=${resource.id}";
+    String HOME = "/";
+    String DASHBOARD = "/dashboard";
+    String WORKSPACE = "/workspace/list";
+    String ADMIN = "/admin/internal";
+    String PAGE_NOT_FOUND = "/page-not-found";
+    String BOOKMARKS = DASHBOARD + "#bookmarks";
+    String ENTITY_NAMESPACE = "browse/creators";
+    String CART_ADD = "/cart/add";
+    String COLUMNS_RESOURCE_ID = "columns?id=${resource.id}";
+    String VIEW_RESOURCE_ID = "view?id=${resource.id}";
 }

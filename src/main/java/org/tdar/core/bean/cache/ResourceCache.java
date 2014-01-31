@@ -10,11 +10,11 @@ import org.tdar.core.bean.HasLabel;
  */
 public interface ResourceCache<R> extends HasLabel {
 
-    public Long getCount();
+    Long getCount();
 
-    public R getKey();
+    R getKey();
 
-    public Double getLogCount();
+    Double getLogCount();
 
-    public String getCssId();
+    String getCssId();
 }
