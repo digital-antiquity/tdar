@@ -133,6 +133,7 @@
 			<id>Laughing Panda</id>
 			<url>http://maven.laughingpanda.org/maven2</url>
 		</repository>
+<!-- 
 		<repository>
 			<id>dataone.org</id>
 			<url>http://dev-testing.dataone.org/maven</url>
@@ -143,7 +144,8 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-	</repositories>
+ -->
+ 	</repositories>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.tdar</groupId>
@@ -323,12 +325,13 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+<!-- 
 		<dependency>
 		   <groupId>org.dataone</groupId>
 		   <artifactId>d1_libclient_java</artifactId>
 		   <version>1.2.5</version>
 		   <type>jar</type>
-		   <!--  LICENSE: APACHE 2.0 -->
+		   <!-  LICENSE: APACHE 2.0 ->
 		   <exclusions>
 		   	<exclusion>
 		   		<artifactId>httpclient</artifactId>
@@ -344,7 +347,7 @@
 		   	</exclusion>
 		   </exclusions>
 		</dependency>
- 		<dependency>
+ --> 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
 			<version>2.0.2</version>
