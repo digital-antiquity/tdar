@@ -984,16 +984,25 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         urls.add(SEARCH_RESULTS_BASE_URL
                 + "/search/advanced?__multiselect_groups%5B0%5D.approvedSiteTypeIdLists%5B0%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLatitude=&groups%5B0%5D.operator=AND&groups%5B0%5D.fieldTypes%5B2%5D=KEYWORD_CULTURAL&sortField=RELEVANCE&__multiselect_groups%5B0%5D.approvedCultureKeywordIdLists%5B1%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLongitude=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLongitude=&groups%5B0%5D.approvedSiteTypeIdLists%5B0%5D=272&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLatitude=&groups%5B0%5D.fieldTypes%5B0%5D=KEYWORD_SITE&groups%5B0%5D.approvedCultureKeywordIdLists%5B1%5D=4");
 
-        List<String> errors = new ArrayList<String>();
+        List<String> empty = new ArrayList<String>();
+        List<String> useless = new ArrayList<String>();
         for (String url : urls) {
             gotoPage(url);
             if (!getPageCode().contains(" is greater than total number of results")) {
-                errors.add(url);
+                empty.add(url);
             }
+
+            if (getPageCode().contains(" is greater than total number of results")) {
+                useless.add(url);
+            }
+
             assertNoErrorTextPresent();
         }
-        for (String url : errors) {
-            logger.warn("URL NOT VALID: {}", url);
+        for (String url : empty) {
+            logger.warn("SEARCH EMPTY: {}", url);
+        }
+        for (String url : useless) {
+            logger.warn("RESULTS REQUEST TOO HIGH: {}", url);
         }
     }
 
