@@ -15,7 +15,7 @@ public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         int status = gotoPageWithoutErrorCheck(url);
         Assert.assertEquals("http result should be 200 OK", HttpServletResponse.SC_OK, status);
         String json = getPageCode();
-        logger.error("json is:{}", json);
+        logger.trace("json is:{}", json);
         JSONObject jso = JSONObject.fromObject(json);
         Assert.assertNotNull("expecting parseable json", jso);
         JSONArray jarr = jso.getJSONArray(resultField);
@@ -57,17 +57,18 @@ public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertJsonResult("/lookup/keyword?minLookupLength=0", "items");
     }
 
-    // @Test
-    // public void testValidCollectionLookup() {
-    // //TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
-    // assertJsonResult("/lookup/collection?minLookupLength=0", "collections", 0);
-    // }
-    //
-    // @Test
-    // public void testValidAnnotationKeyLookup() {
-    // //TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
-    // assertJsonResult("/lookup/annotationkey?minLookupLength=0", "items", 0);
-    // }
-    //
+     @Test
+     public void testValidCollectionLookup() {
+     //TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
+     assertJsonResult("/lookup/collection?minLookupLength=0", "collections", 0);
+     }
+    
+     @Test
+     public void testValidAnnotationKeyLookup() {
+     //TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
+     assertJsonResult("/lookup/annotationkey?minLookupLength=0", "items", 0);
+     
+     }
+    
 
 }
