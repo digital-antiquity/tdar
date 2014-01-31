@@ -56,7 +56,7 @@ $(document).ready(function() {
 
 <#-- emit a toolbar for use on a resource view page
   @param namespace:string prefix of the action urls for the buttons on the toolbar (e.g. "dataset" becomes "dataset/delete"
-  @param current:string value of the action of the page being rendered
+  @param current:string? value of the action of the page being rendered
   @requires resource.id:Long a non-transient resource ID
   @requires resource.resourceType:string
   @requires sessionData:SessionData the current authenticated session
@@ -105,6 +105,13 @@ $(document).ready(function() {
   </#if>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove: rarely used -->
+<#-- emit toolbar for use on a "creator" page
+    @param current:string name of the current struts action (e.g. edit/view/save)
+    @requires creator.creatorType:string either "institution" or "person"
+    @requires sessionData:SessionData
+    @requires authenticatedUser:Person
+ -->
 <#macro creatorToolbar current>
 
     <#if editor || authenticatedUser?? && id == authenticatedUser.id>
@@ -130,10 +137,19 @@ $(document).ready(function() {
   </#if>
 </#macro>
 
+<#-- Emit a link to a page which corresponds  specified namespace and action and resourceId.  For example, <@makeLink "coding-sheet" "add">
+    will emit <a href="http://{hostname}/coding-sheet/add">{label}</a>.
 
+    If the specified URL is the same location of the current request,  this macro emits a text label instead of a link.
 
-
-<#macro makeLink namespace=namespace action=action label=label name=name  current=false includeResourceId=true disabled=false  extraClass="">
+    Most arguments to this macro (namespace/action/label) are technically optional, however, their default values are
+    are identifiers of the same name that must be defined at the time that freemarker renders this macro.
+    @param namespace:string? struts namespace name
+    @param action:string? struts action name
+    @param label:string? text to display for the link
+    @param current:string? struts action name of the current page.
+ -->
+<#macro makeLink namespace=namespace action=action label=label name=name  current="" includeResourceId=true disabled=false  extraClass="">
     <#assign state = "" />
     <#if disabled>
         <#assign state="disabled" />
@@ -168,10 +184,12 @@ $(document).ready(function() {
     </li>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove: rarely used -->
 <#macro makeEditLink namespace current url="edit" label="edit">
     <@makeLink namespace url label "edit" current />
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove: rarely used -->
 <#macro makeDeleteLink namespace current url="delete" label="delete">
     <#if persistable.status?? && persistable.status.toString().toLowerCase().equals('deleted')>
       <@makeLink namespace url label "delete" current true true />
@@ -180,21 +198,19 @@ $(document).ready(function() {
     </#if>
 </#macro>
 
+<#-- FIXME: FTLREFACTOR remove: rarely used -->
 <#macro makeViewLink namespace current url="view" label="view">
     <@makeLink namespace url label "view" current />
 </#macro>
 
-<#macro img url alt="">
-<img src='<@s.url value="${url}" />' <#t>
-    <#if alt != ""> alt='${alt}'<#else>alt='toolbar image'</#if> <#t>
- />
-</#macro>
 
-
+<#-- emit "delete" button for use with repeatable form field rows -->
 <#macro clearDeleteButton id="" disabled=false title="delete this item from the list">
     <button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i class="icon-trash"></i></button>
 </#macro>
 
+<#-- emit the URL associated with the current form. The URL always includes the scheme & host,  if the application uses a nonstandard
+ port for the current scheme  (e.g. the https port is not 443),  the URL include scheme, host, and port -->
 <#macro getFormUrl absolutePath="/login/process">
 <#compress>
 <#-- NOTE: as Jim says, this can be done insetad with an @s.url scheme="https|http", but with tDAR running on so-many ports 
