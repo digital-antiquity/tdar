@@ -67,9 +67,9 @@ import javax.xml.bind.annotation.XmlType;
 public class SearchResults {
 
     @XmlElement(required = true)
-    private SearchResults.Meta meta;
+    protected SearchResults.Meta meta;
     @XmlElement(required = true)
-    private SearchResults.Results results;
+    protected SearchResults.Results results;
 
     /**
      * Gets the value of the meta property.
@@ -153,13 +153,13 @@ public class SearchResults {
     public static class Meta {
 
         @XmlElement(required = true)
-        private String sessionID;
+        protected String sessionID;
         @XmlElement(required = true)
-        private String providerName;
-        private int totalRecords;
-        private int recordsReturned;
-        private int firstRecord;
-        private int lastRecord;
+        protected String providerName;
+        protected int totalRecords;
+        protected int recordsReturned;
+        protected int firstRecord;
+        protected int lastRecord;
 
         /**
          * Gets the value of the sessionID property.
@@ -302,11 +302,11 @@ public class SearchResults {
     })
     public static class Results {
 
-        private boolean containsIntegratableData;
+        protected boolean containsIntegratableData;
         @XmlElement(required = true)
-        private String integratableDatasetUrl;
+        protected String integratableDatasetUrl;
         @XmlElement(required = true)
-        private List<ResultType> result;
+        protected List<ResultType> result;
 
         /**
          * Gets the value of the containsIntegratableData property.

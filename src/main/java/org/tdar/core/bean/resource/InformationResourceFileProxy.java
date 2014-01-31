@@ -16,8 +16,7 @@ import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.annotations.Subselect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +75,7 @@ public class InformationResourceFileProxy implements Serializable {
     private Integer latestVersion = 0;
 
     @OneToMany()
-    @Sort(type = SortType.NATURAL)
+    @SortNatural
     @JoinColumn(name="information_resource_file_id")
     private List<InformationResourceFileVersionProxy> informationResourceFileVersionProxies = new ArrayList<InformationResourceFileVersionProxy>();
 

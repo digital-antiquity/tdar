@@ -114,6 +114,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return (List<Resource>) query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<ResourceCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
         if (Persistable.Base.isTransient(user)) {
             return Collections.EMPTY_LIST;
