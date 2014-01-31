@@ -282,7 +282,7 @@ public interface Persistable extends Serializable {
 
         public static boolean isTransient(Persistable persistable) {
             // object==primative only works for certain primative values (see http://stackoverflow.com/a/3815760/103814)
-            return persistable.getId() == null || isNullOrTransient(persistable.getId());
+            return persistable == null || isNullOrTransient(persistable.getId());
         }
 
         public static boolean isNullOrTransient(Persistable persistable) {
