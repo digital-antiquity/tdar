@@ -4,60 +4,46 @@
 <#assign DEFAULT_SORT = 'RELEVANCE' />
 <#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
 
-	<#-- this macro prints a html tag with or without a closing -->
-    <#macro printTag tagName className closing>
-        <#if tagName?has_content>
-            <<#if closing>/</#if>${tagName} class="${className}" <#nested><#rt/>>
-        </#if>
-    </#macro>
-
-	<#-- special header for the grid layout -->
-    <#macro printGridHeader orientation listTag_>
-        <#if isGridLayout>
-            <div class='resource-list row ${orientation}'>
-        <#else>
-            <@printTag listTag_ "resource-list ${orientation}" false />
-        </#if>
-    </#macro>
-
-	<#-- divider between the sections of results -->
-	<#macro printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation>
-        <#if itemTag_?lower_case != 'li'>
-        	<#-- if not first result -->
-            <#if !first>
-                <#if (!isGridLayout)>
-                    <hr/>
-                <#elseif rowCount % itemsPerRow == 0>
-                    </div>    </div><hr /><div class=" ${orientation} resource-list row"><div class="span2">
-                </#if>
+<#-- FIXME: FTLREFACTOR remove: rarely used -->
+<#-- divider between the sections of results -->
+<#macro _printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation>
+    <#if itemTag_?lower_case != 'li'>
+        <#-- if not first result -->
+        <#if !first>
+            <#if (!isGridLayout)>
+                <hr/>
+            <#elseif rowCount % itemsPerRow == 0>
+                </div>    </div><hr /><div class=" ${orientation} resource-list row"><div class="span2">
             </#if>
         </#if>
-	</#macro>
+    </#if>
+</#macro>
 
-	<#-- add the lat-long data attributes for the map -->
-	<#macro addLatLongDataAttributes orientation resource>
-				<#if orientation == 'MAP' && resource.latLongVisible >
-	            data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
-	            data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
-	</#macro>
+<#-- FIXME: FTLREFACTOR remove: rarely used -->
+<#-- add the lat-long data attributes for the map -->
+<#macro _addLatLongDataAttributes orientation resource>
+            <#if orientation == 'MAP' && resource.latLongVisible >
+            data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
+            data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
+</#macro>
 
-<#--fixme:  with at least three presentation style (list/grid/map/custom), this macro has become *extremely* hard to modify, 
-    let alone comprehend. Consider replacing w/ @listResources, @listResourcesMap, and @listResourcesGrid -->
+<#-- emit a list of resource summary information (e.g. for a a search results page, or a resource collection view page
+    @param resourcelist:list<Persistable> List of Resources or Collections. Required.
+    @param sortField:SortOption?  sort value.  Note, this macro does sort the provided list.  Instead, it uses sortOption as
+            a hint that governs how the macro formats the list header and list items. Default: "relevance"
+    @param itemsPerRow:number? how many items to show per row in "GRID" orientation
+    @param listTag:string? by default wrap all resources in a (<ul/> for lists; <div/> for grid; <ol/> for map), alternately, you can change this to something else
+    @param itemTag:string? by default wrap each item in a (<li/> for lists and map; <div/> for grid), alternately, specify something
+    @param headerTag:string? if the search results is sorted in some manner wrap the header in a <h3/>, the tag to use for the header
+    @param titleTag:string? the tag to wrap the resource title in, default <h3/>
+    @param orientation:string the default orientation for the results (LIST_FULL,  LIST, GRID, MAP). Default: "LIST_FULL"
+    @param mapPositon: where to show the map in relation to the result list
+    @param mapHeight: how high the map should be
+-->
 <#macro listResources resourcelist sortfield=DEFAULT_SORT itemsPerRow=4
     listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
 	
-	<#-- parameters:
-		sortField: how to sort the results
-		itemsPerRow: how many items to show per row in "GRID" orientation
-		listTag: by default wrap all resources in a (<ul/> for lists; <div/> for grid; <ol/> for map), alternately, you can change this to something else
-		itemTag: by default wrap each item in a (<li/> for lists and map; <div/> for grid), alternately, specify something
-		headerTag: if the search results is sorted in some manner wrap the header in a <h3/>, the tag to use for the header
-		titleTag: the tag to wrap the resource title in, default <h3/>
-		orientation: the default orientation for the results (Title List,  List, Grid, Map)
-		mapPositon: where to show the map in relation to the result list
-		mapHeight: how high the map should be
-	-->
-	
+
   <#local showProject = false />
   <#global prev =""/>
   <#global first = true/>
@@ -97,28 +83,28 @@
        <#local rowCount= rowCount+1 />
 
 		<#-- list headers are displayed when sorting by specific fields ResourceType and Project -->
-		<@printListHeaders sortfield first resource headerTag orientation listTag_ />	   
+		<@_printListHeaders sortfield first resource headerTag orientation listTag_ />
 
         <#-- printing item tag start / -->
-        <@printTag itemTag_ "listItem ${itemClass!''}" false>
-			<@addLatLongDataAttributes orientation resource />
+        <@_printTag itemTag_ "listItem ${itemClass!''}" false>
+			<@_addLatLongDataAttributes orientation resource />
 			id="resource-${resource.id?c}"
-        </@printTag>
+        </@_printTag>
 
 		<#-- if we're at a new row; close the above tag and re-open it (bug) -->
-		<@printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation />
+		<@_printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation />
 
 		<#-- add grid thumbnail -->
-		<@addGridThumbnail resource />
+		<@_addGridThumbnail resource />
 		
 		<#-- add the title -->
         <@searchResultTitleSection resource titleTag />
 
         <#-- if in debug add lucene description to explain relevancy -->
-        <@printLuceneExplanation  resource />
+        <@_printLuceneExplanation  resource />
 
         <#-- print resource's description -->
-        <@printDescription resource=resource orientation=orientation length=500 showProject=showProject/>
+        <@_printDescription resource=resource orientation=orientation length=500 showProject=showProject/>
 
 		<#-- close item tag -->
         </${itemTag_}>
@@ -132,11 +118,11 @@
     </#if>
   </#if>
   
-  <@addMapFooter orientation mapPosition mapHeight />
+  <@_addMapFooter orientation mapPosition mapHeight />
 </#macro>
 
 
-<#macro printListHeaders sortfield first resource=null headerTag="" orientation='LIST' listTag_='li'>	   
+<#macro _printListHeaders sortfield first resource=null headerTag="" orientation='LIST' listTag_='li'>
     <#-- handle grouping/sorting with indentation -->
     <#-- special sorting for RESOURCE_TYPE and PROJECT to group lists by these; sort key stored in "key" -->
     <#if (sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')) && resource.resourceType?has_content>
@@ -157,16 +143,35 @@
             <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
 
 			<#-- if we're a grid, then reset rows -->
-			<@printGridHeader orientation listTag_ />
+			<@_printGridHeader orientation listTag_ />
         </#if>
         <#assign prev=key />
     <#elseif first>
         <#-- default case for group tag -->
-		<@printGridHeader orientation listTag_ />
+		<@_printGridHeader orientation listTag_ />
     </#if>  
 </#macro>
 
-<#macro addMapFooter orientation mapPosition mapHeight  >
+<#-- FIXME: FTLREFACTOR remove: rarely used (jtd: I think it'll work better to emit the tag explicitly than call out to a macro) -->
+<#-- this macro prints a html tag with or without a closing -->
+<#macro _printTag tagName className closing>
+    <#if tagName?has_content>
+            <<#if closing>/</#if>${tagName} class="${className}" <#nested><#rt/>>
+    </#if>
+</#macro>
+
+<#-- FIXME: FTLREFACTOR remove: rarely used -->
+<#-- special header for the grid layout -->
+<#macro _printGridHeader orientation listTag_>
+    <#if isGridLayout>
+    <div class='resource-list row ${orientation}'>
+    <#else>
+        <@_printTag listTag_ "resource-list ${orientation}" false />
+    </#if>
+</#macro>
+
+<#-- FIXME: FTLREFACTOR remove: rarely used (jtd: I think it'll work better to emit the tag explicitly than call out to a macro) -->
+<#macro _addMapFooter orientation mapPosition mapHeight  >
 	  <#if orientation == "MAP">
 	  </div>
 	      <#if mapPosition=="left" || mapPosition == "bottom">
@@ -183,9 +188,8 @@
 	  </#if>
 </#macro>
 
-
-
-<#macro addGridThumbnail resource>
+<#-- FIXME: FTLREFACTOR remove: rarely used  -->
+<#macro _addGridThumbnail resource>
 	<#if isGridLayout>
 	    <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><#t>
 	            <@view.firstThumbnail resource /><#t>
@@ -194,7 +198,7 @@
 </#macro>
 
 
-<#macro printDescription resource=resource orientation=DEFAULT_ORIENTATION length=80 showProject=false>
+<#macro _printDescription resource=resource orientation=DEFAULT_ORIENTATION length=80 showProject=false>
 	<#if resource?has_content>
 		<#local _desc = "Description not available"/>
 		<#if (resource.description)?has_content >
@@ -213,7 +217,7 @@
 	            <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
 		            <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
 	            </#if>
-	            <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
+	            <@common.cartouche resource true><@_listCreators resource/></@common.cartouche>
 	            <@view.unapiLink resource  />
 	            <#if showProject && !resource.resourceType.project >
 		            <p class="project">${resource.project.title}</p>
@@ -227,20 +231,26 @@
 	</#if>
 </#macro>
 
-    <#macro printLuceneExplanation resource>
-            <#if resource.explanation?has_content>
-            <blockquote class="luceneExplanation">
-                <b>explanation:</b>${resource.explanation}<br/>
-            </blockquote>
-            </#if>
-			<#if resource.score?has_content>
-            <blockquote class="luceneScore">
-                <b>score:</b>${resource.score}<br/>
-            </blockquote>
-			</#if>
-    </#macro>
+<#--emit the lucene score for the specified resource for the current search -->
+<#macro _printLuceneExplanation resource>
+        <#if resource.explanation?has_content>
+        <blockquote class="luceneExplanation">
+            <b>explanation:</b>${resource.explanation}<br/>
+        </blockquote>
+        </#if>
+        <#if resource.score?has_content>
+        <blockquote class="luceneScore">
+            <b>score:</b>${resource.score}<br/>
+        </blockquote>
+        </#if>
+</#macro>
 
 
+<#--emit the title section of the resource (as part of a list of search results), including title, status indicator,
+bookmark indicator, etc..
+    @param result:Peristable the resource/collection
+    @param titleTag:String  name of the html tag that will wrap the actual resource title (e.g. "li", "div", "td")
+ -->
 <#macro searchResultTitleSection result titleTag >
     <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
     <#if titleTag?has_content>
@@ -263,8 +273,8 @@
     </#if>
 </#macro>
 
-
-<#macro listCreators resource_>
+<#--list the author/editor/creators of a resource - part of the summary information included in a a search result item -->
+<#macro _listCreators resource_>
      <#assign showSubmitter=true/>
      <#if resource_.primaryCreators?has_content>
       <span class="authors">
@@ -295,6 +305,21 @@
         </span>
     </#if>
 </#macro>
+
+<#--
+    Emit the bookmark indicator for a resource.
+
+    As the name implies,  the bookmark indicator indicates whether a resource is "bookmarked". It is represented as a
+    star-shaped icon and should typically be presented alongside the resource title.
+
+    More importantly, the bookmark indicator is also a toggle button, and serves as the means for the user to add and
+    remove items from the user's bookmarked items list.
+
+    Bookmarked items will appear on the tDAR dashboard page (/dashboard). Bookmarked datasets also appear on the
+    integration workspace start page (/workspace/list-tables).
+
+    @param _resource:Resource a resource object
+-->
 
 <#macro bookmark _resource showLabel=true useListItem=false>
   <#if sessionData?? && sessionData.authenticated>
