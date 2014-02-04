@@ -782,10 +782,6 @@ ${_date?string('MM/dd/yyyy')}<#t>
     </#if>
 </#macro>
 
-<#macro linkToResource resource title target='resourcedetail'>
-<a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="${target}" >${title}</a>
-</#macro>
-
 <#macro resourceCollectionTable removeable=false tbid="tblCollectionResources">
     <table class="table table-condensed table-hover" id="${tbid}">
         <colgroup>
@@ -797,23 +793,14 @@ ${_date?string('MM/dd/yyyy')}<#t>
             <tr>
                 <th style="width: 4em">ID</th>
                 <th <#if removeable>colspan="2"</#if>>Name</th>
-                
             </tr>
         </thead>
         <tbody>
             <#list resources as resource>
                 <tr id='dataTableRow_${resource.id?c}'>
                     <td>${resource.id?c}</td>
-                    <td>
-                        <@linkToResource resource resource.title!'<em>(no title)</em>' /> <#if !resource.active>[${resource.status.label}]</#if>
-                    </td>
-                    <#if removeable>
-                    <td>
-                    <button class="btn btn-mini remove-row"
-                                type="button" tabindex="-1" 
-                                data-resourceid="${resource.id?c}"><i class="icon-trash"></i></button></td>
-                    </#if>
-                </tr>
+                    <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="_blank" >${(resource.title)!""}</a></td>
+                    <#if removeable><td><button class="btn btn-mini remove-row" type="button" tabindex="-1" data-resourceid="${resource.id?c}"><i class="icon-trash"></i></button></td></#if></tr>
             </#list>
         </tbody>
     </table>

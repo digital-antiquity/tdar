@@ -14,6 +14,7 @@
 
 </head>
 <body>
+<#compress>
 
     <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen"  data-offset-top="250" data-spy="affix" >
       <div class="">
@@ -136,10 +137,10 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 
     <div id="divSelectedResources">
     <#list resources as resource>
-        <input type="hidden" name="resources.id" value="${resource.id?c}" id="hdnResourceId${resource.id?c}" />
+        <input type="hidden" name="resources.id" value="${resource.id?c}" id="hdnResourceId${resource.id?c}">
     </#list>
     </div>
-</div>    
+</div>
 
 <div class="glide" >
     <h2>Selected Resources</h2>
@@ -174,5 +175,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 </script>
 </#noescape>
 <@edit.personAutocompleteTemplate />
+</#compress>
+
 </body>
 </#escape>
