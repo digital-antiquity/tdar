@@ -1153,12 +1153,17 @@
             <artifactId>wro4j-core</artifactId>
             <version>${wro4j.version}</version>
         </dependency>
-<!--         <dependency>
-            <groupId>ro.isdc.wro4j</groupId>
-            <artifactId>wro4j-extensions</artifactId>
-            <version>${wro4j.version}</version>
+        <dependency>
+            <groupId>com.yahoo.platform.yui</groupId>
+            <artifactId>yuicompressor</artifactId>
+            <version>2.4.6</version>
         </dependency>
- -->	</dependencies>
+        <!--         <dependency>
+                    <groupId>ro.isdc.wro4j</groupId>
+                    <artifactId>wro4j-extensions</artifactId>
+                    <version>${wro4j.version}</version>
+                </dependency>
+         -->	</dependencies>
 
 	<reporting>
 		<plugins>
@@ -1185,6 +1190,8 @@
 					<configLocation>src/main/resources/check_style.xml</configLocation>
 				</configuration>
 			</plugin>
+
+
 <!-- 
 			 <plugin>
                 <groupId>org.nanoko.coffee-mill</groupId>
@@ -2409,6 +2416,48 @@
 				</plugins>
 			</build>
 		</profile>
+
+        <profile>
+            <id>jsprofile</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.cj.jshintmojo</groupId>
+                    <artifactId>jshint-maven-plugin</artifactId>
+                    <version>1.3.0</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.cj.jshintmojo</groupId>
+                        <artifactId>jshint-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>lint</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <version>2.4.1</version>
+                            <!--<options>maxparams:3,indent,camelcase,eqeqeq,forin,immed,latedef,noarg,noempty,nonew</options>-->
+                            <!--<globals>require,$,yourFunkyJavascriptModule</globals>-->
+                            <configFile>src/main/resources/jshint.conf.json</configFile>
+                            <directories>
+                                <directory>src/main/webapp/js</directory>
+                            </directories>
+                            <excludes>
+                                <exclude>src/main/webapp/hackyScript.js</exclude>
+                                <exclude>src/main/webapp/myDirectoryForThirdyPartyStuff</exclude>
+                            </excludes>
+                            <reporter>jslint</reporter>
+                            <reportFile>target/jshint.xml</reportFile>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 	</profiles>
 
 	<scm>

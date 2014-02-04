@@ -1,0 +1,29 @@
+/**
+ *
+ * Documentation for official jsHint tool:
+ * - http://www.jshint.com/docs/
+ *
+ * For more information on jshint options:
+ * - http://www.jshint.com/docs/options/
+ *
+ * Note: jshint-maven-plugin v1.3.0  uses jsHint v2.4.1
+ */
+{
+    "maxparams": 3,
+    "indent": true,
+    "camelcase": true,
+    "eqeqeq": true,
+    "forin": true,
+    "immed": true,
+    "latedef": true,
+    "noarg": true,
+    "noempty": true,
+    "nonew": true,
+
+    //Note: you can also declare globals with inline directives (see docs)
+    "globals": {
+        "TDAR": false,
+        "$": false,
+        "yourFunkyJavascriptModule": false
+    }
+}
