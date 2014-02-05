@@ -1184,7 +1184,7 @@
 				<version>2.11</version>
 				<configuration>
 					<enableRSS>false</enableRSS>
-					<includes>org/tdar/**/*.java</includes>
+					<includes>**\/*.java</includes>
 					<enableRulesSummary>true</enableRulesSummary>
 					<sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
 					<configLocation>src/main/resources/check_style.xml</configLocation>
@@ -1894,9 +1894,10 @@
 				<version>2.11</version>
 				<configuration>
 					<enableRSS>false</enableRSS>
-					<includes>org/tdar/*.java</includes>
+					<includes>**\/*.java</includes>
 					<enableRulesSummary>true</enableRulesSummary>
 					<configLocation>src/main/resources/check_style.xml</configLocation>
+                    <consoleOutput>true</consoleOutput>
 				</configuration>
 			</plugin>
 			<plugin>
