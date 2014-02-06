@@ -28,6 +28,10 @@ libpeerconnection.log
 
 .externalToolBuilders\org.eclipse.wst.jsdt.core.javascriptValidator.launch
 import.log
+
+*.sublime-workspace
+*.sublime-project
+
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 
