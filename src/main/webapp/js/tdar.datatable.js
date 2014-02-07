@@ -396,7 +396,7 @@ TDAR.datatable = function () {
      */
     function _rowUnselected(obj) {
         console.log('removing selected reosurce:' + obj.id);
-        $('#hdnResourceId' + obj.id).remove();
+        $('#hr' + obj.id).remove();
 
         var $row = $('#dataTableRow_' + obj.id);
         var $table = $row.closest('table');
