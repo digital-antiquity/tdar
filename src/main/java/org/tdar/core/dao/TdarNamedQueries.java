@@ -117,6 +117,7 @@ public interface TdarNamedQueries {
     String COLLECTION_LIST_WITH_AUTHUSER = "collection.idlest.with.authuser";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited" ;
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted" ;
+    String QUERY_SPARSE_COLLECTION_RESOURCES = "query.sparse.collection.resources";
     // raw SQL/HQL queries
 
     /**

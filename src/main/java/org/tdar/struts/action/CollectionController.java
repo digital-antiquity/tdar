@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -39,6 +38,14 @@ import org.tdar.utils.PaginationHelper;
 @Namespace("/collection")
 public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<Resource> {
 
+    /**
+     * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
+     * refers to the combined count of authorized users +the count of resources associated with a collection.   Big
+     * collections may adversely affect save/load times as well as cause rendering problems on the client, and so the
+     * system may choose to mitigate these effects (somehow)
+     */
+    public  static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
+
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<Resource>();
 
@@ -58,6 +65,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private PaginationHelper paginationHelper;
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
+    private List<Resource> sparseCollectionResources = Collections.EMPTY_LIST;
 
     @Override
     public boolean isEditable() {
@@ -186,11 +194,10 @@ public class CollectionController extends AbstractPersistableController<Resource
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
 
-        // FIXME: this could be replaced with a load that's a skeleton object (title, resourceType, date)
-        resources.addAll(getPersistable().getResources());
-        // for (Resource resource : getPersistable().getResources()) {
-        // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
-        // }
+        //resources.addAll(getPersistable().getResources());
+        sparseCollectionResources = getResourceCollectionService().findCollectionSparseResources(getId());
+        resources.addAll(sparseCollectionResources);
+
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
@@ -230,9 +237,13 @@ public class CollectionController extends AbstractPersistableController<Resource
         return result;
     }
 
+    /**
+     * resources that that the current user is prohibited from removing when editing a collection
+     * @return
+     */
     private List<Resource> getRetainedResources() {
         List<Resource> retainedResources = new ArrayList<Resource>();
-        for (Resource resource : getPersistable().getResources()) {
+        for (Resource resource : sparseCollectionResources) {
             boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
             if (!canEdit) {
                 retainedResources.add(resource);
@@ -507,4 +518,19 @@ public class CollectionController extends AbstractPersistableController<Resource
     public ProjectionModel getProjectionModel() {
         return ProjectionModel.RESOURCE_PROXY;
     }
+
+    public boolean isBigCollection() {
+        if(getPersistable() == null) return false;
+        if(getPersistable().getResources() == null) return false;
+        return getPersistable().getResources().size() > BIG_COLLECTION_CHILDREN_COUNT;
+    }
+
+    /**
+     * Return a list of sparse resources representing the resources associated with the ResourceCollection.
+     * @return
+     */
+    public List<Resource> getSparseCollectionResources() {
+        return sparseCollectionResources;
+    }
+
 }

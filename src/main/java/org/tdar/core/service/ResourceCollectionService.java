@@ -593,4 +593,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
     }
 
+    /**
+     * Return a read-only list of sparse Resource objects that belong to a ResourceCollection with the specified ID
+     * The only populated fields are Resource.id,  Resource.title,  and Resource.resourceType.
+     *
+     * @param collectionId id of the ResourceCollection that contains the resources returned by this method
+     * @return
+     */
+    public List<Resource> findCollectionSparseResources(Long collectionId) {
+        return getDao().findCollectionSparseResources(collectionId);
+    }
 }

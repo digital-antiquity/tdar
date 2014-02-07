@@ -153,4 +153,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return collections;
     }
 
+    public List<Resource> findCollectionSparseResources(Long collectionId) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_COLLECTION_RESOURCES);
+        query.setLong("id", collectionId);
+        return (List<Resource>) query.list();
+    }
+
 }

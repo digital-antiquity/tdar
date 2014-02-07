@@ -220,6 +220,13 @@ public class Resource extends JsonModel.Base implements Persistable,
         setStatus(status);
     }
 
+    public Resource(Long id, String title, ResourceType resourceType, Status status, Long supplierId) {
+        this(id, title, resourceType);
+        this.status = status;
+        Person submitter = new Person();
+        submitter.setId(supplierId);
+    }
+
     @Id
     @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "resource_sequence")
