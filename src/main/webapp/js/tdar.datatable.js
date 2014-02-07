@@ -345,9 +345,9 @@ TDAR.datatable = function () {
         }
 
         //bind row delete button
-        $resourcesTable.on('click', 'button.remove-row', function () {
+        $resourcesTable.on('click', 'button', function () {
             var button = this,
-                resourceid = $(button).data("resourceid");
+                resourceid = $(button).data("rid");
             _removeResourceClicked(resourceid, button, dataTable);
         });
     }
@@ -360,7 +360,7 @@ TDAR.datatable = function () {
     function _rowSelected(obj) {
 
         // first, add the hidden input tag to the dom
-        var tag = '<input type="hidden" name="resources.id" value="' + obj.id + '" id="hdnResourceId' + obj.id + '"/>';
+        var tag = '<input type="hidden" name="resources.id" value="' + obj.id + '" id="hr' + obj.id + '"/>';
         console.log("adding selected resource:" + tag);
         $('#divSelectedResources').append(tag);
 
@@ -376,7 +376,7 @@ TDAR.datatable = function () {
         resourceTag += '            :title        ';
         resourceTag += '        </a>                                                                                  ';
         resourceTag += '    </td>                                                                                     ';
-        resourceTag += '    <td><button class="btn btn-mini remove-row" data-resourceid=":id" type="button" tabindex="-1"><i class="icon-trash"></i></button></td>';
+        resourceTag += '    <td><button class="btn btn-mini" data-rid=":id" type="button" tabindex="-1"><i class="icon-trash"></i></button></td>';
         resourceTag += '</tr>                                                                                         ';
 
         resourceTag = resourceTag.replace(/:id/g, obj.id);
@@ -421,7 +421,7 @@ TDAR.datatable = function () {
         var $dataTable = $(dataTable);
         // delete the element from the selectedrows structure and remove the hidden input tag
         delete $dataTable.data('selectedRows')[id];
-        $('#hdnResourceId' + id).remove();
+        $('#hr' + id).remove();
 
         // now delete the row from the table
         var $elem = $(elem);

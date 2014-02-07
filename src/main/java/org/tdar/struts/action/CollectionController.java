@@ -47,7 +47,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     public  static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
 
     private static final long serialVersionUID = 5710621983240752457L;
-    private List<Resource> resources = new ArrayList<Resource>();
+    private List<Resource> resources = new ArrayList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<Long>();
     private Long parentId;
@@ -65,7 +65,6 @@ public class CollectionController extends AbstractPersistableController<Resource
     private PaginationHelper paginationHelper;
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
-    private List<Resource> sparseCollectionResources = Collections.EMPTY_LIST;
 
     @Override
     public boolean isEditable() {
@@ -194,9 +193,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
 
-        //resources.addAll(getPersistable().getResources());
-        sparseCollectionResources = getResourceCollectionService().findCollectionSparseResources(getId());
-        resources.addAll(sparseCollectionResources);
+        resources.addAll(getResourceCollectionService().findCollectionSparseResources(getId()));
 
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
@@ -243,7 +240,7 @@ public class CollectionController extends AbstractPersistableController<Resource
      */
     private List<Resource> getRetainedResources() {
         List<Resource> retainedResources = new ArrayList<Resource>();
-        for (Resource resource : sparseCollectionResources) {
+        for (Resource resource : getResources()) {
             boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
             if (!canEdit) {
                 retainedResources.add(resource);
@@ -519,18 +516,15 @@ public class CollectionController extends AbstractPersistableController<Resource
         return ProjectionModel.RESOURCE_PROXY;
     }
 
-    public boolean isBigCollection() {
-        if(getPersistable() == null) return false;
-        if(getPersistable().getResources() == null) return false;
-        return getPersistable().getResources().size() > BIG_COLLECTION_CHILDREN_COUNT;
-    }
-
     /**
-     * Return a list of sparse resources representing the resources associated with the ResourceCollection.
+     * A hint to the view-layer that this resource collection is "big".  The view-layer may choose to gracefully degrade the presentation to save on bandwidth and/or
+     * client resources.
+     *
      * @return
      */
-    public List<Resource> getSparseCollectionResources() {
-        return sparseCollectionResources;
+    public boolean isBigCollection() {
+        return getResources().size() + getAuthorizedUsers().size() > BIG_COLLECTION_CHILDREN_COUNT;
     }
+
 
 }

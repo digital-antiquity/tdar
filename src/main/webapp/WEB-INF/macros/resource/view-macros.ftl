@@ -827,14 +827,11 @@ ${_date?string('MM/dd/yyyy')}<#t>
     </#if>
 </#macro>
 
-<#--emit a link tag for the specified resource and title-->
-<#macro linkToResource resource title target='resourcedetail'>
-<a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="${target}" >${title}</a>
-</#macro>
 
 <#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#--emit table listing resources associated with the current resource collection  -->
-<#macro resourceCollectionTable removeable=false tbid="tblCollectionResources">
+<#--Big collections cause big html documents so we intentionally omit optional closing tags (e.g.TR, TD).  -->
+<#macro resourceCollectionTable  tbid="tblCollectionResources">
     <table class="table table-condensed table-hover" id="${tbid}">
         <colgroup>
             <col style="width:4em">
@@ -843,25 +840,15 @@ ${_date?string('MM/dd/yyyy')}<#t>
         </colgroup>
         <thead>
             <tr>
-                <th style="width: 4em">ID</th>
-                <th <#if removeable>colspan="2"</#if>>Name</th>
-                
-            </tr>
+                <th style="width: 4em">ID
+                <th>Name
         </thead>
         <tbody>
             <#list resources as resource>
                 <tr id='dataTableRow_${resource.id?c}'>
-                    <td>${resource.id?c}</td>
-                    <td>
-                        <@linkToResource resource resource.title!'<em>(no title)</em>' /> <#if !resource.active>[${resource.status.label}]</#if>
-                    </td>
-                    <#if removeable>
-                    <td>
-                    <button class="btn btn-mini remove-row"
-                                type="button" tabindex="-1" 
-                                data-resourceid="${resource.id?c}"><i class="icon-trash"></i></button></td>
-                    </#if>
-                </tr>
+                    <td>${resource.id?c}
+                    <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="_rv" >${resource.title!'(no title)'}</a> <#if !resource.active>[${resource.status.label}]</#if>
+                    <td><button class="btn btn-mini" type="button" data-rid="${resource.id?c}"><i class="icon-trash"></i></button>
             </#list>
         </tbody>
     </table>
