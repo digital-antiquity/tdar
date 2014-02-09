@@ -116,7 +116,8 @@ var d${i} = [];
 	    axes:{
 	        xaxis:{
 	            renderer:$.jqplot.DateAxisRenderer
-	        }
+	        },
+			yaxis: {min:0}
 	    },
         highlighter: {
             show: true,
