@@ -432,7 +432,7 @@
 
         @org.hibernate.annotations.NamedQuery(
                 name=TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES,
-                query= "select new Resource(r.id, r.title, r.resourceType, r.status, r.submitter.id) from "
+                query= "select new Resource(r.id, r.title, r.resourceType, r.status, r.submitter) from "
                     + " Resource r join r.resourceCollections rc where rc.id = :id"
         )
 

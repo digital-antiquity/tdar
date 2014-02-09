@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -45,6 +46,7 @@ import org.tdar.struts.action.CollectionController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.BrowseController;
+
 import com.opensymphony.xwork2.Action;
 
 //import static org.hamcrest.MatcherAssert.assertThat;
@@ -1046,10 +1048,12 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         projectController.setServletRequest(getServletPostRequest());
         projectController.setAsync(false);
         projectController.save();
+        genericService.synchronize();
         searchIndexService.flushToIndexes();
         searchIndexService.index(project2);
 
         logger.info("{}", project2.getResourceCollections());
+        assertTrue(Persistable.Base.extractIds(project2.getResourceCollections()).contains(rcid));
         controller = generateNewInitializedController(CollectionController.class);
         controller.setId(rcid);
         controller.prepare();
@@ -1062,6 +1066,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid);
         controller.prepare();
         controller.edit();
+        logger.info("resources:{}", controller.getResources());
+        logger.info("?:{}", controller.getResults());
+        logger.info("?:{}", controller.getResourceCollection().getResources());
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResources()));
     }
 

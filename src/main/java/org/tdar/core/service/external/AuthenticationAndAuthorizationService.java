@@ -330,9 +330,13 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
             return false;
 
         // does the user have special privileges to edit resources in any status?
-        if (can(InternalTdarRights.EDIT_ANY_RESOURCE, person))
+        if (can(InternalTdarRights.EDIT_ANY_RESOURCE, person)) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("checking if person can edit any resource");
+            }
             return true;
-
+        }
+        
         // finally, check if user has been granted permission
         // FIXME: technically the dao layer is doing some stuff that we should be, but I don't want to mess w/ it right now.
         return authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.MODIFY_METADATA);

@@ -470,6 +470,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *         this method iteratively populates the transient children resource collection fields of the specified
      *         collection.
      */
+    @Transactional(readOnly=true)
     public List<ResourceCollection> findAllChildCollections(ResourceCollection collection, Person authenticatedUser, CollectionType collectionType) {
         List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
         List<ResourceCollection> toEvaluate = new ArrayList<ResourceCollection>();
@@ -498,6 +499,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *            the type of collections to return (e.g. internal, shared, public)
      * @return a list containing the provided 'parent' collection and any descendant collections (if any).
      */
+    @Transactional(readOnly=true)
     public List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection, CollectionType collectionType) {
         return getDao().findAllChildCollectionsOnly(collection, collectionType);
     }
@@ -513,6 +515,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param generalPermissions
      * @return
      */
+    @Transactional(readOnly=true)
     public Set<ResourceCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions) {
         return getDao().findFlattendCollections(user,generalPermissions);
     }
@@ -534,6 +537,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param anyNode
      * @return
      */
+    @Transactional(readOnly=true)
     public ResourceCollection getFullyInitializedRootResourceCollection(ResourceCollection anyNode, Person authenticatedUser) {
         ResourceCollection root = getRootResourceCollection(anyNode);
         findAllChildCollections(getRootResourceCollection(anyNode), authenticatedUser, CollectionType.SHARED);
@@ -544,6 +548,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * Find all @link ResourceCollection entries that were both public and shared.
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Long> findAllPublicActiveCollectionIds() {
         return getDao().findAllPublicActiveCollectionIds();
     }
@@ -555,6 +560,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param statuses
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Resource> findAllResourcesWithStatus(ResourceCollection persistable, Status... statuses) {
         return getDao().findAllResourcesWithStatus(persistable, statuses);
     }
@@ -566,6 +572,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param authenticatedUser
      * @return
      */
+    @Transactional(readOnly=true)
     public List<AuthorizedUser> getAuthorizedUsersForCollection(ResourceCollection persistable, Person authenticatedUser) {
         List<AuthorizedUser> users = new ArrayList<>(persistable.getAuthorizedUsers());
         applyTransientEnabledPermission(authenticatedUser, users, authenticationAndAuthorizationService.canEditCollection(authenticatedUser, persistable));
@@ -580,6 +587,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param authenticatedUser
      * @param collectionIds
      */
+    @Transactional(readOnly=true)
     public void reconcileCollectionTree(Collection<ResourceCollection> collection, Person authenticatedUser, List<Long> collectionIds) {
         Iterator<ResourceCollection> iter = collection.iterator();
         while (iter.hasNext()) {
@@ -600,6 +608,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param collectionId id of the ResourceCollection that contains the resources returned by this method
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Resource> findCollectionSparseResources(Long collectionId) {
         return getDao().findCollectionSparseResources(collectionId);
     }

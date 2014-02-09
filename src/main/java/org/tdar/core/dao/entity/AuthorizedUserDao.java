@@ -46,12 +46,17 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
     public boolean isAllowedTo(Person person, Resource resource, GeneralPermissions permission) {
         Set<Long> ids = new HashSet<Long>();
 
-        // FIXME: push business logic up to service layer?
         if (resource.isDeleted()) {
+            if (getLogger().isTraceEnabled()) {
+                getLogger().trace("not allowed to ... deleted: {}", resource.getId());
+            }
             return false;
         }
         // if the user is the owner, don't go any further
         if (ObjectUtils.equals(resource.getSubmitter(), person)) {
+            if (getLogger().isTraceEnabled()) {
+                getLogger().trace("allowed to ... is submitter: {}", resource.getId());
+            }
             return true;
         }
 
