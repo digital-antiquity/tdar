@@ -2435,7 +2435,7 @@
                         </executions>
                         <configuration>
                             <version>2.4.1</version>
-                            <configFile>src/main/resources/jshint.conf.template.json</configFile>
+                            <configFile>src/main/resources/jshint.conf.json</configFile>
                             <directories>
                                 <directory>src/main/webapp/js</directory>
                             </directories>
