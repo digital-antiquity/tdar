@@ -12,7 +12,7 @@ import org.tdar.utils.Pair;
  */
 public interface AsyncUpdateReceiver {
 
-    final static AsyncUpdateReceiver DEFAULT_RECEIVER = new DefaultReceiver();
+    static AsyncUpdateReceiver DEFAULT_RECEIVER = new DefaultReceiver();
 
     void setPercentComplete(float complete);
 

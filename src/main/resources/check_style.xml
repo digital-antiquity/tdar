@@ -105,8 +105,10 @@
     <module name="EmptyStatement"/>
     <module name="EqualsHashCode"/>
     <module name="HiddenField">
-       <!--  <property name="severity" value="ignore"/>
-	    <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/> -->
+        <property name="severity" value="ignore"/>
+	    <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+	    <property name="ignoreConstructorParameter" value="true"/>
+	    <property name="ignoreSetter" value="true"/>
     </module>
     <module name="IllegalInstantiation"/>
     <module name="InnerAssignment"/>
