@@ -84,7 +84,7 @@
     <tr class="${extraClass}">
         <td><a href="<@s.url value="/cart/${invoice.id?c}" />" >${invoice.dateCreated}</a></td>
         <td>
-            <a href="<@s.url value="/browse/creator/${invoice.owner.id?c}"/>">${invoice.owner.properName}</a>
+            <a href="<@s.url value="/browse/creators/${invoice.owner.id?c}"/>">${invoice.owner.properName}</a>
             <#if invoice.proxy>
                 c/o ${invoice.transactedBy.properName}
             </#if>

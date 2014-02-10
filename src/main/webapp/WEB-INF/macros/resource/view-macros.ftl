@@ -831,7 +831,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
 <#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#--emit table listing resources associated with the current resource collection  -->
 <#--Big collections cause big html documents so we intentionally omit optional closing tags (e.g.TR, TD).  -->
-<#macro resourceCollectionTable  tbid="tblCollectionResources">
+<#macro resourceCollectionTable removeable=false tbid="tblCollectionResources">
     <table class="table table-condensed table-hover" id="${tbid}">
         <colgroup>
             <col style="width:4em">
@@ -840,15 +840,16 @@ ${_date?string('MM/dd/yyyy')}<#t>
         </colgroup>
         <thead>
             <tr>
-                <th style="width: 4em">ID
-                <th>Name
+                <th style="width: 4em">ID</th>
+                <th <#if removeable>colspan="2"</#if>>Name</th>
+            </tr>
         </thead>
         <tbody>
             <#list resources as resource>
                 <tr id='dataTableRow_${resource.id?c}'>
-                    <td>${resource.id?c}
-                    <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="_rv" >${resource.title!'(no title)'}</a> <#if !resource.active>[${resource.status.label}]</#if>
-                    <td><button class="btn btn-mini" type="button" data-rid="${resource.id?c}"><i class="icon-trash"></i></button>
+                    <td>${resource.id?c}</td>
+                    <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>" target="_blank" >${(resource.title)!""}</a></td>
+                    <#if removeable><td><button class="btn btn-mini remove-row" type="button" tabindex="-1" data-resourceid="${resource.id?c}"><i class="icon-trash"></i></button></td></#if></tr>
             </#list>
         </tbody>
     </table>

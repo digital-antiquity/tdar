@@ -312,7 +312,7 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.ACCESS_BY,
-            query = "select ref.id, ref.title, ref.resourceType, date_trunc('day', ras.date), count(ref) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by date_trunc('day', ras.date) desc"
+            query = "select ref.id, ref.title, ref.resourceType, date_trunc('day', ras.date), count(ref) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc, date_trunc('day', ras.date) desc"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.RESOURCE_ACCESS_HISTORY,
@@ -324,7 +324,7 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.DOWNLOAD_BY,
-            query = "select date_trunc('day', ras.date),  count(ref),  ref.id  FROM FileDownloadStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by date_trunc('day', ras.date) desc"
+            query = "select date_trunc('day', ras.date),  count(ref),  ref.id  FROM FileDownloadStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc, date_trunc('day', ras.date) desc"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT,

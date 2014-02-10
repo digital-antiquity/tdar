@@ -24,7 +24,7 @@
               <#if invoice.transactionStatus.complete>
                 <tr>
                    <td><a href="<@s.url value="/cart/${invoice.id?c}"/>">${invoice.dateCreated}</a></td>
-                   <td>${invoice.owner.properName} </td>
+                   <td><a href="<@s.url value="/browse/creators/${invoice.owner.id?c}"/>">${invoice.owner.properName}</a> </td>
                    <td>${invoice.paymentMethod!""}</td>
                    <td>${invoice.transactionStatus}</td>
                    <td>${invoice.totalNumberOfFiles} </td>

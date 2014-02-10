@@ -130,16 +130,20 @@ public interface TdarNamedQueries {
                     "where collection.id=collection_resource.collection_id and collection.id=authorized_user.resource_collection_id " +
                     "and user_id=:submitterId and general_permission_int > :effectivePermissions " +
                     "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
+
     String QUERY_SQL_COUNT = "SELECT COUNT(*) FROM %1$s";
     String QUERY_FIND_ALL_WITH_IDS = "FROM %s WHERE id in (:ids)";
     String QUERY_FIND_ALL_WITH_STATUS = "FROM %s WHERE status in (:statuses)";
     String QUERY_SQL_COUNT_ACTIVE_RESOURCE = "SELECT COUNT(*) FROM %1$s where status='ACTIVE' and resourceType='%2$s' ";
     String QUERY_SQL_COUNT_ACTIVE_RESOURCE_WITH_FILES = "select count(distinct  resource.id) from  resource, information_resource_file where  resource.status='ACTIVE' and resource.resource_type='%1$s' and resource.id=information_resource_id";
     String QUERY_SQL_RESOURCE_INCREMENT_USAGE = "update Resource r set r.accessCounter=accessCounter+1 where r.id=:resourceId";
-    String QUERY_SQL_RAW_RESOURCE_STAT_LOOKUP = "select (select count(*) from resource where resource_type = rt.resource_type and status = 'ACTIVE') as all,"
-            + "(select count(distinct information_resource_id) from information_resource_file irf join resource rr on (rr.id = irf.information_resource_id) where rr.resource_type = rt.resource_type and rr.status = 'ACTIVE') as with_files,"
-            + "(select count(distinct information_resource_id) from information_resource_file irf join resource rr on (rr.id = irf.information_resource_id) where rr.resource_type = rt.resource_type and rr.status = 'ACTIVE' and irf.restriction = 'CONFIDENTIAL') as with_conf,"
-            + "rt.* from (select distinct resource_type from resource) as rt";
+    String QUERY_SQL_RAW_RESOURCE_STAT_LOOKUP = "select rt.* , "
+            + "(select count(*) from resource where resource_type = rt.resource_type and status = 'ACTIVE') as all,  "
+            + "(select count(*) from resource where resource_type = rt.resource_type and status = 'DRAFT') as draft, "
+            + "(select count(distinct information_resource_id) from information_resource_file irf join resource rr on (rr.id = irf.information_resource_id) where rr.resource_type = rt.resource_type and rr.status = 'ACTIVE') as with_files, "
+            + "(select count(distinct information_resource_id) from information_resource_file irf join resource rr on (rr.id = irf.information_resource_id) where rr.resource_type = rt.resource_type and rr.status = 'ACTIVE' and irf.restriction = 'CONFIDENTIAL') as with_conf "
+            + "from (select distinct resource_type from resource) as rt";
+
     // generated HQL formats
     String QUERY_CREATOR_MERGE_ID = "select merge_creator_id from %1$s where id=%2$s";
 

@@ -12,7 +12,7 @@
 <table class="tableFormat table">
 <thead>
   <tr>
-    <th>Resource Type</th><th>Total #</th><th># with files</th><th># with confidential files</th>
+    <th>Resource Type</th><th>Total active</th><th>drafts</th><th># with files</th><th># with confidential files</th>
   </tr>
  </thead>
    <#list currentResourceStatsKeys as key>

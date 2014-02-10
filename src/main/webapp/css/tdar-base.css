@@ -782,9 +782,12 @@ h2 {
 	margin-top: 15px;
 }
 
+#alt aside  ul.collection-treeview a {
+  word-break: break-word;
+}
+
 #alt aside  ul.collection-treeview li {
     margin-top: auto;
-    word-break: break-all;
 }
 
 #alt aside li strong {

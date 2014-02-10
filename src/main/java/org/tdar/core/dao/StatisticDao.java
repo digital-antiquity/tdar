@@ -52,10 +52,11 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         Map<ResourceType, List<BigInteger>> toReturn = new HashMap<ResourceType, List<BigInteger>>();
         for (Object[] result_ : (List<Object[]>) query.list()) {
             List<BigInteger> stat = new ArrayList<BigInteger>();
-            toReturn.put(ResourceType.valueOf((String) result_[3]), stat);
-            stat.add((BigInteger) result_[0]);
+            toReturn.put(ResourceType.valueOf((String) result_[0]), stat);
             stat.add((BigInteger) result_[1]);
             stat.add((BigInteger) result_[2]);
+            stat.add((BigInteger) result_[3]);
+            stat.add((BigInteger) result_[4]);
         }
         return toReturn;
     }

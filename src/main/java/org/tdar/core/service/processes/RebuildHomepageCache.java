@@ -3,6 +3,8 @@ package org.tdar.core.service.processes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +14,15 @@ import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
+import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.data.AggregateViewStatistic;
+import org.tdar.struts.data.DateGranularity;
 
 /**
  * $Id$
@@ -73,14 +79,36 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         resourceService.save(informationResourceService.findResourcesByDecade(Status.ACTIVE));
         resourceService.deleteAll(HomepageFeaturedItemCache.class);
         resourceService.deleteAll(BrowseYearCountCache.class);
+        resourceService.deleteAll(WeeklyPopularResourceCache.class);
         resourceService.save(informationResourceService.findResourcesByYear(Status.ACTIVE));
+        
+        DateTime end = new DateTime();
+        DateTime start = end.minusDays(7);
+
+        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, start.toDate(), end.toDate(), 1L);
+
         // cache?
         List<HomepageFeaturedItemCache> hfic = new ArrayList<HomepageFeaturedItemCache>();
-        for (Object res : informationResourceService.findRandomFeaturedResourceInCollection(true,
-                getTdarConfiguration().getFeaturedCollectionId(), 5)) {
+        Long featuredCollectionId = getTdarConfiguration().getFeaturedCollectionId();
+        for (Object res : informationResourceService.findRandomFeaturedResourceInCollection(true, featuredCollectionId, 5)) {
             hfic.add(new HomepageFeaturedItemCache((InformationResource) res));
         }
-        resourceService.save(hfic);
+        
+        List<WeeklyPopularResourceCache> wrc = new ArrayList<WeeklyPopularResourceCache>();
+        int max = 20;
+        if (CollectionUtils.isNotEmpty(wrc)) {
+            if (CollectionUtils.size(wrc) < max) {
+            max = wrc.size();
+            }
+            for (AggregateViewStatistic res : aggregateUsageStats.subList(0, max)) {
+                Resource resource = resourceService.find(res.getResourceId());
+                if (resource.isActive()) {
+                    wrc.add(new WeeklyPopularResourceCache(resource));
+                }
+            }
+            resourceService.save(wrc);
+            resourceService.save(hfic);
+        }
 
         logger.info("done caching");
     }
