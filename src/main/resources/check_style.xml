@@ -105,16 +105,16 @@
     <module name="EmptyStatement"/>
     <module name="EqualsHashCode"/>
     <module name="HiddenField">
-        <property name="severity" value="ignore"/>
-	    <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+       <!--  <property name="severity" value="ignore"/>
+	    <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/> -->
     </module>
     <module name="IllegalInstantiation"/>
     <module name="InnerAssignment"/>
     <module name="MagicNumber"/>
     <module name="MissingSwitchDefault"/>
     <module name="RedundantThrows">
-      <property name="suppressLoadErrors" value="true"/>
-    </module>
+<!--      <property name="suppressLoadErrors" value="true"/>
+ -->    </module>
     <module name="SimplifyBooleanExpression"/>
     <module name="SimplifyBooleanReturn"/>
     <module name="DesignForExtension">
