@@ -3,7 +3,7 @@ package org.tdar.core.service.processes;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,6 @@ import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.ScheduledProcess;
@@ -75,6 +74,7 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         resourceService.save(informationResourceService.findResourcesByDecade(Status.ACTIVE));
         resourceService.deleteAll(HomepageFeaturedItemCache.class);
         resourceService.deleteAll(BrowseYearCountCache.class);
+        resourceService.deleteAll(WeeklyPopularResourceCache.class);
         resourceService.save(informationResourceService.findResourcesByYear(Status.ACTIVE));
         
         DateTime end = new DateTime();
@@ -84,13 +84,19 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
 
         // cache?
         List<WeeklyPopularResourceCache> hfic = new ArrayList<WeeklyPopularResourceCache>();
-        for (AggregateViewStatistic res : aggregateUsageStats.subList(0, 20)) {
-            Resource resource = resourceService.find(res.getResourceId());
-            if (resource.isActive()) {
-                hfic.add(new WeeklyPopularResourceCache(resource));
+        int max = 20;
+        if (CollectionUtils.isNotEmpty(hfic)) {
+            if (CollectionUtils.size(hfic) < max) {
+            max = hfic.size();
             }
+            for (AggregateViewStatistic res : aggregateUsageStats.subList(0, max)) {
+                Resource resource = resourceService.find(res.getResourceId());
+                if (resource.isActive()) {
+                    hfic.add(new WeeklyPopularResourceCache(resource));
+                }
+            }
+            resourceService.save(hfic);
         }
-        resourceService.save(hfic);
 
         logger.info("done caching");
     }
