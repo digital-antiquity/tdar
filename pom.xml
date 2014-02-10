@@ -18,7 +18,7 @@
 		<!--  see  http://tomcat.apache.org/whichversion.html for compatibility with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
 		<!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
 		<apache.cxf.version>2.7.8</apache.cxf.version>
-		<jena.version>2.11.0</jena.version>
+		<jena.version>2.11.1</jena.version>
 		<clover.version>3.2.0</clover.version>
 		<!-- /end managed versions -->
 		<jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
@@ -37,7 +37,7 @@
 		<odata4j.version>0.7.0</odata4j.version>
 		<jersey.version>1.18</jersey.version>
 		<jackson.version>2.3.0</jackson.version>
-		<slf4j.version>1.7.5</slf4j.version>
+		<slf4j.version>1.7.6</slf4j.version>
 		<http-components.version>4.3.2</http-components.version>
 		<display.port></display.port>
 		<warfile.name>ROOT</warfile.name>
@@ -47,7 +47,7 @@
 		<build.profile.id>default</build.profile.id>
 	</properties>
 	<prerequisites>
-		<maven>3.0.0</maven>
+		<maven>3.0.4</maven>
 	</prerequisites>
 	<organization>
 		<name>The Digital Archaeological Record</name>
@@ -166,7 +166,7 @@
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
 			<artifactId>keytool-api</artifactId>
-			<version>1.3</version>
+			<version>1.4</version>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
@@ -227,7 +227,7 @@
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
-			<version>1.9.2</version>
+			<version>1.9.3</version>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
@@ -350,7 +350,7 @@
  --> 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
-			<version>2.0.2</version>
+			<version>2.0.3</version>
 			<!--  LICENSE: LGPL -->
 		</dependency>	
 		<dependency>
@@ -766,7 +766,7 @@
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<!-- seems to be somewhat incompatible with jetty 8 -->
-			<version>2.2</version>
+			<version>2.2.2</version>
 			<!-- <scope>runtime</scope> -->
 			<!--  LICENSE: APACHE 1.1 -->
 		</dependency>
@@ -802,7 +802,7 @@
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>2.0.2</version>
+			<version>2.0.3</version>
 			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
 		<!-- OpenCSV -->
@@ -828,7 +828,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-exec</artifactId>
-			<version>1.1</version>
+			<version>1.2</version>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
@@ -840,7 +840,7 @@
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
-			<version>1.3</version>
+			<version>1.3.1</version>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
 		<dependency>
@@ -887,14 +887,7 @@
 			</exclusions>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
-<!-- 
 		<dependency>
-			<groupId>com.hp.hpl.jena</groupId>
-			<artifactId>jena</artifactId>
-			<version>2.6.4</version>
-		</dependency>
-
- -->		<dependency>
 			<groupId>edu.asu.lib</groupId>
 			<artifactId>jaxb-document-api</artifactId>
 			<version>1.0.2</version>
@@ -1138,7 +1131,7 @@
 		<dependency>
 			<groupId>org.jboss.arquillian.extension</groupId>
 			<artifactId>arquillian-phantom-driver</artifactId>
-			<version>1.1.0.Final</version>
+			<version>1.1.2.Final</version>
 			<scope>test</scope>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
@@ -1253,7 +1246,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.8.1</version>
+				<version>2.9.1</version>
 				<configuration>
 					<links>
 						<link>http://commons.apache.org/lang/api-release/</link>
@@ -2240,7 +2233,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>versions-maven-plugin</artifactId>
-						<version>1.3.1</version>
+						<version>2.1</version>
 					</plugin>
 				</plugins>
 			</build>
