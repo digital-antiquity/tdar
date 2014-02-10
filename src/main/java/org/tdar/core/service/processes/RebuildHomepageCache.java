@@ -13,6 +13,7 @@ import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.ScheduledProcess;
@@ -82,19 +83,26 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
 
         List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, start.toDate(), end.toDate(), 1L);
 
+        List<HomepageFeaturedItemCache> hfic = new ArrayList<HomepageFeaturedItemCache>();
+        Long featuredCollectionId = getTdarConfiguration().getFeaturedCollectionId();
+        for (Object res : informationResourceService.findRandomFeaturedResourceInCollection(true, featuredCollectionId, 5)) {
+            hfic.add(new HomepageFeaturedItemCache((InformationResource) res));
+        }
+
         // cache?
-        List<WeeklyPopularResourceCache> hfic = new ArrayList<WeeklyPopularResourceCache>();
+        List<WeeklyPopularResourceCache> wrc = new ArrayList<WeeklyPopularResourceCache>();
         int max = 20;
-        if (CollectionUtils.isNotEmpty(hfic)) {
-            if (CollectionUtils.size(hfic) < max) {
-            max = hfic.size();
+        if (CollectionUtils.isNotEmpty(wrc)) {
+            if (CollectionUtils.size(wrc) < max) {
+            max = wrc.size();
             }
             for (AggregateViewStatistic res : aggregateUsageStats.subList(0, max)) {
                 Resource resource = resourceService.find(res.getResourceId());
                 if (resource.isActive()) {
-                    hfic.add(new WeeklyPopularResourceCache(resource));
+                    wrc.add(new WeeklyPopularResourceCache(resource));
                 }
             }
+            resourceService.save(wrc);
             resourceService.save(hfic);
         }
 
