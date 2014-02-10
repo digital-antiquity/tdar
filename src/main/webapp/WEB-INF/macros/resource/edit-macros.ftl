@@ -1262,7 +1262,7 @@ $(function() {
 
             {%if (file.fileId) { %}
             <@fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button btn btn-small btn-warning btn-block"/>
-            <button type="button" style="display:none; text-align:left" class="btn btn-small btn-warning undo-replace-button btn-block" title="Restore Original File">Restore</button>
+            <button type="button" style="display:none; text-align:left" class="btn btn-small btn-warning undo-replace-button btn-block" title="Restore Original File">Cancel</button>
             {% } %}
 
 
