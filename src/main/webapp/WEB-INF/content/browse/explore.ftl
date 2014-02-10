@@ -59,6 +59,24 @@
 	</script>
     <@common.barGraph data="timelineData" graphLabel="" graphHeight=354 searchKey="groups[0].creationDecades" id="browseByDecade" config="timelineConfig" rotate=-30  yaxis="log"/>
 
+
+
+<h2>Most Popular in the Last Week</h2>
+<ul>
+	<#list featuredResources as resource>
+		<li><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
+	</#list>
+</ul>
+
+<h2>Recently added Resource</h2>
+<ul>
+	<#list recentResources as resource>
+		<li><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
+	</#list>
+</ul>
+
+
+
 <h2>Browse by Investigation Type</h2>
 <ul class="inline">
      <#list investigationTypes?sort as investigationType>
@@ -88,9 +106,6 @@
      </#list>
 </ul>
  
-
-
-
 
 <#macro searchFor queryParam term displayTerm wrappingTag="span" occurrence=0>
 	<#local term_ = term />

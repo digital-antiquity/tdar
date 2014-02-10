@@ -66,6 +66,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.DynamicQueryComponent;
@@ -85,6 +86,8 @@ import org.tdar.struts.action.search.SearchParameters;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.Pair;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 @Service
 @Transactional
@@ -752,6 +755,21 @@ public class SearchService {
                 handler.setSortField(handler.getSecondarySortField());
             }
         }
+    }
+
+    public Collection<? extends Resource> findMostRecentResources(long l, Person authenticatedUser) throws ParseException {
+        ReservedSearchParameters params = new ReservedSearchParameters();
+        params.getStatuses().add(Status.ACTIVE);
+        ResourceQueryBuilder qb = new ResourceQueryBuilder();
+        qb.append(params);
+        SearchResult result = new SearchResult();
+        result.setAuthenticatedUser(authenticatedUser);
+        result.setSortField(SortOption.DATE_REVERSE);
+        result.setSecondarySortField(SortOption.TITLE);
+        result.setStartRecord(0);
+        result.setRecordsPerPage(10);
+        handleSearch(qb, result);
+        return (List<Resource>)((List<?>)result.getResults());
     }
 
 }

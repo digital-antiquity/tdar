@@ -49,3 +49,12 @@ alter table collection add column description_admin text default null;
 
 -- abrin 1/24/2014
 create index res_uploader on resource (uploader_id);
+
+-- abrin 2/9/2014
+CREATE TABLE weekly_popular_resource_cache (
+    id bigserial NOT NULL,
+    label character varying(255) NOT NULL,
+    level character varying(50) NOT NULL,
+    resource_count bigint,
+    resource_id bigint
+);

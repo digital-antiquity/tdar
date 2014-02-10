@@ -25,8 +25,10 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
+import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
+import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
@@ -35,6 +37,8 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
@@ -92,6 +96,9 @@ public class BrowseController extends AbstractLookupController {
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
+    private List<Resource> featuredResources = new ArrayList<Resource>();
+    private List<Resource> recentResources = new ArrayList<Resource>();
+
     private String creatorXml;
     private List<Account> accounts = new ArrayList<Account>();
     Map<String,SearchFieldType> searchFieldLookup = new HashMap<>();
@@ -110,6 +117,27 @@ public class BrowseController extends AbstractLookupController {
         setSiteTypeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
         setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
+        
+        try {
+            for (WeeklyPopularResourceCache cache : getGenericService().findAll(WeeklyPopularResourceCache.class)) {
+                Resource key = cache.getKey();
+                if (key instanceof Resource) {
+                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag((Resource) key, null);
+                }
+                getObfuscationService().obfuscate(key);
+                if (key.isActive()) {
+                    getFeaturedResources().add(key);
+                }
+            }
+        } catch (IndexOutOfBoundsException ioe) {
+            logger.debug("no featured resources found");
+        }
+        
+        try {
+        getRecentResources().addAll(getSearchService().findMostRecentResources(10L, getAuthenticatedUser()));
+        } catch (ParseException pe) {
+            logger.debug("error", pe);
+        }
         return SUCCESS;
     }
 
@@ -417,6 +445,22 @@ public class BrowseController extends AbstractLookupController {
 //            registered = ((Person)getCreator()).isRegistered();
 //        }
         return isAuthenticated() && (isEditor() ||  ObjectUtils.equals(getId(), getAuthenticatedUser().getId() ));
+    }
+
+    public List<Resource> getFeaturedResources() {
+        return featuredResources;
+    }
+
+    public void setFeaturedResources(List<Resource> featuredResources) {
+        this.featuredResources = featuredResources;
+    }
+
+    public List<Resource> getRecentResources() {
+        return recentResources;
+    }
+
+    public void setRecentResources(List<Resource> recentResources) {
+        this.recentResources = recentResources;
     }
 
 }
