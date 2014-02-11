@@ -28,7 +28,7 @@ import org.tdar.search.index.field.LazyReaderField;
  */
 public class PersistentReaderBridge implements FieldBridge {
 
-    List<URI> input;
+    private List<URI> input;
     protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
 
     /*

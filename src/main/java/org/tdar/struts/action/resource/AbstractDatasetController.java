@@ -494,7 +494,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
+        return getAnalyzer().getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
     }
 
     /**

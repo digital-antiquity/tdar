@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.scheduling.annotation.Async;
@@ -230,7 +229,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 latestUploadedVersion.setTransientFile(transientFile);
             }
 
-            analyzer.processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
+            getAnalyzer().processFile(dataset.getActiveInformationResourceFiles().toArray(new InformationResourceFile[0]));
         } catch (Exception e) {
             throw new TdarRecoverableRuntimeException(e);
         }
@@ -274,7 +273,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             proxy.setName(tableName);
             ResultSetExtractor<Boolean> excelExtractor = new ResultSetExtractor<Boolean>() {
                 @Override
-                public Boolean extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+                public Boolean extractData(ResultSet resultSet) throws SQLException {
                     List<String> headerLabels = getColumnNames(resultSet, dataTable);
                     proxy.setHeaderLabels(headerLabels);
                     proxy.setData(new ResultSetIterator(resultSet));
@@ -493,7 +492,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         ResultSetExtractor<Set<CodingRule>> resultSetExtractor = new ResultSetExtractor<Set<CodingRule>>() {
             @Override
             public Set<CodingRule> extractData(ResultSet resultSet)
-                    throws SQLException, DataAccessException {
+                    throws SQLException {
                 Set<CodingRule> rules = new HashSet<CodingRule>();
                 ResultSetMetaData metadata = resultSet.getMetaData();
                 int columns = metadata.getColumnCount();
@@ -558,7 +557,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor<Map<DataTableColumn, String>>() {
 
             @Override
-            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException {
                 Map<DataTableColumn, String> result = new HashMap<>();
                 while (rs.next()) {
                     result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
@@ -622,7 +621,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         final DataTable table = column.getDataTable();
         ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor<Map<DataTableColumn, String>>() {
             @Override
-            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException {
                 while (rs.next()) {
                     Map<DataTableColumn, String> results = DatasetUtils.convertResultSetRowToDataTableColumnMap(table, rs, false);
                     return results;

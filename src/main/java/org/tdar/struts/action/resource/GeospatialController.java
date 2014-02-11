@@ -69,7 +69,7 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
 
     @Override
     public Set<String> getValidFileExtensions() {
-        Set<String> extensionsForTypes = analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET, ResourceType.IMAGE);
+        Set<String> extensionsForTypes = getAnalyzer().getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET, ResourceType.IMAGE);
         // FIXME: these should come from the analyzer
         // Note: aux.xml and shp.xml omitted because we know view layer logic will accept any .xml (so will server, for that matter)
         String[] geoexts = { "shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg", "jpw", "jgw", "tfw",

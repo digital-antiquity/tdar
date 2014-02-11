@@ -35,7 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.ReflectionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -316,7 +315,7 @@ public class ReflectionService {
      * @throws NoSuchBeanDefinitionException
      * @throws ClassNotFoundException
      */
-    public Class<Persistable> getMatchingClassForSimpleName(String name) throws NoSuchBeanDefinitionException, ClassNotFoundException {
+    public Class<Persistable> getMatchingClassForSimpleName(String name) throws ClassNotFoundException {
         logger.trace("scanning for: {}", name);
         scanForPersistables();
         logger.trace("scanning in: {}", persistableLookup);
@@ -330,7 +329,7 @@ public class ReflectionService {
      * @throws ClassNotFoundException
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void scanForPersistables() throws NoSuchBeanDefinitionException, ClassNotFoundException {
+    private void scanForPersistables() throws ClassNotFoundException {
         if (persistableLookup != null)
             return;
 
@@ -446,7 +445,7 @@ public class ReflectionService {
      * @throws ClassNotFoundException
      */
     @SafeVarargs
-    public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws NoSuchBeanDefinitionException, ClassNotFoundException {
+    public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws ClassNotFoundException {
         List<Class<?>> toReturn = new ArrayList<>();
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         for (Class<? extends Annotation> annot : annots) {

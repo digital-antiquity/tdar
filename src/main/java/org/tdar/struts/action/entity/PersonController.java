@@ -49,13 +49,6 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     private String email;
 
-    //TODO: add email change validator
-    //private String confirmEmail;
-
-    @Autowired
-    ObfuscationService obfuscationService;
-
-
     @Override
     public String loadEditMetadata() throws TdarActionException {
         String ret = super.loadEditMetadata();
@@ -228,7 +221,7 @@ public class PersonController extends AbstractCreatorController<Person> {
         Person p = getPersistable();
         if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
             if (!isEditable()) {
-                obfuscationService.obfuscate(p, getAuthenticatedUser());
+                getObfuscationService().obfuscate(p, getAuthenticatedUser());
             }
         }
         return p;

@@ -121,7 +121,7 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#connect(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public boolean connect() throws ClientProtocolException, IOException {
+    public boolean connect() throws IOException {
         logger.debug("creating challenge/response authentication request for: {} ({} / *****)", getDOIProviderHostname(), getDOIProviderUsername());
         HttpGet authenticationRequest = new HttpGet(getDOIProviderHostname() + "/login");
         processHttpRequest(authenticationRequest);
@@ -134,7 +134,7 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#logout(java.lang.String)
      */
     @Override
-    public boolean logout() throws ClientProtocolException, IOException {
+    public boolean logout() throws IOException {
         logger.info("logout: {} ", getDOIProviderHostname());
         HttpGet authenticationRequest = new HttpGet(getDOIProviderHostname() + "/logout");
         processHttpRequest(authenticationRequest);
@@ -171,7 +171,7 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#create(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException {
+    public Map<String, String> create(Resource r, String resourceUrl) throws IOException {
         return createOrModify(r, resourceUrl, getDOIProviderHostname(), "shoulder", getDOIShoulder());
     }
 
@@ -184,7 +184,7 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#getMetadata(java.lang.String, java.lang.String)
      */
     @Override
-    public Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> getMetadata(String identifier) throws IOException {
         Map<String, String> typeMap = new HashMap<String, String>();
         HttpGet request = new HttpGet(getDOIProviderHostname() + "/id/" + identifier);
         String result = processHttpRequest(request);
@@ -210,7 +210,7 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#modify(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws IOException {
         return createOrModify(r, resourceUrl, getDOIProviderHostname(), "id", identifier);
     }
 
@@ -223,11 +223,11 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#delete(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws IOException {
         return createOrModify(r, resourceUrl, getDOIProviderHostname(), "id", identifier, true);
     }
 
-    public Map<String, String> forceDelete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> forceDelete(Resource r, String resourceUrl, String identifier) throws IOException {
         HttpDelete post = new HttpDelete(getDOIProviderHostname() + "/id/" + identifier);
         return processRequest(post);
     }

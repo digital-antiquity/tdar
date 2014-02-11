@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 public class TdarSheetsContentHandler implements SheetContentsHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    int toRead = -1;
-    int rowNum = 0;
+    private int toRead = -1;
+    private int rowNum = 0;
     private List<List<String>> rows = new ArrayList<>();
     private List<String> row = new ArrayList<>();
 

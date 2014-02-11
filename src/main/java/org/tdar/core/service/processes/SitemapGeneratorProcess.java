@@ -44,8 +44,8 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
     @Autowired
     private transient UrlService urlService;
 
-    int batchCount = 0;
-    boolean run = false;
+    private int batchCount = 0;
+    private boolean run = false;
 
     @Override
     public void execute() {

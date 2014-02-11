@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -25,10 +24,10 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     private static final String ACCEPT = "accept";
     private static final String DECLINE = "decline";
     private static final long serialVersionUID = 5992094345280080761L;
-    List<AuthNotice> authNotices = new ArrayList<>();
-    List<AuthNotice> acceptedAuthNotices = new ArrayList<>();
-    String userResponse = "";
-    Person user;
+    private List<AuthNotice> authNotices = new ArrayList<>();
+    private List<AuthNotice> acceptedAuthNotices = new ArrayList<>();
+    private String userResponse = "";
+    private Person user;
 
     @Override
     public void prepare() {

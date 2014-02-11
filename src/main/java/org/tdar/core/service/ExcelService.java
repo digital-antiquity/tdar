@@ -57,7 +57,7 @@ public class ExcelService {
     // official office spec states that sheet max is limited by available RAM but has no max. So this is an arbitrary number.
     public static final int MAX_SHEETS_PER_WORKBOOK = 32;
 
-    public final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final int FIRST_ROW = 0;
     public static final int FIRST_COLUMN = 0;

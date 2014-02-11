@@ -54,7 +54,7 @@ public class IndexAction extends AuthenticationAware.Base {
     private List<Resource> featuredResources = new ArrayList<Resource>();
 
     @Autowired
-    RssService rssService;
+    private RssService rssService;
 
     private List<SyndEntry> rssEntries;
 

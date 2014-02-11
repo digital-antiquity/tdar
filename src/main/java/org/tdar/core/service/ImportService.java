@@ -79,7 +79,7 @@ public class ImportService {
     @Autowired
     private InformationResourceService informationResourceService;
 
-    public transient Logger logger = LoggerFactory.getLogger(getClass());
+    private transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * @see #bringObjectOntoSession(Resource, Person, Collection, Long)
@@ -90,7 +90,7 @@ public class ImportService {
      * @throws APIException
      * @throws Exception
      */
-    public <R extends Resource> R bringObjectOntoSession(R incoming, Person authorizedUser) throws APIException, Exception {
+    public <R extends Resource> R bringObjectOntoSession(R incoming, Person authorizedUser) throws Exception {
         return bringObjectOntoSession(incoming, authorizedUser, null, null);
     }
 

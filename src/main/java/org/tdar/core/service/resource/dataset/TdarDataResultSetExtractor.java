@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -41,7 +40,7 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
      * @see org.springframework.jdbc.core.ResultSetExtractor#extractData(java.sql.ResultSet)
      */
     @Override
-    public List<List<String>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+    public List<List<String>> extractData(ResultSet rs) throws SQLException {
         List<List<String>> results = new ArrayList<List<String>>();
         int rowNum = 1;
         while (rs.next()) {

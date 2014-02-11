@@ -40,7 +40,7 @@ public class AdminActivityController extends AuthenticationAware.Base {
     private static final long serialVersionUID = 6261948544478872563L;
 
     @Autowired
-    ScheduledProcessService scheduledProcessService;
+    private ScheduledProcessService scheduledProcessService;
 
     private Statistics sessionStatistics;
     private Boolean scheduledProcessesEnabled;

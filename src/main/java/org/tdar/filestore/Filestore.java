@@ -33,7 +33,7 @@ import org.tdar.utils.MessageHelper;
 
 public interface Filestore {
 
-    public static final String FILENAME_SANITIZE_REGEX = "([\\W&&[^\\s\\-\\+\\.]])";
+    static final String FILENAME_SANITIZE_REGEX = "([\\W&&[^\\s\\-\\+\\.]])";
 
     public enum StorageMethod {
         NO_ROTATION,
@@ -73,7 +73,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    abstract String store(InputStream content, InformationResourceFileVersion version) throws IOException;
+    String store(InputStream content, InformationResourceFileVersion version) throws IOException;
 
     long getSizeInBytes();
 
@@ -90,7 +90,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    abstract String storeAndRotate(InputStream content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
+    String storeAndRotate(InputStream content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
 
     /**
      * Write a file to the filestore.
@@ -99,11 +99,11 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    abstract String store(File content, InformationResourceFileVersion version) throws IOException;
+    String store(File content, InformationResourceFileVersion version) throws IOException;
 
-    abstract String storeAndRotate(File content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
+    String storeAndRotate(File content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
 
-    abstract void storeLog(LogType type, String filename, String message);
+    void storeLog(LogType type, String filename, String message);
 
     /**
      * Retrieve the file with the given ID from the store.
@@ -113,7 +113,7 @@ public interface Filestore {
      * @return {@link File} associated with the given ID.
      * @throws {@link FileNotFoundException }
      */
-    abstract File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException;
+    File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException;
 
     /**
      * Delete the file with the given fileId.
@@ -122,13 +122,13 @@ public interface Filestore {
      *            file identifier
      * @throws {@link IOException }
      */
-    abstract void purge(InformationResourceFileVersion version) throws IOException;
+    void purge(InformationResourceFileVersion version) throws IOException;
 
-    abstract String getFilestoreLocation();
+    String getFilestoreLocation();
 
-    abstract MessageDigest createDigest(File f);
+    MessageDigest createDigest(File f);
 
-    abstract boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException, TaintedFileException;
+    boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException, TaintedFileException;
 
     public abstract static class BaseFilestore implements Filestore {
         private static final String MD5 = "MD5";

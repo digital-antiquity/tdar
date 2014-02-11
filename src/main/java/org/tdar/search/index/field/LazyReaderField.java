@@ -31,9 +31,8 @@ import org.slf4j.LoggerFactory;
 public class LazyReaderField extends AbstractField implements Fieldable {
 
     private static final long serialVersionUID = 2428565315964872093L;
-    Reader reader;
-    protected final static transient Logger logger = LoggerFactory.getLogger(LazyReaderField.class);
-    String content;
+    private Reader reader;
+    private final static transient Logger logger = LoggerFactory.getLogger(LazyReaderField.class);
     private List<URI> paths;
 
     public LazyReaderField(String name, List<URI> paths, Field.Store store, Field.Index index, Float boost) {

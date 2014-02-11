@@ -25,9 +25,6 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
-import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
@@ -39,9 +36,6 @@ import org.tdar.utils.jaxb.JaxbValidationEvent;
 @ParentPackage("secured")
 public class APIController extends AuthenticationAware.Base {
 
-    @Autowired
-    PersonalFilestoreService filestoreService;
-
     private List<File> uploadFile = new ArrayList<>();
     private List<String> uploadFileFileName = new ArrayList<>();
     private String record;
@@ -49,16 +43,12 @@ public class APIController extends AuthenticationAware.Base {
     private String status;
     private Long projectId; // note this will override projectId value specified in record
 
-    @Autowired
-    public ImportService importService;
-    @Autowired
-    public XmlService xmlService;
-
     // on the receiving end
     private List<String> processedFileNames;
 
-    private ObfuscationService obfuscationService;
-
+    @Autowired
+    private ImportService importService;
+    
     private Resource importedRecord;
     private String message;
     private List<String> restrictedFiles = new ArrayList<>();
@@ -82,10 +72,10 @@ public class APIController extends AuthenticationAware.Base {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             Resource resource = getResourceService().find(getId());
             if (!isAdministrator() && !getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), resource)) {
-                obfuscationService.obfuscate(resource,getAuthenticatedUser());
+                getObfuscationService().obfuscate(resource,getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
-            String xml = xmlService.convertToXML(resource);
+            String xml = getXmlService().convertToXML(resource);
             setInputStream(new ByteArrayInputStream(xml.getBytes()));
             return SUCCESS;
         }
@@ -115,7 +105,7 @@ public class APIController extends AuthenticationAware.Base {
         }
 
         try {
-            Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
+            Resource incoming = (Resource) getXmlService().parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
             Person authenticatedUser = getAuthenticatedUser();
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId);

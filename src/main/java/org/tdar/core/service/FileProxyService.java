@@ -33,7 +33,7 @@ public class FileProxyService {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    PersonalFilestoreService filestoreService;
+    private PersonalFilestoreService filestoreService;
 
     public static final String MISSING_FILE_PROXY_WARNING = "something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {}";
 

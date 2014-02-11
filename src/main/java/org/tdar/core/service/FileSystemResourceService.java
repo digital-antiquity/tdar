@@ -1,7 +1,6 @@
 package org.tdar.core.service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -28,14 +27,14 @@ import freemarker.ext.dom.NodeModel;
 public class FileSystemResourceService {
 
     @Autowired
-    FileSystemResourceDao fileSystemResourceDao;
+    private FileSystemResourceDao fileSystemResourceDao;
 
     public boolean testWRO() {
         return fileSystemResourceDao.testWRO();
     }
 
     // helper to load the PDF Template for the cover page
-    public File loadTemplate(String path) throws IOException, FileNotFoundException {
+    public File loadTemplate(String path) throws IOException {
         return fileSystemResourceDao.loadTemplate(path);
     }
 

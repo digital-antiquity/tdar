@@ -49,10 +49,10 @@ public class DownloadService {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    PdfService pdfService;
+    private PdfService pdfService;
 
     @Autowired
-    GenericService genericService;
+    private GenericService genericService;
 
     // TODO
     private String slugify(InformationResource resource) {

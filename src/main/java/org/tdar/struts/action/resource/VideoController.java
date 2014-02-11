@@ -41,7 +41,7 @@ public class VideoController extends AbstractInformationResourceController<Video
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(ResourceType.VIDEO);
+        return getAnalyzer().getExtensionsForType(ResourceType.VIDEO);
     }
 
     @Override

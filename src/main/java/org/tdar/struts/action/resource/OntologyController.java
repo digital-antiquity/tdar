@@ -86,7 +86,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(ResourceType.ONTOLOGY);
+        return getAnalyzer().getExtensionsForType(ResourceType.ONTOLOGY);
     }
 
     public List<OntologyNode> getRootElements() {

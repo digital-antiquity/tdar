@@ -46,7 +46,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private String callback;
     private Long userId;
 
-    LinkedList<Throwable> errors = new LinkedList<Throwable>();
+    private LinkedList<Throwable> errors = new LinkedList<Throwable>();
 
     private List<LookupSource> indexesToRebuild = new ArrayList<LookupSource>();
 

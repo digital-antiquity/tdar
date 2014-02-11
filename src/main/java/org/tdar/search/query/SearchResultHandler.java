@@ -23,8 +23,8 @@ import org.tdar.struts.data.FacetGroup;
  */
 public interface SearchResultHandler<I extends Indexable> {
 
-    static final int DEFAULT_START = 0;
-    static final int DEFAULT_RESULT_SIZE = 25;
+    final int DEFAULT_START = 0;
+    final int DEFAULT_RESULT_SIZE = 25;
 
     SortOption getSortField();
 
@@ -107,7 +107,7 @@ public interface SearchResultHandler<I extends Indexable> {
 
     Person getAuthenticatedUser();
 
-    abstract String getSearchTitle();
+    String getSearchTitle();
 
     String getSearchDescription();
 

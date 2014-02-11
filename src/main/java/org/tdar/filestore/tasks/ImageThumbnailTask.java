@@ -47,7 +47,7 @@ public class ImageThumbnailTask extends AbstractTask {
     public static final int LARGE = 600;
     public static final int MEDIUM = 300;
     public static final int SMALL = 96;
-    transient ImagePlus ijSource;
+    private transient ImagePlus ijSource;
     private boolean jaiImageJenabled = true;
     /*
      * public static void main(String[] args) {

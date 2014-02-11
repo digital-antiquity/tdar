@@ -98,7 +98,7 @@ public class SearchService {
     private SessionFactory sessionFactory;
 
     @Autowired
-    ObfuscationService obfuscationService;
+    private ObfuscationService obfuscationService;
 
     @Autowired
     private GenericService genericService;
@@ -112,7 +112,7 @@ public class SearchService {
 
     private transient ConcurrentMap<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>> parserCacheMap = new ConcurrentHashMap<>();
 
-    public static int MAX_FTQ_RESULTS = 50_000;
+    public static final int MAX_FTQ_RESULTS = 50_000;
 
     /**
      * Log the parser map (For debugging)

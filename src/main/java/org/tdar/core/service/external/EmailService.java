@@ -34,7 +34,7 @@ public class EmailService {
     private MailSender mailSender;
 
     @Autowired
-    FreemarkerService freemarkerService;
+    private FreemarkerService freemarkerService;
 
     /*
      * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates

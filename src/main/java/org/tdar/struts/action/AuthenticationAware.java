@@ -35,7 +35,7 @@ import org.tdar.web.SessionDataAware;
 })
 public interface AuthenticationAware extends SessionDataAware {
 
-    static final String TYPE_REDIRECT = "redirect";
+    final String TYPE_REDIRECT = "redirect";
 
     AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
 
@@ -44,7 +44,7 @@ public interface AuthenticationAware extends SessionDataAware {
 
     boolean isAuthenticated();
 
-    abstract boolean isBillingManager();
+    boolean isBillingManager();
 
     public abstract static class Base extends TdarActionSupport implements AuthenticationAware {
 

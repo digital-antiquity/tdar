@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -33,7 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,9 +112,8 @@ public class XmlService {
      * @return
      * @throws IOException
      * @throws JAXBException
-     * @throws NoSuchBeanDefinitionException
      */
-    public File generateSchema() throws IOException, JAXBException, NoSuchBeanDefinitionException {
+    public File generateSchema() throws IOException, JAXBException {
         final File tempFile = File.createTempFile(TDAR_SCHEMA, XSD, TdarConfiguration.getInstance().getTempDirectory());
         JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
 
@@ -170,7 +167,7 @@ public class XmlService {
      * @throws IOException
      */
     @Transactional
-    public void convertToJson(Object object, Writer writer) throws JsonProcessingException, IOException {
+    public void convertToJson(Object object, Writer writer) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JaxbAnnotationModule());
         ObjectWriter objectWriter = null;

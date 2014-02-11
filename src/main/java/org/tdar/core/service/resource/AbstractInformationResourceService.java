@@ -66,7 +66,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
-    protected FileAnalyzer analyzer;
+    private FileAnalyzer analyzer;
 
     // private MessageService messageService;
 
@@ -409,4 +409,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         this.analyzer = analyzer;
     }
 
+    public FileAnalyzer getAnalyzer() {
+        return analyzer;
+    }
 }

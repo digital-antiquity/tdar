@@ -162,7 +162,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(ResourceType.CODING_SHEET);
+        return getAnalyzer().getExtensionsForType(ResourceType.CODING_SHEET);
     }
 
     @Override

@@ -128,7 +128,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(ResourceType.DOCUMENT);
+        return getAnalyzer().getExtensionsForType(ResourceType.DOCUMENT);
     }
 
     public void setDocument(Document document) {

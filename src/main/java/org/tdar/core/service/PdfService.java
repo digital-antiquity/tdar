@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.Date;
 
@@ -95,10 +94,9 @@ public class PdfService {
      * @param files
      * @return
      * @throws IOException
-     * @throws FileNotFoundException
      * @throws COSVisitorException
      */
-    private File mergePDFs(File... files) throws IOException, FileNotFoundException, COSVisitorException {
+    private File mergePDFs(File... files) throws IOException, COSVisitorException {
         PDFMergerUtility merger = new PDFMergerUtility();
         File outputFile = File.createTempFile(files[0].getName(), DOT_PDF, TdarConfiguration.getInstance().getTempDirectory());
         merger.setDestinationStream(new FileOutputStream(outputFile));

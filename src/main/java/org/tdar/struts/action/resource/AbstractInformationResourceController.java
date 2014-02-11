@@ -32,13 +32,11 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -60,10 +58,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private static final long serialVersionUID = -200666002871956655L;
 
     @Autowired
-    protected FileProxyService fileProxyService;
-
-    @Autowired
-    protected XmlService xmlService;
+    private FileProxyService fileProxyService;
 
     private List<CategoryVariable> allDomainCategories;
 
@@ -98,15 +93,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     // resource availability
     // private String resourceAvailability;
     private boolean allowedToViewConfidentialFiles;
-    protected FileAnalyzer analyzer;
+    private FileAnalyzer analyzer;
     private boolean hasDeletedFiles = false;
     // protected PersonalFilestoreTicket filestoreTicket;
     private ResourceCreatorProxy copyrightHolderProxies = new ResourceCreatorProxy();
 
-    @Autowired
-    protected PersonalFilestoreService filestoreService;
-
-    // private boolean resourceFilesHaveChanged = false;
 
     /**
      * This should be overridden when InformationResource content is entered from a text area in the web form.
@@ -367,7 +358,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             }
         }
         try {
-            filesJson = xmlService.convertToJson(fileProxies);
+            filesJson = getXmlService().convertToJson(fileProxies);
         } catch (IOException e) {
             getLogger().error("could not convert file list to json", e);
             filesJson = "[]";
@@ -524,7 +515,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     @Autowired
     public void setFileAnalyzer(FileAnalyzer analyzer) {
-        this.analyzer = analyzer;
+        this.analyzer= analyzer;
     }
 
     public Collection<String> getValidFileExtensions() {
@@ -674,6 +665,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public String getFilesJson() {
         loadFilesJson();
         return filesJson;
+    }
+
+    public FileAnalyzer getAnalyzer() {
+        return analyzer;
     }
 
 }

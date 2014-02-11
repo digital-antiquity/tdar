@@ -35,7 +35,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     }
 
     @Autowired
-    InformationResourceFileVersionDao informationResourceFileVersionDao;
+    private InformationResourceFileVersionDao informationResourceFileVersionDao;
 
     public InformationResourceFile findByFilestoreId(String filestoreId) {
         return findByProperty("filestoreId", filestoreId);

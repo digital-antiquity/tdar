@@ -52,10 +52,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     private GenericDao genericDao;
 
     @Autowired
-    DatasetDao datasetDao;
+    private DatasetDao datasetDao;
 
     @Autowired
-    AuthenticationAndAuthorizationService authService;
+    private AuthenticationAndAuthorizationService authService;
 
     /**
      * Find the account (if exists) associated with the invoice

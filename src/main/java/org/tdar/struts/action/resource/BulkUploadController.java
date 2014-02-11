@@ -26,6 +26,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadService;
+import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
@@ -56,6 +57,9 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private BulkUploadService bulkUploadService;
 
     @Autowired
+    private PersonalFilestoreService filestoreService;
+
+    @Autowired
     private FileAnalyzer analyzer;
 
     private String bulkFileName;
@@ -65,7 +69,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private String phase;
     private List<Pair<Long, String>> details;
     private String asyncErrors;
-    int maxReferenceRow = 0;
+    private int maxReferenceRow = 0;
     private File templateFile;
     private String templateFilename;
 
@@ -225,7 +229,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Override
     public Collection<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT);
+        return getAnalyzer().getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT);
     }
 
     @Override

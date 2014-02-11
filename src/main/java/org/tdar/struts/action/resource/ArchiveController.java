@@ -54,7 +54,7 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(ResourceType.ARCHIVE);
+        return getAnalyzer().getExtensionsForType(ResourceType.ARCHIVE);
     }
 
     public void setArchive(final Archive archive) {

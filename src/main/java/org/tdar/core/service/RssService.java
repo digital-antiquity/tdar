@@ -131,12 +131,11 @@ public class RssService implements Serializable {
      * 
      * @param url
      * @return
-     * @throws IllegalArgumentException
      * @throws FeedException
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    public List<SyndEntry> parseFeed(URL url) throws IllegalArgumentException, FeedException, IOException {
+    public List<SyndEntry> parseFeed(URL url) throws FeedException, IOException {
         List<SyndEntry> result = new ArrayList<>();
         HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
         // Reading the feed

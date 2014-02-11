@@ -1,5 +1,19 @@
 package org.tdar.core.service.resource.ontology;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -17,11 +31,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.utils.MessageHelper;
-
-import java.io.*;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 /**
  * Converts a text formatted Ontology into an OWL XML ontology
  *
@@ -36,11 +45,11 @@ public class OwlOntologyConverter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public final static String IRI_INVALID_CHARACTERS_REGEX = "[^\\w~.-]";
-    public final static Pattern TAB_PREFIX_PATTERN = Pattern.compile("^(\\t+).*$");
+    public static final String IRI_INVALID_CHARACTERS_REGEX = "[^\\w~.-]";
+    public static final Pattern TAB_PREFIX_PATTERN = Pattern.compile("^(\\t+).*$");
     public static final String SYNONYM_SPLIT_REGEX = ";";
-    public final static Pattern SYNONYM_PATTERN = Pattern.compile("^(.+)[\\(\\[](.+)[\\)\\]](.*)$");
-    public final static Pattern DESCRIPTION_PATTERN = Pattern.compile("^(.+)\\{(.+)\\}$");
+    public static final Pattern SYNONYM_PATTERN = Pattern.compile("^(.+)[\\(\\[](.+)[\\)\\]](.*)$");
+    public static final Pattern DESCRIPTION_PATTERN = Pattern.compile("^(.+)\\{(.+)\\}$");
 
     public static final String TDAR_ORDER_PREFIX = "TDAROrder-";
     public static final String TDAR_DESCRIPTION_PREFIX = "TDARDescription-";

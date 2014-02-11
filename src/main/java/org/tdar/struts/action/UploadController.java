@@ -23,11 +23,9 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")
@@ -42,8 +40,6 @@ public class UploadController extends AuthenticationAware.Base {
 
     @Autowired
     private PersonalFilestoreService filestoreService;
-    @Autowired
-    XmlService xmlService;
 
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();
@@ -51,7 +47,7 @@ public class UploadController extends AuthenticationAware.Base {
     private PersonalFilestoreTicket personalFilestoreTicket;
     private String callback;
     private Long informationResourceId;
-    InputStream jsonInputStream;
+    private InputStream jsonInputStream;
     private int jsonContentLength;
 
     // on the receiving end
@@ -178,7 +174,7 @@ public class UploadController extends AuthenticationAware.Base {
             }
         }
         StringWriter sw = new StringWriter();
-        xmlService.convertToJson(fileProxies, sw);
+        getXmlService().convertToJson(fileProxies, sw);
         String json = sw.toString();
         getLogger().trace("file list as json: {}", json);
         byte[] jsonBytes = json.getBytes();

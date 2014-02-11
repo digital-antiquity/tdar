@@ -16,7 +16,7 @@ import org.tdar.db.conversion.analyzers.LongAnalyzer;
 
 public class ConversionStatisticsManager {
 
-    Logger logger = Logger.getLogger(getClass());
+    private Logger logger = Logger.getLogger(getClass());
 
     private Map<DataTableColumn, List<ColumnAnalyzer>> statistics = new HashMap<DataTableColumn, List<ColumnAnalyzer>>();
 
