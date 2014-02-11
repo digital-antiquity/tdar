@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -19,7 +20,6 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
@@ -30,6 +30,7 @@ import org.tdar.core.service.resource.ResourceService;
 import com.redfin.sitemapgenerator.ChangeFreq;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 import com.redfin.sitemapgenerator.GoogleImageSitemapUrl;
+import com.redfin.sitemapgenerator.SitemapIndexGenerator;
 import com.redfin.sitemapgenerator.WebSitemapGenerator;
 import com.redfin.sitemapgenerator.WebSitemapUrl;
 
@@ -55,22 +56,24 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
     public void execute() {
         run = true;
         TdarConfiguration config = TdarConfiguration.getInstance();
-        File file = new File(config.getSitemapDir());
+        File dir = new File(config.getSitemapDir());
         try {
-            FileUtils.deleteDirectory(file);
+            FileUtils.deleteDirectory(dir);
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-        file.mkdirs();
+        dir.mkdirs();
         WebSitemapGenerator wsg;
         GoogleImageSitemapGenerator gisg;
+        SitemapIndexGenerator sig;
         int total = 0;
         int totalImages = 0;
         boolean imageSitemapGeneratorEnabled = true;
         try {
-            wsg = WebSitemapGenerator.builder(config.getBaseUrl(), file).gzip(true).allowMultipleSitemaps(true).build();
-            gisg = GoogleImageSitemapGenerator.builder(config.getBaseUrl(), file).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image").build();
+            wsg = WebSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).build();
+            gisg = GoogleImageSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
+            sig = new SitemapIndexGenerator(config.getBaseUrl(),new File(dir,"sitemap_index.xml"));
             // wsg.set
             List<Resource> resources = resourceService.findAllSparseActiveResources();
             total += resources.size();
@@ -112,20 +115,31 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
                 String url = urlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
                 addUrl(wsg, url);
             }
-            // for (int i = 0; i < 60000; i++) wsg.addUrl(config.getBaseUrl() +"/doc"+i+".html");
-            // total += 60000;
             if (total > 0) {
                 wsg.write();
             }
             if (totalImages > 0) {
                 gisg.write();
             }
-            if (total > WebSitemapGenerator.MAX_URLS_PER_SITEMAP) {
-                wsg.writeSitemapsWithIndex();
+
+            Date date = new Date();
+            for (File file : dir.listFiles()) {
+                if (file.getName().equals("sitemap_index.xml")) {
+                    continue;
+                }
+                File sitemap1 = new File(dir,"sitemap1.xml.gz");
+                if (file.getName().equals("sitemap.xml.gz") && sitemap1.exists()) {
+                    continue;
+                }
+                File imageSitemap1 = new File(dir,"image_sitemap1.xml.gz");
+                if (file.getName().equals("image_sitemap.xml.gz") && imageSitemap1.exists()) {
+                    continue;
+                }
+                
+                sig.addUrl(String.format("%s/%s/%s",config.getBaseUrl(),"sitemap",file.getName()), date);
             }
-            if (totalImages > WebSitemapGenerator.MAX_URLS_PER_SITEMAP) {
-                gisg.writeSitemapsWithIndex();
-            }
+
+            sig.write();
             // wsg.addUrl("http://www.example.com/index.html"); // repeat multiple times
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
