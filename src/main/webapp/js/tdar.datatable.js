@@ -360,8 +360,8 @@ TDAR.datatable = function () {
     function _rowSelected(obj) {
 
         // first, add the hidden input tag to the dom
-        var tag = '<input type="hidden" name="resources.id" value="' + obj.id + '" id="hr' + obj.id + '"/>';
-        console.log("adding selected resource:" + tag);
+        var tag = '<input type="hidden" name="resources.id" value="' + obj.id + '" id="hrid' + obj.id + '"/>';
+        //console.log("adding selected resource:" + tag);
         $('#divSelectedResources').append(tag);
 
         // next, add a new row to the 'selected items' table.
@@ -369,10 +369,10 @@ TDAR.datatable = function () {
         var $table = $('#tblCollectionResources');
         var $tbody = $('tbody', $table);
         var resourceTag = '';
-        resourceTag += '<tr id="dataTableRow_:id">                                                                   ';
+        resourceTag += '<tr id="dtr_:id">                                                                   ';
         resourceTag += '    <td>:id</td>                                                                             ';
         resourceTag += '    <td>                                                                                      ';
-        resourceTag += '        <a href="/:urlNamespace/:id" target="resourcedetail" >                                    ';
+        resourceTag += '        <a href="/:urlNamespace/:id" target="_b" >                                    ';
         resourceTag += '            :title        ';
         resourceTag += '        </a>                                                                                  ';
         resourceTag += '    </td>                                                                                     ';
@@ -395,10 +395,10 @@ TDAR.datatable = function () {
      * @private
      */
     function _rowUnselected(obj) {
-        console.log('removing selected reosurce:' + obj.id);
-        $('#hr' + obj.id).remove();
+        //console.log('removing selected reosurce:' + obj.id);
+        $('#hrid' + obj.id).remove();
 
-        var $row = $('#dataTableRow_' + obj.id);
+        var $row = $('#dtr_' + obj.id);
         var $table = $row.closest('table');
         // var $div = $row.closest('div');
         $row.remove();
@@ -421,7 +421,7 @@ TDAR.datatable = function () {
         var $dataTable = $(dataTable);
         // delete the element from the selectedrows structure and remove the hidden input tag
         delete $dataTable.data('selectedRows')[id];
-        $('#hr' + id).remove();
+        $('#hrid' + id).remove();
 
         // now delete the row from the table
         var $elem = $(elem);

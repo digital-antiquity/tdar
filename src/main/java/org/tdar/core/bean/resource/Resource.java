@@ -219,9 +219,22 @@ public class Resource extends JsonModel.Base implements Persistable,
         setStatus(status);
     }
 
-    public Resource(Long id, String title, ResourceType resourceType, Status status, Person submitter) {
+    /**
+     * Instantiate a "sparse" resource object instance that has a very limited number of populated fields. This is
+     * useful in the context of displaying summary information about a collection of resources.  You should not
+     * attempt to persist objects created using this constructor.
+     *
+     * @param id
+     * @param title
+     * @param resourceType
+     * @param status
+     * @param submitterId
+     */
+    public Resource(Long id, String title, ResourceType resourceType, Status status, Long submitterId) {
         this(id, title, resourceType);
         this.status = status;
+        Person submitter = new Person();
+        submitter.setId(submitterId);
         this.submitter = submitter;
     }
 

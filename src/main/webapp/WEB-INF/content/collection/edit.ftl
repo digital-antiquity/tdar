@@ -136,7 +136,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     </div>
 
     <div id="divSelectedResources">
-    <#list resources as resource><input type="hidden" name="resources.id" value="${resource.id?c}" id="hr${resource.id?c}"></#list>
+    <#list resources as resource><input type="hidden" name="resources.id" value="${resource.id?c}" id="hrid${resource.id?c}"></#list>
     </div>
 </div>
 

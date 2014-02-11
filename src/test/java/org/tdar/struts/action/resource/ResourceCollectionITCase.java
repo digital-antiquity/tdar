@@ -1,21 +1,13 @@
 package org.tdar.struts.action.resource;
 
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
@@ -1288,5 +1280,47 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         }
         assertTrue(seen);
         ignoreActionErrors(true);
+    }
+
+    private Map<Long, Resource> getIdmap(Set<Resource> resources) {
+        Map<Long, Resource> idmap = new HashMap<>();
+        for(Resource resource : resources) {
+            idmap.put(resource.getId(), resource);
+        }
+        return idmap;
+    }
+
+    @Test
+    /**
+     *  Assert that the sparse resource list returned by findCollectionSparseResources  matches the persisted list (for
+     *  the subset of properties in Resource that we care about)
+     */
+    public void testfindCollectionSparseResources() {
+
+        //For now we rely on the the init-test and any data created by intervening web tests.  In this way this test
+        //is brittle.  A better idea would be to create our own sample data.
+        List<ResourceCollection> allCollections = resourceCollectionService.findAll();
+        assertThat("sample data set size", allCollections.size(), greaterThan(5));
+
+        for(ResourceCollection collection : allCollections) {
+            //get map of persisted resources
+            Map<Long, Resource> persistedResourceMap = getIdmap(collection.getResources());
+
+            //get list of sparse resources, make sure it has same size  & contents as the persisted resource list.
+            List<Resource> sparseResources = resourceCollectionService.findCollectionSparseResources(collection.getId());
+            assertThat(collection.getResources(), hasSize(sparseResources.size()));
+
+            for(Resource sparseResource : sparseResources) {
+                logger.trace("evaluating resource:{}", sparseResource);
+                assertThat(persistedResourceMap, hasKey(sparseResource.getId()));
+
+                Resource resource = persistedResourceMap.get(sparseResource.getId());
+                assertThat(sparseResource.getTitle(),           is(resource.getTitle()));
+                assertThat(sparseResource.getResourceType(),    is(resource.getResourceType()));
+                assertThat(sparseResource.getStatus(),          is(resource.getStatus()));
+                assertThat(sparseResource.getSubmitter(),       is(resource.getSubmitter())); //here we assume ID equality
+            }
+        }
+
     }
 }

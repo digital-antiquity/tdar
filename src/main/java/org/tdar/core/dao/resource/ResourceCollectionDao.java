@@ -6,12 +6,7 @@
  */
 package org.tdar.core.dao.resource;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Query;

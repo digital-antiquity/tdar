@@ -192,8 +192,8 @@ public class CollectionController extends AbstractPersistableController<Resource
     public String loadEditMetadata() throws TdarActionException {
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
-        resources.addAll(getResourceCollectionService().findCollectionSparseResources(getId()));
-
+        List<Resource> sparseResources = getResourceCollectionService().findCollectionSparseResources(getId());
+        resources.addAll(sparseResources);
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
@@ -239,9 +239,13 @@ public class CollectionController extends AbstractPersistableController<Resource
      */
     private List<Resource> getRetainedResources() {
         List<Resource> retainedResources = new ArrayList<Resource>();
+<<<<<<< mine
         for (Resource resource : getResources()) {
             getLogger().debug("retain?: {}", resource);
             getLogger().debug("{} <--> {}", getAuthenticatedUser(), resource.getSubmitter());
+=======
+        for (Resource resource : resources) {
+>>>>>>> theirs
             boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
             if (!canEdit) {
                 retainedResources.add(resource);

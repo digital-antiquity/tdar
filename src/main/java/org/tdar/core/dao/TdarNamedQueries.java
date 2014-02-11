@@ -199,5 +199,4 @@ public interface TdarNamedQueries {
             + "information_resource_file_version irfv where r.id=ir.id and ir.id=irf.information_resource_id and "
             + "irf.id=irfv.information_resource_file_id and internal_type='WEB_SMALL' and resource_type in ('IMAGE','SENSORY_DATA','GEOSPATIAL') "
             + "and restriction='PUBLIC' and r.status='ACTIVE'";
-    
 }
