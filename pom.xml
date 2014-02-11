@@ -527,8 +527,8 @@
 		<dependency>
 			<groupId>com.google.code</groupId>
 			<artifactId>sitemapgen4j</artifactId>
-			<version>1.0.1</version>
 			<!--  LICENSE: APACHE 2.0 -->
+			<version>fork-1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>stax</groupId>

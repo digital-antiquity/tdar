@@ -94,3 +94,7 @@ CREATE TABLE weekly_popular_resource_cache (
     resource_count bigint,
     resource_id bigint
 );
+
+alter table weekly_popular_resource_cache drop column label;
+alter table weekly_popular_resource_cache drop column level;
+alter table weekly_popular_resource_cache drop column resource_count;

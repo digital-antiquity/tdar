@@ -57,6 +57,8 @@ import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 
+import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
+
 @Service
 public class ResourceService extends GenericService {
 
@@ -641,5 +643,11 @@ public class ResourceService extends GenericService {
             arrayList.remove(ResourceType.ARCHIVE);
         }
         return arrayList;
+    }
+
+    @Transactional
+    public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
+        return datasetDao.findAllResourcesWithPublicImagesForSitemap(gisg);
+        
     }
 }

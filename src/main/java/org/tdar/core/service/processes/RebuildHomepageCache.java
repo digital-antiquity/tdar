@@ -82,10 +82,7 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         resourceService.deleteAll(WeeklyPopularResourceCache.class);
         resourceService.save(informationResourceService.findResourcesByYear(Status.ACTIVE));
         
-        DateTime end = new DateTime();
-        DateTime start = end.minusDays(7);
 
-        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, start.toDate(), end.toDate(), 1L);
 
         // cache?
         List<HomepageFeaturedItemCache> hfic = new ArrayList<HomepageFeaturedItemCache>();
@@ -93,22 +90,29 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         for (Object res : informationResourceService.findRandomFeaturedResourceInCollection(true, featuredCollectionId, 5)) {
             hfic.add(new HomepageFeaturedItemCache((InformationResource) res));
         }
-        
+
+        logger.debug("homepage featured item cache ({})",hfic.size());
+
         List<WeeklyPopularResourceCache> wrc = new ArrayList<WeeklyPopularResourceCache>();
+
         int max = 20;
-        if (CollectionUtils.isNotEmpty(wrc)) {
-            if (CollectionUtils.size(wrc) < max) {
-            max = wrc.size();
+        DateTime end = new DateTime();
+        DateTime start = end.minusDays(7);
+        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, start.toDate(), end.toDate(), 1L);
+        if (CollectionUtils.isNotEmpty(aggregateUsageStats)) {
+            if (CollectionUtils.size(aggregateUsageStats) < max) {
+                max = aggregateUsageStats.size();
             }
-            for (AggregateViewStatistic res : aggregateUsageStats.subList(0, max)) {
-                Resource resource = resourceService.find(res.getResourceId());
-                if (resource.isActive()) {
+            for (int i=0; i < max ; i++) {
+                Resource resource = resourceService.find(aggregateUsageStats.get(i).getResourceId());
+                if (resource != null && resource.isActive()) {
                     wrc.add(new WeeklyPopularResourceCache(resource));
                 }
             }
-            resourceService.save(wrc);
-            resourceService.save(hfic);
         }
+        logger.debug("weekly popular stats ({})",wrc.size());
+        resourceService.save(wrc);
+        resourceService.save(hfic);
 
         logger.info("done caching");
     }

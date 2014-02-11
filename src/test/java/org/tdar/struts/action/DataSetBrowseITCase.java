@@ -1,5 +1,5 @@
 /**
-x * $Id$
+ * $Id$
  * 
  * @author $Author$
  * @version $Revision$
@@ -12,15 +12,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.resource.DatasetService;
+import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.data.ResultMetadataWrapper;
 
 /**
@@ -29,8 +34,10 @@ import org.tdar.struts.data.ResultMetadataWrapper;
  */
 public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
 
+
     private static final int RESULTS_PER_PAGE = 2;
 
+    private static final String SRC_TEST_RESOURCES_DATA_INTEGRATION_TESTS_EMPTY_ACCDB = "src/test/resources/data_integration_tests/empty.accdb";
     private static final String DOUBLE_DATASET = "src/test/resources/coding sheet/double_translation_test_dataset.xlsx";
     private static final String TEXT_DATASET = "src/test/resources/coding sheet/csvCodingSheetText.csv";
 
@@ -112,4 +119,16 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
             assertTrue(row.contains(term));
         }
     }
+   
+    @Test
+    @Rollback
+    public void testTranslate() throws IOException, TdarActionException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+        // load datasets
+        Dataset dataset = setupAndLoadResource(SRC_TEST_RESOURCES_DATA_INTEGRATION_TESTS_EMPTY_ACCDB, Dataset.class);
+        DatasetController controller = generateNewInitializedController(DatasetController.class);
+        controller.setId(dataset.getId());
+        datasetService.createTranslatedFile(dataset);
+        assertNotNull(dataset);
+    }
+
 }

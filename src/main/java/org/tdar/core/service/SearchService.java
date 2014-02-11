@@ -754,7 +754,7 @@ public class SearchService {
         qb.append(params.toQueryPartGroup(MessageHelper.getInstance()));
         SearchResult result = new SearchResult();
         result.setAuthenticatedUser(authenticatedUser);
-        result.setSortField(SortOption.DATE_REVERSE);
+        result.setSortField(SortOption.ID_REVERSE);
         result.setSecondarySortField(SortOption.TITLE);
         result.setStartRecord(0);
         result.setRecordsPerPage(10);

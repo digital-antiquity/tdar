@@ -18,13 +18,13 @@ public class UrlService {
     public static final String TDAR_NAMESPACE_URL = "http://www.tdar.org/namespace";
     public static final String TDAR_NAMESPACE_PREFIX = "tdar";
 
-    private String baseUrl;
+    private static String baseUrl;
 
     /*
      * Get the tDAR Base URL
      * 
      */
-    public String getBaseUrl() {
+    public static String getBaseUrl() {
         if (baseUrl == null) {
             baseUrl = StringUtils.stripEnd(TdarConfiguration.getInstance().getBaseUrl().trim(), "/");
         }
@@ -77,7 +77,7 @@ public class UrlService {
      * @param id
      * @return
      */
-    public String absoluteUrl(String namespace, Long id) {
+    public static String absoluteUrl(String namespace, Long id) {
         return String.format("%s/%s/%s", StringUtils.stripEnd(getBaseUrl(), "/"), namespace, id);
     }
 
@@ -89,6 +89,25 @@ public class UrlService {
      */
     public String downloadUrl(InformationResourceFileVersion version) {
         return String.format("%s/filestore/%d/get", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
+    }
+
+
+    /**
+     * get the URL for a thumbnail image
+     * 
+     * @return
+     */
+    public String thumbnailUrl(InformationResourceFileVersion version) {
+        return String.format("%s/filestore/%d/thumbnail", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
+    }
+
+    /**
+     * get the URL for a thumbnail image
+     * 
+     * @return
+     */
+    public static String thumbnailUrl(Long id) {
+        return String.format("%s/filestore/%d/thumbnail", StringUtils.stripEnd(getBaseUrl(), "/"), id);
     }
 
     /**
@@ -136,4 +155,5 @@ public class UrlService {
         Object attr = servletRequest.getAttribute(attribute);
         return (String) attr;
     }
+
 }

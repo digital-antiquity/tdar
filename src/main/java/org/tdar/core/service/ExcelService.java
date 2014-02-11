@@ -510,9 +510,14 @@ public class ExcelService {
         if (TdarConfiguration.getInstance().getMaxSpreadSheetRows() > 1) {
             maxRows = TdarConfiguration.getInstance().getMaxSpreadSheetRows();
         }
-
         while (data.hasNext()) {
-            Object[] row = data.next();
+            Object[] row = null;
+            try {
+                row = data.next();
+            } catch (RuntimeException re) {
+                logger.error("RuntimeException, table empty?", re);
+                break;
+            }
             rowNum++;
             addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
             if (rowNum >= maxRows - 1) {
