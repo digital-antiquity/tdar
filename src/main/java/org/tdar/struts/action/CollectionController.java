@@ -185,11 +185,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
 
-        // FIXME: this could be replaced with a load that's a skeleton object (title, resourceType, date)
-        resources.addAll(getPersistable().getResources());
-        // for (Resource resource : getPersistable().getResources()) {
-        // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
-        // }
+        List<Resource> sparseResources = getResourceCollectionService().findCollectionSparseResources(getId());
+        resources.addAll(sparseResources);
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
@@ -232,7 +229,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private List<Resource> getRetainedResources() {
         List<Resource> retainedResources = new ArrayList<Resource>();
-        for (Resource resource : getPersistable().getResources()) {
+        for (Resource resource : resources) {
             boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
             if (!canEdit) {
                 retainedResources.add(resource);

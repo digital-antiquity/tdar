@@ -317,9 +317,9 @@ function _registerResourceCollectionDataTable(dataTable, resourcesTable) {
     }
 
     //bind row delete button
-    $resourcesTable.on('click', 'button.remove-row', function() {
+    $resourcesTable.on('click', 'button', function() {
         var button = this,
-            resourceid = $(button).data("resourceid");
+            resourceid = $(button).data("rid");
         _removeResourceClicked(resourceid, button, dataTable);
     } );
 }
@@ -328,8 +328,8 @@ function _registerResourceCollectionDataTable(dataTable, resourcesTable) {
 function _rowSelected(obj) {
 
     // first, add the hidden input tag to the dom
-    var tag = '<input type="hidden" name="resources.id" value="' + obj.id + '" id="hdnResourceId' + obj.id + '"/>';
-    console.log("adding selected resource:" + tag);
+    var tag = '<input type="hidden" name="resources.id" value="' + obj.id + '" id="hrid' + obj.id + '"/>';
+    //console.log("adding selected resource:" + tag);
     $('#divSelectedResources').append(tag);
 
     // next, add a new row to the 'selected items' table.
@@ -337,14 +337,14 @@ function _rowSelected(obj) {
     var $table = $('#tblCollectionResources');
     var $tbody = $('tbody', $table);
     var resourceTag = '';
-        resourceTag += '<tr id="dataTableRow_:id">                                                                   ';
+        resourceTag += '<tr id="dtr_:id">                                                                   ';
         resourceTag += '    <td>:id</td>                                                                             ';
         resourceTag += '    <td>                                                                                      ';
-        resourceTag += '        <a href="/:urlNamespace/:id" target="resourcedetail" >                                    ';
+        resourceTag += '        <a href="/:urlNamespace/:id" target="_" >                                    ';
         resourceTag += '            :title        ';
         resourceTag += '        </a>                                                                                  ';
         resourceTag += '    </td>                                                                                     ';
-        resourceTag += '    <td><button class="btn btn-mini remove-row" data-resourceid=":id" type="button" tabindex="-1"><i class="icon-trash"></i></button></td>';
+        resourceTag += '    <td><button class="btn btn-mini" data-rid=":id" type="button" tabindex="-1"><i class="icon-trash"></i></button></td>';
         resourceTag += '</tr>                                                                                         ';
 
        resourceTag = resourceTag.replace(/:id/g, obj.id);
@@ -358,10 +358,10 @@ function _rowSelected(obj) {
 }
 
 function _rowUnselected(obj) {
-    console.log('removing selected reosurce:' + obj.id);
-    $('#hdnResourceId' + obj.id).remove();
+    //console.log('removing selected reosurce:' + obj.id);
+    $('#hrid' + obj.id).remove();
     
-    var $row = $('#dataTableRow_' + obj.id);
+    var $row = $('#dtr_' + obj.id);
     var $table = $row.closest('table');
     // var $div = $row.closest('div');
     $row.remove();
@@ -373,7 +373,7 @@ function _removeResourceClicked(id, elem, dataTable) {
     var $dataTable = $(dataTable);
     // delete the element from the selectedrows structure and remove the hidden input tag
     delete $dataTable.data('selectedRows')[id];
-    $('#hdnResourceId' + id).remove();
+    $('#hrid' + id).remove();
     
     // now delete the row from the table
     var $elem = $(elem);

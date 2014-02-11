@@ -190,4 +190,5 @@ public interface TdarNamedQueries {
             + "irf.id=irfv.information_resource_file_id and internal_type='WEB_SMALL' and resource_type in ('IMAGE','SENSORY_DATA','GEOSPATIAL') "
             + "and restriction='PUBLIC' and r.status='ACTIVE'";
 
+    public static final String QUERY_SPARSE_COLLECTION_RESOURCES = "query.sparse.collection.resources";
 }

@@ -7,7 +7,7 @@
 <hibernate-configuration>
     <session-factory name="sessionFactory">
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://localhost/tdarmetadata</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost/tdarmetadata_stable</property>
         <property name="hibernate.connection.username">tdar</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <mapping package="org.tdar.core.bean.resource"/>

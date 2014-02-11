@@ -6,16 +6,13 @@
  */
 package org.tdar.core.dao.resource;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
@@ -141,6 +138,15 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             toEvaluate.addAll(findCollectionsOfParent(child.getId(), null, collectionType));
         }
         return collections;
+    }
+
+    public List<Resource> findCollectionSparseResources(Long collectionId) {
+        if (Persistable.Base.isNullOrTransient(collectionId)) {
+            return Collections.EMPTY_LIST;
+        }
+        Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_COLLECTION_RESOURCES);
+        query.setLong("id", collectionId);
+        return (List<Resource>) query.list();
     }
 
 }
