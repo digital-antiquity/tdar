@@ -62,6 +62,8 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
                 return SENSORY_DATA.label;
             case GEOSPATIAL:
                 return GEOSPATIAL.label;
+            case AUDIO:
+                return AUDIO.label;
             default:
                 return getLabel().concat("s");
         }
