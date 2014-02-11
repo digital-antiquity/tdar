@@ -3,22 +3,16 @@ package org.tdar.core.service.processes;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -29,7 +23,6 @@ import org.tdar.core.service.resource.ResourceService;
 
 import com.redfin.sitemapgenerator.ChangeFreq;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
-import com.redfin.sitemapgenerator.GoogleImageSitemapUrl;
 import com.redfin.sitemapgenerator.SitemapIndexGenerator;
 import com.redfin.sitemapgenerator.WebSitemapGenerator;
 import com.redfin.sitemapgenerator.WebSitemapUrl;
@@ -69,7 +62,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
         SitemapIndexGenerator sig;
         int total = 0;
         int totalImages = 0;
-        boolean imageSitemapGeneratorEnabled = false;
+        boolean imageSitemapGeneratorEnabled = true;
         try {
             wsg = WebSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).build();
             gisg = GoogleImageSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
@@ -82,13 +75,12 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             for (Resource resource : resources) {
                 String url = urlService.absoluteUrl(resource);
                 addUrl(wsg, url);
-                if (imageSitemapGeneratorEnabled) {
-                    if (resource.getResourceType().isImage() || resource.getResourceType().isSensoryData() || resource.getResourceType().isGeospatial()) {
-                        InformationResource ir = resourceService.find(resource.getId());
-                        totalImages += addImageUrl(gisg, url, ir);
-                    }
-                }
             }
+
+            if (imageSitemapGeneratorEnabled) {
+                totalImages = resourceService.findAllResourcesWithPublicImagesForSitemap(gisg);
+            }
+
             logger.info("({}) images in sitemap", totalImages);
             
 
@@ -145,29 +137,6 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-    private int addImageUrl(GoogleImageSitemapGenerator gisg, String loc, InformationResource resource) throws MalformedURLException {
-        int count = 0;
-        if (resource == null || CollectionUtils.isEmpty(resource.getPublicFiles())) {
-            return count;
-        }
-        
-        for (InformationResourceFile version : resource.getPublicFiles()) {
-            InformationResourceFileVersion thumb = version.getLatestThumbnail();
-            if (version.isPublic() && thumb != null) {
-                String imageUrl = urlService.downloadUrl(thumb);
-                String description = version.getDescription();
-                if (StringUtils.isBlank(description)) {
-                    description = resource.getDescription();
-                }
-                GoogleImageSitemapUrl iurl = new GoogleImageSitemapUrl.Options(new URL(loc)).addImage(
-                        new GoogleImageSitemapUrl.ImageTag(new URL(imageUrl)).title(resource.getTitle()).caption(description)).build();
-                gisg.addUrl(iurl);
-                count++;
-            }
-        }
-        return count;
     }
 
     private void addUrl(WebSitemapGenerator wsg, String url) throws MalformedURLException {

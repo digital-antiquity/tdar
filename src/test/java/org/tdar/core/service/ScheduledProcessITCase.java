@@ -45,6 +45,7 @@ import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
+import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 
@@ -62,6 +63,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private SitemapGeneratorProcess sitemap;
+
+    @Autowired
+    RebuildHomepageCache homepage;
 
     @Autowired
     WeeklyStatisticsLoggingProcess processingTask;
@@ -146,6 +150,11 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Test
     public void testSitemapGen() {
         sitemap.execute();
+    }
+
+    @Test
+    public void testHomepageGen() {
+        homepage.execute();
     }
 
     @Test

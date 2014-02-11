@@ -184,4 +184,10 @@ public interface TdarNamedQueries {
     public static final String UPDATE_CREATOR_OCCURRENCE_RESOURCE = "update creator set occurrence = occurrence+ coalesce((select count(resource_id) from resource_creator where creator_id=creator.id group by creator_id),0) ";
     public static final String DATASETS_USING_NODES = "select id from resource where id in (select dataset_id from data_table where data_table.id in (select data_table_id from data_table_column, coding_rule, coding_sheet where data_table_column.default_coding_sheet_id=coding_sheet_id and coding_rule.coding_sheet_id=coding_sheet.id and  ontology_node_id=%s)) and status = 'ACTIVE'";
     public static final String HQL_DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY = "delete InformationResourceFileVersion where id = :id";
+    
+    public static final String SELECT_RAW_IMAGE_SITEMAP_FILES = "select r.id as resourceId, r.title, r.description as resourceDescription, r.resource_type, irf.description, irfv.id from resource r, information_resource ir, information_resource_file irf, "
+            + "information_resource_file_version irfv where r.id=ir.id and ir.id=irf.information_resource_id and "
+            + "irf.id=irfv.information_resource_file_id and internal_type='WEB_SMALL' and resource_type in ('IMAGE','SENSORY_DATA','GEOSPATIAL') "
+            + "and restriction='PUBLIC' and r.status='ACTIVE'";
+
 }

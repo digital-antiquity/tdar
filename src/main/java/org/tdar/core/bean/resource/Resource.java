@@ -203,8 +203,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         setResourceType(type);
     }
 
-    public Resource(Long id, String title, ResourceType resourceType,
-            String description, Status status) {
+    public Resource(Long id, String title, ResourceType resourceType, String description, Status status) {
         this(id, title, resourceType);
         setDescription(description);
         setStatus(status);

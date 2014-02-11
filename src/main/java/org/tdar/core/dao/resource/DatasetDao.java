@@ -1,5 +1,6 @@
 package org.tdar.core.dao.resource;
 
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -38,8 +39,13 @@ import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.db.model.abstracts.TargetDatabase;
+
+import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
+import com.redfin.sitemapgenerator.GoogleImageSitemapUrl;
+import com.redfin.sitemapgenerator.GoogleImageSitemapUrl.ImageTag;
 
 /**
  * $Id$
@@ -250,6 +256,37 @@ public class DatasetDao extends ResourceDao<Dataset> {
     public List<Resource> findAllSparseActiveResources() {
         Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_ACTIVE_RESOURCES);
         return query.list();
+    }
+
+    public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
+        Query query = getCurrentSession().createSQLQuery(SELECT_RAW_IMAGE_SITEMAP_FILES);
+        int count = 0;
+        logger.trace(SELECT_RAW_IMAGE_SITEMAP_FILES);
+        for (Object[] row : (List<Object[]>)query.list()) {
+//            select r.id, r.title, r.description, r.resource_type, irf.description, irfv.id 
+            Number id = (Number)row[0];
+            String title = (String)row[1];
+            String description = (String)row[2];
+            ResourceType resourceType = ResourceType.valueOf((String)row[3]);
+            String fileDescription = (String)row[4];
+            Number imageId = (Number)row[5];
+            
+            String resourceUrl = UrlService.absoluteUrl(resourceType.getUrlNamespace(), id.longValue());
+            String imageUrl = UrlService.thumbnailUrl(imageId.longValue());
+            if (StringUtils.isNotBlank(fileDescription)) {
+                description = fileDescription;
+            }
+            try {
+                ImageTag tag = new GoogleImageSitemapUrl.ImageTag(new URL(imageUrl)).title(title).caption(description);
+                GoogleImageSitemapUrl iurl = new GoogleImageSitemapUrl.Options(new URL(resourceUrl)).addImage(tag).build();
+                gisg.addUrl(iurl);
+                count++;
+            } catch(Exception e) {
+                logger.error("error in url generation for sitemap {}", e);
+            }
+        }
+        return count;
+        
     }
 
 }
