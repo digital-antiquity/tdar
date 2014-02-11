@@ -55,7 +55,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
 
     @Override
     public String getLabel() {
-        return MessageHelper.getMessage("documentType."+ label);
+        return label;
     }
 
     public boolean isBookTitleDisplayed() {

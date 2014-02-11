@@ -6,12 +6,12 @@ import org.tdar.utils.MessageHelper;
 
 
 public enum AuthenticationResult  {
-    VALID(MessageHelper.getMessage("authenticationResult.valid")),
-    INVALID_PASSWORD(MessageHelper.getMessage("authenticationResult.invalid_password")),
-    INACTIVE_ACCOUNT(MessageHelper.getMessage("authenticationResult.invalid_account")),
-    ACCOUNT_DOES_NOT_EXIST(MessageHelper.getMessage("authenticationResult.account_does_not_exist")),
-    REMOTE_EXCEPTION(MessageHelper.getMessage("authenticationResult.remote_exception")), 
-    ACCOUNT_EXISTS(MessageHelper.getMessage("authenticationResult.account_already_exists"));
+    VALID(""), 
+    INVALID_PASSWORD("Authentication failed.  Please check that your username and password were entered correctly."),
+    INACTIVE_ACCOUNT("This account is inactive."),
+    ACCOUNT_DOES_NOT_EXIST("This account does not exist"),
+    REMOTE_EXCEPTION("The authentication server is currently down.  Please try authenticating again in a few minutes."),
+    ACCOUNT_EXISTS(MessageHelper.getMessage("The account already exists"));
     
     private final String message;
     private Person person;

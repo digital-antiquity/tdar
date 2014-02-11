@@ -42,7 +42,7 @@ public enum OAIRecordType {
             }
         }
 
-        throw new OAIException(MessageHelper.getMessage("oaiRecordType.metadata_format_unknown",format.getPrefix() ,name ),
+        throw new OAIException("Metadata format '" + format.getPrefix() + "' cannot be disseminated for records of type '" + name + "'",
                 OaiErrorCode.CANNOT_DISSEMINATE_FORMAT);
     }
 

@@ -10,9 +10,9 @@ import org.tdar.utils.MessageHelper;
  */
 public enum CoverageType implements HasLabel {
 
-    CALENDAR_DATE(MessageHelper.getMessage("coverageType.calendar")),
-    RADIOCARBON_DATE(MessageHelper.getMessage("coverageType.radiocarbon")),
-    NONE(MessageHelper.getMessage("coverageType.none"));
+    CALENDAR_DATE("Calendar Date"),
+    RADIOCARBON_DATE("Radiocarbon Date"),
+    NONE("None");
 
     private String label;
 

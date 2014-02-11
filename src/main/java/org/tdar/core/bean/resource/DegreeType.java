@@ -10,10 +10,9 @@ import org.tdar.utils.MessageHelper;
  *
  */
 public enum DegreeType implements HasLabel {
-    UNDERGRADUATE(MessageHelper.getMessage("degreeType.undergraduate")), 
-    MASTERS(MessageHelper.getMessage("degreeType.masters")), 
-    DOCTORAL(MessageHelper.getMessage("degreeType.doctoral"));
-    
+    UNDERGRADUATE("Undergraduate Thesis"), 
+    MASTERS("Masters Thesis"), 
+    DOCTORAL("Doctoral Dissertation");
     private String label;
 
     private DegreeType(String label) {

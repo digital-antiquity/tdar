@@ -8,10 +8,10 @@ import org.tdar.utils.MessageHelper;
  *
  */
 public enum DisplayOrientation implements HasLabel {
-    LIST(MessageHelper.getMessage("displayOrientation.list")),
-    LIST_FULL(MessageHelper.getMessage("displayOrientation.list_full")),
-    GRID(MessageHelper.getMessage("displayOrientation.grid")),
-    MAP(MessageHelper.getMessage("displayOrientation.map"));
+    LIST("List"),
+    LIST_FULL("List (Full)"),
+    GRID("Grid"),
+    MAP("Map");
 
     private String label;
 

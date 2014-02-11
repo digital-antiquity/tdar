@@ -101,9 +101,9 @@ public class SensoryData extends Dataset {
     private String controlDataFilename;
 
     public enum RgbCapture {
-        NA(MessageHelper.getMessage("rgbCapture.none")),
-        INTERNAL(MessageHelper.getMessage("rgbCapture.internal")),
-        EXTERNAL(MessageHelper.getMessage("rgbCapture.external"));
+        NA("None"),
+        INTERNAL("Internal"),
+        EXTERNAL("External");
         String label;
 
         RgbCapture(String label) {

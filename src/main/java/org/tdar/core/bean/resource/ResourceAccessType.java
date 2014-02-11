@@ -18,10 +18,10 @@ import org.tdar.utils.MessageHelper;
  */
 @SuppressWarnings("rawtypes")
 public enum ResourceAccessType implements HasLabel, Facetable {
-    CITATION(MessageHelper.getMessage("resourceAccessType.citation")),
-    PUBLICALLY_ACCESSIBLE(MessageHelper.getMessage("resourceAccessType.public")),
-    PARTIALLY_RESTRICTED(MessageHelper.getMessage("resourceAccessType.partial")),
-    RESTRICTED(MessageHelper.getMessage("resourceAccessType.redacted"));
+    CITATION("Citation Only"),
+    PUBLICALLY_ACCESSIBLE("Publicly Accessible Files"),
+    PARTIALLY_RESTRICTED("Some Files Restricted"),
+    RESTRICTED("Restricted Files");
 
     private String label;
     private transient Integer count;

@@ -58,13 +58,15 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private Integer recordsPerPage = 10;
 
     public enum PostSaveColumnMapActions implements HasLabel {
-        SAVE_VIEW(MessageHelper.getMessage("abstractDatasetController.view")),
-        SAVE_MAP_THIS(MessageHelper.getMessage("abstractDatasetController.save_map_this"));
+        SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"),
+        SAVE_MAP_THIS("Save, and return to this edit page", "Save, and return to this edit page");
 
         private String label;
+        private String ontologyLabel;
 
-        private PostSaveColumnMapActions(String label) {
+        private PostSaveColumnMapActions(String label, String ontologyLabel) {
             this.setLabel(label);
+            this.setOntologyLabel(ontologyLabel);
         }
 
         @Override
@@ -77,7 +79,11 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         }
 
         public String getOntologyLabel() {
-            return label;
+            return ontologyLabel;
+        }
+
+        public void setOntologyLabel(String ontologyLabel) {
+            this.ontologyLabel = ontologyLabel;
         }
 
         public String getResultName(boolean gotoView, Dataset resource) {

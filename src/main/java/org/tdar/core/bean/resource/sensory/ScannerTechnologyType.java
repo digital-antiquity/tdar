@@ -13,11 +13,11 @@ import org.tdar.utils.MessageHelper;
  *
  */
 public enum ScannerTechnologyType implements HasLabel {
-    NONE(MessageHelper.getMessage("scannerTechnologyType.none")),
-    TIME_OF_FLIGHT(MessageHelper.getMessage("scannerTechnologyType.none")),
-    PHASE_BASED(MessageHelper.getMessage("scannerTechnologyType.phase_based")),
-    TRIANGULATION(MessageHelper.getMessage("scannerTechnologyType.triangulation")),
-    COMBINED(MessageHelper.getMessage("scannerTechnologyType.combined"));
+    NONE("Not Specified"),
+    TIME_OF_FLIGHT("Time of Flight"),
+    PHASE_BASED("Phase-based"),
+    TRIANGULATION("Triangulation"),
+    COMBINED("Combined");
 
     private final String label;
     private final boolean active;

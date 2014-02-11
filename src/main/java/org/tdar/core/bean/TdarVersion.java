@@ -15,5 +15,7 @@ public enum TdarVersion {
     FLUVIAL,
     GRID,
     HARRIS,
-    INSITU
+    INSITU,
+    JAR,
+    KNAP;
 }

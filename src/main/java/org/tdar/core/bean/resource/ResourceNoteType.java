@@ -11,12 +11,12 @@ import org.tdar.utils.MessageHelper;
  * @author Adam Brin
  * @version $Revision$
  */
-public enum ResourceNoteType implements HasLabel {
-    GENERAL(MessageHelper.getMessage("resourceNoteType.general")),
-    REDACTION(MessageHelper.getMessage("resourceNoteType.redaction")),
-    RIGHTS_ATTRIBUTION(MessageHelper.getMessage("resourceNoteType.rights")),
-    ADMIN(MessageHelper.getMessage("resourceNoteType.admin"));
-
+public enum ResourceNoteType implements HasLabel { 
+    GENERAL("General Note"),
+    REDACTION("Redaction Note"),
+    RIGHTS_ATTRIBUTION("Rights & Attribution"),
+    ADMIN("Administration Note");
+    
     private final String label;
 
     private ResourceNoteType(String label) {

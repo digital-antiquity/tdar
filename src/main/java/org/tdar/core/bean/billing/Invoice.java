@@ -51,11 +51,11 @@ public class Invoice extends Base implements Updatable {
     private final static String[] JSON_PROPERTIES = { "id", "paymentMethod", "transactionStatus", "totalFiles", "totalResources", "totalSpace",
             "calculatedCost", "total" };
     public enum TransactionStatus implements HasLabel {
-        PREPARED(MessageHelper.getMessage("transactionStatus.prepared")),
-        PENDING_TRANSACTION(MessageHelper.getMessage("transactionStatus.pending")),
-        TRANSACTION_SUCCESSFUL(MessageHelper.getMessage("transactionStatus.successful")),
-        TRANSACTION_FAILED(MessageHelper.getMessage("transactionStatus.failed")),
-        TRANSACTION_CANCELLED(MessageHelper.getMessage("transactionStatus.cancelled"));
+        PREPARED("Prepared"),
+        PENDING_TRANSACTION("Pending Transaction"),
+        TRANSACTION_SUCCESSFUL("Transaction Successful"),
+        TRANSACTION_FAILED("Transaction Failed"),
+        TRANSACTION_CANCELLED("Transaction Cancelled");
 
         private String label;
 

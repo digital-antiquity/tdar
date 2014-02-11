@@ -11,12 +11,12 @@ import org.tdar.utils.MessageHelper;
  *
  */
 public enum Status implements HasLabel {
-    DRAFT(MessageHelper.getMessage("status.draft")),
-    ACTIVE(MessageHelper.getMessage("status.active")),
-    FLAGGED(MessageHelper.getMessage("status.flagged")),
-    FLAGGED_ACCOUNT_BALANCE(MessageHelper.getMessage("status.flagged_account")),
-    DUPLICATE(MessageHelper.getMessage("status.duplicate")),
-    DELETED(MessageHelper.getMessage("status.deleted"));
+    DRAFT("Draft"),
+    ACTIVE("Active"),
+    FLAGGED("Flagged"),
+    FLAGGED_ACCOUNT_BALANCE("Flagged: Overage"),
+    DUPLICATE("Duplicate"),
+    DELETED("Deleted");
 
     private final String label;
 

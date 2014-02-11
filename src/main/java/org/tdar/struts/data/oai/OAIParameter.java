@@ -35,7 +35,7 @@ public enum OAIParameter {
                 return parameter;
             }
         }
-        throw new OAIException(MessageHelper.getMessage("oaiParameter.unknown_parameter", val), OaiErrorCode.BAD_ARGUMENT);
+        throw new OAIException("Unknown parameter '" + val + "'", OaiErrorCode.BAD_ARGUMENT);
     }
 
     /**

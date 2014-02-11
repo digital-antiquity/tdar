@@ -35,7 +35,7 @@ public enum OAIMetadataFormat {
                 return prefix_;
             }
         }
-        throw new OAIException(MessageHelper.getMessage("oaiException.unknown_format"), OaiErrorCode.BAD_ARGUMENT);
+        throw new OAIException("Unknown or missing metadata format", OaiErrorCode.BAD_ARGUMENT);
     }
 
     /**

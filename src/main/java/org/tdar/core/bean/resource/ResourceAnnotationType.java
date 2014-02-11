@@ -20,7 +20,7 @@ import org.tdar.utils.MessageHelper;
  */
 public enum ResourceAnnotationType implements HasLabel {
     
-    IDENTIFIER(MessageHelper.getMessage("resourceAnnotationType.identifier"));
+	IDENTIFIER("Resource Identifier");
 
     private final String label;
 

@@ -9,9 +9,9 @@ import org.tdar.utils.MessageHelper;
  *
  */
 public enum AddressType implements HasLabel {
-    MAILING(MessageHelper.getMessage("addressType.mailing")),
-    BILLING(MessageHelper.getMessage("addressType.billing")),
-    OTHER(MessageHelper.getMessage("addressType.other"));
+    MAILING("Mailing Address"),
+    BILLING("Billing Address"),
+    OTHER("Other");
 
     private String label;
 

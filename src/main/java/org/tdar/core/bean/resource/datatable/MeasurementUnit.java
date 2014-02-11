@@ -10,21 +10,21 @@ import org.tdar.utils.MessageHelper;
  *
  */
 public enum MeasurementUnit implements HasLabel {
-    KILOGRAM(MessageHelper.getMessage("measurementUnit.kilogram"), "kg"),
-    GRAM(MessageHelper.getMessage("measurementUnit.gram"), "g"),
-    MILLIGRAM(MessageHelper.getMessage("measurementUnit.milligram"), "mg"),
-    MICROGRAM(MessageHelper.getMessage("measurementUnit.microgram"), "mcg"),
-    KILOMETER(MessageHelper.getMessage("measurementUnit.kilometer"), "km"),
-    METER(MessageHelper.getMessage("measurementUnit.meter"), "m"),
-    CENTIMETER(MessageHelper.getMessage("measurementUnit.centimeter"), "cm"),
-    MILLIMETER(MessageHelper.getMessage("measurementUnit.millimeter"), "mm"),
-    SQUAR_METER(MessageHelper.getMessage("measurementUnit.square_meter"), "m2"),
-    HECTARE(MessageHelper.getMessage("measurementUnit.hectare"), "ha"),
-    SQUARE_KM(MessageHelper.getMessage("measurementUnit.square_km"), "km2"),
-    MILLILITER(MessageHelper.getMessage("measurementUnit.milliliter"), "ml"),
-    CUBIC_CM(MessageHelper.getMessage("measurementUnit.cubic_cm"), "cc"),
-    LITRE(MessageHelper.getMessage("measurementUnit.litre"), "l"),
-    PARTS_PER_MILLION(MessageHelper.getMessage("measurementUnit.parts_per_million"), "ppm");
+    KILOGRAM("kilogram", "kg"),
+    GRAM("gram", "g"),
+    MILLIGRAM("milligram", "mg"),
+    MICROGRAM("microgram", "mcg"),
+    KILOMETER("kilometer", "km"),
+    METER("meter", "m"),
+    CENTIMETER("centimeter", "cm"),
+    MILLIMETER("millimeter", "mm"),
+    SQUAR_METER("square meter", "m2"),
+    HECTARE("hectare", "ha"),
+    SQUARE_KM("square kilometer", "km2"),
+    MILLILITER("milliliter", "ml"),
+    CUBIC_CM("cubic centimeter", "cc"),
+    LITRE("liter", "l"),
+    PARTS_PER_MILLION("parts per million", "ppm");
 
     private String shortName;
     private String fullName;

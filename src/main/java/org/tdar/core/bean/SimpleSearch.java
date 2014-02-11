@@ -1,6 +1,5 @@
 package org.tdar.core.bean;
 
-import org.tdar.utils.MessageHelper;
 
 /**
  * This interface is designed to ensure that fields are available for basic searhing
@@ -10,8 +9,8 @@ import org.tdar.utils.MessageHelper;
  */
 public interface SimpleSearch {
     enum SimpleSearchType {
-        RESOURCE(MessageHelper.getMessage("simpleSearchType.resource")),
-        COLLECTION(MessageHelper.getMessage("simpleSearchType.collection"));
+        RESOURCE("Resource"),
+        COLLECTION("Collection");
 
         private String label;
 
