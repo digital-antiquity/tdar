@@ -239,13 +239,9 @@ public class CollectionController extends AbstractPersistableController<Resource
      */
     private List<Resource> getRetainedResources() {
         List<Resource> retainedResources = new ArrayList<Resource>();
-<<<<<<< mine
         for (Resource resource : getResources()) {
-            getLogger().debug("retain?: {}", resource);
-            getLogger().debug("{} <--> {}", getAuthenticatedUser(), resource.getSubmitter());
-=======
-        for (Resource resource : resources) {
->>>>>>> theirs
+            getLogger().trace("retain?: {}", resource);
+            getLogger().trace("{} <--> {}", getAuthenticatedUser(), resource.getSubmitter());
             boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
             if (!canEdit) {
                 retainedResources.add(resource);
