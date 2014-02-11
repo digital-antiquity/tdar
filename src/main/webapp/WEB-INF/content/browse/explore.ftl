@@ -61,14 +61,14 @@
 
 
 
-<h2>Most Popular in the Last Week</h2>
+<h2>Most Popular in the Past Week</h2>
 <ul>
 	<#list featuredResources as resource>
 		<li><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
 	</#list>
 </ul>
 
-<h2>Recently added Resource</h2>
+<h2>Recently Added Resources</h2>
 <ul>
 	<#list recentResources as resource>
 		<li><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
