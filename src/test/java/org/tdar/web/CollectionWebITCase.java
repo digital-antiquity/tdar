@@ -60,7 +60,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Assert.assertTrue("this test needs at least 2 resources in the test DB", someResources.size() > removeCount);
         List<Resource> removedResources = new ArrayList<Resource>();
         for (i = 0; i < removeCount; i++) {
-            htmlPage.getElementById("hdnResourceId" + someResources.get(i).getId()).remove();
+            htmlPage.getElementById("hrid" + someResources.get(i).getId()).remove();
             removedResources.add(someResources.remove(i));
         }
 
