@@ -25,7 +25,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
-import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
@@ -37,7 +36,6 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Facetable;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -118,7 +116,9 @@ public class BrowseController extends AbstractLookupController {
         setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
         
+        Long count = 10L;
         try {
+            int cacheCount =0;
             for (WeeklyPopularResourceCache cache : getGenericService().findAll(WeeklyPopularResourceCache.class)) {
                 Resource key = cache.getKey();
                 if (key instanceof Resource) {
@@ -126,6 +126,9 @@ public class BrowseController extends AbstractLookupController {
                 }
                 getObfuscationService().obfuscate(key);
                 if (key.isActive()) {
+                    if (cacheCount == count)  
+                        break;
+                    cacheCount++;
                     getFeaturedResources().add(key);
                 }
             }
@@ -134,7 +137,7 @@ public class BrowseController extends AbstractLookupController {
         }
         
         try {
-        getRecentResources().addAll(getSearchService().findMostRecentResources(10L, getAuthenticatedUser()));
+            getRecentResources().addAll(getSearchService().findMostRecentResources(count, getAuthenticatedUser()));
         } catch (ParseException pe) {
             logger.debug("error", pe);
         }
