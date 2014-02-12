@@ -3,6 +3,7 @@ package org.tdar.search.query.part;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
@@ -40,7 +41,10 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
     protected QueryPartGroup getQueryPart(String value) {
         QueryPartGroup queryPart = super.getQueryPart(value);
         String cleanedQueryString = getCleanedQueryString(value);
-
+        if (StringUtils.isBlank(cleanedQueryString)) {
+            return queryPart;
+        }
+        
         FieldQueryPart<String> creatorPart = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, cleanedQueryString);
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, cleanedQueryString);
         FieldQueryPart<String> linkedContent = new FieldQueryPart<String>(QueryFieldNames.DATA_VALUE_PAIR, cleanedQueryString);
@@ -48,6 +52,14 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         if (cleanedQueryString.contains(" ")) {
             creatorPart.setProximity(2);
         }
+        
+        // if we're searching for something numeric, put the tDAR ID into the query string and weight it appropriately.
+        if (StringUtils.isNumeric(cleanedQueryString)) {
+            FieldQueryPart<String> idPart = new FieldQueryPart<String>(QueryFieldNames.ID, cleanedQueryString);
+            idPart.setBoost(CREATOR_BOOST);
+            queryPart.append(idPart);
+        }
+        
         queryPart.append(creatorPart.setBoost(CREATOR_BOOST));
         queryPart.append(content);
         queryPart.append(linkedContent);
