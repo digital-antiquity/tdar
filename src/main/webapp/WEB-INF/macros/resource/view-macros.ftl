@@ -732,7 +732,9 @@ $(document).ready(function() {
 </#macro>
 
 <#macro unapiLink resource>
-    <abbr class="unapi-id" title="${resource.id?c}"></abbr>
+	<#if resource.active>
+	    <abbr class="unapi-id" title="${resource.id?c}"></abbr>
+    </#if>
 </#macro>
 
 
