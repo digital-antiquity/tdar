@@ -5,6 +5,8 @@ TDAR.namespace("fileupload");
 TDAR.fileupload = function() {
     'use strict';
     
+    /* how long to display error messages prior to removing a failed file upload from the files table (in millis) */
+    var ERROR_TIMEOUT = 5000;
 
     var _nextRowId = 0;
     var _nextRowVisibility = true;
@@ -75,12 +77,10 @@ TDAR.fileupload = function() {
         var _updateSequenceNumbers =  function(e, data){
             //console.log("updating sequenceNumbers");
             $('tbody.files').find("tr").not(".replace-target,.deleted-file").each(function(idx, trElem){
-                //console.log("updating sequencenumber::   row.id:%s   sequenceNumber:%s", trElem.id, idx+1);
                 $('.fileSequenceNumber', trElem).val(idx + 1);
             });
         }
         
-        //note: unlike in jquery.bind(), you cant use space-separated event names here.
         $fileupload.bind("fileuploadcompleted fileuploadfailed", _updateSequenceNumbers);
 
         var helper = $.extend({}, _options, {
@@ -91,7 +91,7 @@ TDAR.fileupload = function() {
                 //list of existing and new files that are not deleted or serving as a file replacement
                 //FIXME: needs to not include files that were uploaded but failed part way.
                 validFiles: function() {
-                    var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file, .hidden');
+                    var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file, .hidden, .fileupload-error');
                     
                     var files = $rows.map(function(){
                         var file = {};
