@@ -90,7 +90,9 @@ function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
     options.url = "lookup/person";
     options.dataPath = "data.people";
     options.retainInputValueOnSelect = true;
-    options.sortField = 'CREATOR_NAME';
+    if (!usersOnly) {
+        options.sortField = 'CREATOR_NAME';
+    }
     options.showCreate = showCreate;
     options.minLength = 3;
 
