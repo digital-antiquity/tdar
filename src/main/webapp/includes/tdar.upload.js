@@ -147,6 +147,23 @@ TDAR.fileupload = function() {
             }
         });
 
+        //When an upload fails, fileupload plugin displays error information in the file row message.  In addition, we need 
+        //to remove/disable the fileproxy form fields associated with this upload so they aren't sent in the request upon submit
+        $fileupload.bind("fileuploadfailed", function(e, data){
+            var $row = data.context;
+            //$row.find("input, select").remove();
+            //a delete button probably doesn't help us either.
+            //$row.find("button").remove();
+
+            //Keep the row around for a few seconds so that the user can see the error information,  then remove the row
+            setTimeout(
+                function(){
+                    $row.fadeOut("slow", function(){$row.remove()})
+                }, 
+                ERROR_TIMEOUT
+            );
+        });
+
         //pre-populate the files table with any previously-uploaded files
         if(TDAR.filesJson) {
             var files = _translateIrFiles(TDAR.filesJson);
