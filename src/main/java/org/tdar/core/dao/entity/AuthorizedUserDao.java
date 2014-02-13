@@ -3,6 +3,7 @@ package org.tdar.core.dao.entity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -141,6 +142,9 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         if (CollectionUtils.isEmpty(collectionIds)) {
             collectionIds = new ArrayList<>();
             collectionIds.add(null);
+        }
+        if (Persistable.Base.isNullOrTransient(person)) {
+            return Collections.EMPTY_LIST;
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED);
 
