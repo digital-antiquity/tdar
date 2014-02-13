@@ -644,7 +644,8 @@ TDAR.common = function() {
      */
     var _initializeView = function() {
         console.debug('initialize view');
-        var mapdiv = undefined;
+        var mapdiv, $divSearchContext = $("#divSearchContext");
+
         if($('#large-google-map').length) {
             mapdiv = $('#large-google-map')[0];
         };
@@ -655,6 +656,13 @@ TDAR.common = function() {
             var inputContainer = $("#divCoordContainer")[0];
             TDAR.maps.initMapApi();
             TDAR.maps.setupMap(mapdiv, inputContainer);
+        }
+        if($divSearchContext.length === 1) {
+            $(".searchbox").focus(function() {
+                $divSearchContext.addClass("active");
+            }).blur(function() {
+                //$divSearchContext.removeClass("active");
+            });
         }
 
     };

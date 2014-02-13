@@ -437,6 +437,17 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             terms.setOperator(Operator.AND);
             terms.getAllFields().add(query);
             terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
+
+            //contextual search: resource collection
+            String collectionId = getServletRequest().getParameter("collection");
+            if( collectionId != null) {
+                Long id = Long.valueOf(collectionId);
+                ResourceCollection rc = new ResourceCollection();
+                rc.setId(id);
+                terms.getFieldTypes().add(SearchFieldType.COLLECTION);
+                terms.getCollections().add(rc);
+            }
+
             groups.add(terms);
         }
         return isBasic;

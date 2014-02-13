@@ -174,5 +174,6 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 </#noescape>
 <@edit.personAutocompleteTemplate />
 </#compress>
+<div style="display:none"
 </body>
 </#escape>

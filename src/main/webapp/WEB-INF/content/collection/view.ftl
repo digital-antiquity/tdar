@@ -21,6 +21,12 @@
 	
 </head>
 <body>
+
+<div id="divSearchContext" parse="true">
+    <input id="cbctxid" type="checkbox" name="collection" value="${id?c}">
+    <label for="cbctxid">Search within this collection</label>
+</div>
+
 <#if editable>
     <@nav.toolbar "collection" "view">
         <@nav.makeLink

@@ -1429,3 +1429,38 @@ tr.DELETED {
     color: #0F0;
 
 }
+
+
+#divSearchContext {
+    /*position the context search box just the 'search tdar' input*/
+    position: absolute;
+    right:10px;
+    top: 72px;
+    background-color: #ddd;
+    width:205px;
+    height:18px;
+    margin: 0;
+    padding: 2px 5px 5px 10px;
+    font-size:10pt;
+    line-height: 1em;
+    border-radius: 5px;
+    display:none;
+}
+
+#divSearchContext.active {
+    display:block;
+}
+
+#divSearchContext input {
+    padding: 0;
+    margin: 0;
+}
+#divSearchContext label {
+    display: inline-block;
+    padding: 0 0 0 0;
+    vertical-align: top;
+    font-family: ff-tisa-web-pro, serif;
+    font-size: 13px;
+    font-style: italic;
+    font-weight: normal;
+}
