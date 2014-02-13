@@ -357,20 +357,22 @@ $(document).ready(function(){
 <!-- FIXME: refactor to not repeat the same block -->
 <#macro templateProject fieldIndex="{termid}" groupid="{groupid}">
         <div class="term PROJECT">
+        	<#local val = (groups[groupid].projects[fieldIndex].name)! >
             <@s.hidden name="groups[${groupid}].projects[${fieldIndex}].id" id="projects_${groupid}_${fieldIndex}_id" />
             <@common.combobox cssClass="input-xxlarge-combo projectcombo" name="groups[${groupid}].projects[${fieldIndex}].title" 
                 autocompleteIdElement="#projects_${groupid}_${fieldIndex}_id" 
-                target="" label="" placeholder="enter project name" value=""  bootstrapControl=false />
+                target="" label="" placeholder="enter project name" value="${val}"  bootstrapControl=false />
         </div>
 </#macro>
 
 <!-- FIXME: refactor to not repeat the same block -->
 <#macro templateCollection fieldIndex="{termid}" groupid="{groupid}">
         <div class="term COLLECTION">
+        	<#local val = (groups[groupid].collections[fieldIndex].name)! >
             <@s.hidden name="groups[${groupid}].collections[${fieldIndex}].id" id="collections_${groupid}_${fieldIndex}_id" />
             <@common.combobox name="groups[${groupid}].collections[${fieldIndex}].name" id="collections_${groupid}_${fieldIndex}_name"  
                 cssClass="input-xxlarge-combo collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id" 
-                target="" label="" placeholder="enter collection name" value="" bootstrapControl=false/>
+                target="" label="" placeholder="enter collection name" value="${val}" bootstrapControl=false/>
         </div>
 </#macro>
 
