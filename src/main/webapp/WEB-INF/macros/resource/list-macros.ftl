@@ -214,7 +214,9 @@
 		            <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
 	            </#if>
 	            <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
-	            <@view.unapiLink resource  />
+	            <#if resource.resourceType?has_content>
+		            <@view.unapiLink resource  />
+	            </#if>
 	            <#if showProject && !resource.resourceType.project >
 		            <p class="project">${resource.project.title}</p>
 	            </#if>

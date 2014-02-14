@@ -659,7 +659,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void assertNoErrorTextPresent() {
         assertTextNotPresent("Exception stack trace: " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
                                                                                                      // rendering)
-        assertTextNotPresentIgnoreCase("HTTP ERROR");
+        assertTextNotPresentIgnoreCase("http error");
+        assertTextNotPresentIgnoreCase("server error");
+        assertTextNotPresentIgnoreCase("java.lang");
+        assertTextNotPresentIgnoreCase("caused by");
         assertTextNotPresentIgnoreCase("Exception " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
                                                                                                   // rendering)
         assertFalse("page shouldn't contain action errors " + getCurrentUrlPath() + ":" + getPageText(), getPageCode().contains("class=\"action-error\""));
