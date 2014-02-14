@@ -57,12 +57,6 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
         }
     }
 
-    @Test
-    public void testGetResourceTypes() {
-        ResourceController controller = generateNewInitializedController(ResourceController.class);
-        SortedMap<ResourceType, String> resourceTypes = controller.getResourceTypes();
-        assertEquals(6, resourceTypes.size());
-    }
 
     @Override
     protected TdarActionSupport getController() {

@@ -24,6 +24,7 @@ public class WeeklyPopularResourceCache extends Persistable.Base implements Comp
         this.resource = resource;
     }
 
+    @Override
     public Double getLogCount() {
         return Math.log(getCount());
     }
@@ -33,8 +34,9 @@ public class WeeklyPopularResourceCache extends Persistable.Base implements Comp
         return 1;
     }
 
+    @Override
     public String getCssId() {
-        return this.getKey().getResourceTypeLabel();
+        return this.getKey().getResourceType().name();
     }
 
     @Override

@@ -917,7 +917,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Transient
     public String getResourceTypeLabel() {
-        return resourceType.getLabel();
+        return MessageHelper.getMessage(resourceType.name());
     }
 
     // marked as final because this is called from constructors.

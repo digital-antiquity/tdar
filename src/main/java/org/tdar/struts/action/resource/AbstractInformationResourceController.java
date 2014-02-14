@@ -600,7 +600,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         super.validate();
         if (getPersistable().getDate() == null) {
             getLogger().debug("Invalid date created for {}", getPersistable());
-            String resourceTypeLabel = getPersistable().getResourceType().getLabel();
+            String resourceTypeLabel = getText(getPersistable().getResourceType().name());
             addActionError("Please enter a valid creation year for " + resourceTypeLabel);
         }
         if (isCopyrightMandatory()) {

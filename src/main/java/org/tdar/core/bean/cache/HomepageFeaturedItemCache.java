@@ -42,7 +42,7 @@ public class HomepageFeaturedItemCache extends Persistable.Base implements Compa
 
     @Override
     public String getCssId() {
-        return this.getKey().getResourceTypeLabel();
+        return this.getKey().getResourceType().name();
     }
 
     @Override

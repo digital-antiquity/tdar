@@ -252,7 +252,7 @@ public class BulkUploadService {
         for (Resource resource : proxy.getResourcesCreated().values()) {
             receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
             Person submitter = proxy.getSubmitter();
-            String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]", resource.getResourceType().getLabel(), submitter,
+            String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]", resource.getResourceType(), submitter,
                     resource.getId(), StringUtils.left(resource.getTitle(), 100));
 
             try {

@@ -128,27 +128,27 @@ public class ResourceController extends AuthenticationAware.Base {
         this.resourceType = resourceType;
     }
 
-    /**
-     * Returns a sorted map of the allowable subset of resource types that can be
-     * entered.
-     */
-    public SortedMap<ResourceType, String> getResourceTypes() {
-        synchronized (resourceTypes) {
-            if (resourceTypes.isEmpty()) {
-                addResourceType(ResourceType.CODING_SHEET);
-                addResourceType(ResourceType.DATASET);
-                addResourceType(ResourceType.DOCUMENT);
-                addResourceType(ResourceType.SENSORY_DATA);
-                addResourceType(ResourceType.IMAGE);
-                addResourceType(ResourceType.ONTOLOGY);
-            }
-        }
-        return resourceTypes;
-    }
-
-    private void addResourceType(ResourceType resourceType) {
-        resourceTypes.put(resourceType, resourceType.getLabel());
-    }
+//    /**
+//     * Returns a sorted map of the allowable subset of resource types that can be
+//     * entered.
+//     */
+//    public SortedMap<ResourceType, String> getResourceTypes() {
+//        synchronized (resourceTypes) {
+//            if (resourceTypes.isEmpty()) {
+//                addResourceType(ResourceType.CODING_SHEET);
+//                addResourceType(ResourceType.DATASET);
+//                addResourceType(ResourceType.DOCUMENT);
+//                addResourceType(ResourceType.SENSORY_DATA);
+//                addResourceType(ResourceType.IMAGE);
+//                addResourceType(ResourceType.ONTOLOGY);
+//            }
+//        }
+//        return resourceTypes;
+//    }
+//
+//    private void addResourceType(ResourceType resourceType) {
+//        resourceTypes.put(resourceType, resourceType.getLabel());
+//    }
 
     public Long getProjectId() {
         return projectId;
