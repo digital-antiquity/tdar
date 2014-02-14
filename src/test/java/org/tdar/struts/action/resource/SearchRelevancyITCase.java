@@ -12,7 +12,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -114,10 +116,13 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     // assert title match appears before keywordmatch, and keywordmatch before docmatch and docmatch
     @Test
     @Rollback
-    // FIXME: Throw more results into the mix so they won't just happen to be sorted even when sorting is turned off (even a broken clock is right twice a day).
     public void testLocationRelevancy() throws IOException, TdarActionException {
         prepareInformationResources();
         runIndex();
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/");
+        request.addParameter("query", SEMI_UNIQUE_NAME);
+        controller.setServletRequest(request);
+
         controller.setQuery(SEMI_UNIQUE_NAME);
         controller.setSortField(SortOption.RELEVANCE);
         logger.debug("about to perform search");
