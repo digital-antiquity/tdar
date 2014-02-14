@@ -258,13 +258,11 @@
     <br/>
     <div class="mappingInfo" data-tooltipcontent="#mappingToolTip" data-tiplabel="Mapping ${siteAcronym} Resources">
     <#if column.dataTable?? && column.dataTable.dataset.project?? && column.dataTable.dataset.project.id != -1 >
-        <#assign mapping = "false" />
-        <#if column.mappingColumn??>
-            <#assign mapping =column.mappingColumn /></#if>
 
-    <@common.boolfield name="dataTableColumns[${column_index}].mappingColumn"
+    <@s.checkbox name="dataTableColumns[${column_index}].mappingColumn"
         label="Use column values to map table rows to resources?"
-        id="mapping_${column_index}" value=mapping cssClass="mappingValue" />
+        id="mapping_${column_index}" cssClass="mappingValue" />
+
     <div class="mappingDetail well">
        <p>${siteAcronym} can associate groups of documents and images with this dataset as long as they're all part of the same project. 
        If this column has filenames in it, ${siteAcronym} will associate the filename with the filename of the image or document and load the row
@@ -275,12 +273,10 @@
         <#assign ignoreExt = "false" />
         <#if column.ignoreFileExtension??>
             <#assign ignoreExt = column.ignoreFileExtension /></#if>
-        <@common.boolfield 
+        <@s.checkbox
           name="dataTableColumns[${column_index}].ignoreFileExtension"
           label="ignore file extension"
-          id="dataTableColumns[${column_index}].ignoreFileExtension"
-          value=ignoreExt
-          />
+          id="dataTableColumns[${column_index}].ignoreFileExtension" />
         
         <br/>
 <#--

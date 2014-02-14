@@ -1041,22 +1041,6 @@ this bit of freemarker is voodoo:
 <#if arg1=arg2>${val}</#if><#t>
 </#macro>
 
-<#-- emit a boolean form field. -->
-<#-- FIXME: FTLREFACTOR remove:rarely used(1) -->
-<#macro boolfield name label id  value labelPosition="left" type="checkbox" labelTrue="Yes" labelFalse="No" cssClass="">
-    <@boolfieldCheckbox name label id  value labelPosition cssClass />
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove:rarely used(1) -->
-<#macro boolfieldCheckbox name label id value labelPosition cssClass>
-<#if value?? && value?string == 'true'>
-    <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" 
-        checked="checked"/>
-<#else>
-    <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" />
-</#if>
-</#macro>
-
 <#-- emit a "combobox" control.  A combobox is essentially text field element that features both autocomplete support as
  as the ability to view a list of all possible values (by clicking on a 'dropdown' button beside the text box)-->
 <#macro combobox name target autocompleteIdElement placeholder value cssClass autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="">

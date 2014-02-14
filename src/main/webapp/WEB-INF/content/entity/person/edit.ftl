@@ -53,7 +53,7 @@ label.error {display:block;}
         <@s.textfield cssClass="input-xlarge ${(person.registered)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
         
         <#if privacyControlsEnabled>
-            <@common.boolfield label='Make email public?' name="person.emailPublic" id="email-public" value=person.emailPublic!false  />
+            <@s.checkbox label='Make email public?' name="person.emailPublic" id="email-public"  />
             <p class="field"><em><b>NOTE:</b> Making your email address public will display it to anyone who visits ${siteAcronym}, this includes search engines, spammers, and visitors who are not logged in.</em></p>
         </#if>
             
@@ -66,11 +66,11 @@ label.error {display:block;}
         <@s.textfield  label="Phone" cssClass="phoneUS input-xlarge" name="person.phone"  maxlength=255 />
         
         <#if privacyControlsEnabled>
-            <@common.boolfield label='Make phone public?' name="person.phonePublic" id="phone-public" value=person.phonePublic!false />
+            <@s.checkbox label='Make phone public?' name="person.phonePublic" id="phone-public" />
             <p class="field"><em><b>NOTE:</b> Making your phone # public will display it to anyone who visits ${siteAcronym}, this includes search engines, and visitors who are not logged in.</em></p>
         </#if>    
         
-        <@common.boolfield label='${siteAcronym} Contributor?' name="person.contributor" id="contributor-id" value=(person.contributor!false)  />
+        <@s.checkbox label="${siteAcronym} Contributor?" name="person.contributor" id="contributor-id" />
 
 
         

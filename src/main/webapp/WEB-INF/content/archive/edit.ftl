@@ -9,7 +9,7 @@
         <#if !resource.isImportDone()>
             <@helptext.unpackArchiveTip />
             <div class="" id="unpackArchiveSection" data-tiplabel="Unpack the archive?" data-tooltipcontent="#divUnpackArchiveTip" >
-                <@common.boolfield label='Unpack the uploaded archive into the repository?' name="resource.doImportContent" id="do_import_content" value=resource.doImportContent!false  />
+                <@s.checkbox label='Unpack the uploaded archive into the repository?' name="resource.doImportContent" id="do_import_content" />
             </div>
         <#else>
             <p>This archive <strong>has already been</strong> unpacked into the repository.
