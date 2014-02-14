@@ -119,9 +119,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     public void testLocationRelevancy() throws IOException, TdarActionException {
         prepareInformationResources();
         runIndex();
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/");
-        request.addParameter("query", SEMI_UNIQUE_NAME);
-        controller.setServletRequest(request);
+        controller.setServletRequest(getServletRequest());
 
         controller.setQuery(SEMI_UNIQUE_NAME);
         controller.setSortField(SortOption.RELEVANCE);
