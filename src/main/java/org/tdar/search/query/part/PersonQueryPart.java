@@ -7,6 +7,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.search.query.QueryFieldNames;
 
 public class PersonQueryPart extends FieldQueryPart<Person> {
 
@@ -34,13 +35,22 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 hasName = true;
             }
             if (!hasName && StringUtils.isNotBlank(pers.getWildcardName())) {
-                fns.add(pers.getWildcardName());
-                lns.add(pers.getWildcardName());
+                String wildcardName = pers.getWildcardName().trim();
+                fns.add(wildcardName);
+                lns.add(wildcardName);
                 group.setOperator(Operator.OR);
+                String wildcard = new String(wildcardName);
+                wildcard = PhraseFormatter.ESCAPED.format(wildcard);
+                wildcard = PhraseFormatter.WILDCARD.format(wildcard);
+                if (wildcard.contains(" ")) {
+                    wildcard = PhraseFormatter.QUOTED.format(wildcard);
+                }
+                FieldQueryPart<String> fullName = new FieldQueryPart<>(QueryFieldNames.PROPER_NAME, wildcard);
+                fullName.setBoost(6f);
+                group.append(fullName);
                 setOperator(Operator.OR);
-
-            }
-
+           }
+            
             if (StringUtils.isNotBlank(pers.getEmail())) {
                 ems.add(pers.getEmail());
             }

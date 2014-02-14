@@ -772,7 +772,9 @@ ${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?ha
 
 <#--emit the unapi 'link' for the specified resource (see: http://unapi.info/specs/) -->
 <#macro unapiLink resource>
-    <abbr class="unapi-id" title="${resource.id?c}"></abbr>
+	<#if resource.active>
+	    <abbr class="unapi-id" title="${resource.id?c}"></abbr>
+    </#if>
 </#macro>
 
 

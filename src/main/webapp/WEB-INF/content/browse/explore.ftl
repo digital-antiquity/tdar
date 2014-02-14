@@ -60,21 +60,24 @@
     <@common.barGraph data="timelineData" graphLabel="" graphHeight=354 searchKey="groups[0].creationDecades" id="browseByDecade" config="timelineConfig" rotate=-30  yaxis="log"/>
 
 
-
-<h2>Most Popular in the Past Week</h2>
-<ul>
-	<#list featuredResources as resource>
-		<li><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
-	</#list>
-</ul>
-
-<h2>Recently Added Resources</h2>
-<ul>
-	<#list recentResources as resource>
-		<li><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
-	</#list>
-</ul>
-
+<div class="row">
+	<div class="span6">
+		<h2>Most Popular in the Past Week</h2>
+		<ul>
+			<#list featuredResources as resource>
+				<li><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
+			</#list>
+		</ul>
+	</div>
+	<div class="span6">
+		<h2>Recently Added Resources</h2>
+		<ul>
+			<#list recentResources as resource>
+				<li><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
+			</#list>
+		</ul>
+	</div>
+</div>
 
 
 <h2>Browse by Investigation Type</h2>

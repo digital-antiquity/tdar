@@ -2,6 +2,8 @@
 
 TDAR.fileupload = (function(TDAR, $) {
     "use strict";
+    /* how long to display error messages prior to removing a failed file upload from the files table (in millis) */
+    var ERROR_TIMEOUT = 5000;
 
     var _nextRowId = 0;
     var _nextRowVisibility = true;
@@ -95,12 +97,10 @@ TDAR.fileupload = (function(TDAR, $) {
         var _updateSequenceNumbers =  function(e, data){
             //console.log("updating sequenceNumbers");
             $('tbody.files').find("tr").not(".replace-target,.deleted-file").each(function(idx, trElem){
-                //console.log("updating sequencenumber::   row.id:%s   sequenceNumber:%s", trElem.id, idx+1);
                 $('.fileSequenceNumber', trElem).val(idx + 1);
             });
         }
         
-        //note: unlike in jquery.bind(), you cant use space-separated event names here.
         $fileupload.bind("fileuploadcompleted fileuploadfailed", _updateSequenceNumbers);
 
         //FIXME: break this out as a separate class so that it's easier to be seen by jsdoc
@@ -119,11 +119,8 @@ TDAR.fileupload = (function(TDAR, $) {
                 //list of existing and new files that are not deleted or serving as a file replacement
                 //FIXME: needs to not include files that were uploaded but failed part way.
                 validFiles: function() {
-
-                    /** jquery selection containing the all fileupload table rows for 'active' files (e.g not deleted or replaced) */
-                    var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file, .hidden');
-
                     /** {id:string, action:string, filename:string, sequence:number, ext:string, base:string, context:string}[] array of file objects */
+                    var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file, .hidden, .fileupload-error');
                     var files = $rows.map(function(){
                         var file = {};
                         $(this).find('[type="hidden"]').each(function(){
@@ -176,6 +173,23 @@ TDAR.fileupload = (function(TDAR, $) {
                 console.log("ticket received: %s", JSON.stringify(ticket));
                 $("#ticketId").val(ticket.id);
             }
+        });
+
+        //When an upload fails, fileupload plugin displays error information in the file row message.  In addition, we need 
+        //to remove/disable the fileproxy form fields associated with this upload so they aren't sent in the request upon submit
+        $fileupload.bind("fileuploadfailed", function(e, data){
+            var $row = data.context;
+            //$row.find("input, select").remove();
+            //a delete button probably doesn't help us either.
+            //$row.find("button").remove();
+
+            //Keep the row around for a few seconds so that the user can see the error information,  then remove the row
+            setTimeout(
+                function(){
+                    $row.fadeOut("slow", function(){$row.remove()})
+                }, 
+                ERROR_TIMEOUT
+            );
         });
 
         //pre-populate the files table with any previously-uploaded files

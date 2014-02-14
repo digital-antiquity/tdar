@@ -129,13 +129,18 @@ public class BrowseController extends AbstractLookupController {
         setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
         
+        Long count = 10L;
         try {
+            int cacheCount =0;
             for (WeeklyPopularResourceCache cache : getGenericService().findAll(WeeklyPopularResourceCache.class)) {
                 Resource key = cache.getKey();
                 if (key instanceof Resource) {
                     getAuthenticationAndAuthorizationService().applyTransientViewableFlag((Resource) key, null);
                 }
                 if (key.isActive()) {
+                    if (cacheCount == count)  
+                        break;
+                    cacheCount++;
                     getFeaturedResources().add(key);
                 }
             }
@@ -144,7 +149,7 @@ public class BrowseController extends AbstractLookupController {
         }
         
         try {
-        getRecentResources().addAll(getSearchService().findMostRecentResources(10L, getAuthenticatedUser()));
+            getRecentResources().addAll(getSearchService().findMostRecentResources(count, getAuthenticatedUser()));
         } catch (ParseException pe) {
             getLogger().debug("error", pe);
         }
