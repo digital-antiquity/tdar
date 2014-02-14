@@ -159,7 +159,7 @@ public interface Persistable extends Serializable {
          * @return
          */
         public static boolean isEqual(Persistable a, Persistable b) {
-            Logger logger = LoggerFactory.getLogger(a.getClass());
+            Logger logger = LoggerFactory.getLogger(Persistable.class);
             // null is never equal to anything
             if (a == null || b == null) {
                 logger.trace("false b/c one is null");
