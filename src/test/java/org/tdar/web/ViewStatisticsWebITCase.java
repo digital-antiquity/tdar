@@ -10,7 +10,10 @@ public class ViewStatisticsWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
     public void testViewStatisticsIncremented() {
+        logout();
+        loginAdmin();
         createDocumentAndUploadFile(TEST_TITLE);
+        login();
         String pageCode = getPageCode();
         String docUrl = pageCode.substring(pageCode.indexOf("/filestore/"));
         docUrl = docUrl.substring(0, docUrl.indexOf("\""));
