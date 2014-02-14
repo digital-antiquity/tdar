@@ -18,6 +18,7 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 
 //import com.sun.xml.txw2.annotation.XmlElement;
@@ -40,7 +41,7 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
 
     private boolean selectable;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String index;
 
     @XmlAttribute

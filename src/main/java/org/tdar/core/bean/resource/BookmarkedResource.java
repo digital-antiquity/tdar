@@ -13,6 +13,7 @@ import javax.persistence.TemporalType;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 
@@ -42,7 +43,7 @@ public class BookmarkedResource extends Persistable.Base {
     private Resource resource;
 
     // an alias for this bookmarked resource - if not present, uses the name of the resource.
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)

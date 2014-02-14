@@ -13,6 +13,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.TdarGroup;
 
@@ -34,7 +35,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
         PRODUCTION, TEST;
     }
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
     @Column(updatable = false)
     private Integer numberOfHours = 0;
@@ -86,13 +87,13 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     @Column(updatable = false)
     private Float price;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String currency;
 
     private Boolean enabled = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "groupName", length = 255)
+    @Column(name = "groupName", length = FieldLength.FIELD_LENGTH_255)
     private TdarGroup group;
 
     public Integer getNumberOfHours() {

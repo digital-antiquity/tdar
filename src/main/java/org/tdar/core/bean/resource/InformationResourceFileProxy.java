@@ -20,6 +20,7 @@ import org.hibernate.annotations.SortNatural;
 import org.hibernate.annotations.Subselect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
@@ -68,7 +69,7 @@ public class InformationResourceFileProxy implements Serializable {
     private Boolean partOfComposite = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "general_type", length = 255)
+    @Column(name = "general_type", length = FieldLength.FIELD_LENGTH_255)
     private FileType informationResourceFileType;
 
     @Column(name = "latest_version")

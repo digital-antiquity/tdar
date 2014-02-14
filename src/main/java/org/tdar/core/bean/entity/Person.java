@@ -34,6 +34,7 @@ import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
@@ -91,14 +92,14 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @BulkImportField(label = "Last Name", comment = BulkImportField.CREATOR_LNAME_DESCRIPTION, order = 2)
     @Fields({ @Field(name = QueryFieldNames.LAST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = QueryFieldNames.LAST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
     @BulkImportField(label = "First Name", comment = BulkImportField.CREATOR_FNAME_DESCRIPTION, order = 1)
     @Fields({ @Field(name = QueryFieldNames.FIRST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String firstName;
 
     @Column(name="orcid_id")
@@ -108,11 +109,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Column(unique = true, nullable = true)
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
     @Column(unique = true, nullable = true)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String username;
 
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
@@ -160,10 +161,10 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     // rpanet.org number (if applicable - using String since I'm not sure if
     // it's in numeric format)
     @Column(name = "rpa_number")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String rpaNumber;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String phone;
 
     @Column(nullable = false, name = "phone_public", columnDefinition = "boolean default FALSE")

@@ -35,6 +35,7 @@ import org.hibernate.search.annotations.Resolution;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
@@ -89,7 +90,7 @@ public class ResourceProxy implements Serializable {
     @DateBridge(resolution = Resolution.DAY)
     private Date dateCreated;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String url;
 
     @ManyToOne(optional = false)

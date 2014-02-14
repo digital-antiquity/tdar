@@ -1,6 +1,5 @@
 package org.tdar.core.bean;
 
-import org.tdar.utils.MessageHelper;
 
 /**
  * Controls the display type for a collection, project, or any resource list.

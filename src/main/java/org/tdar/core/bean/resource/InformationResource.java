@@ -48,6 +48,7 @@ import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
@@ -188,7 +189,7 @@ public abstract class InformationResource extends Resource {
 
     @BulkImportField(label = "Copy Located At", comment = BulkImportField.COPY_LOCATION_DESCRIPTION)
     @Column(name = "copy_location")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String copyLocation;
 
     @Column(name = "last_uploaded")
@@ -222,7 +223,7 @@ public abstract class InformationResource extends Resource {
 
     @BulkImportField(label = "Publisher Location")
     @Column(name = "publisher_location")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String publisherLocation;
 
     @JoinColumn(name = "copyright_holder_id")
@@ -256,7 +257,7 @@ public abstract class InformationResource extends Resource {
     private DataTableColumn mappedDataKeyColumn;
 
     @Column
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String mappedDataKeyValue;
 
     @Transient

@@ -20,17 +20,16 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -110,7 +109,7 @@ public class Invoice extends Base implements Updatable {
     private String transactionId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_type", length = 255)
+    @Column(name = "transaction_type", length = FieldLength.FIELD_LENGTH_255)
     private PaymentMethod paymentMethod;
 
     private Long billingPhone;
@@ -158,7 +157,7 @@ public class Invoice extends Base implements Updatable {
     @Length(max = 25)
     private String invoiceNumber;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String otherReason;
 
     @Enumerated(EnumType.STRING)

@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 
@@ -35,7 +36,7 @@ public class ResourceRelationship extends Persistable.Base {
     private Resource targetResource;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "relationship_type", length = 255)
+    @Column(name = "relationship_type", length = FieldLength.FIELD_LENGTH_255)
     @Field(norms = Norms.NO, store = Store.YES)
     private ResourceRelationshipType type;
 

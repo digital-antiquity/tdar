@@ -4,7 +4,6 @@ import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
-import org.tdar.utils.MessageHelper;
 
 /**
  * 

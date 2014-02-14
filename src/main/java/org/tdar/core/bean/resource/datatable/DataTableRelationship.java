@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -29,7 +30,7 @@ public class DataTableRelationship extends Persistable.Base {
     private static final long serialVersionUID = 7389360675412671860L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "relationship_type", length = 255)
+    @Column(name = "relationship_type", length = FieldLength.FIELD_LENGTH_255)
     private DataTableColumnRelationshipType type;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "relationship")

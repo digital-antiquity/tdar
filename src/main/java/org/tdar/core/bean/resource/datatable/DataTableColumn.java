@@ -28,6 +28,7 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -91,13 +92,13 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private DataTable dataTable;
 
     @Column(nullable = false)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
     @Column(nullable = false, name = "display_name")
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String displayName;
 
     @Lob
@@ -105,7 +106,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "column_data_type", length = 255)
+    @Column(nullable = false, name = "column_data_type", length = FieldLength.FIELD_LENGTH_255)
     private DataTableColumnType columnDataType = DataTableColumnType.VARCHAR;
 
     @Enumerated(EnumType.STRING)

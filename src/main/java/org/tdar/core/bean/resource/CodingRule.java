@@ -18,6 +18,7 @@ import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.JSONTransient;
@@ -43,12 +44,12 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     private CodingSheet codingSheet;
 
     @Column(nullable = false)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String code;
 
     @Column(nullable = false)
     @Field
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     @Index(name = "coding_rule_term_index")
     private String term;
 

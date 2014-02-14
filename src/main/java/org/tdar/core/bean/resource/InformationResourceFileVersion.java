@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 
@@ -50,44 +51,44 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @JoinColumn(name = "information_resource_file_id")
     private InformationResourceFile informationResourceFile;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String filename;
 
     @Column(name = "file_version")
     private Integer version;
 
     @Column(name = "mime_type")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String mimeType;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String format;
 
     @Column(name = "primary_file")
     private Boolean primaryFile = Boolean.FALSE;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String extension;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String premisId;
 
     @Column(name = "filestore_id")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String filestoreId;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String checksum;
 
     @Column(name = "checksum_type")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String checksumType;
 
     @Column(nullable = false, name = "date_created")
     private Date dateCreated;
 
     @Column(name = "file_type")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String fileType;
 
     @Enumerated(EnumType.STRING)
@@ -107,7 +108,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @Column(name = "effective_size")
     private Long uncompressedSizeOnDisk;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String path;
 
     @Transient

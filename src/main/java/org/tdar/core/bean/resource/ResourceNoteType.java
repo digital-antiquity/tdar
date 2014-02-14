@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$

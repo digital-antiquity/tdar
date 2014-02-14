@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.SensoryData;
@@ -22,11 +23,11 @@ public class SensoryDataImage extends Persistable.Sequence<SensoryDataImage> imp
     private static final long serialVersionUID = -9115746507586171584L;
 
     @Column(nullable = false)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String filename;
 
     @Column
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String description;
 
     public String getFilename() {

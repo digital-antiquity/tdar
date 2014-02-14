@@ -34,6 +34,7 @@ import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
@@ -164,7 +165,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private Boolean partOfComposite = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "general_type", length = 255)
+    @Column(name = "general_type", length = FieldLength.FIELD_LENGTH_255)
     private FileType informationResourceFileType;
 
     @Column(name = "latest_version")

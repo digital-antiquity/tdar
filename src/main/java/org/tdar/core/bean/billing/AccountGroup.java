@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Person;
@@ -39,10 +40,10 @@ public class AccountGroup extends Base implements Updatable {
     @JoinColumn(nullable = true, updatable = true, name = "account_group_id")
     private Set<Account> accounts = new HashSet<Account>();
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String description;
 
     @Enumerated(EnumType.STRING)

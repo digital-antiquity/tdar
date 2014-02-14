@@ -13,6 +13,7 @@ import net.sf.json.JsonConfig;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 
@@ -38,7 +39,7 @@ public class BillingTransactionLog extends Base {
     private Date dateCreated;
     // the confirmation id for this invoice
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String transactionId;
 
     public BillingTransactionLog() {

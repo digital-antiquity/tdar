@@ -8,7 +8,6 @@ package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.utils.MessageHelper;
 
 /**
  * Describes the aggregate restrictions on all of the files on the InformationResource.

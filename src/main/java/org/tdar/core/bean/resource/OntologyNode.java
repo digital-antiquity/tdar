@@ -23,6 +23,7 @@ import org.hibernate.annotations.Index;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -69,7 +70,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     private Integer intervalEnd;
 
     @Column(name = "display_name")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String displayName;
 
     @Length(max = 2048)

@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.hibernate.annotations.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -60,7 +61,7 @@ public class AuthorizedUser extends Base implements Persistable {
     @Column(name = "general_permission_int")
     private Integer effectiveGeneralPermission;
     @Enumerated(EnumType.STRING)
-    @Column(name = "admin_permission", length = 255)
+    @Column(name = "admin_permission", length = FieldLength.FIELD_LENGTH_255)
     private AdminPermissions adminPermission;
 
     @ManyToOne(optional = false)

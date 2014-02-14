@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource.datatable;
 
 import org.tdar.core.bean.HasLabel;
-import org.tdar.utils.MessageHelper;
 
 /**
  * Manages the column type that the user tells us.

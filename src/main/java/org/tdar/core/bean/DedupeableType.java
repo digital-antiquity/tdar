@@ -10,7 +10,6 @@ import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.utils.MessageHelper;
 
 /**
  * Controls the types of objects that can be deduped.

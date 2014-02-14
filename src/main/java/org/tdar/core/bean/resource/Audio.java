@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 
 /**
  * The elements on this resource are inspired by:
@@ -30,7 +31,7 @@ public final class Audio extends InformationResource {
     private static final long serialVersionUID = -5207630181373559506L;
 
     @Column(name = "software")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String software;
 
     // all the following fields should be in the header (and probably length)
@@ -44,7 +45,7 @@ public final class Audio extends InformationResource {
     private Integer sampleRate;
 
     @Column(name = "audio_codec")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String audioCodec;
 
     public Audio() {

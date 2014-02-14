@@ -22,10 +22,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
-import org.tdar.utils.MessageHelper;
 
 @Entity
 @Indexed
@@ -44,11 +44,11 @@ public class SensoryData extends Dataset {
 
     /** toplevel metadata fields **/
     @Column(name = "monument_number")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String monumentNumber;
 
     @Column(name = "survey_location")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String surveyLocation; // FIXME: remove this field
 
     @Column(name = "survey_date_begin")
@@ -58,15 +58,15 @@ public class SensoryData extends Dataset {
     private Date surveyDateEnd;
 
     @Column(name = "survey_conditions")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String surveyConditions;
 
     @Column(name = "scanner_details")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String scannerDetails;
 
     @Column(name = "company_name")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String companyName;
 
     @Column(name = "turntable_used", nullable = false)
@@ -89,14 +89,14 @@ public class SensoryData extends Dataset {
     private String finalDatasetDescription;
 
     @Column(name = "additional_project_notes")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String additionalProjectNotes;
 
     @Column(name = "planimetric_map_filename")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String planimetricMapFilename;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     @Column(name = "control_data_filename")
     private String controlDataFilename;
 
@@ -115,7 +115,7 @@ public class SensoryData extends Dataset {
         }
     }
 
-    @Column(name = "rgb_capture", length = 255)
+    @Column(name = "rgb_capture", length = FieldLength.FIELD_LENGTH_255)
     @Enumerated(EnumType.STRING)
     private RgbCapture rgbCapture;
 
@@ -123,7 +123,7 @@ public class SensoryData extends Dataset {
     // TODO: determine if this is actually one-to-many relationship. the xls from angie suggests this, but only one registration record is present in any of the
     // sampple projects
     @Column(name = "registered_dataset_name")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String registeredDatasetName;
 
     @Column(name = "scans_used")
@@ -138,14 +138,14 @@ public class SensoryData extends Dataset {
     @Column(name = "final_registration_points")
     private Long finalRegistrationPoints;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     @Column(name = "registration_method")
     private String registrationMethod;
 
     /** mesh metadata **/
     // premeshing metadata
     @Column(name = "premesh_dataset_name")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String preMeshDatasetName;
 
     @Column(name = "premesh_points")
@@ -169,7 +169,7 @@ public class SensoryData extends Dataset {
     private String pointDeletionSummary;
 
     // polygonal mesh metadata
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     @Column(name = "mesh_dataset_name")
     private String meshDatasetName;
 
@@ -195,7 +195,7 @@ public class SensoryData extends Dataset {
     private boolean meshdataReduction;
 
     @Column(name = "mesh_adjustment_matrix")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String meshAdjustmentMatrix;
 
     @Column(name = "mesh_processing_notes")
@@ -205,7 +205,7 @@ public class SensoryData extends Dataset {
 
     // decimated mesh metadata
     @Column(name = "decimated_mesh_dataset")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String decimatedMeshDataset;
 
     @Column(name = "decimated_mesh_original_triangle_count")
@@ -225,11 +225,11 @@ public class SensoryData extends Dataset {
     @JoinColumn(nullable = false, updatable = false, name = "sensory_data_id")
     private Set<SensoryDataImage> sensoryDataImages = new LinkedHashSet<SensoryDataImage>();
 
-    @Column(name = "scanner_technology", length = 255)
+    @Column(name = "scanner_technology", length = FieldLength.FIELD_LENGTH_255)
     @Enumerated(EnumType.STRING)
     private ScannerTechnologyType scannerTechnology;
 
-    @Column(name = "camera_details", length = 255)
+    @Column(name = "camera_details", length = FieldLength.FIELD_LENGTH_255)
     private String cameraDetails;
 
     public SensoryData() {

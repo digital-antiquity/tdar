@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 
@@ -28,7 +29,7 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
     @Column(name = "keyword_id")
     private Long keywordId;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String label;
 
     @Enumerated(EnumType.STRING)

@@ -23,6 +23,7 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
@@ -65,7 +66,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @Enumerated(EnumType.STRING)
     @Field
     @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
-    @Column(length = 255)
+    @Column(length = FieldLength.FIELD_LENGTH_255)
     private ResourceCreatorRole role;
 
 

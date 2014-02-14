@@ -2,7 +2,6 @@ package org.tdar.core.bean.resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
-import org.tdar.utils.MessageHelper;
 
 /**
  * Status for resources within tDAR, controls permissions and how they're indexed.

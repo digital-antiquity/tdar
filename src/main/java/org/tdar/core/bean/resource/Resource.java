@@ -75,6 +75,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.DeHydratable;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -267,11 +268,11 @@ public class Resource extends JsonModel.Base implements Persistable,
     @DateBridge(resolution = Resolution.DAY)
     private Date dateCreated;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String url;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "resource_type", length = 255)
+    @Column(name = "resource_type", length = FieldLength.FIELD_LENGTH_255)
     @Index(name = "resource_type_index")
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
@@ -425,7 +426,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     private transient boolean updated = false;
 
     @Column(name = "external_id")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String externalId;
 
     private transient Float score = -1f;

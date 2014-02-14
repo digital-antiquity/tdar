@@ -46,6 +46,7 @@ import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -170,8 +171,8 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         setDateUpdated(new Date());
     }
 
-    @Column(length = 255)
-    @Length(max = 255)
+    @Column(length = FieldLength.FIELD_LENGTH_255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String url;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

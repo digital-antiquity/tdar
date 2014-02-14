@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tdar.core.bean.HasLabel;
-import org.tdar.utils.MessageHelper;
 
 /**
  * The type of scan controlls the type of metadata that we display
