@@ -1101,17 +1101,14 @@ this bit of freemarker is voodoo:
 </#if>        
 </#macro>
 
-
-<#-- FIXME: FTLREFACTOR remove:rarely used(1) -->
 <#-- emit notice indicating that the system is currently reindexing the lucene database -->
 <#macro reindexingNote>
  <#if reindexing!false >
-    <div class=" alert">
-        <p>Please note: ${siteAcronym} is currently being updated and not all searches will return the complete results. </p>
+    <div class="reindexing alert">
+        <p><@text "notifications.fmt_system_is_reindexing", siteAcronym /></p>
     </div>
  </#if>
 </#macro>
-
 
 <#-- Emit a resource description (replace crlf's with <p> tags-->
 <#macro description description_="No description specified." >
@@ -1164,5 +1161,15 @@ this bit of freemarker is voodoo:
     <textarea style="display:none" name="javascriptErrorLog"  id="javascriptErrorLog" class="devconsole oldschool input-block-level" rows="10" cols="20" maxlength="${(160 * 80 * 2)?c}">${javascriptErrorLogDefault!'NOSCRIPT'}</textarea>
     <script>document.getElementById('javascriptErrorLog').value="";</script>
 </#macro>
+
+
+<#-- a slightly more concise way to emit i18n strings.
+    name:String string key name
+    parms...?:varargs<String> (optional) any additional arguments are treated as MessageFormat parameters
+-->
+<#macro text name parms...>
+    <@s.text name="${name}"><#list parms as parm><@s.param>${parm}</@s.param></#list></@s.text>
+</#macro>
+
 
 </#escape>

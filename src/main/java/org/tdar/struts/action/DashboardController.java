@@ -81,21 +81,6 @@ public class DashboardController extends AuthenticationAware.Base {
         // } catch (ParseException e1) {
         // getLogger().error("parse exception: {} ", e1);
         // }
-        try {
-            Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
-            if (isEditor() && indexingTask != null) {
-                String properName = "unknown user";
-                try {
-                    properName = indexingTask.getUser().getProperName();
-                } catch (Exception e) {
-                    getLogger().warn("reindexing user could not be determined");
-                }
-                String msg = String.format("%s is RE-INDEXING %s (%s)", properName, getSiteAcronym(), indexingTask.getStartDate());
-                addActionMessage(msg);
-            }
-        } catch (Throwable t) {
-            getLogger().error("what???", t);
-        }
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);
         Collections.sort(sharedResourceCollections);

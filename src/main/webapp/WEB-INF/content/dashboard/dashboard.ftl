@@ -198,8 +198,8 @@
 </#macro>
 
 
-
 <#macro browseResourceSection>
+    <@common.reindexingNote />
 	<div class="" id="project-list">
 	    <h2>Browse Resources</h2>
 	    <div>
