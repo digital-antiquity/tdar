@@ -1150,13 +1150,6 @@ this bit of freemarker is voodoo:
 </#macro>
 
 <#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#-- return true if the system should show contributor-oriented menu items / buttons /links -->
-<#function showContributorMenuItems>
-    <#-- show the 'upload' (even when logged out)  unless user.contributor flag is off -->
-    <#return (authenticatedUser.contributor)!true >
-</#function>
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#macro jsErrorLog>
     <textarea style="display:none" name="javascriptErrorLog"  id="javascriptErrorLog" class="devconsole oldschool input-block-level" rows="10" cols="20" maxlength="${(160 * 80 * 2)?c}">${javascriptErrorLogDefault!'NOSCRIPT'}</textarea>
     <script>document.getElementById('javascriptErrorLog').value="";</script>

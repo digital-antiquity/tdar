@@ -14,47 +14,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#-- Emit choose-project section:  including project dropdown and inheritance checkbox -->
-<#macro chooseProjectSection>
-    <#local _projectId = 'project.id' />
-    <#if resource.id == -1 >
-    <#local _projectId = request.getParameter('projectId')!'' />
-    </#if>
-        <div id="projectTipText" style="display:none;">
-        Select a project with which your <@resourceTypeLabel /> will be associated. This is an important choice because it  will allow metadata to be inherited from the project further down this form
-        </div>
-        <h4>Choose a Project</h4>
-        <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
-            <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-            truncate="70" value='${_projectId}' required=true  cssClass="required input-xxlarge" />
-        </div>
-
-        <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="validationErrorModalLabel">Overwrite Existing Values?</h3>
-            </div>
-            <div class="modal-body">
-                <p>Inheriting values from <span class="labeltext">the parent project</span> would overwrite existing information in the following sections</p>
-                <p class="list-container"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="btnInheritOverwriteOkay">Overwrite Existing Values</button>
-                <button type="button" class="btn"  id="btnInheritOverwriteCancel" data-dismiss="modal" aria-hidden="true">Cancel</button>
-            </div>
-        </div> 
-        
-        <@helptext.inheritance />
-        <div class="control-group" data-tiplabel="Inherit Metadata from Selected Project" data-tooltipcontent="#divSelectAllInheritanceTooltipContent" id="divInheritFromProject">
-            <div class="controls">
-                <label class="checkbox" for="cbSelectAllInheritance">
-                    <input type="checkbox" value="true" id="cbSelectAllInheritance" class="">
-                    <span id="spanCurrentlySelectedProjectText">Inherit from project.</span>
-                </label>
-            </div>
-        </div>
-</#macro>
 
 <#-- Emit the choose-a-collection section -->
 <#macro resourceCollectionSection>
@@ -68,7 +27,15 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <label class="control-label">Collection Name(s)</label>
             <div class="controls">
                 <#list _resourceCollections as resourceCollection>
-                <@resourceCollectionRow resourceCollection resourceCollection_index/>
+                <#-- emit a single row of the choose-a-collection section -->
+                <div id="resourceCollectionRow_${resourceCollection_index}_" class="controls-row repeat-row">
+                    <@s.hidden name="resourceCollections[${resourceCollection_index}].id"  id="resourceCollectionRow_${resourceCollection_index}_id" />
+                <@s.textfield theme="simple" id="resourceCollectionRow_${resourceCollection_index}_id" name="resourceCollections[${resourceCollection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
+                        autocompleteIdElement="#resourceCollectionRow_${resourceCollection_index}_id" maxlength=255
+                        autocompleteParentElement="#resourceCollectionRow_${resourceCollection_index}_" />
+                <@nav.clearDeleteButton id="resourceCollectionRow" />
+                </div>
+
                 </#list>
                 <#if resource.resourceType.project>
                 <span class="help-inline"><em>Note</em>: adding this project to a collection will not include the resources within this project.</span>
@@ -78,17 +45,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#-- emit a single row of the choose-a-collection section -->
-<#macro resourceCollectionRow resourceCollection collection_index = 0 type="internal">
-    <div id="resourceCollectionRow_${collection_index}_" class="controls-row repeat-row">
-            <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
-            <@s.textfield theme="simple" id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
-            autocompleteIdElement="#resourceCollectionRow_${collection_index}_id" maxlength=255
-            autocompleteParentElement="#resourceCollectionRow_${collection_index}_" />
-        <@nav.clearDeleteButton id="resourceCollectionRow" />
-    </div>
-</#macro>
 
 <#-- emit a div containing "repeatable"  keyword fields
     @param label:string label associated with the section  (e.g. "Geographic Keywords")
@@ -118,14 +74,13 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- render the "spatial information" section:geographic keywords, map, coordinates, etc. -->
 <#macro spatialContext showInherited=true>
 <div class="well-alt" id="spatialSection">
     <h2>Spatial Terms</h2>
     <@_inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited />
     <div id="divSpatialInformation">
- 
+
         <div data-tiplabel="Spatial Terms: Geographic" data-tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;." >
         <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' />
         </div>
@@ -140,7 +95,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
             <div id='explicitCoordinatesDiv' style='text-align:center;'>
                 <table cellpadding="0" cellspacing="0" style="margin-left:auto;margin-right:auto;text-align:left;" >
-                <tr>                                    
+                <tr>
                 <td></td>
                 <td>
                 <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong ne-lat" title="Please enter a valid Maximum Latitude" />
@@ -164,11 +119,11 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <tr>
                 <td></td>
                 <td>
-                    <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong sw-lat" title="Please enter a valid Minimum Latitude" /> 
-                    <input type="text" id="d_miny"  placeholder="Latitude (min)"  class="sw-lat-display span2" /> 
+                    <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong sw-lat" title="Please enter a valid Minimum Latitude" />
+                    <input type="text" id="d_miny"  placeholder="Latitude (min)"  class="sw-lat-display span2" />
                 </td>
                 <td></td>
-                </tr>           
+                </tr>
                 </table>
             </div>
             <@helptext.manualGeo />
@@ -183,7 +138,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit resource.resourceType.lable
     @requires resource:Resource
 -->
@@ -195,17 +149,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#if>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#-- emit resourceProvider section -->
-<#macro resourceProvider showInherited=true>
-<div class="well-alt" id="divResourceProvider" data-tiplabel="Resource Provider" data-tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
-    <h2>Institution Authorizing Upload of this <@resourceTypeLabel /></h2>
-    <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
-    <br/>
-</div>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit the "temporal context" section (temporal coverage, temporal keywords) -->
 <#macro temporalContext showInherited=true>
 <div class="well-alt" id="temporalSection">
@@ -219,6 +162,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
 </div>
 </#macro>
+
+<#-- emit the coverage dates section (temporal coverage, temporal keywords) -->
 <#macro _coverageDatesSection>
     <#local _coverageDates=coverageDates />
     <#if _coverageDates.empty><#local _coverageDates = [blankCoverageDate] /></#if>
@@ -235,7 +180,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit the "general keywords" repeatable fields -->
 <#macro generalKeywords showInherited=true>
 <div  
@@ -246,30 +190,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id="divOtherInformation">
         <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
     </div>
-    
-    <#--fixme:  moving 'tagstrip' experiment out of divOtherInformation so existing inheritance code doesn't break
-    <div class="row">
-                <p><span class="label label-warning">FIXME:</span> replace lame keyword lists with fancy taglists (like the one below!)</p><br>
-        <div class="control-group">
-            <label class="control-label">Other Keywords</label>
-            <div class="controls">
-                <input type=text" name="test" id="otherKeywords" style="width:500px" value="${otherKeywords?join(","}"/>
-            </div>
-        </div>
-        <script>
-        $(document).ready(function() {
-            $("#otherKeywords").select2({
-                tags:[${otherKeywords?join(","}],
-                tokenSeparators: [";"]});
-        });
-        </script>
-    </div>
-     -->
 </div>
 </#macro>
 
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit the "Site Information" section of an edit page; controlled/uncontrolled site types, site names.
      @see hier.checkboxlist for information on how hierarchical checkboxlists work
  -->
@@ -293,8 +216,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- render material types section as a list of keywords
     @param showInherited:boolean  if true, show the "inherit from project" checkbox
     @requires  allMaterialKeywords:list<Keyword>  list of keywords to populate the checkboxlist key=keyword.id,
@@ -313,8 +234,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- render material types section: repeatable keyword text fields and checkboxlist of approved keywords
     @param showInherited:boolean  if true, show the "inherit from project" checkbox
     @param inline:boolean not used
@@ -339,8 +258,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit investigation types
     @param showInherited:boolean
     @requires  allInvestigationTypes:list<Keyword>
@@ -483,7 +400,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
         <div class="form-actions" id="editFormActions">
             <#nested>
-            <@submitButton label=label id=buttonid />
+            <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  <#if id?has_content>id="${buttonid}"</#if>>
             <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none" />
         </div> 
     </div>
@@ -504,19 +421,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#macro submitButton label="submit" id="">
-    <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  <#if id?has_content>id="${id}"</#if>>
-</#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#macro parentContextHelp element="div" resourceType="resource" valueType="values">
-<${element} data-tiplabel="Inherited Values" data-tooltipcontent="The parent project for this ${resourceType} defines ${valueType} for this section.  You may also define your own, but note that they will not override the values defined by the parent.">
-<#nested>
-</${element}>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit related collections section-->
 <#macro relatedCollections showInherited=true>
 <#local _sourceCollections = sourceCollections />
@@ -530,14 +435,14 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <div id="divSourceCollectionControl" class="control-group repeatLastRow">
             <label class="control-label">Source Collections</label>
             <#list _sourceCollections as sourceCollection>
-                <@sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
+                <@_sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
             </#list>
         </div>
     
         <div id="divRelatedComparativeCitationControl" class="control-group repeatLastRow">
             <label class="control-label">Related or Comparative Collections</label>
             <#list _relatedComparativeCollections as relatedComparativeCollection>
-                <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
+                <@_sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
             </#list>
         </div> 
         <@helptext.sourceRelatedCollection />
@@ -545,9 +450,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit source collections section-->
-<#macro sourceCollectionRow sourceCollection prefix index=0>
+<#macro _sourceCollectionRow sourceCollection prefix index=0>
 <#local plural = "${prefix}s" />
     <div class="controls controls-row repeat-row" id="${prefix}Row_${index}_">
         <#-- <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" /> -->
@@ -579,8 +483,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>    
 </#macro>
 
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit 'resource notes' section
     @requires resourceNotes:list<ResourceNote>
 -->
@@ -620,7 +522,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
     </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit account information section -->
 <#macro accountSection>
 <#if payPerIngestEnabled>
@@ -645,7 +546,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#if>
 </#macro>
 
-
 <#macro dateRow proxy=proxy proxy_index=0>
 <div class="controls controls-row" id="DateRow_${proxy_index}_">
         <#--<@s.hidden name="coverageDates[${proxy_index}].id" cssClass="dont-inherit" /> -->
@@ -658,8 +558,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
        <@nav.clearDeleteButton id="{proxy_index}DateRow"/>
 </div>
 </#macro>
-
-
 
 <#macro resourceCreators sectionTitle proxies prefix>
 <#local _proxies = proxies >
@@ -782,7 +680,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
     </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit the custom identifiers section of a resource edit page-->
 <#macro identifiers showInherited=true>
     <#local _resourceAnnotations = resourceAnnotations />
@@ -911,8 +808,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </#if>
 </#macro>
 
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit the file upload section for async uploads
     @param showMultiple:boolean (not used?)
     @param divTitle:string (not used?)
@@ -1066,21 +961,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </tr>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#-- emit the resource title section of an edit page
-    @requires resource.title:string
-    @requires resource.id:number
--->
-<#macro title>
-<#-- expose pageTitle so edit pages can use it elsewhere -->
-<#assign pageTitle>Create a new <@resourceTypeLabel /></#assign>
-<#if resource.id != -1>
-<#assign pageTitle>Editing <@resourceTypeLabel /> Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})</#assign>
-</#if>
-<title>${pageTitle}</title>
-</#macro>
-
-
 <#-- emit the right-sidebar section.  Note this gets parsed by sitemesh, so more content will go inside.
     @requires resource:Resource
 -->
@@ -1229,8 +1109,6 @@ $(function() {
 </script>
 </#macro>
 
-
-<#-- FIXME: FTLREFACTOR  jtd: macro only used once.  We could/should either inline this content instead of using it as a macro, or simply move the macro to file that references it-->
 <#-- emit the copyright holders section -->
 <#macro copyrightHolders sectionTitle copyrightHolderProxies >
     <#if copyrightMandatory>
@@ -1406,11 +1284,6 @@ $(function() {
 </span>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#macro _acceptedFileTypesRegex>
-/\.(<@join sequence=validFileExtensions delimiter="|"/>)$/i<#t>
-</#macro>
-
 <#--emit the sub-navmenu of a resource edit page -->
 <#macro subNavMenu>
     <#local supporting = resource.resourceType.supporting >
@@ -1446,7 +1319,6 @@ $(function() {
     </div>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR move to commin-invoice.ftl -->
 <#macro listMemberUsers >
 <#local _authorizedUsers=account.authorizedMembers />
 <#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
@@ -1549,7 +1421,6 @@ $(function() {
     </div>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
 <#-- emit a text input field intended for use as a date-entry control-->
 <#macro datefield date name="" id=name cssClass="" label="" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" >
     <#local val = "">

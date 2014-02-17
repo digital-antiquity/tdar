@@ -15,7 +15,12 @@
 <#import "/${themeDir}/local-helptext.ftl" as  helptext>
 <#-- helptext can be overriden by the theme so we import it, it, in turn override the default helptext -->
 <head>
-<@edit.title />
+<#-- expose pageTitle so edit pages can use it elsewhere -->
+<#assign pageTitle>Create a new <@edit.resourceTypeLabel /></#assign>
+<#if resource.id != -1>
+    <#assign pageTitle>Editing <@edit.resourceTypeLabel /> Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})</#assign>
+</#if>
+<title>${pageTitle}</title>
 
 <meta name="lastModifiedDate" content="$Date$"/>
 
@@ -204,12 +209,49 @@
 	
 	
 	
+    <#-- Emit choose-project section:  including project dropdown and inheritance checkbox -->
 	<div class="" id="organizeSection">
 	    <#if !resource.resourceType.project>
 	    <h2>${siteAcronym} Collections &amp; Project</h2>
 	    <h4>Add to a Collection</h4>
 	    <@edit.resourceCollectionSection />
-	    <@edit.chooseProjectSection />
+                <#assign _projectId = 'project.id' />
+                <#if resource.id == -1 >
+                    <#assign _projectId = request.getParameter('projectId')!'' />
+                </#if>
+                <div id="projectTipText" style="display:none;">
+                    Select a project with which your <@resourceTypeLabel /> will be associated. This is an important choice because it  will allow metadata to be inherited from the project further down this form
+                </div>
+                <h4>Choose a Project</h4>
+                <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
+                    <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
+                    truncate="70" value='${_projectId}' required=true  cssClass="required input-xxlarge" />
+                </div>
+
+                <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="validationErrorModalLabel">Overwrite Existing Values?</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>Inheriting values from <span class="labeltext">the parent project</span> would overwrite existing information in the following sections</p>
+                        <p class="list-container"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="btnInheritOverwriteOkay">Overwrite Existing Values</button>
+                        <button type="button" class="btn"  id="btnInheritOverwriteCancel" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                    </div>
+                </div>
+
+                <@helptext.inheritance />
+                <div class="control-group" data-tiplabel="Inherit Metadata from Selected Project" data-tooltipcontent="#divSelectAllInheritanceTooltipContent" id="divInheritFromProject">
+                    <div class="controls">
+                        <label class="checkbox" for="cbSelectAllInheritance">
+                            <input type="checkbox" value="true" id="cbSelectAllInheritance" class="">
+                            <span id="spanCurrentlySelectedProjectText">Inherit from project.</span>
+                        </label>
+                    </div>
+                </div>
 	    <#else>
 	    <h2>${siteAcronym} Collections</h2>
 	    <@edit.resourceCollectionSection />
@@ -217,7 +259,12 @@
 	</div>
 
     <#if !resource.resourceType.project>
-      <@edit.resourceProvider inheritanceEnabled />
+        <#-- emit resourceProvider section -->
+        <div class="well-alt" id="divResourceProvider" data-tiplabel="Resource Provider" data-tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
+            <h2>Institution Authorizing Upload of this <@resourceTypeLabel /></h2>
+            <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
+            <br/>
+        </div>
       <#if licensesEnabled?? && licensesEnabled >
           <@edit.license />
       </#if>
@@ -280,7 +327,7 @@
 
 var formSelector = "#metadataForm";
 var includeInheritance = ${inheritanceEnabled?string("true", "false")};
-var acceptFileTypes  = <@edit._acceptedFileTypesRegex />;
+var acceptFileTypes  = /\.(<@edit.join sequence=validFileExtensions delimiter="|"/>)$/i;
 /*
 
  * FIXME: move to common.js once we figure out how to control and set javascript based on freemarker values that have "Rights" implications.
@@ -366,4 +413,5 @@ TDAR.inheritance.applyInheritance(formSelector);
 <@edit.personAutocompleteTemplate />
 
 </body>
+
 </#escape>
