@@ -938,7 +938,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
     }
 </#macro>
 
-<#-- emit markup for a single thumbnail representing the specified resource (e.g. for use in search results or project/collection contents  -->
+<#-- emit markup for a single thumbnail representing the specified resource (e.g. for use in search results or project/collection contents)  -->
 <#macro firstThumbnail resource_ forceAddSchemeHostAndPort=true>
     <#-- if you don't test if the resource hasThumbnails -- then you start showing the Image Unavailable on Projects, Ontologies... -->
 	<#local seenThumbnail = false/>

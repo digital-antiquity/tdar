@@ -1123,7 +1123,6 @@ $(function() {
     </#if>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR  jtd: macro only used once.  We could/should either inline this content instead of using it as a macro, or simply move the macro to file that references it-->
 <#-- emit the license section -->
 <#macro license>
 <#assign currentLicenseType = defaultLicenseType/>

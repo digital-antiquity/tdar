@@ -4,29 +4,6 @@
 <#assign DEFAULT_SORT = 'RELEVANCE' />
 <#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
 
-<#-- FIXME: FTLREFACTOR remove: rarely used -->
-<#-- divider between the sections of results -->
-<#macro _printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation>
-    <#if itemTag_?lower_case != 'li'>
-        <#-- if not first result -->
-        <#if !first>
-            <#if (!isGridLayout)>
-                <hr/>
-            <#elseif rowCount % itemsPerRow == 0>
-                </div>    </div><hr /><div class=" ${orientation} resource-list row"><div class="span2">
-            </#if>
-        </#if>
-    </#if>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove: rarely used -->
-<#-- add the lat-long data attributes for the map -->
-<#macro _addLatLongDataAttributes orientation resource>
-            <#if orientation == 'MAP' && resource.latLongVisible >
-            data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
-            data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
-</#macro>
-
 <#-- emit a list of resource summary information (e.g. for a a search results page, or a resource collection view page
     @param resourcelist:list<Persistable> List of Resources or Collections. Required.
     @param sortField:SortOption?  sort value.  Note, this macro does sort the provided list.  Instead, it uses sortOption as
@@ -86,16 +63,22 @@
 		<@_printListHeaders sortfield first resource headerTag orientation listTag_ />
 
         <#-- printing item tag start / -->
-        <@_printTag itemTag_ "listItem ${itemClass!''}" false>
-			<@_addLatLongDataAttributes orientation resource />
-			id="resource-${resource.id?c}"
-        </@_printTag>
+        <${itemTag_} class="listItem ${itemClass!''}"
+            <#if orientation == 'MAP' && resource.latLongVisible >
+            data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
+            data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}"
+            </#if>
+			id="resource-${resource.id?c}">
 
 		<#-- if we're at a new row; close the above tag and re-open it (bug) -->
 		<@_printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation />
 
 		<#-- add grid thumbnail -->
-		<@_addGridThumbnail resource />
+        <#if isGridLayout>
+            <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><#t>
+	            <@view.firstThumbnail resource /><#t>
+	        </a><br/>
+        </#if>
 		
 		<#-- add the title -->
         <@searchResultTitleSection resource titleTag />
@@ -118,9 +101,36 @@
     </#if>
   </#if>
   
-  <@_addMapFooter orientation mapPosition mapHeight />
+    <#if orientation == "MAP">
+    </div>
+        <#if mapPosition=="left" || mapPosition == "bottom">
+        <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
+
+        </div>
+        </#if>
+    </div>
+    <script>
+        $(document).ready(function() {
+            TDAR.maps.setupMapResult();
+        });
+    </script>
+    </#if>
+
 </#macro>
 
+<#-- divider between the sections of results -->
+    <#macro _printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation>
+        <#if itemTag_?lower_case != 'li'>
+        <#-- if not first result -->
+            <#if !first>
+                <#if (!isGridLayout)>
+                <hr/>
+                <#elseif rowCount % itemsPerRow == 0>
+                </div>    </div><hr /><div class=" ${orientation} resource-list row"><div class="span2">
+                </#if>
+            </#if>
+        </#if>
+    </#macro>
 
 <#macro _printListHeaders sortfield first resource=null headerTag="" orientation='LIST' listTag_='li'>
     <#-- handle grouping/sorting with indentation -->
@@ -143,60 +153,22 @@
             <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
 
 			<#-- if we're a grid, then reset rows -->
-			<@_printGridHeader orientation listTag_ />
+            <#if isGridLayout>
+            <div class='resource-list row ${orientation}'>
+            <#else>
+            <${listTag_} class="resource-list ${orientation}">
+            </#if>
         </#if>
         <#assign prev=key />
     <#elseif first>
         <#-- default case for group tag -->
-		<@_printGridHeader orientation listTag_ />
+        <#if isGridLayout>
+        <div class='resource-list row ${orientation}'>
+        <#else>
+        <${listTag_} class="resource-list ${orientation}">
+        </#if>
     </#if>  
 </#macro>
-
-<#-- FIXME: FTLREFACTOR remove: rarely used (jtd: I think it'll work better to emit the tag explicitly than call out to a macro) -->
-<#-- this macro prints a html tag with or without a closing -->
-<#macro _printTag tagName className closing>
-    <#if tagName?has_content>
-            <<#if closing>/</#if>${tagName} class="${className}" <#nested><#rt/>>
-    </#if>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove: rarely used -->
-<#-- special header for the grid layout -->
-<#macro _printGridHeader orientation listTag_>
-    <#if isGridLayout>
-    <div class='resource-list row ${orientation}'>
-    <#else>
-        <@_printTag listTag_ "resource-list ${orientation}" false />
-    </#if>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove: rarely used (jtd: I think it'll work better to emit the tag explicitly than call out to a macro) -->
-<#macro _addMapFooter orientation mapPosition mapHeight  >
-	  <#if orientation == "MAP">
-	  </div>
-	      <#if mapPosition=="left" || mapPosition == "bottom">
-	    <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
-	    
-	    </div>
-	    </#if>    
-	    </div>    
-	    <script>
-	        $(document).ready(function() {
-		        TDAR.maps.setupMapResult();
-	        });
-	    </script>      
-	  </#if>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove: rarely used  -->
-<#macro _addGridThumbnail resource>
-	<#if isGridLayout>
-	    <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><#t>
-	            <@view.firstThumbnail resource /><#t>
-	        <#t></a><br/>
-	</#if>
-</#macro>
-
 
 <#macro _printDescription resource=resource orientation=DEFAULT_ORIENTATION length=80 showProject=false>
 	<#if resource?has_content>
@@ -207,7 +179,6 @@
 			</#if>
 		</#if>
 		<#local _rid = resource.id?c >
-		<#--//FIXME: need non-hokey way to determine whether persistable is collection  -->
 		<#if resource.class.simpleName == 'ResourceCollection'>
 			<#local _rid = "C${resource.id?c}" >
 		</#if>
