@@ -1,4 +1,5 @@
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <head>
 <title>Register with ${siteName}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -13,6 +14,7 @@ label.error {display:block;}
 <#assign action_><@nav.getFormUrl absolutePath="/account/register" /></#assign>
 
 <@s.form id="accountForm" method="post" action="${action_}" cssClass="form-horizontal">
+<@common.jsErrorLog />
 
 <div class="alert alert-block alert-error" style="display:none" id="error">
   <h4>Please correct the following issues with your submission</h4>

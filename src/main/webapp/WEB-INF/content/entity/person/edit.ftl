@@ -21,7 +21,7 @@ label.error {display:block;}
 <h1>${pageTitle}</h1>
 
 <@s.form name='personForm' id='frmPerson'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
-
+<@common.jsErrorLog />
 <div class="row">
     <h2>Personal Details</h2>
     <div class="" >

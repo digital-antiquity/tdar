@@ -8,7 +8,7 @@
     <#else>
         <title>Add a new Institution</title>
     </#if>
-    
+
     <script type="text/javascript">
         $(function() {
             initializeView();
@@ -19,6 +19,7 @@
 <body>
 
     <@s.form  name="institutionForm" id="frmInstitution"  cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
+    <@common.jsErrorLog />
     <div class="glide">
         <h1>Institution Information for: ${institution.name}</h1>
         <@s.hidden name="id" />

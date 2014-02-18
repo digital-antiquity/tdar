@@ -43,7 +43,7 @@
 
 <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
 <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
-
+<@common.jsErrorLog />
 <h2>Basic Information</h2>
 <div class="" id="basicInformationSection" data-tiplabel="Basic Information"  data-tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent
     collection&quot; which allows you to inherit all of the access permissions defined by the parent.">
