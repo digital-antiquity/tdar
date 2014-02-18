@@ -220,7 +220,7 @@
                     <#assign _projectId = request.getParameter('projectId')!'' />
                 </#if>
                 <div id="projectTipText" style="display:none;">
-                    Select a project with which your <@resourceTypeLabel /> will be associated. This is an important choice because it  will allow metadata to be inherited from the project further down this form
+                    Select a project with which your <@edit.resourceTypeLabel /> will be associated. This is an important choice because it  will allow metadata to be inherited from the project further down this form
                 </div>
                 <h4>Choose a Project</h4>
                 <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
@@ -261,7 +261,7 @@
     <#if !resource.resourceType.project>
         <#-- emit resourceProvider section -->
         <div class="well-alt" id="divResourceProvider" data-tiplabel="Resource Provider" data-tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
-            <h2>Institution Authorizing Upload of this <@resourceTypeLabel /></h2>
+            <h2>Institution Authorizing Upload of this <@edit.resourceTypeLabel /></h2>
             <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
             <br/>
         </div>
