@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
@@ -39,6 +40,7 @@ import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.RssService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.db.model.abstracts.TargetDatabase;
@@ -277,7 +279,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 description = fileDescription;
             }
             try {
-                ImageTag tag = new GoogleImageSitemapUrl.ImageTag(new URL(imageUrl)).title(title).caption(description);
+                ImageTag tag = new GoogleImageSitemapUrl.ImageTag(new URL(imageUrl)).title(cleanupXml(title)).caption(cleanupXml(description));
                 GoogleImageSitemapUrl iurl = new GoogleImageSitemapUrl.Options(new URL(resourceUrl)).addImage(tag).build();
                 gisg.addUrl(iurl);
                 count++;
@@ -287,6 +289,13 @@ public class DatasetDao extends ResourceDao<Dataset> {
         }
         return count;
         
+    }
+
+    private String cleanupXml(String text) {
+        if (StringUtils.isEmpty(text)) {
+            return text;
+        }
+        return StringEscapeUtils.escapeXml(RssService.stripInvalidXMLCharacters(text));
     }
 
 }
