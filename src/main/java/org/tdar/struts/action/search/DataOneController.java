@@ -19,12 +19,15 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.dataOne.DataOneCapabilitiesResponse;
 import org.tdar.struts.data.dataOne.DataOneLogEntry;
+import org.tdar.utils.activity.Activity;
+import org.tdar.utils.activity.ActivityMonitor;
 
 import com.opensymphony.xwork2.interceptor.ParameterNameAware;
 
@@ -46,7 +49,18 @@ public class DataOneController extends AbstractLookupController<Indexable> imple
     @Autowired
     private XmlService xmlService;
 
+    private String fromDate;
+    private String toDate;
+    private int start;
+    private int count;
+    private int total;
+    private String pidFilter;
+    private String event;
+    private String replicaStatus;
+    private String checksumAlgorithm;
 
+    private String currentDateFormatted;
+    
     public DataOneLogEntry generateLogEntry() {
         DataOneLogEntry logEntry = new DataOneLogEntry(getServletRequest());
         logEntry.setNodeIdentifier("TDAR");
@@ -74,9 +88,24 @@ public class DataOneController extends AbstractLookupController<Indexable> imple
         throw new TdarActionException(StatusCode.NOT_IMPLEMENTED, "not implemented");
     }
 
+    @Action(value="ping", results= {
+            @Result(name=SUCCESS, params={"Date","${date}"}),
+            @Result(name=ERROR)
+            // 200 ok < Date: Tue, 06 Mar 2012 14:19:59 GMT
+            //500 bad;
+
+    })
+    public String ping() throws TdarActionException {
+        Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
+        if (indexingTask != null && !indexingTask.hasEnded()) {
+            return ERROR;
+        }
+        return SUCCESS;
+    }
+
     @Actions({
         @Action(""),
-        @Action("ping")
+        @Action("node")
     })
     public String execute() throws TdarActionException {
         DataOneCapabilitiesResponse d1c = new DataOneCapabilitiesResponse();
