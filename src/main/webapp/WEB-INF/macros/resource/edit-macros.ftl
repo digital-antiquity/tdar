@@ -400,7 +400,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
         <div class="form-actions" id="editFormActions">
             <#nested>
-            <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  <#if id?has_content>id="${buttonid}"</#if>>
+            <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}" id="${buttonid}">
             <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none" />
         </div> 
     </div>
