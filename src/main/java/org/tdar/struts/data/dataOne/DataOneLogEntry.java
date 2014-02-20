@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class LogEntry implements Serializable {
+public class DataOneLogEntry implements Serializable {
 
     private static final long serialVersionUID = -1160217582231223023L;
     private String identifier;
@@ -17,7 +17,7 @@ public class LogEntry implements Serializable {
     private String nodeIdentifier;
     private boolean shouldRecord;
 
-    public LogEntry(HttpServletRequest servletRequest) {
+    public DataOneLogEntry(HttpServletRequest servletRequest) {
         setIpAddress(servletRequest.getRemoteAddr());
         setUserAgent(servletRequest.getHeader("User-Agent"));
     }

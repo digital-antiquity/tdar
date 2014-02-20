@@ -23,8 +23,8 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
-import org.tdar.struts.data.dataOne.DataOneCapabilities;
-import org.tdar.struts.data.dataOne.LogEntry;
+import org.tdar.struts.data.dataOne.DataOneCapabilitiesResponse;
+import org.tdar.struts.data.dataOne.DataOneLogEntry;
 
 import com.opensymphony.xwork2.interceptor.ParameterNameAware;
 
@@ -47,8 +47,8 @@ public class DataOneController extends AbstractLookupController<Indexable> imple
     private XmlService xmlService;
 
 
-    public LogEntry generateLogEntry() {
-        LogEntry logEntry = new LogEntry(getServletRequest());
+    public DataOneLogEntry generateLogEntry() {
+        DataOneLogEntry logEntry = new DataOneLogEntry(getServletRequest());
         logEntry.setNodeIdentifier("TDAR");
         return logEntry;
     }
@@ -79,7 +79,7 @@ public class DataOneController extends AbstractLookupController<Indexable> imple
         @Action("ping")
     })
     public String execute() throws TdarActionException {
-        DataOneCapabilities d1c = new DataOneCapabilities();
+        DataOneCapabilitiesResponse d1c = new DataOneCapabilitiesResponse();
 //        d1c.setServices(services);
 //        d1c.setSchedule(schedule);
         return SUCCESS;
