@@ -5,54 +5,6 @@ navigation freemarker macros
 <#escape _untrusted as _untrusted?html>
 <#import "list-macros.ftl" as list>
 
-<#-- FIXME: FTLREFACTOR remove: rarely used -->
-<#-- emit a partial login form -->
-<#macro loginForm cssClass="">
-<script type="text/javascript">
-$(document).ready(function() {
-  $('#loginForm').validate({
-    messages: {
-      loginUsername: {
-        required: "Please enter your username."
-      },
-      loginPassword: {
-        required: "Please enter your password."
-      }
-    },
-    errorClass:'help-inline',
-  highlight: function(label) {
-    $(label).closest('.control-group').addClass('error');
-  },
-  success: function($label) {
-    $label.closest('.control-group').removeClass('error').addClass('success');
-  }
-  
-    });
-  $('#loginUsername').focus();
-  $('#loginUsername').bind("focusout",function() {
-    var fld = $('#loginUsername');
-    fld.val($.trim(fld.val()))});
-});
-</script>
-<#local formAction><@getFormUrl absolutePath="/login/process"/></#local>
-<@s.form id='loginForm' method="post" action="${formAction}" cssClass="${cssClass}">
-    <input type="hidden" name="url" value="${Parameters.url!''}"/>
-    <@s.textfield spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
-    <@s.password id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
-    <@s.checkbox name="userCookieSet" label="Stay logged-in the next time I visit this page" />
-    
-    <div class="form-actions">
-        <button type="submit" class="button btn btn-primary input-small submitButton" name="_tdar.Login" id="btnLogin">Login</button>
-        <div class="pull-right">
-            <div class="btn-group">
-                <a class="btn " href='<@s.url value="/account/new"/>' rel="nofollow">Register </a> 
-                <a class="btn " href='<@s.url value="/account/recover"/>' rel="nofollow">Reset Password</a>
-            </div>
-        </div>
-    </div>
-</@s.form>
-<div id="error"></div>
-</#macro>
 
 <#-- emit a toolbar for use on a resource view page
   @param namespace:string prefix of the action urls for the buttons on the toolbar (e.g. "dataset" becomes "dataset/delete"
@@ -76,13 +28,14 @@ $(document).ready(function() {
     <div class="span12 resource-nav  screen " id="toolbars" parse="true">
       <ul >
        <#if persistable??>
-        <@makeViewLink namespace current />
+        <@makeLink namespace "view" "view" "view" current />
         <#if editable>
-          <@makeEditLink namespace current />
+           <@makeLink namespace "edit" "edit" "edit" current />
         </#if>
         <#if editable>
-          <@makeDeleteLink namespace current />
-        </#if>
+          <#local _deleteable = persistable.status?? && persistable.status.toString().toLowerCase().equals('deleted') >
+          <@makeLink namespace "delete" "delete" "delete" current true _deleteable />
+       </#if>
         <#if persistable.resourceType??>
 	        <@list.bookmark resource true true />
 	        <#if resource.resourceType == "PROJECT">
@@ -92,9 +45,9 @@ $(document).ready(function() {
         </#if>
         <#nested>
        <#elseif creator??>
-        <@makeViewLink namespace current />
+           <@makeLink namespace "view" "view" "view" current />
         <#if ableToEditAnything>
-          <@makeEditLink namespace current />
+          <@makeLink namespace "edit" "edit" "edit" current />
         </#if>
        <#else>
         <@makeLink "workspace" "list" "bookmarked resources" "list" current false />
@@ -105,7 +58,6 @@ $(document).ready(function() {
   </#if>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove: rarely used -->
 <#-- emit toolbar for use on a "creator" page
     @param current:string name of the current struts action (e.g. edit/view/save)
     @requires creator.creatorType:string either "institution" or "person"
@@ -184,48 +136,24 @@ $(document).ready(function() {
     </li>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove: rarely used -->
-<#macro makeEditLink namespace current url="edit" label="edit">
-    <@makeLink namespace url label "edit" current />
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove: rarely used -->
-<#macro makeDeleteLink namespace current url="delete" label="delete">
-    <#if persistable.status?? && persistable.status.toString().toLowerCase().equals('deleted')>
-      <@makeLink namespace url label "delete" current true true />
-    <#else>
-      <@makeLink namespace url label "delete" current true false />
-    </#if>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove: rarely used -->
-<#macro makeViewLink namespace current url="view" label="view">
-    <@makeLink namespace url label "view" current />
-</#macro>
-
 
 <#-- emit "delete" button for use with repeatable form field rows -->
 <#macro clearDeleteButton id="" disabled=false title="delete this item from the list">
     <button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i class="icon-trash"></i></button>
 </#macro>
-
-<#-- emit the URL associated with the current form. The URL always includes the scheme & host,  if the application uses a nonstandard
- port for the current scheme  (e.g. the https port is not 443),  the URL include scheme, host, and port -->
-<#macro getFormUrl absolutePath="/login/process">
-<#compress>
-<#-- NOTE: as Jim says, this can be done insetad with an @s.url scheme="https|http", but with tDAR running on so-many ports 
-    in testing, I'm not sure if the right way is the best way for us  -->
-<#assign actionMethod>${absolutePath}</#assign>
-<#if httpsEnabled>
-    <#assign appPort = ""/>
-    <#if httpsPort != 443>
-        <#assign appPort= ":" + httpsPort?c/>
-    </#if>
-    <#assign actionMethod>https://${hostName}${appPort}${absolutePath}</#assign>
-</#if>
-${actionMethod}
-</#compress>
-</#macro>
-
-
 </#escape>
+
+<#-- Return the URL associated with the current form. The URL always includes the scheme & host,  if the application uses a nonstandard
+ port for the current scheme  (e.g. the https port is not 443),  the URL include scheme, host, and port -->
+<#function getFormUrl absolutePath="/login/process" >
+    <#local actionMethod>${absolutePath}</#local>
+    <#local appPort = ""/>
+    <#if httpsEnabled>
+        <#if httpsPort != 443>
+            <#local  appPort= ":" + httpsPort?c/>
+        </#if>
+        <#local actionMethod="https://${hostName}${appPort}${absolutePath}" />
+    </#if>
+    <#return actionMethod>
+</#function>
+

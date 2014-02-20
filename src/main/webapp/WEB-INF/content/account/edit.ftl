@@ -11,7 +11,7 @@ label.error {display:block;}
 <#include "/${themeDir}/terms.ftl" />
 
 <h2>Account Registration</h2>
-<#assign action_><@nav.getFormUrl absolutePath="/account/register" /></#assign>
+<#assign action_ = nav.getFormUrl("/account/register") >
 
 <@s.form id="accountForm" method="post" action="${action_}" cssClass="form-horizontal">
 <@common.jsErrorLog />
