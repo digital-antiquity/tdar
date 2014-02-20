@@ -80,6 +80,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String REDIRECT = "redirect";
     public static final String WAIT = "wait";
     public static final String THUMBNAIL = "thumbnail";
+    public static final String SM = "sm";
+    public static final String MD = "md";
+    public static final String LG = "lg";
     public static final String FORBIDDEN = "forbidden";
     public static final String SUCCESS_ASYNC = "SUCCESS_ASYNC";
     public static final String NOT_FOUND = "not_found";

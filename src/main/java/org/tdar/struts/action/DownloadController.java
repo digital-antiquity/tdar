@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -94,7 +95,10 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         return SUCCESS;
     }
 
-    @Action(value = THUMBNAIL, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    @Actions({
+        @Action(value = THUMBNAIL, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }),
+        @Action(value = SM, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    })
     public String thumbnail() throws TdarActionException {
         InformationResourceFileVersion irFileVersion = null;
         if (informationResourceFileId == null)

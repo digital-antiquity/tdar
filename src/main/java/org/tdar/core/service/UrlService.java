@@ -58,11 +58,11 @@ public class UrlService {
     }
 
     public String thumbnailUrl(InformationResourceFileVersion version) {
-        return String.format("%s/filestore/%d/thumbnail", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
+        return String.format("%s/filestore/img/sm/%d", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
     }
 
     public static String thumbnailUrl(Long id) {
-        return String.format("%s/filestore/%d/thumbnail", StringUtils.stripEnd(getBaseUrl(), "/"), id);
+        return String.format("%s/filestore/img/sm/%d", StringUtils.stripEnd(getBaseUrl(), "/"), id);
     }
 
     public String getPairedSchemaUrl() {

@@ -7,6 +7,7 @@ Disallow: /search/download
 Disallow: /filestore/
 Disallow: /search/advanced
 Allow: /browse/explore
+Allow: /filestore/img/sm/*
 <#else>
 Disallow: *
 </#if>
