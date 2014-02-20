@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -77,20 +78,6 @@ public class DownloadService {
         IOUtils.closeQuietly(zout);
     }
 
-    public void generateZipArchive(InformationResource resource, File destinationFile) throws IOException {
-        Collection<File> files = new LinkedList<File>();
-
-        for (InformationResourceFileVersion version : resource.getLatestVersions()) {
-            if (version.getInformationResourceFile().isDeleted())
-                continue;
-            files.add(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
-        }
-    }
-
-    public void generateZipArchive(InformationResource resource) throws IOException {
-        generateZipArchive(resource, File.createTempFile(slugify(resource), ".zip", TdarConfiguration.getInstance().getTempDirectory()));
-    }
-
     @Transactional
     public void handleDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions) throws TdarActionException {
         if (ArrayUtils.isEmpty((irFileVersions))) {
@@ -101,11 +88,17 @@ public class DownloadService {
         String mimeType = null;
         String fileName = null;
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
+            if (irFileVersion.getInformationResourceFile().isDeleted()) {
+                continue;
+            }
             addFileToDownload(files, authenticatedUser, irFileVersion, dh.isCoverPageIncluded());
             if (!irFileVersion.isDerivative()) {
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
-                FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
-                genericService.save(stat);
+                // don't count download stats if you're downloading your own stuff
+                if (!Persistable.Base.isEqual(irFile.getInformationResource().getSubmitter(), authenticatedUser) && !dh.isEditor()) {
+                    FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
+                    genericService.save(stat);
+                }
                 if (irFileVersions.length > 1) {
                     initDispositionPrefix(FileType.FILE_ARCHIVE, dh);
                     fileName = String.format("files-%s.zip",informationResourceId);

@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
@@ -177,7 +179,7 @@ public class BrowseController extends AbstractLookupController {
                     Persistable.Base.extractIds(getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
                     Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
-
+        
         return SUCCESS;
     }
 
@@ -225,7 +227,11 @@ public class BrowseController extends AbstractLookupController {
                 } catch (Exception e) {
                     getLogger().error("error: {}", e);
                 }
+            }
 
+            if (!isEditor() && !Persistable.Base.isEqual(creator, getAuthenticatedUser())) {
+                CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), creator);
+                getGenericService().saveOrUpdate(cvs);
             }
 
             setPersistable(creator);

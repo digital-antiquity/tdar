@@ -98,3 +98,22 @@ CREATE TABLE weekly_popular_resource_cache (
 alter table weekly_popular_resource_cache drop column label;
 alter table weekly_popular_resource_cache drop column level;
 alter table weekly_popular_resource_cache drop column resource_count;
+
+-- abrin 2/14/2014
+create table creator_view_statistics (
+    id  bigserial not null,
+    date_accessed timestamp,
+    creator_id int8 references creator,
+    primary key (id)
+);
+create index creator_view_stats_count_id on creator_view_statistics (creator_id, id);
+
+
+create table resource_collection_view_statistics (
+    id  bigserial not null,
+    date_accessed timestamp,
+    resource_collection_id int8 references collection,
+    primary key (id)
+);
+
+create index resource_collection_view_stats_count_id on resource_collection_view_statistics (resource_collection_id, id);

@@ -28,6 +28,8 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
@@ -151,6 +153,31 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         // don't do strict test since the downloaded pdf's will have a cover page
         assertArchiveContents(files, file, false);
     }
+
+    
+    @Test
+    @Rollback
+    public void testDownloadArchiveControllerWithDeleted() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
+
+        List<File> files = new ArrayList<>();
+        File file1 = new File(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
+        files.add(file1);
+//        files.add(new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME));
+        Document document = generateDocumentWithUser();
+        for(File file : files) {
+            addFileToResource(document, file);
+        }
+        
+        InformationResourceFile deleted = document.getFirstInformationResourceFile();
+        deleted.setStatus(FileStatus.DELETED);
+        genericService.saveOrUpdate(deleted);
+        
+        DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
+        controller.setInformationResourceId(document.getId());
+        assertEquals(TdarActionSupport.ERROR, controller.downloadZipArchive());
+        logger.info(controller.getFileName());
+    }
+
 
     @Test
     @Rollback

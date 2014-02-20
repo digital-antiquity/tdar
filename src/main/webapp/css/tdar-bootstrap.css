@@ -95,6 +95,7 @@ left: 0!important;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
+    width: 58%;  /*workaround for bs2.3.2 css bug preventing xlarge sizing for .uneditable-input spans */
 }
 
 /* make the file transfer data appear more muted/compact */

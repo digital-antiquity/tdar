@@ -4,7 +4,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -93,7 +95,10 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         return SUCCESS;
     }
 
-    @Action(value = THUMBNAIL, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    @Actions({
+        @Action(value = THUMBNAIL, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }),
+        @Action(value = SM, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    })
     public String thumbnail() throws TdarActionException {
         InformationResourceFileVersion irFileVersion = null;
         if (informationResourceFileId == null)
@@ -127,6 +132,9 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         InformationResource ir = (InformationResource) getResourceService().find(getInformationResourceId());
         List<InformationResourceFileVersion> versions = new ArrayList<>();
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
+            if (irf.isDeleted()) {
+                continue;
+            }
             if (!getAuthenticationAndAuthorizationService().canDownload(irf, getSessionData().getPerson())) {
                 getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
                 return FORBIDDEN;
@@ -134,6 +142,10 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             getLogger().trace("adding: {}", irf.getLatestUploadedVersion());
             versions.add(irf.getLatestUploadedOrArchivalVersion());
         }
+        if (CollectionUtils.isEmpty(versions)) {
+            return ERROR;
+        }
+        
         getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), versions.toArray(new InformationResourceFileVersion[0]));
         return SUCCESS;
     }

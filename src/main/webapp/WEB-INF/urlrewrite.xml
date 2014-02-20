@@ -146,6 +146,16 @@
 		<to>/filestore/$2?informationResourceFileId=$1</to>
 	</rule>
 
+    <rule>
+		<from>^/filestore/img/sm/(\d+)</from>
+		<to>/filestore/thumbnail?informationResourceFileId=$1</to>
+	</rule>
+
+    <rule>
+		<from>^/filestore/img/(md|lg)/(\d+)</from>
+		<to>/filestore/$1?informationResourceFileId=$2</to>
+	</rule>
+
 	<rule>
 		<from>^/filestore/(\d+)/?</from>
 		<to>/filestore/get?informationResourceFileId=$1</to>

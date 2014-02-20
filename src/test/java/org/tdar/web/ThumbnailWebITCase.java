@@ -80,7 +80,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.debug("edit:" + editPage);
         logger.trace(getPageText());
         // we're dealing with a confidential file, should not be there
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
         String pageCode = getPageCode();
         Pattern p = Pattern.compile("/filestore/(\\d+)(/?)");
         Matcher m = p.matcher(pageCode);
@@ -93,12 +93,12 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // ONCE WE LOG OUT THE THUMBNAIL SHOULDN'T BE PRESENT BECAUSE THE RESOURCE IS CONFIDENTIAL
         logout();
         gotoPage(viewPage);
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
 
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(viewPage);
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
 
         assertDeniedAccess(irFileVersionIds);
 
@@ -111,7 +111,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         logout();
         gotoPage(viewPage);
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
 
         assertLoginPrompt(irFileVersionIds);
 
@@ -119,7 +119,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(viewPage);
         // not present because not showing only one thumbnail
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
         assertTextPresentInCode("/filestore/");
 
         assertAllowedToViewIRVersionIds(irFileVersionIds);
@@ -134,7 +134,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         logout();
         gotoPage(viewPage);
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
 
         assertLoginPrompt(irFileVersionIds);
 
@@ -145,8 +145,8 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.info(getPageText());
         assertFalse(statusCode == 200); // make sure we have a "bad" status code though
         gotoPage(viewPage);
-        assertTextNotPresent("/thumbnail");
-
+        assertTextNotPresent("/img/sm");
+        
         Long imageId = extractTdarIdFromCurrentURL();
 
         assertDeniedAccess(irFileVersionIds);

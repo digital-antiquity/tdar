@@ -188,8 +188,10 @@
 	            <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
 		            <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
 	            </#if>
-	            <@common.cartouche resource true><@_listCreators resource/></@common.cartouche>
-	            <@view.unapiLink resource  />
+	            <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
+	            <#if resource.resourceType?has_content>
+		            <@view.unapiLink resource  />
+	            </#if>
 	            <#if showProject && !resource.resourceType.project >
 		            <p class="project">${resource.project.title}</p>
 	            </#if>

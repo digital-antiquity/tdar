@@ -18,5 +18,7 @@ public interface DownloadHandler extends ActionMessageErrorSupport {
 
     void setDispositionPrefix(String string);
 
+    public boolean isEditor();
+    
     boolean isCoverPageIncluded();
 }

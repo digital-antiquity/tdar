@@ -1217,7 +1217,7 @@ $(function() {
                 <div class="controls controls-row">
                     <div class="span5">
                         <div><em class="replacement-text "></em></div>
-                        <span class="name uneditable-input subtle inpux-xlarge">{%=file.name%}</span>
+                        <span class="name uneditable-input subtle inpux-xlarge" title="{%=file.name%}">{%=file.name%}</span>
                         <span class="help-inline">{%=o.formatFileSize(file.size)%}</span>
                     </div>
                 </div>

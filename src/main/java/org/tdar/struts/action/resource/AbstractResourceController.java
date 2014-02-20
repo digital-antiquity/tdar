@@ -285,7 +285,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         initializeResourceCreatorProxyLists();
         loadCustomMetadata();
         getResourceService().updateTransientAccessCount(getResource());
-        getResourceService().incrementAccessCounter(getPersistable());
+        // don't count if we're an admin
+        if (!Persistable.Base.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
+            getResourceService().incrementAccessCounter(getPersistable());
+        }
         loadEffectiveResourceCollections();
         getAccountService().updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
 

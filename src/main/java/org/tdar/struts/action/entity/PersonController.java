@@ -14,10 +14,12 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -26,6 +28,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -214,6 +217,12 @@ public class PersonController extends AbstractCreatorController<Person> {
         } catch (Throwable e) {
             getLogger().error("problem communicating with crowd getting user info for {} ", getPersistable(), e);
         }
+
+        if (!isEditor() && !Persistable.Base.isEqual(getPersistable(), getAuthenticatedUser())) {
+            CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), getPersistable());
+            getGenericService().saveOrUpdate(cvs);
+        }
+
         return SUCCESS;
     }
 

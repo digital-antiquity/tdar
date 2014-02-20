@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
@@ -185,6 +186,10 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public String loadViewMetadata() {
         setParentId(getPersistable().getParentId());
+        if (!isEditor()) {
+            ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable());
+            getGenericService().saveOrUpdate(rcvs);
+        }
         return SUCCESS;
     }
 
