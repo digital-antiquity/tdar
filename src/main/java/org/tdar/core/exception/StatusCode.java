@@ -24,7 +24,8 @@ public enum StatusCode {
     UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED, "UNAUTHORIZED", TdarActionSupport.UNAUTHORIZED),
     BAD_REQUEST(HttpStatus.SC_BAD_REQUEST, "BAD REQUEST", "badrequest"),
     UNKNOWN_ERROR(HttpStatus.SC_INTERNAL_SERVER_ERROR, "UNKNOWN ERROR", "unknownerror"),
-    FORBIDDEN(HttpStatus.SC_FORBIDDEN, "NOT ALLOWED", "notallowed");
+    FORBIDDEN(HttpStatus.SC_FORBIDDEN, "NOT ALLOWED", "notallowed"), 
+    NOT_IMPLEMENTED(HttpStatus.SC_NOT_IMPLEMENTED,"NOT IMPLEMENTED", "notimplemented");
 
     private final int httpStatusCode;
     private final String errorMessage;
