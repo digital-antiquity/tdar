@@ -78,20 +78,6 @@ public class DownloadService {
         IOUtils.closeQuietly(zout);
     }
 
-    public void generateZipArchive(InformationResource resource, File destinationFile) throws IOException {
-        Collection<File> files = new LinkedList<File>();
-
-        for (InformationResourceFileVersion version : resource.getLatestVersions()) {
-            if (version.getInformationResourceFile().isDeleted())
-                continue;
-            files.add(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
-        }
-    }
-
-    public void generateZipArchive(InformationResource resource) throws IOException {
-        generateZipArchive(resource, File.createTempFile(slugify(resource), ".zip", TdarConfiguration.getInstance().getTempDirectory()));
-    }
-
     @Transactional
     public void handleDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions) throws TdarActionException {
         if (ArrayUtils.isEmpty((irFileVersions))) {
@@ -102,6 +88,9 @@ public class DownloadService {
         String mimeType = null;
         String fileName = null;
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
+            if (irFileVersion.getInformationResourceFile().isDeleted()) {
+                continue;
+            }
             addFileToDownload(files, authenticatedUser, irFileVersion, dh.isCoverPageIncluded());
             if (!irFileVersion.isDerivative()) {
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
