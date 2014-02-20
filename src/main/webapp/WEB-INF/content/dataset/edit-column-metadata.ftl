@@ -57,6 +57,7 @@
 
 
 <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal"  action='save-column-metadata'>
+<@common.jsErrorLog />
 <@s.hidden name='id' value='${resource.id?c}'/>
 <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
 <#if ( dataset.dataTables?size > 1 )>
