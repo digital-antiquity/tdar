@@ -470,7 +470,9 @@ No coding rules have been entered for this coding sheet yet.
 
 <#macro keywordSearch _keywords fieldName="query" quoted=true>
 <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
+<#if !_keyword.deleted>
  <@search fieldName quoted>${_keyword.label}</@search> <#if _keyword_has_next>&bull;</#if> 
+</#if>
 </#list>
 </#macro>
 

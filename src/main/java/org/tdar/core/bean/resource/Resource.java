@@ -1245,6 +1245,8 @@ public class Resource extends JsonModel.Base implements Persistable,
         Collection<Keyword> kwds = getAllActiveKeywords();
 
         for (Keyword kwd : kwds) {
+            if (kwd.isDeleted())
+                continue;
             if (kwd instanceof HierarchicalKeyword) {
                 for (String label : ((HierarchicalKeyword<?>) kwd).getParentLabelList()) {
                     sb.append(label).append(" ");
@@ -1260,6 +1262,8 @@ public class Resource extends JsonModel.Base implements Persistable,
             sb.append(note.getNote()).append(" ");
         }
         for (ResourceCreator creator : getResourceCreators()) {
+            if (creator.getCreator().isDeleted())
+                continue;
             sb.append(creator.getCreator().getName()).append(" ");
             sb.append(creator.getCreator().getProperName()).append(" ");
         }
