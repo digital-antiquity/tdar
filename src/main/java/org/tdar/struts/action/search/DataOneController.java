@@ -68,33 +68,33 @@ public class DataOneController extends AbstractLookupController<Indexable> imple
     }
 
     
-    @Actions({
-        @Action("isAuthorized"),
-        @Action("accessRules"),
-        @Action("monitor"),
-        @Action("error")
-    })
+//    @Actions({
+//        @Action("isAuthorized"),
+//        @Action("accessRules"),
+//        @Action("monitor"),
+//        @Action("error")
+//    })
     public String notImplemented() throws TdarActionException {
         throw new TdarActionException(StatusCode.NOT_IMPLEMENTED, "not implemented");
     }
 
-    @Action("meta")
+//    @Action("meta")
     public String meta() throws TdarActionException {
         throw new TdarActionException(StatusCode.NOT_IMPLEMENTED, "not implemented");
     }
 
-    @Action("checksum")
+//    @Action("checksum")
     public String checksum() throws TdarActionException {
         throw new TdarActionException(StatusCode.NOT_IMPLEMENTED, "not implemented");
     }
 
-    @Action(value="ping", results= {
-            @Result(name=SUCCESS, params={"Date","${date}"}),
-            @Result(name=ERROR)
-            // 200 ok < Date: Tue, 06 Mar 2012 14:19:59 GMT
-            //500 bad;
-
-    })
+//    @Action(value="ping", results= {
+//            @Result(name=SUCCESS, params={"Date","${date}"}),
+//            @Result(name=ERROR)
+//            // 200 ok < Date: Tue, 06 Mar 2012 14:19:59 GMT
+//            //500 bad;
+//
+//    })
     public String ping() throws TdarActionException {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
         if (indexingTask != null && !indexingTask.hasEnded()) {
@@ -103,10 +103,10 @@ public class DataOneController extends AbstractLookupController<Indexable> imple
         return SUCCESS;
     }
 
-    @Actions({
-        @Action(""),
-        @Action("node")
-    })
+//    @Actions({
+//        @Action(""),
+//        @Action("node")
+//    })
     public String execute() throws TdarActionException {
         DataOneCapabilitiesResponse d1c = new DataOneCapabilitiesResponse();
 //        d1c.setServices(services);
@@ -115,17 +115,17 @@ public class DataOneController extends AbstractLookupController<Indexable> imple
 //        throw new TdarActionException(StatusCode.NOT_IMPLEMENTED, "not implemented");
     }
 
-    @Action("log")
+//    @Action("log")
     public String log() throws TdarActionException {
         throw new TdarActionException(StatusCode.NOT_IMPLEMENTED, "not implemented");
     }
 
-    @Action("object")
+//    @Action("object")
     public String object() throws TdarActionException {
         throw new TdarActionException(StatusCode.NOT_IMPLEMENTED, "not implemented");
     }
 
-    @Action("replica")
+//    @Action("replica")
     public String replica() throws TdarActionException {
         throw new TdarActionException(StatusCode.NOT_IMPLEMENTED, "not implemented");
     }
