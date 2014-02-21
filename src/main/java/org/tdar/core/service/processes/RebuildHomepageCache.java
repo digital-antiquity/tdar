@@ -1,7 +1,9 @@
 package org.tdar.core.service.processes;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
@@ -92,13 +94,17 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         int max = 20;
         DateTime end = new DateTime();
         DateTime start = end.minusDays(7);
-        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, start.toDate(), end.toDate(), 1L);
+        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getOverallUsageStats(start.toDate(), end.toDate(), 1L);
         if (CollectionUtils.isNotEmpty(aggregateUsageStats)) {
-            if (CollectionUtils.size(aggregateUsageStats) < max) {
-                max = aggregateUsageStats.size();
-            }
-            for (int i=0; i < max ; i++) {
-                Resource resource = resourceService.find(aggregateUsageStats.get(i).getResourceId());
+            Set<Long> seen = new HashSet<>();
+            for (AggregateViewStatistic avs : aggregateUsageStats) {
+                Long resourceId = avs.getResourceId();
+                // handling unique resource ids across the timeperiod
+                if (seen.contains(resourceId)) {
+                    continue;
+                }
+                seen.add(resourceId);
+                Resource resource = resourceService.find(resourceId);
                 if (resource != null && resource.isActive()) {
                     wrc.add(new WeeklyPopularResourceCache(resource));
                 }

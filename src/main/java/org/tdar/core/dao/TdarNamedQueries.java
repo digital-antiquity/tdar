@@ -86,6 +86,7 @@ public interface TdarNamedQueries {
     public static final String SPACE_BY_COLLECTION = "admin.size.collection";
     public static final String SPACE_BY_SUBMITTER = "admin.size.submitter";
     public static final String ACCESS_BY = "admin.access";
+    public static final String ACCESS_BY_OVERALL = "admin.access.overall";
     public static final String DOWNLOAD_BY = "admin.download";
     public static final String LOGS_FOR_RESOURCE = "admin.logsforResource";
     public static final String FIND_ACTIVE_COUPON = "coupon.active";
