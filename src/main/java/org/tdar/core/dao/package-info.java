@@ -315,6 +315,10 @@
             query = "select ref.id, ref.title, ref.resourceType, date_trunc('day', ras.date), count(ref) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc, date_trunc('day', ras.date) desc"
     ),
     @org.hibernate.annotations.NamedQuery(
+            name = TdarNamedQueries.ACCESS_BY_OVERALL,
+            query = "select ref.id, ref.title, ref.resourceType, count(ref) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by ref having count(ref) > :minCount order by count(ref) desc"
+    ),
+    @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.RESOURCE_ACCESS_HISTORY,
             query = "select new org.tdar.struts.data.AggregateViewStatistic(ref.id, date_trunc('day', ras.date), count(ref)) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ref.id in (:resourceIds) and ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) >= :minCount order by date_trunc('day', ras.date) desc"
     ),

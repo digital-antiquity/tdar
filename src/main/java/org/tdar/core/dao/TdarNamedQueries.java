@@ -90,6 +90,7 @@ public interface TdarNamedQueries {
     String SPACE_BY_COLLECTION = "admin.size.collection";
     String SPACE_BY_SUBMITTER = "admin.size.submitter";
     String ACCESS_BY = "admin.access";
+    String ACCESS_BY_OVERALL = "admin.access.overall";
     String DOWNLOAD_BY = "admin.download";
     String LOGS_FOR_RESOURCE = "admin.logsforResource";
     String FIND_ACTIVE_COUPON = "coupon.active";
@@ -118,6 +119,8 @@ public interface TdarNamedQueries {
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited" ;
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted" ;
     String QUERY_SPARSE_COLLECTION_RESOURCES = "query.sparse.collection.resources";
+
+
     // raw SQL/HQL queries
 
     /**

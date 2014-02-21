@@ -503,7 +503,9 @@ No coding rules have been entered for this coding sheet yet.
 <#-- emit a link to the search page for the label of the supplied keyword (see @search)-->
 <#macro keywordSearch _keywords fieldName="query" quoted=true>
 <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
+<#if !_keyword.deleted>
  <@search fieldName quoted>${_keyword.label}</@search> <#if _keyword_has_next>&bull;</#if> 
+</#if>
 </#list>
 </#macro>
 
@@ -639,7 +641,7 @@ No coding rules have been entered for this coding sheet yet.
     <#list allResourceCreatorRoles as role>
         <#assign contents = "" />
         <#list proxyList as proxy>
-          <#if proxy.valid && proxy.role == role >
+          <#if proxy.valid && proxy.role == role && !proxy.resourceCreator.creator.deleted >
             <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>,</#if> <@browse creator=proxy.resourceCreator /><#t/></#assign>
           </#if>
         </#list>

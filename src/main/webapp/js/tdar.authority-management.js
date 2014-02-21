@@ -16,7 +16,7 @@ TDAR.auth = function () {
         person: {
             tableSelector: '#dupe_datatable',
             sAjaxSource: '/lookup/person',
-            "bLengthChange": false,
+            "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
                 {sTitle: "person id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
@@ -34,7 +34,7 @@ TDAR.auth = function () {
         institution: {
             tableSelector: '#dupe_datatable',
             sAjaxSource: '/lookup/institution',
-            "bLengthChange": false,
+            "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
                 {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
@@ -55,7 +55,7 @@ TDAR.auth = function () {
         keyword: {
             tableSelector: '#dupe_datatable',
             sAjaxSource: '/lookup/keyword',
-            "bLengthChange": false,
+            "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
                 {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},

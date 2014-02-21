@@ -1145,7 +1145,7 @@ public class Resource extends JsonModel.Base implements Persistable,
                 .getPrimaryCreatorRoles(getResourceType());
         if (resourceCreators != null) {
             for (ResourceCreator creator : resourceCreators) {
-                if (primaryRoles.contains(creator.getRole()))
+                if (primaryRoles.contains(creator.getRole()) && !creator.getCreator().isDeleted())
                     authors.add(creator);
             }
 
@@ -1158,6 +1158,13 @@ public class Resource extends JsonModel.Base implements Persistable,
     public Collection<ResourceCreator> getEditors() {
         List<ResourceCreator> editors = new ArrayList<ResourceCreator>(
                 this.getResourceCreators(ResourceCreatorRole.EDITOR));
+        Iterator<ResourceCreator> iterator = editors.iterator();
+        while (iterator.hasNext()) {
+            ResourceCreator rc = iterator.next();
+            if (rc.getCreator().isDeleted()) {
+                iterator.remove();
+            }
+        }
         Collections.sort(editors);
         return editors;
     }
@@ -1269,6 +1276,8 @@ public class Resource extends JsonModel.Base implements Persistable,
         Collection<Keyword> kwds = getAllActiveKeywords();
 
         for (Keyword kwd : kwds) {
+            if (kwd.isDeleted())
+                continue;
             if (kwd instanceof HierarchicalKeyword) {
                 for (String label : ((HierarchicalKeyword<?>) kwd).getParentLabelList()) {
                     sb.append(label).append(" ");
@@ -1284,6 +1293,8 @@ public class Resource extends JsonModel.Base implements Persistable,
             sb.append(note.getNote()).append(" ");
         }
         for (ResourceCreator creator : getResourceCreators()) {
+            if (creator.getCreator().isDeleted())
+                continue;
             sb.append(creator.getCreator().getName()).append(" ");
             sb.append(creator.getCreator().getProperName()).append(" ");
         }
