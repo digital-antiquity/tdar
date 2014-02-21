@@ -1121,7 +1121,7 @@ public class Resource extends JsonModel.Base implements Persistable,
                 .getPrimaryCreatorRoles(getResourceType());
         if (resourceCreators != null) {
             for (ResourceCreator creator : resourceCreators) {
-                if (primaryRoles.contains(creator.getRole()))
+                if (primaryRoles.contains(creator.getRole()) && !creator.getCreator().isDeleted())
                     authors.add(creator);
             }
 
@@ -1134,6 +1134,13 @@ public class Resource extends JsonModel.Base implements Persistable,
     public Collection<ResourceCreator> getEditors() {
         List<ResourceCreator> editors = new ArrayList<ResourceCreator>(
                 this.getResourceCreators(ResourceCreatorRole.EDITOR));
+        Iterator<ResourceCreator> iterator = editors.iterator();
+        while (iterator.hasNext()) {
+            ResourceCreator rc = iterator.next();
+            if (rc.getCreator().isDeleted()) {
+                iterator.remove();
+            }
+        }
         Collections.sort(editors);
         return editors;
     }
