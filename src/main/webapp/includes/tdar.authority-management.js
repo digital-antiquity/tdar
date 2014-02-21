@@ -9,11 +9,13 @@ var selEntityType;
 var dataTable = null;
 var g_selectedDupeIds = {};
 
+
+// consider refactoring to take defaults out into a defautls object and override with settings
 var g_settingsMap = {
         person:{
             tableSelector: '#dupe_datatable',
             sAjaxSource:'/lookup/person',
-            "bLengthChange": false,
+            "bLengthChange": true,
             "bFilter": true,
             aoColumns:[
                        {sTitle:"person id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},
@@ -30,7 +32,7 @@ var g_settingsMap = {
         institution:{
             tableSelector: '#dupe_datatable',
             sAjaxSource:'/lookup/institution',
-            "bLengthChange": false,
+            "bLengthChange": true,
             "bFilter": true,
             aoColumns:[
                        {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},
@@ -50,7 +52,7 @@ var g_settingsMap = {
         keyword:{
             tableSelector: '#dupe_datatable',
             sAjaxSource:'/lookup/keyword',
-            "bLengthChange": false,
+            "bLengthChange": true,
             "bFilter": true,
             aoColumns:[
                        {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},

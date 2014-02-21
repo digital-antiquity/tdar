@@ -310,7 +310,7 @@
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.ACCESS_BY,
-            query = "select ref.id, ref.title, ref.resourceType, date_trunc(:part, ras.date), count(ref) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc(:part, ras.date), ref having count(ref) > :minCount order by count(ref) desc, date_trunc(:part, ras.date) desc"
+            query = "select ref.id, ref.title, ref.resourceType, date_trunc('day', ras.date), count(ref) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc, date_trunc('day', ras.date) desc"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.ACCESS_BY_OVERALL,

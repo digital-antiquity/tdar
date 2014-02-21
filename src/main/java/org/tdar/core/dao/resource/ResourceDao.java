@@ -353,9 +353,11 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             case ACCESS_DAY:
                 break;
             case ACCESS_OVERALL:
-                getCurrentSession().getNamedQuery(ACCESS_BY_OVERALL);
+                query = getCurrentSession().getNamedQuery(ACCESS_BY_OVERALL);
+                break;
             case DOWNLOAD_DAY:
                 query = getCurrentSession().getNamedQuery(DOWNLOAD_BY);
+                break;
         }
         // query.setParameter("part", granularity.name().toLowerCase());
         query.setParameter("start", start);
