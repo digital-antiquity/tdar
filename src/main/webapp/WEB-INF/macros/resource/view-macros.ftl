@@ -614,10 +614,19 @@ No coding rules have been entered for this coding sheet yet.
 <#macro resourceAnnotations>
     <#if ! resource.activeResourceAnnotations.isEmpty()>
     <h3>Record Identifiers</h3>
-        <#list resource.activeResourceAnnotations as resourceAnnotation>
-			<@kvp key=resourceAnnotation.resourceAnnotationKey.key val=resourceAnnotation.value />
+
+    <#list allResourceAnnotationKeys as key>
+   	    <#assign contents = "" />
+	    <#list resource.activeResourceAnnotations as ra>
+          <#if key.id == ra.resourceAnnotationKey.id >
+            <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>;</#if>${ra.value}<#t/></#assign>
+          </#if>
         </#list>
-        <hr/>
+        <#if contents?has_content>
+        	<#assign keyLabel>${key.key}(s)</#assign>
+            <@kvp key=keyLabel val=contents noescape=true />
+        </#if>
+    </#list>
     </#if>
 
 </#macro>

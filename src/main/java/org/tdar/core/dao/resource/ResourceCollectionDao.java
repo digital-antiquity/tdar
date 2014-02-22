@@ -10,6 +10,7 @@ import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
+import org.tdar.core.dao.TdarNamedQueries;
 
 /**
  * @author Adam Brin
@@ -155,6 +157,13 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_COLLECTION_RESOURCES);
         query.setLong("id", collectionId);
         return (List<Resource>) query.list();
+    }
+
+    public Long getCollectionViewCount(ResourceCollection persistable) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.COLLECTION_VIEW);
+        query.setParameter("id", persistable.getId());
+        Number result = (Number)query.uniqueResult();
+        return result.longValue();
     }
 
 }

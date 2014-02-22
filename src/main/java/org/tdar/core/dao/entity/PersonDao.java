@@ -17,6 +17,7 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.Dao;
@@ -181,6 +182,13 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         logger.info("beginning updates - submitter");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER)).executeUpdate();
         logger.info("completed updates");
+    }
+
+    public Long getCreatorViewCount(Creator creator) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.CREATOR_VIEW);
+        query.setParameter("id", creator.getId());
+        Number result = (Number)query.uniqueResult();
+        return result.longValue();
     }
 
 }

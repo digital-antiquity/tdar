@@ -142,6 +142,8 @@ ${resourceTypeFacets[0].plural}
 		    <dt><p><strong>Visible:</strong></p></dt>
 		    <dd><p> ${resourceCollection.visible?string}</p></dd>
 		    <#if resourceCollection.sortBy??><dt><p><strong>Sort by:</strong></dt><dd><p> ${resourceCollection.sortBy.label}</p></dd></#if>
+			<dt><b>Collection Views:</b></dt><dd>${viewCount}</dd>
+
 		</dl>
 		    <@view.authorizedUsers resourceCollection />
 		</#if>

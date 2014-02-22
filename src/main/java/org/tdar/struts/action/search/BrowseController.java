@@ -88,6 +88,7 @@ public class BrowseController extends AbstractLookupController {
     private static final long serialVersionUID = -128651515783098910L;
     private Creator creator;
     private Persistable persistable;
+    private Long viewCount = 0L;
     private List<InvestigationType> investigationTypes = new ArrayList<InvestigationType>();
     private List<CultureKeyword> cultureKeywords = new ArrayList<CultureKeyword>();
     private List<SiteTypeKeyword> siteTypeKeywords = new ArrayList<SiteTypeKeyword>();
@@ -132,23 +133,24 @@ public class BrowseController extends AbstractLookupController {
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
         
         Long count = 10L;
-        try {
-            int cacheCount =0;
-            for (WeeklyPopularResourceCache cache : getGenericService().findAll(WeeklyPopularResourceCache.class)) {
-                Resource key = cache.getKey();
-                if (key instanceof Resource) {
-                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag((Resource) key, null);
-                }
-                if (key.isActive()) {
-                    if (cacheCount == count)  
-                        break;
-                    cacheCount++;
-                    getFeaturedResources().add(key);
-                }
-            }
-        } catch (IndexOutOfBoundsException ioe) {
-            getLogger().debug("no featured resources found");
-        }
+//        try {
+//            int cacheCount =0;
+//            for (WeeklyPopularResourceCache cache : getGenericService().findAll(WeeklyPopularResourceCache.class)) {
+//                Resource key = cache.getKey();
+//                if (key instanceof Resource) {
+//                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag((Resource) key, null);
+//                }
+//                getObfuscationService().obfuscate(key);
+//                if (key.isActive()) {
+//                    if (cacheCount == count)  
+//                        break;
+//                    cacheCount++;
+//                    getFeaturedResources().add(key);
+//                }
+//            }
+//        } catch (IndexOutOfBoundsException ioe) {
+//            logger.debug("no featured resources found");
+//        }
         
         try {
             getRecentResources().addAll(getSearchService().findMostRecentResources(count, getAuthenticatedUser()));
@@ -227,6 +229,7 @@ public class BrowseController extends AbstractLookupController {
                 } catch (Exception e) {
                     getLogger().error("error: {}", e);
                 }
+                setViewCount(getEntityService().getCreatorViewCount(creator));
             }
 
             if (!isEditor() && !Persistable.Base.isEqual(creator, getAuthenticatedUser())) {
@@ -543,6 +546,14 @@ public class BrowseController extends AbstractLookupController {
 
     public void setRecentResources(List<Resource> recentResources) {
         this.recentResources = recentResources;
+    }
+
+    public Long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Long viewCount) {
+        this.viewCount = viewCount;
     }
 
 }

@@ -119,6 +119,8 @@ public interface TdarNamedQueries {
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited" ;
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted" ;
     String QUERY_SPARSE_COLLECTION_RESOURCES = "query.sparse.collection.resources";
+    String COLLECTION_VIEW = "collection.views";
+    String CREATOR_VIEW = "creator.views";
 
 
     // raw SQL/HQL queries

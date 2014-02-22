@@ -860,6 +860,16 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return ResourceCreatorRole.getAll();
     }
 
+    public Set<ResourceAnnotationKey> getAllResourceAnnotationKeys() {
+        Set<ResourceAnnotationKey> keys = new HashSet<>();
+        if (getPersistable() != null && CollectionUtils.isNotEmpty(getPersistable().getActiveResourceAnnotations())) {
+            for (ResourceAnnotation ra : getPersistable().getActiveResourceAnnotations()) {
+                keys.add(ra.getResourceAnnotationKey());
+            }
+        }
+        return keys;
+    }
+
     public void setSiteNameKeywords(List<String> siteNameKeywords) {
         this.siteNameKeywords = siteNameKeywords;
     }

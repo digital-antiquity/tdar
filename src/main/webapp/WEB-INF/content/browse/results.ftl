@@ -266,4 +266,7 @@
         No Resources associated with ${creator.properName}
         </#if>
     </#if>
+    <#if editor>
+	<p><b>Creator Views:</b>${viewCount}</p>
+	</#if>    
 </#escape>
