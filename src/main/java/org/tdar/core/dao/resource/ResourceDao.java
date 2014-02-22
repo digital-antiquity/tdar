@@ -314,7 +314,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             Object[] obj = (Object[]) obj_;
             @SuppressWarnings("deprecation")
             Resource res = new Resource((Long) obj[0], (String) obj[1], (ResourceType) obj[2]);
-            AggregateViewStatistic view = new AggregateViewStatistic((Date) obj[3], (Number) obj[4], res);
+            AggregateViewStatistic view = new AggregateViewStatistic(null, (Number) obj[3], res);
             markReadOnly(view.getResource());
             toReturn.add(view);
         }
