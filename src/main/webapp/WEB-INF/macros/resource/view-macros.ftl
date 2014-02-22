@@ -578,7 +578,7 @@ No coding rules have been entered for this coding sheet yet.
    	    <#assign contents = "" />
 	    <#list resource.activeResourceAnnotations as ra>
           <#if key.id == ra.resourceAnnotationKey.id >
-            <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>;</#if>${ra.value}<#t/></#assign>
+            <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>; </#if>${ra.value}<#t/></#assign>
           </#if>
         </#list>
         <#if contents?has_content>
