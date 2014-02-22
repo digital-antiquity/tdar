@@ -107,7 +107,9 @@ public interface TdarNamedQueries {
     public static final String QUERY_FILE_SIZE_TOTAL ="file.total_size";
     public static final String QUERY_RELATED_RESOURCES = "resource.related";
     public static final String FIND_ACCOUNT_FOR_INVOICE = "account.forInvoice";
-
+    public static final String COLLECTION_VIEW = "collection.views";
+    public static final String CREATOR_VIEW = "creator.views";
+    
     public static final String COLLECTION_LIST_WITH_AUTHUSER = "collection.idlest.with.authuser";
     public static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited" ;
     public static final String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted";

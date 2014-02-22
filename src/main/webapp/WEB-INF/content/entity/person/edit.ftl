@@ -97,7 +97,7 @@ label.error {display:block;}
 
 <@common.billingAccountList accounts />
 
-<#if editingSelf>
+<#if editingSelf && person.registered >
 <div class="glide" id="divChangePassword">
     <h2>Change Your Password</h2>
     <@s.password name="password" id="txtPassword" label="New password"  autocomplete="off" />

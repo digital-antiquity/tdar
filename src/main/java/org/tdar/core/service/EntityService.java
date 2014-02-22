@@ -243,4 +243,16 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public void updateOcurrances() {
         getDao().updateOccuranceValues();
     }
+
+    /**
+     * get aggregate view counts for creators
+     * @param creator
+     * @return
+     */
+    @Transactional(readOnly=true)
+    public Long getCreatorViewCount(Creator creator) {
+        if (Persistable.Base.isNullOrTransient(creator))
+            return 0L;
+        return getDao().getCreatorViewCount(creator);
+    }
 }

@@ -43,6 +43,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private List<ResourceCollection> collections = new LinkedList<>();
     private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
 
+    private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
     private int totalRecords;
@@ -181,6 +182,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (!isEditor()) {
             ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable());
             getGenericService().saveOrUpdate(rcvs);
+        } else {
+            setViewCount(getResourceCollectionService().getCollectionViewCount(getPersistable()));
         }
         return SUCCESS;
     }
@@ -512,6 +515,14 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public void setSelectedResourceTypes(ArrayList<ResourceType> selectedResourceTypes) {
         this.selectedResourceTypes = selectedResourceTypes;
+    }
+
+    public Long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Long viewCount) {
+        this.viewCount = viewCount;
     }
 
 }

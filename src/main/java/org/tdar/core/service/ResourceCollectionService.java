@@ -513,4 +513,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findCollectionSparseResources(collectionId);
     }
 
+    /**
+     * Find aggregate view count for collection
+     * @param persistable
+     * @return
+     */
+    @Transactional(readOnly=true)
+    public Long getCollectionViewCount(ResourceCollection persistable) {
+        if (Persistable.Base.isNullOrTransient(persistable))
+            return 0L;
+        return getDao().getCollectionViewCount(persistable);
+    }
+
 }

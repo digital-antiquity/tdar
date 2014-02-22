@@ -415,11 +415,14 @@
                         + ")"
                     + ")  " +
                     " order by res.title, res.id"),
-
-        @org.hibernate.annotations.NamedQuery(
-        name=TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES,
-        query= "select new Resource(r.id, r.title, r.resourceType, r.status, r.submitter.id) from "
-                + " Resource r join r.resourceCollections rc where rc.id = :id")
+    @org.hibernate.annotations.NamedQuery(
+    name=TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES,
+    query= "select new Resource(r.id, r.title, r.resourceType, r.status, r.submitter.id) from "
+            + " Resource r join r.resourceCollections rc where rc.id = :id"),
+    @org.hibernate.annotations.NamedQuery(name=TdarNamedQueries.CREATOR_VIEW,
+            query= "select count(*) from CreatorViewStatistic  where reference.id = :id"),
+    @org.hibernate.annotations.NamedQuery(name=TdarNamedQueries.COLLECTION_VIEW,
+            query= "select count(*) from ResourceCollectionViewStatistic where reference.id = :id")
 
 
 })
