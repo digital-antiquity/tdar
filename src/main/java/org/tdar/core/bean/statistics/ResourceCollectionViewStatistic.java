@@ -8,13 +8,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.tdar.core.bean.collection.ResourceCollection;
 
 @Entity
-@Table(name = "resource_collection_view_statistics")
-@org.hibernate.annotations.Table( appliesTo = "resource_collection_view_statistics", indexes = {
-        @Index(name="resource_collection_view_stats_count_id", columnNames={"resource_collection_id", "id"})
+@Table(name = "resource_collection_view_statistics", indexes = {
+        @Index(name="resource_collection_view_stats_count_id", columnList="resource_collection_id, id")
 })
 public class ResourceCollectionViewStatistic extends AbstractResourceStatistic<ResourceCollection> {
 
@@ -32,10 +31,12 @@ public class ResourceCollectionViewStatistic extends AbstractResourceStatistic<R
         setReference(r);
     }
 
+    @Override
     public ResourceCollection getReference() {
         return reference;
     }
 
+    @Override
     public void setReference(ResourceCollection reference) {
         this.reference = reference;
     }

@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
@@ -52,9 +52,8 @@ import org.tdar.search.query.QueryFieldNames;
  * @version $Revision$
  */
 @Entity
-@Table(name = "person")
+@Table(name = "person", indexes = { @Index(name = "person_instid", columnList = "institution_id, id")})
 //FIXME:  not able to create index 'person_lc' (lower(first_name), lower(last_name), id) with annotations.
-@org.hibernate.annotations.Table( appliesTo = "person", indexes = { @Index(name = "person_instid", columnNames = {"institution_id", "id"})})
 @Indexed(index = "Person")
 @XmlRootElement(name = "person")
 public class Person extends Creator implements Comparable<Person>, Dedupable<Person>, Validatable {

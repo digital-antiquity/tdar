@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
@@ -48,12 +48,12 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
  */
 
 @Entity
-@Table(name = "institution")
+@Table(name = "institution", indexes= {
+        @Index(name = "institution_name_key", columnList="name")
+})
 @Indexed(index = "Institution")
 @DiscriminatorValue("INSTITUTION")
 @XmlRootElement(name = "institution")
-//FIXME: I don't think we can implement institution_name_lc w/ annotations because we can't specify lower(name)
-//@org.hibernate.annotations.Table(appliesTo = "institution", indexes = {@Index(name = "institution_name_lc", columnNames = {"name", "id"})})
 public class Institution extends Creator implements Comparable<Institution>, Dedupable<Institution>, Validatable {
 
     private static final long serialVersionUID = 892315581573902067L;
@@ -72,7 +72,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     private Set<Institution> synonyms = new HashSet<Institution>();
 
     @Column(nullable = false, unique = true)
-    @Index(name = "institution_name_key")
     @BulkImportField(label = "Institution Name", comment = BulkImportField.CREATOR_INSTITUTION_DESCRIPTION, order = 10)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;

@@ -29,6 +29,7 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
     }
 
 
+    @Override
     public Locale getLocale() {
         return locale;
     }

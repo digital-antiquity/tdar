@@ -11,7 +11,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Norms;
@@ -30,9 +30,8 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
  */
 
 @Entity
-@Table(name = "resource_note")
-@org.hibernate.annotations.Table( appliesTo="resource_note", indexes = {
-        @Index(name="resid_noteid", columnNames={"resource_id", "id"})})
+@Table(name = "resource_note", indexes = {
+        @Index(name="resid_noteid", columnList="resource_id, id")})
 public class ResourceNote extends Persistable.Sequence<ResourceNote> implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;

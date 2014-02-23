@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -46,7 +46,10 @@ import org.tdar.core.configuration.JSONTransient;
 @Entity
 // @Indexed(interceptor=DontIndexWhenGeneratedInterceptor.class)
 @Indexed
-@Table(name = "coding_sheet")
+@Table(name = "coding_sheet", indexes={
+        @Index(name = "coding_catvar_id",columnList="category_variable_id"),
+        @Index(name = "coding_sheet_default_ontology_id_idx", columnList="default_ontology_id")
+})
 @XmlRootElement(name = "codingSheet")
 public class CodingSheet extends InformationResource implements SupportsResource {
 
@@ -56,7 +59,6 @@ public class CodingSheet extends InformationResource implements SupportsResource
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
     @IndexedEmbedded(depth = 1)
-    @Index(name = "coding_catvar_id")
     private CategoryVariable categoryVariable;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codingSheet")
@@ -68,7 +70,6 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @ManyToOne
     @JoinColumn(name = "default_ontology_id")
-    @Index(name = "coding_sheet_default_ontology_id_idx")
     private Ontology defaultOntology;
 
     @Field

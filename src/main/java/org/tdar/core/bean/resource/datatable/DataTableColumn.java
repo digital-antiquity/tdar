@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -51,7 +51,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Revision$
  */
 @Entity
-@Table(name = "data_table_column")
+@Table(name = "data_table_column", indexes={
+        @Index(name = "data_table_column_data_table_id_idx", columnList="data_table_id"),
+        @Index(name = "data_table_column_default_ontology_id_idx", columnList="default_ontology_id"),
+        @Index(name = "data_table_column_default_coding_sheet_id_idx",columnList="default_coding_sheet_id")
+})
 @XmlRootElement
 public class DataTableColumn extends Persistable.Sequence<DataTableColumn> implements Validatable {
 
@@ -88,7 +92,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @ManyToOne(optional = false)
     // , cascade = { CascadeType.PERSIST })
     @JoinColumn(name = "data_table_id")
-    @Index(name = "data_table_column_data_table_id_idx")
     private DataTable dataTable;
 
     @Column(nullable = false)
@@ -119,12 +122,10 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     @ManyToOne
     @JoinColumn(name = "default_ontology_id")
-    @Index(name = "data_table_column_default_ontology_id_idx")
     private Ontology defaultOntology;
 
     @ManyToOne
     @JoinColumn(name = "default_coding_sheet_id")
-    @Index(name = "data_table_column_default_coding_sheet_id_idx")
     private CodingSheet defaultCodingSheet;
 
     @Enumerated(EnumType.STRING)

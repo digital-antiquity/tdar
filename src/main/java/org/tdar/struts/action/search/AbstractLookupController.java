@@ -502,6 +502,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.defaultSort = defaultSort;
     }
 
+    @Override
     public ProjectionModel getProjectionModel() {
         return projectionModel;
     }

@@ -3,7 +3,7 @@ package org.tdar.core.bean.citation;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 
 /**
  * Represents source collection reference-type annotations.
@@ -12,9 +12,8 @@ import org.hibernate.annotations.Index;
  * @version $Revision$
  */
 @Entity
-@Table(name = "source_collection")
-@org.hibernate.annotations.Table(appliesTo = "source_collection", indexes = {
-        @Index(name = "source_collection_resource_id_idx", columnNames = "resource_id")
+@Table(name = "source_collection", indexes = {
+        @Index(name = "source_collection_resource_id_idx", columnList = "resource_id")
 })
 public class SourceCollection extends Citation {
     private static final long serialVersionUID = 129719231908607137L;

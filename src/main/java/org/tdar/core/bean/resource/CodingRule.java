@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
@@ -32,14 +32,17 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @latest $Id$
  */
 @Entity
-@Table(name = "coding_rule")
+@Table(name = "coding_rule", indexes={
+        @Index(name = "coding_rule_coding_sheet_id_idx",columnList="coding_sheet_id"),
+        @Index(name = "coding_rule_term_index",columnList="term"),
+        @Index(name = "coding_rule_ontology_node_id_idx",columnList="ontology_node_id")
+})
 public class CodingRule extends Persistable.Base implements Comparable<CodingRule> {
 
     private static final long serialVersionUID = -577936920767925065L;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
-    @Index(name = "coding_rule_coding_sheet_id_idx")
     @ContainedIn
     private CodingSheet codingSheet;
 
@@ -50,7 +53,6 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     @Column(nullable = false)
     @Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
-    @Index(name = "coding_rule_term_index")
     private String term;
 
     @Column(length = 2000)
@@ -59,7 +61,6 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ontology_node_id")
-    @Index(name = "coding_rule_ontology_node_id_idx")
     private OntologyNode ontologyNode;
 
     private transient long count = -1L;

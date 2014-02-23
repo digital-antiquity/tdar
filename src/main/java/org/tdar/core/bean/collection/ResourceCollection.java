@@ -44,7 +44,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfile.FetchOverride;
 import org.hibernate.annotations.FetchProfiles;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -91,7 +91,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  */
 @Entity
 @Indexed(index = "Collection")
-@Table(name = "collection")
+@Table(name = "collection", indexes = {
+        @Index(name = "collection_parent_id_idx", columnList="parent_id"),
+        @Index(name = "collection_owner_id_idx", columnList="owner_id"),
+        @Index(name = "collection_updater_id_idx", columnList="updater_id")
+})
 @FetchProfiles(value = {
         @FetchProfile(name = "simple", fetchOverrides = {
                 @FetchOverride(association = "resources", mode = FetchMode.JOIN, entity = ResourceCollection.class),
@@ -178,12 +182,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @ManyToOne
     @IndexedEmbedded
     @JoinColumn(name = "owner_id", nullable = false)
-    @Index(name = "collection_owner_id_idx")
     private Person owner;
 
     @ManyToOne
     @JoinColumn(name = "updater_id", nullable = true)
-    @Index(name = "collection_updater_id_idx")
     private Person updater;
 
     @Column(nullable = false, name = "date_created")
@@ -194,7 +196,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    @Index(name = "collection_parent_id_idx")
     private ResourceCollection parent;
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();

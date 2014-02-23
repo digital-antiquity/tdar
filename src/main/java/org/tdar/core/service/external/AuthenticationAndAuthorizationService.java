@@ -104,6 +104,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
 
     
     
+    @Override
     public List<Resource> findEditableResources(Person person, boolean isAdmin, List<ResourceType> resourceTypes) {
         return authorizedUserDao.findEditableResources(person, resourceTypes, isAdmin);
     }

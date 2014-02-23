@@ -97,8 +97,10 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         final StopWatch stopwatch = new StopWatch();
         int total = 50;
         Runnable[] strategies = new Runnable[] {
-            new Runnable() {public void run() {newWay(ids);}},
-            new Runnable() {public void run() {oldWay(ids);}}
+            new Runnable() {@Override
+            public void run() {newWay(ids);}},
+            new Runnable() {@Override
+            public void run() {oldWay(ids);}}
         };
         SummaryStatistics newstats1 = new SummaryStatistics();
         SummaryStatistics oldstats = new SummaryStatistics();

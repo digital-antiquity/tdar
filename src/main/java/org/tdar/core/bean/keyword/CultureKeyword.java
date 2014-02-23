@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -26,9 +26,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  */
 
 @Entity
-@Table(name = "culture_keyword")
-@org.hibernate.annotations.Table( appliesTo="culture_keyword", indexes = {
-        @Index(name="cltkwd_appr", columnNames={"approved", "id"})
+@Table(name = "culture_keyword", indexes = {
+        @Index(name="cltkwd_appr", columnList="approved, id")
 })
 @Indexed(index = "Keyword")
 public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implements SuggestedKeyword {

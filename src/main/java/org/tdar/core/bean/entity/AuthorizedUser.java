@@ -17,7 +17,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
@@ -30,13 +30,12 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @author Adam Brin
  *         This is the representation of a user and a permission combined and an association with a resource collection.
  */
-@Table(name = "authorized_user")
-@org.hibernate.annotations.Table( appliesTo="authorized_user", indexes = {
-        @Index(name="authorized_user_cid", columnNames={"id", "resource_collection_id"}),
-        @Index(name="authorized_user_cid2", columnNames={"user_id", "resource_collection_id"}),
-        @Index(name="authorized_user_perm", columnNames={"resource_collection_id", "general_permission_int", "user_id"}),
-        @Index(name = "authorized_user_resource_collection_id_idx", columnNames = {"resource_collection_id"})
-
+@Table(name = "authorized_user", indexes = {
+        @Index(name="authorized_user_cid", columnList="id, resource_collection_id"),
+        @Index(name="authorized_user_cid2", columnList="user_id, resource_collection_id"),
+        @Index(name="authorized_user_perm", columnList="resource_collection_id, general_permission_int, user_id"),
+        @Index(name = "authorized_user_resource_collection_id_idx", columnList = "resource_collection_id"),
+        @Index(name = "authorized_user_user_id_idx", columnList="user_id")
 })
 @Entity
 public class AuthorizedUser extends Base implements Persistable {
@@ -66,7 +65,6 @@ public class AuthorizedUser extends Base implements Persistable {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "user_id")
-    @Index(name = "authorized_user_user_id_idx")
     private Person user;
 
     private transient boolean enabled = false;

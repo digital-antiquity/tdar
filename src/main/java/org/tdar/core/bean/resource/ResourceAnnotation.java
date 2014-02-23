@@ -14,7 +14,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasResource;
@@ -32,9 +32,8 @@ import org.tdar.core.configuration.JSONTransient;
  * @version $Rev$
  */
 @Entity
-@Table(name = "resource_annotation")
-@org.hibernate.annotations.Table( appliesTo = "resource_annotation", indexes = {
-        @Index(name="resource_id_keyid", columnNames={"resource_id", "resourceannotationkey_id", "id"})})
+@Table(name = "resource_annotation", indexes = {
+        @Index(name="resource_id_keyid", columnList="resource_id, resourceannotationkey_id, id")})
 public class ResourceAnnotation extends Persistable.Base implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;

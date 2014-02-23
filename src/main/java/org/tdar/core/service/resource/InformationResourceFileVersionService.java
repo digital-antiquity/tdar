@@ -19,6 +19,7 @@ public class InformationResourceFileVersionService extends ServiceInterface.Type
      * 
      * @param file
      */
+    @Override
     @Transactional(readOnly = false)
     public void delete(InformationResourceFileVersion file) {
         delete(file, false);

@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -39,7 +39,9 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
  */
 @Entity
 @Indexed
-@Table(name = "document")
+@Table(name = "document", indexes={
+        @Index(name = "document_type_index", columnList="document_type")
+})
 @XmlRootElement(name = "document")
 public class Document extends InformationResource {
 
@@ -47,7 +49,6 @@ public class Document extends InformationResource {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", length = FieldLength.FIELD_LENGTH_255)
-    @Index(name = "document_type_index")
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Document Type")
     private DocumentType documentType;

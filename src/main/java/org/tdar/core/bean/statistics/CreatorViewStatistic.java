@@ -8,13 +8,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.tdar.core.bean.entity.Creator;
 
 @Entity
-@Table(name = "creator_view_statistics")
-@org.hibernate.annotations.Table( appliesTo = "creator_view_statistics", indexes = {
-        @Index(name="creator_view_stats_count_id", columnNames={"creator_id", "id"})
+@Table(name = "creator_view_statistics", indexes = {
+        @Index(name="creator_view_stats_count_id", columnList="creator_id, id")
 })
 public class CreatorViewStatistic extends AbstractResourceStatistic<Creator> {
 
@@ -32,10 +31,12 @@ public class CreatorViewStatistic extends AbstractResourceStatistic<Creator> {
         setReference(r);
     }
 
+    @Override
     public Creator getReference() {
         return reference;
     }
 
+    @Override
     public void setReference(Creator reference) {
         this.reference = reference;
     }

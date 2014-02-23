@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.slf4j.Logger;
@@ -43,11 +43,10 @@ import org.tdar.utils.MessageHelper;
  * @version $Rev$
  */
 @Entity
-@Table(name = "resource_creator")
-@org.hibernate.annotations.Table( appliesTo ="resource_creator", indexes = {
-        @Index(name="creator_sequence", columnNames={"resource_id", "sequence_number", "creator_id"}),
-        @Index(name = "creatorid", columnNames = {"creator_id"}),
-        @Index(name = "rescreator_resid", columnNames = {"resource_id"})
+@Table(name = "resource_creator", indexes = {
+        @Index(name="creator_sequence", columnList="resource_id, sequence_number, creator_id"),
+        @Index(name = "creatorid", columnList = "creator_id"),
+        @Index(name = "rescreator_resid", columnList = "resource_id")
 })
 public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>,Obfuscatable {
 

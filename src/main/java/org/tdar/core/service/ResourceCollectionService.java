@@ -236,6 +236,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * 
      * @param resourceCollection
      */
+    @Override
     @Transactional
     public void delete(ResourceCollection resourceCollection) {
         getDao().delete(resourceCollection.getAuthorizedUsers());

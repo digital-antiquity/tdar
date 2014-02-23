@@ -20,6 +20,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -29,6 +30,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -53,8 +55,6 @@ import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfile.FetchOverride;
 import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
-import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -133,18 +133,18 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Revision$
  */
 @Entity
-@Table(name = "resource")
-@org.hibernate.annotations.Table( appliesTo = "resource", indexes = {
-        @Index(name="resource_active", columnNames={"id", "submitter_id", "status"}),
-        @Index(name="resource_active_draft", columnNames={"submitter_id", "status", "id"}),
-        @Index(name="resource_status", columnNames={"id", "status"}),
-        @Index(name="resource_status2", columnNames={"status", "id"}),
+@Table(name = "resource",indexes= {
+        @Index(name="resource_active", columnList="id, submitter_id, status"),
+        @Index(name ="resource_title_index", columnList = "title"),
+        @Index(name="resource_active_draft", columnList="submitter_id, status, id"),
+        @Index(name="resource_status", columnList="id, status"),
+        @Index(name="resource_status2", columnList="status, id"),
 
         //can't use @Index on entity fields - they have to go here
-        @Index(name = "res_submitterid", columnNames = {"submitter_id"}),
-        @Index(name = "res_uploaderid", columnNames = {"uploader_id"}),
-        @Index(name = "res_updaterid", columnNames = {"updater_id"})
-
+        @Index(name = "res_submitterid", columnList = "submitter_id"),
+        @Index(name = "res_uploaderid", columnList = "uploader_id"),
+        @Index(name = "res_updaterid", columnList = "updater_id"),
+        @Index(name = "resource_type_index", columnList="resource_type")
 })
 @Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
@@ -251,7 +251,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
 
     //FIXME: I don't think this index helps us.  Can we get rid of it?
-    @Index(name = "resource_title_index")
+//    @Index(name = "resource_title_index")
     @Length(max = 512)
     private String title;
 
@@ -273,7 +273,6 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_type", length = FieldLength.FIELD_LENGTH_255)
-    @Index(name = "resource_type_index")
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private ResourceType resourceType;
@@ -326,7 +325,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("sequenceNumber ASC")
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
-    @IndexColumn(name = "id")
+    @OrderColumn(name = "id")
     private Set<ResourceNote> resourceNotes = new LinkedHashSet<ResourceNote>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

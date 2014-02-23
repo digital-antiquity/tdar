@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import javax.persistence.Index;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Rev$
  */
 @Entity
-@Table(name = "ontology_node")
+@Table(name = "ontology_node", indexes={
+        @Index(name = "ontology_node_interval_start_index", columnList="interval_start"),
+        @Index(name = "ontology_node_interval_end_index", columnList="interval_end"),
+        @Index(name = "ontology_node_index",columnList="index")
+})
 public class OntologyNode extends Persistable.Base implements Comparable<OntologyNode> {
 
     private static final long serialVersionUID = 6997306639142513872L;
@@ -61,12 +65,10 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     //FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_start")
-    @Index(name = "ontology_node_interval_start_index")
     private Integer intervalStart;
 
     //FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_end")
-    @Index(name = "ontology_node_interval_end_index")
     private Integer intervalEnd;
 
     @Column(name = "display_name")
@@ -84,7 +86,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     private transient Set<OntologyNode> synonymNodes = new HashSet<>();
 
-    @Index(name = "ontology_node_index")
     private String index;
 
     private String iri;
