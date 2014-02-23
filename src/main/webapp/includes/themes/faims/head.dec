@@ -1,0 +1,12 @@
+
+<#if (persistable.description)?has_content>
+	<meta name="description" content="${persistable.description?html}"/>
+<#else>
+	<meta name="description" content="The Federated Archaeological Information Management System Project repository is an Australian digital repository for archaeological information."/>
+</#if>
+
+<meta name="keywords" content="tdar, database, archaeology, digital repository, FAIMS, preservation, access"/>
+
+<link rel='shortcut icon' href='<@s.url value="/includes/themes/faims/images/FAIMS-Small-B.png"/>'/>
+<link rel="stylesheet" type="text/css" href="/includes/themes/faims/faims.css" />
+
