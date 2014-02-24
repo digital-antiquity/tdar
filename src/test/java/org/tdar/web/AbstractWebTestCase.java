@@ -113,7 +113,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     private static final String BEGIN_TDAR_FOOTER = "<!-- BEGIN-TDAR-FOOTER -->";
     public static final String TABLE_METADATA = "table metadata";
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
+    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_24);
     protected Page internalPage;
     protected HtmlPage htmlPage;
     private HtmlForm _internalForm;

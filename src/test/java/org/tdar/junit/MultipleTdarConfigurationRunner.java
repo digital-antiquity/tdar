@@ -53,7 +53,7 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         return description;
     }
 
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
+    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_24);
 
     @Override
     protected void runChild(final FrameworkMethod method, RunNotifier notifier) {
