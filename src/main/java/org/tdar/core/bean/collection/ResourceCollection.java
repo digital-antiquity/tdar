@@ -25,6 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
@@ -205,7 +206,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @ElementCollection()
     @CollectionTable(name="collection_parents", joinColumns=@JoinColumn(name="collection_id"))
     @Column(name="parent_id")
-    private Set<Long> parentIds;
+    private Set<Long> parentIds = new HashSet<>();
 
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();

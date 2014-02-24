@@ -442,7 +442,7 @@
     @org.hibernate.annotations.NamedQuery(name=TdarNamedQueries.COLLECTION_VIEW,
             query= "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
     @org.hibernate.annotations.NamedQuery(name=TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
-    query="from ResourceCollection rc where rc.parentIds in (:id)")
+    query="from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) ")
 })
 
 package org.tdar.core.dao;
