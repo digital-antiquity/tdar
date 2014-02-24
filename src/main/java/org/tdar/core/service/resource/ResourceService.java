@@ -575,8 +575,8 @@ public class ResourceService extends GenericService {
      * @return
      */
     @Transactional
-    public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long minCount) {
-        return datasetDao.getOverallUsageStats(start, end, minCount);
+    public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
+        return datasetDao.getOverallUsageStats(start, end, max);
     }
 
     @Transactional

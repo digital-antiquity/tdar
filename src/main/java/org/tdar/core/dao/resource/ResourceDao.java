@@ -312,9 +312,10 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return toReturn;
     }
 
-    public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long minCount) {
+    public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
         List<AggregateViewStatistic> toReturn = new ArrayList<AggregateViewStatistic>();
-        Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_OVERALL);
+        Query query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
+        query.setMaxResults(max.intValue());
         for (Object obj_ : query.list()) {
             Object[] obj = (Object[]) obj_;
             @SuppressWarnings("deprecation")
