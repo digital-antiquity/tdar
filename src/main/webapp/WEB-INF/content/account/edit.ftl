@@ -82,9 +82,9 @@ label.error {display:block;}
             </span>
             <label class="checkbox">
             <@s.checkbox theme="simple" name="requestingContributorAccess" id="contributor-id"  />
-                I <!-- accept the ${siteAcronym}
+                I accept the ${siteAcronym}
                 <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
-                and --> wish to add ${siteAcronym} content.
+                and wish to add ${siteAcronym} content.
             </label>
         </div>
     </div>
