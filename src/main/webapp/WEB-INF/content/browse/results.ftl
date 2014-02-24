@@ -309,6 +309,6 @@
         </#if>
     </#if>
     <#if editor>
-	<p><b>Creator Views:</b>${viewCount}</p>
+	<p><b>This Creator Page was Viewed:</b>${viewCount} times</p>
 	</#if>    
 </#escape>
