@@ -633,6 +633,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         
         persistable.setParent(parent);
         List<Long> parentIds = new ArrayList<>(parent.getParentIds());
+        parentIds.add(parent.getId());
         persistable.getParentIds().clear();
         persistable.getParentIds().addAll(parentIds);
         for (ResourceCollection child : children) {

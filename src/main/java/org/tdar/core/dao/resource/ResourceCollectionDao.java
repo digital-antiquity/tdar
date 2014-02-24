@@ -173,6 +173,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         if (Persistable.Base.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
         }
+        logger.debug("potential parent: {} ", persistable.getId());
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN);
         query.setLong("id", persistable.getId());
         return (List<ResourceCollection>) query.list();
