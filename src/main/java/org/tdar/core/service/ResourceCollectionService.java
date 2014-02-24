@@ -485,8 +485,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 //            child.setTransientChildren(new LinkedHashSet<ResourceCollection>(findDirectChildCollections(child.getId(), null, collectionType)));
 //            toEvaluate.addAll(child.getTransientChildren());
 //        }
-        throw new TdarRecoverableRuntimeException("not reimplemented yet");
-//        return allCollections;
+        logger.error("not reimplemented yet");
+        return allChildren;
     }
 
     /**
@@ -632,8 +632,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<Long> oldParentIds = new ArrayList<>(persistable.getParentIds());
         
         persistable.setParent(parent);
-        List<Long> parentIds = new ArrayList<>(parent.getParentIds());
-        parentIds.add(parent.getId());
+        List<Long> parentIds = new ArrayList<>();
+        if (Persistable.Base.isNotNullOrTransient(parent)) {
+            if (CollectionUtils.isNotEmpty(parent.getParentIds())) {
+                parentIds.addAll(parent.getParentIds());
+            }
+            parentIds.add(parent.getId());
+        }
         persistable.getParentIds().clear();
         persistable.getParentIds().addAll(parentIds);
         for (ResourceCollection child : children) {
