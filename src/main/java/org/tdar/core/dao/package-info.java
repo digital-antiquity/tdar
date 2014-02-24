@@ -420,14 +420,7 @@
     @org.hibernate.annotations.NamedQuery(
             //select c.id, c.name from collection c left join collection_parents as p on c.id=p.collection_id left join authorized_user auth on c.id=auth.resource_collection_id where auth.general_permission_int>399 and auth.user_id=8092 or p.parent_id in (select resource_collection_id from authorized_user where authorized_user.general_permission_int>399 and authorized_user.user_id=8092);
             name=TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED,
-            query=  " SELECT distinct new Resource(res.id, res.title, res.resourceType) FROM Resource as res  where " +
-                    " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) "
-                    + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
-                    " (res.submitter.id=:userId or exists "
-                        + "( from ResourceCollection rescol join rescol.resources as colres where colres.id = res.id and " +
-                            " (TRUE=:admin or rescol.id in (:rescolIds) )"
-                        + ")"
-                    + ")  " +
+            query=  " SELECT distinct new Resource(res.id, res.title, res.resourceType) " + org.tdar.core.dao.TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX +
                     " order by res.title, res.id"),
     @org.hibernate.annotations.NamedQuery(
             name=TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY,

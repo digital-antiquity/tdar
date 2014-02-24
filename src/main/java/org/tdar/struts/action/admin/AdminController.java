@@ -34,6 +34,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ScheduledProcessService;
+import org.tdar.core.service.processes.UpgradeResourceCollectionPermissions;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
@@ -60,6 +61,9 @@ public class AdminController extends AuthenticationAware.Base {
     @Autowired
     private ScheduledProcessService scheduledProcessService;
 
+    @Autowired
+    private UpgradeResourceCollectionPermissions urcp;
+    
     private List<ResourceRevisionLog> resourceRevisionLogs;
 
     private List<Pair<CultureKeyword, Integer>> uncontrolledCultureKeywordStats;
@@ -157,6 +161,15 @@ public class AdminController extends AuthenticationAware.Base {
         scheduledProcessService.updateSitemap();
         scheduledProcessService.updateHomepage();
         getActionMessages().add("Scheduled... check admin activity controller to test");
+        return SUCCESS;
+    }
+
+    @Action(value = "buildCollectionTree", results = {
+            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+    })
+    public String buildCollectionTree() {
+        getLogger().debug("manually running 'build collection tree'");
+        urcp.execute();
         return SUCCESS;
     }
 

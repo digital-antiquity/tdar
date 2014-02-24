@@ -174,13 +174,17 @@ public interface TdarNamedQueries {
     String QUERY_HQL_UPDATE_MANY_TO_MANY_REFERENCES = ""; // TODO: //Not possible, I think.
     String QUERY_HQL_UPDATE_MANY_TO_ONE_REFERENCES = ""; // TODO: use many_to_one_count in exists clause.
 
-    String HQL_EDITABLE_RESOURCE_SUFFIX = "FROM Resource as res  where " +
-            " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
-            "(res.submitter.id=:userId or exists (" +
-            " from ResourceCollection rescol join rescol.authorizedUsers  as authUser " +
-            " join rescol.resources as colres " +
-            " where colres.id = res.id and " +
-            "(TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
+    String HQL_EDITABLE_RESOURCE_SUFFIX = " FROM Resource as res  where " +
+    " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) "
+    + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
+    " (res.submitter.id=:userId or exists "
+        + "( from ResourceCollection rescol join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and " +
+            " (TRUE=:admin or rescol.owner.id=:userId or rescol.id in ( "
+            + "select r.id from ResourceCollection r join r.authorizedUsers as auth where auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission) "
+            + "or parentId IN ("
+            + " select r.id from ResourceCollection r join r.authorizedUsers as auth where auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission) )"
+        + ")"
+    + ")  ";
 
     String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
     String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";

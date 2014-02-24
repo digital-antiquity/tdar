@@ -147,7 +147,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             return Collections.EMPTY_LIST;
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED);
-
+        query.setInteger("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         query.setLong("userId", person.getId());
         query.setParameter("admin", isAdmin);
         query.setParameterList("resourceTypes", resourceTypes);
@@ -158,7 +158,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         }
         query.setParameter("allStatuses", false);
         query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        query.setParameterList("rescolIds", collectionIds);
+//        query.setParameterList("rescolIds", collectionIds);
         List results = query.list();
 
         return results;

@@ -14,6 +14,8 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.Pair;
 
+import com.mchange.v2.util.CollectionUtils;
+
 /**
  * Abstract class to help with batch processes, track errors, and managing the batches.
  * 
@@ -151,6 +153,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         if (allIds == null) {
             allIds = findAllIds();
             Collections.sort(allIds);
+            logger.debug("{} ids in queue", CollectionUtils.size(allIds) );
         }
         return allIds;
     }

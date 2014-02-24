@@ -117,3 +117,10 @@ create table resource_collection_view_statistics (
 );
 
 create index resource_collection_view_stats_count_id on resource_collection_view_statistics (resource_collection_id, id);
+
+
+-- abrin 2/24/2014 adding ID Table
+create table collection_parents (
+     collection_id int8 not null references collection,
+     parent_id int8 not null references collection
+);
