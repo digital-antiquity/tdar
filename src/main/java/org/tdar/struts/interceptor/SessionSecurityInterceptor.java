@@ -86,7 +86,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
         
         
         response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Content-Security-Policy", "'script-src' 'self' '*://"+TdarConfiguration.getInstance().getStaticContentHost() + "' '" + TdarConfiguration.getInstance().getContentSecurityPolicyAdditions() +"' '*://ajax.googleapis.com' '*://www.google.com' '*://ajax.aspnetcdn.com netdna.bootstrapcdn.com' 'unsafe-inline' '*://use.typekit.net'");
+        response.setHeader("Content-Security-Policy", "'default-src' 'self' '*://"+TdarConfiguration.getInstance().getStaticContentHost() + "' '" + TdarConfiguration.getInstance().getContentSecurityPolicyAdditions() +"' '*://ajax.googleapis.com' '*://www.google.com' '*://ajax.aspnetcdn.com netdna.bootstrapcdn.com' 'unsafe-inline' '*://use.typekit.net'");
         //http://www.html5rocks.com/en/tutorials/security/content-security-policy/
         
         SessionType mark = SessionType.READ_ONLY;
