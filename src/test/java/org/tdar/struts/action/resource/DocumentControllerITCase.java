@@ -546,6 +546,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         dc.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS, dc.save());
 
+        logger.debug("RC: {}", doc.getInternalResourceCollection().getAuthorizedUsers());
         // change the submitter to the admin
         Long id = doc.getId();
         doc = null;

@@ -64,8 +64,11 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         // get all of the resource collections and their hierarchical tree, permissions are additive
         for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
             ids.addAll(collection.getParentIds());
+            ids.add(collection.getId());
         }
-
+        if (getLogger().isTraceEnabled()) {
+            getLogger().debug("allowed to rights collection ids: {}", ids);
+        }
         return isAllowedTo(person, permission, ids);
     }
 
@@ -91,6 +94,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
         @SuppressWarnings("unchecked")
         List<Integer> result = query.list();
+        getLogger().debug("results: {}", result);
         if (result.isEmpty() || result.get(0) != 1) {
             return false;
         }
