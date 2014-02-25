@@ -8,9 +8,12 @@ vim:sts=2:sw=2
   <display-name>The Digital Archaeological Record</display-name>
   
   <!-- set session timeout -->
-  <session-config>
-    <session-timeout>480</session-timeout>
-  </session-config>
+	<session-config>
+		<session-timeout>480</session-timeout>
+		<cookie-config>
+			<http-only>true</http-only>
+		</cookie-config>
+	</session-config>
 
   <!-- FILTERS -->
   <filter>

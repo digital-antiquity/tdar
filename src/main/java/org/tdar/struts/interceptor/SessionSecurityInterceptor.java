@@ -77,12 +77,17 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
         }
         logger.debug("<< activity begin: {} ", activity);
 
+        HttpServletResponse response = ServletActionContext.getResponse();
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, CacheControl.class)) {
-            HttpServletResponse response = ServletActionContext.getResponse();
             response.setHeader("Cache-Control", "no-store,no-Cache");
             response.setHeader("Pragma", "no-cache");
             response.setDateHeader("Expires", 0);
         }
+        
+        
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Content-Security-Policy", "'script-src' 'self' '*://"+TdarConfiguration.getInstance().getStaticContentHost() + "' '" + TdarConfiguration.getInstance().getContentSecurityPolicyAdditions() +"' '*://ajax.googleapis.com' '*://www.google.com' '*://ajax.aspnetcdn.com netdna.bootstrapcdn.com' 'unsafe-inline' '*://use.typekit.net'");
+        //http://www.html5rocks.com/en/tutorials/security/content-security-policy/
         
         SessionType mark = SessionType.READ_ONLY;
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
@@ -108,7 +113,6 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             } else {
                 logger.warn("caught TdarActionException", exception);
             }
-            HttpServletResponse response = ServletActionContext.getResponse();
             response.setStatus(exception.getStatusCode());
             logger.debug("clearing session due to {} -- returning to {}", exception.getResponseStatusCode(), exception.getResultName());
             genericService.clearCurrentSession();
