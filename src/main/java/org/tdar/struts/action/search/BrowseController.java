@@ -120,24 +120,24 @@ public class BrowseController extends AbstractLookupController {
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
         
         Long count = 10L;
-//        try {
-//            int cacheCount =0;
-//            for (WeeklyPopularResourceCache cache : getGenericService().findAll(WeeklyPopularResourceCache.class)) {
-//                Resource key = cache.getKey();
-//                if (key instanceof Resource) {
-//                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag((Resource) key, null);
-//                }
-//                getObfuscationService().obfuscate(key);
-//                if (key.isActive()) {
-//                    if (cacheCount == count)  
-//                        break;
-//                    cacheCount++;
-//                    getFeaturedResources().add(key);
-//                }
-//            }
-//        } catch (IndexOutOfBoundsException ioe) {
-//            logger.debug("no featured resources found");
-//        }
+        try {
+            int cacheCount =0;
+            for (WeeklyPopularResourceCache cache : getGenericService().findAll(WeeklyPopularResourceCache.class)) {
+                Resource key = cache.getKey();
+                if (key instanceof Resource) {
+                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag((Resource) key, null);
+                }
+                getObfuscationService().obfuscate(key);
+                if (key.isActive()) {
+                    if (cacheCount == count)  
+                        break;
+                    cacheCount++;
+                    getFeaturedResources().add(key);
+                }
+            }
+        } catch (IndexOutOfBoundsException ioe) {
+            logger.debug("no featured resources found");
+        }
         
         try {
             getRecentResources().addAll(getSearchService().findMostRecentResources(count, getAuthenticatedUser()));
