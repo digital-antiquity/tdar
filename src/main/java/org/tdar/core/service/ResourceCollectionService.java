@@ -20,7 +20,6 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotNullPredicate;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.solr.client.solrj.request.CoreAdminRequest.Persist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

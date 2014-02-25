@@ -178,11 +178,11 @@ public interface TdarNamedQueries {
     " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) "
     + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
     " (res.submitter.id=:userId or exists "
-        + "( from ResourceCollection rescol join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and " +
+        + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and " +
             " (TRUE=:admin or rescol.owner.id=:userId or rescol.id in ( "
-            + "select r.id from ResourceCollection r join r.authorizedUsers as auth where auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission) "
+            + "select r.id from ResourceCollection r left join r.authorizedUsers as auth where auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission) "
             + "or parentId IN ("
-            + " select r.id from ResourceCollection r join r.authorizedUsers as auth where auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission) )"
+            + " select r.id from ResourceCollection r left join r.authorizedUsers as auth where auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission) )"
         + ")"
     + ")  ";
 

@@ -609,9 +609,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             internalResourceCollection = new ResourceCollection(CollectionType.INTERNAL);
             internalResourceCollection.setOwner(person);
             resource.getResourceCollections().add(internalResourceCollection);
+            genericService.save(internalResourceCollection);
         }
         internalResourceCollection.getAuthorizedUsers().add(authorizedUser);
+        logger.debug("{}", internalResourceCollection);
         genericService.saveOrUpdate(internalResourceCollection);
+        genericService.saveOrUpdate(authorizedUser);
         genericService.saveOrUpdate(resource);
     }
 
