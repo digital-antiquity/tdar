@@ -140,7 +140,6 @@ public class BrowseController extends AbstractLookupController {
                 if (key instanceof Resource) {
                     getAuthenticationAndAuthorizationService().applyTransientViewableFlag((Resource) key, null);
                 }
-                getObfuscationService().obfuscate(key);
                 if (key.isActive()) {
                     if (cacheCount == count)  
                         break;
@@ -149,7 +148,7 @@ public class BrowseController extends AbstractLookupController {
                 }
             }
         } catch (IndexOutOfBoundsException ioe) {
-            logger.debug("no featured resources found");
+            getLogger().debug("no featured resources found");
         }
         
         try {
