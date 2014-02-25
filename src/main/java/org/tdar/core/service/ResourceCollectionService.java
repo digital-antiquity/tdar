@@ -20,6 +20,7 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotNullPredicate;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.solr.client.solrj.request.CoreAdminRequest.Persist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -472,20 +473,21 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     @Transactional(readOnly=true)
     public List<ResourceCollection> buildCollectionTreeForController(ResourceCollection collection, Person authenticatedUser, CollectionType collectionType) {
-        List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
-        List<ResourceCollection> toEvaluate = new ArrayList<ResourceCollection>();
-        toEvaluate.add(collection);
+//        List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
+//        List<ResourceCollection> toEvaluate = new ArrayList<ResourceCollection>();
+//        toEvaluate.add(collection);
         List<ResourceCollection> allChildren = getAllChildCollections(collection);
         //FIXME: iterate over all children to reconcile tree
-//        while (!toEvaluate.isEmpty()) {
-//            ResourceCollection child = toEvaluate.get(0);
-//            authenticationAndAuthorizationService.applyTransientViewableFlag(child, authenticatedUser);
-//            collections.add(child);
-//            toEvaluate.remove(0);
-//            child.setTransientChildren(new LinkedHashSet<ResourceCollection>(findDirectChildCollections(child.getId(), null, collectionType)));
-//            toEvaluate.addAll(child.getTransientChildren());
-//        }
-        logger.error("not reimplemented yet");
+        Iterator<ResourceCollection> iter = allChildren.iterator();
+        while (iter.hasNext()) {
+            ResourceCollection child = iter.next();
+            authenticationAndAuthorizationService.applyTransientViewableFlag(child, authenticatedUser);
+            ResourceCollection parent = child.getParent();
+            if (parent != null) {
+                parent.getTransientChildren().add(child);
+                iter.remove();
+            }
+        }
         return allChildren;
     }
 
