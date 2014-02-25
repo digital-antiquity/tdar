@@ -69,7 +69,7 @@
 			</#list>
 		</ul>
 	</div> 
-	<div class="span12">
+	<div class="span6">
 		<h2>Recently Added Resources</h2>
 		<ul>
 			<#list recentResources as resource>
