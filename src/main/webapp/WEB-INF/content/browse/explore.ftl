@@ -61,15 +61,15 @@
 
 
 <div class="row">
-<#--	<div class="span6">
+	<div class="span6">
 		<h2>Most Popular in the Past Week</h2>
 		<ul>
 			<#list featuredResources as resource>
 				<li><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></li>
 			</#list>
 		</ul>
-	</div> -->
-	<div class="span12">
+	</div> 
+	<div class="span6">
 		<h2>Recently Added Resources</h2>
 		<ul>
 			<#list recentResources as resource>

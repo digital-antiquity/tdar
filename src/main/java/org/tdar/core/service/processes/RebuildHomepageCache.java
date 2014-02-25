@@ -99,7 +99,7 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         int max = 20;
         DateTime end = new DateTime();
         DateTime start = end.minusDays(7);
-        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getOverallUsageStats(start.toDate(), end.toDate(), 1L);
+        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getOverallUsageStats(start.toDate(), end.toDate(), 40L);
         if (CollectionUtils.isNotEmpty(aggregateUsageStats)) {
             Set<Long> seen = new HashSet<>();
             for (AggregateViewStatistic avs : aggregateUsageStats) {
@@ -108,6 +108,12 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
                 if (seen.contains(resourceId)) {
                     continue;
                 }
+                
+                if (max == 0) {
+                    break;
+                }
+                max--;
+                
                 seen.add(resourceId);
                 Resource resource = resourceService.find(resourceId);
                 if (resource != null && resource.isActive()) {
