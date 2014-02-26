@@ -10,6 +10,10 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 
 <#noescape>
+<#assign rtLabel = resource.resourceType.label />
+<#if namespace == '/batch'>
+	<#assign rtLabel = '' />
+</#if>
 <#assign _filesJson = "''">
 <#if filesJson?has_content>
 <#assign _filesJson = filesJson>
@@ -130,7 +134,7 @@ $(function(){
 	<@edit.accountSection />
 
 	<#if !resource.resourceType.project>
-	<@edit.resourceCreators '${resource.resourceType.label} Creators' authorshipProxies 'authorship' />
+	<@edit.resourceCreators '${rtLabel} Creators' authorshipProxies 'authorship' />
 	</#if>
 
 	<div id="citationInformation" class="well-alt"> 
@@ -189,9 +193,9 @@ $(function(){
 	
 	<#if multipleUpload??>
 		<#if multipleUpload>
-			<@edit.asyncFileUpload  uploadLabel="Attach ${resource.resourceType.label} Files" showMultiple=multipleUpload />
+			<@edit.asyncFileUpload  uploadLabel="Attach ${rtLabel} Files" showMultiple=multipleUpload />
 		<#else>
-			<@edit.upload "${resource.resourceType.label} file" />
+			<@edit.upload "${rtLabel} file" />
 		</#if>
 	</#if>
 	
