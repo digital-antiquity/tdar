@@ -307,9 +307,14 @@ static.content.port
 # the ssl http port for static content
 static.content.sslPort
 
+# content security policy enabled
+#default = true
+content.security.policy.enabled = true
+
 # the additions to the content security policy headers
 # http://www.html5rocks.com/en/tutorials/security/content-security-policy/
-content.security.policy.additions
+content.security.policy.additions = ""
+
 
 ###################################
 ## SPECIAL USER SETTINGS
