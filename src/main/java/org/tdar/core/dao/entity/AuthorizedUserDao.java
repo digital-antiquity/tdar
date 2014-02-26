@@ -79,7 +79,9 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         if (ObjectUtils.equals(collection.getOwner(), person)) {
             return true;
         }
-        return isAllowedTo(person, permission, collection.getParentIds());
+        List<Long> ids = new ArrayList<>(collection.getParentIds());
+        ids.add(collection.getId());
+        return isAllowedTo(person, permission, ids);
     }
 
     public boolean isAllowedTo(Person person, GeneralPermissions permission, Collection<Long> collectionIds) {

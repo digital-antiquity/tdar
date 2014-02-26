@@ -52,7 +52,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
         genericService.save(projectWithDifferentSubmitterAndFullUser);
 
         addAuthorizedUser(projectWithDifferentSubmitterAndFullUser, testPerson, GeneralPermissions.MODIFY_RECORD);
-        genericService.synchronize();
+//        genericService.synchronize();
 
         logger.debug("{internal: {}" , projectWithDifferentSubmitterAndFullUser.getInternalResourceCollection());
         Project projectWithSameFullUserAndSubmitter = new Project();

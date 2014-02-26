@@ -25,9 +25,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -47,9 +46,6 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfile.FetchOverride;
 import org.hibernate.annotations.FetchProfiles;
-
-import javax.persistence.Index;
-
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -710,8 +706,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.adminDescription = adminDescription;
     }
 
-    /*
-     * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father, you.
+    /**
+     * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
+     * 
+     * Note: in earlier implementations this contained the currentId as well, I've removed this, but am unsure 
+     * whether it should be there
      */
     @Transient
     @Field(name = QueryFieldNames.COLLECTION_TREE)
