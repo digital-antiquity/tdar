@@ -118,5 +118,7 @@ create table resource_collection_view_statistics (
 
 create index resource_collection_view_stats_count_id on resource_collection_view_statistics (resource_collection_id, id);
 
+-- abrin 2/27/2014 -- inheritance for individual and institutional credit
 alter table information_resource add inheriting_individual_institutional_credit boolean default FALSE;
+update information_resource set inheriting_individual_institutional_credit=false;
 alter table creator alter column date_created type timestamp;
