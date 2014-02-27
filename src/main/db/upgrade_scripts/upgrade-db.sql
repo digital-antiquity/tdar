@@ -117,3 +117,5 @@ create table resource_collection_view_statistics (
 );
 
 create index resource_collection_view_stats_count_id on resource_collection_view_statistics (resource_collection_id, id);
+
+alter table information_resource add inheriting_individual_institutional_credit boolean default FALSE
