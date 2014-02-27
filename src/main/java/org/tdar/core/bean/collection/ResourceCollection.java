@@ -89,6 +89,10 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * 
  *         <b>INTERNAL</b> collections enable access rights to a specific resource. Users never see these, they simply see the rights on the resource.
  *         <b>SHARED</b> collections are ones that users create and enable access. Shared collections can be public or private
+ *         <b>PUBLIC</b> collections do not store rights and can be used for bookmarks and such things (not fully implemented).
+ *         
+ *         The Tree structure that is represented is a hybrid of a "materialized path" implementation -- see http://vadimtropashko.wordpress.com/2008/08/09/one-more-nested-intervals-vs-adjacency-list-comparison/.
+ *         It's however, optimized so that the node's children are manifested in a supporting table to optimize rights queries, which will be the most common lookup. 
  */
 @Entity
 @Indexed(index = "Collection")

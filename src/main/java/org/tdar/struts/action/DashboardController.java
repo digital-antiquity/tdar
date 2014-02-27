@@ -66,21 +66,21 @@ public class DashboardController extends AuthenticationAware.Base {
     @Override
     @Action("dashboard")
     public String execute() {
-        getLogger().debug("find recently edited resources");
+        getLogger().trace("find recently edited resources");
         setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
-        getLogger().debug("find empty projects");
+        getLogger().trace("find empty projects");
         setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
-        getLogger().debug("counts for graphs");
+        getLogger().trace("counts for graphs");
         setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
-        getLogger().debug("parent/ owner collections");
+        getLogger().trace("parent/ owner collections");
         getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
-        getLogger().debug("accessible collections");
+        getLogger().trace("accessible collections");
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
         collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
-        getLogger().debug("reconcile tree1");
+        getLogger().trace("reconcile tree1");
         getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), getAuthenticatedUser(), collectionIds);
-        getLogger().debug("reconcile tree2");
+        getLogger().trace("reconcile tree2");
         getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
         // try {
         // getResourceCollectionService().reconcileCollectionTree2(getResourceCollections(), getAuthenticatedUser(), collectionIds);
