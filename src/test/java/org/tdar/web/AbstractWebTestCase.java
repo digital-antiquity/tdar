@@ -660,10 +660,12 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertTextNotPresent("Exception stack trace: " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
                                                                                                      // rendering)
         assertTextNotPresentIgnoreCase("http error");
-        if (getPageText().matches("\\{\\d\\}")) {
-            fail("bad localization escape sequence: " + getCurrentUrlPath() + ":" + getPageText());
-        }
         assertTextNotPresentIgnoreCase("server error");
+        assertTextNotPresentIgnoreCase("{0}"); // should be a regex
+        assertTextNotPresentIgnoreCase("{1}");
+        assertTextNotPresentIgnoreCase("{2}");
+        assertTextNotPresentIgnoreCase("{3}");
+        assertTextNotPresentIgnoreCase("{4}");
         assertTextNotPresentIgnoreCase(".exception.");
         assertTextNotPresentIgnoreCase("caused by");
         assertTextNotPresentIgnoreCase("Exception " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
