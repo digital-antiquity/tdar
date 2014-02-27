@@ -373,6 +373,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     // return a persisted annotation based on incoming pojo
     private void resolveAnnotations(Collection<ResourceAnnotation> incomingAnnotations) {
+        List<ResourceAnnotation> toAdd = new ArrayList<>();
         for (ResourceAnnotation incomingAnnotation : incomingAnnotations) {
             if (incomingAnnotation == null)
                 continue;
@@ -380,7 +381,21 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             ResourceAnnotationKey resolvedKey = getGenericService().findByExample(ResourceAnnotationKey.class, incomingKey, FindOptions.FIND_FIRST_OR_CREATE)
                     .get(0);
             incomingAnnotation.setResourceAnnotationKey(resolvedKey);
+            
+            if (incomingAnnotation.isTransient()) {
+                List<String> vals = new ArrayList<>();
+                vals.add(incomingAnnotation.getValue());
+                cleanupKeywords(vals);
+                
+                if (vals.size() > 1) {
+                    incomingAnnotation.setValue(vals.get(0));
+                    for (int i =1 ; i < vals.size(); i++) {
+                        toAdd.add(new ResourceAnnotation(resolvedKey, vals.get(i)));
+                    }
+                }
+            }
         }
+        incomingAnnotations.addAll(toAdd);
     }
 
     private Boolean editable = null;

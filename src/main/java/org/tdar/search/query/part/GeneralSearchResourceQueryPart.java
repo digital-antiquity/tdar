@@ -15,6 +15,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
     protected static final float DESCRIPTION_BOOST = 4f;
     protected static final float PHRASE_BOOST = 3.2f;
     protected static final float ANY_FIELD_BOOST = 2f;
+    protected static final float ID_BOOST = 10f;
 
     public GeneralSearchResourceQueryPart(List<String> list, Operator operator) {
         this(list);
@@ -56,9 +57,9 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         }
         
         // if we're searching for something numeric, put the tDAR ID into the query string and weight it appropriately.
-        if (StringUtils.isNumeric(cleanedQueryString)) {
+        if (StringUtils.isNumeric(value)) {
             FieldQueryPart<String> idPart = new FieldQueryPart<String>(QueryFieldNames.ID, cleanedQueryString);
-            idPart.setBoost(CREATOR_BOOST);
+            idPart.setBoost(ID_BOOST);
             queryPart.append(idPart);
         }
         

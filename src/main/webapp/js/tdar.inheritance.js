@@ -150,7 +150,7 @@ function _resetIndexedAttributes(elem) {
 // clears (not resets) the selected elements
 function _clearFormSection(selector) {
     // Use a whitelist of fields to minimize unintended side effects.
-    $('input:text, input:password, input:file', selector).val('');
+    $(selector).find('input:text, input:password, input:file, textarea').val('');
     // De-select any checkboxes, radios and drop-down menus
     $(':input', selector).prop('checked', false).prop('selected', false);
 }
