@@ -98,6 +98,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.ResourceCreatorRoleType;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -534,6 +535,11 @@ public class Resource extends JsonModel.Base implements Persistable,
     @IndexedEmbedded
     public Set<CultureKeyword> getActiveCultureKeywords() {
         return getCultureKeywords();
+    }
+
+    @IndexedEmbedded
+    public Set<ResourceCreator> getActiveResourceCreators() {
+        return getResourceCreators();
     }
 
     @Transient
@@ -1887,4 +1893,13 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.obfuscatedObjectDifferent = value;
     }
 
+    public Set<ResourceCreator> getIndividualAndInstitutionalCredit() {
+        Set<ResourceCreator> creators = new HashSet<>();
+        for (ResourceCreator creator : this.getActiveResourceCreators()) {
+            if (creator.getRole().getType() == ResourceCreatorRoleType.CREDIT) {
+                creators.add(creator);
+            }
+        }
+        return creators;
+    }
 }
