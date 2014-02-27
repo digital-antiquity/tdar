@@ -24,7 +24,7 @@
 
 <meta name="lastModifiedDate" content="$Date$"/>
 
-<#noescape>
+
 <#assign rtLabel = resource.resourceType.label />
 <#if namespace == '/batch'>
 	<#assign rtLabel = '' />
