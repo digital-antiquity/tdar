@@ -1902,4 +1902,9 @@ public class Resource extends JsonModel.Base implements Persistable,
         }
         return creators;
     }
+
+    @IndexedEmbedded
+    public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
+        return getIndividualAndInstitutionalCredit();
+    }
 }

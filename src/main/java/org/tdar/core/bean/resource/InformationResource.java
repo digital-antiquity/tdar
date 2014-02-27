@@ -681,8 +681,9 @@ public abstract class InformationResource extends Resource {
     
     @IndexedEmbedded
     @Override
-    public Set<ResourceCreator> getIndividualAndInstitutionalCredit() {
-        return isProjectVisible() && isInheritingIndividualAndInstitutionalCredit() ? project.getIndividualAndInstitutionalCredit() : getIndividualAndInstitutionalCredit();
+    public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
+        Resource effectiveResource = isProjectVisible() && isInheritingIndividualAndInstitutionalCredit() ? project : this;
+        return effectiveResource.getIndividualAndInstitutionalCredit();
     }
 
     @Transient
