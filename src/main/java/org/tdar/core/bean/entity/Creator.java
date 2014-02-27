@@ -152,7 +152,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Column(name = "last_updated", nullable = true)
     private Date dateUpdated;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created")
     private Date dateCreated;
 
