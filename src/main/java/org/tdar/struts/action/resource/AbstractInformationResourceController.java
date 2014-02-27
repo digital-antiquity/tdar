@@ -506,6 +506,34 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (getResource().isInheritingOtherInformation()) {
             setOtherKeywords(null);
         }
+        
+        if (getResource().isInheritingIndividualAndInstitutionalCredit()) {
+            if (CollectionUtils.isNotEmpty(getCreditProxies())) {
+                getCreditProxies().clear();
+            }
+        }
+        
+        if (getResource().isInheritingCollectionInformation()) {
+            if (CollectionUtils.isNotEmpty(getRelatedComparativeCollections())) {
+                getRelatedComparativeCollections().clear();
+            }
+            if (CollectionUtils.isNotEmpty(getSourceCollections())) {
+                getSourceCollections().clear();
+            }
+        }
+        
+        if (getResource().isInheritingNoteInformation()) {
+            if (CollectionUtils.isNotEmpty(getResourceNotes())) {
+                getResourceNotes().clear();
+            }
+        }
+        
+        if (getResource().isInheritingIdentifierInformation()) {
+            if (CollectionUtils.isNotEmpty(getResourceAnnotations())) {
+                getResourceAnnotations().clear();
+            }
+        }
+        
         // FIXME: we need to set the project at this point to avoid getProjectId() being indexed too early
         // see TDAR-2001
         resolveProject();

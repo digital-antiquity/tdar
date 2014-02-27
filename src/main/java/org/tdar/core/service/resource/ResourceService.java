@@ -503,6 +503,7 @@ public class ResourceService extends GenericService {
                 informationResource.setInheritingIdentifierInformation(proxyInformationResource.isInheritingIdentifierInformation());
                 informationResource.setInheritingNoteInformation(proxyInformationResource.isInheritingNoteInformation());
                 informationResource.setInheritingCollectionInformation(proxyInformationResource.isInheritingCollectionInformation());
+                informationResource.setInheritingIndividualAndInstitutionalCredit(proxyInformationResource.isInheritingIndividualAndInstitutionalCredit());
             }
             datasetDao.saveOrUpdate(resource);
             // NOTE: THIS SHOULD BE THE LAST THING DONE AS IT BRINGS EVERYTHING BACK ONTO THE SESSION PROPERLY
