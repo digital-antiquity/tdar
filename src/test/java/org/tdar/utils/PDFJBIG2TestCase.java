@@ -11,12 +11,9 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
-import javax.imageio.spi.IIORegistry;
-import javax.imageio.spi.ImageWriterSpi;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
@@ -25,15 +22,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.media.imageioimpl.plugins.clib.CLibImageWriter;
-import com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriterSpi;
-
 public class PDFJBIG2TestCase {
 
     private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @Test
-    @Ignore("test for PDFBox issue, not tDAR issue")
+//    @Ignore("test for PDFBox issue, not tDAR issue")
     public void testJBIG2() throws IOException {
         File pdfFile = new File("src/test/resources/documents/pia-09-lame-1980-small.pdf");
         String imageFormat = "jpg";
