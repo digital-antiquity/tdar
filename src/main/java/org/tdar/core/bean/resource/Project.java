@@ -70,7 +70,7 @@ public class Project extends Resource implements Sortable {
             "resourceAnnotations",
             "resourceAnnotationKey",
             "individualAndInstitutionalCredit","creator","dateUpdated",
-            "role","firstName","lastName","name","institution","properName"
+            "role","firstName","lastName","name","institution","email"
     };
 
     public static final Project NULL = new Project() {
