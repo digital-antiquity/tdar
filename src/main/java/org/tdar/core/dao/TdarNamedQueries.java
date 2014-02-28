@@ -180,9 +180,7 @@ public interface TdarNamedQueries {
     " (res.submitter.id=:userId or exists "
         + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and " +
             " (TRUE=:admin or rescol.owner.id=:userId or exists ( "
-            + "select 1 from ResourceCollection r left join r.authorizedUsers as auth where rescol.id=r.id and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission) "
-            + "or exists ("
-            + " select 1 from ResourceCollection r left join r.authorizedUsers as auth where parentId=r.id and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission) )"
+            + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
         + ")"
     + ")  ";
 
