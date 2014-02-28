@@ -147,8 +147,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Column(name = "contributor", nullable = false, columnDefinition = "boolean default FALSE")
     private Boolean contributor = Boolean.FALSE;
 
-    @Column(name = "contributor_reason", length = 512)
-    @Length(max = 512)
+    @Column(name = "contributor_reason", length = FieldLength.FIELD_LENGTH_512)
+    @Length(max = FieldLength.FIELD_LENGTH_512)
     private String contributorReason;
 
     // did this user register with the system or were they entered by someone
