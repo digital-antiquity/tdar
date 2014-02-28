@@ -121,6 +121,7 @@ function _convertCreator(raw) {
 
     if(bPerson) {
         obj.person = {
+            id: raw.creator.id,
             lastName: raw.creator.lastName,
             firstName: raw.creator.firstName,
             email: raw.creator.email,
@@ -132,6 +133,7 @@ function _convertCreator(raw) {
         }
     } else {
         obj.institution = {
+            id: raw.creator.id,
             name: raw.creator.name
         }
     };
@@ -369,10 +371,35 @@ function _inheritTemporalInformation(formId, json) {
     _disableSection(sectionId);
 }
 
+
 function _inheritCreditInformation(divSelector, creators) {
     _clearFormSection(divSelector);
     TDAR.inheritance.resetRepeatable(divSelector, creators.length);
-    _populateSection(divSelector, {creditProxies: creators});
+    if(creators.length > 0) {
+        _populateSection(divSelector, {creditProxies: creators});
+        //now set the correct toggle state for eachrow
+        var $proxyRows = $(divSelector).find(".repeat-row");
+        $proxyRows.each(function(i, rowElem){
+            if(creators[i].type === "person") {
+                $(rowElem).find(".creatorPerson").removeClass("hidden");
+                $(rowElem).find(".creatorInstitution").addClass("hidden");
+
+                $(rowElem).find(".personButton").addClass("active");
+                $(rowElem).find(".institutionButton").removeClass("active");
+            } else {
+
+                //fixme: cmon jim, really??  there's a better way to activate one over the other
+                $(rowElem).find(".creatorPerson").addClass("hidden");
+                $(rowElem).find(".creatorInstitution").removeClass("hidden");
+
+                $(rowElem).find(".personButton").removeClass("active");
+                $(rowElem).find(".institutionButton").addClass("active");
+
+            }
+        });
+
+    }
+
     _disableSection(divSelector);
 }
 
@@ -682,7 +709,7 @@ function _processInheritance(formId) {
             mappedData: "creditProxies",
             isSafeCallback: function() {return true;},
             inheritSectionCallback: function() {
-                _inheritCreditInformation('#creditSection', TDAR.inheritance.json.creditProxies);
+                _inheritCreditInformation('#creditTable', TDAR.inheritance.json.creditProxies);
 
             }
 
@@ -727,6 +754,7 @@ function _enableAll() {
     _enableSection('#divIdentifiers');
     _enableSection('#relatedCollectionsSection');
     _enableSection('#resourceNoteSection');
+    _enableSection("#creditTable");
 }
 
 //todo: this duplicates code (see all the calls to bindCheckbox); use  inheritOptionsList instead
