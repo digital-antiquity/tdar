@@ -91,7 +91,8 @@ function _convertToFormJson(rawJson) {
             otherKeywords : $.map(rawJson.otherKeywords, function(v) {
                 return v.label;
             })
-        }
+        },
+        creditProxies: $.map(rawJson.individualAndInstitutionalCredit, _convertCreator)
     };
 
     // FIXME: update the parent latlong box (i.e. the red box not the brown
@@ -104,6 +105,37 @@ function _convertToFormJson(rawJson) {
         obj.spatialInformation['maxy'] = rawJson.firstLatitudeLongitudeBox.maxObfuscatedLatitude;
     }
 
+    //now build out individual/institutional credit
+    return obj;
+}
+//convert creator from untranslated json to object that can then be passed to from populate plugin
+function _convertCreator(raw) {
+    var bPerson =  raw.creator.hasOwnProperty("lastName");
+    var obj = {
+        id: raw.creator.id,
+        role: raw.role,
+        type: bPerson ? "person" : "institution",
+        person: {},
+        institution: {}
+    };
+
+    if(bPerson) {
+        obj.person = {
+            lastName: raw.creator.lastName,
+            firstName: raw.creator.firstName,
+            email: raw.creator.email,
+            institution: {name:"", id:""}
+        }
+        if(raw.creator.institution) {
+            obj.person.institution.name = raw.creator.institution.name;
+            obj.person.institution.id = raw.creator.institution.id;
+        }
+    } else {
+        obj.institution = {
+            name: raw.creator.name
+        }
+    };
+    console.log(obj);
     return obj;
 }
 
@@ -337,6 +369,13 @@ function _inheritTemporalInformation(formId, json) {
     _disableSection(sectionId);
 }
 
+function _inheritCreditInformation(divSelector, creators) {
+    _clearFormSection(divSelector);
+    TDAR.inheritance.resetRepeatable(divSelector, creators.length);
+    _populateSection(divSelector, {creditProxies: creators});
+    _disableSection(divSelector);
+}
+
 function applyInheritance(formSelector) {
     var $form = $(formSelector);
     //collection of 'options' objects for each inheritance section. options contain info about
@@ -420,7 +459,8 @@ function _getBlankProject() {
         "relatedComparativeCollections" : [],
         "resourceAnnotations" : [],
         "uncontrolledCultureKeywords" : [],
-        "uncontrolledSiteTypeKeywords" : []
+        "uncontrolledSiteTypeKeywords" : [],
+        "individualAndInstitutionalCredit": []
     };
     return skeleton;
 }
@@ -633,6 +673,19 @@ function _processInheritance(formId) {
                 _enableSection('#divSpatialInformation');
                 _enableMap();
             }
+        },
+
+        {
+            sectionName: "Individual and Institutional Roles",
+            cbSelector: "#cbInheritingCreditRoles",
+            divSelector: "#creditSection",
+            mappedData: "creditProxies",
+            isSafeCallback: function() {return true;},
+            inheritSectionCallback: function() {
+                _inheritCreditInformation('#creditSection', TDAR.inheritance.json.creditProxies);
+
+            }
+
         }
 
     ];

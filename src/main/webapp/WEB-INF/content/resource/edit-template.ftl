@@ -278,7 +278,10 @@
 
 
 	<#if !(hideCreditSection??)>
-	    <@edit.resourceCreators 'Individual and Institutional Roles' creditProxies 'credit'  />
+	    <@edit.resourceCreators 'Individual and Institutional Roles' creditProxies 'credit' >
+            <@edit._inheritsection checkboxId="cbInheritingCreditRoles" name='resource.inheritingIndividualAndInstitutionalCredit' />
+
+        </@edit.resourceCreators>
     </#if>
 	<@helptext.resourceCreator />
 

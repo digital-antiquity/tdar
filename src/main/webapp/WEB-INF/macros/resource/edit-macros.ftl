@@ -566,7 +566,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     id="${prefix}Section"
     data-tooltipcontent="#divResourceCreatorsTip">
     <h2>${sectionTitle}</h2>
-       
+    <#nested>
     <div id="${prefix}Table" class="table repeatLastRow creatorProxyTable">
         <#list _proxies as proxy>
         <@creatorProxyRow proxy  prefix proxy_index/>
