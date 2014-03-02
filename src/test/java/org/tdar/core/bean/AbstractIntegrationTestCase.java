@@ -550,8 +550,16 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return TestConfiguration.getInstance().getUserId();
     }
 
+    protected final Long getBillingAdminUserId() {
+        return TestConfiguration.getInstance().getBillingAdminUserId();
+    }
+
     protected Person getBasicUser() {
         return getUser(getBasicUserId());
+    }
+    
+    protected Person getBillingUser() {
+        return getUser(getBillingAdminUserId());
     }
 
     protected Person getAdminUser() {

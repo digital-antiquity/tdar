@@ -229,7 +229,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Override
     public Collection<String> getValidFileExtensions() {
-        return getAnalyzer().getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT);
+        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT, ResourceType.DATASET);
     }
 
     @Override

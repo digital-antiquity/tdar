@@ -661,7 +661,12 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                                                                                                      // rendering)
         assertTextNotPresentIgnoreCase("http error");
         assertTextNotPresentIgnoreCase("server error");
-//        assertTextNotPresentIgnoreCase("java.lang");
+        assertTextNotPresentIgnoreCase("{0}"); // should be a regex
+        assertTextNotPresentIgnoreCase("{1}");
+        assertTextNotPresentIgnoreCase("{2}");
+        assertTextNotPresentIgnoreCase("{3}");
+        assertTextNotPresentIgnoreCase("{4}");
+        assertTextNotPresentIgnoreCase(".exception.");
         assertTextNotPresentIgnoreCase("caused by");
         assertTextNotPresentIgnoreCase("Exception " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
                                                                                                   // rendering)
@@ -1235,7 +1240,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             setInput("requestingContributorAccess", "CONTRIBUTOR_AGREEMENT");
         }
         setInput("timeCheck", Long.toString(System.currentTimeMillis() - 10000));
-        submitForm("Save");
+        submitForm("Create Account");
         genericService.synchronize();
         setSessionUser(entityService.findByUsername(username));
     }

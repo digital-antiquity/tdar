@@ -76,6 +76,7 @@ public class HttpsInterceptor implements Interceptor {
     private String doHttpsIntercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
         HttpServletResponse response = ServletActionContext.getResponse();
+        response.setHeader("Frame-Options:","DENY");
         if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled()) {
             return invocation.invoke();
         }

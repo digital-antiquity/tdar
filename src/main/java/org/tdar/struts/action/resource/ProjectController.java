@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -133,6 +132,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
                 getLogger().trace("Trying to convert blank or null project to json: " + project);
                 return json;
             }
+            getObfuscationService().obfuscate(project, getAuthenticatedUser());
             json = project.toJSON().toString();
         } catch (Exception ex) {
             addActionErrorWithException(getText("projectController.project_json_invalid"), ex);

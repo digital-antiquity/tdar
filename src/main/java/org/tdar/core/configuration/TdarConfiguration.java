@@ -725,4 +725,13 @@ public class TdarConfiguration {
     public String getStaticContentHost() {
         return assistant.getStringProperty("static.content.host",getHostName());
     }
+
+    public String getContentSecurityPolicyAdditions() {
+        return assistant.getStringProperty("content.security.policy.additions","");
+    }
+
+    public Boolean getContentSecurityPolicyEnabled() {
+        return assistant.getBooleanProperty("content.security.policy.enabled",true);
+    }
+
 }

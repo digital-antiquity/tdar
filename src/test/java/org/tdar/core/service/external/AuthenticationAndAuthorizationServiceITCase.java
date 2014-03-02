@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +26,21 @@ import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.AbstractConfigurableService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UserAccountController;
 import org.tdar.struts.action.UserAgreementController;
+import org.tdar.utils.TestConfiguration;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 // jtd 9/5:  this doesn't need to be an integration test atm, but I figure we'll eventually want to add tests that
 // need a non-mocked service.
@@ -52,6 +59,20 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         user.setTosVersion(tosVersion);
         user.setContributorAgreementVersion(creatorAgreementVersion);
         return user;
+    }
+    
+    @Test
+    @Rollback
+    public void testBillingAdminRetained() {
+        List<Status> list = new ArrayList<>();
+        list.add(Status.ACTIVE);
+        list.add(Status.DRAFT);
+        Person user = getBillingUser();
+        logger.debug("groups: {} ", InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups());
+        assertTrue(ArrayUtils.contains(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups(), TdarGroup.TDAR_BILLING_MANAGER));
+
+        authenticationAndAuthorizationService.removeIfNotAllowed(list, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user);
+        logger.debug("{}",list);
     }
 
     @Test

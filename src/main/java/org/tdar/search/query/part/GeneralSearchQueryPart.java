@@ -67,6 +67,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
             titlePart.setProximity(3);
             descriptionPart.setProximity(4);
         }
+
         primary.append(titlePart.setBoost(TITLE_BOOST));
         primary.append(descriptionPart.setBoost(DESCRIPTION_BOOST));
         primary.append(allFields);

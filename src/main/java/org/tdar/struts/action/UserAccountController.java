@@ -1,5 +1,7 @@
 package org.tdar.struts.action;
 
+import java.util.List;
+
 import net.tanesha.recaptcha.ReCaptcha;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,9 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
+import org.tdar.core.bean.request.UserAffiliation;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -29,6 +33,8 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * $Id$
@@ -53,9 +59,9 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     private static final long serialVersionUID = 1147098995283237748L;
 
-    private static final int MAXLENGTH_CONTRIBUTOR = 512;
-    public static final long ONE_HOUR_IN_MS = 3600000;
-    public static final long FIVE_SECONDS_IN_MS = 5000;
+    private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
+    public static final long ONE_HOUR_IN_MS = 3_600_000;
+    public static final long FIVE_SECONDS_IN_MS = 5_000;
 
     private Long timeCheck;
     private Long personId;
@@ -492,4 +498,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return getTdarConfiguration().getContributorAgreementUrl();
     }
 
+    public List<UserAffiliation> getUserAffiliations() {
+        return Arrays.asList(UserAffiliation.values());
+    }
 }

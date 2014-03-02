@@ -118,9 +118,13 @@ create table resource_collection_view_statistics (
 
 create index resource_collection_view_stats_count_id on resource_collection_view_statistics (resource_collection_id, id);
 
-
 -- abrin 2/24/2014 adding ID Table
 create table collection_parents (
      collection_id int8 not null references collection,
      parent_id int8 not null references collection
 );
+
+-- abrin 2/27/2014 -- inheritance for individual and institutional credit
+alter table information_resource add inheriting_individual_institutional_credit boolean default FALSE;
+update information_resource set inheriting_individual_institutional_credit=false;
+alter table creator alter column date_created type timestamp;>>>>>>> theirs

@@ -113,7 +113,7 @@ public abstract class InformationResource extends Resource {
     private static final long serialVersionUID = -1534799746444826257L;
     public static final String[] JSON_PROPERTIES = { "inheritingCulturalInformation", "inheritingInvestigationInformation", "inheritingMaterialInformation",
             "inheritingOtherInformation", "inheritingSiteInformation", "inheritingSpatialInformation", "inheritingTemporalInformation",
-            "inheritingIdentifierInformation", "inheritingNoteInformation", "inheritingCollectionInformation"
+            "inheritingIdentifierInformation", "inheritingNoteInformation", "inheritingCollectionInformation","inheritingIndividualAndInstitutionalCredit"
     };
 
     public InformationResource() {
@@ -251,6 +251,8 @@ public abstract class InformationResource extends Resource {
     private boolean inheritingIdentifierInformation = false;
     @Column(name = "inheriting_collection_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingCollectionInformation = false;
+    @Column(name = "inheriting_individual_institutional_credit", nullable = false, columnDefinition = "boolean default FALSE")
+    private boolean inheritingIndividualAndInstitutionalCredit = false;
 
     @ManyToOne(optional = true)
     private DataTableColumn mappedDataKeyColumn;
@@ -676,6 +678,13 @@ public abstract class InformationResource extends Resource {
         return isProjectVisible() && isInheritingInvestigationInformation() ? project.getInvestigationTypes() : getInvestigationTypes();
     }
 
+    
+    @IndexedEmbedded
+    @Override
+    public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
+        return isProjectVisible() && isInheritingIndividualAndInstitutionalCredit() ? project.getIndividualAndInstitutionalCredit() : getIndividualAndInstitutionalCredit();
+    }
+
     @Transient
     @XmlTransient
     public boolean isProjectVisible() {
@@ -904,7 +913,7 @@ public abstract class InformationResource extends Resource {
     @JSONTransient
     public boolean isInheritingSomeMetadata() {
         return (inheritingCulturalInformation || inheritingInvestigationInformation || inheritingMaterialInformation || inheritingOtherInformation ||
-                inheritingSiteInformation || inheritingSpatialInformation || inheritingTemporalInformation || inheritingIdentifierInformation || inheritingNoteInformation);
+                inheritingSiteInformation || inheritingSpatialInformation || inheritingTemporalInformation || inheritingIdentifierInformation || inheritingNoteInformation || inheritingIndividualAndInstitutionalCredit);
     }
 
     @Transient
@@ -917,6 +926,7 @@ public abstract class InformationResource extends Resource {
             setProject(Project.NULL);
             // setting the project to null should be enough...
             setInheritingCulturalInformation(false);
+            setInheritingIndividualAndInstitutionalCredit(false);
             setInheritingInvestigationInformation(false);
             setInheritingMaterialInformation(false);
             setInheritingOtherInformation(false);
@@ -1128,5 +1138,14 @@ public abstract class InformationResource extends Resource {
      */
     public void updateFromTransientResource(InformationResource transientCopy) {
         // Should we throw an exception if we are here ?
+    }
+
+    public boolean isInheritingIndividualAndInstitutionalCredit() {
+        return inheritingIndividualAndInstitutionalCredit;
+    }
+
+    public void setInheritingIndividualAndInstitutionalCredit(
+            boolean inheritingIndividualAndInstitutionalCredit) {
+        this.inheritingIndividualAndInstitutionalCredit = inheritingIndividualAndInstitutionalCredit;
     }
 }

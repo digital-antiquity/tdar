@@ -24,6 +24,12 @@
 
 <meta name="lastModifiedDate" content="$Date$"/>
 
+
+<#assign rtLabel = resource.resourceType.label />
+<#if namespace == '/batch'>
+	<#assign rtLabel = '' />
+</#if>
+
 </head>
 <body>
 <@edit.sidebar />
@@ -133,7 +139,7 @@
 	<@edit.accountSection />
 
 	<#if !resource.resourceType.project>
-	<@edit.resourceCreators '${resource.resourceType.label} Creators' authorshipProxies 'authorship' />
+	<@edit.resourceCreators '${rtLabel} Creators' authorshipProxies 'authorship' />
 	</#if>
 
 	<div id="citationInformation" class="well-alt"> 
@@ -196,9 +202,9 @@
 	<#if multipleUpload??>
 		<#-- if true -- we use the async file upload / otherwise we use the traditional file field -->
 		<#if multipleUpload>
-			<@edit.asyncFileUpload  uploadLabel="Attach ${resource.resourceType.label} Files" showMultiple=multipleUpload />
+			<@edit.asyncFileUpload  uploadLabel="Attach ${rtLabel} Files" showMultiple=multipleUpload />
 		<#else>
-			<@edit.upload "${resource.resourceType.label} file" />
+			<@edit.upload "${rtLabel} file" />
 		</#if>
 	</#if>
 
@@ -272,7 +278,10 @@
 
 
 	<#if !(hideCreditSection??)>
-	    <@edit.resourceCreators 'Individual and Institutional Roles' creditProxies 'credit'  />
+	    <@edit.resourceCreators 'Individual and Institutional Roles' creditProxies 'credit' >
+            <@edit._inheritsection checkboxId="cbInheritingCreditRoles" name='resource.inheritingIndividualAndInstitutionalCredit' />
+
+        </@edit.resourceCreators>
     </#if>
 	<@helptext.resourceCreator />
 
