@@ -100,9 +100,7 @@ label.error {display:block;}
 
 	<div class="row">
 	<div class="span5">
-	<#--
-		<@s.radio list="%{userAffiliations}" name="test" label="Affiliation / Interest" listKey="name()" listValue="getText(name())"/>
-		-->
+<#--		<@s.radio list="userAffiliations" name="test" label="Affiliation / Interest" listValue="label" /> -->
 	</div>
 	<div class="span5">
 	    <#if RPAEnabled>

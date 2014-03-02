@@ -5,9 +5,11 @@
     <include file="struts-local-settings.xml"/>
     <!-- performance enhancements -->
     <!-- freemarker cache -->
-    <!-- <constant name='struts.freemarker.templatesCache' value='true'/> -->
     <constant name="struts.freemarker.mru.max.strong.size" value="250"/>
-    <constant name="struts.freemarker.templatesCache.updateDelay" value="60000"/>
+    <!-- 
+    	set this in struts-local-settings.xml 
+	    <constant name="struts.freemarker.templatesCache.updateDelay" value="5000000"/>
+     -->
     <!-- javatemplates plugin, possible optimization for freemarker tags using
           the simple theme. it may only work if you're using basic JSP struts tags
           though, needs testing. -->
