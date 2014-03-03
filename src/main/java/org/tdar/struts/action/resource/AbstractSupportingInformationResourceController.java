@@ -23,7 +23,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.utils.MessageHelper;
 
 public abstract class AbstractSupportingInformationResourceController<R extends InformationResource> extends AbstractInformationResourceController<R> {
 

@@ -16,7 +16,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
@@ -61,7 +60,6 @@ import org.tdar.struts.data.oai.OAIVerb;
 import org.tdar.struts.data.oai.OaiErrorCode;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
-import org.tdar.utils.MessageHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

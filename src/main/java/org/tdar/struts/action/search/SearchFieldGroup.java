@@ -1,7 +1,6 @@
 package org.tdar.struts.action.search;
 
 import org.tdar.core.bean.HasLabel;
-import org.tdar.utils.MessageHelper;
 
 public enum SearchFieldGroup implements HasLabel {
 

@@ -1459,7 +1459,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     public boolean isValid() {
         if (isValidForController() == true) {
             if (getSubmitter() == null) {
-                throw new TdarValidationException(MessageHelper.getMessage("resource.submitter_required", getResourceType()));
+                throw new TdarValidationException("resource.submitter_required", getResourceType());
             }
             if (getDateCreated() == null) {
                 throw new TdarValidationException("resource.date_required", getResourceType());

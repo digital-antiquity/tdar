@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 

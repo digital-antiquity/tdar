@@ -37,10 +37,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarQuotaException;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
-
-import com.opensymphony.xwork2.TextProvider;
 
 /**
  * $Id$

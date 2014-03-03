@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.struts.data.Range;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 

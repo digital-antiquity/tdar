@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.utils.MessageHelper;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -72,10 +71,10 @@ public class CsvCodingSheetParser implements CodingSheetParser {
             throw new CodingSheetParserException(e);
         } catch (ArrayIndexOutOfBoundsException e) {
             logger.error("Invalid CSV format for coding sheets.", e);
-            throw new CodingSheetParserException(MessageHelper.getMessage("csvCodingSheetParser.could_not_parse_columns"), e);
+            throw new CodingSheetParserException("csvCodingSheetParser.could_not_parse_columns", e);
         }
         if (emptyBecauseOfParseIssues) {
-            throw new CodingSheetParserException(MessageHelper.getMessage("csvCodingSheetParser.could_not_parse_comma"));
+            throw new CodingSheetParserException("csvCodingSheetParser.could_not_parse_comma");
         }
         return codingRules;
     }

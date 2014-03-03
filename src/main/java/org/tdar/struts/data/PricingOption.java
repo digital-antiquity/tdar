@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.lang.ObjectUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.billing.BillingItem;
-import org.tdar.utils.MessageHelper;
 
 public class PricingOption implements Serializable {
 

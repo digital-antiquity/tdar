@@ -12,7 +12,6 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 

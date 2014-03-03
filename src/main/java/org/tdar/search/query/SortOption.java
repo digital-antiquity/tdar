@@ -16,7 +16,6 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.utils.MessageHelper;
 public enum SortOption {
     RELEVANCE(null, "Relevance", null, SortField.SCORE,false ),
     ID(null, "ID", QueryFieldNames.ID, SortField.INT, false),

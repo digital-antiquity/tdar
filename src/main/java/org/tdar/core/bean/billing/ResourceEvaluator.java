@@ -16,7 +16,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
 
 /*
  * This class is designed to help figure out what resources (files, resources, space) that a tDAR Resource is taking up.

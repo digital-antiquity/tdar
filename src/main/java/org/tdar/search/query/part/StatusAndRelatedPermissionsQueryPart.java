@@ -14,7 +14,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 

@@ -23,7 +23,6 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$

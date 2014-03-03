@@ -6,7 +6,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 

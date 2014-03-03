@@ -85,7 +85,7 @@ public class HttpsInterceptor implements Interceptor {
             response.sendRedirect(changeUrlProtocol("https", request));
         } else if (invocation.getAction() instanceof TdarActionSupport) {
             logger.warn("ERROR_HTTPS_ONLY");
-            ((TdarActionSupport) invocation.getAction()).addActionError(MessageHelper.getMessage("httpsInterceptor.error_https_only"));
+            ((TdarActionSupport) invocation.getAction()).addActionError(MessageHelper.getMessage("httpsInterceptor.error_https_only",invocation.getInvocationContext().getLocale()));
         }
 
         return TdarActionSupport.BAD_REQUEST;

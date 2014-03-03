@@ -10,7 +10,6 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 

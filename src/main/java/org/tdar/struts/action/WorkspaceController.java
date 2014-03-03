@@ -36,7 +36,6 @@ import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
 import org.tdar.struts.data.IntegrationDataResult;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 /**

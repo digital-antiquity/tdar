@@ -8,7 +8,7 @@ package org.tdar.core.exception;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public class TdarRuntimeException extends RuntimeException {
+public class TdarRuntimeException extends I18nRuntimeException {
 
     private static final long serialVersionUID = 6246686753761896569L;
 

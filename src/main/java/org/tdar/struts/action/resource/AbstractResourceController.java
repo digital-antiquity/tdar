@@ -75,7 +75,6 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
-import org.tdar.utils.MessageHelper;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;

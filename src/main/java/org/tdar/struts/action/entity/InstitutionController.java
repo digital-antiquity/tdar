@@ -12,7 +12,6 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.utils.MessageHelper;
 
 @Component
 @Scope("prototype")

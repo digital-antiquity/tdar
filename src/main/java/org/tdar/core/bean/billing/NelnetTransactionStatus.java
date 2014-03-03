@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.utils.MessageHelper;
 
 /**
  * Enum to track NelNet Transaction Status

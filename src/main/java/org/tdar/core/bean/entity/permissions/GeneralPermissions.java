@@ -9,7 +9,6 @@ package org.tdar.core.bean.entity.permissions;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin

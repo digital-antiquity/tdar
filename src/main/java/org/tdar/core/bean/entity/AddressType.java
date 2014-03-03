@@ -1,7 +1,6 @@
 package org.tdar.core.bean.entity;
 
 import org.tdar.core.bean.HasLabel;
-import org.tdar.utils.MessageHelper;
 
 /**
  * Enum for Type of Address

@@ -10,7 +10,6 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.utils.MessageHelper;
 
 //FIXME: There be dragons here!
 /**

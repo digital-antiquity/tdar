@@ -14,9 +14,6 @@ import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
-
-import com.opensymphony.xwork2.TextProvider;
 
 /**
  * an Activity + quantity for a financial transaction. Multiple activities may be associated with a single financial transaction. 

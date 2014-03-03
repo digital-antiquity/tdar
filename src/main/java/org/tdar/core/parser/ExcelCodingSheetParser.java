@@ -18,7 +18,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -75,10 +74,10 @@ public class ExcelCodingSheetParser implements CodingSheetParser {
             throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_missing_fields",e);
         } catch (IOException e) {
             logger.error("Couldn't construct POI Workbook from input stream", e);
-            throw new CodingSheetParserException(MessageHelper.getMessage("excelCodingSheetParser.could_not_parse_poi"), e);
+            throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_poi", e);
         } catch (InvalidFormatException exception) {
             logger.error("Couldn't create POI Workbook from input stream", exception);
-            throw new CodingSheetParserException(MessageHelper.getMessage("excelCodingSheetParser.could_not_parse_poi"), exception);
+            throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_poi", exception);
         }
         return codingRules;
     }

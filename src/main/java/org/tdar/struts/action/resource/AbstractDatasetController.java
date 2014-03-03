@@ -37,7 +37,6 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.Pair;
 

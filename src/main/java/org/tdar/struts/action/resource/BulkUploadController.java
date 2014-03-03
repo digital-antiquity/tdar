@@ -31,7 +31,6 @@ import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 /**

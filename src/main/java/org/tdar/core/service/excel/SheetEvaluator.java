@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
-import org.tdar.utils.MessageHelper;
 
 /*
  * The goal of this class is to evaluate the beginning of a worksheet and try and figure out where the

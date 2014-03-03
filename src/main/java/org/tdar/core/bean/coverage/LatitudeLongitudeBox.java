@@ -31,9 +31,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -293,7 +293,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public void setMinimumLatitude(Double minimumLatitude) {
         if (minimumLatitude != null && !isValidLatitude(minimumLatitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("latLong.lat_invalid"));
+            throw new TdarValidationException("latLong.lat_invalid");
         }
         setMiny(minimumLatitude);
     }
@@ -318,7 +318,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public void setMaximumLatitude(Double maximumLatitude) {
         if (maximumLatitude != null & !isValidLatitude(maximumLatitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("latLong.lat_invalid"));
+            throw new TdarValidationException("latLong.lat_invalid");
         }
         setMaxy(maximumLatitude);
     }
@@ -343,7 +343,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public void setMinimumLongitude(Double minimumLongitude) {
         if (minimumLongitude != null && !isValidLongitude(minimumLongitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("latLong.long_invalid"));
+            throw new TdarValidationException("latLong.long_invalid");
         }
         setMinx(minimumLongitude);
     }
@@ -373,7 +373,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public void setMaximumLongitude(Double maximumLongitude) {
         if (maximumLongitude != null && !isValidLongitude(maximumLongitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("latLong.long_invalid"));
+            throw new TdarValidationException("latLong.long_invalid");
         }
         setMaxx(maximumLongitude);
     }

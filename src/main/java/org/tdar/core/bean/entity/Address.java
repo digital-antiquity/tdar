@@ -17,7 +17,6 @@ import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
 
 /**
  * Represents a physical address for a person or institution.
@@ -139,22 +138,22 @@ public class Address extends Base implements Persistable, Validatable {
     @XmlTransient
     public boolean isValid() {
         if (StringUtils.isBlank(street1)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.street_required"));
+            throw new TdarValidationException("address.street_required");
         }
         if (StringUtils.isBlank(city)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.city_required"));
+            throw new TdarValidationException("address.city_required");
         }
         if (StringUtils.isBlank(state)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.state_required"));
+            throw new TdarValidationException("address.state_required");
         }
         if (StringUtils.isBlank(country)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.country_required"));
+            throw new TdarValidationException("address.country_required");
         }
         if (StringUtils.isBlank(postal)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.postal_required"));
+            throw new TdarValidationException("address.postal_required");
         }
         if (type == null) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.type_required"));
+            throw new TdarValidationException("address.type_required");
         }
         return true;
     }

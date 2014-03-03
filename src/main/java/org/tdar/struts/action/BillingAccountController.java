@@ -35,7 +35,6 @@ import org.tdar.core.service.GenericService;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.utils.MessageHelper;
 
 @Component
 @Scope("prototype")

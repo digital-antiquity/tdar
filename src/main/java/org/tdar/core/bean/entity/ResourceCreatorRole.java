@@ -12,7 +12,6 @@ import java.util.Set;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$

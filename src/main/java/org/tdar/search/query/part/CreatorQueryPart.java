@@ -15,7 +15,6 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.data.ResourceCreatorProxy;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 
