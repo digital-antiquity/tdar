@@ -5,6 +5,9 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -18,6 +21,8 @@ public class MessageHelper implements Serializable, TextProvider {
     private static final long serialVersionUID = 3633016404256878510L;
     private static MessageHelper instance;
     private static ResourceBundle bundle;
+
+    private static Logger logger = LoggerFactory.getLogger(MessageHelper.class);
 
     protected MessageHelper() {
        // Exists only to defeat instantiation.
@@ -44,8 +49,16 @@ public class MessageHelper implements Serializable, TextProvider {
     /*
      * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
      */
-    public static String getMessage(String key, Object ... formatKeys) {
-        return MessageFormat.format(getMessage(key),formatKeys);
+    public static String getMessage(String lookup, Object ... formatKeys) {
+        String key = lookup;
+        if (!StringUtils.contains(lookup, " ")) {
+            key = getMessage(lookup);
+            if (StringUtils.isBlank(key)) {
+                logger.error("looked for localization key: {}, but not found",lookup);
+                key = lookup;
+            }
+        }
+        return MessageFormat.format(key,formatKeys);
     }
 
     private ResourceBundle getBundle() {
