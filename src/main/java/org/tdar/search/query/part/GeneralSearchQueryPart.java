@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.struts.action.search.SearchFieldType;
 
+import com.opensymphony.xwork2.TextProvider;
+
 public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     protected static final float TITLE_BOOST = 6f;
     protected static final float CREATOR_BOOST = 5f;
@@ -96,17 +98,17 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         String fields = StringUtils.join(getFieldValues(), ", ");
         if (StringUtils.isBlank(fields)) {
             return "";
         }
-        return SearchFieldType.ALL_FIELDS.getLabel() + ": " + fields;
+        return provider.getText(SearchFieldType.ALL_FIELDS.name()) + ": " + fields;
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
 }

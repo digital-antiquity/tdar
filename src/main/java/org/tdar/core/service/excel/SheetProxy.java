@@ -95,7 +95,7 @@ public class SheetProxy implements Serializable {
 
     public void setName(String name) {
         if (workbook != null && workbook.getSheet(name) != null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("sheetProxy.workbook_name_already_exists", name));
+            throw new TdarRecoverableRuntimeException("sheetProxy.workbook_name_already_exists", name);
         }
         this.name = name;
     }

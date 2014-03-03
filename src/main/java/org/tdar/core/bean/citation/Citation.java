@@ -18,6 +18,8 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * $Id$
  * 

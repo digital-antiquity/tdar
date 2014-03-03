@@ -41,7 +41,7 @@ public class InformationResourceFileVersionDao extends HibernateBase<Information
 
     public void delete(InformationResourceFileVersion file, boolean purge) {
         if (file.isUploadedOrArchival()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.cannot_delete_archival"));
+            throw new TdarRecoverableRuntimeException("error.cannot_delete_archival");
         }
         if (purge) {
             purgeFromFilestore(file);

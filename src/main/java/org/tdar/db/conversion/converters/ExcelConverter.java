@@ -93,7 +93,7 @@ public class ExcelConverter extends DatasetConverter.Base {
         } catch (RuntimeException rex) {
             // if this is a "missing rows" issue, the user might be able to work around it by resaving the excel spreadsheet;
             if (rex.getMessage().equals(MessageHelper.getMessage("excelConverter.poi_error_missing_rows"))) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("excelConverter.error_corrupt_file_try_resaving"));
+                throw new TdarRecoverableRuntimeException("excelConverter.error_corrupt_file_try_resaving");
             } else {
                 throw rex;
             }

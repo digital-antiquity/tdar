@@ -102,7 +102,7 @@ public class SheetEvaluator {
     }
 
     private void throwTdarRecoverableRuntimeException(int rowNumber, short offendingColumnIndex, int columnNameBound, String sheetName) {
-        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("sheetEvaluator.row_has_more_columns",rowNumber, offendingColumnIndex, columnNameBound, sheetName));
+        throw new TdarRecoverableRuntimeException("sheetEvaluator.row_has_more_columns",rowNumber, offendingColumnIndex, columnNameBound, sheetName);
     }
 
     private int evaluateForBlankCells(Row row, int endAt, int cellCount) {
@@ -122,7 +122,7 @@ public class SheetEvaluator {
         try {
 
             if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
-                     throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("sheetEvaluator.parse_excel_error", cell.getRowIndex() +1, cell.getColumnIndex()+1));
+                     throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error", cell.getRowIndex() +1, cell.getColumnIndex()+1);
             }
 
             return formatter.formatCellValue(cell, evaluator);
@@ -136,7 +136,7 @@ public class SheetEvaluator {
                 case Cell.CELL_TYPE_BOOLEAN:
                     return Boolean.toString(cell.getBooleanCellValue());
                 default:
-                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("sheetEvaluator.parse_error", cell.getRowIndex() +1, cell.getColumnIndex()+1));
+                    throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_error", cell.getRowIndex() +1, cell.getColumnIndex()+1);
             }
         } catch (RuntimeException re) {
             throw new TdarRecoverableRuntimeException(String.format("there was a problem processing your dataset at row: %s column %s",

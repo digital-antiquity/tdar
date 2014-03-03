@@ -340,7 +340,7 @@ public class ReflectionService {
             Class cls = Class.forName(beanClassName);
             logger.trace("{} - {} ", cls.getSimpleName(), cls);
             if (persistableLookup.containsKey(cls.getSimpleName())) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.jaxb_mapping", cls.getSimpleName()));
+                throw new TdarRecoverableRuntimeException("reflectionService.jaxb_mapping", cls.getSimpleName());
             }
             persistableLookup.put(cls.getSimpleName(), cls);
         }
@@ -638,7 +638,7 @@ public class ReflectionService {
                     BeanUtils.setProperty(beanToProcess, name, Enum.valueOf(propertyType, value));
                 } catch (IllegalArgumentException e) {
                     logger.debug("cannot set property:", e);
-                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.not_valid_value", value, name), e);
+                    throw new TdarRecoverableRuntimeException("reflectionService.not_valid_value", e, value, name);
                 }
             } else {
                 if (Integer.class.isAssignableFrom(propertyType)) {
@@ -648,7 +648,7 @@ public class ReflectionService {
                             value = new Integer((int) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_integer", name, value));
+                        throw new TdarRecoverableRuntimeException("reflectionService.expecting_integer", name, value);
                     }
                 }
                 if (Long.class.isAssignableFrom(propertyType)) {
@@ -658,14 +658,14 @@ public class ReflectionService {
                             value = new Long((long) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_big_integer", name, value));
+                        throw new TdarRecoverableRuntimeException("reflectionService.expecting_big_integer", name, value);
                     }
                 }
                 if (Float.class.isAssignableFrom(propertyType)) {
                     try {
                         Float.parseFloat(value);
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_floating_point", name, value));
+                        throw new TdarRecoverableRuntimeException("reflectionService.expecting_floating_point", name, value);
                     }
                 }
                 BeanUtils.setProperty(beanToProcess, name, value);
@@ -675,7 +675,7 @@ public class ReflectionService {
                 throw (TdarRecoverableRuntimeException) e1;
             }
             logger.debug("error processing bulk upload: {}", e1);
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("reflectionService.expecting_floating_generic", name, value));
+            throw new TdarRecoverableRuntimeException("reflectionService.expecting_floating_generic", name, value);
         }
     }
 

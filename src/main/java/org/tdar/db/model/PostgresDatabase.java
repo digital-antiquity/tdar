@@ -190,14 +190,14 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             // cleanup
         } catch (SQLException e) {
             logger.warn("sql exception", e.getNextException());
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.prepared_statement_fail"), e);
+            throw new TdarRecoverableRuntimeException("postgresDatabase.prepared_statement_fail", e);
         } finally {
             try {
                 statement.clearBatch();
                 statement.getConnection().close();
                 preparedStatementMap.remove(dataTable);
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.could_not_close"), e);
+                throw new TdarRecoverableRuntimeException("postgresDatabase.could_not_close", e);
             }
         }
     }
@@ -437,7 +437,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         Iterator<DataTableColumn> iterator = dataTable.getDataTableColumns().iterator();
         int i = 1;
         if (dataTable.getDataTableColumns().size() > MAX_ALLOWED_COLUMNS) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.datatable_to_long"));
+            throw new TdarRecoverableRuntimeException("postgresDatabase.datatable_to_long");
         }
 
         while (iterator.hasNext()) {
@@ -558,8 +558,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                         java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
                         preparedStatement.setTimestamp(i, sqlDate);
                     } else {
-                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.cannot_parse_date",
-                                colValue.toString(), column.getName(), column.getDataTable().getName()));
+                        throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_parse_date",
+                                colValue.toString(), column.getName(), column.getDataTable().getName());
                     }
                     break;
                 default:
@@ -773,7 +773,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         String selectSql = generateModernOntologyEnhancedSelect(table, proxy);
 
         if (!selectSql.toLowerCase().contains(" where ")) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.integration_query_broken"));
+            throw new TdarRecoverableRuntimeException("postgresDatabase.integration_query_broken");
         }
 
         executeUpdateOrDelete(selectSql);

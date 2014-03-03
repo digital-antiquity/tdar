@@ -134,7 +134,7 @@ public class GenericKeywordService extends GenericService {
             try {
                 keyword = cls.newInstance();
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.could_not_create_class", cls));
+                throw new TdarRecoverableRuntimeException("error.could_not_create_class", cls);
             }
             keyword.setLabel(label);
             genericKeywordDao.save(keyword);

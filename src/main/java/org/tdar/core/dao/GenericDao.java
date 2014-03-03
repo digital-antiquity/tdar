@@ -389,7 +389,7 @@ public class GenericDao {
         
         if (entity  instanceof InformationResourceFileVersion) {
             if (((InformationResourceFileVersion) entity).isUploadedOrArchival()) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.cannot_delete_archival"));
+                throw new TdarRecoverableRuntimeException("error.cannot_delete_archival");
             }
         }
 

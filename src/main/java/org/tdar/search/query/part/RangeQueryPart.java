@@ -18,6 +18,8 @@ import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.struts.data.Range;
 import org.tdar.utils.MessageHelper;
 
+import com.opensymphony.xwork2.TextProvider;
+
 public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
 
@@ -101,26 +103,26 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         String fmt = "%s is %s";
         String op = " " + getOperator().toString().toLowerCase() + " ";
         List<String> valueDescriptions = new ArrayList<String>();
         for (Range<C> range : getFieldValues()) {
-            valueDescriptions.add(getDescription(range));
+            valueDescriptions.add(getDescription(provider, range));
         }
         return String.format(fmt, descriptionLabel, StringUtils.join(valueDescriptions, op));
     }
 
-    private String getDescription(Range<C> singleValue) {
+    private String getDescription(TextProvider provider, Range<C> singleValue) {
 
-        String fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_between");
+        String fmt = provider.getText("rangeQueryPart.fmt_description_value_between");
         C start = singleValue.getStart();
         C end = singleValue.getEnd();
         if (isBlank(start) || isBlank(end)) {
             if (isBlank(start)) {
-                fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_less");
+                fmt = provider.getText("rangeQueryPart.fmt_description_value_less");
             } else {
-                fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_greater");
+                fmt = provider.getText("rangeQueryPart.fmt_description_value_greater");
             }
         }
         return MessageFormat.format(fmt, start, end);

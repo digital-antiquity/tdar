@@ -156,7 +156,7 @@ public class EZIDDao implements ExternalIDProvider {
         if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
             logger.error("StatusCode:{}", response.getStatusLine().getStatusCode());
             logger.trace(result);
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("ezidDao.could_not_connect",result , authenticationRequest.getRequestLine()));
+            throw new TdarRecoverableRuntimeException("ezidDao.could_not_connect",result , authenticationRequest.getRequestLine().toString());
         }
         recievedEntity.consumeContent();
         return result;
@@ -244,7 +244,7 @@ public class EZIDDao implements ExternalIDProvider {
 
         logger.trace(result);
         if (!StringUtils.containsIgnoreCase(result, SUCCESS)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("ezidDao.could_not_create_doi",result));
+            throw new TdarRecoverableRuntimeException("ezidDao.could_not_create_doi",result);
         }
         return typeMap;
     }

@@ -12,6 +12,8 @@ import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * 
  * $Id$
@@ -53,13 +55,13 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
     };
 
     @Override
-    public String getDescription() {
-        return MessageHelper.getMessage("temporalQueryPart.date_between", getFieldValues().get(0).toString());
+    public String getDescription(TextProvider provider) {
+        return provider.getText("temporalQueryPart.date_between", getFieldValues().get(0).toString());
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     @Override

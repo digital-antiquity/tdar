@@ -179,7 +179,7 @@ public class OwlOntologyConverter {
             }
 
         } catch (IOException e) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("owlOntologyConverter.error_parsing"));
+            throw new TdarRecoverableRuntimeException("owlOntologyConverter.error_parsing");
         } finally {
             IOUtils.closeQuietly(reader);
         }
@@ -194,7 +194,7 @@ public class OwlOntologyConverter {
             logger.debug(result);
             return result;
         } catch (IOException e) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("owlOntologyConverter.error_writing"));
+            throw new TdarRecoverableRuntimeException("owlOntologyConverter.error_writing");
         }
     }
 
@@ -205,7 +205,7 @@ public class OwlOntologyConverter {
     public void testOntologyNodesUnique(List<OntologyNode> nodeList, Set<String> uniqueSet) {
         logger.debug("unique: {} incoming: {}", uniqueSet.size(), nodeList.size());
         if (nodeList.size() != uniqueSet.size()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("owlOntologyConverter.node_names_unique",nodeList.size(), uniqueSet.size()));
+            throw new TdarRecoverableRuntimeException("owlOntologyConverter.node_names_unique",nodeList.size(), uniqueSet.size());
         }
     }
 

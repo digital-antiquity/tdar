@@ -17,6 +17,8 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.MessageHelper;
 
+import com.opensymphony.xwork2.TextProvider;
+
 public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQueryPart<C> {
 
     private List<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
@@ -28,7 +30,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
         setOperator(Operator.OR);
         setActualClass(creatorClass);
         setFieldName(fieldName);
-        setDisplayName(MessageHelper.getMessage("creatorQueryPart.label"));
+//        setDisplayName(getMessage("creatorQueryPart.label"));
         for (int i = 0; i < proxyList.size(); i++) {
             try {
                 ResourceCreatorProxy proxy = proxyList.get(i);
@@ -42,7 +44,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                     for (Creator creator_ : creators) {
                         if (Persistable.Base.isTransient(creator_)) {
                             // user entered a complete-ish creator record but autocomplete callback did fire successfully
-                            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("creatorQueryPart.use_autocomplete", creator_));
+                            throw new TdarRecoverableRuntimeException("creatorQueryPart.use_autocomplete", creator_.toString());
                         }
                         this.roles.add(rc.getRole());
                         this.getFieldValues().add((C) creator_);
@@ -126,7 +128,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
     }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         StringBuilder names = new StringBuilder();
         for (int i = 0; i < getFieldValues().size(); i++) {
             Creator creator = getFieldValues().get(i);
@@ -141,12 +143,12 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                 }
             }
         }
-        return MessageHelper.getMessage("creatorQueryPart.with_creators", names);
+        return provider.getText("creatorQueryPart.with_creators", names.toString());
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
 }

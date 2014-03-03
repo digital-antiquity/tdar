@@ -33,6 +33,8 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * $Id$
  * 
@@ -160,7 +162,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
                 role = creatorRole.name();
             }
             if (isNullOrTransient(creatorToFormat)) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCreator.undefined_creator_id"));
+                throw new TdarRecoverableRuntimeException("resourceCreator.undefined_creator_id");
             }
             toReturn = String.format("%s_%s_%s", code, creatorToFormat.getId(), role).toLowerCase();
         }

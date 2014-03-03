@@ -9,6 +9,8 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * $Id$
  * 
@@ -125,16 +127,16 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         return generateQueryString();
     }
 
-    private String getDescription(boolean escape) {
+    private String getDescription(TextProvider provider, boolean escape) {
         if (!descriptionVisible)
             return "";
         List<String> partDescriptions = new ArrayList<String>();
         for (QueryPart<?> part : getParts()) {
             String description = "";
             if (escape) {
-                description = part.getDescriptionHtml();
+                description = part.getDescriptionHtml(provider);
             } else {
-                description = part.getDescription();
+                description = part.getDescription(provider);
             }
 
             // filter out blank descriptions
@@ -158,13 +160,13 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
     }
 
     @Override
-    public String getDescription() {
-        return getDescription(false);
+    public String getDescription(TextProvider provider) {
+        return getDescription(provider, false);
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return getDescription(true);
+    public String getDescriptionHtml(TextProvider provider) {
+        return getDescription(provider, true);
     }
 
     public int size() {

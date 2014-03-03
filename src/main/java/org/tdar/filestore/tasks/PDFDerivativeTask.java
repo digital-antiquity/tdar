@@ -39,7 +39,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         try {
             task.run(vers);
         } catch (Throwable e) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("pdfDerivativeTask.processing_error"), e);
+            throw new TdarRecoverableRuntimeException("pdfDerivativeTask.processing_error", e);
         }
     }
 
@@ -71,7 +71,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 }
             }
         } catch (Throwable t) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("pdfDerivativeTask.processing_error"), t);
+            throw new TdarRecoverableRuntimeException("pdfDerivativeTask.processing_error", t);
         }
     }
 
@@ -136,7 +136,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 getLogger().info("access permissions: " + document.getCurrentAccessPermission());
                 getLogger().info("security manager: " + document.getSecurityHandler());
                 getWorkflowContext().setErrorFatal(true);
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("pdfDerivativeTask.encryption_warning"));
+                throw new TdarRecoverableRuntimeException("pdfDerivativeTask.encryption_warning");
             }
 
             // try {

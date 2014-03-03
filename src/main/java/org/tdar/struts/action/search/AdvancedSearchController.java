@@ -604,14 +604,14 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     public String getSearchPhrase() {
         StringBuilder sb = new StringBuilder();
-        String searchingFor = topLevelQueryPart.getDescription();
+        String searchingFor = topLevelQueryPart.getDescription(this);
         if (groups.isEmpty() || StringUtils.isBlank(searchingFor)) {
             sb.append(getText("advancedSearchController.showing_all_resources"));
         } else {
             sb.append(searchingFor);
         }
         // THIS SHOULD BE LESS BRITTLE THAN CALLING isEmpty()
-        String narrowedBy = reservedQueryPart.getDescription();
+        String narrowedBy = reservedQueryPart.getDescription(this);
         if (narrowedBy != null && StringUtils.isNotBlank(narrowedBy.trim())) {
             sb.append(getText("advancedSearchController.narrowed_by"));
             sb.append(narrowedBy);

@@ -83,7 +83,7 @@ public class ImageThumbnailTask extends AbstractTask {
     public void processImage(InformationResourceFileVersion version, File sourceFile) {
         if (sourceFile == null || !sourceFile.exists()) {
             getWorkflowContext().setErrorFatal(true);
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.file_not_found"));
+            throw new TdarRecoverableRuntimeException("error.file_not_found");
         }
         String filename = sourceFile.getName();
         getLogger().debug("sourceFile: " + sourceFile);
@@ -140,7 +140,7 @@ public class ImageThumbnailTask extends AbstractTask {
                 createJpegDerivative(version, ijSource, filename, SMALL, false);
             } catch (Throwable e) {
                 getLogger().error("Failed to create jpeg derivative", e);
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("imageThumbnailTask.processingError"), e);
+                throw new TdarRecoverableRuntimeException("imageThumbnailTask.processingError", e);
             }
         }
     }

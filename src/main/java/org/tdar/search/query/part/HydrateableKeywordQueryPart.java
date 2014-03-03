@@ -10,6 +10,8 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.utils.MessageHelper;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * 
  * $Id$
@@ -27,7 +29,6 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
     private static final String LABEL_KEYWORD = ".labelKeyword";
     private static final String LABEL = ".label";
     private static final String INFORMATION_RESOURCES = "informationResources.";
-    private String descriptionLabel = MessageHelper.getMessage("keywordQueryPart.label");
     private boolean includeChildren = true;
 
     public HydrateableKeywordQueryPart(String fieldName, Class<K> originalClass, List<K> fieldValues_) {
@@ -73,23 +74,19 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
         return topLevel.generateQueryString();
     }
 
-    public String getDescriptionLabel() {
-        return descriptionLabel;
-    }
-
-    public void setDescriptionLabel(String label) {
-        descriptionLabel = label;
+    public String getDescriptionLabel(TextProvider provider) {
+        return provider.getText("keywordQueryPart.label");
     }
 
     @Override
-    public String getDescription() {
-        String strValues = StringUtils.join(getFieldValues(), getDescriptionOperator());
-        return String.format("%s: \"%s\"", descriptionLabel, strValues);
+    public String getDescription(TextProvider provider) {
+        String strValues = StringUtils.join(getFieldValues(), getDescriptionOperator(provider));
+        return String.format("%s: \"%s\"", getDescriptionLabel(provider), strValues);
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     public boolean isIncludeChildren() {

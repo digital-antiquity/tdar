@@ -197,7 +197,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
         logger.trace("{}", node);
         
         if (StringUtils.isBlank(node.getIri())) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("owlApiHierarchyParser.blank_iri", node));
+            throw new TdarRecoverableRuntimeException("owlApiHierarchyParser.blank_iri", node);
         }
         node.setIntervalEnd(Integer.valueOf(index));
         return index + 1;

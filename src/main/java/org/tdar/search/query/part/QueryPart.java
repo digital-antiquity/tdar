@@ -2,6 +2,8 @@ package org.tdar.search.query.part;
 
 import org.apache.lucene.queryParser.QueryParser.Operator;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * 
  * $Id$
@@ -20,9 +22,9 @@ public interface QueryPart<T> {
 
     void setDescriptionVisible(boolean visible);
 
-    String getDescription();
+    String getDescription(TextProvider provider);
 
-    String getDescriptionHtml();
+    String getDescriptionHtml(TextProvider provider);
 
     boolean isEmpty();
 

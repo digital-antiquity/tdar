@@ -16,12 +16,14 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 
-public class StatusQueryPart extends FieldQueryPart<Status> {
+import com.opensymphony.xwork2.TextProvider;
+
+public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status> {
 
     private Person person;
     private TdarGroup tdarGroup;
 
-    public StatusQueryPart(Collection<Status> statuses, Person person, TdarGroup tdarGroup) {
+    public StatusAndRelatedPermissionsQueryPart(Collection<Status> statuses, Person person, TdarGroup tdarGroup) {
         this.setPerson(person);
         this.setTdarGroup(tdarGroup);
         add(statuses.toArray(new Status[0]));
@@ -50,8 +52,8 @@ public class StatusQueryPart extends FieldQueryPart<Status> {
     }
 
     @Override
-    public String getDescription() {
-        String fmt = MessageHelper.getMessage("statusQueryPart.resource_is");
+    public String getDescription(TextProvider provider) {
+        String fmt = provider.getText("statusQueryPart.resource_is");
         List<String> labels = new ArrayList<String>();
         boolean seenActive = false;
         for (Status status : getFieldValues()) {
@@ -65,12 +67,12 @@ public class StatusQueryPart extends FieldQueryPart<Status> {
             return "";
         }
 
-        return String.format(fmt, StringUtils.join(labels, MessageHelper.getMessage("statusQueryPart.or")));
+        return String.format(fmt, StringUtils.join(labels, provider.getText("statusQueryPart.or")));
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     public Person getPerson() {

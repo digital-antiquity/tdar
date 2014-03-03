@@ -35,7 +35,7 @@ public class InformationResourceFileVersionService extends ServiceInterface.Type
     @Transactional(readOnly = false)
     public void delete(InformationResourceFileVersion file, boolean purge) {
         if (file.isArchival() || file.isUploaded()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("informationResourceFileVersion.cannot_delete_original"));
+            throw new TdarRecoverableRuntimeException("informationResourceFileVersion.cannot_delete_original");
         }
         getDao().delete(file, purge);
     }

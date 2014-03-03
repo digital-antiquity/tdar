@@ -8,12 +8,20 @@ public class TdarValidationException extends TdarRecoverableRuntimeException {
         super(message);
     }
 
+    public TdarValidationException(String key, Object... values) {
+        super(key, values);
+    }
+    
     public TdarValidationException() {
         super();
     }
 
     public TdarValidationException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public TdarValidationException(String message, Throwable cause, Object ... values) {
+        super(message, cause, values);
     }
 
     public TdarValidationException(Throwable cause) {

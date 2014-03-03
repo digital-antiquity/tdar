@@ -26,7 +26,7 @@ public class CharAnalyzer implements ColumnAnalyzer {
         if ("".equals(value))
             return true;
         if (value.matches(EXCEL_BAD_REGEX)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("charAnalyzer.excel_data_error"));
+            throw new TdarRecoverableRuntimeException("charAnalyzer.excel_data_error");
         }
         if (value.length() > len) {
             len = value.length();

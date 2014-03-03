@@ -1462,7 +1462,7 @@ public class Resource extends JsonModel.Base implements Persistable,
                 throw new TdarValidationException(MessageHelper.getMessage("resource.submitter_required", getResourceType()));
             }
             if (getDateCreated() == null) {
-                throw new TdarValidationException(MessageHelper.getMessage("resource.date_required", getResourceType()));
+                throw new TdarValidationException("resource.date_required", getResourceType());
             }
             return true;
         }
@@ -1473,10 +1473,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
-            throw new TdarValidationException(MessageHelper.getMessage("resource.title", getResourceType()));
+            throw new TdarValidationException("resource.title", getResourceType());
         }
         if (StringUtils.isEmpty(getDescription())) {
-            throw new TdarValidationException(MessageHelper.getMessage("resource.description", getResourceType()));
+            throw new TdarValidationException("resource.description", getResourceType());
         }
         return true;
     }

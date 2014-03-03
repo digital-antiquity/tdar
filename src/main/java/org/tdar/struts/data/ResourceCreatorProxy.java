@@ -129,7 +129,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value="NP_NULL_ON_SOME_PATH", justification="ignoring null derefernece because findbugs is not paying attention to the null-check above")
     private CreatorType determineActualCreatorType() {
         if (institution == null && person == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCreatorProxy.err_determine_creator_insufficient_info"));
+            throw new TdarRecoverableRuntimeException("resourceCreatorProxy.err_determine_creator_insufficient_info");
         }
         boolean hasNoPersistableValues = institution.hasNoPersistableValues();
         if (hasNoPersistableValues && person.hasNoPersistableValues()) {

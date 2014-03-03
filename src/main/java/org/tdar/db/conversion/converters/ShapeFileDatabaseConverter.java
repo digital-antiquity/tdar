@@ -164,7 +164,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             }
         } catch (Exception e) {
             logger.error("could not process shapefile: {}", e);
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("shapeFileConveter.corrupt"));
+            throw new TdarRecoverableRuntimeException("shapeFileConveter.corrupt");
         } finally {
             iterator.close();
             dataStore.dispose();

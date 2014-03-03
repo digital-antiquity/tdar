@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -13,7 +14,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.ObjectUtils;
-import javax.persistence.Index;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.Field;
@@ -184,7 +184,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         double add = 0;
 
         if (num1 == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("latLong.one_null"));
+            throw new TdarRecoverableRuntimeException("latLong.one_null");
         }
         // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
         Double numTwo = (num2 != null) ? num2: num1 + salt / 2;

@@ -40,6 +40,8 @@ import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * $Id$
  * 
@@ -396,7 +398,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
         setSpaceUsedInBytes(getSpaceUsedInBytes() + endingEvaluator.getSpaceUsedInBytes());
         if (status != AccountAdditionStatus.CAN_ADD_RESOURCE) {
-            throw new TdarQuotaException(MessageHelper.getMessage("account.overdrawn"), status);
+            throw new TdarQuotaException("account.overdrawn", status);
         }
     }
 

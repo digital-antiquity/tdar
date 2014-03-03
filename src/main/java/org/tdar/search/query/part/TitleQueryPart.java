@@ -8,6 +8,8 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 
+import com.opensymphony.xwork2.TextProvider;
+
 public class TitleQueryPart extends FieldQueryPart<String> {
 
     private static final float TITLE_BOOST = 6f;
@@ -76,13 +78,13 @@ public class TitleQueryPart extends FieldQueryPart<String> {
     }
 
     @Override
-    public String getDescription() {
-        return MessageHelper.getMessage("titleQueryPart.description", StringUtils.join(getFieldValues(),";"));
+    public String getDescription(TextProvider provider) {
+        return provider.getText("titleQueryPart.description", StringUtils.join(getFieldValues(),";"));
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     public String getPrefix() {

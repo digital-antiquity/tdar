@@ -108,7 +108,7 @@ public class AndsPidsDao implements ExternalIDProvider {
                 throw new TdarRecoverableRuntimeException(message);
             }
         } catch (IllegalStateException | IllegalArgumentException | XPathExpressionException | ParserConfigurationException | SAXException e) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("andsPidDao.create_fail",resourceUrl), e);
+            throw new TdarRecoverableRuntimeException("andsPidDao.create_fail", e,resourceUrl);
         }
         return typeMap;
     }
@@ -140,7 +140,7 @@ public class AndsPidsDao implements ExternalIDProvider {
             }
         } catch (Exception e) {
             logger.debug("could not modify handle for resource: {}", resourceUrl);
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("andsPidDao.update_fail",resourceUrl), e);
+            throw new TdarRecoverableRuntimeException("andsPidDao.update_fail", e,resourceUrl);
         }
         return typeMap;
     }
@@ -155,7 +155,7 @@ public class AndsPidsDao implements ExternalIDProvider {
                 pidsClient.deleteValueByIndex(handle, 1);
         } catch (Exception e) {
             logger.debug("could not delete handle for resource: {}", resourceUrl);
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("andsPidDao.delete_fail",resourceUrl), e);
+            throw new TdarRecoverableRuntimeException("andsPidDao.delete_fail", e,resourceUrl);
         }
         return typeMap;
     }

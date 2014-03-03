@@ -179,13 +179,13 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                     break;
                 case USER_CHOICE_2:
                     if (!NelnetTransactionItem.getUserIdKey().equals(item.getKey())) {
-                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("nelNetTransactionRequestTemplate.user_id_key_changed"));
+                        throw new TdarRecoverableRuntimeException("nelNetTransactionRequestTemplate.user_id_key_changed");
                     }
                     value = invoice.getOwner().getId().toString();
                     break;
                 case USER_CHOICE_3:
                     if (!NelnetTransactionItem.getInvoiceIdKey().equals(item.getKey())) {
-                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("nelNetTransactionRequestTemplate.invoice_id_key_changed"));
+                        throw new TdarRecoverableRuntimeException("nelNetTransactionRequestTemplate.invoice_id_key_changed");
                     }
                     value = invoice.getId().toString();
                     break;

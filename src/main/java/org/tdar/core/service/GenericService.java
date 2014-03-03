@@ -207,7 +207,7 @@ public class GenericService {
     @Transactional(readOnly = true)
     public <P extends Persistable> List<P> populateSparseObjectsById(List<P> sparseObjects, Class<?> cls) {
         if (!DeHydratable.class.isAssignableFrom(cls)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.not_implemented"));
+            throw new TdarRecoverableRuntimeException("error.not_implemented");
         }
         // get a unique set of Ids
         Map<Long, P> ids = Persistable.Base.createIdMap(sparseObjects);

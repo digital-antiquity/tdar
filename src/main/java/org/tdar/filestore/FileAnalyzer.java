@@ -103,7 +103,7 @@ public class FileAnalyzer {
             if (wf == null) {
                 wf = w;
             } else if (w != null && wf.getClass() != w.getClass()) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("filestore.file_version_null"));
+                throw new TdarRecoverableRuntimeException("filestore.file_version_null");
             }
         }
         return wf;
@@ -111,7 +111,7 @@ public class FileAnalyzer {
 
     public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
         if (informationResourceFileVersions == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("filestore.file_version_null"));
+            throw new TdarRecoverableRuntimeException("filestore.file_version_null");
         }
         Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null) {

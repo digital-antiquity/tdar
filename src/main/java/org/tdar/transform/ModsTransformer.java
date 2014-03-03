@@ -445,7 +445,7 @@ public abstract class ModsTransformer<R extends Resource> implements
     public static ModsDocument transformAny(Resource resource) {
         ResourceType resourceType = ResourceType.fromClass(resource.getClass());
         if (resourceType == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("transformer.unsupported_type"));
+            throw new TdarRecoverableRuntimeException("transformer.unsupported_type");
         }
         switch (resourceType) {
             case CODING_SHEET:
@@ -474,7 +474,7 @@ public abstract class ModsTransformer<R extends Resource> implements
                 break;
         }
 
-        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("transformer.no_mods_transformer", resource.getClass()));
+        throw new TdarRecoverableRuntimeException("transformer.no_mods_transformer", resource.getClass());
     }
 
 }

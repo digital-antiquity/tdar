@@ -8,7 +8,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.Range;
+
 import javax.persistence.Index;
+
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
@@ -21,6 +23,8 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * $Id$

@@ -647,17 +647,17 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             return columnsToMap;
         }
         if (project == Project.NULL) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetService.no_project_specified"));
+            throw new TdarRecoverableRuntimeException("datasetService.no_project_specified");
         }
         getDao().unmapAllColumnsInProject(project, columns);
         for (DataTableColumn column : columns) {
             logger.info("mapping dataset to resources using column: {} ", column);
             Dataset dataset = column.getDataTable().getDataset();
             if (dataset == null) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetService.dataset_null_column",column));
+                throw new TdarRecoverableRuntimeException("datasetService.dataset_null_column",column);
                 }
             else if (ObjectUtils.notEqual(project, dataset.getProject())) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetService.dataset_different_project", project, dataset.getProject()));
+                throw new TdarRecoverableRuntimeException("datasetService.dataset_different_project", project, dataset.getProject());
             }
             if (column.isMappingColumn()) {
                 columnsToMap.add(column);
@@ -729,8 +729,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             if (existingColumn == null) {
                 existingColumn = dataTable.getColumnByName(incomingColumn.getName());
                 if (existingColumn == null) {
-                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetService.could_not_find_column", incomingColumn.getName(),
-                            incomingColumn.getId()));
+                    throw new TdarRecoverableRuntimeException("datasetService.could_not_find_column", incomingColumn.getName(),
+                            incomingColumn.getId());
                 }
             }
             CodingSheet incomingCodingSheet = incomingColumn.getDefaultCodingSheet();
@@ -795,7 +795,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // copy off all of the values that can be directly copied from the bean
             existingColumn.copyUserMetadataFrom(incomingColumn);
             if (!existingColumn.isValid()) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetService.invalid_column",existingColumn));
+                throw new TdarRecoverableRuntimeException("datasetService.invalid_column",existingColumn);
             }
 
             if (needToRemap) {

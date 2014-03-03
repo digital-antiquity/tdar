@@ -13,7 +13,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
-import org.tdar.search.query.part.StatusQueryPart;
+import org.tdar.search.query.part.StatusAndRelatedPermissionsQueryPart;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -44,7 +44,7 @@ public class ReservedSearchParameters extends SearchParameters {
         }
         QueryPartGroup queryPartGroup = super.toQueryPartGroup(support);
         // TODO: not just statusQueryPart, but also maps, resourceTypes
-        StatusQueryPart statusQueryPart = new StatusQueryPart(statuses, getAuthenticatedUser(), getTdarGroup());
+        StatusAndRelatedPermissionsQueryPart statusQueryPart = new StatusAndRelatedPermissionsQueryPart(statuses, getAuthenticatedUser(), getTdarGroup());
         FieldQueryPart<String> generated = new FieldQueryPart<String>("generated", "true");
         if (isUseSubmitterContext()) {
             if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {

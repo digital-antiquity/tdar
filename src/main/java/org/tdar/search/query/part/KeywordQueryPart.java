@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.utils.MessageHelper;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * 
  * $Id$
@@ -32,9 +34,6 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     private List<String> terms;
     private boolean includeChildren = true;
 
-    // for use when generating description
-    private String descriptionLabel = MessageHelper.getMessage("keywordQueryPart.label");
-    
     private String keywordType;
 
     public KeywordQueryPart() {
@@ -135,23 +134,23 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         return keywordType;
     }
 
-    public String getDescriptionLabel() {
-        return descriptionLabel;
-    }
-
-    public void setDescriptionLabel(String label) {
-        descriptionLabel = label;
-    }
+//    public String getDescriptionLabel() {
+//        return descriptionLabel;
+//    }
+//
+//    public void setDescriptionLabel(String label) {
+//        descriptionLabel = label;
+//    }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         String strValues = StringUtils.join(terms, ", ");
-        return String.format("%s: %s", descriptionLabel, strValues);
+        return String.format("%s: %s", provider.getText("keywordQueryPart.label"), strValues);
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     @Override

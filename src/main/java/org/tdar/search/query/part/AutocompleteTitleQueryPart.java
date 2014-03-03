@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
 
+import com.opensymphony.xwork2.TextProvider;
+
 public class AutocompleteTitleQueryPart implements QueryPart<String> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final float TITLE_BOOST = 6f;
@@ -66,13 +68,13 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
     // }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         return "Title: " + title;
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml(getDescription(provider));
     }
 
     @Override

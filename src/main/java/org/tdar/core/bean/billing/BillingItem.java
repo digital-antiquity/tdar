@@ -16,6 +16,8 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.MessageHelper;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * an Activity + quantity for a financial transaction. Multiple activities may be associated with a single financial transaction. 
  * 
@@ -66,10 +68,10 @@ public class BillingItem extends Base implements Validatable {
     @XmlTransient
     public boolean isValidForController() {
         if (getActivity() == null) {
-            throw new TdarValidationException(MessageHelper.getMessage("billingItem.specify_activity"));
+            throw new TdarValidationException("billingItem.specify_activity");
         }
         if (getQuantity() < 1) {
-            throw new TdarValidationException(MessageHelper.getMessage("billingItem.non_zero_value"));
+            throw new TdarValidationException("billingItem.non_zero_value");
         }
         return true;
     }

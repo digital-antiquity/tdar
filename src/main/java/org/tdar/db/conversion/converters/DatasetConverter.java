@@ -178,7 +178,7 @@ public interface DatasetConverter {
                 return getDataTables();
             } catch (IOException e) {
                 logger.error("I/O error while opening input database or dumping data", e);
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetService.io_exception)"), e);
+                throw new TdarRecoverableRuntimeException("datasetService.io_exception)", e);
             } catch (TdarRecoverableRuntimeException tex) {
                 // FIXME: THIS FEELS DUMB. We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error
                 // message
@@ -186,7 +186,7 @@ public interface DatasetConverter {
                 throw tex;
             } catch (Exception e) {
                 logger.error("unable to prcess file:  " + getInformationResourceFileVersion().getFilename(), e);
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetConverter.error_unable_to_process", getInformationResourceFileVersion().getFilename()), e);
+                throw new TdarRecoverableRuntimeException("datasetConverter.error_unable_to_process", e, getInformationResourceFileVersion().getFilename());
             }
         }
 

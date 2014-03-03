@@ -8,6 +8,7 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
 
     private static final long serialVersionUID = -5281745740521596786L;
     private Locale locale;
+    private Object[] values;
     
     public I18nRuntimeException() {
         this.setLocale(Locale.getDefault());
@@ -22,6 +23,18 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
     public I18nRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
+    
+    public I18nRuntimeException(String message, Object ... values) {
+        super(message);
+        this.values = values;
+    }
+
+
+    public I18nRuntimeException(String message, Throwable cause, Object ... values) {
+        super(message, cause);
+        this.values = values;
+    }
+
 
 
     public I18nRuntimeException(Throwable cause) {
@@ -36,7 +49,7 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
 
     @Override
     public String getLocalizedMessage() {
-        return MessageHelper.getMessage(getMessage(),locale);
+        return MessageHelper.getMessage(getMessage(),locale, values);
     };
 
     @Override

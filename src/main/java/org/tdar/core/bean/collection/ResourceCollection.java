@@ -79,6 +79,8 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * @author Adam Brin
  * 

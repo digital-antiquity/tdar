@@ -148,7 +148,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
      */
     public void updateUsername(Person person, String newUsername, String password) {
         if (personDao.findByUsername(newUsername.toLowerCase()) != null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("auth.username_exists", newUsername));
+            throw new TdarRecoverableRuntimeException("auth.username_exists", newUsername);
         }
 
         String[] groupNames = getProvider().findGroupMemberships(person);
@@ -225,7 +225,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
 
         reservedSearchParameters.getStatuses().retainAll(allowedSearchStatuses);
         if (reservedSearchParameters.getStatuses().isEmpty()) {
-            throw (new TdarRecoverableRuntimeException(MessageHelper.getMessage("auth.search.status.denied")));
+            throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));
         }
 
     }
@@ -662,13 +662,13 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
     public AuthenticationStatus authenticatePerson(String loginUsername, String loginPassword, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
         if (!isPossibleValidUsername(loginUsername)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("auth.username.invalid"));
+            throw new TdarRecoverableRuntimeException("auth.username.invalid");
         }
 
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
         if (!result.isValid()) {
             logger.debug(String.format("Couldn't authenticate %s - (reason: %s)", loginUsername, result));
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("auth.couldnt_authenticate",result.getMessage()));
+            throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate",result.getMessage());
         }
         
         Person person = personDao.findByUsername(loginUsername);
@@ -684,14 +684,14 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
         
 
         if (!person.isActive()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("auth.cannot.deleted"));
+            throw new TdarRecoverableRuntimeException("auth.cannot.deleted");
         }
         
         // enable us to force group cache to be cleared
         clearPermissionsCache(person);
         
         if (!isMember(person, TdarGroup.TDAR_USERS)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("auth.cannot.notmember"));
+            throw new TdarRecoverableRuntimeException("auth.cannot.notmember");
         }
         
         logger.debug(String.format("%s (%s) logged in from %s using: %s", loginUsername, person.getEmail(), request.getRemoteAddr(),

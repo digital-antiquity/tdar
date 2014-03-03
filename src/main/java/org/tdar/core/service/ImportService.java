@@ -376,7 +376,7 @@ public class ImportService {
         logger.info("{} {}", second, id);
         H h = genericService.find(second, id);
         if (h == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.object_does_not_exist"));
+            throw new TdarRecoverableRuntimeException("error.object_does_not_exist");
         }
         return h;
     }

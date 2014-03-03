@@ -322,7 +322,7 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
     public static DublinCoreDocument transformAny(Resource resource) {
         ResourceType resourceType = ResourceType.fromClass(resource.getClass());
         if (resourceType == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("transformer.unsupported_type"));
+            throw new TdarRecoverableRuntimeException("transformer.unsupported_type");
         }
         switch (resourceType) {
             case CODING_SHEET:
@@ -351,6 +351,6 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
                 break;
         }
 
-        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("transformer.no_dc_transformer", resource.getClass()));
+        throw new TdarRecoverableRuntimeException("transformer.no_dc_transformer", resource.getClass());
     }
 }

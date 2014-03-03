@@ -174,7 +174,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     @Override
     public Map<String, String> getMetadata(String identifier) {
-        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.not_implemented"));
+        throw new TdarRecoverableRuntimeException("error.not_implemented");
     }
 
     @Override
@@ -204,7 +204,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     @SuppressWarnings("static-method")
     private void validateResponse(String operation, AndsDoiResponse response) {
         if (!response.isSuccess()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("andsDoi.could_not_complete",operation ,response.getMessage()));
+            throw new TdarRecoverableRuntimeException("andsDoi.could_not_complete",operation ,response.getMessage());
         }
     }
 

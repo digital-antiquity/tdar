@@ -194,7 +194,7 @@ public class BulkUploadService {
         image.setDescription("");
         image.setDate(-1);
         if (CollectionUtils.isEmpty(fileProxies)) {
-            TdarRecoverableRuntimeException throwable = new TdarRecoverableRuntimeException(MessageHelper.getMessage("bulkUploadService.the_system_has_not_received_any_files"));
+            TdarRecoverableRuntimeException throwable = new TdarRecoverableRuntimeException("bulkUploadService.the_system_has_not_received_any_files");
             receiver.addError(throwable);
             throw throwable;
         }
@@ -345,15 +345,15 @@ public class BulkUploadService {
 
         if (proxy.getColumnNames().isEmpty()) {
             logger.info("the manifest file uploaded appears to be empty");
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("bulkUploadService.the_manifest_file_uploaded_appears_to_be_empty_no_columns_found"));
+            throw new TdarRecoverableRuntimeException("bulkUploadService.the_manifest_file_uploaded_appears_to_be_empty_no_columns_found");
         }
 
         if (!proxy.getColumnNames().get(ExcelService.FIRST_COLUMN).equals(BulkUploadTemplate.FILENAME)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("bulkUploadService.the_first_column_must_be_the_filename"));
+            throw new TdarRecoverableRuntimeException("bulkUploadService.the_first_column_must_be_the_filename");
         }
 
         if (CollectionUtils.isNotEmpty(requiredErrors)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("bulkUploadService.the_following_columns_are_required_s", StringUtils.join(requiredErrors.toArray(), ", ")));
+            throw new TdarRecoverableRuntimeException("bulkUploadService.the_following_columns_are_required_s", StringUtils.join(requiredErrors.toArray(), ", "));
         }
 
         testFilenameCaseAndAddFiles(rowIterator, proxy);
@@ -389,7 +389,7 @@ public class BulkUploadService {
             if (caseTest.containsKey(filename)) {
                 String testFile = caseTest.get(filename);
                 if (testFile.equals(filename)) {
-                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("bulkUploadService.duplicate_filename_s_was_found_in_manifest_file", filename));
+                    throw new TdarRecoverableRuntimeException("bulkUploadService.duplicate_filename_s_was_found_in_manifest_file", filename);
                 }
                 if (testFile.equalsIgnoreCase(filename)) {
                     proxy.setCaseSensitive(true);
@@ -593,7 +593,7 @@ public class BulkUploadService {
             String base = FilenameUtils.getBaseName(name);
             if (base.equals(filename)) {
                 if (toReturn != null) {
-                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("bulkUploadService.please_include_the_file_extension_in_the_filename"));
+                    throw new TdarRecoverableRuntimeException("bulkUploadService.please_include_the_file_extension_in_the_filename");
                 }
                 toReturn = filenameResourceMap.get(name);
             }
@@ -685,7 +685,7 @@ public class BulkUploadService {
                 continue;
             }
             if (resourceToProcess == null) {
-                receiver.addError(new TdarRecoverableRuntimeException(MessageHelper.getMessage("bulkUploadService.skipping_line_filename_not_found", filename)));
+                receiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", filename));
                 continue;
             }
             logger.info("processing:" + filename);
@@ -722,8 +722,8 @@ public class BulkUploadService {
                     if (cellMetadata == null
                             || !(mappedClass != null && (resourceSubtypeAssignableFrom || resourceCreatorAssignableFrom || creatorAssignableFrom))) {
                         if (mappedClass != null) {
-                            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("bulkUploadService.fieldname_is_not_valid_for_type", filename, name,
-                                    resourceToProcess.getResourceType()));
+                            throw new TdarRecoverableRuntimeException("bulkUploadService.fieldname_is_not_valid_for_type", filename, name,
+                                    resourceToProcess.getResourceType());
                         }
                     }
                     requiredFields.remove(cellMetadata);
@@ -801,7 +801,7 @@ public class BulkUploadService {
             resource.getResourceCreators().add(creator);
             logger.debug("added " + creator + " successfully");
         } else {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("bulkUploadService.resource_creator_is_not_valid_for_type", creator.getCreator().getName(), creator.getRole(), resource.getResourceType()));
+            throw new TdarRecoverableRuntimeException("bulkUploadService.resource_creator_is_not_valid_for_type", creator.getCreator().getName(), creator.getRole(), resource.getResourceType());
         }
     }
 

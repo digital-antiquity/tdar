@@ -10,7 +10,7 @@ package org.tdar.core.exception;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public class TdarRecoverableRuntimeException extends RuntimeException {
+public class TdarRecoverableRuntimeException extends I18nRuntimeException {
 
     private static final long serialVersionUID = 6246686753761896569L;
 
@@ -24,6 +24,14 @@ public class TdarRecoverableRuntimeException extends RuntimeException {
 
     public TdarRecoverableRuntimeException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public TdarRecoverableRuntimeException(String message, Object ... values) {
+        super(message, values);
+    }
+
+    public TdarRecoverableRuntimeException(String message, Throwable cause, Object ... values) {
+        super(message, cause, values);
     }
 
     public TdarRecoverableRuntimeException(Throwable cause) {

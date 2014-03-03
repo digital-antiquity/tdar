@@ -180,11 +180,11 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         query.setParameter("code", coupon.getCode().toLowerCase());
         for (Invoice inv : (List<Invoice>) query.list()) {
             if (inv.getTransactionStatus().isComplete()) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountDao.coupon_already_used"));
+                throw new TdarRecoverableRuntimeException("accountDao.coupon_already_used");
             }
         }
         if (!invoice.getCoupon().getId().equals(coupon.getId())) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accountDao.coupon_assigned_wrong"));
+            throw new TdarRecoverableRuntimeException("accountDao.coupon_assigned_wrong");
         }
     }
 

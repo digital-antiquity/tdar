@@ -235,7 +235,7 @@ public class AuthorityManagementService {
         // prevent 'protected' records from being deleted
         if (countProtectedRecords(dupes) > 0) {
             activity.end();
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("authorityManagementService.dedup_not_allowed_protected"));
+            throw new TdarRecoverableRuntimeException("authorityManagementService.dedup_not_allowed_protected");
         }
 
         /* -if many-to-many or one-to-many, 

@@ -15,7 +15,8 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.utils.MessageHelper;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * $Id$
@@ -146,23 +147,23 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         if (getFieldValues().isEmpty()) {
-            return MessageHelper.getMessage("spatialQueryPart.empty_description");
+            return provider.getText("spatialQueryPart.empty_description");
         }
 
-        String fmt = MessageHelper.getMessage("spatialQueryPart.resource_located");
         List<String> latlongs = new ArrayList<String>();
         for (LatitudeLongitudeBox box : getFieldValues()) {
             latlongs.add(box.toString());
         }
         String seperator = " " + operator.name().toLowerCase() + " ";
-        return String.format(fmt, StringUtils.join(latlongs, seperator));
+        String fmt = provider.getText("spatialQueryPart.resource_located", StringUtils.join(latlongs, seperator));
+        return fmt;
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     @Override

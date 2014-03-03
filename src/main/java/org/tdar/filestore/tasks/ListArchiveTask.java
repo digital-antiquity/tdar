@@ -81,7 +81,7 @@ public class ListArchiveTask extends AbstractTask {
                     entry = ais.getNextEntry();
                 }
             } catch (ArchiveException e) {
-              throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("listArchiveTask.couldn_not_find_file", f_));
+              throw new TdarRecoverableRuntimeException("listArchiveTask.couldn_not_find_file", f_);
             } finally {
                 if (ais != null) {
                     IOUtils.closeQuietly(ais);

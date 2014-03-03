@@ -428,7 +428,7 @@ public class ExcelService {
      */
     public CellStyle addRow(Sheet sheet, int rowNum, int startCol, List<? extends Object> fields, CellStyle headerStyle) {
         if (rowNum > DEFAULT_EXCEL_VERSION.getMaxRows()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("excelService.too_many_rows"));
+            throw new TdarRecoverableRuntimeException("excelService.too_many_rows");
         }
         Row row = sheet.getRow(rowNum);
         if (row == null) {

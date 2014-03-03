@@ -9,6 +9,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.hibernate.search.annotations.ProvidedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasLabel;
@@ -16,7 +17,8 @@ import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * @author abrin
@@ -242,7 +244,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
      */
     public FieldQueryPart<C> setFuzzy(Float fuzzy) {
         if (fuzzy > 1) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("fieldQueryPart.fuzzyness_out_of_range"));
+            throw new TdarRecoverableRuntimeException("fieldQueryPart.fuzzyness_out_of_range");
         }
         this.fuzzy = fuzzy;
         return this;
@@ -269,7 +271,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         if (!descriptionVisible)
             return "";
         List<Object> vals = new ArrayList<Object>();
@@ -283,12 +285,12 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             vals.add(val);
         }
 
-        return String.format("%s: \"%s\"", getDisplayName(), StringUtils.join(vals, getDescriptionOperator()));
+        return String.format("%s: \"%s\"", getDisplayName(), StringUtils.join(vals, getDescriptionOperator(provider)));
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     @Override
@@ -355,7 +357,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         if (value == null)
             return false;
         if (value instanceof Validatable && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
-            throw new TdarValidationException(MessageHelper.getMessage("fieldQueryPart.is_not_valid", value));
+            throw new TdarValidationException("fieldQueryPart.is_not_valid", value.toString());
         }
         return true;
     }
@@ -392,10 +394,10 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     public void update() {
     }
 
-    public String getDescriptionOperator() {
-        String delim = MessageHelper.getMessage("fieldQueryPart.and");
+    public String getDescriptionOperator(TextProvider provider) {
+        String delim = provider.getText("fieldQueryPart.and");
         if (getOperator() == Operator.OR) {
-            delim = MessageHelper.getMessage("fieldQueryPart.or");
+            delim = provider.getText("fieldQueryPart.or");
         }
         return delim;
     }

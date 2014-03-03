@@ -97,7 +97,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         }
         
         if (version.isUploadedOrArchival()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.cannot_delete_archival"));
+            throw new TdarRecoverableRuntimeException("error.cannot_delete_archival");
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY);
         query.setParameter("id", version.getId()).executeUpdate();

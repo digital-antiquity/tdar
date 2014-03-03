@@ -8,6 +8,7 @@ public class I18nException extends Exception implements Localizable {
 
     private static final long serialVersionUID = 6115182705667575524L;
     private Locale locale;
+    private String[] values;
     
     public I18nException() {
         this.setLocale(Locale.getDefault());
@@ -21,6 +22,17 @@ public class I18nException extends Exception implements Localizable {
 
     public I18nException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public I18nException(String message, String ... values) {
+        super(message);
+        this.values = values;
+    }
+
+
+    public I18nException(String message, Throwable cause, String ... values) {
+        super(message, cause);
+        this.values = values;
     }
 
 
@@ -42,7 +54,7 @@ public class I18nException extends Exception implements Localizable {
      */
     @Override
     public String getLocalizedMessage() {
-        return MessageHelper.getMessage(getMessage(),locale);
+        return MessageHelper.getMessage(getMessage(),locale,values);
     };
 
     /* (non-Javadoc)

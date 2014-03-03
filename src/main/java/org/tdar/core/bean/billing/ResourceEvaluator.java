@@ -229,7 +229,7 @@ public class ResourceEvaluator implements Serializable {
      */
     public void subtract(ResourceEvaluator initialEvaluation) {
         if (!initialEvaluation.getModel().equals(getModel())) {
-            throw new TdarValidationException(MessageHelper.getMessage("resourceEvaluator.two_different_models"));
+            throw new TdarValidationException("resourceEvaluator.two_different_models");
         }
         setSpaceUsed(getSpaceUsedInBytes() - initialEvaluation.getSpaceUsedInBytes());
         setFilesUsed(getFilesUsed() - initialEvaluation.getFilesUsed());
