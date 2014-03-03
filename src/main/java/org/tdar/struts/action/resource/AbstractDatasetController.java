@@ -234,7 +234,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             return INPUT_COLUMNS;
         }
         this.columnsToRemap = updateResults.getSecond();
-        getResourceService().logRecordXmlToFilestore(getDataResource());
+        getXmlService().logRecordXmlToFilestore(getDataResource());
         postSaveColumnMetadataCleanup();
         return getPostSaveAction().getResultName(!updateResults.getFirst(), (Dataset) getPersistable());
     }

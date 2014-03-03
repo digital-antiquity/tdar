@@ -14,15 +14,17 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
@@ -40,13 +42,23 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Autowired
     ResourceService resourceService;
 
+    @Autowired
+    XmlService xmlService;
+
     @Test
     public void testXMLSave() {
         for (Document resource : resourceService.findAll(Document.class)) {
-            logger.info(resource.getId() + " -- saving");
-            resourceService.logRecordXmlToFilestore(resource);
+            xmlService.logRecordXmlToFilestore(resource);
         }
-    }
+
+        for (ResourceCollection resource : resourceService.findAll(ResourceCollection.class)) {
+            xmlService.logRecordXmlToFilestore(resource);
+        }
+
+        for (Creator resource : resourceService.findAll(Creator.class)) {
+            xmlService.logRecordXmlToFilestore(resource);
+        }
+}
 
     @Test
     @Rollback

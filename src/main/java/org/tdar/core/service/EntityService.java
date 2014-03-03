@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     private InstitutionDao institutionDao;
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
+    @Autowired
+    private XmlService xmlService;
 
     /**
      * Find a @link Person by ID
@@ -228,6 +231,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         if (blessedPerson == null) {
             getDao().save(transientPerson);
             blessedPerson = transientPerson;
+            xmlService.logRecordXmlToFilestore(transientPerson);
         }
         return blessedPerson;
     }
@@ -247,10 +251,18 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             return getDao().find(Institution.class, transientInstitution.getId());
         }
 
-        Institution blessedInstitution = getDao().findByExample(Institution.class, transientInstitution,
-                Arrays.asList(Institution.getIgnorePropertiesForUniqueness()), FindOptions.FIND_FIRST_OR_CREATE).get(0);
+        List<Institution> examples = getDao().findByExample(Institution.class, transientInstitution,
+                Arrays.asList(Institution.getIgnorePropertiesForUniqueness()), FindOptions.FIND_FIRST);
+        Institution blessedInstitution = transientInstitution;
+        if (CollectionUtils.isEmpty(examples)) {
+            institutionDao.save(blessedInstitution);
+            xmlService.logRecordXmlToFilestore(blessedInstitution);
+        } else {
+            blessedInstitution = examples.get(0);
+        }
         if (!blessedInstitution.isDeleted()) {
             blessedInstitution.setStatus(Status.ACTIVE);
+            xmlService.logRecordXmlToFilestore(blessedInstitution);
         }
         return blessedInstitution;
     }

@@ -168,28 +168,6 @@ public class ResourceService extends GenericService {
         save(log);
     }
 
-    /**
-     * Serializes the JAXB-XML representation of a @link Record to the tDAR @link Filestore
-     * @param resource
-     */
-    @Transactional(readOnly = true)
-    public <T extends Resource> void logRecordXmlToFilestore(T resource) {
-        @SuppressWarnings("deprecation")
-        InformationResourceFileVersion version = new InformationResourceFileVersion();
-        version.setFilename("record.xml");
-        version.setExtension("xml");
-        version.setFileVersionType(VersionType.RECORD);
-        version.setInformationResourceId(resource.getId());
-        try {
-            StorageMethod rotate = StorageMethod.DATE;
-            // rotate.setRotations(5);
-            TdarConfiguration.getInstance().getFilestore().storeAndRotate(ObjectType.RESOURCE, new StringInputStream(xmlService.convertToXML(resource), "UTF-8"), version, rotate);
-        } catch (Exception e) {
-            logger.error("something happend when converting record to XML:" + resource, e);
-            throw new TdarRecoverableRuntimeException("could not save xml record");
-        }
-        logger.trace("done saving");
-    }
 
     /**
      * Lists all tDAR @link Status entries.

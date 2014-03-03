@@ -115,6 +115,7 @@ public class CollectionController extends AbstractPersistableController<Resource
                 getAuthenticatedUser(), resources);
         getLogger().trace("{}", rehydratedIncomingResources);
         getLogger().debug("RESOURCES {}", persistable.getResources());
+        getXmlService().logRecordXmlToFilestore(getPersistable());
         return SUCCESS;
     }
 
@@ -148,6 +149,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
         getGenericService().delete(persistable.getAuthorizedUsers());
         // FIXME: need to handle parents and children
+        getXmlService().logRecordXmlToFilestore(getPersistable());
 
         // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
     }

@@ -312,7 +312,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         } else {
             reason = "reason not specified";
         }
-        getResourceService().logRecordXmlToFilestore(resource);
+        getXmlService().logRecordXmlToFilestore(resource);
         String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(),
                 getAuthenticatedUser(), reason);
 
@@ -334,7 +334,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
 
         if (shouldSaveResource() && getResource() != null) {
-            getResourceService().logRecordXmlToFilestore(getPersistable());
+            getXmlService().logRecordXmlToFilestore(getPersistable());
         }
 
         if (getResource() != null) { // this will happen with the bulk uploader

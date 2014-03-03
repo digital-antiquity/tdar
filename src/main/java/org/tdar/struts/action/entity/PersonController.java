@@ -1,9 +1,8 @@
 package org.tdar.struts.action.entity;
 
-import com.opensymphony.xwork2.validator.annotations.EmailValidator;
-import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
-import com.opensymphony.xwork2.validator.annotations.Validations;
-import com.opensymphony.xwork2.validator.annotations.ValidatorType;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -11,7 +10,6 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -23,13 +21,13 @@ import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ObfuscationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
+import com.opensymphony.xwork2.validator.annotations.Validations;
+import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 
 @Component
 @Scope("prototype")
@@ -136,6 +134,7 @@ public class PersonController extends AbstractCreatorController<Person> {
         }
 
         getGenericService().saveOrUpdate(person);
+        getXmlService().logRecordXmlToFilestore(getPersistable());
 
         // If the user is editing their own profile, refresh the session object if needed
         if (getAuthenticatedUser().equals(person)) {
@@ -201,6 +200,8 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     @Override
     protected void delete(Person persistable) {
+        getXmlService().logRecordXmlToFilestore(getPersistable());
+
         // the actual delete is being done by persistableController. We don't delete any relations since we want the operation to fail if any exist.
     }
 

@@ -26,7 +26,10 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
@@ -56,7 +59,19 @@ public interface Filestore {
         RESOURCE,
         CREATOR,
         COLLECTION;
-        
+
+        public static ObjectType fromClass(Class<?> cls) {
+            if (Resource.class.isAssignableFrom(cls)) {
+                return RESOURCE;
+            }
+            if (ResourceCollection.class.isAssignableFrom(cls)) {
+                return COLLECTION;
+            }
+            if (Creator.class.isAssignableFrom(cls)) {
+                return CREATOR;
+            }
+            return null;
+        }
         public String getRootDir() {
             switch (this) {
                 case RESOURCE:

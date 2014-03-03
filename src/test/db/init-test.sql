@@ -2649,7 +2649,7 @@ INSERT INTO geospatial (currentnessUpdateNotes,map_source,id) VALUES ('recent', 
 INSERT INTO image VALUES (4292);
 INSERT INTO collection_resource(resource_id, collection_id) VALUES(4289,1575),(4290,1575),(4291,1575),(4292,1575);
 SELECT setval('category_variable_id_seq', (SELECT MAX(id) FROM category_variable)+1);
-SELECT setval('contributor_request_id_seq', (SELECT MAX(id) FROM contributor_request)+1);
+--SELECT setval('contributor_request_id_seq', (SELECT MAX(id) FROM contributor_request)+1);
 SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
 SELECT setval('culture_keyword_id_seq', (SELECT MAX(id) FROM culture_keyword)+1);
 SELECT setval('geographic_keyword_id_seq', (SELECT MAX(id) FROM geographic_keyword)+1);

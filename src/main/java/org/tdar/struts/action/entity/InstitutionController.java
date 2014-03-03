@@ -35,6 +35,8 @@ public class InstitutionController extends AbstractPersistableController<Institu
         } else {
             getGenericService().update(persistable);
         }
+        getXmlService().logRecordXmlToFilestore(getPersistable());
+
         return SUCCESS;
     }
 
@@ -50,6 +52,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
 
     @Override
     protected void delete(Institution persistable) {
+        getXmlService().logRecordXmlToFilestore(getPersistable());
     }
 
     @Override

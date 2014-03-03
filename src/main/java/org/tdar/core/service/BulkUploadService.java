@@ -102,6 +102,9 @@ public class BulkUploadService {
     private FileAnalyzer analyzer;
 
     @Autowired
+    private XmlService xmlService;
+
+    @Autowired
     private ExcelService excelService;
 
     @Autowired
@@ -256,7 +259,7 @@ public class BulkUploadService {
                     resource.getId(), StringUtils.left(resource.getTitle(), 100));
 
             try {
-                resourceService.logRecordXmlToFilestore(resource);
+                xmlService.logRecordXmlToFilestore(resource);
                 genericDao.refresh(submitter);
                 resourceService.logResourceModification(resource, submitter, logMessage);
                 // FIXME: saveRecordToFilestore doesn't distinguish 'recoverable' from 'disastrous' exceptions. Until it does we just have to assume the worst.

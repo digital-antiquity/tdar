@@ -850,7 +850,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
         Assert.assertNotNull(tv);
         if (reason != null) {
-            Assert.assertEquals(reason, tv.getMessage());
+            Assert.assertEquals(reason, tv.getLocalizedMessage());
         }
     }
 
