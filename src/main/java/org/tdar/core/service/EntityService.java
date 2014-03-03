@@ -1,7 +1,6 @@
 package org.tdar.core.service;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -16,14 +15,12 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
-import org.tdar.core.dao.request.ContributorRequestDao;
 
 /**
  * $Id$
@@ -42,8 +39,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     private InstitutionDao institutionDao;
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
-    @Autowired
-    private ContributorRequestDao contributorRequestDao;
 
     /**
      * Find a @link Person by ID
@@ -108,30 +103,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return institutionDao.withNameLike(name);
     }
 
-    /**
-     * List all @link ContributorRequest entries
-     * @return
-     */
-    public List<ContributorRequest> findAllContributorRequests() {
-        return contributorRequestDao.findAll();
-    }
-
-    /**
-     * Find a @link ContributorRequest for a specific @link PErson
-     * @param p
-     * @return
-     */
-    public ContributorRequest findContributorRequest(Person p) {
-        return contributorRequestDao.findByPerson(p);
-    }
-
-    /**
-     * List all Pending @link ContributorRequest entries
-     * @return
-     */
-    public List<ContributorRequest> findAllPendingContributorRequests() {
-        return contributorRequestDao.findAllPending();
-    }
 
     /**
      * Find a @link Person by their email

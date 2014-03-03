@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -20,7 +19,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
@@ -250,21 +248,13 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String email = "test++++++user@gmail.com";
         Person findByEmail = entityService.findByEmail(email);
         if (findByEmail != null) { // this should rarely happen, but it'll clear out the test before we run it if the last time it failed...
-            ContributorRequest findContributorRequest = entityService.findContributorRequest(findByEmail);
-            if (findContributorRequest != null) {
-                genericService.delete(findContributorRequest);
-            }
             genericService.delete(findByEmail);
         }
         genericService.synchronize();
         String execute = setupValidUserInController(controller, email);
         final Person p = controller.getPerson();
-        final ContributorRequest request = controller.getContributorRequest();
         final AuthenticationToken token = controller.getSessionData().getAuthenticationToken();
-        assertNotNull(request);
-        assertEquals(p, request.getApplicant());
         assertEquals(p, token.getPerson());
-        assertEquals(REASON, request.getContributorReason());
         assertEquals("expecting result to be 'success'", "success", execute);
         assertNotNull("person id should not be null", p.getId());
         assertNotNull("person should have set insitution", p.getInstitution());
@@ -284,7 +274,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 boolean deleteUser = authService.getAuthenticationProvider().deleteUser(person);
                 assertTrue("could not delete user", deleteUser);
                 genericService.delete(genericService.findAll(AuthenticationToken.class));
-                genericService.delete(request);
                 genericService.delete(person);
                 return null;
             }

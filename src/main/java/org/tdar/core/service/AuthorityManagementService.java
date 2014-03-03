@@ -34,7 +34,6 @@ import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -99,7 +98,7 @@ public class AuthorityManagementService {
 
     // List of classes we will evaluate when looking for references.
     private static List<Class<?>> hostClasses = Arrays.<Class<?>> asList(Resource.class, InformationResource.class, ResourceCreator.class,
-            Person.class, Institution.class, ContributorRequest.class, AuthorizedUser.class, ResourceCollection.class);
+            Person.class, Institution.class, AuthorizedUser.class, ResourceCollection.class);
 
     /**
      * Search through all of the defined classes in {@link #hostClasses} and find Fields that refer to the specified class.

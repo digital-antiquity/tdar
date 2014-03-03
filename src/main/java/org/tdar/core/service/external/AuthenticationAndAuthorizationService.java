@@ -32,7 +32,6 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -833,7 +832,6 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
         person = reconcilePersonWithTransient(person, findByUsername, MessageHelper.getMessage("userAccountController.error_username_already_registered"));
         person = reconcilePersonWithTransient(person, personDao.findByEmail(person.getEmail()), MessageHelper.getMessage("userAccountController.error_duplicate_email"));
         person.setRegistered(true);
-        ContributorRequest contributorRequest  = null;
         Institution institution = institutionDao.findByName(institutionName);
         if (institution == null && !StringUtils.isBlank(institutionName)) {
             institution = new Institution();
@@ -850,10 +848,8 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
         // after the person has been saved, create a contributor request for
         // them as needed.
             if (contributor) {
-                contributorRequest = createContributorRequest(person);
                 person.setContributor(true);
                 satisfyPrerequisite(person, AuthNotice.CONTRIBUTOR_AGREEMENT);
-                addResult.setContributorRequest(contributorRequest);
         }
         satisfyPrerequisite(person, AuthNotice.TOS_AGREEMENT);
 
@@ -872,7 +868,6 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
         // log person in.
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, person.getUsername(), password);
         result.setPerson(person);
-        result.setContributorRequest(contributorRequest);
         return result;
 
     }
@@ -912,17 +907,6 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
         return person;
     }
 
-
-    @Transactional
-    public ContributorRequest createContributorRequest(Person person) {
-        // create an account request for the administrator..
-        ContributorRequest request = new ContributorRequest(person, person.getContributorReason());
-        // FIXME: eventually, this should only happen after being approved (and giving us money)
-        person.setContributor(true);
-        personDao.saveOrUpdate(request);
-        personDao.saveOrUpdate(person);
-        return request;
-    }
 
 
     private ConfigurableService<AuthenticationProvider> providers = new AbstractConfigurableService<AuthenticationProvider>() {

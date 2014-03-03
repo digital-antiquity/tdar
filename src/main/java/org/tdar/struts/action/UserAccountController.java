@@ -19,8 +19,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.request.ContributorRequest;
-import org.tdar.core.bean.request.UserAffiliation;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -74,7 +73,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private String institutionName;
     private String comment; // for simple spam protection
     private String passwordResetURL;
-    private ContributorRequest contributorRequest;
 
     private String recaptcha_challenge_field;
     private String recaptcha_response_field;
@@ -194,8 +192,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             AuthenticationResult result = getAuthenticationAndAuthorizationService().addAnAuthenticateUser(person, password, institutionName, getServletRequest(), getServletResponse(), getSessionData(), isRequestingContributorAccess());
             if (result.isValid()) {
                 setPerson(result.getPerson());
-                setContributorRequest(result.getContributorRequest());
-                getLogger().debug("contrib request:{} " , getContributorRequest());
                 getLogger().debug("Authenticated successfully with auth service.");
                 getEntityService().registerLogin(person);
                 getAuthenticationAndAuthorizationService().createAuthenticationToken(person, getSessionData());
@@ -445,14 +441,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     public void setPasswordResetURL(String url)
     {
         this.passwordResetURL = url;
-    }
-
-    public ContributorRequest getContributorRequest() {
-        return contributorRequest;
-    }
-
-    public void setContributorRequest(ContributorRequest contributorRequest) {
-        this.contributorRequest = contributorRequest;
     }
 
     public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {

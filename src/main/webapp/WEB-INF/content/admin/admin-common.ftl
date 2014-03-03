@@ -11,27 +11,25 @@
 <#macro header>
 <div class="glide">
     <h3> Menu</h3>
-    <table cellpadding=4>
-    <tr>
-        <td><a href="<@s.url value="/admin/"/>">Admin Home</a> </td>
-        <td><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a> </td>
-        <td><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a> </td>
-        <td><a href="<@s.url value="/admin/user"/>">User Statistics</a> </td>
-        <td><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a> </td>
-        <td><a href="<@s.url value="/admin/contributors"/>">Contributor Requests</a></td>
-        <td><a href="<@s.url value="/admin/file-info"/>">File Information</a></td>
-		<td><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></td>
+ <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+         <li class="tab-pane"><a href="<@s.url value="/admin/"/>">Admin Home</a> </li>
+        <li class="tab-pane"><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a> </li>
+        <li class="tab-pane"><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a> </li>
+        <li class="tab-pane"><a href="<@s.url value="/admin/user"/>">User Statistics</a> </li>
+        <li class="tab-pane"><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a> </li>
+        <li class="tab-pane"><a href="<@s.url value="/admin/contributors"/>">Contributor Requests</a></li>
+        <li class="tab-pane"><a href="<@s.url value="/admin/file-info"/>">File Information</a></li>
+		<li class="tab-pane"><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></li>
 
 		<#if billingManager || editor>
-			<td><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></td>
-			<td><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></td>
+			<li class="tab-pane"><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></li>
+			<li class="tab-pane"><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></li>
 		</#if>
         <#if administrator >
-        <td><a href="<@s.url value="/admin/system/activity"/>">System Activity</a> </td>
-            <td><a href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></td>
+        <li class="tab-pane"><a href="<@s.url value="/admin/system/activity"/>">System Activity</a> </li>
+            <li class="tab-pane"><a href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></li>
         </#if>
-</tr>
-    </table>
+</ul>
 </div>    
 </#macro>
 

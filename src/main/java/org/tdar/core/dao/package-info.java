@@ -87,10 +87,6 @@
                     + " and not exists(select 1 from InformationResource ir where ir.status in ('ACTIVE','DRAFT') and ir.project.id = project.id)"
     ),
     @org.hibernate.annotations.NamedQuery(
-            name = TdarNamedQueries.QUERY_CONTRIBUTORREQUEST_PENDING,
-            query = "from ContributorRequest where approver is null and approved='f' order by timestamp desc"
-    ),
-    @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_BOOKMARKEDRESOURCE_IS_ALREADY_BOOKMARKED,
             query = "from BookmarkedResource where resource.id=:resourceId and person.id=:personId"
     ),

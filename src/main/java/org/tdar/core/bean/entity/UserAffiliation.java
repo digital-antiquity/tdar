@@ -1,4 +1,4 @@
-package org.tdar.core.bean.request;
+package org.tdar.core.bean.entity;
 
 public enum UserAffiliation {
     K12_STUDENT, UNDERGRAD_STUDENT, GRAD_STUDENT, K12_TEACHER, FACULTY, AVOCATIONAL, PUBLIC_AGENCY_ARCH, COMMERCIAL_ARCH;

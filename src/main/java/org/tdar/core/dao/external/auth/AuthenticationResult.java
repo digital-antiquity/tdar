@@ -1,7 +1,6 @@
 package org.tdar.core.dao.external.auth;
 
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.utils.MessageHelper;
 
 
@@ -15,7 +14,6 @@ public enum AuthenticationResult  {
     
     private final String message;
     private Person person;
-    private ContributorRequest contributorRequest;
     private transient ThreadLocal<Throwable> threadLocalThrowable = new ThreadLocal<>();
 
     AuthenticationResult(String message) {
@@ -52,11 +50,4 @@ public enum AuthenticationResult  {
         this.person = person;
     }
 
-    public ContributorRequest getContributorRequest() {
-        return contributorRequest;
-    }
-
-    public void setContributorRequest(ContributorRequest contributorRequest) {
-        this.contributorRequest = contributorRequest;
-    }
 }

@@ -24,7 +24,6 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.Resource;
@@ -55,8 +54,6 @@ import org.tdar.utils.Pair;
 public class AdminController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = 4385039298623767568L;
-
-    private List<ContributorRequest> pendingContributorRequests;
 
     @Autowired
     private ScheduledProcessService scheduledProcessService;
@@ -186,13 +183,6 @@ public class AdminController extends AuthenticationAware.Base {
     public String userMailchipInfo() {
         setRecentUsers(getEntityService().findAllRegisteredUsers());
         return SUCCESS;
-    }
-
-    public List<ContributorRequest> getPendingContributorRequests() {
-        if (pendingContributorRequests == null) {
-            pendingContributorRequests = getEntityService().findAllPendingContributorRequests();
-        }
-        return pendingContributorRequests;
     }
 
     public List<ResourceRevisionLog> getResourceRevisionLogs() {
