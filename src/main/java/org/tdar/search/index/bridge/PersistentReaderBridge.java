@@ -20,6 +20,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.index.field.LazyReaderField;
 
 /**
@@ -54,7 +55,7 @@ public class PersistentReaderBridge implements FieldBridge {
                 }
                 try {
                     logger.trace("indexing file ... {}", version);
-                    input.add(filestore.retrieveFile(version).toURI());
+                    input.add(filestore.retrieveFile(ObjectType.RESOURCE, version).toURI());
                 } catch (FileNotFoundException e) {
                     if (TdarConfiguration.getInstance().isProductionEnvironment()) {
                         logger.error("File does not exist", e);

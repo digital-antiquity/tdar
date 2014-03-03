@@ -27,6 +27,7 @@ import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorListener;
+import org.tdar.filestore.Filestore.ObjectType;
 
 public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
@@ -107,12 +108,12 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         logger.info("versions: {} ", irFile.getInformationResourceFileVersions());
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             map.put(irfv.getFileVersionType(), irfv);
-            irfv.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(irfv));
+            irfv.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irfv));
             irfvids.add(irfv.getId());
         }
         assertTrue(map.containsKey(VersionType.INDEXABLE_TEXT));
         InformationResourceFileVersion fileVersion = map.get(VersionType.INDEXABLE_TEXT);
-        String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(fileVersion));
+        String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, fileVersion));
         assertTrue(text.contains("Tree-Ring Research, University of Arizona, Tucson"));
     }
 

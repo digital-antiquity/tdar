@@ -30,6 +30,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.FreemarkerService;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
 /**
  * Converts a text formatted Ontology into an OWL XML ontology
@@ -94,7 +95,7 @@ public class OwlOntologyConverter {
      * @throws FileNotFoundException
      */
     public OWLOntology toOwlOntology(InformationResourceFileVersion file) throws FileNotFoundException {
-        File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(file);
+        File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, file);
         if (file != null && transientFile.exists()) {
             IRI iri = IRI.create(transientFile);
             return loadFromIRI(iri);

@@ -26,6 +26,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.PairtreeFilestore;
 
@@ -92,10 +93,10 @@ public class FilestoreTest {
         String name = "abc.txt";
         InformationResourceFileVersion version = generateVersion(name);
         String baseAssert = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1" + File.separator;
-        assertEquals(baseAssert + "archival" + File.separator + name, store.getAbsoluteFilePath(version));
+        assertEquals(baseAssert + "archival" + File.separator + name, store.getAbsoluteFilePath(ObjectType.RESOURCE,version));
         version.setFileVersionType(VersionType.WEB_LARGE);
-        assertEquals(baseAssert + PairtreeFilestore.DERIV + File.separator + name, store.getAbsoluteFilePath(version));
-        Logger.getLogger(getClass()).info(store.getAbsoluteFilePath(version));
+        assertEquals(baseAssert + PairtreeFilestore.DERIV + File.separator + name, store.getAbsoluteFilePath(ObjectType.RESOURCE,version));
+        Logger.getLogger(getClass()).info(store.getAbsoluteFilePath(ObjectType.RESOURCE,version));
     }
 
     @Test
@@ -105,7 +106,7 @@ public class FilestoreTest {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
         File f = new File(TEST_DOCUMENT);
-        store.store(f, version);
+        store.store(ObjectType.RESOURCE, f, version);
         assertNotNull(version.getChecksum());
         assertEquals("MD5", version.getChecksumType());
         assertNotNull(version.getDateCreated());
@@ -138,11 +139,11 @@ public class FilestoreTest {
         File f = new File(TEST_DOCUMENT);
         StorageMethod rotate = StorageMethod.ROTATE;
         rotate.setRotations(5);
-        store.storeAndRotate(f, version, rotate);
+        store.storeAndRotate(ObjectType.RESOURCE, f, version, rotate);
         version.setTransientFile(f);
-        store.storeAndRotate(f, version, rotate);
+        store.storeAndRotate(ObjectType.RESOURCE, f, version, rotate);
 
-        File tmpFile = store.retrieveFile(version);
+        File tmpFile = store.retrieveFile(ObjectType.RESOURCE, version);
         assertTrue(tmpFile.exists());
         File rotated = new File(tmpFile.getParentFile(), String.format("%s.1.%s", FilenameUtils.getBaseName(tmpFile.getName()),
                 FilenameUtils.getExtension(tmpFile.getName())));
@@ -188,13 +189,13 @@ public class FilestoreTest {
         cleanup();
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
-        store.store(new File(TEST_DOCUMENT), version);
-        File f = new File(store.getAbsoluteFilePath(version));
+        store.store(ObjectType.RESOURCE, new File(TEST_DOCUMENT), version);
+        File f = new File(store.getAbsoluteFilePath(ObjectType.RESOURCE,version));
         assertTrue("file exists: " + f.getCanonicalPath(), f.exists());
         String expectedPath = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1";
         assertEquals(expectedPath + File.separator + "archival" + File.separator + TEST_DOCUMENT_NAME, f.getAbsolutePath());
         try {
-            store.purge(version);
+            store.purge(ObjectType.RESOURCE, version);
         } catch (IOException e) {
             if (System.getProperty("os.name").indexOf("indows") == -1 && e.getMessage().contains("Unable to delete file")) {
                 logger.info("couldn't delete file... windows");
@@ -222,14 +223,14 @@ public class FilestoreTest {
         version.getInformationResourceFile().setLatestVersion(2);
         version.setVersion(2);
         version.setFileVersionType(VersionType.UPLOADED);
-        store.store(new File(TEST_IMAGE), version);
-        assertTrue(store.verifyFile(version));
-        File f = new File(store.getAbsoluteFilePath(version));
+        store.store(ObjectType.RESOURCE, new File(TEST_IMAGE), version);
+        assertTrue(store.verifyFile(ObjectType.RESOURCE, version));
+        File f = new File(store.getAbsoluteFilePath(ObjectType.RESOURCE,version));
         assertTrue("file exists: " + f.getCanonicalPath(), f.exists());
         String expectedPath = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v2";
         assertEquals(expectedPath + File.separator + TEST_IMAGE_NAME, f.getAbsolutePath());
         try {
-            store.purge(version);
+            store.purge(ObjectType.RESOURCE, version);
         } catch (IOException e) {
             if (System.getProperty("os.name").indexOf("indows") == -1 && e.getMessage().contains("Unable to delete file")) {
                 logger.info("couldn't delete file... windows");

@@ -64,6 +64,7 @@ import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.MessageHelper;
@@ -225,7 +226,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         try {
             for (InformationResourceFile file : dataset.getActiveInformationResourceFiles()) {
                 InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
-                File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(latestUploadedVersion);
+                File transientFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, latestUploadedVersion);
                 latestUploadedVersion.setTransientFile(transientFile);
             }
 

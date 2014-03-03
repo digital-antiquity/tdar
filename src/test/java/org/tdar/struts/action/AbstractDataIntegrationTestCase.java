@@ -40,6 +40,7 @@ import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.CodingSheetController;
 import org.tdar.struts.action.resource.DatasetController;
@@ -120,7 +121,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         long infoId = (long) (Math.random() * 10000);
         InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, infoId, 123L);
         version.setId(id);
-        filestore.store(name, version);
+        filestore.store(ObjectType.RESOURCE, name, version);
         version.setTransientFile(name);
         return version;
     }
@@ -128,7 +129,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
     public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
-        File storedFile = filestore.retrieveFile(accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();

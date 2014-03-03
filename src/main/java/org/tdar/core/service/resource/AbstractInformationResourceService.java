@@ -38,6 +38,7 @@ import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.BaseFilestore;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
@@ -178,7 +179,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
             if (!irFiles.contains(file) && !file.isDeleted()) {
                 InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
-                latestUploadedVersion.setTransientFile(filestore.retrieveFile(latestUploadedVersion));
+                latestUploadedVersion.setTransientFile(filestore.retrieveFile(ObjectType.RESOURCE, latestUploadedVersion));
                 filesToProcess.add(latestUploadedVersion);
             }
         }
@@ -199,7 +200,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             for (InformationResourceFileVersion version : filesToProcess) {
                 if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
                     // If we are re-processing, the transient file might not exist.
-                    version.setTransientFile(filestore.retrieveFile(version));
+                    version.setTransientFile(filestore.retrieveFile(ObjectType.RESOURCE, version));
                 }
                 analyzer.processFile(version);
             }
@@ -346,7 +347,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 continue;
             }
             InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
-            original.setTransientFile(filestore.retrieveFile(original));
+            original.setTransientFile(filestore.retrieveFile(ObjectType.RESOURCE, original));
             latestVersions.add(original);
             Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
             while (iterator.hasNext()) {
@@ -386,7 +387,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
 
         irFile.addFileVersion(version);
-        filestore.store(fileProxy.getFile(), version);
+        filestore.store(ObjectType.RESOURCE, fileProxy.getFile(), version);
         version.setTransientFile(fileProxy.getFile());
         getDao().save(version);
         getDao().saveOrUpdate(irFile);

@@ -21,6 +21,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.LogType;
+import org.tdar.filestore.Filestore.ObjectType;
 
 @Component
 public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
@@ -59,7 +60,7 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
         int count = 0;
         for (InformationResourceFileVersion version : informationResourceFileVersionService.findAll()) {
             try {
-                if (!filestore.verifyFile(version)) {
+                if (!filestore.verifyFile(ObjectType.RESOURCE, version)) {
                     count++;
                     tainted.add(version);
                 }

@@ -46,6 +46,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -461,7 +462,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
             InformationResourceFile translatedFile = datasetService.createTranslatedFile(dataset);
             ExcelUnit excelUnit = new ExcelUnit();
-            excelUnit.open(TdarConfiguration.getInstance().getFilestore().retrieveFile(translatedFile.getTranslatedFile()));
+            excelUnit.open(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, translatedFile.getTranslatedFile()));
             assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
         } catch (OutOfMemoryError oem) {
             logger.debug("Well, guess I ran out of memory...", oem);
@@ -474,7 +475,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         testCodingSheetMapping();
         assertNotNull("file proxy was null", tranlatedIRFile);
         ExcelUnit excelUnit = new ExcelUnit();
-        File retrieveFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(tranlatedIRFile.getTranslatedFile());
+        File retrieveFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, tranlatedIRFile.getTranslatedFile());
         excelUnit.open(retrieveFile);
 
         excelUnit.selectSheet("total_number_of_bones_per_perio");

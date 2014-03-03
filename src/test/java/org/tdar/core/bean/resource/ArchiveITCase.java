@@ -15,6 +15,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.ActionMessageErrorListener;
+import org.tdar.filestore.Filestore.ObjectType;
 
 public class ArchiveITCase extends AbstractIntegrationTestCase {
 
@@ -45,7 +46,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         genericService.synchronize();
 
         // however, whatever caused the processing error is fixed
-        File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFile.getLatestUploadedVersion());
+        File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFile.getLatestUploadedVersion());
         File sourceFile = new File(TestConstants.TEST_ARCHIVE_DIR + TestConstants.GOOD_ARCHIVE);
         fileInStore.setWritable(true);
         org.apache.commons.io.FileUtils.copyFile(sourceFile, fileInStore);

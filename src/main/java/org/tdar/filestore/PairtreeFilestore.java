@@ -68,18 +68,18 @@ public class PairtreeFilestore extends BaseFilestore {
     }
 
     @Override
-    public String store(InputStream content, InformationResourceFileVersion version) throws IOException {
+    public String store(ObjectType type, InputStream content, InformationResourceFileVersion version) throws IOException {
         StorageMethod rotate = StorageMethod.NO_ROTATION;
-        return storeAndRotate(content, version, rotate);
+        return storeAndRotate(type, content, version, rotate);
     }
 
     /**
      * @see org.tdar.filestore.Filestore#store(java.io.InputStream)
      */
     @Override
-    public String storeAndRotate(InputStream content, InformationResourceFileVersion version, StorageMethod rotate) throws IOException {
+    public String storeAndRotate(ObjectType type, InputStream content, InformationResourceFileVersion version, StorageMethod rotate) throws IOException {
         OutputStream outputStream = null;
-        String path = getAbsoluteFilePath(version);
+        String path = getAbsoluteFilePath(type, version);
 
         File outFile = new File(path);
         if (outFile.exists() && rotate.getRotations() > 0) {
@@ -154,28 +154,28 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#store(File)
      */
     @Override
-    public String store(File content, InformationResourceFileVersion version) throws IOException {
-        return storeAndRotate(content, version, StorageMethod.NO_ROTATION);
+    public String store(ObjectType type, File content, InformationResourceFileVersion version) throws IOException {
+        return storeAndRotate(type, content, version, StorageMethod.NO_ROTATION);
     }
 
     /**
      * @see org.tdar.filestore.Filestore#store(File)
      */
     @Override
-    public String storeAndRotate(File content, InformationResourceFileVersion version, StorageMethod rotations) throws IOException {
+    public String storeAndRotate(ObjectType type, File content, InformationResourceFileVersion version, StorageMethod rotations) throws IOException {
         if (content == null || !content.isFile()) {
             logger.warn("Trying to store null or non-file content: {}", content);
             return "";
         }
-        return storeAndRotate(new FileInputStream(content), version, rotations);
+        return storeAndRotate(type, new FileInputStream(content), version, rotations);
     }
 
     /**
      * @see org.tdar.filestore.Filestore#retrieveFile(java.lang.String)
      */
     @Override
-    public File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException {
-        File file = new File(getAbsoluteFilePath(version));
+    public File retrieveFile(ObjectType type, InformationResourceFileVersion version) throws FileNotFoundException {
+        File file = new File(getAbsoluteFilePath(type, version));
         logger.trace("file requested: {}", file);
         if (!file.isFile())
             throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found",file.getAbsolutePath()));
@@ -200,8 +200,8 @@ public class PairtreeFilestore extends BaseFilestore {
      * @param fileId
      * @return
      */
-    public String getResourceDirPath(Number fileId) {
-        String filePath = getFilestoreLocation() + File.separator;
+    public String getResourceDirPath(ObjectType type, Number fileId) {
+        String filePath = getFilestoreLocation() + File.separator + type.getRootDir() + File.separator;
         filePath = FilenameUtils.normalize(filePath + toPairTree(fileId));
         return filePath;
     }
@@ -222,10 +222,10 @@ public class PairtreeFilestore extends BaseFilestore {
      * @param fileId
      * @return String
      */
-    public String getAbsoluteFilePath(InformationResourceFileVersion version) {
+    public String getAbsoluteFilePath(ObjectType type, InformationResourceFileVersion version) {
         Long irID = version.getInformationResourceId();
         StringBuffer base = new StringBuffer();
-        base.append(getResourceDirPath(irID));
+        base.append(getResourceDirPath(type, irID));
         if (version.getInformationResourceFileId() != null) {
             base.append(version.getInformationResourceFileId());
             base.append(File.separator);
@@ -275,8 +275,8 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#purge(java.lang.String)
      */
     @Override
-    public void purge(InformationResourceFileVersion version) throws IOException {
-        File file = new File(getAbsoluteFilePath(version));
+    public void purge(ObjectType type, InformationResourceFileVersion version) throws IOException {
+        File file = new File(getAbsoluteFilePath(type, version));
         if (!version.isDerivative() && !version.isTranslated()) {
             try {
                 // if archival, need to go up one more

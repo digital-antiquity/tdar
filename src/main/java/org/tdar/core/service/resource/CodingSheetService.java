@@ -34,6 +34,7 @@ import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
 import org.tdar.filestore.WorkflowContext;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.MessageHelper;
 
@@ -110,7 +111,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         Set<String> duplicates = new HashSet<String>();
         List<CodingRule> incomingCodingRules = new ArrayList<CodingRule>();
         try {
-            stream = new FileInputStream(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+            stream = new FileInputStream(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
             incomingCodingRules.addAll(getCodingSheetParser(version.getFilename()).parse(codingSheet, stream));
             Set<String> uniqueSet = new HashSet<String>();
             for (CodingRule rule : incomingCodingRules) {

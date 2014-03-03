@@ -26,6 +26,7 @@ import org.tdar.core.service.workflow.workflows.PDFWorkflow;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.filestore.Filestore.ObjectType;
 
 /**
  * @author Adam Brin
@@ -76,7 +77,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
         InformationResourceFileVersion indexableVersion = informationResourceFile.getIndexableVersion();
         logger.info("version: {}", indexableVersion);
-        String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(indexableVersion));
+        String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, indexableVersion));
         logger.info(text);
         assertTrue(text.toLowerCase().contains("have fun digging"));
     }

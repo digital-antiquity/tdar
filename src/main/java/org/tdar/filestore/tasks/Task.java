@@ -16,6 +16,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.WorkflowContext;
+import org.tdar.filestore.Filestore.ObjectType;
 
 /**
  * @author Adam Brin
@@ -93,7 +94,7 @@ public interface Task extends Serializable {
                     ctx.getInformationResourceId(), originalVersion.getInformationResourceFileId());
 
             try {
-                ctx.getFilestore().store(f, version);
+                ctx.getFilestore().store(ObjectType.RESOURCE, f, version);
                 version.setTransientFile(f);
             } catch (IOException e) {
                 getLogger().warn("cannot store version", e);

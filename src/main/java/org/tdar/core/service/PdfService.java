@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.FileSystemResourceDao;
 import org.tdar.core.exception.PdfCoverPageGenerationException;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.AsciiTransliterator;
 import org.tdar.utils.MessageHelper;
 
@@ -79,7 +80,7 @@ public class PdfService {
 
                 // merge the two PDFs
 
-                return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+                return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
             } else {
                 throw new PdfCoverPageGenerationException(MessageHelper.getMessage("pdfService.file_type_invalid"));
             }

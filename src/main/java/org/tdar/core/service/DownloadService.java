@@ -33,6 +33,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.PdfCoverPageGenerationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.DownloadHandler;
 import org.tdar.utils.DeleteOnCloseFileInputStream;
@@ -140,7 +141,7 @@ public class DownloadService {
             throws TdarActionException {
         File resourceFile = null;
         try {
-            resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFileVersion);
+            resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFileVersion);
         } catch (FileNotFoundException e1) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
         }
