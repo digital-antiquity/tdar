@@ -36,12 +36,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -117,7 +119,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         }
     }
 
-    public enum FileAccessRestriction implements HasLabel {
+    public enum FileAccessRestriction implements HasLabel, Localizable {
         PUBLIC,
         EMBARGOED,
         CONFIDENTIAL;
@@ -125,6 +127,11 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         @Override
         public String getLabel() {
             return WordUtils.capitalize(this.name().toLowerCase());
+        }
+
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
         }
 
         public boolean isRestricted() {

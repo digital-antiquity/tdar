@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -53,7 +54,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableMapConverter;
 @Service
 public class AuthorityManagementService {
 
-    public enum DupeMode implements HasLabel {
+    public enum DupeMode implements HasLabel, Localizable {
         /*
          * Authority Management really needs multiple modes:
          * 1. Typo cleanup mode -- remove the dups and pretend they never existed
@@ -75,6 +76,11 @@ public class AuthorityManagementService {
         @Override
         public String getLabel() {
             return label;
+        }
+        
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
         }
 
     }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
 /**
  * The type of scan controlls the type of metadata that we display
@@ -11,7 +13,7 @@ import org.tdar.core.bean.HasLabel;
  * @author abrin
  *
  */
-public enum ScannerTechnologyType implements HasLabel {
+public enum ScannerTechnologyType implements HasLabel, Localizable {
     NONE("Not Specified"),
     TIME_OF_FLIGHT("Time of Flight"),
     PHASE_BASED("Phase-based"),
@@ -38,6 +40,11 @@ public enum ScannerTechnologyType implements HasLabel {
     private ScannerTechnologyType(String label, boolean active) {
         this.label = label;
         this.active = active;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     @Override

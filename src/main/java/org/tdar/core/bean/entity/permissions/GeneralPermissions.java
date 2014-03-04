@@ -7,8 +7,10 @@
 package org.tdar.core.bean.entity.permissions;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin
@@ -16,7 +18,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
  *         equivalent. The numerical equivalent is additive, hence someone with a 500 level permission can do a 100 level action. The numeric permissions should
  *         be faster to query / index in the database
  */
-public enum GeneralPermissions implements HasLabel {
+public enum GeneralPermissions implements HasLabel, Localizable {
     VIEW_ALL("View All", 100),
     MODIFY_METADATA("Modify Metadata", 400),
     MODIFY_RECORD("Modify Files & Metadata", 500),
@@ -51,6 +53,11 @@ public enum GeneralPermissions implements HasLabel {
     @Override
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     /**

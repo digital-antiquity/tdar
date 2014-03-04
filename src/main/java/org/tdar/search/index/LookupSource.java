@@ -3,6 +3,7 @@ package org.tdar.search.index;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -25,9 +26,10 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
+import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
-public enum LookupSource implements HasLabel {
+public enum LookupSource implements HasLabel, Localizable {
     PERSON("people", Person.class),
     INSTITUTION("institutions", Institution.class),
     KEYWORD("items", CultureKeyword.class, GeographicKeyword.class, InvestigationType.class, MaterialKeyword.class, OtherKeyword.class, TemporalKeyword.class,
@@ -49,6 +51,11 @@ public enum LookupSource implements HasLabel {
         return this.collectionName;
     }
 
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
+    
     public String getCollectionName() {
         return this.collectionName;
     }

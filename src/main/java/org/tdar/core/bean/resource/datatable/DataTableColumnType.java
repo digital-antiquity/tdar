@@ -10,6 +10,8 @@ import java.sql.Types;
 
 import org.odata4j.edm.EdmSimpleType;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
 /**
  * Enum to manage the type of column between tDAR internal types, and database and other types
@@ -17,7 +19,7 @@ import org.tdar.core.bean.HasLabel;
  * @author Adam Brin
  * 
  */
-public enum DataTableColumnType implements HasLabel {
+public enum DataTableColumnType implements HasLabel, Localizable {
 
     // See: http://msdn.microsoft.com/en-us/library/bb896344.aspx for EdmSimpleTypes
 
@@ -134,6 +136,11 @@ public enum DataTableColumnType implements HasLabel {
     @Override
     public String getLabel() {
         return name();
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     public EdmSimpleType<?> getEdmSimpleType() {

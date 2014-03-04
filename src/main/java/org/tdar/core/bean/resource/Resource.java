@@ -921,6 +921,8 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @Transient
+    @Deprecated()
+    // removing for localization
     public String getResourceTypeLabel() {
         return MessageHelper.getMessage(resourceType.name());
     }

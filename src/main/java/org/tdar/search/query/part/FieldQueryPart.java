@@ -13,6 +13,7 @@ import org.hibernate.search.annotations.ProvidedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -279,6 +280,8 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             Object val = getFieldValues().get(i);
             if (SimpleSearch.class.isAssignableFrom(val.getClass())) {
                 val = ((SimpleSearch) val).getTitle();
+            } else if (val instanceof Localizable) {
+                val = provider.getText(((Localizable) val).getLocaleKey());
             } else if (val instanceof HasLabel) {
                 val = ((HasLabel) val).getLabel();
             }

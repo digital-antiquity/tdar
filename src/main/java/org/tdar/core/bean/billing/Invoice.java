@@ -25,11 +25,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -49,7 +51,7 @@ public class Invoice extends Base implements Updatable {
     @Transient
     private final static String[] JSON_PROPERTIES = { "id", "paymentMethod", "transactionStatus", "totalFiles", "totalResources", "totalSpace",
             "calculatedCost", "total" };
-    public enum TransactionStatus implements HasLabel {
+    public enum TransactionStatus implements HasLabel, Localizable {
         PREPARED("Prepared"),
         PENDING_TRANSACTION("Pending Transaction"),
         TRANSACTION_SUCCESSFUL("Transaction Successful"),
@@ -85,6 +87,12 @@ public class Invoice extends Base implements Updatable {
         public String getLabel() {
             return this.label;
         }
+
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
+        }
+
     }
 
     public Invoice() {

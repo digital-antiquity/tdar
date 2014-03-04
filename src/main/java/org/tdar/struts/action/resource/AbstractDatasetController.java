@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -37,6 +38,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.Pair;
 
@@ -56,7 +58,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private Integer startRecord = 0;
     private Integer recordsPerPage = 10;
 
-    public enum PostSaveColumnMapActions implements HasLabel {
+    public enum PostSaveColumnMapActions implements HasLabel, Localizable {
         SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"),
         SAVE_MAP_THIS("Save, and return to this edit page", "Save, and return to this edit page");
 
@@ -71,6 +73,11 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         @Override
         public String getLabel() {
             return label;
+        }
+
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
         }
 
         public void setLabel(String label) {

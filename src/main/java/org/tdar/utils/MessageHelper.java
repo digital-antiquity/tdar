@@ -133,4 +133,9 @@ public class MessageHelper implements Serializable, TextProvider {
     public ResourceBundle getTexts() {
         throw new TdarRecoverableRuntimeException("not.implemented");
     }
+
+    public static final String formatLocalizableKey(Enum<?> en) {
+        return String.format("%s.%s", en.getClass().getSimpleName(), en.name());
+    }
+
 }

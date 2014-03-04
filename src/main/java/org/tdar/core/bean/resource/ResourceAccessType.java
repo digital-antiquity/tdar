@@ -7,7 +7,9 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 
 /**
  * Describes the aggregate restrictions on all of the files on the InformationResource.
@@ -16,7 +18,7 @@ import org.tdar.search.query.QueryFieldNames;
  * 
  */
 @SuppressWarnings("rawtypes")
-public enum ResourceAccessType implements HasLabel, Facetable {
+public enum ResourceAccessType implements HasLabel, Facetable, Localizable {
     CITATION("Citation Only"),
     PUBLICALLY_ACCESSIBLE("Publicly Accessible Files"),
     PARTIALLY_RESTRICTED("Some Files Restricted"),
@@ -33,6 +35,12 @@ public enum ResourceAccessType implements HasLabel, Facetable {
     public String getLabel() {
         return label;
     }
+    
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
+
 
     public void setLabel(String label) {
         this.label = label;

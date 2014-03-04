@@ -2,8 +2,10 @@ package org.tdar.core.bean.resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
+import org.tdar.utils.MessageHelper;
 
 /**
  * 
@@ -12,7 +14,7 @@ import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum ResourceType implements HasLabel, Facetable<ResourceType> {
+public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizable {
     CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset",  CodingSheet.class),
     DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
     DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
@@ -279,5 +281,10 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
 
     public void setSchema(String schema) {
         this.schema = schema;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 }

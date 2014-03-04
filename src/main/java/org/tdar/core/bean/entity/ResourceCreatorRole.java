@@ -10,8 +10,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -26,7 +28,7 @@ import org.tdar.core.bean.resource.ResourceType;
 
 // FIXME: the logic of these roles, when they are relevant, when they should be accepted for input, and when they should be included for citation, is almost
 // totally inscrutable
-public enum ResourceCreatorRole implements HasLabel {
+public enum ResourceCreatorRole implements HasLabel , Localizable {
     CONTACT("Contact", ResourceCreatorRoleType.CREDIT),
     AUTHOR("Author", ResourceCreatorRoleType.AUTHORSHIP, null, ResourceType.DOCUMENT),
     CONTRIBUTOR("Contributor", ResourceCreatorRoleType.CREDIT),
@@ -116,6 +118,11 @@ public enum ResourceCreatorRole implements HasLabel {
     @Override
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     public boolean isRelevantFor(CreatorType creatorType) {

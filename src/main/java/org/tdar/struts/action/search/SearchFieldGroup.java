@@ -1,8 +1,10 @@
 package org.tdar.struts.action.search;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
-public enum SearchFieldGroup implements HasLabel {
+public enum SearchFieldGroup implements HasLabel, Localizable {
 
     BASIC_FIELDS("Basic Fields"),
     CONTROLLED_KEYWORDS("Controlled Keywords"),
@@ -20,4 +22,8 @@ public enum SearchFieldGroup implements HasLabel {
         return label;
     }
 
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
 }

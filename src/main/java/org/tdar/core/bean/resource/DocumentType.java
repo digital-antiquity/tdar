@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 
@@ -12,7 +13,7 @@ import org.tdar.utils.MessageHelper;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum DocumentType implements HasLabel, Facetable<DocumentType> {
+public enum DocumentType implements HasLabel, Facetable<DocumentType>, Localizable {
 
     BOOK("book", "book", "Book"),
     BOOK_SECTION("chapter", "bookitem", "Book"),
@@ -56,6 +57,11 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
     @Override
     public String getLabel() {
         return label;
+    }
+    
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     public boolean isBookTitleDisplayed() {

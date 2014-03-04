@@ -12,7 +12,9 @@ import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -40,7 +42,7 @@ public class ResourceRelationship extends Persistable.Base {
     @Field(norms = Norms.NO, store = Store.YES)
     private ResourceRelationshipType type;
 
-    private enum ResourceRelationshipType implements HasLabel {
+    private enum ResourceRelationshipType implements HasLabel, Localizable {
         REFERENCES("References"),
         REPLACES("Replaces"),
         VERSION_OF("Version Of");
@@ -49,6 +51,11 @@ public class ResourceRelationship extends Persistable.Base {
 
         private ResourceRelationshipType(String label) {
             this.label = label;
+        }
+
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
         }
 
         @Override

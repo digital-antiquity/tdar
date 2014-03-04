@@ -24,11 +24,13 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 
 /**
  * A Dataset information resource can currently be an Excel file, Access MDB file, or plaintext CSV file.
@@ -45,7 +47,7 @@ public class Dataset extends InformationResource {
 
     private static final long serialVersionUID = -5796154884019127904L;
 
-    public enum IntegratableOptions implements HasLabel, Facetable<IntegratableOptions> {
+    public enum IntegratableOptions implements HasLabel, Facetable<IntegratableOptions> , Localizable {
         YES("Ready for Data Integration"), NO("Needs Ontology Mappings");
 
         private String label;
@@ -59,6 +61,12 @@ public class Dataset extends InformationResource {
         public String getLabel() {
             return label;
         }
+
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
+        }
+
 
         @Override
         public Integer getCount() {

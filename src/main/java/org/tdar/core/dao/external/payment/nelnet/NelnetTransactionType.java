@@ -1,10 +1,11 @@
 package org.tdar.core.dao.external.payment.nelnet;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.utils.MessageHelper;
 
-public enum NelnetTransactionType implements HasLabel {
+public enum NelnetTransactionType implements HasLabel, Localizable {
 
     CREDIT_CARD("Credit Card", 1, true),
     CREDIT_CARD_REFUND("Credit Card Refund", 2, false),
@@ -31,6 +32,11 @@ public enum NelnetTransactionType implements HasLabel {
     @Override
     public String getLabel() {
         return label;
+    }
+    
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     private void setLabel(String label) {

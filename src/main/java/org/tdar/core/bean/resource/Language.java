@@ -2,6 +2,8 @@ package org.tdar.core.bean.resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
 /**
  * Controlled vocabulary for languages
@@ -9,7 +11,7 @@ import org.tdar.core.bean.HasLabel;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum Language implements HasLabel {
+public enum Language implements HasLabel, Localizable {
 
     ENGLISH("English", "en", "eng"),
     SPANISH("Spanish", "sp", "spa"),
@@ -42,6 +44,11 @@ public enum Language implements HasLabel {
 
     public String getIso639_2() {
         return iso639_2;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     public static Language fromISO(String str) {

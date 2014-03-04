@@ -1,6 +1,8 @@
 package org.tdar.core.bean.resource.datatable;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
 /**
  * Represents a measurement unit
@@ -8,7 +10,7 @@ import org.tdar.core.bean.HasLabel;
  * @author abrin
  *
  */
-public enum MeasurementUnit implements HasLabel {
+public enum MeasurementUnit implements HasLabel, Localizable {
     KILOGRAM("kilogram", "kg"),
     GRAM("gram", "g"),
     MILLIGRAM("milligram", "mg"),
@@ -36,6 +38,11 @@ public enum MeasurementUnit implements HasLabel {
     @Override
     public String getLabel() {
         return getFullName();
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     private void setFullName(String label) {

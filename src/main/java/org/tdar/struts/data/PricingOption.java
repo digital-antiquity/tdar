@@ -8,11 +8,13 @@ import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.utils.MessageHelper;
 
 public class PricingOption implements Serializable {
 
-    public enum PricingType implements HasLabel {
+    public enum PricingType implements HasLabel, Localizable {
         SIZED_BY_MB("Priced by MB"),
         SIZED_BY_FILE_ONLY("Priced by File"),
         SIZED_BY_FILE_ABOVE_TIER("Priced by File rounded up");
@@ -27,7 +29,12 @@ public class PricingOption implements Serializable {
         public String getLabel() {
             return label;
         }
-    }
+
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
+        }
+}
 
     private static final long serialVersionUID = -3297968564600082652L;
 
