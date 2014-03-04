@@ -17,6 +17,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.service.bulk.CellMetadata;
 
 public class ReflectionServiceTest {
@@ -33,6 +34,10 @@ public class ReflectionServiceTest {
                 for (Object obj : cls.getEnumConstants()) {
                     String label = ((HasLabel) obj).getLabel();
                     assertNotNull(label);
+                    if (obj instanceof Localizable) {
+                        Localizable l = ((Localizable)obj);
+                        logger.debug(l.getLocaleKey() + "==" + label);
+                    }
                     logger.trace("cls: {} label: {}", cls, label);
                 }
             }
