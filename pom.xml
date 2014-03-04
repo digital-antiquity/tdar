@@ -10,7 +10,7 @@
 		<struts2.version>2.3.16</struts2.version>
 		<hibernate.version>4.3.3.Final</hibernate.version>
 		<hibernate.search.version>4.5.0.Final</hibernate.search.version>
-		<spring.framework.version>4.0.1.RELEASE</spring.framework.version>
+		<spring.framework.version>4.0.2.RELEASE</spring.framework.version>
 		<spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
 		<spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
 		<postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
@@ -654,24 +654,17 @@
 			<artifactId>poi-ooxml</artifactId> <version>3.7</version> </dependency>  -->
 		<!-- hibernate and JPA persistence -->
 		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.1-api </artifactId>
-			<version>1.0.0.Final</version>
-			<type>pom</type>
-			<!--  LICENSE: LGPL 2.1 -->
-		</dependency>
-		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 			<!--  LICENSE: LGPL 2.1 -->
 		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>${hibernate.version}</version>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.hibernate</groupId> -->
+<!-- 			<artifactId>hibernate-entitymanager</artifactId> -->
+<!-- 			<version>${hibernate.version}</version> -->
 			<!--  LICENSE: LGPL 2.1 -->
-		</dependency>
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
@@ -785,6 +778,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet.api.version}</version>
+		    <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -1043,6 +1037,12 @@
 			<artifactId>odata4j-core</artifactId>
 			<version>${odata4j.version}</version>
 			<!--  LICENSE: APACHE 2.0 -->
+			<exclusions>
+				<exclusion>
+					<artifactId>javax.persistence</artifactId>
+					<groupId>org.eclipse.persistence</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.odata4j</groupId>
