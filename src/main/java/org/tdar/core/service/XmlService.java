@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -47,6 +48,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FileStoreFile.DirectoryType;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.utils.MessageHelper;
@@ -330,12 +333,13 @@ public class XmlService {
         }
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_KEYWORD_MEAN), log.getKeywordMean().toString());
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_KEYWORD_MEDIAN), log.getKeywordMedian().toString());
-        File dir = new File(TdarConfiguration.getInstance().getCreatorFOAFDir());
-        dir.mkdir();
-        File file = new File(dir, creator.getId() + FOAF_XML);
+
+        File file = new File(TdarConfiguration.getInstance().getTempDirectory(),creator.getId() + FOAF_XML);
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         model.write(writer, RDF_XML_ABBREV);
         IOUtils.closeQuietly(writer);
+        FileStoreFile fsf = new FileStoreFile(DirectoryType.SUPPORT, creator.getId(), file.getName());
+        TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
 
     }
 
@@ -374,5 +378,24 @@ public class XmlService {
             person_.addProperty(FOAF.member, addInstitution(model, baseUrl, institution));
         }
         return person_;
+    }
+
+    /**
+     * Stores the CreatorXML Log in the filestore
+     * 
+     * @param model
+     * @param baseUrl
+     * @param person
+     * @return
+     * @throws Exception 
+     */
+    public void generateCreatorLog(Creator creator, CreatorInfoLog log) throws Exception {
+        File file = new File(TdarConfiguration.getInstance().getTempDirectory(),creator.getId() + ".xml");
+        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
+        convertToXML(log, writer);
+        IOUtils.closeQuietly(writer);
+        FileStoreFile fsf = new FileStoreFile(DirectoryType.SUPPORT, creator.getId(), file.getName());
+        TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
+        
     }
 }

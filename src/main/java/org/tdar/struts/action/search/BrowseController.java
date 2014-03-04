@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +43,10 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FileStoreFileProxy;
+import org.tdar.filestore.FileStoreFile.DirectoryType;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -96,7 +98,6 @@ public class BrowseController extends AbstractLookupController {
     private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     private List<BrowseYearCountCache> scholarData;
-    private File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + XML);
     private List<BrowseDecadeCountCache> timelineData;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private List<String> groups = new ArrayList<String>();
@@ -112,7 +113,6 @@ public class BrowseController extends AbstractLookupController {
 
     private transient InputStream inputStream;
     private Long contentLength;
-    private XPathFactory xPathFactory;
     private Document dom;
     private float keywordMedian = 0;
     private float creatorMedian = 0;
@@ -196,7 +196,9 @@ public class BrowseController extends AbstractLookupController {
     public String creatorRdf() throws FileNotFoundException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + FOAF_XML);
+            FileStoreFile object = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + FOAF_XML);
+            
+            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, object );
             if (file.exists()) {
                 setInputStream(new FileInputStream(file));
                 setContentLength(file.length());
@@ -257,7 +259,8 @@ public class BrowseController extends AbstractLookupController {
                 }
             }
             try {
-                File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + SLASH + getId() + XML);
+                FileStoreFile object = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + XML);
+                File foafFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, object );
                 if (foafFile.exists()) {
                     dom = getFileSystemResourceService().openCreatorInfoLog(foafFile);
                     getKeywords();
@@ -451,14 +454,6 @@ public class BrowseController extends AbstractLookupController {
         return searchFieldLookup;
     }
 
-
-    public File getFoafFile() {
-        return foafFile;
-    }
-
-    public void setFoafFile(File foafFile) {
-        this.foafFile = foafFile;
-    }
 
     public List<NodeModel> getCollaborators() throws TdarActionException {
         if (collaborators != null) {

@@ -1,9 +1,5 @@
 package org.tdar.core.service.processes;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -207,9 +203,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
             try {
                 xmlService.generateFOAF(creator, log);
-                File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + creator.getId() + ".xml");
-                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
-                xmlService.convertToXML(log, writer);
+                xmlService.generateCreatorLog(creator, log);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 logger.error("exception: {} ", e);

@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.filestore.FileStoreFileProxy;
 
 @Entity
 // making the assumption formally that there can only be one version of any type
@@ -38,7 +39,7 @@ import org.tdar.core.bean.Viewable;
  * @author abrin
  *
  */
-public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension {
+public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension, FileStoreFileProxy {
 
     private static final long serialVersionUID = 3768354809654162949L;
 
@@ -457,12 +458,19 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.primaryFile = primaryFile;
     }
 
+    @Override
     public File getTransientFile() {
         return transientFile;
     }
 
+    @Override
     public void setTransientFile(File transientFile) {
         this.transientFile = transientFile;
+    }
+
+    @Override
+    public Long getPersistableId() {
+        return getInformationResourceId();
     }
 
 }

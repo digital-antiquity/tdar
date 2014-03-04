@@ -104,7 +104,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    String store(ObjectType type, InputStream content, InformationResourceFileVersion version) throws IOException;
+    String store(ObjectType type, InputStream content, FileStoreFileProxy object) throws IOException;
 
     long getSizeInBytes();
 
@@ -121,7 +121,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    String storeAndRotate(ObjectType type, InputStream content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
+    String storeAndRotate(ObjectType type, InputStream content, FileStoreFileProxy object, StorageMethod rotation) throws IOException;
 
     /**
      * Write a file to the filestore.
@@ -130,9 +130,9 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    String store(ObjectType type, File content, InformationResourceFileVersion version) throws IOException;
+    String store(ObjectType type, File content, FileStoreFileProxy version) throws IOException;
 
-    String storeAndRotate(ObjectType type, File content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
+    String storeAndRotate(ObjectType type, File content, FileStoreFileProxy object, StorageMethod rotation) throws IOException;
 
     void storeLog(LogType type, String filename, String message);
 
@@ -144,7 +144,7 @@ public interface Filestore {
      * @return {@link File} associated with the given ID.
      * @throws {@link FileNotFoundException }
      */
-    File retrieveFile(ObjectType type, InformationResourceFileVersion version) throws FileNotFoundException;
+    File retrieveFile(ObjectType type, FileStoreFileProxy object) throws FileNotFoundException;
 
     /**
      * Delete the file with the given fileId.
@@ -153,13 +153,13 @@ public interface Filestore {
      *            file identifier
      * @throws {@link IOException }
      */
-    void purge(ObjectType type, InformationResourceFileVersion version) throws IOException;
+    void purge(ObjectType type, FileStoreFileProxy object) throws IOException;
 
     String getFilestoreLocation();
 
     MessageDigest createDigest(File f);
 
-    boolean verifyFile(ObjectType type, InformationResourceFileVersion version) throws FileNotFoundException, TaintedFileException;
+    boolean verifyFile(ObjectType type, FileStoreFileProxy object) throws FileNotFoundException, TaintedFileException;
 
     public abstract static class BaseFilestore implements Filestore {
         private static final String MD5 = "MD5";
@@ -290,13 +290,13 @@ public interface Filestore {
         }
 
         @Override
-        public boolean verifyFile(ObjectType type, InformationResourceFileVersion version) throws FileNotFoundException {
-            File toVerify = retrieveFile(type, version);
+        public boolean verifyFile(ObjectType type, FileStoreFileProxy object) throws FileNotFoundException {
+            File toVerify = retrieveFile(type, object);
             MessageDigest newDigest = createDigest(toVerify);
             String hex = formatDigest(newDigest);
-            logger.debug("Verifying file: {}", version.getFilename());
-            logger.trace("\told: {} new: {}", version.getChecksum(), hex);
-            return hex.trim().equalsIgnoreCase(version.getChecksum().trim());
+            logger.debug("Verifying file: {}", object.getFilename());
+            logger.trace("\told: {} new: {}", object.getChecksum(), hex);
+            return hex.trim().equalsIgnoreCase(object.getChecksum().trim());
         }
 
         public DigestInputStream appendMessageDigestStream(InputStream content) {

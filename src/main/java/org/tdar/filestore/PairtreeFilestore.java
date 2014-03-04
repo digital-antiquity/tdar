@@ -18,6 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.filestore.Filestore.BaseFilestore;
@@ -68,7 +69,7 @@ public class PairtreeFilestore extends BaseFilestore {
     }
 
     @Override
-    public String store(ObjectType type, InputStream content, InformationResourceFileVersion version) throws IOException {
+    public String store(ObjectType type, InputStream content, FileStoreFileProxy version) throws IOException {
         StorageMethod rotate = StorageMethod.NO_ROTATION;
         return storeAndRotate(type, content, version, rotate);
     }
@@ -77,7 +78,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#store(java.io.InputStream)
      */
     @Override
-    public String storeAndRotate(ObjectType type, InputStream content, InformationResourceFileVersion version, StorageMethod rotate) throws IOException {
+    public String storeAndRotate(ObjectType type, InputStream content, FileStoreFileProxy version, StorageMethod rotate) throws IOException {
         OutputStream outputStream = null;
         String path = getAbsoluteFilePath(type, version);
 
@@ -108,11 +109,14 @@ public class PairtreeFilestore extends BaseFilestore {
                 throw new TdarRuntimeException(errorMessage);
             }
             
-            if (version.isUploaded()) {
-                outFile.setWritable(false);
+            if (version instanceof InformationResourceFileVersion) {
+                InformationResourceFileVersion irfv = (InformationResourceFileVersion)version;
+                if (irfv.isUploaded()) {
+                    outFile.setWritable(false);
+                }
+                
+                updateVersionInfo(outFile, irfv);
             }
-            
-            updateVersionInfo(outFile, version);
             MessageDigest digest = digestInputStream.getMessageDigest();
             if (StringUtils.isEmpty(version.getChecksum())) {
                 version.setChecksumType(digest.getAlgorithm());
@@ -154,7 +158,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#store(File)
      */
     @Override
-    public String store(ObjectType type, File content, InformationResourceFileVersion version) throws IOException {
+    public String store(ObjectType type, File content, FileStoreFileProxy version) throws IOException {
         return storeAndRotate(type, content, version, StorageMethod.NO_ROTATION);
     }
 
@@ -162,7 +166,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#store(File)
      */
     @Override
-    public String storeAndRotate(ObjectType type, File content, InformationResourceFileVersion version, StorageMethod rotations) throws IOException {
+    public String storeAndRotate(ObjectType type, File content, FileStoreFileProxy version, StorageMethod rotations) throws IOException {
         if (content == null || !content.isFile()) {
             logger.warn("Trying to store null or non-file content: {}", content);
             return "";
@@ -174,7 +178,7 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#retrieveFile(java.lang.String)
      */
     @Override
-    public File retrieveFile(ObjectType type, InformationResourceFileVersion version) throws FileNotFoundException {
+    public File retrieveFile(ObjectType type, FileStoreFileProxy version) throws FileNotFoundException {
         File file = new File(getAbsoluteFilePath(type, version));
         logger.trace("file requested: {}", file);
         if (!file.isFile())
@@ -222,27 +226,36 @@ public class PairtreeFilestore extends BaseFilestore {
      * @param fileId
      * @return String
      */
-    public String getAbsoluteFilePath(ObjectType type, InformationResourceFileVersion version) {
-        Long irID = version.getInformationResourceId();
+    public String getAbsoluteFilePath(ObjectType type, FileStoreFileProxy version) {
+        Long irID = version.getPersistableId();
         StringBuffer base = new StringBuffer();
         base.append(getResourceDirPath(type, irID));
-        if (version.getInformationResourceFileId() != null) {
-            base.append(version.getInformationResourceFileId());
-            base.append(File.separator);
-            base.append("v" + version.getVersion());
-            base.append(File.separator);
-            if (version.isArchival()) {
-                base.append(ARCHIVAL);
-                base.append(File.separator);
-            } else if (!version.isUploaded()) {
-                base.append(DERIV);
-                base.append(File.separator);
+        if (version instanceof InformationResourceFileVersion) {
+            InformationResourceFileVersion irfv = (InformationResourceFileVersion) version;
+            if (Persistable.Base.isNotNullOrTransient(irfv.getInformationResourceFileId())) {
+                append(base, irfv.getInformationResourceFileId());
+                append(base, "v" + irfv.getVersion());
+                if (irfv.isArchival()) {
+                    append(base, ARCHIVAL);
+                } else if (!irfv.isUploaded()) {
+                    append(base, DERIV);
+                }
             }
+        }        
+        
+        if (version instanceof FileStoreFile) {
+            FileStoreFile fsf = (FileStoreFile)version;
+            append(base, fsf.getType().toString().toLowerCase());
         }
         logger.trace("{}", base);
         return FilenameUtils.concat(FilenameUtils.normalize(base.toString()), version.getFilename());
     }
 
+    private void append(StringBuffer base, Object obj) {
+        base.append(obj);
+        base.append(File.separator);
+    }
+    
     /**
      * Constructs the relative path to the file in the filestore with a given
      * fileId.
@@ -275,22 +288,30 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#purge(java.lang.String)
      */
     @Override
-    public void purge(ObjectType type, InformationResourceFileVersion version) throws IOException {
+    public void purge(ObjectType type, FileStoreFileProxy version) throws IOException {
         File file = new File(getAbsoluteFilePath(type, version));
-        if (!version.isDerivative() && !version.isTranslated()) {
-            try {
-                // if archival, need to go up one more
-                if (version.isArchival()) {
-                    file = file.getParentFile();
+        if (version instanceof InformationResourceFileVersion) {
+            InformationResourceFileVersion irfv = (InformationResourceFileVersion) version;
+            if (irfv.isDerivative() || irfv.isTranslated()) {
+                FileUtils.deleteQuietly(file);
+                cleanEmptyParents(file.getParentFile());
+            } else {
+                try {
+                    // if archival, need to go up one more
+                    if (irfv.isArchival()) {
+                        file = file.getParentFile();
+                    }
+                    File parentFile = file.getParentFile();
+                    String canonicalPath = parentFile.getCanonicalPath();
+                    File deletedFile = new File(canonicalPath + DELETED_SUFFIX);
+
+                    logger.debug("renaming: {} ==> {}", parentFile.getAbsolutePath(), deletedFile.getAbsoluteFile());
+                    FileUtils.moveDirectory(parentFile, deletedFile);
+                    return;
+                } catch (Exception e) {
+                    logger.warn("cannot purge file", e);
+                    return;
                 }
-                File parentFile = file.getParentFile();
-                String canonicalPath = parentFile.getCanonicalPath();
-                File deletedFile = new File(canonicalPath + DELETED_SUFFIX);
-                
-                logger.debug("renaming: {} ==> {}", parentFile.getAbsolutePath(), deletedFile.getAbsoluteFile());
-                FileUtils.moveDirectory(parentFile, deletedFile);
-            } catch (Exception e) {
-                logger.warn("cannot purge file", e);
             }
         } else {
             FileUtils.deleteQuietly(file);
