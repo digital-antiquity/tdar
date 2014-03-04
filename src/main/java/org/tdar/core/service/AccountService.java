@@ -890,9 +890,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         if (account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles() || account.getAvailableSpaceInMb() < coupon.getNumberOfMb()) {
-            logger.info("{}", account.getTotalNumberOfFiles());
-            logger.info("{} < {} ", account.getAvailableNumberOfFiles(), coupon.getNumberOfFiles());
-            logger.info("{} < {} ", account.getAvailableSpaceInMb(), coupon.getNumberOfMb());
+            logger.trace("{}", account.getTotalNumberOfFiles());
+            logger.debug("{} < {} ", account.getAvailableNumberOfFiles(), coupon.getNumberOfFiles());
+            logger.debug("{} < {} ", account.getAvailableSpaceInMb(), coupon.getNumberOfMb());
             throw new TdarRecoverableRuntimeException("accountService.not_enough_space_or_files");
         }
         genericDao.save(coupon);

@@ -192,6 +192,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.setNumberOfFiles(1000L);
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
+        logger.debug("messages: {}", controller.getActionMessages());
         assertTrue(controller.getActionMessages().contains(MessageHelper.getMessage("accountService.not_enough_space_or_files")));
         setIgnoreActionErrors(true);
     }

@@ -23,12 +23,6 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
-    public void testContributorRequests() {
-        gotoPage("/admin/contributors");
-        assertTextPresentInPage("Contributor Requests");
-    }
-
-    @Test
     public void testRecentActivity() {
         gotoPage("/admin/activity");
         assertTextPresentInPage("Recent Activity");
