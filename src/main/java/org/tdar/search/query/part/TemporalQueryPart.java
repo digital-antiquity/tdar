@@ -1,6 +1,8 @@
 package org.tdar.search.query.part;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
@@ -10,6 +12,7 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -55,7 +58,12 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
 
     @Override
     public String getDescription(TextProvider provider) {
-        return provider.getText("temporalQueryPart.date_between", getFieldValues().get(0).toString());
+        logger.debug("vals: {}", getFieldValues().get(0).toString());
+        logger.debug(provider.getClass().getCanonicalName());
+        logger.debug(provider.getText("temporalQueryPart.date_between", getFieldValues().get(0).toString()));
+        List<String> vals = new ArrayList<>();
+        vals.add(getFieldValues().get(0).toString());
+        return provider.getText("temporalQueryPart.date_between", vals);
     }
 
     @Override

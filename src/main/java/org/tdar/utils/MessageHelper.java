@@ -94,14 +94,12 @@ public class MessageHelper implements Serializable, TextProvider {
 
     @Override
     public String getText(String key, List<?> args) {
-        // TODO Auto-generated method stub
-        return null;
+        return MessageHelper.getMessage(key, args.toArray());
     }
 
     @Override
     public String getText(String key, String[] args) {
-        // TODO Auto-generated method stub
-        return null;
+        return MessageHelper.getMessage(key,args);
     }
 
     @Override

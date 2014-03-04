@@ -281,6 +281,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Test
     @Rollback(true)
     public void testCalDateSearchPhrase() {
+        controller = generateNewInitializedController(AdvancedSearchController.class);
         setResourceTypes(ResourceType.DOCUMENT, ResourceType.IMAGE);
         CoverageDate cd = new CoverageDate(CoverageType.CALENDAR_DATE, -1000, 1200);
         firstGroup().getCoverageDates().add(cd);

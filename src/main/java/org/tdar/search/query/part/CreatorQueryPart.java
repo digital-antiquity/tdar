@@ -142,7 +142,9 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                 }
             }
         }
-        return provider.getText("creatorQueryPart.with_creators", names.toString());
+        List<String> vals = new ArrayList<>();
+        vals.add(names.toString());
+        return provider.getText("creatorQueryPart.with_creators", vals);
     }
 
     @Override

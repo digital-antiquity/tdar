@@ -65,8 +65,9 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
         if (labels.size() == 1 && seenActive) {
             return "";
         }
-
-        return String.format(fmt, StringUtils.join(labels, provider.getText("statusQueryPart.or")));
+        List<String> vals = new ArrayList<>();
+        vals.add(StringUtils.join(labels, provider.getText("statusQueryPart.or")));
+        return String.format(fmt, vals);
     }
 
     @Override
