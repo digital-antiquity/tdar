@@ -389,7 +389,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         for (ResourceCollection collection : incoming_) {
             addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, collection);
-            xmlService.logRecordXmlToFilestore(collection);
         }
         logger.debug("after save: {} ({})", current, current.size());
 
@@ -436,6 +435,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             collectionToAdd.markUpdated(authenticatedUser);
             if (collectionToAdd.isTransient() && shouldSave) {
                 save(collectionToAdd);
+                xmlService.logRecordXmlToFilestore(collection);
             }
 
             // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
