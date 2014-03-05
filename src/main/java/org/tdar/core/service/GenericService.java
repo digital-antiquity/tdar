@@ -37,6 +37,8 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.MessageHelper;
 
+import java.util.Arrays;
+
 /**
  * $Id$
  * 
@@ -492,12 +494,15 @@ public class GenericService {
         } else {
             Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
             Set<ConstraintViolation<Object>> violations = validator.validate(obj);
+            List<Object> errors = new ArrayList<>();
+            errors.add(obj);
             if (violations.size() > 0) {
                 logger.debug(String.format("violations: %s", violations));
-                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid_with_violations", obj, violations));
+                errors.add(violations);
+                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid_with_violations", errors));
             }
             if (obj instanceof Validatable && !((Validatable) obj).isValid()) {
-                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid", obj));
+                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid", errors));
             }
         }
     }

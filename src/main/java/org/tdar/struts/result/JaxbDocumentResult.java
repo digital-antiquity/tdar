@@ -1,6 +1,7 @@
 package org.tdar.struts.result;
 
 import java.io.Writer;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,7 +57,7 @@ public class JaxbDocumentResult implements Result {
     public void execute(ActionInvocation invocation) throws Exception {
         JaxbDocument jaxbDocument = (JaxbDocument) invocation.getStack().findValue(documentName);
         if (jaxbDocument == null) {
-            String msg = MessageHelper.getMessage("jaxbDocumentResult.document_not_found", documentName);
+            String msg = MessageHelper.getMessage("jaxbDocumentResult.document_not_found", invocation.getInvocationContext().getLocale(), Arrays.asList(documentName).toArray());
             logger.error(msg);
             throw new IllegalArgumentException(msg);
         }

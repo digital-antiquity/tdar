@@ -42,6 +42,8 @@ import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
+import java.util.Arrays;
+
 /**
  * Metadata for a column in a data table.
  * 
@@ -341,28 +343,31 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @Override
     @JSONTransient
     public boolean isValid() {
+        List<Object> keys = new ArrayList<>();
+        keys.add(getName());
         if (columnEncodingType == null) {
-            throw new TdarValidationException("dataTableColumn.invalid_encoding_type", getName());
+            throw new TdarValidationException("dataTableColumn.invalid_encoding_type", keys);
         }
         switch (columnEncodingType) {
             case CODED_VALUE:
                 if (getDefaultCodingSheet() == null) {
-                    throw new TdarValidationException("dataTableColumn.invalid_coded_value", getName());
+                    throw new TdarValidationException("dataTableColumn.invalid_coded_value", keys);
                 }
                 break;
             case MEASUREMENT:
                 if (measurementUnit == null) {
-                    throw new TdarValidationException("dataTableColumn.invalid_measurement", getName());
+                    throw new TdarValidationException("dataTableColumn.invalid_measurement", keys);
                 }
                 // FIXME: Not 100% sure this is correct with the NUMERIC check
                 if (columnDataType == null || !columnDataType.isNumeric()) {
-                    throw new TdarValidationException("dataTableColumn.invalid_measurement_numeric", getName());
+                    throw new TdarValidationException("dataTableColumn.invalid_measurement_numeric", keys);
                 }
                 break;
             case COUNT:
                 // FIXME: Not 100% sure this is correct with the NUMERIC check
                 if (columnDataType == null || !columnDataType.isNumeric()) {
-                    throw new TdarValidationException("dataTableColumn.invalid", getName(), "count was not numeric");
+                    keys.add("count was not numeric");
+                    throw new TdarValidationException("dataTableColumn.invalid", keys);
                 }
             case UNCODED_VALUE:
         }

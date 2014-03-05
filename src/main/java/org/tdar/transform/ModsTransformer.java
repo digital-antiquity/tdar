@@ -473,7 +473,7 @@ public abstract class ModsTransformer<R extends Resource> implements
                 break;
         }
 
-        throw new TdarRecoverableRuntimeException("transformer.no_mods_transformer", resource.getClass());
+        throw new TdarRecoverableRuntimeException("transformer.no_mods_transformer", Arrays.asList(resource.getClass()));
     }
 
 }

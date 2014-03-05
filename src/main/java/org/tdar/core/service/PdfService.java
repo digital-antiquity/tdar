@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Transient;
 
@@ -30,6 +32,8 @@ import org.tdar.core.exception.PdfCoverPageGenerationException;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.AsciiTransliterator;
 import org.tdar.utils.MessageHelper;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * A centralized service used for the creation and management of PDF documents
@@ -64,7 +68,7 @@ public class PdfService {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public File mergeCoverPage(Person submitter, InformationResourceFileVersion version) throws COSVisitorException, IOException, URISyntaxException {
+    public File mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version) throws COSVisitorException, IOException, URISyntaxException {
         try {
             InformationResource informationResource = version.getInformationResourceFile().getInformationResource();
             if (version.getExtension().equalsIgnoreCase("PDF") && informationResource instanceof Document) {
@@ -76,16 +80,16 @@ public class PdfService {
                 File template = fileDao.loadTemplate(path);
 
                 // create the cover page
-                template = createCoverPage(submitter, template, document, version.getInformationResourceFile().getDescription());
+                template = createCoverPage(provider, submitter, template, document, version.getInformationResourceFile().getDescription());
 
                 // merge the two PDFs
 
                 return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
             } else {
-                throw new PdfCoverPageGenerationException(MessageHelper.getMessage("pdfService.file_type_invalid"));
+                throw new PdfCoverPageGenerationException("pdfService.file_type_invalid");
             }
         } catch (Throwable e) {
-            throw new PdfCoverPageGenerationException(MessageHelper.getMessage("pdfService.could_not_add_cover_page"), e);
+            throw new PdfCoverPageGenerationException("pdfService.could_not_add_cover_page", e);
         }
     }
 
@@ -120,7 +124,7 @@ public class PdfService {
      * @throws FileNotFoundException
      * @throws URISyntaxException
      */
-    private File createCoverPage(Person submitter, File template, Document document, String description) throws IOException, COSVisitorException, FileNotFoundException,
+    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description) throws IOException, COSVisitorException, FileNotFoundException,
             URISyntaxException {
         PDDocument doc = PDDocument.load(template);
         PDPage page = null;
@@ -172,11 +176,14 @@ public class PdfService {
         }
 
         if (StringUtils.isNotBlank(doi)) {
-            cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.doi"), doi, PdfFontHelper.HELVETICA_TWELVE_POINT, LEFT_MARGIN, cursorPositionFromBottom);
+            cursorPositionFromBottom = writeLabelPairOnPage(content, provider.getText("pdfService.doi"), doi, PdfFontHelper.HELVETICA_TWELVE_POINT, LEFT_MARGIN, cursorPositionFromBottom);
 
         }
         cursorPositionFromBottom = 200;
-        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.downloaded"), MessageHelper.getMessage("pdfService.by_on",submitter.getProperName() , new Date()),
+        List<Object> byOn = new ArrayList<>();
+        byOn.add(submitter.getProperName());
+        byOn.add(new Date());
+        cursorPositionFromBottom = writeLabelPairOnPage(content, provider.getText("pdfService.downloaded"), provider.getText("pdfService.by_on",byOn),
                 PdfFontHelper.HELVETICA_EIGHT_POINT,
                 LEFT_MARGIN, cursorPositionFromBottom);
 

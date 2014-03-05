@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -186,7 +187,7 @@ public interface DatasetConverter {
                 throw tex;
             } catch (Exception e) {
                 logger.error("unable to prcess file:  " + getInformationResourceFileVersion().getFilename(), e);
-                throw new TdarRecoverableRuntimeException("datasetConverter.error_unable_to_process", e, getInformationResourceFileVersion().getFilename());
+                throw new TdarRecoverableRuntimeException("datasetConverter.error_unable_to_process", e, Arrays.asList(getInformationResourceFileVersion().getFilename()));
             }
         }
 

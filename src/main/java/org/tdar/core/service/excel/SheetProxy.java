@@ -2,6 +2,7 @@ package org.tdar.core.service.excel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -95,7 +96,7 @@ public class SheetProxy implements Serializable {
 
     public void setName(String name) {
         if (workbook != null && workbook.getSheet(name) != null) {
-            throw new TdarRecoverableRuntimeException("sheetProxy.workbook_name_already_exists", name);
+            throw new TdarRecoverableRuntimeException("sheetProxy.workbook_name_already_exists", Arrays.asList(name));
         }
         this.name = name;
     }

@@ -8,6 +8,7 @@ package org.tdar.core.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -222,7 +223,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         try {
             process.execute();
         } catch (Throwable e) {
-            logger.error(MessageHelper.getMessage("scheduledProcessService.error_running", process.getDisplayName()), e);
+            logger.error(MessageHelper.getMessage("scheduledProcessService.error_running", Arrays.asList(process.getDisplayName())), e);
         }
 
         if (process.isCompleted()) {

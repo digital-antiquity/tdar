@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +135,7 @@ public class GenericKeywordService extends GenericService {
             try {
                 keyword = cls.newInstance();
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException("error.could_not_create_class", cls);
+                throw new TdarRecoverableRuntimeException("error.could_not_create_class", Arrays.asList(cls));
             }
             keyword.setLabel(label);
             genericKeywordDao.save(keyword);

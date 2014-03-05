@@ -9,6 +9,7 @@ package org.tdar.core.dao.external.pid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -156,7 +157,7 @@ public class EZIDDao implements ExternalIDProvider {
         if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
             logger.error("StatusCode:{}", response.getStatusLine().getStatusCode());
             logger.trace(result);
-            throw new TdarRecoverableRuntimeException("ezidDao.could_not_connect",result , authenticationRequest.getRequestLine().toString());
+            throw new TdarRecoverableRuntimeException("ezidDao.could_not_connect",Arrays.asList(result , authenticationRequest.getRequestLine().toString()));
         }
         recievedEntity.consumeContent();
         return result;
@@ -244,7 +245,7 @@ public class EZIDDao implements ExternalIDProvider {
 
         logger.trace(result);
         if (!StringUtils.containsIgnoreCase(result, SUCCESS)) {
-            throw new TdarRecoverableRuntimeException("ezidDao.could_not_create_doi",result);
+            throw new TdarRecoverableRuntimeException("ezidDao.could_not_create_doi",Arrays.asList(result));
         }
         return typeMap;
     }

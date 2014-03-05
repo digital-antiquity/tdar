@@ -1,14 +1,19 @@
 package org.tdar.core.exception;
 
+import java.util.List;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.utils.MessageHelper;
 
 public class I18nRuntimeException extends RuntimeException implements Localizable {
 
     private static final long serialVersionUID = 6115182705667575524L;
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
     private Locale locale;
-    private Object[] values;
+    private List<?> values;
     private String message;
     
     public I18nRuntimeException() {
@@ -26,13 +31,13 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
         this.message = message;
     }
 
-    public I18nRuntimeException(String message, Object ... values) {
+    public I18nRuntimeException(String message, List<?> values) {
         this.message = message;
         this.values = values;
     }
 
 
-    public I18nRuntimeException(String message, Throwable cause, Object ... values) {
+    public I18nRuntimeException(String message, Throwable cause, List<?> values) {
         super(cause);
         this.message = message;
         this.values = values;
@@ -57,12 +62,12 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
      */
     @Override
     public String getLocalizedMessage() {
-        return MessageHelper.getMessage(message,locale, values);
+        return MessageHelper.getMessage(message,locale, values.toArray());
     };
 
   @Override
   public String getMessage() {
-      return MessageHelper.getMessage(message, values);
+      return MessageHelper.getMessage(message, values.toArray());
   }
 
 

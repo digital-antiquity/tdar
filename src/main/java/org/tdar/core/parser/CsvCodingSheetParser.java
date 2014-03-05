@@ -54,7 +54,7 @@ public class CsvCodingSheetParser implements CodingSheetParser {
                     continue;
                 }
                 if (StringUtils.isBlank(code) || StringUtils.isBlank(term)) {
-                    throw new TdarRecoverableRuntimeException("csvCodingSheetParser.null_code_or_term", code, term);
+                    throw new TdarRecoverableRuntimeException("csvCodingSheetParser.null_code_or_term", Arrays.asList(code, term));
                 }
 
                 CodingRule codingRule = new CodingRule();

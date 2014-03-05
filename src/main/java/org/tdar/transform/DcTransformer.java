@@ -1,6 +1,7 @@
 package org.tdar.transform;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -350,6 +351,6 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
                 break;
         }
 
-        throw new TdarRecoverableRuntimeException("transformer.no_dc_transformer", resource.getClass());
+        throw new TdarRecoverableRuntimeException("transformer.no_dc_transformer", Arrays.asList(resource.getClass()));
     }
 }

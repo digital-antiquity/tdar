@@ -187,7 +187,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
             integrationDataResults = generatedIntegrationData.getFirst();
             setPivotData(generatedIntegrationData.getSecond());
-            PersonalFilestoreTicket ticket = getDataIntegrationService().toExcel(getIntegrationColumns(), generatedIntegrationData,
+            PersonalFilestoreTicket ticket = getDataIntegrationService().toExcel(this, getIntegrationColumns(), generatedIntegrationData,
                     getAuthenticatedUser());
             File file = File.createTempFile("integration", ".xml");
             FileUtils.writeStringToFile(file, integrationContextXml);

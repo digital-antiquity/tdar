@@ -6,8 +6,14 @@
  */
 package org.tdar.core.service.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,10 +30,6 @@ import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.action.resource.OntologyController;
-
-import edu.emory.mathcs.backport.java.util.Collections;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin

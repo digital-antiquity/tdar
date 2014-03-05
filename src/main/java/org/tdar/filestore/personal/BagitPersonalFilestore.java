@@ -152,7 +152,9 @@ public class BagitPersonalFilestore implements PersonalFilestore {
                 return new File(pathToBag, storedBagFile.getFilepath());
             }
         }
-        throw new TdarRecoverableRuntimeException("bagitPersonalFilestore.could_not_find_file_created", incomingFileName);
+        List<String> names = new ArrayList<>();
+        names.add(incomingFileName);
+        throw new TdarRecoverableRuntimeException("bagitPersonalFilestore.could_not_find_file_created", names);
     }
 
     @Override

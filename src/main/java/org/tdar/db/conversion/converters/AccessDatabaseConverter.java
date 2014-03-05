@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -204,7 +205,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             } catch (BufferUnderflowException | IllegalStateException  bex) {
                 throw new TdarRecoverableRuntimeException("accessDatabaseConverter.error_corrupt");
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException("accessDatabaseConverter.cannot_read_Row", e,rowNumber, tableName);
+                throw new TdarRecoverableRuntimeException("accessDatabaseConverter.cannot_read_Row", e,Arrays.asList(rowNumber, tableName));
             }
             finally {
                 completePreparedStatements();

@@ -3,7 +3,9 @@ package org.tdar.core.dao.external.pid;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -115,7 +117,9 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     private String getStringProperty(String property) {
         String result = assistant.getProperty(property, null);
         if (result == null) {
-            throw new IllegalStateException(MessageHelper.getMessage("Doi.required_property_not_set", property));
+            List<String> vals = new ArrayList<>();
+            vals.add(property);
+            throw new IllegalStateException(MessageHelper.getMessage("Doi.required_property_not_set", vals));
         }
         return result;
     }
@@ -204,7 +208,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     @SuppressWarnings("static-method")
     private void validateResponse(String operation, AndsDoiResponse response) {
         if (!response.isSuccess()) {
-            throw new TdarRecoverableRuntimeException("andsDoi.could_not_complete",operation ,response.getMessage());
+            throw new TdarRecoverableRuntimeException("andsDoi.could_not_complete",Arrays.asList(operation ,response.getMessage()));
         }
     }
 

@@ -169,7 +169,10 @@ public class RssService implements Serializable {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType(ATOM_1_0);
 
-        feed.setTitle(MessageHelper.getMessage("rssService.title",TdarConfiguration.getInstance().getSiteAcronym() , cleanStringForXML(handler.getSearchTitle())));
+        List<Object> vals =new ArrayList<>();
+        vals.add(TdarConfiguration.getInstance().getSiteAcronym());
+        vals.add(cleanStringForXML(handler.getSearchTitle()));
+        feed.setTitle(handler.getText("rssService.title",vals));
         OpenSearchModule osm = new OpenSearchModuleImpl();
         osm.setItemsPerPage(handler.getRecordsPerPage());
         osm.setStartIndex(handler.getStartRecord());

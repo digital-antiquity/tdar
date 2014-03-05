@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -67,8 +68,9 @@ import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResultMetadataWrapper;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * $Id$
@@ -654,10 +656,10 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             logger.info("mapping dataset to resources using column: {} ", column);
             Dataset dataset = column.getDataTable().getDataset();
             if (dataset == null) {
-                throw new TdarRecoverableRuntimeException("datasetService.dataset_null_column",column);
+                throw new TdarRecoverableRuntimeException("datasetService.dataset_null_column",Arrays.asList(column));
                 }
             else if (ObjectUtils.notEqual(project, dataset.getProject())) {
-                throw new TdarRecoverableRuntimeException("datasetService.dataset_different_project", project, dataset.getProject());
+                throw new TdarRecoverableRuntimeException("datasetService.dataset_different_project", Arrays.asList(project, dataset.getProject()));
             }
             if (column.isMappingColumn()) {
                 columnsToMap.add(column);
@@ -716,7 +718,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * necessary.
      */
     @Transactional
-    public Pair<Boolean, List<DataTableColumn>> updateColumnMetadata(Dataset dataset, DataTable dataTable, List<DataTableColumn> dataTableColumns,
+    public Pair<Boolean, List<DataTableColumn>> updateColumnMetadata(TextProvider provider, Dataset dataset, DataTable dataTable, List<DataTableColumn> dataTableColumns,
             Person authenticatedUser) {
         boolean hasOntologies = false;
         Pair<Boolean, List<DataTableColumn>> toReturn = new Pair<Boolean, List<DataTableColumn>>(hasOntologies, new ArrayList<DataTableColumn>());
@@ -729,8 +731,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             if (existingColumn == null) {
                 existingColumn = dataTable.getColumnByName(incomingColumn.getName());
                 if (existingColumn == null) {
-                    throw new TdarRecoverableRuntimeException("datasetService.could_not_find_column", incomingColumn.getName(),
-                            incomingColumn.getId());
+                    throw new TdarRecoverableRuntimeException("datasetService.could_not_find_column", Arrays.asList(incomingColumn.getName(),
+                            incomingColumn.getId()));
                 }
             }
             CodingSheet incomingCodingSheet = incomingColumn.getDefaultCodingSheet();
@@ -755,7 +757,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             incomingColumn.setDefaultOntology(defaultOntology);
             if (defaultOntology != null && Base.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-                CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(existingColumn, authenticatedUser,
+                CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser,
                         defaultOntology);
                 incomingColumn.setDefaultCodingSheet(generatedCodingSheet);
                 getLogger().debug("generated coding sheet {} for {}", generatedCodingSheet, incomingColumn);
@@ -795,7 +797,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // copy off all of the values that can be directly copied from the bean
             existingColumn.copyUserMetadataFrom(incomingColumn);
             if (!existingColumn.isValid()) {
-                throw new TdarRecoverableRuntimeException("datasetService.invalid_column",existingColumn);
+                throw new TdarRecoverableRuntimeException("datasetService.invalid_column",Arrays.asList(existingColumn));
             }
 
             if (needToRemap) {

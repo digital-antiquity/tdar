@@ -430,7 +430,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (collectionToAdd != null && collectionToAdd.isValid()) {
             if (Persistable.Base.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
                     && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
-                throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error", collectionToAdd.getTitle());
+                throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error", Arrays.asList(collectionToAdd.getTitle()));
             }
             collectionToAdd.markUpdated(authenticatedUser);
             if (collectionToAdd.isTransient() && shouldSave) {
@@ -444,7 +444,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         } else {
             if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
                 String collectionName = collectionToAdd != null ? collectionToAdd.getName(): "null collection";
-                throw new TdarRecoverableRuntimeException("resourceCollectionService.invalid",collectionName);
+                throw new TdarRecoverableRuntimeException("resourceCollectionService.invalid",Arrays.asList(collectionName));
             }
         }
     }

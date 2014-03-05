@@ -27,24 +27,24 @@ public class ExtractAudioInfoTask extends AbstractTask {
         // reality check: do we have an archive?
         final Class<? extends Resource> resourceClass = ctx.getResourceType().getResourceClass();
         if (Audio.class != resourceClass) {
-            recordErrorAndExit(MessageHelper.getMessage("extractAudioInformation.wrong_resource_type", resourceClass));
+            recordErrorAndExit("extractAudioInformation.wrong_resource_type", resourceClass);
         }
 
         // if we can't get the archive, we don't have enough information to run...
         Audio audio = (Audio) ctx.getTransientResource();
         if (audio == null) {
-            recordErrorAndExit(MessageHelper.getMessage("extractAudioInformation.transient_missing"));
+            recordErrorAndExit("extractAudioInformation.transient_missing");
         }
 
         // are there actual files to copy?
         final List<InformationResourceFileVersion> audioFiles = ctx.getOriginalFiles();
         if (audioFiles.size() <= 0) {
-            recordErrorAndExit(MessageHelper.getMessage("extractAudioInformation.missing_file"));
+            recordErrorAndExit("extractAudioInformation.missing_file");
         }
 
         // at the moment there should only be one file
         if (1 < audioFiles.size()) {
-            recordErrorAndExit(MessageHelper.getMessage("extractAudioInformation.too_many_files"));
+            recordErrorAndExit("extractAudioInformation.too_many_files");
         }
 
         // Preconditions have been checked, now to write the control file and extract the audio files to work with.

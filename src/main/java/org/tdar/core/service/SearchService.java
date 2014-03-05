@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -225,8 +226,8 @@ public class SearchService {
         logger.debug("{}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
 
         if (resultHandler.getStartRecord() > ftq.getResultSize()) {
-            throw new SearchPaginationException(MessageHelper.getMessage("searchService.start_record_too_high", resultHandler.getStartRecord(),
-                    ftq.getResultSize()));
+            throw new SearchPaginationException(MessageHelper.getMessage("searchService.start_record_too_high", Arrays.asList(resultHandler.getStartRecord(),
+                    ftq.getResultSize())));
         }
 
         logger.trace("returning: {}", toReturn);

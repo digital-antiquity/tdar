@@ -2,6 +2,7 @@ package org.tdar.filestore.tasks;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -60,9 +61,7 @@ public class ConvertDatasetTask extends AbstractTask {
 
                 if (versionToConvert == null || !versionToConvert.getTransientFile().exists()) {
                     // abort!
-                    String msg = MessageHelper.getMessage("convertDatasetTask.file_does_not_exist", versionToConvert, versionToConvert.getId());
-                    getLogger().error(msg);
-                    throw new TdarRecoverableRuntimeException(msg);
+                    throw new TdarRecoverableRuntimeException("convertDatasetTask.file_does_not_exist", Arrays.asList(versionToConvert, versionToConvert.getId()));
                 }
 
                 // drop this dataset's actual data tables from the tdardata database - we'll delete the actual hibernate metadata entities later after

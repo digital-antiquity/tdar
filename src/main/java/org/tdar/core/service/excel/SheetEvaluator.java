@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 
+import java.util.Arrays;
+
 /*
  * The goal of this class is to evaluate the beginning of a worksheet and try and figure out where the
  * "data" starts.  This could be the first row, or there, as in many cases are, a few header rows ahead
@@ -101,7 +103,12 @@ public class SheetEvaluator {
     }
 
     private void throwTdarRecoverableRuntimeException(int rowNumber, short offendingColumnIndex, int columnNameBound, String sheetName) {
-        throw new TdarRecoverableRuntimeException("sheetEvaluator.row_has_more_columns",rowNumber, offendingColumnIndex, columnNameBound, sheetName);
+        List<Object> errors = new ArrayList<>();
+        errors.add(rowNumber);
+        errors.add( offendingColumnIndex);
+        errors.add(columnNameBound);
+        errors.add(sheetName);
+        throw new TdarRecoverableRuntimeException("sheetEvaluator.row_has_more_columns",errors);
     }
 
     private int evaluateForBlankCells(Row row, int endAt, int cellCount) {
@@ -118,10 +125,13 @@ public class SheetEvaluator {
         if (cell == null) {
             return null;
         }
+        List<Object> errors = new ArrayList<>();
+        errors.add(cell.getRowIndex() +1);
+        errors.add(cell.getColumnIndex()+1);
         try {
 
             if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
-                     throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error", cell.getRowIndex() +1, cell.getColumnIndex()+1);
+                     throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error", errors);
             }
 
             return formatter.formatCellValue(cell, evaluator);
@@ -135,7 +145,7 @@ public class SheetEvaluator {
                 case Cell.CELL_TYPE_BOOLEAN:
                     return Boolean.toString(cell.getBooleanCellValue());
                 default:
-                    throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_error", cell.getRowIndex() +1, cell.getColumnIndex()+1);
+                    throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_error", errors);
             }
         } catch (RuntimeException re) {
             throw new TdarRecoverableRuntimeException(String.format("there was a problem processing your dataset at row: %s column %s",

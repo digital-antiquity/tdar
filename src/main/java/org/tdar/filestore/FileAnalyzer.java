@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -115,7 +116,7 @@ public class FileAnalyzer {
         }
         Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null) {
-            String message = MessageHelper.getMessage("fileAnalyzer.no_workflow_found", java.util.Arrays.toString(informationResourceFileVersions));
+            String message = MessageHelper.getMessage("fileAnalyzer.no_workflow_found", Arrays.asList(Arrays.toString(informationResourceFileVersions)));
             throw new TdarRecoverableRuntimeException(message);
         }
         checkFilesExist(informationResourceFileVersions);
@@ -130,10 +131,10 @@ public class FileAnalyzer {
             File file = version.getTransientFile();
 
             if (file == null) {
-                throw new FileNotFoundException(MessageHelper.getMessage("filestore.file_does_not_exist",version));
+                throw new FileNotFoundException(MessageHelper.getMessage("filestore.file_does_not_exist",Arrays.asList(version)));
             }
             if (!file.exists()) {
-                throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found", file.getCanonicalPath()));
+                throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found", Arrays.asList(file.getCanonicalPath())));
             }
 
         }

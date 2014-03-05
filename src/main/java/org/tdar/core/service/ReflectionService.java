@@ -35,6 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.ReflectionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -48,7 +49,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.bulk.CellMetadata;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.ActionInvocation;
@@ -340,7 +340,7 @@ public class ReflectionService {
             Class cls = Class.forName(beanClassName);
             logger.trace("{} - {} ", cls.getSimpleName(), cls);
             if (persistableLookup.containsKey(cls.getSimpleName())) {
-                throw new TdarRecoverableRuntimeException("reflectionService.jaxb_mapping", cls.getSimpleName());
+                throw new TdarRecoverableRuntimeException("reflectionService.jaxb_mapping", Arrays.asList(cls.getSimpleName()));
             }
             persistableLookup.put(cls.getSimpleName(), cls);
         }
@@ -638,7 +638,7 @@ public class ReflectionService {
                     BeanUtils.setProperty(beanToProcess, name, Enum.valueOf(propertyType, value));
                 } catch (IllegalArgumentException e) {
                     logger.debug("cannot set property:", e);
-                    throw new TdarRecoverableRuntimeException("reflectionService.not_valid_value", e, value, name);
+                    throw new TdarRecoverableRuntimeException("reflectionService.not_valid_value", e, Arrays.asList(value, name));
                 }
             } else {
                 if (Integer.class.isAssignableFrom(propertyType)) {
@@ -648,7 +648,7 @@ public class ReflectionService {
                             value = new Integer((int) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("reflectionService.expecting_integer", name, value);
+                        throw new TdarRecoverableRuntimeException("reflectionService.expecting_integer", Arrays.asList(value, name));
                     }
                 }
                 if (Long.class.isAssignableFrom(propertyType)) {
@@ -658,14 +658,14 @@ public class ReflectionService {
                             value = new Long((long) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("reflectionService.expecting_big_integer", name, value);
+                        throw new TdarRecoverableRuntimeException("reflectionService.expecting_big_integer", Arrays.asList(value, name));
                     }
                 }
                 if (Float.class.isAssignableFrom(propertyType)) {
                     try {
                         Float.parseFloat(value);
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("reflectionService.expecting_floating_point", name, value);
+                        throw new TdarRecoverableRuntimeException("reflectionService.expecting_floating_point", Arrays.asList(value, name));
                     }
                 }
                 BeanUtils.setProperty(beanToProcess, name, value);
@@ -675,7 +675,7 @@ public class ReflectionService {
                 throw (TdarRecoverableRuntimeException) e1;
             }
             logger.debug("error processing bulk upload: {}", e1);
-            throw new TdarRecoverableRuntimeException("reflectionService.expecting_floating_generic", name, value);
+            throw new TdarRecoverableRuntimeException("reflectionService.expecting_floating_generic", Arrays.asList(value, name));
         }
     }
 

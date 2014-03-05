@@ -356,7 +356,7 @@ public class BulkUploadService {
         }
 
         if (CollectionUtils.isNotEmpty(requiredErrors)) {
-            throw new TdarRecoverableRuntimeException("bulkUploadService.the_following_columns_are_required_s", StringUtils.join(requiredErrors.toArray(), ", "));
+            throw new TdarRecoverableRuntimeException("bulkUploadService.the_following_columns_are_required_s", Arrays.asList(StringUtils.join(requiredErrors.toArray(), ", ")));
         }
 
         testFilenameCaseAndAddFiles(rowIterator, proxy);
@@ -392,7 +392,7 @@ public class BulkUploadService {
             if (caseTest.containsKey(filename)) {
                 String testFile = caseTest.get(filename);
                 if (testFile.equals(filename)) {
-                    throw new TdarRecoverableRuntimeException("bulkUploadService.duplicate_filename_s_was_found_in_manifest_file", filename);
+                    throw new TdarRecoverableRuntimeException("bulkUploadService.duplicate_filename_s_was_found_in_manifest_file", Arrays.asList(filename));
                 }
                 if (testFile.equalsIgnoreCase(filename)) {
                     proxy.setCaseSensitive(true);
@@ -688,13 +688,15 @@ public class BulkUploadService {
                 continue;
             }
             if (resourceToProcess == null) {
-                receiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", filename));
+                List<Object> vals = new ArrayList<>();
+                vals.add(filename);
+                receiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", vals));
                 continue;
             }
             logger.info("processing:" + filename);
 
             receiver.setPercentComplete(receiver.getPercentComplete() + 1f);
-            receiver.setStatus(MessageHelper.getMessage("bulkUploadService.processing_file", filename));
+            receiver.setStatus(MessageHelper.getMessage("bulkUploadService.processing_file", Arrays.asList(filename)));
 
             ResourceCreatorProxy creatorProxy = new ResourceCreatorProxy();
 
@@ -725,8 +727,8 @@ public class BulkUploadService {
                     if (cellMetadata == null
                             || !(mappedClass != null && (resourceSubtypeAssignableFrom || resourceCreatorAssignableFrom || creatorAssignableFrom))) {
                         if (mappedClass != null) {
-                            throw new TdarRecoverableRuntimeException("bulkUploadService.fieldname_is_not_valid_for_type", filename, name,
-                                    resourceToProcess.getResourceType());
+                            throw new TdarRecoverableRuntimeException("bulkUploadService.fieldname_is_not_valid_for_type", (List<Object>)(List<?>)Arrays.asList(filename, name,
+                                    resourceToProcess.getResourceType()));
                         }
                     }
                     requiredFields.remove(cellMetadata);
@@ -770,7 +772,7 @@ public class BulkUploadService {
                 }
                 logger.debug("resourceCreators:{}", resourceToProcess.getResourceCreators());
                 if (requiredFields.size() > 0) {
-                    String msg = MessageHelper.getMessage("bulkUploadService.required_fields_missing",filename);
+                    String msg = MessageHelper.getMessage("bulkUploadService.required_fields_missing",Arrays.asList(filename));
                     for (CellMetadata meta : requiredFields) {
                         logger.trace("{}", meta);
                         msg += meta.getDisplayName() + ", ";
@@ -804,7 +806,7 @@ public class BulkUploadService {
             resource.getResourceCreators().add(creator);
             logger.debug("added " + creator + " successfully");
         } else {
-            throw new TdarRecoverableRuntimeException("bulkUploadService.resource_creator_is_not_valid_for_type", creator.getCreator().getName(), creator.getRole(), resource.getResourceType());
+            throw new TdarRecoverableRuntimeException("bulkUploadService.resource_creator_is_not_valid_for_type", (List<?>)Arrays.asList(creator.getCreator().getName(), creator.getRole(), resource.getResourceType()));
         }
     }
 

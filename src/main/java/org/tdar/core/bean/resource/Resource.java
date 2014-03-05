@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -1461,10 +1462,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     public boolean isValid() {
         if (isValidForController() == true) {
             if (getSubmitter() == null) {
-                throw new TdarValidationException("resource.submitter_required", getResourceType());
+                throw new TdarValidationException("resource.submitter_required", Arrays.asList(getResourceType()));
             }
             if (getDateCreated() == null) {
-                throw new TdarValidationException("resource.date_required", getResourceType());
+                throw new TdarValidationException("resource.date_required", Arrays.asList(getResourceType()));
             }
             return true;
         }
@@ -1475,10 +1476,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
-            throw new TdarValidationException("resource.title", getResourceType());
+            throw new TdarValidationException("resource.title", Arrays.asList(getResourceType()));
         }
         if (StringUtils.isEmpty(getDescription())) {
-            throw new TdarValidationException("resource.description", getResourceType());
+            throw new TdarValidationException("resource.description", Arrays.asList(getResourceType()));
         }
         return true;
     }

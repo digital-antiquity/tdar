@@ -876,7 +876,7 @@ public abstract class InformationResource extends Resource {
     @JSONTransient
     public boolean isValidForController() {
         if (date == null) {
-            throw new TdarValidationException("informationResource.created_date_required",getResourceType());
+            throw new TdarValidationException("informationResource.created_date_required",Arrays.asList(getResourceType()));
         }
         return super.isValidForController();
     }

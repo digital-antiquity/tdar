@@ -359,7 +359,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         if (value == null)
             return false;
         if (value instanceof Validatable && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
-            throw new TdarValidationException("fieldQueryPart.is_not_valid", value.toString());
+            throw new TdarValidationException("fieldQueryPart.is_not_valid", Arrays.asList(value.toString()));
         }
         return true;
     }

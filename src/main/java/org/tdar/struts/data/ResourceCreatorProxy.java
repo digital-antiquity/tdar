@@ -1,5 +1,7 @@
 package org.tdar.struts.data;
 
+import java.util.Arrays;
+
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
@@ -136,7 +138,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             return null;
         }
         if (!hasNoPersistableValues && !person.hasNoPersistableValues()) {
-            String err = MessageHelper.getMessage("resourceCreatorProxy.err_fmt2_determine_creator_too_much_info", getPerson(), getInstitution(), getType());
+            String err = MessageHelper.getMessage("resourceCreatorProxy.err_fmt2_determine_creator_too_much_info", Arrays.asList(getPerson(), getInstitution(), getType()));
             logger.warn(err);
             return type;
         }

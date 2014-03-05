@@ -38,6 +38,8 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.DownloadHandler;
 import org.tdar.utils.DeleteOnCloseFileInputStream;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * $Id$
  * 
@@ -92,7 +94,7 @@ public class DownloadService {
             if (irFileVersion.getInformationResourceFile().isDeleted()) {
                 continue;
             }
-            addFileToDownload(files, authenticatedUser, irFileVersion, dh.isCoverPageIncluded());
+            addFileToDownload(dh, files, authenticatedUser, irFileVersion, dh.isCoverPageIncluded());
             if (!irFileVersion.isDerivative()) {
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
                 // don't count download stats if you're downloading your own stuff
@@ -137,7 +139,7 @@ public class DownloadService {
         }
     }
 
-    private void addFileToDownload(Map<File, String> downloadMap, Person authenticatedUser, InformationResourceFileVersion irFileVersion, boolean includeCoverPage)
+    private void addFileToDownload(TextProvider provider, Map<File, String> downloadMap, Person authenticatedUser, InformationResourceFileVersion irFileVersion, boolean includeCoverPage)
             throws TdarActionException {
         File resourceFile = null;
         try {
@@ -153,7 +155,7 @@ public class DownloadService {
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && includeCoverPage) {
             try {
                 // this will be in the temp directory, so it will be scavenged at some stage.
-                resourceFile = pdfService.mergeCoverPage(authenticatedUser, irFileVersion);
+                resourceFile = pdfService.mergeCoverPage(provider, authenticatedUser, irFileVersion);
             } catch (PdfCoverPageGenerationException cpge) {
                 logger.trace("Error occurred while merging cover page onto " + irFileVersion, cpge);
             } catch (Exception e) {

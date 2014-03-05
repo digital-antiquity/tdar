@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
@@ -97,7 +98,7 @@ public class PairtreeFilestore extends BaseFilestore {
 
         }
         logger.info("storing at: {}", outFile.getAbsolutePath());
-        String errorMessage = MessageHelper.getMessage("pairtreeFilestore.cannot_write", outFile.getAbsolutePath());
+        String errorMessage = MessageHelper.getMessage("pairtreeFilestore.cannot_write", Arrays.asList(outFile.getAbsolutePath()));
         DigestInputStream digestInputStream = appendMessageDigestStream(content);
         try {
             FileUtils.forceMkdir(outFile.getParentFile());
@@ -182,7 +183,7 @@ public class PairtreeFilestore extends BaseFilestore {
         File file = new File(getAbsoluteFilePath(type, version));
         logger.trace("file requested: {}", file);
         if (!file.isFile())
-            throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found",file.getAbsolutePath()));
+            throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found",Arrays.asList(file.getAbsolutePath())));
 
         // version.setTransientFile(file);
         return file;

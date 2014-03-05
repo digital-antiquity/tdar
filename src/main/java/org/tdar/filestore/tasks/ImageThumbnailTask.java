@@ -126,8 +126,7 @@ public class ImageThumbnailTask extends AbstractTask {
                 getWorkflowContext().setErrorFatal(true);
             }
 
-            String errorMessage = MessageHelper.getMessage("imageThumbnailTask.fmt_error_processing_could_not_open", filename, msg);
-            throw new TdarRecoverableRuntimeException(errorMessage);
+            throw new TdarRecoverableRuntimeException("imageThumbnailTask.fmt_error_processing_could_not_open", Arrays.asList(filename, msg));
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
                 version.setHeight(ijSource.getHeight());

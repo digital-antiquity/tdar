@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,8 +49,11 @@ import org.tdar.struts.data.IntegrationDataResult;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import au.com.bytecode.opencsv.CSVWriter;
+
+import com.opensymphony.xwork2.TextProvider;
+
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
  * $Id$
@@ -270,7 +274,7 @@ public class DataIntegrationService {
      * @param person
      * @return
      */
-    public PersonalFilestoreTicket toExcel(List<IntegrationColumn> integrationColumns,
+    public PersonalFilestoreTicket toExcel(TextProvider provider, List<IntegrationColumn> integrationColumns,
             Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData,
             Person person) {
         List<IntegrationDataResult> integrationDataResults = generatedIntegrationData.getFirst();
@@ -278,7 +282,7 @@ public class DataIntegrationService {
             return null;
         }
 
-        DataIntegrationWorkbook integrationProxy = new DataIntegrationWorkbook(excelService, person, generatedIntegrationData);
+        DataIntegrationWorkbook integrationProxy = new DataIntegrationWorkbook(provider, excelService, person, generatedIntegrationData);
         integrationProxy.setIntegrationColumns(integrationColumns);
         integrationProxy.setIntegrationDataResults(integrationDataResults);
         integrationProxy.generate();
@@ -333,8 +337,8 @@ public class DataIntegrationService {
      * @return
      */
     @Transactional
-    public CodingSheet createGeneratedCodingSheet(DataTableColumn column, Person submitter) {
-        return createGeneratedCodingSheet(column, submitter, column.getDefaultOntology());
+    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, Person submitter) {
+        return createGeneratedCodingSheet(provider, column, submitter, column.getDefaultOntology());
     }
 
     /**
@@ -347,21 +351,21 @@ public class DataIntegrationService {
      */
     @Transactional
     @SuppressWarnings(value="NP_NULL_ON_SOME_PATH", justification="null check earlier in the method")
-    public CodingSheet createGeneratedCodingSheet(DataTableColumn column, Person submitter, Ontology ontology) {
+    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, Person submitter, Ontology ontology) {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
         }
         CodingSheet codingSheet = new CodingSheet();
         codingSheet.setGenerated(true);
-        codingSheet.setTitle(MessageHelper.getMessage("dataIntegrationService.generated_coding_sheet_title", column.getDisplayName()));
+        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName())));
         codingSheet.markUpdated(submitter);
         codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
         codingSheet.setDefaultOntology(ontology);
         codingSheet.setCategoryVariable(ontology.getCategoryVariable());
 
-        codingSheet.setDescription(MessageHelper.getMessage("dataIntegrationService.generated_coding_sheet_description",
-                TdarConfiguration.getInstance().getSiteAcronym(), column, column.getDataTable().getDataset().getTitle(), column.getDataTable().getDataset()
-                        .getId(), codingSheet.getDateCreated()));
+        codingSheet.setDescription(provider.getText("dataIntegrationService.generated_coding_sheet_description",
+                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), column, column.getDataTable().getDataset().getTitle(), column.getDataTable().getDataset()
+                        .getId(), codingSheet.getDateCreated())));
         genericDao.save(codingSheet);
         // generate identity coding rules
         List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);

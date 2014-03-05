@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -140,7 +141,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
             assert dataset != null;
             if (!authService.canView(authenticatedUser, dataset)) {
                 // We use the OData exception since it is serialised and sends an appropriate HTTP status code to the client.
-                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_view", authenticatedUser, dataset));
+                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_view", Arrays.asList(authenticatedUser, dataset)));
             }
             dataRecords.addAll(databaseService.findAllRows(dataTable));
         }
@@ -162,7 +163,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
             assert dataset != null;
             if (!authService.canEdit(authenticatedUser, dataset)) {
                 // We use the OData exception since it is serialised and sends an appropriate HTTP status code to the client.
-                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_edit", authenticatedUser, dataset));
+                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_edit", Arrays.asList(authenticatedUser, dataset)));
             }
             Map<?, ?> data = dataRecord.asMap();
             databaseService.editRow(dataTable, dataRecord.getId(), data);

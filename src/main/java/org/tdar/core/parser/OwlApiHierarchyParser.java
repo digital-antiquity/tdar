@@ -24,6 +24,8 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 
+import java.util.Arrays;
+
 /**
  * $Id$
  * 
@@ -196,7 +198,9 @@ public class OwlApiHierarchyParser implements OntologyParser {
         logger.trace("{}", node);
         
         if (StringUtils.isBlank(node.getIri())) {
-            throw new TdarRecoverableRuntimeException("owlApiHierarchyParser.blank_iri", node);
+            List<Object> vals = new ArrayList<>();
+            vals.add(node);
+            throw new TdarRecoverableRuntimeException("owlApiHierarchyParser.blank_iri", vals);
         }
         node.setIntervalEnd(Integer.valueOf(index));
         return index + 1;

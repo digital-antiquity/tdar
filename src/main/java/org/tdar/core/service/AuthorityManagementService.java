@@ -290,7 +290,7 @@ public class AuthorityManagementService {
         // Throw an exception if this operation touched on too many records. Here we rely upon the assumption that throwing an exception will rollback the
         // underlying transaction and all will be set back to normal. A much slower, but safer, way to go about it would be to pre-count the affected records.
         if (dupeMode != DupeMode.MARK_DUPS_ONLY && affectedRecordCount > maxAffectedRecordsCount) {
-            String msg = MessageHelper.getMessage("authorityManagementService.dedup_not_allowed_too_many", NumberFormat.getNumberInstance().format(maxAffectedRecordsCount));
+            String msg = MessageHelper.getMessage("authorityManagementService.dedup_not_allowed_too_many",Arrays.asList( NumberFormat.getNumberInstance().format(maxAffectedRecordsCount)));
             throw new TdarRecoverableRuntimeException(msg);
         }
 
@@ -369,9 +369,9 @@ public class AuthorityManagementService {
 
         // now send a summary email
         String subject = MessageHelper.getMessage("authorityManagementService.email_subject",
-                TdarConfiguration.getInstance().getSiteAcronym(), 
+                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), 
                 MessageHelper.getMessage("authorityManagementService.service_name"),
-                logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString());
+                logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString()));
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("log", logData);

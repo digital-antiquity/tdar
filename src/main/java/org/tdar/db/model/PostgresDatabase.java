@@ -559,7 +559,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                         preparedStatement.setTimestamp(i, sqlDate);
                     } else {
                         throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_parse_date",
-                                colValue.toString(), column.getName(), column.getDataTable().getName());
+                                Arrays.asList(colValue.toString(), column.getName(), column.getDataTable().getName()));
                     }
                     break;
                 default:

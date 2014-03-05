@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -81,7 +82,7 @@ public class ListArchiveTask extends AbstractTask {
                     entry = ais.getNextEntry();
                 }
             } catch (ArchiveException e) {
-              throw new TdarRecoverableRuntimeException("listArchiveTask.couldn_not_find_file", f_);
+              throw new TdarRecoverableRuntimeException("listArchiveTask.couldn_not_find_file", Arrays.asList(f_));
             } finally {
                 if (ais != null) {
                     IOUtils.closeQuietly(ais);

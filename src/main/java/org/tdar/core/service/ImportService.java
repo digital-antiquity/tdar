@@ -9,6 +9,7 @@ package org.tdar.core.service;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -151,7 +152,7 @@ public class ImportService {
             for (FileProxy proxy : proxies) {
                 String ext = FilenameUtils.getExtension(proxy.getFilename()).toLowerCase();
                 if (!extensionsForType.contains(ext))
-                    throw new APIException(MessageHelper.getMessage("importService.invalid_file_type", ext, StringUtils.join(extensionsForType, ", ")), StatusCode.FORBIDDEN);
+                    throw new APIException("importService.invalid_file_type", Arrays.asList(ext, StringUtils.join(extensionsForType, ", ")), StatusCode.FORBIDDEN);
             }
 
             ActionMessageErrorListener listener = new ActionMessageErrorListener();
@@ -326,7 +327,7 @@ public class ImportService {
                 if (property instanceof ControlledKeyword) {
                     Keyword findByLabel = (Keyword) genericKeywordService.findByLabel(kwdCls, ((Keyword) property).getLabel());
                     if (findByLabel == null) {
-                        throw new APIException(MessageHelper.getMessage("importService.unsupported_keyword", property.getClass().getSimpleName()),
+                        throw new APIException("importService.unsupported_keyword", Arrays.asList(property.getClass().getSimpleName()),
                                 StatusCode.FORBIDDEN);
                     }
                 } else {
@@ -357,7 +358,7 @@ public class ImportService {
                     } else if (property instanceof Creator && ((Creator) property).hasNoPersistableValues()) {
                         toReturn = null;
                     } else {
-                        throw new APIException(MessageHelper.getMessage("importService.object_invald", property.getClass(), property), StatusCode.FORBIDDEN);
+                        throw new APIException("importService.object_invald", Arrays.asList(property.getClass(), property), StatusCode.FORBIDDEN);
                     }
                 }
             }

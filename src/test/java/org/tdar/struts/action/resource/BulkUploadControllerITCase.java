@@ -277,7 +277,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(new Float(100), bulkUploadController.getPercentDone());
 
         List<Pair<Long, String>> details = bulkUploadController.getDetails();
-        logger.info("{}", details);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
         assertTrue(bulkUploadController.getAsyncErrors().contains(

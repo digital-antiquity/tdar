@@ -15,6 +15,7 @@ import org.tdar.core.bean.resource.DocumentCitationFormatTestCase;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.utils.MessageHelper;
 
 public class PdfServiceITCase extends AbstractIntegrationTestCase {
 
@@ -47,7 +48,7 @@ public class PdfServiceITCase extends AbstractIntegrationTestCase {
         // aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa
         // aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa
         // aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a");
-        File merged = pdfService.mergeCoverPage(getBasicUser(), originalVersion);
+        File merged = pdfService.mergeCoverPage(MessageHelper.getInstance(), getBasicUser(), originalVersion);
         logger.debug("{}", merged);
     }
 }

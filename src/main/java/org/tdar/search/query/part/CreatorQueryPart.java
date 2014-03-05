@@ -1,6 +1,7 @@
 package org.tdar.search.query.part;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -43,7 +44,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                     for (Creator creator_ : creators) {
                         if (Persistable.Base.isTransient(creator_)) {
                             // user entered a complete-ish creator record but autocomplete callback did fire successfully
-                            throw new TdarRecoverableRuntimeException("creatorQueryPart.use_autocomplete", creator_.toString());
+                            throw new TdarRecoverableRuntimeException("creatorQueryPart.use_autocomplete", Arrays.asList(creator_.toString()));
                         }
                         this.roles.add(rc.getRole());
                         this.getFieldValues().add((C) creator_);

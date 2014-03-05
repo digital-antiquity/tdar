@@ -1,5 +1,7 @@
 package org.tdar.core.exception;
 
+import java.util.List;
+
 /**
  * $Id$
  * 
@@ -26,11 +28,11 @@ public class TdarRecoverableRuntimeException extends I18nRuntimeException {
         super(message, cause);
     }
 
-    public TdarRecoverableRuntimeException(String message, Object ... values) {
+    public TdarRecoverableRuntimeException(String message, List<?> values) {
         super(message, values);
     }
 
-    public TdarRecoverableRuntimeException(String message, Throwable cause, Object ... values) {
+    public TdarRecoverableRuntimeException(String message, Throwable cause, List<?> values) {
         super(message, cause, values);
     }
 

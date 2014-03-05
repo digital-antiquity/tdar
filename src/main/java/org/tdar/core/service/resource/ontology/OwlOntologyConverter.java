@@ -32,6 +32,8 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
+
+import java.util.Arrays;
 /**
  * Converts a text formatted Ontology into an OWL XML ontology
  *
@@ -205,7 +207,10 @@ public class OwlOntologyConverter {
     public void testOntologyNodesUnique(List<OntologyNode> nodeList, Set<String> uniqueSet) {
         logger.debug("unique: {} incoming: {}", uniqueSet.size(), nodeList.size());
         if (nodeList.size() != uniqueSet.size()) {
-            throw new TdarRecoverableRuntimeException("owlOntologyConverter.node_names_unique",nodeList.size(), uniqueSet.size());
+            List<Object> errs = new ArrayList<>();
+            errs.add(nodeList.size());
+            errs.add(uniqueSet.size());
+            throw new TdarRecoverableRuntimeException("owlOntologyConverter.node_names_unique",errs);
         }
     }
 

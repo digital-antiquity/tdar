@@ -148,7 +148,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
      */
     public void updateUsername(Person person, String newUsername, String password) {
         if (personDao.findByUsername(newUsername.toLowerCase()) != null) {
-            throw new TdarRecoverableRuntimeException("auth.username_exists", newUsername);
+            throw new TdarRecoverableRuntimeException("auth.username_exists", Arrays.asList(newUsername));
         }
 
         String[] groupNames = getProvider().findGroupMemberships(person);
@@ -668,7 +668,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
         if (!result.isValid()) {
             logger.debug(String.format("Couldn't authenticate %s - (reason: %s)", loginUsername, result));
-            throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate",result.getMessage());
+            throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate",Arrays.asList(result.getMessage()));
         }
         
         Person person = personDao.findByUsername(loginUsername);
@@ -878,7 +878,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
         result.put("user", person);
         result.put("config", config);
         try {
-            String subject = MessageHelper.getMessage("userAccountController.welcome",TdarConfiguration.getInstance().getSiteAcronym());
+            String subject = MessageHelper.getMessage("userAccountController.welcome",Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
             emailService.sendWithFreemarkerTemplate(EMAIL_WELCOME_TEMPLATE, result, subject, person);
         } catch (Exception e) {
             // we don't want to ruin the new user's experience with a nasty error message...

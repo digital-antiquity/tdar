@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +37,8 @@ import org.tdar.struts.data.IntegrationDataResult;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * Proxy class to handle the generation of the Excel Workbook at the end of the DataIntegration
  * 
@@ -54,10 +57,12 @@ public class DataIntegrationWorkbook  implements Serializable {
     private Person person;
     private List<String> names;
     private PersonalFilestoreTicket ticket;
-
-    public DataIntegrationWorkbook(ExcelService excelService, Person person, Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData) {
+    private TextProvider provider;
+    
+    public DataIntegrationWorkbook(TextProvider provider, ExcelService excelService, Person person, Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData) {
         this.setExcelService(excelService);
         this.person = person;
+        this.provider = provider;
         this.setGeneratedIntegrationResults(generatedIntegrationData);
         setWorkbook(new HSSFWorkbook());
         names = new ArrayList<String>();
@@ -75,7 +80,7 @@ public class DataIntegrationWorkbook  implements Serializable {
         int rowIndex = 0;
         // int columnIndex = 0;
 
-        setDescription(new StringBuilder(MessageHelper.getMessage("dataIntegrationWorkbook.descr", " ")));
+        setDescription(new StringBuilder(provider.getText("dataIntegrationWorkbook.descr")).append(" "));
 
         List<DataTable> tableList = new ArrayList<DataTable>();
         List<String> columnNames = new ArrayList<String>();
@@ -137,7 +142,7 @@ public class DataIntegrationWorkbook  implements Serializable {
             headerLabels.add(integrationColumn.getName());
 
             if (integrationColumn.isIntegrationColumn()) {
-                headerLabels.add(MessageHelper.getMessage("dataIntegrationWorkbook.data_mapped_value", integrationColumn.getName()));
+                headerLabels.add(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(integrationColumn.getName())));
             }
         }
 
@@ -177,7 +182,7 @@ public class DataIntegrationWorkbook  implements Serializable {
         Row summaryRow = summarySheet.createRow(0);
         // FIXME: Should I have the ontology mappings too??
         excelService.createHeaderCell(summaryStyle, summaryRow, 0,
-                MessageHelper.getMessage("dataIntegrationWorkbook.description_header", person.getProperName() , new SimpleDateFormat().format(new Date())));
+                provider.getText("dataIntegrationWorkbook.description_header", Arrays.asList(person.getProperName() , new SimpleDateFormat().format(new Date()))));
         summarySheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
 
         int currentRow = 3;
@@ -197,10 +202,10 @@ public class DataIntegrationWorkbook  implements Serializable {
             List<String> labels = new ArrayList<String>();
             List<String> descriptions = new ArrayList<String>();
             List<String> mappings = new ArrayList<String>();
-            descriptions.add(MessageHelper.getMessage("dataIntegrationWorkbook.description_description_column","    "));
+            descriptions.add(provider.getText("dataIntegrationWorkbook.description_description_column",Arrays.asList("    ")));
             if (integrationColumn.isIntegrationColumn()) {
-                labels.add(MessageHelper.getMessage("dataIntegrationWorkbook.description_integration_column", " "));
-                mappings.add(MessageHelper.getMessage("dataIntegrationWorkbook.description_mapped_column", "    "));
+                labels.add(provider.getText("dataIntegrationWorkbook.description_integration_column", Arrays.asList("    ")));
+                mappings.add(provider.getText("dataIntegrationWorkbook.description_mapped_column",Arrays.asList("    ")));
             } else {
                 labels.add(" Display Column:");
             }
@@ -341,7 +346,7 @@ public class DataIntegrationWorkbook  implements Serializable {
     }
 
     public String getFileName() {
-        String fileName = MessageHelper.getMessage("dataIntegrationWorkbook.file_name",  StringUtils.join(names, "_"));
+        String fileName = provider.getText("dataIntegrationWorkbook.file_name",  Arrays.asList(StringUtils.join(names, "_")));
         return fileName;
     }
     

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
                 parser = new OwlApiHierarchyParser(ontology, converter.toOwlOntology(latestUploadedFile));
             } catch (FileNotFoundException e) {
                 logger.warn("file not found: {}", e);
-                throw new TdarRecoverableRuntimeException("error.file_not_found", e, latestUploadedFile.getFilename());
+                throw new TdarRecoverableRuntimeException("error.file_not_found", e, Arrays.asList(latestUploadedFile.getFilename()));
             }
             List<OntologyNode> incomingOntologyNodes = parser.generate();
             getLogger().debug("created {} ontology nodes from {}", incomingOntologyNodes.size(), latestUploadedFile.getFilename());
@@ -175,7 +176,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         Collection<InformationResourceFileVersion> files = ontology.getLatestVersions();
         int size = files.size();
         if (size != 1) {
-            throw new TdarRecoverableRuntimeException("ontologyService.could_not_determine_which_file", size);
+            throw new TdarRecoverableRuntimeException("ontologyService.could_not_determine_which_file", Arrays.asList(size));
         }
         for (InformationResourceFileVersion irFile : files) {
             File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFile);

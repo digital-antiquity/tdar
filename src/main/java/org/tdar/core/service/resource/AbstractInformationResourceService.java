@@ -379,7 +379,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     private InformationResourceFileVersion createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
         String filename = BaseFilestore.sanitizeFilename(fileProxy.getFilename());
         if (fileProxy.getFile() == null || !fileProxy.getFile().exists()) {
-            throw new TdarRecoverableRuntimeException("fileprocessing.error.not_found",fileProxy.getFilename());
+            throw new TdarRecoverableRuntimeException("fileprocessing.error.not_found",Arrays.asList(fileProxy.getFilename()));
         }
         InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, irFile);
         if (irFile.isTransient()) {

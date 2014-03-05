@@ -3,6 +3,7 @@ package org.tdar.utils;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.apache.commons.lang.StringUtils;
@@ -46,10 +47,37 @@ public class MessageHelper implements Serializable, TextProvider {
         return key;
     }
 
+    public static String getMessage(String lookup, List<?> formatKeys) {
+        return getMessage(lookup, formatKeys.toArray());
+    }
     /*
      * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
      */
-    public static String getMessage(String lookup, Object ... formatKeys) {
+    public static String getMessage(String lookup, Object[] formatKeys) {
+        logger.debug("Calling getMessage: {}, {}", lookup, formatKeys);
+        String key = getKey(lookup);
+        return MessageFormat.format(key,formatKeys);
+    }
+    
+    /*
+     * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
+     */
+    public static String getMessage(String lookup, Locale locale, Object[] formatKeys) {
+        logger.debug("Calling getMessage: {}, {}", lookup, formatKeys);
+        String key = getKey(lookup);
+        return MessageFormat.format(key,formatKeys);
+    }
+
+    
+    /*
+     * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
+     */
+    public static String getMessage(String lookup, Locale locale) {
+        String key = getKey(lookup);
+        return key;
+    }
+
+    private static String getKey(String lookup) {
         String key = lookup;
         if (!StringUtils.contains(lookup, " ")) {
             key = getMessage(lookup);
@@ -58,7 +86,7 @@ public class MessageHelper implements Serializable, TextProvider {
                 key = lookup;
             }
         }
-        return MessageFormat.format(key,formatKeys);
+        return key;
     }
 
     private ResourceBundle getBundle() {

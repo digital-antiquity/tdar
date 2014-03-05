@@ -40,7 +40,7 @@ import org.tdar.struts.action.UserAccountController;
 import org.tdar.struts.action.UserAgreementController;
 import org.tdar.utils.TestConfiguration;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
 
 // jtd 9/5:  this doesn't need to be an integration test atm, but I figure we'll eventually want to add tests that
 // need a non-mocked service.

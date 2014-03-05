@@ -1,5 +1,10 @@
 package org.tdar.core.exception;
 
+import java.io.Serializable;
+import java.util.List;
+
+import com.joestelmach.natty.generated.DateParser.meridian_indicator_return;
+
 /**
  * $Id$
  * 
@@ -7,7 +12,7 @@ package org.tdar.core.exception;
  * @author Adam Brin
  * @version $Rev$
  */
-public class APIException extends Exception {
+public class APIException extends I18nException {
 
     private static final long serialVersionUID = -6383202970353307213L;
 
@@ -22,6 +27,12 @@ public class APIException extends Exception {
         super(msg);
         this.setCode(code);
     }
+
+    public APIException(String msg, List<?> asList, StatusCode forbidden) {
+        super(msg, asList);
+        this.setCode(forbidden);
+    }
+
 
     public void setCode(StatusCode code) {
         this.code = code;
