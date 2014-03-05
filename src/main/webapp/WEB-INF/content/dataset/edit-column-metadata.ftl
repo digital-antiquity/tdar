@@ -353,11 +353,9 @@
 
 <script type='text/javascript'>
 
-var formId = "#edit-metadata-form";
-$(document).ready(function() {
-	TDAR.datasetMetadata.init(formId);
+$(function(){
+    TDAR.datasetMetadata.init("#edit-metadata-form");
 });
-
 
 </script>
 

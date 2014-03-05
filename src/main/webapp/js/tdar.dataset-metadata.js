@@ -1,11 +1,13 @@
 (function(TDAR, $) {
     'use strict';
 
+
     /**
-     * this function manages the display of the checkboxes next to a column field when someone changes one of the values, it changesthe color if mapped properly
+     * this function manages the display of the checkboxes next to a column field when someone changes one of the values, it changes the color if mapped properly
      * to something
      */
     function _registerCheckboxInfo() {
+        console.log("registerCheckboxInfo called", arguments[0], arguments[1]);
         var $target = $($(this).parents(".datatablecolumn").first());
         var val = $('.columnEncoding:checked', $target).val();
         var square = $target.find("span.columnSquare");
@@ -14,6 +16,7 @@
         var codingInfo = $target.find("div.codingInfo");
         var measurementInfo = $target.find("div.measurementInfo");
 
+        //show the relevant fields in this section based off the choice of column type
         if (val == 'CODED_VALUE' || val == 'UNCODED_VALUE') {
             mapping.show();
         } else {
@@ -39,7 +42,13 @@
             measurementInfo.hide();
         }
 
-        square.removeClass();
+        // Decorate the 'column square' element in this section of the form to indicate the type of column and it's
+        // level of "completeness". We start out by removing all decorations from the indicator, and (potentially)
+        // add them back as we analyze this section.
+        //square.removeClass();
+
+        //workaround for jquery-ui removeClass() bug #9015 (http://bugs.jqueryui.com/ticket/9015)
+        square.removeAttr("class");
 
         square.addClass("columnSquare");
 
@@ -53,7 +62,6 @@
         mapDetail.hide();
 
         if (dataType == undefined || dataType.indexOf('INT') == -1 && dataType.indexOf('DOUBLE') == -1) {
-            // TODO: confirm test coverage, then delete this comment.
             $(".columnEncoding[value='MEASUREMENT']", $target).prop('disabled', true);
             $(".columnEncoding[value='COUNT']", $target).prop('disabled', true);
         }
@@ -86,11 +94,8 @@
             mapDetail.show();
         }
 
-        if (valid) {
-            square.removeClass('invalid');
-            if (!uncoded) {
-                square.removeClass('uncoded');
-            }
+        if(!valid) {
+            square.addClass("invalid");
         }
 
         var subcat = $target.find(".categorySelect").first();
@@ -122,10 +127,6 @@
     function _init(formId) {
 
         var $form = $(formId);
-
-        if (!Modernizr.cssresize) {
-            $('textarea.resizable:not(.processed)').TextAreaResizer();
-        }
 
         // set up ajax calls, no caching
         $.ajaxSetup({
