@@ -1,5 +1,6 @@
 package org.tdar.struts.action.entity;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,7 +46,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
         if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
             Institution findInstitutionByName = getEntityService().findInstitutionByName(name);
             if (findInstitutionByName != null) {
-                addActionError(getText("institutionController.cannot_rename", name));
+                addActionError(getText("institutionController.cannot_rename", Arrays.asList(name)));
             }
         }
     }
