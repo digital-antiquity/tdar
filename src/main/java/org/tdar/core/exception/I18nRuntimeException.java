@@ -1,8 +1,10 @@
 package org.tdar.core.exception;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.utils.MessageHelper;
@@ -62,12 +64,15 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
      */
     @Override
     public String getLocalizedMessage() {
+        if (CollectionUtils.isEmpty(values)){
+            return MessageHelper.getMessage(message,locale);
+        }
         return MessageHelper.getMessage(message,locale, values.toArray());
     };
 
   @Override
   public String getMessage() {
-      return MessageHelper.getMessage(message, values.toArray());
+      return MessageHelper.getMessage(message);
   }
 
 

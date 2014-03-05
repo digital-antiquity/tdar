@@ -89,7 +89,7 @@ public class DynamicQueryComponentHelperTest {
         boolean found = false;
         HashSet<DynamicQueryComponent> createFields2 = DynamicQueryComponentHelper.createFields(Project.class, "");
         for (DynamicQueryComponent dqc : createFields2) {
-            logger.info(dqc.getLabel() + "{}" + dqc.getParent());
+            logger.trace(dqc.getLabel() + "{}" + dqc.getParent());
             if (dqc.getLabel().contains("informationResources.activeOtherKeywords.label"))
                 found = true;
         }
