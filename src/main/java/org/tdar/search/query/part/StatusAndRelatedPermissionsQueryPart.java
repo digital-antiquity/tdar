@@ -52,7 +52,6 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
 
     @Override
     public String getDescription(TextProvider provider) {
-        String fmt = provider.getText("statusQueryPart.resource_is");
         List<String> labels = new ArrayList<String>();
         boolean seenActive = false;
         for (Status status : getFieldValues()) {
@@ -67,7 +66,7 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
         }
         List<String> vals = new ArrayList<>();
         vals.add(StringUtils.join(labels, provider.getText("statusQueryPart.or")));
-        return String.format(fmt, vals);
+        return provider.getText("statusQueryPart.resource_is", vals);
     }
 
     @Override

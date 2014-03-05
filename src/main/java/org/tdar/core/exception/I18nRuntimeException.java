@@ -2,7 +2,11 @@ package org.tdar.core.exception;
 
 import java.util.Locale;
 
+import mx4j.log.Logger;
+
 import org.tdar.utils.MessageHelper;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class I18nRuntimeException extends RuntimeException implements Localizable {
 
@@ -57,12 +61,12 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
      */
     @Override
     public String getLocalizedMessage() {
-        return MessageHelper.getMessage(message,locale,values);
+        return MessageHelper.getMessage(message,locale,Arrays.asList(values));
     };
 
   @Override
   public String getMessage() {
-      return MessageHelper.getMessage(message, values);
+      return MessageHelper.getMessage(message, Arrays.asList(values));
   }
 
 

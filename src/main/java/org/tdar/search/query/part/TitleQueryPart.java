@@ -1,6 +1,8 @@
 package org.tdar.search.query.part;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -78,7 +80,9 @@ public class TitleQueryPart extends FieldQueryPart<String> {
 
     @Override
     public String getDescription(TextProvider provider) {
-        return provider.getText("titleQueryPart.description", StringUtils.join(getFieldValues(),";"));
+        List<String> vals = new ArrayList<>();
+        vals.add(StringUtils.join(getFieldValues(),";"));
+        return provider.getText("titleQueryPart.description", vals);
     }
 
     @Override

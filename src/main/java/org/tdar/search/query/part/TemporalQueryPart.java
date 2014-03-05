@@ -58,9 +58,6 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
 
     @Override
     public String getDescription(TextProvider provider) {
-        logger.debug("vals: {}", getFieldValues().get(0).toString());
-        logger.debug(provider.getClass().getCanonicalName());
-        logger.debug(provider.getText("temporalQueryPart.date_between", getFieldValues().get(0).toString()));
         List<String> vals = new ArrayList<>();
         vals.add(getFieldValues().get(0).toString());
         return provider.getText("temporalQueryPart.date_between", vals);

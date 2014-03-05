@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,8 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import com.opensymphony.xwork2.TextProvider;
 import com.opensymphony.xwork2.util.ValueStack;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /*
  * A Singleton helper class for managing Localization and Messages
@@ -50,6 +53,10 @@ public class MessageHelper implements Serializable, TextProvider {
      * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
      */
     public static String getMessage(String lookup, Object ... formatKeys) {
+        return getMessage(lookup, Arrays.asList(formatKeys));
+    }
+    
+    public static String getMessage(String lookup, List<Object> formatKeys) {
         String key = lookup;
         if (!StringUtils.contains(lookup, " ")) {
             key = getMessage(lookup);

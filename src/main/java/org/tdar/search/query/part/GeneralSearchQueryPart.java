@@ -103,7 +103,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         if (StringUtils.isBlank(fields)) {
             return "";
         }
-        return provider.getText(SearchFieldType.ALL_FIELDS.name()) + ": " + fields;
+        return provider.getText(SearchFieldType.ALL_FIELDS.getLocaleKey()) + ": " + fields + " ";
     }
 
     @Override

@@ -157,7 +157,9 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
             latlongs.add(box.toString());
         }
         String seperator = " " + operator.name().toLowerCase() + " ";
-        String fmt = provider.getText("spatialQueryPart.resource_located", StringUtils.join(latlongs, seperator));
+        List<String> vals = new ArrayList<>();
+        vals.add( StringUtils.join(latlongs, seperator));
+        String fmt = provider.getText("spatialQueryPart.resource_located",vals);
         return fmt;
     }
 
