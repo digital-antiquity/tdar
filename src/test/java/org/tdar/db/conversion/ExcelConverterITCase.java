@@ -14,6 +14,7 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -67,7 +68,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         try {
             converter.execute();
-            assertTrue("Should never get to this point in the code.", false);
+            Assert.fail("Should never get to this point in the code.");
         } catch (TdarRecoverableRuntimeException e) {
             assertEquals(expectedErrorMessage, e.getMessage());
         }

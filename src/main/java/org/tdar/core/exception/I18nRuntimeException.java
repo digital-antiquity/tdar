@@ -72,7 +72,7 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
 
   @Override
   public String getMessage() {
-      return MessageHelper.getMessage(message);
+      return getLocalizedMessage();
   }
 
 

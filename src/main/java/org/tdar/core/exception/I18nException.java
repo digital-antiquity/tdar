@@ -62,7 +62,7 @@ public class I18nException extends Exception implements Localizable {
 
   @Override
   public String getMessage() {
-      return MessageHelper.getMessage(message, values);
+      return getLocalizedMessage();
   }
 
 
