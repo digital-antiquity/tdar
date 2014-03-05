@@ -69,6 +69,8 @@ public class Invoice extends Base implements Updatable {
                 case PENDING_TRANSACTION:
                 case PREPARED:
                     return false;
+                default:
+                    break;
             }
             return true;
         }

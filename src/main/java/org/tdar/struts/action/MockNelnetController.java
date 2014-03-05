@@ -16,7 +16,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -33,7 +34,6 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTempla
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
-@SuppressWarnings("deprecation")
 @Component
 @Scope("prototype")
 @ParentPackage("default")
@@ -93,8 +93,9 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         postReq.setEntity(new UrlEncodedFormEntity(pairs, Consts.UTF_8));
         try {
             @SuppressWarnings({ "resource" })
-            DefaultHttpClient httpclient = new DefaultHttpClient();
-            HttpResponse httpresponse = httpclient.execute(postReq);
+            HttpClientBuilder builder = HttpClientBuilder.create();
+            CloseableHttpClient httpClient = builder.build();
+            HttpResponse httpresponse = httpClient.execute(postReq);
             BufferedReader rd = new BufferedReader(new InputStreamReader(httpresponse.getEntity().getContent()));
             boolean seen = false;
             for (String line : IOUtils.readLines(rd)) {
