@@ -2,6 +2,7 @@ package org.tdar.web.functional;
 
 import static org.junit.Assert.assertTrue;
 
+import com.opensymphony.xwork2.interceptor.annotations.Before;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Test;
@@ -204,9 +205,31 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         assertTrue("other keywords should be set", StringUtils.isNotBlank(find("#metadataForm_otherKeywords_0_").val()));
     }
 
+    @Test
+    public void testInheritCreditSection() throws InterruptedException {
+        gotoPage("/document/add");
+        find("#resourceRegistrationTitle").val("my fancy document");
+        find("#resourceDescription").val("this test took me 8 hours to write. a lot of trial and error was involved.");
+        find("#dateCreated").val("2012");
+        find("#projectId").val("3805");
+        find("#cbInheritingCreditRoles").click();
+        //this project should have about four contributors.
+        waitFor("#creditTable > :nth-child(4)");
+        find("#submitButton").click();
+    }
+
     @After
     public void turnIgnoresOff() {
         ignoreJavascriptErrors = false;
     }
 
+    @Override
+    public void login() {
+        setScreenshotsAllowed(false);
+        reindexOnce();
+        loginAdmin();
+        setIgnoreModals(false);
+        setScreenshotsAllowed(true);
+    }
 }
+
