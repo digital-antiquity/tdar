@@ -130,4 +130,4 @@ update information_resource set inheriting_individual_institutional_credit=false
 alter table creator alter column date_created type timestamp;
 
 -- abrin 3/6/2014
-alter table person add column affilliation;
+alter table person add column affilliation varchar(255);
