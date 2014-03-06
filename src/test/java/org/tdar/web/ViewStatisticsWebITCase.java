@@ -22,7 +22,7 @@ public class ViewStatisticsWebITCase extends AbstractAuthenticatedWebTestCase {
         logger.info(docUrl);
         //start at 0
         gotoPage(url.toString());
-        gotoPage(docUrl);
+        gotoPageWithoutErrorCheck(docUrl);
         logout();
         loginAdmin();
         gotoPage(url.toString());
@@ -31,7 +31,7 @@ public class ViewStatisticsWebITCase extends AbstractAuthenticatedWebTestCase {
         logout();
         login();
         gotoPage(url.toString());
-        gotoPage(docUrl);
+        gotoPageWithoutErrorCheck(docUrl);
         logout();
         loginAdmin();
         gotoPage(url.toString());

@@ -54,7 +54,9 @@ public class MessageHelper implements Serializable, TextProvider {
      * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
      */
     public static String getMessage(String lookup, Object[] formatKeys) {
-        logger.debug("Calling getMessage: {}, {}", lookup, formatKeys);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Calling getMessage: {}, {}", lookup, formatKeys);
+        }
         String key = getKey(lookup);
         return MessageFormat.format(key,formatKeys);
     }
@@ -63,7 +65,9 @@ public class MessageHelper implements Serializable, TextProvider {
      * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
      */
     public static String getMessage(String lookup, Locale locale, Object[] formatKeys) {
-        logger.debug("Calling getMessage: {}, {}", lookup, formatKeys);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Calling getMessage: {}, {}", lookup, formatKeys);
+        }
         String key = getKey(lookup);
         return MessageFormat.format(key,formatKeys);
     }
