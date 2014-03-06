@@ -105,14 +105,14 @@ label.error {display:block;}
 	    <#if RPAEnabled>
 
     <div class="control-group">
+        <label class="control-label" for="rpaNumber">RPA Number</label>
+        <div class="controls">
+            <@s.textfield theme="simple" name='person.rpaNumber' id='rpaNumber' />
+        </div>
     <div class="controls">
             <span class="help-block"> 
                 Are you a <a target='_blank' href='http://www.rpanet.org/'>Registered Professional Archaeologist?</a>
             </span>
-        </div>
-        <label class="control-label" for="rpaNumber">RPA Number</label>
-        <div class="controls">
-            <@s.textfield theme="simple" name='person.rpaNumber' id='rpaNumber' />
         </div>
     </div>
     </#if>
