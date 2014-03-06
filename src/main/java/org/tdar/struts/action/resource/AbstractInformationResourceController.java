@@ -71,7 +71,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private Language metadataLanguage;
     private List<Language> languages;
     private List<FileProxy> fileProxies = new ArrayList<>();
-
+    private String json = "{}";
 
     private Long projectId;
 
@@ -367,6 +367,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected void loadCustomMetadata() throws TdarActionException {
         setProject(getPersistable().getProject());
         setProjectId(getPersistable().getProjectId());
+        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
         super.loadCustomMetadata();
         loadInformationResourceProperties();
         loadResourceProviderInformation();
@@ -421,6 +422,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (Persistable.Base.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
         } 
+        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
     }
 
     protected void setProject(Project project) {
@@ -570,7 +572,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public String getProjectAsJson() {
-        return getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
+        return json;
     }
 
     public Long getTicketId() {
