@@ -268,7 +268,7 @@ var FileuploadValidator;
 
             if(this.validateOnChange) {
                 //validate on the fileupload custom events
-                $(this.fileupload).bind("fileuploadcompleted fileuploaddestroyed", function() {
+                $(this.fileupload).bind("fileuploadstopped fileuploaddestroyed", function() {
                     self.validate();
                 });
 
