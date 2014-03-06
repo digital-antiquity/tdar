@@ -34,7 +34,7 @@ label.error {display:block;}
 	    <div class="span5">
 	    <@s.textfield spellcheck="false" required=true id='firstName' label='First name'  name='person.firstName' cssClass="required input-xlarge" />
 	    </div>
-	    <div class="span5">
+	    <div class="span4">
 	    <@s.textfield spellcheck="false" required=true id='lastName' label='Last name' name='person.lastName' cssClass="required input-xlarge" />
 	    </div>
     </div>
@@ -42,7 +42,7 @@ label.error {display:block;}
 	    <div class="span5">
 		    <@s.textfield spellcheck="false" required=true id='emailAddress' label="Email address" name="person.email" cssClass="required email input-xlarge" />
 		</div>
-	    <div class="span5">
+	    <div class="span4">
 		    <@s.textfield spellcheck="false" required=true id='confirmEmail' label="Confirm email" name="confirmEmail" cssClass="required email input-xlarge"/>
 		</div>
     </div>
@@ -67,7 +67,7 @@ label.error {display:block;}
 	    <div class="span5">
 		    <@s.textfield labelposition='left' label='Organization' name='institutionName' id='institutionName' cssClass="input-xlarge"/>
 		</div>
-	    <div class="span5">
+	    <div class="span4">
     		<@s.textfield label='Work phone' labelposition='left' name='person.phone' id='phone' cssClass=" input-xlarge"/>
 		</div>
 	</div>
@@ -99,9 +99,9 @@ label.error {display:block;}
 
 	<div class="row">
 	<div class="span5">
-<#--		<@s.radio list="userAffiliations" name="test" label="Affiliation / Interest" listValue="label" /> -->
+		<@s.select list="userAffiliations" name="person.affilliation" label="Affiliation / Interest" listValue="label" />
 	</div>
-	<div class="span5">
+	<div class="span4">
 	    <#if RPAEnabled>
 
     <div class="control-group">
@@ -129,7 +129,7 @@ label.error {display:block;}
     	<div class="span5">
     	<@s.password required=true label='Password' name='password' id='password'  cssClass="required input-xlarge" autocomplete="off" />
 		</div>
-    	<div class="span5">
+    	<div class="span4">
 	    <@s.password required=true label='Confirm password' name='confirmPassword' id='confirmPassword'  cssClass="required input-xlarge" autocomplete="off" />
 		</div>
 	</div>
