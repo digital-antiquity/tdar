@@ -30,7 +30,7 @@ Note: you may have multiple accounts to simplify billing and allow different peo
 $(document).ready(function(){
     'use strict';
     TDAR.common.initEditPage($('#MetadataForm')[0]);
-    TDAR.common.delegateCreator('#accessRightsRecords', true, false);
+    TDAR.autocomplete.delegateCreator('#accessRightsRecords', true, false);
 });
 </script>
 

@@ -721,6 +721,67 @@ TDAR.autocomplete = (function() {
     }
 
     /**
+     * delegate listener that enables autocomplete for creator input fields when a user clicks in a crator field.
+     * @param id parent element to receive delegated events
+     * @param user if true, use applyPersonAutocomplete, otherwise use applyInstitutionAutocomplete
+     * @param showCreate show a "create new" option at the end of the list.
+     */
+    var _delegateCreator = function(id, user, showCreate) {
+        if (user == undefined || user == false) {
+            $(id).delegate(
+                    ".nameAutoComplete",
+                    "focusin",
+                    function() {
+                        // TODO: these calls re-regester every row after a row is
+                        // created,
+                        // change so that only the new row is registered.
+                        _applyPersonAutoComplete($(".nameAutoComplete", id), false, showCreate);
+                    });
+            $(id).delegate(".institutionAutoComplete", "focusin", function() {
+                TDAR.autocomplete.applyInstitutionAutocomplete($(".institution", id), true);
+            });
+        } else {
+            $(id).delegate(".userAutoComplete", "focusin", function() {
+                TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete", id), true, false);
+            });
+        }
+    };
+
+    /**
+     * delegate listener that enables autocomplete for annotationKey input fields when a user clicks in that
+     * field.
+     * @param id id of parent element to receive delegated events.
+     * @param prefix prefix of classname to use in selector when selecting input fields inside of the parent
+     * @param delim  lookupType to send in ajax request ot search provider
+     * @private
+     */
+    var _delegateAnnotationKey = function(id, prefix, delim) {
+        $(id).delegate("." + prefix + "AutoComplete", "focusin", function() {
+            _applyKeywordAutocomplete("." + prefix + "AutoComplete", delim, {}, false);
+        });
+    };
+
+
+    /**
+     * delegate listener that enables autocomplete for annotationKey input fields when a user clicks in that
+     * @param id id of parent element to receive delegated events.
+     * @param prefix prefix of classname to use in selector when selecting input fields inside of the parent
+     * @param type keyword type
+     * @private
+     */
+    var _delegateKeyword = function(id, prefix, type) {
+        $(id).delegate(".keywordAutocomplete", "focusin", function() {
+            // TODO: these calls re-regester every row after a row is created,
+            // change so that only the new row is registered.
+            console.log('focusin:' + this.id);
+            _applyKeywordAutocomplete(id + " .keywordAutocomplete", "keyword", {
+                keywordType : type
+            }, true);
+        });
+
+    };
+
+    /**
      * return an object from any autocomplete input elements inside the specified parentElem elment. This function
      * maps every .autocomplete-ui-input  into a property of the returned object.  The property name is based on the
      * value of the "autocompletename" attribute of the input element (or the value of the 'name' attribute, if no
@@ -745,6 +806,9 @@ return {
     applyResourceAutocomplete: _applyResourceAutocomplete,
     applyInstitutionAutocomplete: _applyInstitutionAutocomplete,
     applyComboboxAutocomplete: _applyComboboxAutocomplete,
-    objectFromAutocompleteParent: _objectFromAutocompleteParent
+    objectFromAutocompleteParent: _objectFromAutocompleteParent,
+    "delegateCreator": _delegateCreator,
+    "delegateAnnotationKey": _delegateAnnotationKey,
+    "delegateKeyword": _delegateKeyword
     };
 })();

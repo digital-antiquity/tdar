@@ -558,18 +558,18 @@ TDAR.common = function() {
         });    
 
         //wire up autocompletes
-        _delegateCreator("#authorshipTable", false, true);
-        _delegateCreator("#creditTable", false, true);
-        _delegateCreator("#divAccessRights", true, false);
-        _delegateCreator("#divSubmitter", true, false);
-        _delegateCreator("#copyrightHolderTable",false,true);
-        _delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
-        _delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
-        _delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
-        _delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
-        _delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
-        _delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
-        _delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
+        TDAR.autocomplete.delegateCreator("#authorshipTable", false, true);
+        TDAR.autocomplete.delegateCreator("#creditTable", false, true);
+        TDAR.autocomplete.delegateCreator("#divAccessRights", true, false);
+        TDAR.autocomplete.delegateCreator("#divSubmitter", true, false);
+        TDAR.autocomplete.delegateCreator("#copyrightHolderTable",false,true);
+        TDAR.autocomplete.delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
+        TDAR.autocomplete.delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
+        TDAR.autocomplete.delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
+        TDAR.autocomplete.delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
+        TDAR.autocomplete.delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
+        TDAR.autocomplete.delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
+        TDAR.autocomplete.delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
         TDAR.autocomplete.applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
         TDAR.autocomplete.applyInstitutionAutocomplete($('#publisher'), true);
         $('#resourceCollectionTable').on(
@@ -837,74 +837,7 @@ TDAR.common = function() {
     }
 
 
-    //FIXME: move to autocomplete, remove multi-registration bug  TDAR-3496
-    /**
 
-     //FIXME: move to autocomplete, remove multi-registration bug  TDAR-3496
-    /**
-     * delegate listener that enables autocomplete for creator input fields when a user clicks in a crator field.
-     * @param id parent element to receive delegated events
-     * @param user if true, use applyPersonAutocomplete, otherwise use applyInstitutionAutocomplete
-     * @param showCreate show a "create new" option at the end of the list.
-     */
-    var _delegateCreator = function(id, user, showCreate) {
-        if (user == undefined || user == false) {
-            $(id).delegate(
-                    ".nameAutoComplete",
-                    "focusin",
-                    function() {
-                        // TODO: these calls re-regester every row after a row is
-                        // created,
-                        // change so that only the new row is registered.
-                        TDAR.autocomplete.applyPersonAutoComplete($(".nameAutoComplete", id), false,
-                                showCreate);
-                    });
-            $(id).delegate(".institutionAutoComplete", "focusin", function() {
-                TDAR.autocomplete.applyInstitutionAutocomplete($(".institution", id), true);
-            });
-        } else {
-            $(id).delegate(".userAutoComplete", "focusin", function() {
-                TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete", id), true, false);
-            });
-        }
-    }
-
-
-    //FIXME: move to autocomplete, remove multi-registration bug  TDAR-3496
-    /**
-     * delegate listener that enables autocomplete for annotationKey input fields when a user clicks in that
-     * field.
-     * @param id id of parent element to receive delegated events.
-     * @param prefix prefix of classname to use in selector when selecting input fields inside of the parent
-     * @param delim  lookupType to send in ajax request ot search provider
-     * @private
-     */
-    var _delegateAnnotationKey = function(id, prefix, delim) {
-        $(id).delegate("." + prefix + "AutoComplete", "focusin", function() {
-            TDAR.autocomplete.applyKeywordAutocomplete("." + prefix + "AutoComplete", delim, {}, false);
-        });
-    }
-
-
-    //FIXME: move to autocomplete, remove multi-registration bug  TDAR-3496
-    /**
-     * delegate listener that enables autocomplete for annotationKey input fields when a user clicks in that
-     * @param id id of parent element to receive delegated events.
-     * @param prefix prefix of classname to use in selector when selecting input fields inside of the parent
-     * @param type keyword type
-     * @private
-     */
-    var _delegateKeyword = function(id, prefix, type) {
-        $(id).delegate(".keywordAutocomplete", "focusin", function() {
-            // TODO: these calls re-regester every row after a row is created,
-            // change so that only the new row is registered.
-            console.log('focusin:' + this.id);
-            TDAR.autocomplete.applyKeywordAutocomplete(id + " .keywordAutocomplete", "keyword", {
-                keywordType : type
-            }, true);
-        });
-
-    }
 
     /**
      * After certain amount of time,  display a dialog indicating that the users session has expired, then direct
@@ -1242,7 +1175,6 @@ TDAR.common = function() {
         "switchType": _switchType,
         "setupDocumentEditForm": _setupDocumentEditForm,
         "sessionTimeoutWarning": _sessionTimeoutWarning,
-        "delegateCreator": _delegateCreator,
         "applyBookmarks":_applyBookmarks,
         "sprintf": _sprintf,
         "htmlDecode": _htmlDecode,
