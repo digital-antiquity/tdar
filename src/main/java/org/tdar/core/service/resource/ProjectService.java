@@ -22,6 +22,8 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ServiceInterface;
 
 /**
@@ -42,17 +44,8 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
 
-//    /**
-//     * Find Project by Id
-//     */
-//    @Transactional(readOnly = true)
-//    public Project find(Long id) {
-//        Project project = getDao().find(id);
-//        if (project == null) {
-//            return Project.NULL;
-//        }
-//        return project;
-//    }
+    @Autowired
+    private ObfuscationService obfuscationService;
 
     /**
      * Find @link Project resources by their submitter (@link Person).
@@ -175,5 +168,22 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
      */
     public Boolean containsIntegratableDatasets(List<Long> projectIds) {
         return getDao().containsIntegratableDatasets(projectIds);
+    }
+
+    public String getProjectAsJson(Project project, Person user) {
+        getLogger().trace("getprojectasjson called");
+        String json = "{}";
+        try {
+            if (project == null || project.isTransient()) {
+                getLogger().trace("Trying to convert blank or null project to json: " + project);
+                return json;
+            }
+            obfuscationService.obfuscate(project, user);
+            json = project.toJSON().toString();
+        } catch (Exception ex) {
+            throw new TdarRecoverableRuntimeException("projectController.project_json_invalid", ex);
+        }
+        getLogger().trace("returning json:" + json);
+        return json;
     }
 }

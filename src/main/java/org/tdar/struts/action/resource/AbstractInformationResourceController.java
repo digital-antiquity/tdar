@@ -31,7 +31,6 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.FileProxyService;
-import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -64,7 +63,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private Project project = Project.NULL;
     private List<Resource> potentialParents;
-
+    private String json;
     // incoming data
     private List<File> uploadedFiles;
     private List<String> uploadedFileContentTypes; // unused I think (hope)
@@ -368,6 +367,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         setProject(getPersistable().getProject());
+        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
         setProjectId(getPersistable().getProjectId());
         super.loadCustomMetadata();
         loadInformationResourceProperties();
@@ -422,8 +422,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         project = Project.NULL;
         if (Persistable.Base.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
-            return;
         } 
+        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
     }
 
     protected void setProject(Project project) {
@@ -573,7 +573,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public String getProjectAsJson() {
-        return getProject().toJSON().toString();
+        return json;
     }
 
     public Long getTicketId() {

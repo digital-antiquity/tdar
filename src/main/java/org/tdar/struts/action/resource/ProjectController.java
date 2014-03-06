@@ -46,6 +46,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private static final long serialVersionUID = -5625084702553576277L;
 
     private String callback;
+    private String json;
     private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
@@ -124,20 +125,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @SkipValidation
     public String getProjectAsJson() {
-        getLogger().trace("getprojectasjson called");
-        String json = "{}";
-        try {
-            Project project = getProject();
-            if (project == null || project.isTransient()) {
-                getLogger().trace("Trying to convert blank or null project to json: " + project);
-                return json;
-            }
-            getObfuscationService().obfuscate(project, getAuthenticatedUser());
-            json = project.toJSON().toString();
-        } catch (Exception ex) {
-            addActionErrorWithException(getText("projectController.project_json_invalid"), ex);
-        }
-        getLogger().trace("returning json:" + json);
+        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
         return json;
     }
 
