@@ -433,7 +433,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error", Arrays.asList(collectionToAdd.getTitle()));
             }
             collectionToAdd.markUpdated(authenticatedUser);
-            if (collectionToAdd.isTransient() && shouldSave) {
+            if (collectionToAdd.isTransient()) { // && shouldSave abrin commented out for logging (3/6/2014)
                 save(collectionToAdd);
                 xmlService.logRecordXmlToFilestore(collection);
             }
