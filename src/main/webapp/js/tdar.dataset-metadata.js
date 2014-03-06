@@ -128,6 +128,11 @@
 
         var $form = $(formId);
 
+        //Use a plugin if browser doesn't support resizeable textareas
+        if (!Modernizr.cssresize) {
+            $('textarea.resizable:not(.processed)').TextAreaResizer();
+        }
+
         // set up ajax calls, no caching
         $.ajaxSetup({
             cache : false
