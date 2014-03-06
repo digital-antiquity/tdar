@@ -63,7 +63,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private Project project = Project.NULL;
     private List<Resource> potentialParents;
-    private String json;
     // incoming data
     private List<File> uploadedFiles;
     private List<String> uploadedFileContentTypes; // unused I think (hope)
@@ -367,7 +366,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         setProject(getPersistable().getProject());
-        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
         setProjectId(getPersistable().getProjectId());
         super.loadCustomMetadata();
         loadInformationResourceProperties();
@@ -423,7 +421,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (Persistable.Base.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
         } 
-        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
     }
 
     protected void setProject(Project project) {
@@ -573,7 +570,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public String getProjectAsJson() {
-        return json;
+        return getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
     }
 
     public Long getTicketId() {
