@@ -68,7 +68,6 @@
 
 <head>
 <title>Data Integration: Select Tables</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 <script type='text/javascript'>
 $(function() {
   $('.column_toggle').click(function() {

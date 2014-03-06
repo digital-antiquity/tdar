@@ -1,6 +1,5 @@
 <head>
 <title>Contact Information</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <p>
 If you encounter a bug in the application, please feel free to report it using

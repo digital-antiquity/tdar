@@ -8,8 +8,7 @@
 <head>
     <@search.headerLinks includeRss=false />
     <title>Browse By Year: ${year?c}</title>
-    <meta name="lastModifiedDate" content="$Date$"/>
-
+    
 </head>
 <body>
     <h1>Browse By Year: ${year?c}</h1>

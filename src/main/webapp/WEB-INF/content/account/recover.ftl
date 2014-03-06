@@ -3,7 +3,6 @@ vim:sts=2:sw=2:filetype=jsp
 -->
 <head>
 <title>Forgot your password?</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 <script type='text/javascript'>
   $(function() {
     $("#recoverForm").validate();

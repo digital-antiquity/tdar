@@ -3,7 +3,6 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <head>
 <title>Match column values to ontology nodes</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 
 <style type='text/css'>
     .ui-autocomplete {

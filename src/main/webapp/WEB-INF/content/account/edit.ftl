@@ -1,7 +1,6 @@
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <head>
 <title>Register with ${siteName}</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 <style type="text/css">
 label.error {display:block;}
 </style>

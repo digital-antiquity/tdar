@@ -1,6 +1,5 @@
 <head>
 <title>Page not found</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <p>
 Sorry, the page you requested cannot be found.  If this occurred due to a

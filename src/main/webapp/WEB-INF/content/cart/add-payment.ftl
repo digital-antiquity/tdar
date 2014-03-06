@@ -8,7 +8,6 @@
 
 <head>
 <title>Review Billing Information</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 
 </head>
 <body>

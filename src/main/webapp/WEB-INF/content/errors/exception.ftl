@@ -1,6 +1,5 @@
 <head>
 <title>Error Occurred</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
 </head>
 

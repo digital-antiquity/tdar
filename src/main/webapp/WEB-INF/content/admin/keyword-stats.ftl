@@ -29,7 +29,6 @@
 
 <head>
 <title>Administrator Dashboard: Keyword stats</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 
 <body>

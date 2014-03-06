@@ -6,7 +6,6 @@
 
 <head>
 <title>Your cart -- choose payment method</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
 

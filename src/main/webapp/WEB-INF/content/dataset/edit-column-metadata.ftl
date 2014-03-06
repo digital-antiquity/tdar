@@ -3,7 +3,6 @@
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <head>
 <title>Edit Table Metadata for ${dataset.title}</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
 <@edit.sidebar/>

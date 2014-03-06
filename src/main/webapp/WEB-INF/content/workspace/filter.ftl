@@ -4,7 +4,6 @@
 
 <head>
 <title>Filter Ontology Values</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <style type='text/css'>
 //input+label {position: relative; }

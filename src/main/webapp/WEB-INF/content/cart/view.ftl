@@ -8,7 +8,6 @@
 
 <head>
 <title>Your cart</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 
 </head>
 <body>

@@ -2,7 +2,6 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <head>
 <title>Managing citation information for ${resource.title}</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
 <h2>Managing citations for ${resource.title}</h2>

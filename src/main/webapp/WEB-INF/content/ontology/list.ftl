@@ -1,6 +1,5 @@
 <head>
 <title>${authenticatedUser.properName?html}'s Ontology Information</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 
 <!--FIXME -- AM I EVEN USED???? -->
 <!-- Required CSS -->

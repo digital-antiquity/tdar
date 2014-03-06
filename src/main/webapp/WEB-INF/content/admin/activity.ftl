@@ -2,7 +2,6 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
 <title>Administrator Dashboard: Recent Activity</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 
 <h2>Recent activity</h2>

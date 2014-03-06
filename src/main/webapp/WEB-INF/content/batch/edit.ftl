@@ -8,7 +8,6 @@
 
 <head>
 <title>Batch Upload Documents or Images</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 
 </head>
 

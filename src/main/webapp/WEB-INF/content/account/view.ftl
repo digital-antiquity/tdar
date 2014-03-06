@@ -3,7 +3,6 @@ vim:sts=2:sw=2:filetype=jsp
 -->
 <head>
 <title>Account Information for ${person.properName} with ${siteName}</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
 <div class="hero-unit">

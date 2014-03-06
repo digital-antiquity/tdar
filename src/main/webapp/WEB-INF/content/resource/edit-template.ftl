@@ -22,7 +22,6 @@
 </#if>
 <title>${pageTitle}</title>
 
-<meta name="lastModifiedDate" content="$Date$"/>
 
 
 <#assign rtLabel = resource.resourceType.label />

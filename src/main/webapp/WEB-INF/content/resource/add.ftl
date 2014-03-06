@@ -7,7 +7,6 @@
 </#macro>
 <head>
 <title>Add a New Resource</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
 

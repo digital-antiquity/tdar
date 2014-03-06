@@ -6,7 +6,6 @@
 
 <head>
 <title>Your address</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
 

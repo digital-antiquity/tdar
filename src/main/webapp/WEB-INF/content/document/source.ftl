@@ -1,7 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <head>
 <title>Add a source citation to ${linkedInformationResource.title}</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 <script type='text/javascript'>
 $(document).ready(function() {
     $('#selectResourceTypeForm').validate();

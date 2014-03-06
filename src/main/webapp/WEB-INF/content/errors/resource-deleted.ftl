@@ -1,6 +1,5 @@
 <head>
 <title>Access Denied</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <p>
     Sorry, the resource you have requested has either been marked as <em>deleted</em> or you do not have the appropriate rights to view or edit it.  

@@ -1,6 +1,5 @@
 <head>
 <title>Duplicate submission detected</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <p>
 This data has already been posted to the server.  Typically the only times

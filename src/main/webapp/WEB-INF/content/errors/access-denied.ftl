@@ -1,6 +1,5 @@
 <head>
 <title>Access Denied</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <p>
 You do not have the privileges necessary to access this section of this site.  This

@@ -7,7 +7,6 @@
 
 <head>
 <title>${account.name!"Your account"}</title>
-<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
 
