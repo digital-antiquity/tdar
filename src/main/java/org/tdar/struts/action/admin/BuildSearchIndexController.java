@@ -28,6 +28,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
+import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 
 @Component
@@ -66,6 +67,26 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         percentDone = 0;
         phase = "Initializing";
         buildIndex();
+        return SUCCESS;
+    }
+
+    @IgnoreActivity
+    @Action(value = "checkstatusAsync", results = {
+            @Result(name = "success", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) }
+            )
+    public String checkStatusAsync() {
+        percentDone = 0;
+        phase = "Initializing";
+        Activity activity = ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME);
+        if (activity != null) {
+            String msg = activity.getMessage();
+            getLogger().debug(msg);
+            String part = msg.substring(0, msg.indexOf("%"));
+            part = part.substring(part.lastIndexOf(" "));
+            float pct = Float.parseFloat(part);
+            phase = msg;
+            percentDone = (int)pct;
+        }
         return SUCCESS;
     }
 

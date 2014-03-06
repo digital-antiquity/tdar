@@ -135,24 +135,31 @@ public class SearchIndexService {
                     index(fullTextSession, item);
                     numProcessed++;
                     float totalProgress = (currentProgress * maxPer + percent);
-
+                    String message = "";
                     if (numProcessed % divisor == 0) {
-                        updateReceiver.setStatus("indexed " + numProcessed + MIDDLE + totalProgress + "%");
+                        message = "indexed " + numProcessed + MIDDLE + totalProgress + "%";
+                        updateReceiver.setStatus(message);
                         updateReceiver.setPercentComplete(totalProgress / 100f);
                     }
                     if ((numProcessed % FLUSH_EVERY) == 0) {
-                        updateReceiver.setStatus("indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)");
+                        message = "indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)";
+                        updateReceiver.setStatus(message);
                         log.trace("flushing search index");
                         fullTextSession.flushToIndexes();
                         fullTextSession.clear();
                         log.trace("flushed search index");
+                    }
+                    if (StringUtils.isNotBlank(message)) {
+                        activity.setMessage(message);
                     }
                 }
                 scrollableResults.close();
                 fullTextSession.flushToIndexes();
                 fullTextSession.clear();
                 percent += maxPer;
-                updateReceiver.setStatus("finished indexing all " + toIndex.getSimpleName() + "(s).");
+                String message = "finished indexing all " + toIndex.getSimpleName() + "(s).";
+                updateReceiver.setStatus(message);
+                activity.setMessage(message);
             }
 
             fullTextSession.flushToIndexes();
