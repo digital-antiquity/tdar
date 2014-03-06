@@ -117,7 +117,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType>, Localizab
     }
 
     public String getPlural() {
-        return MessageHelper.getMessage("documentType."+label+"_plural");
+        return MessageHelper.getMessage(getLocaleKey() + "_PLURAL");
     }
 
     @Override
@@ -132,7 +132,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType>, Localizab
 
     public String getPublisherLocationName() {
         if (publisherLocationName == null) {
-            return MessageHelper.getMessage("documentType.publisher_location");
+            return MessageHelper.getMessage("DocumentType.publisher_location");
         }
         return publisherLocationName;
     }
@@ -143,7 +143,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType>, Localizab
 
     public String getPublisherName() {
         if (publisherName == null) {
-            return MessageHelper.getMessage("documentType.publisher");
+            return MessageHelper.getMessage("DocumentType.publisher");
         }
         return publisherName;
     }

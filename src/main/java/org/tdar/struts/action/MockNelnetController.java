@@ -105,7 +105,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
             }
             if (seen == false) {
                 getLogger().warn("WE SHOULD SEE 'SUCCESS' IN THE RESPONSE");
-                throw new TdarRecoverableRuntimeException("did not see 'success' in response");
+                throw new TdarRecoverableRuntimeException("mockNelnetController.did_not_see_success");
             }
             getLogger().info("response: {} ", httpresponse);
         } catch (Exception e) {

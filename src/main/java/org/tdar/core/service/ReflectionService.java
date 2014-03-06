@@ -675,7 +675,7 @@ public class ReflectionService {
                 throw (TdarRecoverableRuntimeException) e1;
             }
             logger.debug("error processing bulk upload: {}", e1);
-            throw new TdarRecoverableRuntimeException("reflectionService.expecting_floating_generic", Arrays.asList(value, name));
+            throw new TdarRecoverableRuntimeException("reflectionService.expecting_generic", Arrays.asList(value, name));
         }
     }
 

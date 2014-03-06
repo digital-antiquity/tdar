@@ -2,7 +2,7 @@ package org.tdar.core.exception;
 
 import java.util.Locale;
 
-public interface Localizable {
+public interface LocalizableException {
 
     public abstract Locale getLocale();
 

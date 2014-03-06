@@ -139,8 +139,9 @@ public class MessageService {
         } catch (Exception e) {
             // trying to get a more useful debug message...
             logger.warn("Unhandled exception while processing file: " + Arrays.toString(informationResourceFileVersions), e);
-            throw new TdarRecoverableRuntimeException("There was an unexpected error when processing the file.");
+            throw new TdarRecoverableRuntimeException("messageService.error_processing");
         }
+        
         // }
         return success;
     }

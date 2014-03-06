@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class DeleteOnCloseFileInputStream extends FileInputStream {
                     file = null;
                 } else {
                     logger.error("trying to delete temp file in FILESTORE!!!!!!: {}", file);
-                    throw new TdarRuntimeException("cannot delete a file in the filestore with the DeleteOnCloseInputStream:" + file);
+                    throw new TdarRuntimeException("deleteOnCloseFileInputStream.cannot_delete_file", Arrays.asList( file.getCanonicalPath()));
                 }
             }
         }

@@ -1,5 +1,7 @@
 package org.tdar.core.exception;
 
+import java.util.List;
+
 /**
  * $Id$
  * 
@@ -20,6 +22,10 @@ public class TdarRuntimeException extends I18nRuntimeException {
         super(message);
     }
 
+    public TdarRuntimeException(String message, List<?> values) {
+        super (message, values);
+    }
+    
     public TdarRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }

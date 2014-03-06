@@ -179,7 +179,7 @@ public interface DatasetConverter {
                 return getDataTables();
             } catch (IOException e) {
                 logger.error("I/O error while opening input database or dumping data", e);
-                throw new TdarRecoverableRuntimeException("datasetService.io_exception)", e);
+                throw new TdarRecoverableRuntimeException("datasetService.io_exception", e);
             } catch (TdarRecoverableRuntimeException tex) {
                 // FIXME: THIS FEELS DUMB. We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error
                 // message

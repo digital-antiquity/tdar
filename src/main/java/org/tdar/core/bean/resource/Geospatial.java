@@ -93,12 +93,6 @@ public class Geospatial extends Dataset {
 
     @Override
     public boolean isValidForController() {
-        // if (StringUtils.isEmpty(getSpatialReferenceSystem())) {
-        // throw new TdarValidationException("A spatial reference system is required for this " + getResourceType());
-        // }
-        // if (StringUtils.isEmpty(getProjection())) {
-        // throw new TdarValidationException("A projection is required for this " + getResourceType());
-        // }
         return super.isValidForController();
     }
 

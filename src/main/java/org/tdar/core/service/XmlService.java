@@ -156,7 +156,7 @@ public class XmlService {
             TdarConfiguration.getInstance().getFilestore().storeAndRotate(ObjectType.fromClass(resource.getClass()), new StringInputStream(convertToXML(resource), "UTF-8"), version, rotate);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML:" + resource, e);
-            throw new TdarRecoverableRuntimeException("could not save xml record");
+            throw new TdarRecoverableRuntimeException("xmlService.could_not_save");
         }
         logger.trace("done saving");
     }
@@ -306,7 +306,7 @@ public class XmlService {
                 break;
         }
         if (rdf == null) {
-            throw new TdarRecoverableRuntimeException("cannot determine whether creator is person or institution");
+            throw new TdarRecoverableRuntimeException("xmlService.cannot_determine_creator");
         }
         
         for (LogPart part : log.getCollaboratorLogPart()) {

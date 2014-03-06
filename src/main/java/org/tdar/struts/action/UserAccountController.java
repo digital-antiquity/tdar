@@ -217,7 +217,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
             final boolean reCaptchaResponse = reCaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
             if (reCaptchaResponse == false) {
-                throw new TdarRecoverableRuntimeException("Captcha Response is not valid");
+                throw new TdarRecoverableRuntimeException("userAccountController.captcha_not_valid");
             }
         }
     }

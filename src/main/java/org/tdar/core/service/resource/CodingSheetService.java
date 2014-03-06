@@ -152,7 +152,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
     private CodingSheetParser getCodingSheetParser(String filename) throws CodingSheetParserException {
         CodingSheetParser parser = CodingSheetParserFactory.getInstance().getParser(filename);
         if (parser == null) {
-            throw new CodingSheetParserException("codingSheet.coul_not_parse", Arrays.asList(filename));
+            throw new CodingSheetParserException("codingSheet.could_not_parse", Arrays.asList(filename));
         }
         return parser;
     }

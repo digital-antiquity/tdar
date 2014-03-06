@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import org.tdar.utils.MessageHelper;
 
-public class I18nException extends Exception implements Localizable {
+public class I18nException extends Exception implements LocalizableException {
 
     private static final long serialVersionUID = 6115182705667575524L;
     private Locale locale;

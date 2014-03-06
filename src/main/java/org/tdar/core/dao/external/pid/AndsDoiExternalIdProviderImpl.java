@@ -119,7 +119,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         if (result == null) {
             List<String> vals = new ArrayList<>();
             vals.add(property);
-            throw new IllegalStateException(MessageHelper.getMessage("Doi.required_property_not_set", vals));
+            throw new IllegalStateException(MessageHelper.getMessage("andsDoi.required_property_not_set", vals));
         }
         return result;
     }

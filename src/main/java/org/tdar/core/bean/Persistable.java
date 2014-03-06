@@ -252,7 +252,7 @@ public interface Persistable extends Serializable {
          */
         public static <C> boolean reconcileSet(Set<C> existing, Collection<C> incoming) {
             if (existing == null) {
-                throw new TdarRuntimeException("the existing collection should not be null");
+                throw new TdarRuntimeException("persistable.collection_null");
             }
             if (incoming == null) {
                 if (!CollectionUtils.isEmpty(existing)) {

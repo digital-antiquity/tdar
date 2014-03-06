@@ -84,7 +84,7 @@ public class DownloadService {
     @Transactional
     public void handleDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions) throws TdarActionException {
         if (ArrayUtils.isEmpty((irFileVersions))) {
-            throw new TdarRecoverableRuntimeException("unsupported action");
+            throw new TdarRecoverableRuntimeException("error.unsupported_action");
         }
 
         Map<File, String> files = new HashMap<>();

@@ -887,7 +887,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 excelService.addPairedHeaderRow(sheet, rowNum, 0, headerValues);
                 rowNum++;
                 excelService.addPairedHeaderRow(sheet, rowNum, 0,
-                        Arrays.asList(getText("advancedSearchController.downloded_by"),
+                        Arrays.asList(getText("advancedSearchController.downloaded_by"),
                                 getText("advancedSearchController.downloaded_on", getAuthenticatedUser().getProperName() , new Date())));
                 rowNum++;
                 rowNum++;

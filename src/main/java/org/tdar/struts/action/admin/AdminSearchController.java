@@ -75,7 +75,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
         }
         setMode("admin lookup");
         if (q == null) {
-            throw new TdarRecoverableRuntimeException("cannot determine QueryBuilder");
+            throw new TdarRecoverableRuntimeException("adminSearchController.cannot_determine_query_builder");
         }
         q.setRawQuery(rawQuery);
         try {

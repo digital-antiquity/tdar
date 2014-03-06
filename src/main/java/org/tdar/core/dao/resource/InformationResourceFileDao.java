@@ -93,7 +93,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
 
     public void deleteVersionImmediately(InformationResourceFileVersion version) {
         if (Persistable.Base.isNullOrTransient(version)) {
-            throw new TdarRecoverableRuntimeException("cannot delete transient object");
+            throw new TdarRecoverableRuntimeException("error.cannot_delete_transient");
         }
         
         if (version.isUploadedOrArchival()) {

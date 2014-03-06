@@ -358,7 +358,7 @@ public class ImportService {
                     } else if (property instanceof Creator && ((Creator) property).hasNoPersistableValues()) {
                         toReturn = null;
                     } else {
-                        throw new APIException("importService.object_invald", Arrays.asList(property.getClass(), property), StatusCode.FORBIDDEN);
+                        throw new APIException("importService.object_invalid", Arrays.asList(property.getClass(), property), StatusCode.FORBIDDEN);
                     }
                 }
             }

@@ -10,7 +10,7 @@ public enum AuthenticationResult  {
     INACTIVE_ACCOUNT("This account is inactive."),
     ACCOUNT_DOES_NOT_EXIST("This account does not exist"),
     REMOTE_EXCEPTION("The authentication server is currently down.  Please try authenticating again in a few minutes."),
-    ACCOUNT_EXISTS(MessageHelper.getMessage("The account already exists"));
+    ACCOUNT_EXISTS("The account already exists");
     
     private final String message;
     private Person person;

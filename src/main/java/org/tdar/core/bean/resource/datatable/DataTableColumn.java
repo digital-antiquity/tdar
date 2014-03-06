@@ -367,7 +367,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
                 // FIXME: Not 100% sure this is correct with the NUMERIC check
                 if (columnDataType == null || !columnDataType.isNumeric()) {
                     keys.add("count was not numeric");
-                    throw new TdarValidationException("dataTableColumn.invalid", keys);
+                    throw new TdarValidationException("dataTableColumn.invalid_count_numeric", keys);
                 }
             case UNCODED_VALUE:
         }

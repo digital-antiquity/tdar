@@ -166,12 +166,12 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
             // Sets are currently not supported
             if (set != null) {
-                throw new OAIException(getText("oaiControler.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
+                throw new OAIException(getText("oaiController.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
             }
 
             if (verbToHandle == null) {
                 getLogger().warn("NO VERB PROVIDED");
-                throw new OAIException(getText("oaiControler.bad_verb"), OaiErrorCode.BAD_VERB);
+                throw new OAIException(getText("oaiController.bad_verb"), OaiErrorCode.BAD_VERB);
             } else {
                 switch (verbToHandle) {
                     case IDENTIFY:
@@ -215,7 +215,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
 
     private String identifyVerb() throws OAIException {
-        String message = getText("oaiControler.not_allowed_with_identity");
+        String message = getText("oaiController.not_allowed_with_identity");
         assertParameterIsNull(metadataPrefix, "metadataPrefix", message);
         assertParameterIsNull(identifier, "identifier", message);
         assertParameterIsNull(set, "set", message);
@@ -227,7 +227,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
     private void assertParameterIsNull(Object parameter, String parameterName, String message) throws OAIException {
         if (parameter != null) {
-            throw new OAIException(getText("oaiController.bad_argument", parameterName , message), OaiErrorCode.BAD_ARGUMENT);
+            throw new OAIException(getText("oaiController.bad_arguement", parameterName , message), OaiErrorCode.BAD_ARGUMENT);
         }
     }
 
@@ -499,13 +499,13 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     }
 
     private String listSetsVerb() throws OAIException {
-        throw new OAIException(getText("oaiControler.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
+        throw new OAIException(getText("oaiController.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
         // return SUCCESS_LIST_SETS;
     }
 
     private String getRecordVerb() throws JAXBException, OAIException, ParserConfigurationException {
         // validate parameters
-        String message = getText("oaiControler.not_allowed_with_get");
+        String message = getText("oaiController.not_allowed_with_get");
 
         assertParameterIsNull(resumptionToken, "resumptionToken", message);
         assertParameterIsNull(from, "from", message);

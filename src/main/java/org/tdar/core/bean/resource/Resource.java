@@ -925,7 +925,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Deprecated()
     // removing for localization
     public String getResourceTypeLabel() {
-        return MessageHelper.getMessage(resourceType.name());
+        return MessageHelper.getMessage(resourceType.getLocaleKey());
     }
 
     // marked as final because this is called from constructors.
@@ -1476,10 +1476,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
-            throw new TdarValidationException("resource.title", Arrays.asList(getResourceType()));
+            throw new TdarValidationException("resource.title_required", Arrays.asList(getResourceType()));
         }
         if (StringUtils.isEmpty(getDescription())) {
-            throw new TdarValidationException("resource.description", Arrays.asList(getResourceType()));
+            throw new TdarValidationException("resource.description_required", Arrays.asList(getResourceType()));
         }
         return true;
     }

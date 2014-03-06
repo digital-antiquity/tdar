@@ -111,7 +111,7 @@ public class AndsPidsDao implements ExternalIDProvider {
         } catch (IllegalStateException | IllegalArgumentException | XPathExpressionException | ParserConfigurationException | SAXException e) {
             List<String> vals = new ArrayList<>();
             vals.add(resourceUrl);
-            throw new TdarRecoverableRuntimeException("andsPidDao.create_fail", e,vals);
+            throw new TdarRecoverableRuntimeException("andsPidDao.creation_fail", e,vals);
         }
         return typeMap;
     }

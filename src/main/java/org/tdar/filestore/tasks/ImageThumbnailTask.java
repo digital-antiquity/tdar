@@ -64,7 +64,7 @@ public class ImageThumbnailTask extends AbstractTask {
      * try {
      * task.run(vers);
      * } catch (Exception e) {
-     * throw new TdarRecoverableRuntimeException("an image processing error ocurred", e);
+     * throw new TdarRecoverableRuntimeException('an image processing error ocurred', e);
      * }
      * }
      */

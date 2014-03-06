@@ -336,10 +336,10 @@ public class SearchParameters {
 
         appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, support.getText("searchParameter.resource_type"), getResourceTypes(), Operator.OR,
                 Arrays.asList(ResourceType.values()));
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE,support.getText("searchParameter.integrable"), getIntegratableOptions(), Operator.OR,
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE,support.getText("searchParameter.integratable"), getIntegratableOptions(), Operator.OR,
                 Arrays.asList(IntegratableOptions.values()));
 
-        queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, support.getText("searchParameter.document_Type"), Operator.OR, getDocumentTypes()));
+        queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, support.getText("searchParameter.document_type"), Operator.OR, getDocumentTypes()));
         queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, support.getText("searchParameter.resource_access_type"), Operator.OR,
                 getResourceAccessTypes()));
 

@@ -90,7 +90,7 @@ public class ListArchiveTask extends AbstractTask {
             }
             
             if (seenFiles < 2 && !validEntries) {
-                throw new TdarRecoverableRuntimeException("Could not process zip file, empty, or not a valid zip");
+                throw new TdarRecoverableRuntimeException("listArchiveTask.invalid");
             }
             
             // write that to a file with a known format (one file per line)

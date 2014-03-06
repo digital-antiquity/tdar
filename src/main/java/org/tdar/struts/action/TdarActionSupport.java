@@ -26,7 +26,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.Localizable;
+import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.ActivityManager;
@@ -519,8 +519,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         if (exception instanceof TdarRecoverableRuntimeException) {
             int maxDepth = 4;
             Throwable thrw = exception;
-            if (exception instanceof Localizable) {
-                ((Localizable) exception).setLocale(getLocale());
+            if (exception instanceof LocalizableException) {
+                ((LocalizableException) exception).setLocale(getLocale());
             }
             StringBuilder sb = new StringBuilder(exception.getLocalizedMessage());
 
