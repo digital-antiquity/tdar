@@ -10,7 +10,7 @@ label.error {display:block;}
 <h1>${siteAcronym} Registration</h1>
 <#assign action_ = nav.getFormUrl("/account/register") >
 
-<@s.form id="accountForm" method="post" action="${action_}" cssClass="form-horizontal">
+<@s.form id="accountForm" method="post" action="${action_}" cssClass="">
 
 <div class="alert alert-block alert-error" style="display:none" id="error">
   <h4>Please correct the following issues with your submission</h4>
