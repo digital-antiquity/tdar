@@ -651,8 +651,8 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("is.geolocation.to.be.used", false);
     }
 
-    public String getCreatorFOAFDir() {
-        return getPersonalFileStoreLocation() + "/creatorInfo";
+    public String getFileCacheDirectory() {
+        return getPersonalFileStoreLocation() + "/fileCache";
     }
 
     public String getCulturalTermsLabel() {

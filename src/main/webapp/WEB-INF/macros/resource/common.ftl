@@ -21,7 +21,9 @@ ${filesize?string(",##0.00")}b
 </#compress><#t>
 </#macro>
 <#-- string representing current tdar version/build number -->
-<#assign tdarBuildId><#include  "/version.txt" parse=false/></#assign>
+<#assign tdarBuildId>
+<#attempt><#include  "/version.txt" parse=false/><#recover></#attempt>
+</#assign>
 <#assign tdarBuildId = tdarBuildId?trim?replace("+", ".001") />
 
 <#--
