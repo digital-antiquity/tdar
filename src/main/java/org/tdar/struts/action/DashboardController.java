@@ -26,9 +26,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.ActivityManager;
 import org.tdar.search.query.SortOption;
-import org.tdar.utils.activity.Activity;
 
 /**
  * $Id$
