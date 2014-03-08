@@ -298,44 +298,238 @@
         </#if>
 
     <@view.coin resource/>
-    <#if resource.resourceType == 'PROJECT'>
-        <@view.keywords showParentProjectKeywords=false />
-    <#else>
-        <@view.keywords />
-    </#if>
-    <@view.temporalCoverage />
-
-    <@view.spatialCoverage />
-
-    <@view.indvidualInstitutionalCredit />
-
-    <@view.resourceAnnotations />
+ 
+  <#if resource.containsActiveKeywords >
+        <h2>Keywords</h2>
+        <#if resource.projectVisible?? && !resource.projectVisible && resource.inheritingSomeMetadata>
+            <em>Note: Inherited values from this project are not available because the project is not active</em>
+        </#if>
+        <div class="row">
+                <#if (resource.keywordProperties?size > 1)>        
+                    <div class="span45">
+                <#elseif resource.keywordProperties?size == 1>
+                    <div class="span9">
+                </#if>
+                
+                <#list resource.keywordProperties as prop>
+                <#-- FIXME: somehow this should be folded into SearchFieldType to not have all of this if/else -->
+                    <#if ((resource.keywordProperties?size /2)?ceiling == prop_index)>        
+                        </div><div class="span45">
+                    </#if>
+                    <#if prop == "activeSiteNameKeywords">
+                        <@_keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
+                    </#if>
+                    <#if prop == "activeSiteTypeKeywords">
+                        <@_keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
+                    </#if>
+                    <#if prop == "activeCultureKeywords">
+                        <@_keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
+                    </#if>                    
+                    <#if prop == "activeMaterialKeywords">
+                        <@_keywordSection "Material" resource.activeMaterialKeywords "query" />
+                    </#if>
+                    <#if prop == "activeInvestigationTypes">
+                        <@_keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
+                    </#if>
+                    <#if prop == "activeOtherKeywords">
+                        <@_keywordSection "General" resource.activeOtherKeywords "query" />
+                    </#if>
+                    <#if prop == "activeTemporalKeywords">
+                        <@_keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
+                    </#if>
+                    <#if prop == "activeGeographicKeywords">
+                           <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
+                    </#if>
+                </#list>
+                <#if (resource.keywordProperties?size > 0)>        
+                    </div>
+                </#if>                
+        </div>
+        <hr/>
+  </#if>
+  
     
-    <@view.resourceNotes />
+      <#if resource.containsActiveKeywords >
+        <h2>Keywords</h2>
+        <#if resource.projectVisible?? && !resource.projectVisible && resource.inheritingSomeMetadata>
+            <em>Note: Inherited values from this project are not available because the project is not active</em>
+        </#if>
+        <div class="row">
+                <#if (resource.keywordProperties?size > 1)>        
+                    <div class="span45">
+                <#elseif resource.keywordProperties?size == 1>
+                    <div class="span9">
+                </#if>
+                
+                <#list resource.keywordProperties as prop>
+                <#-- FIXME: somehow this should be folded into SearchFieldType to not have all of this if/else -->
+                    <#if ((resource.keywordProperties?size /2)?ceiling == prop_index)>        
+                        </div><div class="span45">
+                    </#if>
+                    <#if prop == "activeSiteNameKeywords">
+                        <@_keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
+                    </#if>
+                    <#if prop == "activeSiteTypeKeywords">
+                        <@_keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
+                    </#if>
+                    <#if prop == "activeCultureKeywords">
+                        <@_keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
+                    </#if>                    
+                    <#if prop == "activeMaterialKeywords">
+                        <@_keywordSection "Material" resource.activeMaterialKeywords "query" />
+                    </#if>
+                    <#if prop == "activeInvestigationTypes">
+                        <@_keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
+                    </#if>
+                    <#if prop == "activeOtherKeywords">
+                        <@_keywordSection "General" resource.activeOtherKeywords "query" />
+                    </#if>
+                    <#if prop == "activeTemporalKeywords">
+                        <@_keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
+                    </#if>
+                    <#if prop == "activeGeographicKeywords">
+                           <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
+                    </#if>
+                </#list>
+                <#if (resource.keywordProperties?size > 0)>        
+                    </div>
+                </#if>                
+        </div>
+        <hr/>
+  </#if>
 
-    <#-- <@relatedSimpleItem resource.sourceCitations "Source Citations"/> -->
-    <#-- <@relatedSimpleItem resource.relatedCitations "Related Citations"/> -->
-    <@view.relatedSimpleItem resource.activeSourceCollections "Source Collections"/>
-    <@view.relatedSimpleItem resource.activeRelatedComparativeCollections "Related Comparative Collections" />
+<#macro _keywordSection label keywordList searchParam>
+    <#if keywordList?has_content>
+    <p>
+        <strong>${label}</strong><br>
+        <@view.keywordSearch keywordList searchParam false />
+    </p>
+    </#if>
+</#macro>
+    
+    <#if resource.activeCoverageDates?has_content>
+        <h2>Temporal Coverage</h2>
+        <#list resource.activeCoverageDates as coverageDate>
+				<#assign value>
+                <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to 
+                        <#if coverageDate.endDate?has_content>${coverageDate.endDate?c}<#else>?</#if>
+                         <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if>
+				</#assign>
+				<@view.kvp key=coverageDate.dateType.label val=value />
+        </#list>
+        <hr/>
+    </#if>
+
+
+  <#if (resource.activeLatitudeLongitudeBoxes?has_content )>
+        <h2>Spatial Coverage</h2>
+            <div class="title-data">
+                <p>
+                  min long: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}; min lat: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude} ;
+                  max long: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}; max lat: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude} ;
+                  <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
+                  <!-- ${resource.managedGeographicKeywords } -->
+                  <#if editor>
+	                  <#if resource.firstActiveLatitudeLongitudeBox.actuallyObfuscated!false> [obfuscated]</#if>
+                  </#if>
+                </p>
+            </div>
+
+        <div class="row">
+          <div id='large-google-map' class="google-map span9"></div>
+       </div>
+       <div id="divCoordContainer" style="display:none">
+          <input type="hidden"  class="ne-lat" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy" />
+          <input type="hidden"  class="sw-lng" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}" id="minx" />
+          <input type="hidden"  class="ne-lng" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}" id="maxx" />
+          <input type="hidden"  class="sw-lat" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}"  id="miny" />
+       </div>
+  </#if>
+    <#if creditProxies?has_content >
+        <h3>Individual &amp; Institutional Roles</h3>
+        <@view.showCreatorProxy proxyList=creditProxies />
+        <hr/>
+    </#if>
+    
+    <#if ! resource.activeResourceAnnotations.isEmpty()>
+    <h3>Record Identifiers</h3>
+
+    <#list allResourceAnnotationKeys as key>
+   	    <#assign contents = "" />
+	    <#list resource.activeResourceAnnotations as ra>
+          <#if key.id == ra.resourceAnnotationKey.id >
+            <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>; </#if>${ra.value}<#t/></#assign>
+          </#if>
+        </#list>
+        <#if contents?has_content>
+        	<#assign keyLabel>${key.key}(s)</#assign>
+            <@kvp key=keyLabel val=contents noescape=true />
+        </#if>
+    </#list>
+    </#if>
+
+    
+    <#if resource.activeResourceNotes?has_content>
+        <h2>Notes</h2>
+        <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber") as resourceNote>
+            <@kvp key=resourceNote.type.label val=resourceNote.note />
+        </#list>
+        <hr />
+    </#if>
+    
+    <#-- <@_relatedSimpleItem resource.sourceCitations "Source Citations"/> -->
+    <#-- <@_relatedSimpleItem resource.relatedCitations "Related Citations"/> -->
+    <@_relatedSimpleItem resource.activeSourceCollections "Source Collections"/>
+    <@_relatedSimpleItem resource.activeRelatedComparativeCollections "Related Comparative Collections" />
     <#if resource.activeSourceCollections?has_content || resource.activeRelatedComparativeCollections?has_content>
          <hr />
      </#if>
     <#-- display linked data <-> ontology nodes -->
-    <@view.relatedResourceSection label=resource.resourceType.label />
-    
+    <#if relatedResources?? && !relatedResources.empty>
+		<h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
+		<ol style='list-style-position:inside'>
+		<#list relatedResources as related >
+		<li><a href="<@s.url value="/${related.urlNamespace}/${related.id?c}"/>">${related.id?c} - ${related.title} </a></li>
+		</#list>
+		</ol>
+	</#if>
 
     <@view.unapiLink resource />
-    <@view.resourceCollections />
-    <@view.additionalInformation resource />
-
+    <#if !viewableResourceCollections.empty>
+        <h3>This Resource is Part of the Following Collections</h3>
+        <p>
+        <#list viewableResourceCollections as collection>
+                <a href="<@s.url value="/collection/${collection.id?c}"/>">${collection.name}</a> <br/>
+        </#list></p>
+        <hr />
+    </#if>
+    
+	<#--emit additional dataset metadata as a list of key/value pairs  -->
+    <#if resource.resourceType != 'PROJECT'>
+        <#assign map = resource.relatedDatasetData />
+        <#if map?? && !map.empty>
+            <h3>Additional Metadata</h3>
+            <#list map?keys as key>
+                <#if key?? && map.get(key)?? && key.visible?? && key.visible>
+				   <@kvp key=key.displayName val=map.get(key) />
+                </#if>
+            </#list>
+        </#if>
+    </#if>
     <#if !resource.resourceType.project>
 	    <@view.extendedFileInfo />
 	</#if>    
     <#if local_.afterFileInfo?? && local_.afterFileInfo?is_macro>
         <@local_.afterFileInfo />
     </#if>
-    <@view.infoResourceAccessRights />
-
+    <@view.accessRights>
+        <div>
+        <#if resource.embargoedFiles?? && !resource.embargoedFiles>
+           The file(s) attached to this resource are <b>not</b> publicly accessible.  
+                    They will be released to the public domain in the future</b>.
+        </#if>
+        </div>
+    </@view.accessRights>
 
 
         <div id="sidebar-right" parse="true">
@@ -348,8 +542,12 @@
                 <p>
 
                 <ul class="unstyled-list">
-                    <@view.resourceProvider />
-                    
+				  <#if resource.resourceProviderInstitution?? && resource.resourceProviderInstitution.id != -1>
+				    <li>
+				        <strong>Resource Provider</strong><br>
+				        <@view.browse creator=resource.resourceProviderInstitution />
+				    </li>
+				  </#if>
 					
 					<#if local_.sidebarDataTop?? && local_.sidebarDataTop?is_macro>
 						<@local_.sidebarDataTop />
@@ -457,4 +655,25 @@ $(function() {
 
 });
 </script>
+
+<#--emit a list of related items (e.g. list of source collections or list of comparative collections -->
+<#macro _relatedSimpleItem listitems label>
+  <#if ! listitems.isEmpty()>
+        <h3>${label}</h3>
+        <table>
+        <#list listitems as citation>
+            <tr><td>${citation}</td></tr>
+        </#list>
+        </table>
+  </#if>
+</#macro>
+
+<#macro _keywordSection label keywordList searchParam>
+    <#if keywordList?has_content>
+    <p>
+        <strong>${label}</strong><br>
+        <@view.keywordSearch keywordList searchParam false />
+    </p>
+    </#if>
+</#macro>
 </#escape>

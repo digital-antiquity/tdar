@@ -223,18 +223,6 @@ View freemarker macros
     </div>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove: rarely used -->
-<#-- return true if the current resource has any restricted files -->
-<#function hasRestrictedFiles>
- <#return !(resource.publicallyAccessible)>
-<#--  <#return !(resource.publicallyAccessible) && !ableToViewConfidentialFiles> -->
-</#function>
-
-<#-- FIXME: FTLREFACTOR remove: rarely used -->
-<#-- return true if current resource is has contact person/institution -->
-<#function contactInformationAvailable>
-    <#return !contactProxies.empty>
-</#function>
 
 <#--display more detailed information about the files associated with the current resource -->
 <#macro extendedFileInfo>
@@ -284,7 +272,7 @@ View freemarker macros
         </@fileInfoSection>
         </tbody>
         </table>
-        <#if (hasRestrictedFiles() && contactInformationAvailable())>
+        <#if (!(resource.publicallyAccessible) && !contactProxies.empty )>
         <div class="well restricted-files-contacts">
             <h4>Accessing Restricted Files</h4>
             <p>At least one of the files for this resource is restricted from public view. For more information regarding
@@ -353,124 +341,7 @@ No coding rules have been entered for this coding sheet yet.
 </div>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR move to view-template.ftl -->
-<#--emit the Spatial Coverage section of a view page -->
-<#macro spatialCoverage>
-  <#if (resource.activeLatitudeLongitudeBoxes?has_content )>
-        <h2>Spatial Coverage</h2>
-            <div class="title-data">
-                <p>
-                  min long: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}; min lat: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude} ;
-                  max long: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}; max lat: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude} ;
-                  <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
-                  <!-- ${resource.managedGeographicKeywords } -->
-                  <#if editor>
-	                  <#if resource.firstActiveLatitudeLongitudeBox.actuallyObfuscated!false> [obfuscated]</#if>
-                  </#if>
-                </p>
-            </div>
 
-        <div class="row">
-          <div id='large-google-map' class="google-map span9"></div>
-       </div>
-       <div id="divCoordContainer" style="display:none">
-          <input type="hidden"  class="ne-lat" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy" />
-          <input type="hidden"  class="sw-lng" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}" id="minx" />
-          <input type="hidden"  class="ne-lng" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}" id="maxx" />
-          <input type="hidden"  class="sw-lat" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}"  id="miny" />
-       </div>
-  </#if>
-</#macro>
-
-<#-- emit the keywords section of a view page -->
-<#-- FIXME: FTLREFACTOR move to view-template.ftl -->
-<#macro keywords showParentProjectKeywords=true>
-  <#if resource.containsActiveKeywords >
-        <h2>Keywords</h2>
-        <#if resource.projectVisible?? && !resource.projectVisible && resource.inheritingSomeMetadata>
-            <em>Note: Inherited values from this project are not available because the project is not active</em>
-        </#if>
-        <div class="row">
-                <#if (resource.keywordProperties?size > 1)>        
-                    <div class="span45">
-                <#elseif resource.keywordProperties?size == 1>
-                    <div class="span9">
-                </#if>
-                
-                <#list resource.keywordProperties as prop>
-                <#-- FIXME: somehow this should be folded into SearchFieldType to not have all of this if/else -->
-                    <#if ((resource.keywordProperties?size /2)?ceiling == prop_index)>        
-                        </div><div class="span45">
-                    </#if>
-                    <#if prop == "activeSiteNameKeywords">
-                        <@_keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
-                    </#if>
-                    <#if prop == "activeSiteTypeKeywords">
-                        <@_keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
-                    </#if>
-                    <#if prop == "activeCultureKeywords">
-                        <@_keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
-                    </#if>                    
-                    <#if prop == "activeMaterialKeywords">
-                        <@_keywordSection "Material" resource.activeMaterialKeywords "query" />
-                    </#if>
-                    <#if prop == "activeInvestigationTypes">
-                        <@_keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
-                    </#if>
-                    <#if prop == "activeOtherKeywords">
-                        <@_keywordSection "General" resource.activeOtherKeywords "query" />
-                    </#if>
-                    <#if prop == "activeTemporalKeywords">
-                        <@_keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
-                    </#if>
-                    <#if prop == "activeGeographicKeywords">
-                           <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
-                    </#if>
-                </#list>
-                <#if (resource.keywordProperties?size > 0)>        
-                    </div>
-                </#if>                
-        </div>
-        <hr/>
-  </#if>
-</#macro>
-<#macro _keywordSection label keywordList searchParam>
-    <#if keywordList?has_content>
-    <p>
-        <strong>${label}</strong><br>
-        <@keywordSearch keywordList searchParam false />
-    </p>
-    </#if>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR move to view-template.ftl -->
-<#--emit the temporal coverage section of a view page -->
-<#macro temporalCoverage showParentCoverage=true>
-    <#if resource.activeCoverageDates?has_content>
-        <h2>Temporal Coverage</h2>
-        <#list resource.activeCoverageDates as coverageDate>
-				<#assign value>
-                <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to 
-                        <#if coverageDate.endDate?has_content>${coverageDate.endDate?c}<#else>?</#if>
-                         <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if>
-				</#assign>
-				<@kvp key=coverageDate.dateType.label val=value />
-        </#list>
-        <hr/>
-    </#if>
-</#macro>
-
-
-<#-- FIXME: FTLREFACTOR move to view-template.ftl -->
-<#-- emit the resource provider section of a view page -->
-<#macro resourceProvider>
-  <#if resource.resourceProviderInstitution?? && resource.resourceProviderInstitution.id != -1>
-    <li>
-        <strong>Resource Provider</strong><br>
-        <@browse creator=resource.resourceProviderInstitution />
-    </li>
-  </#if>
-</#macro>
 
 <#--emit a link to a resource creator information page -->
 <#macro browse creator role=""><#compress>
@@ -564,32 +435,6 @@ No coding rules have been entered for this coding sheet yet.
     </#if>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#macro authorizedUsers collection >
-    <@common.resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#macro infoResourceAccessRights>
-    <@accessRights>
-        <div>
-        <#if resource.embargoedFiles?? && !resource.embargoedFiles>
-           The file(s) attached to this resource are <b>not</b> publicly accessible.  
-                    They will be released to the public domain in the future</b>.
-        </#if>
-        </div>
-    </@accessRights>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#macro indvidualInstitutionalCredit>
-    <#if creditProxies?has_content >
-        <h3>Individual &amp; Institutional Roles</h3>
-        <@showCreatorProxy proxyList=creditProxies />
-        <hr/>
-    </#if>
-</#macro>
-
 <#--emit a key/value pair -->
 <#macro kvp key="" val="" noescape=false>
 	<#if val?has_content && val != 'NULL' >
@@ -597,52 +442,6 @@ No coding rules have been entered for this coding sheet yet.
     </#if>
 </#macro>
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#--emit resource notes section of view page -->
-<#macro resourceNotes>
-    <#if resource.activeResourceNotes?has_content>
-        <h2>Notes</h2>
-        <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber") as resourceNote>
-            <@kvp key=resourceNote.type.label val=resourceNote.note />
-        </#list>
-        <hr />
-    </#if>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#--emit resource annotations section of view page -->
-<#macro resourceAnnotations>
-    <#if ! resource.activeResourceAnnotations.isEmpty()>
-    <h3>Record Identifiers</h3>
-
-    <#list allResourceAnnotationKeys as key>
-   	    <#assign contents = "" />
-	    <#list resource.activeResourceAnnotations as ra>
-          <#if key.id == ra.resourceAnnotationKey.id >
-            <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>; </#if>${ra.value}<#t/></#assign>
-          </#if>
-        </#list>
-        <#if contents?has_content>
-        	<#assign keyLabel>${key.key}(s)</#assign>
-            <@kvp key=keyLabel val=contents noescape=true />
-        </#if>
-    </#list>
-    </#if>
-
-</#macro>
-
-<#-- FIXME: FTLREFACTOR move to view-template.ftl -->
-<#--emit a list of related items (e.g. list of source collections or list of comparative collections -->
-<#macro relatedSimpleItem listitems label>
-  <#if ! listitems.isEmpty()>
-        <h3>${label}</h3>
-        <table>
-        <#list listitems as citation>
-            <tr><td>${citation}</td></tr>
-        </#list>
-        </table>
-  </#if>
-</#macro>
 
 <#--emit a list of resouce creator proxies -->
 <#macro showCreatorProxy proxyList=authorshipProxies>
@@ -827,19 +626,6 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#macro>
 
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#--emit list of related resources (or datasets) for the current resource -->
-<#macro relatedResourceSection label="">
-    <#if relatedResources?? && !relatedResources.empty>
-    <h3>This ${label} is Used by the Following Datasets:</h3>
-    <ol style='list-style-position:inside'>
-    <@s.iterator var='related' value='relatedResources' >
-    <li><a href="<@s.url value="/${related.urlNamespace}/${related.id?c}"/>">${related.id?c} - ${related.title} </a></li>
-    </@s.iterator>
-    </ol>
-    </#if>
-</#macro>
-
 <#-- because this collection can get quite big,  we conserve output by omitting optional tags and using short attribute values where possible  -->
 <#macro resourceCollectionTable tbid="tblCollectionResources">
     <table class="table table-condensed table-hover" id="${tbid}">
@@ -866,62 +652,6 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#macro>
 
 
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#--emit list of resourceCollections associated with the current resource  -->
-<#macro resourceCollections>
-    <#if !viewableResourceCollections.empty>
-        <h3>This Resource is Part of the Following Collections</h3>
-        <p>
-        <#list viewableResourceCollections as collection>
-                <a href="<@s.url value="/collection/${collection.id?c}"/>">${collection.name}</a> <br/>
-        </#list></p>
-        <hr />
-    </#if>
-</#macro>
-
-
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#--emit additional dataset metadata as a list of key/value pairs  -->
-<#macro additionalInformation resource_>
-    <#if resource_.resourceType != 'PROJECT'>
-        <#assign map = resource_.relatedDatasetData />
-        <#if map?? && !map.empty>
-            <h3>Additional Metadata</h3>
-            <#list map?keys as key>
-                <#if key?? && map.get(key)?? && key.visible?? && key.visible>
-				   <@kvp key=key.displayName val=map.get(key) />
-                </#if>
-            </#list>
-        </#if>
-    </#if>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#-- FIXME: jim: this is the worst thing you've ever written.  -->
-<#macro boolean _label _val _show=true trueString="Yes" falseString="No">
-<#if _show>
-    <b>${_label}:</b>
-    <#if _val>${trueString}<#else>${falseString}</#if>
-</#if>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove:rarely used (actually, probably best replaced with @kvp) -->
-<#macro textfield _label _val="" _alwaysShow=true>
-<#if _alwaysShow || _val?has_content >
-    <b>${_label}:</b> ${_val}
-</#if>
-</#macro>
-
-<#-- FIXME: FTLREFACTOR remove:rarely used -->
-<#macro datefield _label _val="" _alwaysShow=true>
-    <#if _alwaysShow || _val?is_date>
-        <b>${_label}</b>
-        <#if _val?is_date>
-        <@shortDate _val true/>
-        </#if>
-    </#if>
-</#macro>
 
 <#--FIXME: currently broken (TDAR-3531). also,  this should go into external javascript -->
 <#macro datatableChildJavascript>

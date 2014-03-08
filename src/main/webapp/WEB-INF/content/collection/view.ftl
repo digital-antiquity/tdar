@@ -144,7 +144,7 @@ ${resourceTypeFacets[0].plural}
 			<dt><b>This Collection was viewed:</b></dt><dd>${viewCount} times</dd>
 
 		</dl>
-		    <@view.authorizedUsers resourceCollection />
+		    <@_authorizedUsers resourceCollection />
 		</#if>
 <#else>
 This collection is not accessible
@@ -160,4 +160,9 @@ $(document).ready(function(){
 
 
 </body>
+
+<#macro _authorizedUsers collection >
+    <@common.resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
+</#macro>
+
 </#escape>

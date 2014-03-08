@@ -143,51 +143,51 @@
                         <td>
                         <#if showAdminInfo>
                             <#if creator.lastLogin?has_content>
-                                <@view.datefield "Last Login"  creator.lastLogin />
+                                <_@_datefield "Last Login"  creator.lastLogin />
                             <#else>
-                                <@view.textfield "Last Login"  "No record" />
+                                <@_textfield "Last Login"  "No record" />
                             </#if>
                         <#else>
-                            <@view.boolean "Registered User" registered />
+                            <@_boolean "Registered User" registered />
                         </#if>
                         </td>
                     </tr>
                     <tr>
                         <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
                             <td itemprop="email">
-                                <@view.textfield "Email" creator.email />
+                                <@_textfield "Email" creator.email />
                             </td>
                         <#else>
                             <td>
-                                <@view.textfield "Email" "Not Shown" />
+                                <@_textfield "Email" "Not Shown" />
                             </td>
                         </#if>
                         <#if creator.phonePublic || (editor || id == authenticatedUser.id)>
                             <td itemprop="telephone">
-                                <@view.textfield "Phone" creator.phone true />
+                                <@textfield "Phone" creator.phone true />
                             </td>
                         <#else>
                             <td>
-                                <@view.textfield "Phone" "Not Shown" />
+                                <@textfield "Phone" "Not Shown" />
                             </td>
                         </#if>
                     </tr>
                     <tr>
                         <td colspan=2>
                             <#escape x as x?html>
-                    <@view.textfield "Contributor Reason" creator.contributorReason true />
+                    <@textfield "Contributor Reason" creator.contributorReason true />
                     </#escape>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <#escape x as x?html>
-                    <@view.textfield "TOS Version" creator.tosVersion true />
+                    <@textfield "TOS Version" creator.tosVersion true />
                     </#escape>
                         </td>
                         <td>
                             <#escape x as x?html>
-                    <@view.textfield "Agreement Version" creator.contributorAgreementVersion true />
+                    <@textfield "Agreement Version" creator.contributorAgreementVersion true />
                     </#escape>
                         </td>
                     </tr>
@@ -268,5 +268,28 @@
     </#if>
     <#if editor>
 	<p><b>This Creator Page was Viewed:</b>${viewCount} times</p>
-	</#if>    
+	</#if>
+	
+	<#macro _datefield _label _val="" _alwaysShow=true>
+    <#if _alwaysShow || _val?is_date>
+        <b>${_label}</b>
+        <#if _val?is_date>
+        <@shortDate _val true/>
+        </#if>
+    </#if>
+	</#macro>
+	
+	<#macro _textfield _label _val="" _alwaysShow=true>
+		<#if _alwaysShow || _val?has_content >
+		    <b>${_label}:</b> ${_val}
+		</#if>
+	</#macro>
+
+	<#-- FIXME: jim: this is the worst thing you've ever written.  -->
+	<#macro _boolean _label _val _show=true trueString="Yes" falseString="No">
+	<#if _show>
+	    <b>${_label}:</b>
+	    <#if _val>${trueString}<#else>${falseString}</#if>
+	</#if>
+	</#macro>
 </#escape>
