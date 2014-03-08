@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.utils.MessageHelper;
 
 public class NelNetTransactionRequestTemplate implements Serializable {
 

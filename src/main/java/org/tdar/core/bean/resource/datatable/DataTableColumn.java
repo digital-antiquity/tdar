@@ -42,8 +42,6 @@ import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
-import java.util.Arrays;
-
 /**
  * Metadata for a column in a data table.
  * 

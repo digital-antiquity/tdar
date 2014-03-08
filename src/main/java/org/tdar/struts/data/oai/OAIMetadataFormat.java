@@ -7,7 +7,6 @@
 package org.tdar.struts.data.oai;
 
 import org.tdar.core.exception.OAIException;
-import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin

@@ -1,6 +1,5 @@
 package org.tdar.filestore.personal;
 
-import org.tdar.utils.MessageHelper;
 
 public enum PersonalFileType {
     UPLOAD("uploads"),

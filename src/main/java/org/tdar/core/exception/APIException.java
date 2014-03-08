@@ -1,9 +1,6 @@
 package org.tdar.core.exception;
 
-import java.io.Serializable;
 import java.util.List;
-
-import com.joestelmach.natty.generated.DateParser.meridian_indicator_return;
 
 /**
  * $Id$

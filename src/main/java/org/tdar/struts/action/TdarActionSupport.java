@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -65,8 +66,6 @@ import org.tdar.web.SessionData;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-
-import java.util.Arrays;
 
 /**
  * $Id$

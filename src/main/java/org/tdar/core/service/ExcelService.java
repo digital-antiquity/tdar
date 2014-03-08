@@ -39,7 +39,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.excel.CellFormat;
 import org.tdar.core.service.excel.SheetProxy;
-import org.tdar.utils.MessageHelper;
 
 /**
  * This is a service specific to trying to centralize all of the specific issues with writing 

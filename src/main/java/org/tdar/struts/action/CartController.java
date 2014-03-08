@@ -39,7 +39,6 @@ import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.utils.MessageHelper;
 
 @Component
 @Scope("prototype")

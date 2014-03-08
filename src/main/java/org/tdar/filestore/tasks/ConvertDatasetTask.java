@@ -17,7 +17,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.filestore.tasks.Task.AbstractTask;
-import org.tdar.utils.MessageHelper;
 
 public class ConvertDatasetTask extends AbstractTask {
 

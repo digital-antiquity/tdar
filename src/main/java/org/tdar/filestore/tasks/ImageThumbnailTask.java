@@ -30,7 +30,6 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.tasks.Task.AbstractTask;
-import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin

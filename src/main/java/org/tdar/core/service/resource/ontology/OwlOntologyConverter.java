@@ -31,9 +31,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.utils.MessageHelper;
-
-import java.util.Arrays;
 /**
  * Converts a text formatted Ontology into an OWL XML ontology
  *

@@ -24,8 +24,6 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 
-import java.util.Arrays;
-
 /**
  * $Id$
  * 

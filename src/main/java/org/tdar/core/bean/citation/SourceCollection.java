@@ -1,9 +1,8 @@
 package org.tdar.core.bean.citation;
 
 import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import javax.persistence.Index;
+import javax.persistence.Table;
 
 /**
  * Represents source collection reference-type annotations.

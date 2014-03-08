@@ -16,8 +16,8 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.workflows.Workflow;
-import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.WorkflowContext;
 
 /**
  * @author Adam Brin

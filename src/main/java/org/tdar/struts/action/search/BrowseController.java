@@ -44,7 +44,6 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.FileStoreFile.DirectoryType;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.QueryFieldNames;

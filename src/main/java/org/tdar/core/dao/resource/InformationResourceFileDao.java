@@ -20,10 +20,9 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
-import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.Dao.HibernateBase;
+import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.utils.MessageHelper;
 
 @Component
 public class InformationResourceFileDao extends HibernateBase<InformationResourceFile> {

@@ -37,8 +37,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.MessageHelper;
 
-import java.util.Arrays;
-
 /**
  * $Id$
  * 

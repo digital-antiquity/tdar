@@ -41,7 +41,6 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.utils.AccountEvaluationHelper;
-import org.tdar.utils.MessageHelper;
 
 @Transactional(readOnly = true)
 @Service

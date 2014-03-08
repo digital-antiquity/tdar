@@ -16,8 +16,6 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
 
-import com.drew.lang.annotations.SuppressWarnings;
-
 /**
  * $Id$
  * 

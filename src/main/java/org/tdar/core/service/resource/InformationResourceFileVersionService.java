@@ -8,7 +8,6 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.InformationResourceFileVersionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ServiceInterface;
-import org.tdar.utils.MessageHelper;
 
 @Service
 public class InformationResourceFileVersionService extends ServiceInterface.TypedDaoBase<InformationResourceFileVersion, InformationResourceFileVersionDao> {

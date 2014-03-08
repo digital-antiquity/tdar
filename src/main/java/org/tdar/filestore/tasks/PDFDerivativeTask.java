@@ -16,7 +16,6 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
-import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin

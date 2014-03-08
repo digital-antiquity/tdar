@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.tanesha.recaptcha.ReCaptcha;
@@ -32,8 +33,6 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
-
-import java.util.Arrays;
 
 /**
  * $Id$

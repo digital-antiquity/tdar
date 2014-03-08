@@ -50,7 +50,6 @@ import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.StringRange;
 import org.tdar.utils.MessageHelper;
 
-import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
