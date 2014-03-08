@@ -472,7 +472,7 @@
     <#if resource.activeResourceNotes?has_content>
         <h2>Notes</h2>
         <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber") as resourceNote>
-            <@kvp key=resourceNote.type.label val=resourceNote.note />
+            <@view.kvp key=resourceNote.type.label val=resourceNote.note />
         </#list>
         <hr />
     </#if>

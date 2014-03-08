@@ -164,30 +164,30 @@
                         </#if>
                         <#if creator.phonePublic || (editor || id == authenticatedUser.id)>
                             <td itemprop="telephone">
-                                <@textfield "Phone" creator.phone true />
+                                <@_textfield "Phone" creator.phone true />
                             </td>
                         <#else>
                             <td>
-                                <@textfield "Phone" "Not Shown" />
+                                <@_textfield "Phone" "Not Shown" />
                             </td>
                         </#if>
                     </tr>
                     <tr>
                         <td colspan=2>
                             <#escape x as x?html>
-                    <@textfield "Contributor Reason" creator.contributorReason true />
+                    <@_textfield "Contributor Reason" creator.contributorReason true />
                     </#escape>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <#escape x as x?html>
-                    <@textfield "TOS Version" creator.tosVersion true />
+                    <@_textfield "TOS Version" creator.tosVersion true />
                     </#escape>
                         </td>
                         <td>
                             <#escape x as x?html>
-                    <@textfield "Agreement Version" creator.contributorAgreementVersion true />
+                    <@_textfield "Agreement Version" creator.contributorAgreementVersion true />
                     </#escape>
                         </td>
                     </tr>
