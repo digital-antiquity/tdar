@@ -78,7 +78,7 @@ public class ObfuscationResultListener implements PreResultListener {
                 if (obj_ instanceof Obfuscatable) {
                     obfuscationService.obfuscate((Obfuscatable) obj_, user);
                 } else {
-                    logger.error("trying to obfsucate something we shouldn't {}", obj.getClass());
+                    logger.warn("trying to obfsucate something we shouldn't {}", obj.getClass());
                 }
             }
         } else {
