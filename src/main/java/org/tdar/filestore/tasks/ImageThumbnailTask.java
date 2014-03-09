@@ -133,9 +133,13 @@ public class ImageThumbnailTask extends AbstractTask {
                 version.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(version));
             }
             try {
+                Thread.yield();
                 createJpegDerivative(version, ijSource, filename, MEDIUM, false);
+                Thread.yield();
                 createJpegDerivative(version, ijSource, filename, LARGE, false);
+                Thread.yield();
                 createJpegDerivative(version, ijSource, filename, SMALL, false);
+                Thread.yield();
             } catch (Throwable e) {
                 getLogger().error("Failed to create jpeg derivative", e);
                 throw new TdarRecoverableRuntimeException("imageThumbnailTask.processingError", e);

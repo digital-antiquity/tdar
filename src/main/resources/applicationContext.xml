@@ -47,8 +47,13 @@
 		<property name="templateLoaderPaths">
 			<list>
 				<value>classpath:/freemarker-templates</value>
-				<value>classpath:/freemarker-templates-test</value>
 				<value>file:/WEB-INF/freemarker-templates</value>
+				<value>classpath:/WEB-INF/content</value>
+				<value>classpath:src/main/webapp</value>
+				<value>file:src/main/webapp</value>
+				<value>classpath:/freemarker-templates-test</value>
+				<value>classpath:/templates</value>
+				<value>file:/templates</value>
 			</list>
 		</property>
 	</bean>

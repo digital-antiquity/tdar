@@ -83,6 +83,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
                     getLogger().debug("NPE from PDF issue" , npe);
                 }
             }
+            Thread.yield();
 
             List<String> gpsValues = new ArrayList<>();
 

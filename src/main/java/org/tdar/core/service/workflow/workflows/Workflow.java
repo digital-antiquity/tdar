@@ -93,6 +93,7 @@ public interface Workflow {
                 workflowContext.setErrorFatal(true);
                 return false;
             }
+            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
             // ensuring proper sorting
             EnumSet<WorkflowPhase> phases = EnumSet.allOf(WorkflowPhase.class);
@@ -117,9 +118,12 @@ public interface Workflow {
                     } finally {
                         workflowContext.logTask(task, message);
                         task.cleanup();
+                        Thread.yield();
                     }
                 }
             }
+            Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
+
             workflowContext.setProcessedSuccessfully(successful);
             return successful;
         }

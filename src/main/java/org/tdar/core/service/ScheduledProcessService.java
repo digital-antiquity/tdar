@@ -221,9 +221,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         }
         logger.info("beginning {} startId: {}", process.getDisplayName(), process.getLastId());
         try {
+            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             process.execute();
         } catch (Throwable e) {
             logger.error(MessageHelper.getMessage("scheduledProcessService.error_running", Arrays.asList(process.getDisplayName())), e);
+        } finally {
+            Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
         }
 
         if (process.isCompleted()) {

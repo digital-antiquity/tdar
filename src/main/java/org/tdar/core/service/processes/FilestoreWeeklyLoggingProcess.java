@@ -40,7 +40,6 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
     @Autowired
     private transient EmailService emailService;
 
-    private int batchCount = 0;
     private boolean run = false;
 
     @Override
@@ -55,7 +54,7 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
         map.put("other", other);
         map.put("tainted", tainted);
         map.put("missing", missing);
-
+        Thread.yield();
         StringBuffer subject = new StringBuffer(PROBLEM_FILES_REPORT);
         int count = 0;
         for (InformationResourceFileVersion version : informationResourceFileVersionService.findAll()) {
@@ -73,8 +72,16 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
                 tainted.add(version);
                 logger.debug("other error ", e);
             }
+            if (count % 10_000 == 0) {
+                Thread.yield();
+                try {
+                    Thread.sleep(1_000l);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-
+        
         if (count == 0) {
             subject.append(" [NONE]");
         }
