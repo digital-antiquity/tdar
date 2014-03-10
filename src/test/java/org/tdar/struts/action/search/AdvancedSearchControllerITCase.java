@@ -1,12 +1,5 @@
 package org.tdar.struts.action.search;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -59,6 +52,10 @@ import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.*;
 
 @Transactional
 public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
@@ -1072,6 +1069,20 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         controller.advanced();
 
         assertEquals("sparse project should have been inflated", persisted.getTitle(), firstGroup().getProjects().get(0).getTitle());
+    }
+
+    @Test
+    @Rollback
+    public void testRefineSearchWithSparseCollection() {
+        ResourceCollection rc = createAndSaveNewResourceCollection("Mega Collection");
+        ResourceCollection sparseCollection = new ResourceCollection();
+        genericService.synchronize();
+        long collectionId = rc.getId();
+        assertThat(collectionId, greaterThan(0L));
+        sparseCollection.setId(collectionId);
+        firstGroup().getCollections().add(sparseCollection);
+
+        assertThat(sparseCollection.getTitle(), equalTo(firstGroup().getCollections().get(0).getTitle()));
     }
 
     private void assertOnlyResultAndProject(InformationResource informationResource) {

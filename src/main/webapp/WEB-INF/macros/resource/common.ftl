@@ -1045,21 +1045,31 @@ this bit of freemarker is voodoo:
 
 <#-- emit a "combobox" control.  A combobox is essentially text field element that features both autocomplete support as
  as the ability to view a list of all possible values (by clicking on a 'dropdown' button beside the text box)-->
-<#macro combobox name target autocompleteIdElement placeholder value cssClass autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="">
+<#macro combobox name target autocompleteIdElement placeholder  cssClass value=false autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="">
             <#if bootstrapControl>
             <div class="control-group">
                 <label class="control-label">${label}</label>
                 <div class="controls">
             </#if>
                     <div class="input-append">
-                        <@s.textfield theme="simple" name="${name}"  target="${target}"
-                         label="${label}"
-                         autocompleteParentElement="${autocompleteParentElement}"
-                         autocompleteIdElement="${autocompleteIdElement}"
-                         placeholder="${placeholder}"
-                        value="${value}" cssClass="${cssClass}" />
-                        <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>         
-                        <#if addNewLink?has_content>           
+                        <#--if 'value' is not a string,  omit the 'value' attribute so that we don't override the
+                        s.textfield default (i.e. the value described by the 'name' attribute) -->
+                        <#if value?is_string>
+                            <@s.textfield theme="simple" name="${name}"  target="${target}"
+                             label="${label}"
+                             autocompleteParentElement="${autocompleteParentElement}"
+                             autocompleteIdElement="${autocompleteIdElement}"
+                             placeholder="${placeholder}"
+                             value="${value}" cssClass="${cssClass}" />
+                        <#else>
+                            <@s.textfield theme="simple" name="${name}"  target="${target}"
+                            label="${label}"
+                            autocompleteParentElement="${autocompleteParentElement}"
+                            autocompleteIdElement="${autocompleteIdElement}"
+                            placeholder="${placeholder}" cssClass="${cssClass}" />
+                        </#if>
+                        <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>
+                        <#if addNewLink?has_content>
                         <a href="${addNewLink}"  onClick="TDAR.common.setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn show-all" target="adhoc_1">add new</a>
                         </#if>                    
                     </div>

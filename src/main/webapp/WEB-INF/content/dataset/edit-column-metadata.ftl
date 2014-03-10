@@ -235,7 +235,7 @@
              autocompleteIdElement="#${column_index}_cid"
              placeholder="Enter the name of a Coding Sheet"
              addNewLink="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"
-            value="${codingTxt}" cssClass="input-xxlarge-combo codingsheetfield" />
+            cssClass="input-xxlarge-combo codingsheetfield" />
     </div>
      <div id='divOntology-${column_index}' class="ontologyInfo " data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology">
             <#assign ontologyId="" />
@@ -246,13 +246,11 @@
             </#if>
             <@s.hidden name="dataTableColumns[${column_index}].defaultOntology.id" value="${ontologyId}" id="${column_index}_oid" />
             <@common.combobox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
-             value="${ontologyTxt}"  
              label="Map it to an Ontology:"
              placeholder="Enter the name of an Ontology"
              autocompleteParentElement="#divOntology-${column_index}"
              autocompleteIdElement="#${column_index}_oid"
              addNewLink="/ontology/add?returnToResourceMappingId=${resource.id?c}"
-             
              cssClass="input-xxlarge-combo ontologyfield" />
     </div>
     <br/>
