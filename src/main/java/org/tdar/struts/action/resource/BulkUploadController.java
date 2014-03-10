@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -174,6 +175,9 @@ public class BulkUploadController extends AbstractInformationResourceController<
         if (reciever != null) {
             phase = reciever.getStatus();
             percentDone = reciever.getPercentComplete();
+            if (StringUtils.isNotBlank(reciever.getAsyncErrors())) {
+                getLogger().warn("bulkUploadErrors: {}", reciever.getAsyncErrors());
+            }
             setAsyncErrors(reciever.getHtmlAsyncErrors());
             if (percentDone == 100f) {
                 List<Pair<Long, String>> details = reciever.getDetails();
