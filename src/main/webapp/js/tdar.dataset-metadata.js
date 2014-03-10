@@ -75,8 +75,6 @@
                 square.addClass("measurement");
                 valid = true;
             }
-        } else if (ontolog != undefined && ontolog != '') {
-            square.addClass("integration");
         } else if (val == 'CODED_VALUE') {
             // console.log(codingSheetId + " " + isNaN(parseInt(codingSheetId)));
             if (!isNaN(parseInt(codingSheetId))) {
@@ -87,6 +85,10 @@
             square.addClass("uncoded");
             uncoded = true;
             valid = true;
+        }
+
+        if (ontolog != undefined && ontolog != '') {
+            square.addClass("integration");
         }
 
         if (map != undefined && map.val() == "true") {
