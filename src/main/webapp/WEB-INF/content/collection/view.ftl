@@ -22,7 +22,7 @@
 <body>
 
 <div id="divSearchContext" parse="true">
-    <input id="cbctxid" type="checkbox" name="collection" value="${id?c}">
+    <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
     <label for="cbctxid">Search within this collection</label>
 </div>
 

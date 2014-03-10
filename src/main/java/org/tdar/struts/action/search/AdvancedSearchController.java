@@ -51,6 +51,7 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
@@ -131,8 +132,11 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     // querystring format for id searches, basic search, and search by keyword
     // we will do this by having the same setter names as the old search
     // controller for these search types, but we will stuff them in a
-    // searchParams
-    // instance
+    // searchParams instance
+    
+    private Long projectId;
+    private Long collectionId;
+    
     private SearchParameters legacySearchParameters = new SearchParameters();
 
     // SearchParams.toQueryGroup only returns 'dehydrated' query parts. after
@@ -439,13 +443,18 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
 
             //contextual search: resource collection
-            String collectionId = getServletRequest().getParameter("collection");
-            if( collectionId != null) {
-                Long id = Long.valueOf(collectionId);
+            if( Persistable.Base.isNotNullOrTransient(collectionId)) {
                 ResourceCollection rc = new ResourceCollection();
-                rc.setId(id);
+                rc.setId(collectionId);
                 terms.getFieldTypes().add(SearchFieldType.COLLECTION);
                 terms.getCollections().add(rc);
+            }
+            //contextual search: resource collection
+            if( Persistable.Base.isNotNullOrTransient(projectId)) {
+                Project project = new Project();
+                project.setId(projectId);
+                terms.getFieldTypes().add(SearchFieldType.PROJECT);
+                terms.getProjects().add(project);
             }
 
             groups.add(terms);
@@ -1003,6 +1012,22 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     public void setGeoMode(GeoRssMode geoMode) {
         this.geoMode = geoMode;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Long getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
     }
 
 }
