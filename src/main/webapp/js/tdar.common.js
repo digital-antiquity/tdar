@@ -922,21 +922,6 @@ TDAR.common = function() {
 
     }
 
-
-    //FIXME:migrate to tdar.dataintegration.
-    /**
-     * data integration:  toggle an arcordian style div (i think) and update icon to reflect toggled state
-     * @private
-     */
-    var _toggleDiv = function() {
-        $(this).next().slideToggle('slow');
-        $(this).find("span.ui-icon-triangle-1-e").switchClass(
-                "ui-icon-triangle-1-e", "ui-icon-triangle-1-s", 700);
-        $(this).find("span.ui-icon-triangle-1-s").switchClass(
-                "ui-icon-triangle-1-s", "ui-icon-triangle-1-e", 700);
-    }
-
-
     /**
      * specific setup for initializing "supporting resoure" edit forms.
      * @param totalNumberOfFiles total number of flies that can be associated with the resource
@@ -1050,47 +1035,6 @@ TDAR.common = function() {
         });
     }
 
-    //FIXME: migrate to tdar.integration
-    /**
-     * more black magic used exclusively by data integration.  return the boty of a function as a string.
-     * @param func
-     * @returns {*}
-     * @private
-     */
-    var _getFunctionBody = function(func) {
-        var m = func.toString().match(/\{([\s\S]*)\}/m)[1];
-        return m;
-    }
-
-    //FIXME: migrate to tdar.integration TDAR-3497
-    /**
-     * replace last occurance of str in attribute with rep
-     *
-     * @param elem
-     * @param attrName
-     * @param str
-     * @param rep
-     * @private
-     */
-    function _replaceAttribute(elem, attrName, str, rep) {
-        if (!$(elem).attr(attrName))
-            return;
-        var oldval = $(elem).attr(attrName);
-        if (typeof oldval == "function") {
-            oldval = _getFunctionBody(oldval);
-            // console.debug("converting function to string:" + oldval );
-
-        }
-        if (oldval.indexOf(str) != -1) {
-            var beginPart = oldval.substring(0, oldval.lastIndexOf(str));
-            var endPart = oldval.substring(oldval.lastIndexOf(str) + str.length,
-                    oldval.length);
-            var newval = beginPart + rep + endPart;
-            $(elem).attr(attrName, newval);
-            // console.debug('attr:' + attrName + ' oldval:' + oldval + ' newval:' +
-            // newval);
-        }
-    }
 
     /**
      * Used by ontology and coding-sheet edit pages; show relevant fields based on users choice of "manual text entry"
@@ -1171,7 +1115,6 @@ TDAR.common = function() {
         "gaevent": _gaevent,
         "outboundLink": _outboundLink,
         "setupSupportingResourceForm": _setupSupportingResourceForm,
-        "toggleDiv": _toggleDiv,
         "switchType": _switchType,
         "setupDocumentEditForm": _setupDocumentEditForm,
         "sessionTimeoutWarning": _sessionTimeoutWarning,
@@ -1181,7 +1124,6 @@ TDAR.common = function() {
         "htmlEncode":_htmlEncode,
         "htmlDoubleEncode":_htmlDoubleEncode,
         "applyWatermarks": _applyWatermarks,
-        "replaceAttribute": _replaceAttribute,
         "coordinatesCheckboxClicked": _coordinatesCheckboxClicked,
         "refreshInputDisplay": _refreshInputDisplay,
         "maxJavascriptValidationMessages": 25,

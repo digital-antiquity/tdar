@@ -184,9 +184,9 @@
 
         newChild.find('*').each(function () {
             var elem = this;
-            TDAR.common.replaceAttribute(elem, "name", '{COLNUM}', colNum);
+            _replaceAttribute(elem, "name", '{COLNUM}', colNum);
             // always have one DIV to start with, so subtract 2
-            TDAR.common.replaceAttribute(elem, "name", '{CELLNUM}', children.length - 2);
+            _replaceAttribute(elem, "name", '{CELLNUM}', children.length - 2);
         });
 
         $(newChild).children().removeAttr("style");
@@ -353,11 +353,53 @@
         }, 400);
     }
 
+    /**
+     * Return body of a function as a string.
+     * @param func
+     * @returns {*}
+     * @private
+     */
+    var _getFunctionBody = function(func) {
+        var m = func.toString().match(/\{([\s\S]*)\}/m)[1];
+        return m;
+    }
+
+    /**
+     * replace last occurance of str in attribute with rep
+     *
+     * @param elem
+     * @param attrName
+     * @param str
+     * @param rep
+     * @private
+     */
+    function _replaceAttribute(elem, attrName, str, rep) {
+        if (!$(elem).attr(attrName))
+            return;
+        var oldval = $(elem).attr(attrName);
+        if (typeof oldval === "function") {
+            oldval = _getFunctionBody(oldval);
+            // console.debug("converting function to string:" + oldval );
+
+        }
+        if (oldval.indexOf(str) != -1) {
+            var beginPart = oldval.substring(0, oldval.lastIndexOf(str));
+            var endPart = oldval.substring(oldval.lastIndexOf(str) + str.length,
+                oldval.length);
+            var newval = beginPart + rep + endPart;
+            $(elem).attr(attrName, newval);
+            // console.debug('attr:' + attrName + ' oldval:' + oldval + ' newval:' +
+            // newval);
+        }
+    }
+
+
     //expose public elements
     TDAR.integration = {
         "initDataIntegration": _initDataIntegration,
         "setStatus": _setStatus,
         "integrationClearAll": _integrationClearAll
     };
+
 
 })(TDAR, jQuery);
