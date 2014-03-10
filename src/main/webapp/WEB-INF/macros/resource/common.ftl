@@ -1107,7 +1107,7 @@ this bit of freemarker is voodoo:
 <#macro reindexingNote>
  <#if reindexing!false >
     <div class="reindexing alert">
-        <p><@text "notifications.fmt_system_is_reindexing", siteAcronym /></p>
+        <p><@localText "notifications.fmt_system_is_reindexing", siteAcronym /></p>
     </div>
  </#if>
 </#macro>
@@ -1161,7 +1161,7 @@ this bit of freemarker is voodoo:
     name:String string key name
     parms...?:varargs<String> (optional) any additional arguments are treated as MessageFormat parameters
 -->
-<#macro text name parms...>
+<#macro localText name parms...>
     <@s.text name="${name}"><#list parms as parm><@s.param>${parm}</@s.param></#list></@s.text>
 </#macro>
 
