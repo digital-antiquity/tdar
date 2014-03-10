@@ -21,7 +21,7 @@ label.error {display:block;}
 <div class="pull-right">
 <b>Already Registered?</b><br/><a href="<@s.url value="/login" />">Login</a>
 </div>
-	<p><b>Register for a free ${siteAcronym} account in order to:</b>
+	<p><b>There is no charge to become a registered user of ${siteAcronym}. As a registered user, you can:</b>
 	<ul>
 		<li>Download Documents, Data sets, Images, and Other Resources</li>
 		<li>Bookmark Resources for future use</li>
@@ -121,7 +121,7 @@ label.error {display:block;}
 	</div>
 
 
-	<h3>Create an Account</h3>
+	<h3>Register for ${siteAcronym}</h3>
     <@s.textfield spellcheck="false" required=true id='username' label="Username" name="person.username" cssClass="required username input-xlarge" />
 
     
@@ -134,6 +134,18 @@ label.error {display:block;}
 		</div>
 	</div>
 
+
+    <div class="control-group">
+        <label class="control-label">Terms of Use</label>
+        <div class="controls">
+            <span class="help-block">  </span>
+            <label class="checkbox">
+            <@s.checkbox theme="simple" name="acceptTermsOfUse" id="tou-id"  />
+                I have read and accept the ${siteAcronym}
+                <@s.a href="${tosUrl}" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
+            </label>
+        </div>
+    </div>
     
     <div class="control-group">
         <label class="control-label">Contributor Agreement</label>
@@ -176,21 +188,9 @@ label.error {display:block;}
     </#if>
 
 
-    <div class="control-group">
-        <label class="control-label">Terms of Use</label>
-        <div class="controls">
-            <span class="help-block">  </span>
-            <label class="checkbox">
-            <@s.checkbox theme="simple" name="acceptTermsOfUse" id="tou-id"  />
-                I have read and accept the ${siteAcronym}
-                <@s.a href="${tosUrl}" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
-            </label>
-        </div>
-    </div>
-    
     
     <div class="form-actions">
-        <input type="submit" class='btn btn-primary  submitButton' name="submitAction" value="Create Account">
+        <input type="submit" class='btn btn-primary  submitButton' name="submitAction" value="Register">
 <!--        <p class="help-block">
             <small>By submitting the following form you <a href='#terms'>signify your
             consent to the above terms and conditions.</a></small>

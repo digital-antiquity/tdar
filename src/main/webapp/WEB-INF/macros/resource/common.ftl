@@ -1098,7 +1098,7 @@ this bit of freemarker is voodoo:
 <#if billingManager>
     <li><a href="<@s.url value="/billing/list" />">All Accounts</a></li>
 </#if>
-<li><a href="/cart/add">Create a new account or add more to an existing one </a></li>
+<li><a href="/cart/add">Create a new account or add more to an existing one</a></li>
 </ul>
 </#if>        
 </#macro>
