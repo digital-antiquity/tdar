@@ -29,12 +29,14 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.activity.Activity;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -189,7 +191,7 @@ public class SearchIndexService {
         if (item instanceof Project) {
             Project project = (Project) item;
             if (CollectionUtils.isEmpty(project.getCachedInformationResources())) {
-                projectDao.findAllResourcesInProject(project);
+                projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT);
             }
         }
         fullTextSession.index(item);
@@ -398,7 +400,7 @@ public class SearchIndexService {
      * @param project
      */
     public void indexProject(Project project) {
-        project.setCachedInformationResources(new HashSet<InformationResource>(projectDao.findAllResourcesInProject(project)));
+        project.setCachedInformationResources(new HashSet<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT)));
         project.setReadyToIndex(true);
         index(project);
         log.debug("reindexing project contents");

@@ -683,6 +683,16 @@ public abstract class InformationResource extends Resource {
     public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
         return isProjectVisible() && isInheritingIndividualAndInstitutionalCredit() ? project.getIndividualAndInstitutionalCredit() : getIndividualAndInstitutionalCredit();
     }
+    
+    @IndexedEmbedded
+    @Override
+    public Set<ResourceCreator> getActiveResourceCreators() {
+        Set<ResourceCreator> local = new HashSet<ResourceCreator>(super.getResourceCreators());
+        if (isProjectVisible() && isInheritingIndividualAndInstitutionalCredit()) {
+            local.addAll(project.getIndividualAndInstitutionalCredit());
+        }
+        return local;
+    }
 
     @Transient
     @XmlTransient

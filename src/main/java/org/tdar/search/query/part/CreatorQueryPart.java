@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
@@ -85,7 +84,9 @@ public class CreatorQueryPart<C extends Creator> extends
                 FieldQueryPart<String> projectChildren = new FieldQueryPart<>(QueryFieldNames.IR_CREATOR_ROLE_IDENTIFIER, terms);
                 projectChildren.setOperator(Operator.OR);
                 group.append(projectChildren);
+                group.setOperator(Operator.OR);
             }
+
         }
         return group.generateQueryString();
     }

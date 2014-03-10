@@ -1,5 +1,15 @@
 package org.tdar.struts.action.search;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -47,15 +57,11 @@ import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
+import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.*;
 
 @Transactional
 public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
@@ -182,23 +188,40 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
         for (Resource resource : controller.getResults()) {
             logger.info("{}", resource);
-            boolean seen = false;
-            if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
-                seen = true;
-            }
-            if (resource instanceof InformationResource) {
-                Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
-                if (institution != null && institution.getName().contains(namePart)) {
-                    seen = true;
+            boolean seen = checkResourceForValue(namePart, resource);
+            if (resource instanceof Project) {
+                for (Resource r : projectService.findAllResourcesInProject((Project)resource, Status.values())) {
+                    if (seen) {
+                        break;
+                    }
+                    seen = checkResourceForValue(namePart, r);
                 }
-            }
-            for (ResourceCreator creator : resource.getResourceCreators()) {
-                if (creator.getCreator().getProperName().contains(namePart)) {
-                    seen = true;
-                }
+                
             }
             assertTrue("should have seen term somwehere", seen);
         }
+    }
+
+    private boolean checkResourceForValue(String namePart, Resource resource) {
+        boolean seen = false;
+        if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
+            logger.debug("seen submitter or updater");
+            seen = true;
+        }
+        if (resource instanceof InformationResource) {
+            Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
+            if (institution != null && institution.getName().contains(namePart)) {
+                logger.debug("seen in institution");
+                seen = true;
+            }
+        }
+        for (ResourceCreator creator : resource.getActiveResourceCreators()) {
+            if (creator.getCreator().getProperName().contains(namePart)) {
+                logger.debug("seen in resource creator");
+                seen = true;
+            }
+        }
+        return seen;
     }
 
     @Test
