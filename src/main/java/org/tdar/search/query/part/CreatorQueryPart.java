@@ -15,22 +15,25 @@ import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.TextProvider;
 
-public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQueryPart<C> {
+public class CreatorQueryPart<C extends Creator> extends
+        AbstractHydrateableQueryPart<C> {
 
     private List<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @SuppressWarnings("unchecked")
-    public CreatorQueryPart(String fieldName, Class<C> creatorClass, C creator, List<ResourceCreatorProxy> proxyList) {
+    public CreatorQueryPart(String fieldName, Class<C> creatorClass, C creator,
+            List<ResourceCreatorProxy> proxyList) {
         // set default of "or"
         setOperator(Operator.OR);
         setActualClass(creatorClass);
         setFieldName(fieldName);
-//        setDisplayName(getMessage("creatorQueryPart.label"));
+        // setDisplayName(getMessage("creatorQueryPart.label"));
         for (int i = 0; i < proxyList.size(); i++) {
             try {
                 ResourceCreatorProxy proxy = proxyList.get(i);
@@ -38,13 +41,17 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                 if (proxy.isValid()) {
                     List<Creator> creators = new ArrayList<Creator>();
                     if (rc.getCreator() instanceof Dedupable<?>) {
-                        creators.addAll(((Dedupable<Creator>) rc.getCreator()).getSynonyms());
+                        creators.addAll(((Dedupable<Creator>) rc.getCreator())
+                                .getSynonyms());
                     }
                     creators.add(rc.getCreator());
                     for (Creator creator_ : creators) {
                         if (Persistable.Base.isTransient(creator_)) {
-                            // user entered a complete-ish creator record but autocomplete callback did fire successfully
-                            throw new TdarRecoverableRuntimeException("creatorQueryPart.use_autocomplete", Arrays.asList(creator_.toString()));
+                            // user entered a complete-ish creator record but
+                            // autocomplete callback did fire successfully
+                            throw new TdarRecoverableRuntimeException(
+                                    "creatorQueryPart.use_autocomplete",
+                                    Arrays.asList(creator_.toString()));
                         }
                         this.roles.add(rc.getRole());
                         this.getFieldValues().add((C) creator_);
@@ -58,54 +65,29 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
 
     @Override
     public String generateQueryString() {
-        StringBuilder sb = new StringBuilder();
-        List<Integer> trans = new ArrayList<Integer>();
-        // iterate through all of the values; if any of them are transient, put those positions off to the side
+        QueryPartGroup group = new QueryPartGroup(Operator.OR);
+        List<Integer> trans = new ArrayList<>();
+        List<String> terms = new ArrayList<>();
+        // iterate through all of the values; if any of them are transient, put
+        // those positions off to the side
         for (int i = 0; i < getFieldValues().size(); i++) {
             if (Persistable.Base.isNotNullOrTransient(getFieldValues().get(i))) {
-                appendPhrase(sb, i);
+                terms.add(formatValueAsStringForQuery(i));
             } else {
                 trans.add(i);
             }
         }
-        if (sb.length() != 0) {
-            constructQueryPhrase(sb, getFieldName());
+        if (terms.size() > 0) {
+            FieldQueryPart<String> fqp = new FieldQueryPart<>(getFieldName(), terms);
+            fqp.setOperator(Operator.OR);
+            group.append(fqp);
+            if (QueryFieldNames.CREATOR_ROLE_IDENTIFIER.equals(getFieldName())) {
+                FieldQueryPart<String> projectChildren = new FieldQueryPart<>(QueryFieldNames.IR_CREATOR_ROLE_IDENTIFIER, terms);
+                projectChildren.setOperator(Operator.OR);
+                group.append(projectChildren);
+            }
         }
-        if (CollectionUtils.isEmpty(trans)) {
-            return sb.toString();
-        }
-
-        // // for the transient values; we'll grab them via a query using the transientFieldQueryPart --
-        // // this will look it up by "title" or "whatever"
-        //
-        // for (int i = 0; i < getFieldValues().size(); i++) {
-        // if (trans.contains(i)) {
-        // QueryPartGroup group = new QueryPartGroup(Operator.AND);
-        // C c = getFieldValues().get(i);
-        // if (Person.class.isAssignableFrom(c.getClass())) {
-        // PersonQueryPart part = new PersonQueryPart();
-        // part.add((Person) c);
-        // group.append(part);
-        // } else {
-        // InstitutionQueryPart part = new InstitutionQueryPart();
-        // part.add((Institution) c);
-        // group.append(part);
-        // }
-        // group.append(new FieldQueryPart(fieldName, fieldValues_))
-        // }
-        // }
-        //
-        // if (!transientFieldQueryPart.isEmpty()) {
-        // sb.insert(0, "(");
-        // if (sb.length() > 1) {
-        // sb.append(" OR ");
-        // }
-        // logger.info(transientFieldQueryPart.generateQueryString());
-        // sb.append(transientFieldQueryPart.generateQueryString());
-        // sb.append(")");
-        // }
-        //
-        return sb.toString();
+        return group.generateQueryString();
     }
 
     @Override
@@ -114,7 +96,8 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
         ResourceCreatorRole r = roles.get(index);
         logger.trace("{} {} ", c, r);
         if (r == null) {
-            return PhraseFormatter.WILDCARD.format(ResourceCreator.getCreatorRoleIdentifier(c, r));
+            return PhraseFormatter.WILDCARD.format(ResourceCreator
+                    .getCreatorRoleIdentifier(c, r));
         }
         return ResourceCreator.getCreatorRoleIdentifier(c, r);
     };
@@ -135,7 +118,8 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
             ResourceCreatorRole role = getRoles().get(i);
             if (creator != null && !creator.hasNoPersistableValues()) {
                 if (names.length() > 0) {
-                    names.append(" " + getOperator().name().toLowerCase()).append(" ");
+                    names.append(" " + getOperator().name().toLowerCase())
+                            .append(" ");
                 }
                 names.append(creator.getProperName());
                 if (role != null) {

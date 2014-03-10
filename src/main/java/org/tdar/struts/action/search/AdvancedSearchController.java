@@ -613,7 +613,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         // THIS SHOULD BE LESS BRITTLE THAN CALLING isEmpty()
         String narrowedBy = reservedQueryPart.getDescription(this);
         if (narrowedBy != null && StringUtils.isNotBlank(narrowedBy.trim())) {
-            sb.append(getText("advancedSearchController.narrowed_by"));
+            sb.append(" ").append(getText("advancedSearchController.narrowed_by"));
             sb.append(narrowedBy);
         }
         return sb.toString();

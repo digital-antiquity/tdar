@@ -22,8 +22,8 @@ public interface QueryFieldNames {
     String DOCUMENT_TYPE = "documentType";
     String INTEGRATABLE = "integratable";
     String SUBMITTER_ID = "submitter.id";
-    String RESOURCE_CREATORS_CREATOR_ID = "resourceCreators.creator.id";
-    String RESOURCE_CREATORS_CREATOR_NAME_KEYWORD = "resourceCreators.creator.name_kwd";
+    String RESOURCE_CREATORS_CREATOR_ID = "activeResourceCreators.creator.id";
+    String RESOURCE_CREATORS_CREATOR_NAME_KEYWORD = "activeResourceCreators.creator.name_kwd";
     String ACTIVE_SITE_TYPE_KEYWORDS = "activeSiteTypeKeywords";
     String ACTIVE_MATERIAL_KEYWORDS = "activeMaterialKeywords";
     String ACTIVE_CULTURE_KEYWORDS = "activeCultureKeywords";
@@ -75,7 +75,7 @@ public interface QueryFieldNames {
     String RESOURCE_COLLECTION_SHARED_IDS = "sharedCollectionIds";
     String RESOURCE_ACCESS_TYPE = "resourceAccessType";
     String PROPER_NAME = "properName";
-    String RESOURCE_CREATORS_PROPER_NAME = "resourceCreators.creator." + PROPER_NAME;
+    String RESOURCE_CREATORS_PROPER_NAME = "activeResourceCreators.creator." + PROPER_NAME;
     String INFORMATION_RESOURCE_FILES_FILENAME = "informationResourceFiles.filename";
     String RESOURCE_PROVIDER_ID = "resourceProviderInstitution.id";
     String CATEGORY_ID = "categoryVariable.id";
@@ -86,6 +86,7 @@ public interface QueryFieldNames {
     String RESOURCE_OWNER = "resourceOwner";
     String DATE_CREATED_DECADE = "decadeCreated";
     String CREATOR_ROLE_IDENTIFIER = "crid";
+    String IR_CREATOR_ROLE_IDENTIFIER = IR + CREATOR_ROLE_IDENTIFIER;
     String FILENAME = "filename";
     String DATA_VALUE_PAIR = "dataValuePair";
     String COLLECTION_TREE = "collection.parentTree";

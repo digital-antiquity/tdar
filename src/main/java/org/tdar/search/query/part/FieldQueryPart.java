@@ -284,10 +284,11 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             } else if (val instanceof HasLabel) {
                 val = ((HasLabel) val).getLabel();
             }
+            val = " " + val + " ";
             vals.add(val);
         }
 
-        return String.format("%s: \"%s\"", getDisplayName(), StringUtils.join(vals, getDescriptionOperator(provider)));
+        return String.format("%s: \"%s\" ", getDisplayName(), StringUtils.join(vals, getDescriptionOperator(provider)));
     }
 
     @Override
@@ -397,10 +398,11 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     public String getDescriptionOperator(TextProvider provider) {
-        String delim = provider.getText("fieldQueryPart.and");
+        String delim = " " + provider.getText("fieldQueryPart.and");
         if (getOperator() == Operator.OR) {
             delim = provider.getText("fieldQueryPart.or");
         }
+        delim += " ";
         return delim;
     }
 

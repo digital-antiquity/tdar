@@ -145,7 +145,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
             }
         }
 
-        String delim = getDescriptionOperator();
+        String delim = " " + getDescriptionOperator() + " ";
 
         String description = StringUtils.join(partDescriptions, delim);
 
