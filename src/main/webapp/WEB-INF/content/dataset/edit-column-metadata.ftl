@@ -223,10 +223,8 @@
     </span>
     <div id='divCodingSheet-${column_index}' class="codingInfo" data-tooltipcontent="#codingSheetToolTip" data-tiplabel="Coding Sheet">
             <#assign codingId="" />
-            <#assign codingTxt="" />
             <#if column.defaultCodingSheet?? && column.defaultCodingSheet.id??>
                 <#assign codingId=column.defaultCodingSheet.id?c />
-                <#assign codingTxt="${column.defaultCodingSheet.title} (${column.defaultCodingSheet.id?c})"/>
             </#if>
             <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
             <@common.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
@@ -239,10 +237,8 @@
     </div>
      <div id='divOntology-${column_index}' class="ontologyInfo " data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology">
             <#assign ontologyId="" />
-            <#assign ontologyTxt="" />
             <#if column.defaultOntology??  && column.defaultOntology.id?? && column.columnEncodingType != "CODED_VALUE" >
                 <#assign ontologyId=column.defaultOntology.id?c />
-                <#assign ontologyTxt="${column.defaultOntology.title} (${column.defaultOntology.id?c})"/>
             </#if>
             <@s.hidden name="dataTableColumns[${column_index}].defaultOntology.id" value="${ontologyId}" id="${column_index}_oid" />
             <@common.combobox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
