@@ -21,19 +21,22 @@ public class MessageHelper implements Serializable, TextProvider {
 
     private static final long serialVersionUID = 3633016404256878510L;
     private static MessageHelper instance;
-    private static ResourceBundle bundle;
+    private ResourceBundle bundle;
 
     private static Logger logger = LoggerFactory.getLogger(MessageHelper.class);
 
     protected MessageHelper() {
-       // Exists only to defeat instantiation.
-    }
-    
+        // Exists only to defeat instantiation.
+     }
+
+    protected MessageHelper(ResourceBundle bundle) {
+        this.bundle = bundle;
+     }
+
     public static MessageHelper getInstance() {
        if(instance == null) {
-          instance = new MessageHelper();
+          instance = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
        }
-       instance.setBundle(ResourceBundle.getBundle("Locales/tdar-messages"));
        return instance;
     }
 
@@ -96,13 +99,14 @@ public class MessageHelper implements Serializable, TextProvider {
     private ResourceBundle getBundle() {
         return bundle;
     }
-    private void setBundle(ResourceBundle bundle) {
-        MessageHelper.bundle = bundle;
-    }
-
+    
     public static boolean checkKey(String key) {
-            return getInstance().getBundle().containsKey(key);
-    }
+        return getInstance().getBundle().containsKey(key);
+}
+
+    public boolean containsKey(String key) {
+        return getBundle().containsKey(key);
+}
 
     @Override
     public boolean hasKey(String key) {

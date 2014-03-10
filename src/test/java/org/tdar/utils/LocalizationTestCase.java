@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -31,7 +32,7 @@ public class LocalizationTestCase {
     private Map<String,List<String>> matchingMap = new HashMap<>();
     
     @Test
-    public void testLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
+    public void testJavaLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
         Set<BeanDefinition> findClassesThatImplement = ReflectionService.findClassesThatImplement(LocalizableException.class);
         for (BeanDefinition bean : findClassesThatImplement) {
             Class<?> cls = Class.forName(bean.getBeanClassName());
@@ -62,7 +63,35 @@ public class LocalizationTestCase {
             fail(StringUtils.join(results,"\n"));
         }
     }
+
     
+    @Test
+    public void testFreemarkerLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
+        Pattern pattern = Pattern.compile(("^.+(\\.?localText|s\\.text)(\\s*(name=)?)\"([^\"]+)\".+"));
+        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main"), new String[] {"ftl","dec"}, true);
+        while (iterateFiles.hasNext()) {
+            File file = iterateFiles.next();
+            handleFile(pattern, file);
+        }
+
+        List<String> results = new ArrayList<>();
+        MessageHelper freemarkerBundle = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-freemarker-messages"));
+        MessageHelper bundle = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
+        for (Entry<String, List<String>> key : matchingMap.entrySet()) {
+            if (key.getKey().startsWith("${"))
+                continue;
+            
+            if (!bundle.containsKey(key.getKey()) &&  !freemarkerBundle.containsKey(key.getKey())) {
+                String msg = String.format("Locale key is not available in localeFile: %s %s",key.getKey(), key.getValue());
+                logger.error(msg);
+                results.add(msg);
+            }
+        }
+        if (results.size() > 0) {
+            fail(StringUtils.join(results,"\n"));
+        }
+    }
+
     protected void handleFile(Pattern pattern, File file) throws IOException
     {
         LineIterator it = FileUtils.lineIterator(file, "UTF-8");

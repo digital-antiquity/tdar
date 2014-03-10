@@ -1160,6 +1160,8 @@ this bit of freemarker is voodoo:
 <#-- a slightly more concise way to emit i18n strings.
     name:String string key name
     parms...?:varargs<String> (optional) any additional arguments are treated as MessageFormat parameters
+    
+    NOTE: DO NOT CHANGE THE NAME OF THIS MACRO -- IT'S USED IN TESTS TO GREP THROUGH THE CODE
 -->
 <#macro localText name parms...>
     <@s.text name="${name}"><#list parms as parm><@s.param>${parm}</@s.param></#list></@s.text>
