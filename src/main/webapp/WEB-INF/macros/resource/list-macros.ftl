@@ -67,6 +67,7 @@
             <#if orientation == 'MAP' && resource.latLongVisible >
             data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
             data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}"
+            data-scale="${resource.firstActiveLatitudeLongitudeBox.scale?c}"
             </#if>
 			id="resource-${resource.id?c}">
 
