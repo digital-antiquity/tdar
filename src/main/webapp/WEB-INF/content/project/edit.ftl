@@ -23,20 +23,6 @@
 		
 		<@s.select labelposition='top' label='Display Project contents as' name='project.orientation' 
 		     list='%{ResultsOrientations}'  listValue='label'  title="Display as" />
-
-    <br>[0]foobar::<@s.property value="[0]foobar" />
-    <br>[0]foobar::<@s.property value="#[0]foobar" />
-    <br>--${stack.findValue("#parameters.foobar[0]")}--
-    <br>[0]foobar::<@s.property value="#parameters.foobar[1]" />
-    <br>${parameters.foobar[0]}
-    <#list stack?keys as stackkey>
-        <br>boo: ${stackkey}
-    </#list>
-
-    <label>unassigned 1:</label><@s.textfield id="flatval" name="foobar"  />
-    <label>unassigned 2:</label><@s.textfield name="resource.unassigned" />
-    <label>unassigned 3:</label><@s.textfield name="authorizedUsers[20].user.unassignedVallue" />
-
 	</#macro>
 
 </#escape>
