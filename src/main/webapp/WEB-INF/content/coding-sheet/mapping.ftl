@@ -58,7 +58,7 @@
     <div class="control-group">
         <label class="control-label">Mappings</label>
         <#list codingRules as rule>
-        <div class="controls controls-row mappingPair">
+        <div class="controls controls-row mappingPair ${rule.code}" id="row_${rule.code}">
                 <@s.hidden name='codingRules[${rule_index}].id' />
                 <@s.textfield theme="simple" name='codingRules[${rule_index}].term' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
         

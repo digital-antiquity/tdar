@@ -29,7 +29,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.DataIntegrationITCase;
 
-@Ignore
+//@Ignore
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -114,27 +114,29 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         }
 
         submitForm();
-        find(By.id("addColumn")).click(); // 3 columns
-        find(By.id("addColumn")).click();
+        WebElementSelection addColumn = find(By.id("addColumn"));
+        addColumn.click(); // 3 columns
+        addColumn.click();
         WebElementSelection columns = find(By.id("drplist")).find(By.tagName("td"));
 
         WebElement column = columns.get(0);
-        WebElementSelection draggables = find(By.className("drg"));
-        WebElement taxon = findMatchingElementBy(draggables, "Taxon", By.className("name")).first();
-        WebElement scn = findMatchingElementBy(draggables, "Species Common name", By.className("name")).first();
+        WebElementSelection draggables = find(By.className("ui-draggable"));
+        By nameElements = By.className("name");
+        WebElement taxon = findMatchingElementWithChildBy(draggables, "Taxon", nameElements).first();
         dragAndDrop(taxon, column);
+        WebElement scn = findMatchingElementWithChildBy(draggables, "Species Common name", nameElements).first();
         dragAndDrop(scn, column);
 
         column = columns.get(1);
-        WebElement belement = findMatchingElementBy(draggables, "BELEMENT", By.className("name")).first();
-        WebElement bcn = findMatchingElementBy(draggables, BONE_COMMON_NAME, By.className("name")).first();
-        dragAndDrop(bcn, column);
+        WebElement belement = findMatchingElementWithChildBy(draggables, "BELEMENT", nameElements).first();
         dragAndDrop(belement, column);
+        WebElement bcn = findMatchingElementWithChildBy(draggables, BONE_COMMON_NAME, nameElements).first();
+        dragAndDrop(bcn, column);
 
         column = columns.get(2);
-        WebElement bclass = findMatchingElementBy(draggables, "BCLASS", By.className("name")).first();
-        WebElement scode = findMatchingElementBy(draggables, "Site code", By.className("name")).first();
+        WebElement bclass = findMatchingElementWithChildBy(draggables, "BCLASS", nameElements).first();
         dragAndDrop(bclass, column);
+        WebElement scode = findMatchingElementWithChildBy(draggables, "Site code", nameElements).first();
         dragAndDrop(scode, column);
 
         submitForm();
@@ -154,9 +156,29 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         // find(By.id("downloadLink")).click();
     }
 
+    private WebElementSelection findMatchingElementWithChildBy(WebElementSelection parentElement, String matchingText, By selector) {
+        logger.info("looking for {} in {} ({})", matchingText, selector.toString(), parentElement.size());
+        for (WebElement element_ : parentElement) {
+            WebElementSelection element = new WebElementSelection(element_, driver);
+            WebElementSelection name = element.find(selector);
+            logger.info("  {} {} ({})", name.getText(), name.val(), name.toList().size());
+            if (name.getText().equals(matchingText)) {
+                return element;
+            }
+            if (StringUtils.equals(name.val(), matchingText)) {
+                return element;
+            }
+            if (StringUtils.containsIgnoreCase(StringUtils.trim(name.val()), StringUtils.trim(matchingText + " -"))) {
+                return element;
+            }
+        }
+        return null;
+    }
+
     private void dragAndDrop(WebElement draggable, WebElement target) {
         // http://stackoverflow.com/questions/14210051/how-to-automate-drag-drop-functionality-using-selenium-web-driver
         Actions builder = new Actions(driver);
+        logger.debug("dragging {} to {} ", draggable.getText(), target.getText());
         Action dragAndDrop = builder.clickAndHold(draggable).moveToElement(target).release(target).build();
         dragAndDrop.perform();
     }
@@ -164,8 +186,8 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     private void mapCodingSheetToOntology(Map<String, String> map) {
         find(By.className("mappingLink")).find(By.tagName("a")).click();
 
-        WebElementSelection nodePairs = find(By.className("mappingPair"));
         for (Entry<String, String> entry : map.entrySet()) {
+            WebElementSelection nodePairs = find(By.id("row_"+entry.getKey()));
             WebElementSelection match = findMatchingElementBy(nodePairs, entry.getKey(), By.className("codingSheetTerm"));
             if (match == null) {
                 continue;
@@ -191,11 +213,14 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         for (WebElement element_ : parentElement) {
             WebElementSelection element = new WebElementSelection(element_, driver);
             WebElementSelection name = element.find(selector);
-            logger.info("{} {} ({})", name.getText(), name.val(), name.toList().size());
+            logger.info("  {} {} ({})", name.getText(), name.val(), name.toList().size());
             if (name.getText().equals(matchingText)) {
                 return element;
             }
             if (StringUtils.equals(name.val(), matchingText)) {
+                return element;
+            }
+            if (StringUtils.equalsIgnoreCase(StringUtils.trim(name.val()), StringUtils.trim(matchingText))) {
                 return element;
             }
         }

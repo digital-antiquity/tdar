@@ -1006,15 +1006,22 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public boolean selectAutocompleteValue(WebElement field, String textEntry, String partialMenuItemTest, String idSelector) {
         field.sendKeys(textEntry);
-        waitFor(4); // kludge
+        waitFor(TestConfiguration.getInstance().getWaitInt()); // kludge
         field.sendKeys(Keys.ARROW_DOWN);
         WebElementSelection menuItems = null;
-        try {
-            menuItems = waitFor("ul.ui-autocomplete li.ui-menu-item", 20);
-        } catch (TimeoutException tex) {
+        for (int i=0; i < 30; i++) {
+            if (menuItems == null || menuItems.isEmpty()) {
+                try {
+                menuItems = waitFor("ul.ui-autocomplete li.ui-menu-item", TestConfiguration.getInstance().getWaitInt());
+                } catch (TimeoutException tex) {
+                    // ignore
+                }
+            }
+        }
+        if (menuItems == null || menuItems.isEmpty()) {
             fail("could not set value on  " + field + " because autocomplete never appeared or was dismissed too soon");
         }
-
+        
         logger.info("menuItems: {} ({})", menuItems.getHtml(), menuItems.size());
         String partialText = partialMenuItemTest.toLowerCase();
         WebElement firstMatch = null;
@@ -1033,7 +1040,7 @@ public abstract class AbstractSeleniumWebITCase {
         logger.info("match: {} ", firstMatch);
         if (wasFound) {
             (firstMatch.findElement(By.tagName("a"))).click();
-            waitFor(2);
+            waitFor(TestConfiguration.getInstance().getWaitInt());
         }
         return wasFound;
     }

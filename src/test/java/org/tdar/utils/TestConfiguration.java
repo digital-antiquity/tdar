@@ -179,4 +179,8 @@ public class TestConfiguration {
         return assistant.getIntProperty("test.findall.max", 10);
     }
 
+    public int getWaitInt() {
+        return 1;
+    }
+
 }
