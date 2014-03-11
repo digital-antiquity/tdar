@@ -1,4 +1,4 @@
-(function (TDAR, $) {
+(function (TDAR, $, ctx) {
     'use strict';
 
     var _initMapping = function() {
@@ -19,9 +19,9 @@
             var $widget = $textfield.autocomplete("widget");
             $textfield.focus().autocomplete("search", "");
         });
-        
+
         for (var i=0;i< $(".mappingPair").length;i++) {
-            _applyLocalAutoComplete($("#autocomp_"+i),eval("autocomp_"+i+"Suggestions"));
+            _applyLocalAutoComplete($("#autocomp_"+i), ctx["autocomp_"+i+"Suggestions"]);
         }
     };
 
@@ -139,4 +139,4 @@
     };
 
 
-})(TDAR, jQuery);
+})(TDAR, jQuery, window);
