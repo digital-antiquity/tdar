@@ -66,7 +66,9 @@ public class WorkflowResult implements Serializable {
             } else {
                 actionSupport.addActionMessage(exception.getMessage());
             }
-            actionSupport.getStackTraces().add(exception.getStackTrace());
+            String code = Integer.toString(exception.getStackTrace().hashCode());
+            logger.error("error processing file [code:{}]: {} ", code, exception.getStackTrace());
+            actionSupport.getStackTraces().add(code);
         }
     }
 

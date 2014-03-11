@@ -187,19 +187,10 @@
             <#if ((actionErrors![])?size > 0)>
             <h3>${siteAcronym} <@s.text name="error.action_error_header"/></h3>
 				<#-- fixme -- @s.actionerrors need to be here, but in some cases, it duplicates errors -->
+	            <#if ((stackTraces![])?size > 0)>
+	            <small class="pull-right">Error Code(s): <#list stackTraces as code><#if (code_index > 0)>, </#if>${code}</#list></small>
+	             </#if>
             	<@s.actionerror cssClass="action-errors" />
-            <#if ((stackTraces![])?size > 0)>
-            <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggleClass('hidden');return false;" class="btn btn-mini btn-warning btn-invert">Show/Hide Details</a>
-            <div id="stackTraceList" class="<#if production>hidden</#if>">
-                <#list stackTraces as _stacktrace>
-<#--don't indent this pre section  -->
-<pre class="pre-scrollable">
-<em><@s.text name="error.stacktrace"/> ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
-${_stacktrace?html}
-</pre>
-                </#list>
-            </div>
-            </#if>
             </#if>
             <@s.fielderror />
         </div>

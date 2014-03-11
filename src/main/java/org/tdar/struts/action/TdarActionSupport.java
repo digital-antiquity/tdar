@@ -514,7 +514,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     protected void addActionErrorWithException(String message, Throwable exception) {
         String trace = ExceptionUtils.getFullStackTrace(exception);
 
-        getLogger().error("{}: {} -- {}", new Object[] { message, exception, trace });
+        getLogger().error("{} [code: {}]: {} -- {}", new Object[] { message, exception.hashCode(),  exception, trace });
         if (exception instanceof TdarRecoverableRuntimeException) {
             int maxDepth = 4;
             Throwable thrw = exception;
@@ -535,7 +535,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         } else {
             super.addActionError(message);
         }
-        stackTraces.add(trace);
+        stackTraces.add(Integer.toString(exception.hashCode()));
     }
 
     @Override
