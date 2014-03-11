@@ -127,6 +127,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
             "Warning: '<' + '/' + letter not allowed here", /* javascript */
             "missing </a> before <div>",
+            "missing </a> before <h3>",
             "discarding unexpected </div",
             "discarding unexpected </a>",
             "missing </div> before link",
