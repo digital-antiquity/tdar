@@ -18,6 +18,7 @@ vim:sts=2:sw=2:filetype=jsp
 <div class="well">
     <script type="text/javascript">
         $(document).ready(function() {
+        $("#loginUsername").focus();
             $('#loginForm').validate({
                 messages: {
                     loginUsername: {
@@ -45,7 +46,7 @@ vim:sts=2:sw=2:filetype=jsp
     <#assign formAction = nav.getFormUrl("/login/process") >
     <@s.form id='loginForm' method="post" action="${formAction}" cssClass="form-horizontal}">
         <input type="hidden" name="url" value="${Parameters.url!''}"/>
-        <@s.textfield spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
+        <@s.textfield spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
         <@s.password id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
         <@s.checkbox name="userCookieSet" label="Stay logged-in the next time I visit this page" />
 

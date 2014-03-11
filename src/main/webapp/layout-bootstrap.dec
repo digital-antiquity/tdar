@@ -159,7 +159,9 @@
                 </#if>
             </#if>
         </ul>
+        <#if actionName!='login' && actionName!='register'>
         <@common.loginMenu true />
+        </#if>
     </div>
 </div>
 <!-- BEGIN-TDAR-CONTENT -->
