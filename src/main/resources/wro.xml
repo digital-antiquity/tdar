@@ -59,11 +59,13 @@
         <js>/includes/jqplot-1.08/plugins/jqplot.pointLabels.js</js>
         <js>/js/tdar.gmaps.js</js>
         <js>/js/tdar.common.js</js>
+        <js>/js/tdar.charts.js</js>
         <js>/js/tdar.upload.js</js>
         <js>/js/tdar.repeatrow.js</js>
         <js>/js/tdar.autocomplete.js</js>
         <js>/js/tdar.datatable.js</js>
         <js>/js/tdar.dataset-metadata.js</js>
+        <js>/js/tdar.ontology-mapping.js</js>
         <js>/js/tdar.dataintegration.js</js>
         <js>/js/tdar.advanced-search.js</js>
         <js>/js/tdar.authority-management.js</js>

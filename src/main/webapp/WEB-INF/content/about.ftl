@@ -12,30 +12,40 @@
 <body>
 <#escape _untrusted as _untrusted?html >
 <hr>
-<#if payPerIngestEnabled >
 <div class="row">
-<div class="pricing">
-<div class="span1 center">
-<h3 class="document-mid-black red"></h3> 
-</div><div class="span1 center">
-<h3 class="dataset-mid-red red"></h3>
-</div><div class="span1 center">
- <h3 class="image-mid-black red"></h3> 
-</div><div class="span1 center">
-<h3 class="sensory_data-mid-red red"></h3>
+	<div class="pricing">
+		<div class="span1 center">
+			<a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=DOCUMENT"/>"><h3 class="document-mid-black red"></h3></a>
+		</div>
+		<div class="span1 center">
+			<a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=DATASET"/>"><h3 class="dataset-mid-red red"></h3></a>
+		</div>
+		<div class="span1 center">
+			<a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=IMAGE"/>"><h3 class="image-mid-black red"></h3></a>
+		</div>
+		<div class="span1 center">
+			<a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=SENSORY_DATA"/>"><h3 class="sensory_data-mid-red red"></h3></a>
+		</div>
+		<div class="span4 center" style="margin-top: 10px;">
+		<#if payPerIngestEnabled >
+		 <a href="http://www.tdar.org/about/pricing/" class="button">tDAR Pricing Information</a> 
+		</#if>
+		</div>
+		<div class="span1 center">
+			<a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=ONTOLOGY"/>"><h3 class="ontology-mid-red red"></h3></a>
+		</div>
+		<div class="span1 center">
+			<a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=GEOSPATIAL"/>"><h3 class="geospatial-mid-black red"></h3></a>
+		</div>
+		<div class="span1 center">
+			<a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=PROJECT"/>"><h3 class="project-mid-red red"></h3></a>
+		</div>
+		<div class="span1 center"> 
+			<a href="<@s.url value="/search/collections"/>"><h3 class="collection-mid-black red"></h3></a>
+		</div>
+	</div>
 </div>
-<div class="span4 center" style="margin-top: 10px;">
- <a href="http://www.tdar.org/about/pricing/" class="button">tDAR Pricing Information</a> 
-
-</div><div class="span1 center">
- <h3 class="ontology-mid-red red"></h3>
-</div><div class="span1 center">
- <h3 class="geospatial-mid-black red"></h3> 
-</div><div class="span1 center"><h3 class="project-mid-red red"></h3>
-</div><div class="span1 center"> <h3 class="collection-mid-black red"></h3>
-</div></div></div>
 <hr>
-</#if>
 
 <div class="row">
         <#include "featured.ftl" />

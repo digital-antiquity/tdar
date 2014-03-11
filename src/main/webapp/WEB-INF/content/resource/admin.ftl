@@ -2,9 +2,6 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/${themeDir}/settings.ftl" as settings>
-<head>
-    <script type="text/javascript" src="/js/tdar.charts.js"></script>
-</head>
 
 <h1>Administrative info for <span>${resource.title}</span></h1>
 

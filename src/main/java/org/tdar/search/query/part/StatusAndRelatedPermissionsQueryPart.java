@@ -65,7 +65,7 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
             return "";
         }
         List<String> vals = new ArrayList<>();
-        vals.add(StringUtils.join(labels, provider.getText("statusQueryPart.or")));
+        vals.add(StringUtils.join(labels, " " + provider.getText("statusQueryPart.or") + " "));
         return provider.getText("statusQueryPart.resource_is", vals);
     }
 
