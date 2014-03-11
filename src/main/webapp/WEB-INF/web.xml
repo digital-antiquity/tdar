@@ -109,7 +109,10 @@ vim:sts=2:sw=2
     <error-code>404</error-code>
     <location>/404.html</location>
   </error-page>
-  
+   <error-page>
+   <exception-type>java.lang.Throwable</exception-type>
+   <location>/500.html</location>
+  </error-page>
 
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
