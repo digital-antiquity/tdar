@@ -84,7 +84,7 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_SPARSE_EMPTY_PROJECTS,
             query = "select new Project(project.id, project.title) from Project project where (submitter.id=:submitter) and project.status in ('ACTIVE', 'DRAFT') "
-                    + " and not exists(select 1 from InformationResource ir where ir.status in ('ACTIVE','DRAFT') and ir.project.id = project.id)"
+                    + " and not exists(select 1 from InformationResource ir  join ir.project p2 with (project = p2) where ir.status in ('ACTIVE','DRAFT'))"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_BOOKMARKEDRESOURCE_IS_ALREADY_BOOKMARKED,
