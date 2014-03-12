@@ -443,7 +443,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
             //contextual search: resource collection
             if( Persistable.Base.isNotNullOrTransient(collectionId)) {
-                logger.debug("contextual search: collection {}", collectionId);
+                getLogger().debug("contextual search: collection {}", collectionId);
                 ResourceCollection rc = new ResourceCollection();
                 rc.setId(collectionId);
                 terms.getFieldTypes().add(0, SearchFieldType.COLLECTION);
@@ -452,7 +452,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
             //contextual search: project
             } else if( Persistable.Base.isNotNullOrTransient(projectId)) {
-                logger.debug("contextual search: project {}", projectId);
+                getLogger().debug("contextual search: project {}", projectId);
                 Project project = new Project();
                 project.setId(projectId);
                 terms.getFieldTypes().add(0, SearchFieldType.PROJECT);
@@ -503,7 +503,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
         // if refining a search, make sure we inflate any deflated terms
         for (SearchParameters sp : groups) {
-            logger.debug("inflating parameters for group {}", sp);
+            getLogger().debug("inflating parameters for group {}", sp);
             getSearchService().inflateSearchParameters(sp);
         }
 
