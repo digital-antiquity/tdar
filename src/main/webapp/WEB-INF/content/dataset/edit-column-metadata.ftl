@@ -122,6 +122,24 @@
                 <@paginationLink startRecord=paginationHelper.nextPageStartRecord path=path linkText="Next" />
         </td>
             </#if>
+		<td>
+            <label>Records Per Page
+            <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
+                list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
+            </label>
+            <script type='text/javascript'>
+                $("#recordsPerPage").change(function() {
+                    var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g,"");
+                    //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
+                    var prefix = "";
+                    if (url.indexOf("?") != 0) {
+                        prefix = "?";
+                    }
+                    url = prefix + url +  "&recordsPerPage="+$('#recordsPerPage').val();
+                    window.location = url;
+                });
+            </script>
+		</td>
         </tr>
     </table>
 </#if>
