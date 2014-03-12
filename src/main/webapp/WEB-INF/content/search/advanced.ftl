@@ -368,7 +368,7 @@ $(document).ready(function(){
 <#macro templateCollection fieldIndex="{termid}" groupid="{groupid}">
         <div class="term COLLECTION">
             <@s.hidden name="groups[${groupid}].collections[${fieldIndex}].id" id="collections_${groupid}_${fieldIndex}_id" />
-            <@common.combobox name="groups[${groupid}].collections[${fieldIndex}].title" id="collections_${groupid}_${fieldIndex}_name"
+            <@common.combobox name="groups[${groupid}].collections[${fieldIndex}].name" id="collections_${groupid}_${fieldIndex}_name"
                 cssClass="input-xxlarge-combo collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id" 
                 target="" label="" placeholder="enter collection name" bootstrapControl=false/>
         </div>
