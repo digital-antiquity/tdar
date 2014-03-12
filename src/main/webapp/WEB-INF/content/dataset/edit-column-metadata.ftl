@@ -59,6 +59,8 @@
 <@common.jsErrorLog />
 <@s.hidden name='id' value='${resource.id?c}'/>
 <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
+<@s.hidden name="startRecord" />
+<@s.hidden name="recordsPerPage" />
 <#if ( dataset.dataTables?size > 1 )>
 <h2>Column Description and Mapping: ${dataTable.displayName}</h2>
 <div class="">
