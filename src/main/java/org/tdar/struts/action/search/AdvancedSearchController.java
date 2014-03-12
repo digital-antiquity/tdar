@@ -434,9 +434,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     // this is a no-op if basic search not detected
-    private boolean processBasicSearchParameters() {
-        boolean isBasic = StringUtils.isNotBlank(query);
-        if (isBasic) {
+    private void processBasicSearchParameters() {
+        if (StringUtils.isNotBlank(query)) {
             SearchParameters terms = new SearchParameters();
             terms.setOperator(Operator.AND);
             terms.getAllFields().add(query);
@@ -444,22 +443,25 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
             //contextual search: resource collection
             if( Persistable.Base.isNotNullOrTransient(collectionId)) {
+                logger.debug("contextual search: collection {}", collectionId);
                 ResourceCollection rc = new ResourceCollection();
                 rc.setId(collectionId);
-                terms.getFieldTypes().add(SearchFieldType.COLLECTION);
+                terms.getFieldTypes().add(0, SearchFieldType.COLLECTION);
                 terms.getCollections().add(rc);
-            }
-            //contextual search: resource collection
-            if( Persistable.Base.isNotNullOrTransient(projectId)) {
+                terms.getAllFields().add(0, null);
+
+            //contextual search: project
+            } else if( Persistable.Base.isNotNullOrTransient(projectId)) {
+                logger.debug("contextual search: project {}", projectId);
                 Project project = new Project();
                 project.setId(projectId);
-                terms.getFieldTypes().add(SearchFieldType.PROJECT);
+                terms.getFieldTypes().add(0, SearchFieldType.PROJECT);
                 terms.getProjects().add(project);
+                terms.getAllFields().add(0, null);
             }
 
             groups.add(terms);
         }
-        return isBasic;
     }
 
     private String basicSearch() throws TdarActionException {
@@ -501,6 +503,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
         // if refining a search, make sure we inflate any deflated terms
         for (SearchParameters sp : groups) {
+            logger.debug("inflating parameters for group {}", sp);
             getSearchService().inflateSearchParameters(sp);
         }
 

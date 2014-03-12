@@ -610,6 +610,7 @@ public class SearchService {
         // Also, consider moving into genericService
         List<List<? extends Persistable>> lists = searchParameters.getSparseLists();
         for (List<? extends Persistable> list : lists) {
+            logger.debug("inflating list of sparse objects: {}", list );
             // making unchecked cast so compiler accepts call to set()
             @SuppressWarnings("unchecked")
             ListIterator<Persistable> itor = (ListIterator<Persistable>) list.listIterator();
@@ -617,6 +618,7 @@ public class SearchService {
                 Persistable sparse = itor.next();
                 if (sparse != null) {
                     Persistable persistable = genericService.find(sparse.getClass(), sparse.getId());
+                    logger.debug("\t inflating {}({}) -> {}", sparse.getClass().getSimpleName(), sparse.getId(), persistable);
                     itor.set(persistable);
                 }
             }

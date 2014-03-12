@@ -139,7 +139,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      * 
      */
 
-    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient DownloadService downloadService;
