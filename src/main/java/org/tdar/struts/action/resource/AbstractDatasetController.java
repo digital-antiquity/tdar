@@ -185,12 +185,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             addActionError(getText("abstractDatasetController.no_tables"));
             return INPUT;
         }
-        // load existing column metadata if any.
-        DataTable currentDataTable = getDataTable();
-        List<DataTableColumn> columns = new ArrayList<>(currentDataTable.getSortedDataTableColumns());
-        // FIXME: replace with Pagination helper
-
-        setPaginationHelper(PaginationHelper.withStartRecord(columns.size(), getRecordsPerPage(), 100, getStartRecord()));
+        List<DataTableColumn> columns = initializePaginationHelper();
 
         if (CollectionUtils.size(columns) > getRecordsPerPage()) {
             columns = columns.subList(paginationHelper.getFirstItem(), paginationHelper.getLastItem() + 1);
@@ -233,6 +228,8 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     public String saveColumnMetadata() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Pair<Boolean, List<DataTableColumn>> updateResults = new Pair<Boolean, List<DataTableColumn>>(false, new ArrayList<DataTableColumn>());
+        initializePaginationHelper();
+        
         try {
             updateResults = getDatasetService().updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
@@ -244,6 +241,13 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         getXmlService().logRecordXmlToFilestore(getDataResource());
         postSaveColumnMetadataCleanup();
         return getPostSaveAction().getResultName(!updateResults.getFirst(), (Dataset) getPersistable());
+    }
+
+    private List<DataTableColumn> initializePaginationHelper() {
+        DataTable currentDataTable = getDataTable();
+        List<DataTableColumn> columns = new ArrayList<>(currentDataTable.getSortedDataTableColumns());
+        setPaginationHelper(PaginationHelper.withStartRecord(columns.size(), getRecordsPerPage(), 100, getStartRecord()));
+        return columns;
     }
 
     private List<DataTableColumn> columnsToRemap;
