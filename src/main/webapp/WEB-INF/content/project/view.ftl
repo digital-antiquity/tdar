@@ -14,9 +14,14 @@ li.media { display:inline-block}
 
 
 <#macro footer>
+<div id="divSearchContext" parse="true">
+    <input id="cbctxid" type="checkbox" name="projectId" value="${id?c}">
+    <label for="cbctxid">Search within this project</label>
+</div>
+
+
 <#if (totalRecords > 0)>
 
-<br/>
 <h3>There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
 
  <#if selectedResourceTypes?has_content>

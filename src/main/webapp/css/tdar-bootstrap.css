@@ -1093,6 +1093,19 @@ select.searchType {
 	display: inline-block;
 }
 
+
+.icon-collection.icon-red {
+	background: url(/images/r4/resource-types-large.gif) no-repeat -447px -2455px;
+	width: 14px;
+	height: 16px;
+}
+
+.icon-project.icon-red {
+	background: url(/images/r4/resource-types-large.gif) no-repeat -397px -2454px;
+	width: 14px;
+	height: 16px;
+}
+
 .icon-geospatial {
 	background: url(/images/r4/resource-types-large.gif) -431px -2477px
 		no-repeat;

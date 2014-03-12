@@ -40,6 +40,15 @@
                 <h2 class="totalRecords">Search Options</h2>
     <ul class="tools media-list">
         <li class="media"><a href="<@search.refineUrl/>" rel="noindex"><i class="search-magnify-icon-red" ></i> Refine your search &raquo;</a></li>
+
+        <#if (contextualSearch!false)>
+            <#if projectId??>
+                <li class="media"><@s.a href="/project/${projectId?c}"><i class="icon-project icon-red"></i> Return to project page &raquo;</@s.a></li>
+            <#else>
+                <li class="media"><@s.a href="/collection/${collectionId?c}"><i class="icon-collection icon-red"></i> Return To collection page &raquo;</@s.a></li>
+            </#if>
+        </#if>
+
 	<#if lookupSource == 'RESOURCE'>
 	        <li class="media"><i class="search-download-icon-red" ></i> <span>Download these results &raquo;
 	        <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
@@ -83,7 +92,7 @@
     </form>
     </div>
     <div class="visible-phone">
-        <a href="<@search.refineUrl />">Refind your search &raquo;</a>
+        <a href="<@search.refineUrl />">Refine your search &raquo;</a>
     </div>
 </#if>
     

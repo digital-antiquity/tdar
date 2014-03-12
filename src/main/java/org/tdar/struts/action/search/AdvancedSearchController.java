@@ -1033,4 +1033,13 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         this.collectionId = collectionId;
     }
 
+    /**
+     * Indicates whether current search is "contextual search", i.e. is the search implicitly filtered by
+     * project or filtered by collection.
+     * @return
+     */
+    public boolean isContextualSearch() {
+        return collectionId != null || projectId != null;
+    }
+
 }
