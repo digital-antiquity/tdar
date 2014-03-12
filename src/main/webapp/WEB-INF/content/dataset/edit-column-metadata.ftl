@@ -82,9 +82,12 @@
 
 </div>
 </#if>
+<@pagination />
+
+<#macro pagination>
 <#if (paginationHelper.pageCount > 1)>
 <div class="pagination">
-<b>Showing ${recordsPerPage} columns, jump to another page?</b>
+<b>Showing ${recordsPerPage} columns, jump to another page? (save first)</b>
 <#assign path="/">
 <#if (paginationHelper.totalNumberOfItems >0)>
     <table class="pagin">
@@ -148,6 +151,7 @@
 </div>
 
 </#if>
+</#macro>
 
 <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">
@@ -351,6 +355,9 @@
     <tr><td><span class="columnSquare integration">&nbsp;</span><span class="integration_label"></span></td><td>integration columns</td></tr>
     <tr><td><span class="columnSquare mapped">&nbsp;</span><span class="mapped_label"></span></td><td>mapping columns</td></tr>
 </table>
+
+<@pagination />
+
 
 <@edit.submit "Save" false>
 <p>
