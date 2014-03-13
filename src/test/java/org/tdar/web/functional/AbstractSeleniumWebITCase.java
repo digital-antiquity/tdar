@@ -263,9 +263,6 @@ public abstract class AbstractSeleniumWebITCase {
                     fb.setEnvironmentProperty(key, environment.get(key));
                 }
                 FirefoxProfile profile = new FirefoxProfile();
-                //emit UI events even when application is not in OS foreground.
-                //Note: might totally break tests in unix. see: https://code.google.com/p/selenium/issues/detail?id=157
-                profile.setPreference("focusmanager.testmode", true);
                 driver = new FirefoxDriver(fb, profile);
                 break;
             case CHROME:
