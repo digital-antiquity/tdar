@@ -153,8 +153,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             image.setDescription("test description");
             image.setProject(Project.NULL);
 
-            BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getAuthenticatedUser());
-
+            BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getAuthenticatedUser(), null);
             
             String htmlAsyncErrors = manifestProxy.getAsyncUpdateReceiver().getHtmlAsyncErrors();
             if (StringUtils.isNotBlank(htmlAsyncErrors)) {

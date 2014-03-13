@@ -46,7 +46,6 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Project;
@@ -137,10 +136,11 @@ public class BulkUploadService {
      * Load the Excel manifest if it exists
      * 
      * @param wrapper
+     * @param fileProxies 
      * @param receiver
      * @return
      */
-    public BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource image, Person submitter) {
+    public BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource image, Person submitter, Collection<FileProxy> fileProxies) {
         BulkManifestProxy manifestProxy = null;
         File excelManifest = wrapper.getFile();
         if (excelManifest != null && excelManifest.exists()) {
@@ -148,7 +148,7 @@ public class BulkUploadService {
             try {
                 wrapper.setStream(new FileInputStream(excelManifest));
                 Workbook workbook = WorkbookFactory.create(wrapper.getStream());
-                manifestProxy = validateManifestFile(workbook.getSheetAt(0), image, submitter);
+                manifestProxy = validateManifestFile(workbook.getSheetAt(0), image, submitter, fileProxies);
             } catch (Exception e) {
                 logger.debug("exception happened when reading excel file", e);
                 manifestProxy = new BulkManifestProxy(null, null, null);
@@ -202,28 +202,25 @@ public class BulkUploadService {
             throw throwable;
         }
         logger.debug("mapping metadata with excelManifest:" + excelManifest);
-        BulkManifestProxy manifestProxy = loadExcelManifest(excelManifest, image, submitter);
+        BulkManifestProxy manifestProxy = loadExcelManifest(excelManifest, image, submitter, fileProxies);
         asyncStatusMap.put(ticketId, manifestProxy.getAsyncUpdateReceiver());
         if (manifestProxy == null) {
             manifestProxy = new BulkManifestProxy(null, null, null);
         }
         manifestProxy.setFileProxies(fileProxies);
         // If there are errors, then stop...
-        if (StringUtils.isNotBlank(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors())) {
+        String asyncErrors = manifestProxy.getAsyncUpdateReceiver().getAsyncErrors();
+        if (StringUtils.isNotBlank(asyncErrors)) {
+            logger.debug("not moving further because of async validation errors: {}", asyncErrors);
             completeBulkUpload(image, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
             return;
         }
 
-        logger.info("bulk: creating individual resources");
+        logger.info("bulk: processing files, and then persisting");
         count = processFileProxies(manifestProxy, count);
         
         
         logger.info("bulk: applying manifest file data to resources");
-//        try {
-//            readExcelFile(manifestProxy, true);
-//        } catch (Exception e) {
-//            logger.warn(MessageHelper.getMessage("bulkUploadService.an_exception_occured_while_processing_the_manifest_file"), e);
-//        }
 
         updateAccountQuotas(accountId, manifestProxy.getResourcesCreated());
         logAndPersist(manifestProxy);
@@ -357,9 +354,10 @@ public class BulkUploadService {
      * and whether to evaluate the entire sheet as case-sensitive filenames or not.
      * 
      * @param sheet
+     * @param fileProxies 
      * @return
      */
-    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource image, Person submitter) {
+    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource image, Person submitter, Collection<FileProxy> fileProxies) {
 
         Iterator<Row> rowIterator = sheet.rowIterator();
 
@@ -372,17 +370,10 @@ public class BulkUploadService {
 
         // capture all of the column names and make sure they're valid in general
         initializeColumnMetadata(proxy, cellLookupMap, evaluator);
-        proxy.setFileProxies(new ArrayList<FileProxy>());
-        for (Row row : sheet) {
-            String stringCellValue = row.getCell(row.getFirstCellNum()).getStringCellValue();
-            if (StringUtils.isBlank(stringCellValue) || CellMetadata.FILENAME.getName().equals(stringCellValue) || 
-                    stringCellValue.startsWith(CellMetadata.FILENAME.getName())) {
-                continue;
-            }
-            FileProxy fp = new FileProxy();
-            fp.setFilename(stringCellValue);
-            fp.setAction(FileAction.ADD);
-            proxy.getFileProxies().add(fp);
+        if (CollectionUtils.isEmpty(fileProxies)) {
+            createFakeFileProxies(sheet, proxy);
+        } else {
+            proxy.setFileProxies(fileProxies);
         }
         List<String> requiredErrors = new ArrayList<String>();
         for (CellMetadata field : allValidFields) {
@@ -416,6 +407,26 @@ public class BulkUploadService {
         }
 
         return proxy;
+    }
+
+    private void createFakeFileProxies(Sheet sheet, BulkManifestProxy proxy) {
+        proxy.setFileProxies(new ArrayList<FileProxy>());
+        String tableCellName = CellMetadata.FILENAME.getName();
+        for (Row row : sheet) {
+            String stringCellValue = null;
+                    if (row.getCell(ExcelService.FIRST_COLUMN) != null) {
+                        stringCellValue = row.getCell(ExcelService.FIRST_COLUMN).getStringCellValue();
+                    }
+            if (StringUtils.isBlank(stringCellValue) || tableCellName.equals(stringCellValue) || 
+                    stringCellValue.startsWith(tableCellName)) {
+                continue;
+            }
+            FileProxy fp = new FileProxy();
+            fp.setFilename(stringCellValue);
+            fp.setAction(FileAction.ADD);
+            logger.debug("creating validation proxy from {}", stringCellValue);
+            proxy.getFileProxies().add(fp);
+        }
     }
 
     /**
@@ -529,6 +540,11 @@ public class BulkUploadService {
                 String extension = FilenameUtils.getExtension((fileName.toLowerCase()));
                 ResourceType suggestTypeForFile = analyzer.suggestTypeForFileExtension(extension, getResourceTypesSupportingBulkUpload());
                 if (suggestTypeForFile == null) {
+                    // fail fast for validation
+                    logger.debug("skipping because cannot figure out extension for file {}",fileName);
+                    List<Object> vals = new ArrayList<>();
+                    vals.add(fileName);
+                    proxy.getAsyncUpdateReceiver().addError(new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", vals));
                     continue;
                 }
                 Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
@@ -731,15 +747,13 @@ public class BulkUploadService {
 
             // look in the hashmap for the filename, skip the examples
             Resource resourceToProcess = findResource(filename, manifestProxy.getResourcesCreated());
-            logger.debug("fn: {} resource to Process: {}", filename, resourceToProcess);
-            if (StringUtils.isBlank(filename) || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)
-                    || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF)) {
-                continue;
-            }
-            if (resourceToProcess == null) {
+            boolean skip = shouldSkipFilename(filename, resourceToProcess);
+            logger.debug("fn: {} resource to Process: {} skip:{}", filename, resourceToProcess,skip);
+            if (skip) {
                 List<Object> vals = new ArrayList<>();
                 vals.add(filename);
                 asyncUpdateReceiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", vals));
+
                 continue;
             }
             logger.info("processing:" + filename);
@@ -794,9 +808,7 @@ public class BulkUploadService {
 
                                 // FIXME: This is a big assumption that role is the last field and then we repeat
                                 reconcileResourceCreator(resourceToProcess, creatorProxy);
-
                                 creatorProxy = new ResourceCreatorProxy();
-
                                 seenCreatorFields = false;
                             }
                             if (Person.class.isAssignableFrom(mappedClass)) {
@@ -835,6 +847,12 @@ public class BulkUploadService {
                 asyncUpdateReceiver.addError(t);
             }
         }
+    }
+
+    private boolean shouldSkipFilename(String filename, Resource resourceToProcess) {
+        return resourceToProcess == null || StringUtils.isBlank(filename) || 
+                filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)
+                || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF);
     }
 
     /**
