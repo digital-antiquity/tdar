@@ -140,7 +140,7 @@ public class BulkUploadService {
      * @param receiver
      * @return
      */
-    public BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper) {
+    public BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource image, Person submitter) {
         BulkManifestProxy manifestProxy = null;
         File excelManifest = wrapper.getFile();
         if (excelManifest != null && excelManifest.exists()) {
@@ -148,7 +148,7 @@ public class BulkUploadService {
             try {
                 wrapper.setStream(new FileInputStream(excelManifest));
                 Workbook workbook = WorkbookFactory.create(wrapper.getStream());
-                manifestProxy = validateManifestFile(workbook.getSheetAt(0));
+                manifestProxy = validateManifestFile(workbook.getSheetAt(0), image, submitter);
             } catch (Exception e) {
                 logger.debug("exception happened when reading excel file", e);
                 manifestProxy = new BulkManifestProxy(null, null, null);
@@ -202,13 +202,12 @@ public class BulkUploadService {
             throw throwable;
         }
         logger.debug("mapping metadata with excelManifest:" + excelManifest);
-        BulkManifestProxy manifestProxy = loadExcelManifest(excelManifest);
+        BulkManifestProxy manifestProxy = loadExcelManifest(excelManifest, image, submitter);
         asyncStatusMap.put(ticketId, manifestProxy.getAsyncUpdateReceiver());
         if (manifestProxy == null) {
             manifestProxy = new BulkManifestProxy(null, null, null);
         }
         manifestProxy.setFileProxies(fileProxies);
-        manifestProxy.setSubmitter(submitter);
         // If there are errors, then stop...
         if (StringUtils.isNotBlank(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors())) {
             completeBulkUpload(image, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
@@ -216,19 +215,51 @@ public class BulkUploadService {
         }
 
         logger.info("bulk: creating individual resources");
-        count = processFileProxiesIntoResources(image,  manifestProxy,  count, false);
-
+        count = processFileProxies(manifestProxy, count);
+        
+        
         logger.info("bulk: applying manifest file data to resources");
-        try {
-            readExcelFile(manifestProxy, true);
-        } catch (Exception e) {
-            logger.warn(MessageHelper.getMessage("bulkUploadService.an_exception_occured_while_processing_the_manifest_file"), e);
-        }
+//        try {
+//            readExcelFile(manifestProxy, true);
+//        } catch (Exception e) {
+//            logger.warn(MessageHelper.getMessage("bulkUploadService.an_exception_occured_while_processing_the_manifest_file"), e);
+//        }
 
         updateAccountQuotas(accountId, manifestProxy.getResourcesCreated());
         logAndPersist(manifestProxy);
         completeBulkUpload(image, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
 
+    }
+
+    private float processFileProxies(BulkManifestProxy manifestProxy, float count) {
+        for (FileProxy fileProxy : manifestProxy.getFileProxies()) {
+            logger.trace("processing: {}", fileProxy);
+            try {
+                if (fileProxy == null || fileProxy.getAction() != FileAction.ADD) {
+                    continue;
+                }
+                logger.debug("processing: {} | {}" , fileProxy , fileProxy.getAction());
+                String fileName = fileProxy.getFilename();
+                // if there is not an exact match in the manifest file then, skip it. If there is no manifest file, then go merrily along
+                if (manifestProxy != null && !manifestProxy.containsFilename(fileName)) {
+                    logger.info("skipping {} filenames: {} ", fileName, manifestProxy.listFilenames());
+                    continue;
+                }
+                ActionMessageErrorListener listener = new ActionMessageErrorListener();
+                InformationResource informationResource = (InformationResource)manifestProxy.getResourcesCreated().get(fileName);
+                genericDao.saveOrUpdate(informationResource);
+                informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
+                        Arrays.asList(fileProxy));
+                manifestProxy.getAsyncUpdateReceiver().getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
+                if (listener.hasActionErrors()) {
+                    manifestProxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
+                }
+            } catch (Exception e) {
+                logger.error("something happend", e);
+                manifestProxy.getAsyncUpdateReceiver().addError(e);
+            }
+        }
+        return count;        
     }
 
     /**
@@ -328,13 +359,14 @@ public class BulkUploadService {
      * @param sheet
      * @return
      */
-    public BulkManifestProxy validateManifestFile(Sheet sheet) {
+    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource image, Person submitter) {
 
         Iterator<Row> rowIterator = sheet.rowIterator();
 
         LinkedHashSet<CellMetadata> allValidFields = getAllValidFieldNames();
         Map<String, CellMetadata> cellLookupMap = getCellLookupMapByName(allValidFields);
         BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap);
+        proxy.setSubmitter(submitter);
         FormulaEvaluator evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
         proxy.setColumnNamesRow(sheet.getRow(ExcelService.FIRST_ROW));
 
@@ -373,15 +405,11 @@ public class BulkUploadService {
         }
 
         testFilenameCaseAndAddFiles(rowIterator, proxy);
-        Image image = new Image();
-        image.setTitle("template_valid_title");
-        image.setDescription("test description");
-        image.setProject(Project.NULL);
         float count = 0;
         
-        count = processFileProxiesIntoResources(image, proxy, count, true);
+        count = processFileProxiesIntoResources(image, proxy, count);
         try {
-            readExcelFile(proxy, false);
+            readExcelFile(proxy);
         } catch (InvalidFormatException | IOException e) {
             proxy.getAsyncUpdateReceiver().addError(e);
             logger.error(e.getMessage(), e);
@@ -454,10 +482,6 @@ public class BulkUploadService {
                     required.add(cellMetadata);
                 }
             }
-//            } else if (!StringUtils.isBlank(name)) {
-//                logger.debug("error name: {}", name);
-////                errorColumns.add(name);
-//            }
         }
         proxy.getRequired().addAll(required);
     }
@@ -467,24 +491,24 @@ public class BulkUploadService {
      * 
      * @param image
      * @param submitter
-     * @param manifestProxy
+     * @param proxy
      * @param fileProxies
      * @param receiver
      * @param count
      * @return
      */
-    private float processFileProxiesIntoResources(final InformationResource image, final BulkManifestProxy manifestProxy,
-            float count, boolean save) {
+    private float processFileProxiesIntoResources(final InformationResource image, final BulkManifestProxy proxy,
+            float count) {
 
         if (StringUtils.isBlank(image.getTitle())) {
             image.setTitle(BulkUploadTemplate.BULK_TEMPLATE_TITLE);
         }
 
-        if (manifestProxy == null) {
+        if (proxy == null) {
             return count;
         }
         
-        for (FileProxy fileProxy : manifestProxy.getFileProxies()) {
+        for (FileProxy fileProxy : proxy.getFileProxies()) {
             logger.trace("processing: {}", fileProxy);
             try {
                 if (fileProxy == null || fileProxy.getAction() != FileAction.ADD) {
@@ -493,41 +517,38 @@ public class BulkUploadService {
                 logger.debug("processing: {} | {}" , fileProxy , fileProxy.getAction());
                 String fileName = fileProxy.getFilename();
                 // if there is not an exact match in the manifest file then, skip it. If there is no manifest file, then go merrily along
-                if (manifestProxy != null && !manifestProxy.containsFilename(fileName)) {
-                    logger.info("skipping {} filenames: {} ", fileName, manifestProxy.listFilenames());
+                if (proxy != null && !proxy.containsFilename(fileName)) {
+                    logger.info("skipping {} filenames: {} ", fileName, proxy.listFilenames());
                     continue;
                 }
 
                 logger.info("inspecting ... {}", fileName);
                 count++;
-                float percent = (count / Float.valueOf(manifestProxy.getFileProxies().size())) * 50;
-                manifestProxy.getAsyncUpdateReceiver().update(percent, " processing " + fileName);
+                float percent = (count / Float.valueOf(proxy.getFileProxies().size())) * 50;
+                proxy.getAsyncUpdateReceiver().update(percent, " processing " + fileName);
                 String extension = FilenameUtils.getExtension((fileName.toLowerCase()));
                 ResourceType suggestTypeForFile = analyzer.suggestTypeForFileExtension(extension, getResourceTypesSupportingBulkUpload());
+                if (suggestTypeForFile == null) {
+                    continue;
+                }
                 Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
 
                 ActionMessageErrorListener listener = new ActionMessageErrorListener();
                 if (InformationResource.class.isAssignableFrom(resourceClass)) {
                     logger.info("saving " + fileName + "..." + suggestTypeForFile);
-                    InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass, save);
+                    InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass);
                     informationResource.setReadyToIndex(false);
                     informationResource.setTitle(fileName);
-                    informationResource.markUpdated(manifestProxy.getSubmitter());
+                    informationResource.markUpdated(proxy.getSubmitter());
                     informationResource.setDescription(" ");
-                    if (save) {
-                        genericDao.saveOrUpdate(informationResource);
-                        informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
-                                Arrays.asList(fileProxy));
-                    }
-                    manifestProxy.getAsyncUpdateReceiver().getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
-                    manifestProxy.getResourcesCreated().put(fileName, informationResource);
+                    proxy.getResourcesCreated().put(fileName, informationResource);
                     if (listener.hasActionErrors()) {
-                        manifestProxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
+                        proxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
                     }
                 }
             } catch (Exception e) {
                 logger.error("something happend", e);
-                manifestProxy.getAsyncUpdateReceiver().addError(e);
+                proxy.getAsyncUpdateReceiver().addError(e);
             }
         }
         return count;
@@ -679,8 +700,7 @@ public class BulkUploadService {
      * @throws IOException
      */
     @Transactional
-    public <R extends Resource> void readExcelFile(BulkManifestProxy manifestProxy, boolean save)
-            throws InvalidFormatException, IOException {
+    public <R extends Resource> void readExcelFile(BulkManifestProxy manifestProxy) throws InvalidFormatException, IOException {
 
         if (manifestProxy == null) {
             return;
@@ -813,9 +833,6 @@ public class BulkUploadService {
                 logger.debug("excel mapping error: {}", t);
                 resourceToProcess.setStatus(Status.DELETED);
                 asyncUpdateReceiver.addError(t);
-            }
-            if (save) {
-                genericDao.saveOrUpdate(resourceToProcess);
             }
         }
     }

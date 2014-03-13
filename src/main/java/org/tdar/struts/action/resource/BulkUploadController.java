@@ -23,6 +23,7 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -147,7 +148,12 @@ public class BulkUploadController extends AbstractInformationResourceController<
         }
         try {
             Workbook workbook = WorkbookFactory.create(getUploadedFiles().get(0));
-            BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0));
+            Image image = new Image();
+            image.setTitle("template_valid_title");
+            image.setDescription("test description");
+            image.setProject(Project.NULL);
+
+            BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getAuthenticatedUser());
 
             
             String htmlAsyncErrors = manifestProxy.getAsyncUpdateReceiver().getHtmlAsyncErrors();
