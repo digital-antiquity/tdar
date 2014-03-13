@@ -1293,8 +1293,8 @@
 					]]></license>
 					<configuration>
 <!-- 						<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
-						<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
-					</configuration>
+<!-- 						<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
+ -->					</configuration>
 					<includes>
 						<include>**/*.java</include>
 					</includes>
@@ -1449,7 +1449,7 @@
 					bZloaUUnmm
 					]]></license>
 <!-- 						<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
-					<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
+					<!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
 					<includes>
 						<include>**/*.java</include>
 					</includes>
@@ -2212,8 +2212,8 @@
 					<artifactId>maven-clover2-plugin</artifactId>
 					<configuration>
 <!-- 						<cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
-						<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
-					</configuration>
+<!-- 						<cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory>
+ -->					</configuration>
 					<executions>
 						<execution>
 							<phase>generate-sources</phase>
