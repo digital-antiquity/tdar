@@ -1,18 +1,18 @@
 package org.tdar.web.functional;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.openqa.selenium.Keys;
-
+import static java.lang.String.format;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-
 import static org.tdar.web.functional.WebMatchers.emptySelection;
-import static java.lang.String.format;
 import static org.tdar.web.functional.WebMatchers.visible;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Keys;
 
 /**
  * Created by jimdevos on 3/12/14.
@@ -23,12 +23,25 @@ public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
     public static final String COLLECTION_ID = "1575";
     public static final String COLLECTION_QUERY = "sample video";
     public static final String PROJECT_QUERY = "Archaeology";
-
+    private Dimension originalSize;
+    private Dimension testSize = new Dimension(1024, 768);
     @Before
     public void setupContextSearch() {
+        Dimension size2 = driver.manage().window().getSize();
+        if (size2 != testSize) {
+            originalSize = size2;
+        }
+        driver.manage().window().setSize(testSize);
         reindexOnce();
     }
 
+    @After
+    public void resetSize() {
+        if (originalSize != null) {
+        driver.manage().window().setSize(originalSize);
+        }
+    }
+    
     @Test
     public void testProjectResults2() {
         basicTest(format("/project/%s", PROJECT_ID), PROJECT_QUERY);

@@ -263,6 +263,9 @@ public abstract class AbstractSeleniumWebITCase {
                     fb.setEnvironmentProperty(key, environment.get(key));
                 }
                 FirefoxProfile profile = new FirefoxProfile();
+                if (isOSX()) {
+                    profile.setPreference("focusmanager.testmode", true);
+                }
                 driver = new FirefoxDriver(fb, profile);
                 break;
             case CHROME:
@@ -310,6 +313,11 @@ public abstract class AbstractSeleniumWebITCase {
         eventFiringWebDriver.register(eventListener);
 
         this.driver = eventFiringWebDriver;
+    }
+    
+    public static boolean isOSX() {
+        String osName = System.getProperty("os.name");
+        return osName.contains("OS X");
     }
 
     private Capabilities configureCapabilities(DesiredCapabilities caps) {
