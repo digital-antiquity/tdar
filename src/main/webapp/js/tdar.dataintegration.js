@@ -1,0 +1,405 @@
+(function (TDAR, $) {
+    'use strict';
+
+    //HACK jtd - jqueryui relies on $.browser. jQuery 1.10.3 deprecates that.  So,  we add it here w/
+    //bogus value
+    $.browser = "NCSA Mosaic v0.7";
+
+    var drpOptions = {
+        drop: _dropVariable
+    };
+
+    //current status message
+    var msg = "";
+
+    /**
+     * Initialize the data integration UI
+     */
+    var _initDataIntegration = function () {
+        $("#selectDTColForm").submit(function () {
+            var $this = $(this);
+            // copy values into data attributes before doing this; then copy back
+            $("option:selected", $this).attr("selected", "selected");
+            $(":checked", $this).attr("checked", "checked");
+            $("input", $this).filter('[type=text],[type=hidden]').each(function () {
+                $(this).attr("value", $(this).val());
+            });
+            $("#autosave").val($this.html());
+        });
+
+        if ($("#autosave").val() != '') {
+            $("#selectDTColForm").html($("#autosave").val());
+        }
+
+        $(".drg").draggable({
+            zIndex: 2700,
+            revert: true,
+            revertDuration: 0
+        });
+
+        $("#drplist td").droppable(drpOptions);
+
+        $("#drplist").delegate("td", "mouseenter", function () {
+            _expandColumn(this);
+        });
+
+        $('#drplist').delegate('button', 'click', function () {
+            var column = $(this).parent().parent();
+            $(this).parent().remove();
+            _validateColumn(column);
+            return false;
+        });
+
+        $("#clear").click(_integrationClearAll);
+        $("#autoselect").click(_integrationAutoselect);
+        $("#addColumn").click(_addColumn);
+        // autosize the height of the div
+        $('.buttontable tr').each(function () {
+            var pheight = $(this).height();
+            $('.drg', this).css('height', pheight);
+        });
+
+        var top = $('#fixedList').offset().top
+            - parseFloat($('#fixedList').css('marginTop').replace(/auto/, 0));
+        $(window).scroll(function (event) {
+            // what the y position of the scroll is
+            var y = $(this).scrollTop();
+
+            // whether that's below the form
+            if (y >= top - 80) {
+                // if so, ad the fixed class
+                $('#fixedList').addClass('fixed');
+            } else {
+                // otherwise remove it
+                $('#fixedList').removeClass('fixed');
+            }
+        });
+
+    };
+
+    /**
+     * Set the current integration status message
+     * @param msg
+     *
+     */
+    function _setStatus(msg) {
+        $(".status").html(msg);
+        $(".status").show();
+
+        $(".status").css("background-color", "lightyellow !important");
+        $(".status").css("border", "1px solid red !important");
+        $(".status").delay(3000).fadeOut(3000, function () {
+            $(".status").hide();
+        });
+    }
+
+    /**
+     * Inspect contents of integration table column, determine if it should be displayed as "integration" column
+     * or "display" column.
+     *
+     * @param column
+     * @private
+     */
+    function _validateColumn(column) {
+        var integrate = $(column).find("div[data-ontology]");
+        console.log(column);
+        console.log(integrate);
+        var children = $(column).children("div");
+        console.log("children:" + children.length);
+        console.log("integrate:" + integrate.length);
+
+        var ontology = -1;
+        var ontologyName = "";
+        $(integrate).each(function () {
+            if (ontology == -1) {
+                ontology = $(this).data("ontology");
+                ontologyName = $(".ontology", $(this)).html();
+            } else if (ontology != $(this).data("ontology")) {
+                ontology = -1000;
+            }
+        });
+
+        if (integrate.length == $(".buttontable").length && ontology > 0) {
+            ontologyName = ontologyName.substr(2);
+            $(column).find(".colType").html(": integration <span class=\"ontology\">(" + ontologyName + ")</span>");
+            $(column).find(".colTypeField").val("INTEGRATION");
+            $(column).addClass("integrationColumn");
+            $(column).removeClass("displayColumn");
+        } else {
+            $(column).find(".colTypeField").val("DISPLAY");
+            $(column).find(".colType").html(": display");
+            $(column).removeClass("integrationColumn");
+            $(column).addClass("displayColumn");
+        }
+    }
+
+    /**
+     * Event handler, called when a source dataset column is  dropped on the integration table.  Determine if the placement of
+     * the source column placement was valid.  If not, update current status with error message.  If valid,  determine
+     * whether to display the integration table column as an "integration" or "display" column.
+     *
+     * @param event
+     * @param ui
+     * @returns {boolean} true if drop should be accepted. otherwise false.
+     * @private
+     */
+    function _dropVariable(event, ui) {
+        var $target = $(event.target);
+        var draggable = ui.draggable;
+        if (draggable.data("colnum")) {
+            return false;
+        }
+        $(draggable).css("z-index", 100);
+        var table = draggable.data("table");
+        var ret = true;
+        var children = $target.children("div [data-table]");
+        console.log(draggable);
+        console.log(table);
+        console.log(children);
+        if (children.length > 0) {
+            $(children)
+                .each(
+                function () {
+                    console.log($(this));
+                    if ($(this).data("table") == table) {
+                        msg = "you cannot add more than one variable from the same table to any column";
+                        _setStatus(msg);
+                        ret = false;
+                    }
+                });
+        }
+
+        if (!ret) {
+            return false;
+        }
+
+        var newChild = $("<div/>").appendTo($target);
+        newChild.data("ontology", draggable.data("ontology"));
+        newChild.data("table", draggable.data("table"));
+        $target.find(".info").detach();
+        draggable.clone(true,true).appendTo(newChild);
+        newChild.append("&nbsp;&nbsp;&nbsp;&nbsp;<button>X</button>");
+        var colNum = $target.data('colnum');
+        var children = $target.find("div");
+
+        newChild.find('*').each(function () {
+            var elem = this;
+            _replaceAttribute(elem, "name", '{COLNUM}', colNum);
+            // always have one DIV to start with, so subtract 2
+            _replaceAttribute(elem, "name", '{CELLNUM}', children.length - 2);
+        });
+
+        $(newChild).children().removeAttr("style");
+
+        _validateColumn(event.target);
+        $target.draggable("destroy");
+        $(newChild).css("{}");
+
+        $(newChild).children("button").button();
+
+        $target.animate({
+            opacity: .8,
+            borderColor: "#000000"
+        }, 200).animate({
+                opacity: 1,
+                borderColor: "#AAAAAA"
+            }, 200).animate({
+                opacity: .8,
+                borderColor: "#000000"
+            }, 200).animate({
+                opacity: 1,
+                borderColor: "#AAAAAA"
+            }, 200);
+    }
+
+    /**
+     * this is the column adjustment UI, mouseenter is not always right
+     * @param col integration table column to expand
+     * @private
+     */
+    function _expandColumn(col) {
+        var $col = $(col);
+        var $tds = $("#drplist td");
+        var small = 80 / $tds.length;
+        $tds.stop(true, true);
+        if ($tds.length > 8) {
+            small = 150 / $tds.length;
+        }
+        $tds.removeClass("short");
+        $tds.addClass("short");
+        $tds.css({
+            width: small + "%"
+        });
+
+
+        $col.stop(true, true).animate({
+            width: "50%"
+        }).removeClass("short");
+    };
+
+
+    /**
+     * Add a new column to the Integration Table section.
+     *
+     * @param strOntologyId if nonblank, indicates ontology associated with the new column
+     * @returns {boolean} false, sometimes.
+     * @private
+     */
+    function _addColumn(strOntologyId) {
+        var colNum = $("#drplist tr").children().length + 1;
+        $(
+            "<td data-colnum="
+                + (colNum - 1)
+                + " class='displayColumn'><div class='label'>Column "
+                + colNum
+                + "<span class='colType'></span> <input type='hidden' name='integrationColumns["
+                + (colNum - 1)
+                + "].columnType' value='DISPLAY' class='colTypeField'/><input type='hidden' name='integrationColumns["
+                + (colNum - 1)
+                + "].sequenceNumber' value='"
+                + (colNum - 1)
+                + "' class='sequenceNumber'/><button class='removeColumn'>X</button></div></td>")
+            .droppable(drpOptions).appendTo("#drplist tr");
+        var $chld = $("#drplist td:last");
+        $("button.removeColumn", $chld).button().click(function () {
+            $(this).parent().parent().remove();
+            return false;
+        });
+        _expandColumn($chld);
+        if (strOntologyId != undefined && strOntologyId.length > 0) {
+            var event = {};
+            event.target = $chld;
+            var tables = $("table.buttontable");
+            for (var i = 0; i < tables.length; i++) {
+                // fake the drop function
+                var table = tables[i];
+                var ui = {};
+                ui.draggable = $($("[data-ontology=" + strOntologyId + "]", $(table))[0]);
+                _dropVariable(event, ui);
+            }
+        }
+        return false;
+    };
+
+    /**
+     * Clear all columns in Integration Table section
+     */
+    function _integrationClearAll() {
+        $("#drplist tbody td")
+            .each(
+            function () {
+                var $this = $(this);
+                if ($this.data("colnum") == 0) {
+                    $this.empty();
+                    $this
+                        .html(
+                            '<div class="label">Column 1 <span class="colType"></span><input type="hidden" name="integrationColumns[0].columnType" value="DISPLAY" class="colTypeField"/><input type="hidden" name="integrationColumns[0].sequenceNumber" value="0" class="sequenceNumber" /></div><span class="info">Drag variables from below into this column to setup your integration<br/><br/><br/><br/></span>');
+                    $this.removeClass("integrationColumn");
+                    $this.addClass("displayColumn");
+                } else {
+                    $this.remove();
+                }
+            });
+        setTimeout(function () {
+            $("#clear").attr('checked', false);
+        }, 400);
+    }
+
+    /**
+     * Add all integrateable columns to the Integration Tagble
+     * @private
+     */
+    function _integrationAutoselect() {
+        var matches = {};
+        var tables = [];
+        var totalTables = 0;
+        var okay = false;
+
+        $("[data-ontology]").each(function () {
+            var ont = $(this).data('ontology');
+            var table = $(this).data('table');
+            if (matches[ont] == undefined) {
+                matches[ont] = [];
+            }
+            if (-1 == $.inArray(parseInt(table), matches[ont])) {
+                matches[ont][matches[ont].length] = parseInt(table);
+            }
+            // map of ontologyIds -> [unique tableId list]
+            if (-1 == $.inArray(parseInt(table), tables)) {
+                tables[tables.length] = parseInt(table);
+                totalTables++;
+            }
+        });
+
+        for (var match in matches) {
+            if (matches.hasOwnProperty(match)) {
+                console.log(match);
+                if (matches[match].length == totalTables) {
+                    if (!okay) {
+                        $("#drplist td").remove();
+                    }
+                    okay = true;
+                    _addColumn(match);
+                }
+            }
+        }
+        if (!okay) {
+            _setStatus("no shared integration columns were found.");
+        }
+
+        //you know, rumors tell of an html element that implements this.. button-like behavior.
+        setTimeout(function () {
+            $("#autoselect").attr('checked', false);
+        }, 400);
+    }
+
+    /**
+     * Return body of a function as a string.
+     * @param func
+     * @returns {*}
+     * @private
+     */
+    var _getFunctionBody = function(func) {
+        var m = func.toString().match(/\{([\s\S]*)\}/m)[1];
+        return m;
+    }
+
+    /**
+     * replace last occurance of str in attribute with rep
+     *
+     * @param elem
+     * @param attrName
+     * @param str
+     * @param rep
+     * @private
+     */
+    function _replaceAttribute(elem, attrName, str, rep) {
+        if (!$(elem).attr(attrName))
+            return;
+        var oldval = $(elem).attr(attrName);
+        if (typeof oldval === "function") {
+            oldval = _getFunctionBody(oldval);
+            // console.debug("converting function to string:" + oldval );
+
+        }
+        if (oldval.indexOf(str) != -1) {
+            var beginPart = oldval.substring(0, oldval.lastIndexOf(str));
+            var endPart = oldval.substring(oldval.lastIndexOf(str) + str.length,
+                oldval.length);
+            var newval = beginPart + rep + endPart;
+            $(elem).attr(attrName, newval);
+            // console.debug('attr:' + attrName + ' oldval:' + oldval + ' newval:' +
+            // newval);
+        }
+    }
+
+
+    //expose public elements
+    TDAR.integration = {
+        "initDataIntegration": _initDataIntegration,
+        "setStatus": _setStatus,
+        "integrationClearAll": _integrationClearAll
+    };
+
+
+})(TDAR, jQuery);

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <include file="struts-local-settings.xml"/>
+    <!-- performance enhancements -->
+    <!-- freemarker cache -->
+    <constant name="struts.freemarker.mru.max.strong.size" value="250"/>
+    <!-- 
+    	set this in struts-local-settings.xml 
+	    <constant name="struts.freemarker.templatesCache.updateDelay" value="5000000"/>
+     -->
+    <!-- javatemplates plugin, possible optimization for freemarker tags using
+          the simple theme. it may only work if you're using basic JSP struts tags
+          though, needs testing. -->
+    <!-- <constant name="struts.ui.templateSuffix" value="java" /> -->
+    <constant name="struts.ui.theme" value="bootstrap"/>
+    <constant name="struts.url.includeParams" value="none"/>
+    <constant name="struts.action.excludePattern" value="/services/.*"/>
+    <constant name="struts.custom.i18n.resources" value="Locales/tdar-freemarker-messages,/Locales/tdar-messages" />
+
+    <!-- constant name="struts.enable.SlashesInActionNames" value="true"/> <constant
+          name="struts.mapper.alwaysSelectFullNamespace" value="false"/ -->
+    <constant name="struts.patternMatcher" value="com.opensymphony.xwork2.util.NamedVariablePatternMatcher"/>
+    <package name="default" extends="struts-default" namespace="/">
+        <result-types>
+            <result-type name="jaxbdocument" class="org.tdar.struts.result.JaxbDocumentResult"/>
+            <result-type name="freemarkerhttp" class="org.tdar.struts.result.FreemarkerHttpHeaderResult"/>
+        </result-types>
+        <interceptors>
+            <interceptor name="sessionSecurity" class="org.tdar.struts.interceptor.SessionSecurityInterceptor"/>
+            <interceptor name="httpsMethod" class="org.tdar.struts.interceptor.HttpsInterceptor"/>
+            <interceptor name="httpMethod" class="org.tdar.struts.interceptor.HttpMethodInterceptor"/>
+            <interceptor name="execAndWait" class="org.apache.struts2.interceptor.ExecuteAndWaitInterceptor"/>
+            <interceptor-stack name="tdarDefaultStack">
+                <interceptor-ref name="exception">
+                    <param name="logEnabled">true</param>
+                    <param name="logLevel">ERROR</param>
+                    <!--           <param name="exception.logCategory">org.tdar.struts</param> -->
+                </interceptor-ref>
+                <interceptor-ref name="sessionSecurity"/>
+                <interceptor-ref name="httpsMethod"/>
+                <interceptor-ref name="httpMethod"/>
+                <interceptor-ref name="store">
+                    <param name="operationMode">AUTOMATIC</param>
+                </interceptor-ref>
+                 <interceptor-ref name="i18n"/> 
+                <interceptor-ref name="checkbox"/>
+                <interceptor-ref name="multiselect"/>
+                <interceptor-ref name="params">
+                    <!-- Mirror changes to the second entry below as well... -->
+                    <!-- The '-' is because when jQuery Ajax call is made with 'cache: false' we get a _=timestamp with each request -->
+                    <!-- As we don't have a property named '_' in our actions we get an error logged in development mode. Excluding '-' removes the error -->
+                    <param name="excludeParams">_,dojo\..*,^struts\..*,_tdar\..*</param>
+                </interceptor-ref>
+                <interceptor-ref name="servletConfig"/>
+                <interceptor-ref name="prepare"/>
+                <interceptor-ref name="fileUpload">
+	<!--
+	 ONLY OVERRIDE IF ABSOLUTELY NECESSARY - THIS PROTECTS THE TEMP DIRECTORY 
+		AND CLEANS UP IF A FILE THAT'S TOO BIG IS UPLOADED 
+		<param name="maximumSize">8589934592</param> 
+		-->
+                </interceptor-ref>
+                <interceptor-ref name="staticParams"/>
+                <interceptor-ref name="actionMappingParams"/>
+                <interceptor-ref name="params">
+                    <!-- See AbstractPersistableController.prepare() for more detail on why this entry occurs twice -->
+                    <param name="excludeParams">_,dojo\..*,^struts\..*,_tdar\..*</param>
+                </interceptor-ref>
+                <interceptor-ref name="conversionError"/>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+            </interceptor-stack>
+            <interceptor-stack name="unauthenticatedStack">
+                <interceptor-ref name="tdarDefaultStack"/>
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="unauthenticatedStack"/>
+        <global-results>
+            <result name="access-denied" type="redirect">/access-denied</result>
+            <result name="login" type="redirect">/login</result>
+            <result name="error" type="freemarkerhttp">
+                <param name="status">500</param>
+                <param name="location">/WEB-INF/content/errors/error.ftl</param>
+            </result>
+            <result name="badrequest" type="freemarkerhttp">
+                <param name="status">400</param>
+                <param name="location">/WEB-INF/content/errors/error.ftl</param>
+            </result>
+            <!--
+            <result name="exception" type="freemarker">/WEB-INF/content/errors/exception.ftl</result>
+             -->
+            <!-- good: we send propper http error code(so google doesn't keep this page).  Bad: user gets ugly page with no helpful message.  -->
+            <result name="exception" type="freemarkerhttp">
+                <param name="status">500</param>
+                <param name="location">/WEB-INF/content/errors/exception.ftl</param>
+            </result>
+            <result name="unauthorized" type="freemarker">/WEB-INF/content/errors/unauthorized.ftl</result>
+            <result name="gone" type="freemarker">/WEB-INF/content/errors/resource-deleted.ftl</result>
+            <result name="not_found" type="freemarker">/WEB-INF/content/errors/page-not-found.ftl</result>
+            <result name="invalid.token" type="freemarker">/WEB-INF/content/errors/double-submit.ftl</result>
+            <result name="user_agreement" type="redirect">/show-notices</result>
+            <result name="login" type="redirect">/login</result>
+        </global-results>
+        <!-- XXX: swallows all unhandled RuntimeExceptions and sends them to the
+             exception result configured above -->
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.RuntimeException" result="exception"/>
+        </global-exception-mappings>
+    </package>
+    <package name="secured" extends="default" abstract="true">
+        <interceptors>
+            <interceptor name="authenticate" class="org.tdar.struts.interceptor.AuthenticationInterceptor"/>
+            <interceptor-stack name="editAuthenticatedStack">
+                <interceptor-ref name="authenticate"/>
+                <interceptor-ref name="tdarDefaultStack">
+                    <param name="validation.validateAnnotatedMethodOnly">true</param>
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="editAuthenticatedStack"/>
+    </package>
+</struts>
