@@ -183,9 +183,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         }
     }
 
-    protected void appendIf(boolean test, QueryGroup q, String field, String value) {
+    protected <C> void appendIf(boolean test, QueryGroup q, String field, C value) {
         if (test) {
-            q.append(new FieldQueryPart<String>(field, value));
+            q.append(new FieldQueryPart<C>(field, value));
         }
     }
 

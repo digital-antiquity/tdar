@@ -28,7 +28,9 @@ import org.tdar.search.query.builder.ResourceAnnotationKeyQueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AutocompleteTitleQueryPart;
+import org.tdar.search.query.part.CategoryTermQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.ProjectIdLookupQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.FacetGroup;
 
@@ -54,8 +56,8 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private String email;
     private String registered;
     private String url;
-    private String projectId;
-    private String collectionId;
+    private Long projectId;
+    private Long collectionId;
     private String title;
 
     private String keywordType;
@@ -94,42 +96,13 @@ public class LookupController extends AbstractLookupController<Indexable> {
             setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
 
-        QueryPartGroup valueGroup = new QueryPartGroup();
-        if (StringUtils.isNotBlank(getTerm())) {
-            valueGroup.append(new AutocompleteTitleQueryPart(getTerm()));
+        q.append(new CategoryTermQueryPart(getTerm(), getSortCategoryId()));
+
+        if (Persistable.Base.isNotNullOrTransient(projectId)) {
+            q.append(new ProjectIdLookupQueryPart(projectId));
         }
 
-        if (StringUtils.isNumeric(getTerm()) && StringUtils.isNotBlank(getTerm())) {
-            valueGroup.append(new FieldQueryPart<String>(QueryFieldNames.ID, getTerm()));
-            valueGroup.setOperator(Operator.OR);
-        }
-
-        // assumption: if sortCategoryId is set, we assume we are serving a coding-sheet/ontology autocomplete
-        // FIXME: instead of guessing this way it may be better to break codingsheet/ontology autocomplete lookups to another action.
-        if (getSortCategoryId() != null && getSortCategoryId() > -1) {
-            // SHOULD PREFER THINGS THAT HAVE THAT CATEGORY ID
-            FieldQueryPart<String> q2 = new FieldQueryPart<String>(QueryFieldNames.CATEGORY_ID, getSortCategoryId().toString().trim());
-            q2.setBoost(2f);
-            valueGroup.append(q2);
-            valueGroup.setOperator(Operator.OR);
-
-            // if searching by category AND title, a relevancy sort makes more sense
-            if (StringUtils.isNotBlank(term)) {
-                setSortField(SortOption.RELEVANCE);
-            }
-        }
-        q.append(valueGroup);
-
-        if (StringUtils.isNotBlank(projectId) && StringUtils.isNumeric(projectId)) {
-            QueryPartGroup group = new QueryPartGroup();
-            group.setOperator(Operator.OR);
-            group.append(new FieldQueryPart<String>(QueryFieldNames.PROJECT_ID, projectId));
-            group.append(new FieldQueryPart<String>(QueryFieldNames.ID, projectId));
-            q.append(group);
-        }
-
-        // FIXME: SHOULD I BE "SHARED" OR PUBLIC
-        appendIf(StringUtils.isNotBlank(collectionId) && StringUtils.isNumeric(collectionId), q, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, collectionId);
+        appendIf(Persistable.Base.isNotNullOrTransient(collectionId), q, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, collectionId);
 
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
@@ -304,14 +277,8 @@ public class LookupController extends AbstractLookupController<Indexable> {
         this.url = url;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
-
     public void setProjectId(Long projectId) {
-        if (projectId != null) {
-            this.projectId = projectId.toString();
-        }
+        this.projectId = projectId;
     }
 
     /**
@@ -344,11 +311,11 @@ public class LookupController extends AbstractLookupController<Indexable> {
         return keywordType;
     }
 
-    public String getCollectionId() {
+    public Long getCollectionId() {
         return collectionId;
     }
 
-    public void setCollectionId(String collectionId) {
+    public void setCollectionId(Long collectionId) {
         this.collectionId = collectionId;
     }
 
