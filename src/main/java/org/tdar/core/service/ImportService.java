@@ -130,6 +130,9 @@ public class ImportService {
         incomingResource.markUpdated(blessedAuthorizedUser);
         // genericService.detachFromSession(authorizedUser);
         incomingResource = genericService.merge(incomingResource);
+        if (incomingResource instanceof InformationResource) {
+            ((InformationResource) incomingResource).setDate(((InformationResource)incomingResource).getDate());
+        }
 
         processFiles(authorizedUser, proxies, incomingResource);
 
