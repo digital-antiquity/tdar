@@ -59,8 +59,8 @@
 <@common.jsErrorLog />
 <@s.hidden name='id' value='${resource.id?c}'/>
 <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
-<@s.hidden name="startRecord" />
-<@s.hidden name="recordsPerPage" />
+<@s.hidden name="startRecord" value="${(startRecord!0)?c}" />
+<@s.hidden name="recordsPerPage" value="${(recordsPerPage!10)?c}" />
 <#if ( dataset.dataTables?size > 1 )>
 <h2>Column Description and Mapping: ${dataTable.displayName}</h2>
 <div class="">
@@ -82,9 +82,9 @@
 
 </div>
 </#if>
-<@pagination />
+<@pagination "1"/>
 
-<#macro pagination>
+<#macro pagination prefix>
 <#if (paginationHelper.pageCount > 1)>
 <div class="pagination">
 <b>Showing ${recordsPerPage} columns, jump to another page? (save first)</b>
@@ -129,18 +129,18 @@
             </#if>
 		<td>
             <label>Records Per Page
-            <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
+            <@s.select  theme="simple" id="recordsPerPage${prefix}" cssClass="input-small" name="recordsPerPage${prefix}"
                 list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
             </label>
             <script type='text/javascript'>
-                $("#recordsPerPage").change(function() {
+                $("#recordsPerPage${prefix}").change(function() {
                     var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g,"");
                     //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
                     var prefix = "";
                     if (url.indexOf("?") != 0) {
                         prefix = "?";
                     }
-                    url = prefix + url +  "&recordsPerPage="+$('#recordsPerPage').val();
+                    url = prefix + url +  "&recordsPerPage="+$('#recordsPerPage${prefix}').val();
                     window.location = url;
                 });
             </script>
@@ -356,7 +356,7 @@
     <tr><td><span class="columnSquare mapped">&nbsp;</span><span class="mapped_label"></span></td><td>mapping columns</td></tr>
 </table>
 
-<@pagination />
+<@pagination "2" />
 
 
 <@edit.submit "Save" false>
