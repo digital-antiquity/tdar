@@ -91,7 +91,7 @@
             <p>These errors occurred <i>in the past</i>, when the file was initially processed. 
                Please contact your system administrator and request them to investigate the errors.</p>
             <ul><#list files as file>
-                    <li>${file.fileName}<br /> 
+                    <li>${file.filename}<br /> 
                     <strong>Error recorded:</strong></br />
                     ${file.errorMessage!""}</li>
                 </#list>

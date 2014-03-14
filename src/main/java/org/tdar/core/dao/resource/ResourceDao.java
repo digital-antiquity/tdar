@@ -378,7 +378,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         for (Object obj_ : query.list()) {
             Object[] obj = (Object[]) obj_;
             InformationResourceFile irf = find(InformationResourceFile.class, (Long) obj[2]);
-            toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFileName(), irf.getId(), irf.getInformationResource().getId()));
+            toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFilename(), irf.getId(), irf.getInformationResource().getId()));
         }
         return toReturn;
     }
