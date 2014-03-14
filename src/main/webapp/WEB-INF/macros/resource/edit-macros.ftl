@@ -1344,11 +1344,27 @@ $(function() {
 
 </#macro>
 
+<#--Search valuestack for the value of the specified field name.  Starting with the controller fields, then request parameters -->
+<#function requestValue name default="">
+    <#-- look in the request parameters -->
+    <#local parameterVal = (stack.context.parameters[name][0])!default>
+
+    <#-- look in list of values set by struts on the action -->
+    <#local val = (stack.findValue(name))!>
+
+    <#-- prefer the model value over the request parameter -->
+    <#if val?has_content>
+        <#return val>
+    <#else>
+        <#return parameterVal>
+    </#if>
+
+</#function>
 
 <#-- emit one "row" of a registered user table.  Each row contains an text input field that will be initialized
     with the jquery-ui autocomplete plugin
 -->
-<#macro registeredUserRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" 
+<#macro registeredUserRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix=""
     includeRepeatRow=false includeRights=false  hidden=false leadTitle="">
 <#local disabled =  isDisabled?string("disabled", "") />
 <#local readonly = isDisabled?string("readonly", "") />
@@ -1365,12 +1381,14 @@ $(function() {
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
+            <#local _val = requestValue("${strutsPrefix}${personPrefix}.name")>
             <@s.textfield theme="simple" cssClass="span3 ${lookupType} ${requiredClass}" placeholder="Name"  readonly=isDisabled autocomplete="off"
                 name="${strutsPrefix}${personPrefix}.tempDisplayName" maxlength="255" autocompleteName="tempDisplayName"
                 autocompleteIdElement="#${idIdElement}" 
                 autocompleteParentElement="#${rowIdElement}" 
                  title="${nameTitle}"
                 dynamicAttributes={"data-msg-notValidIfIdEmpty":"Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."}
+                value="${_val}"
                 />
 
             <#if includeRights>
@@ -1401,7 +1419,7 @@ $(function() {
 
     <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if>">
 
-        <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
+        <@s.hidden name='${strutsPrefix}${institutionPrefix}.' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
                 <div class="controls-row">
                     <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4 ${requiredClass}" placeholder="Institution Name" autocomplete="off"
                         autocompleteIdElement="#${idIdElement}" autocompleteName="name" 
