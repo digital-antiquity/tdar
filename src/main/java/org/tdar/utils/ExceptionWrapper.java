@@ -18,6 +18,9 @@ public class ExceptionWrapper implements Serializable {
     private boolean fatal;
     private String stackTrace;
 
+    private static final String CODE_NULL_STACKTRACE = "0";
+    public static final int CODE_MAXLENGTH = 5;
+
     public ExceptionWrapper() {
     }
 
@@ -54,4 +57,18 @@ public class ExceptionWrapper implements Serializable {
     public void setFatal(boolean fatal) {
         this.fatal = fatal;
     }
+
+    private String codify() {
+        if(stackTrace == null) return CODE_NULL_STACKTRACE;
+        String code = Integer.toHexString(stackTrace.hashCode());
+        code = code.length() > CODE_MAXLENGTH ? code.substring(0,   CODE_MAXLENGTH) : code;
+        return code.toUpperCase();
+    }
+
+    public String getErrorCode() {
+        return codify();
+    }
+
+
+
 }

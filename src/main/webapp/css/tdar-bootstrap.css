@@ -498,7 +498,7 @@ aside.tdar-icon:before {
 }
 
 .responsive-large-desktop i.document-bg-large {
-	background: url(/images/r4/resource-types-large.gif) 0px 0px no-repeat;
+	background: url(/images/r4/resource-types-large.gif) 0px 0px ; background-repeat: no-repeat;
 	width: 230px;
 	height: 230px;
 	display: inline-block;
@@ -506,7 +506,7 @@ aside.tdar-icon:before {
 
 .responsive-large-desktop i.dataset-bg-large {
 	background: url(/images/r4/resource-types-large.gif) 0px -245px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 230px;
 	height: 230px;
 	display: inline-block;
@@ -514,7 +514,7 @@ aside.tdar-icon:before {
 
 .responsive-large-desktop i.coding_sheet-bg-large {
 	background: url(/images/r4/resource-types-large.gif) 0px -491px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 230px;
 	height: 230px;
 	display: inline-block;
@@ -522,7 +522,7 @@ aside.tdar-icon:before {
 
 .responsive-large-desktop i.ontology-bg-large {
 	background: url(/images/r4/resource-types-large.gif) 0px -736px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 230px;
 	height: 230px;
 	display: inline-block;
@@ -530,7 +530,7 @@ aside.tdar-icon:before {
 
 .responsive-large-desktop i.geospatial-bg-large {
 	background: url(/images/r4/resource-types-large.gif) 0px -982px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 230px;
 	height: 230px;
 	display: inline-block;
@@ -538,7 +538,7 @@ aside.tdar-icon:before {
 
 .responsive-large-desktop i.sensory_data-bg-large {
 	background: url(/images/r4/resource-types-large.gif) 0px -1227px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 230px;
 	height: 230px;
 	display: inline-block;
@@ -546,7 +546,7 @@ aside.tdar-icon:before {
 
 .responsive-large-desktop i.image-bg-large {
 	background: url(/images/r4/resource-types-large.gif) 0px -1964px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 230px;
 	height: 230px;
 	display: inline-block;
@@ -554,7 +554,7 @@ aside.tdar-icon:before {
 
 .responsive-large-desktop i.video-bg-large {
 	background: url(/images/r4/resource-types-large.gif) 0px -1473px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 230px;
 	height: 230px;
 	display: inline-block;
@@ -562,7 +562,7 @@ aside.tdar-icon:before {
 
 .responsive-large-desktop i.collection-bg-large {
 	background: url(/images/r4/resource-types-large.gif) 0px -1719px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 230px;
 	height: 230px;
 	display: inline-block;
@@ -570,7 +570,7 @@ aside.tdar-icon:before {
 
 .responsive-large-desktop i.project-bg-large {
 	background: url(/images/r4/resource-types-large.gif) 0px -2200px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 230px;
 	height: 230px;
 	display: inline-block;
@@ -578,7 +578,7 @@ aside.tdar-icon:before {
 
 .responsive-desktop i.document-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px 0px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 180px;
 	height: 180px;
 	display: inline-block;
@@ -586,7 +586,7 @@ aside.tdar-icon:before {
 
 .responsive-desktop i.dataset-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px -245px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 180px;
 	height: 180px;
 	display: inline-block;
@@ -594,7 +594,7 @@ aside.tdar-icon:before {
 
 .responsive-desktop i.coding_sheet-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px -491px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 180px;
 	height: 180px;
 	display: inline-block;
@@ -602,7 +602,7 @@ aside.tdar-icon:before {
 
 .responsive-desktop i.ontology-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px -736px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 180px;
 	height: 180px;
 	display: inline-block;
@@ -610,7 +610,7 @@ aside.tdar-icon:before {
 
 .responsive-desktop i.geospatial-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px -982px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 180px;
 	height: 180px;
 	display: inline-block;
@@ -618,7 +618,7 @@ aside.tdar-icon:before {
 
 .responsive-desktop i.sensory_data-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px -1227px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 180px;
 	height: 180px;
 	display: inline-block;
@@ -626,7 +626,7 @@ aside.tdar-icon:before {
 
 .responsive-desktop i.image-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px -1964px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 180px;
 	height: 180px;
 	display: inline-block;
@@ -634,7 +634,7 @@ aside.tdar-icon:before {
 
 .responsive-desktop i.video-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px -1473px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 180px;
 	height: 180px;
 	display: inline-block;
@@ -642,7 +642,7 @@ aside.tdar-icon:before {
 
 .responsive-desktop i.collection-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px -1719px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 180px;
 	height: 180px;
 	display: inline-block;
@@ -650,7 +650,7 @@ aside.tdar-icon:before {
 
 .responsive-desktop i.project-bg-large {
 	background: url(/images/r4/resource-types-large.gif) -299px -2210px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 180px;
 	height: 180px;
 	display: inline-block;
@@ -658,7 +658,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.document-bg-large,i.document-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px 0px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
@@ -666,7 +666,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.dataset-bg-large,i.dataset-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -245px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
@@ -674,7 +674,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.coding_sheet-bg-large,i.coding_sheet-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -491px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
@@ -682,7 +682,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.ontology-bg-large,i.ontology-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -736px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
@@ -690,7 +690,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.geospatial-bg-large,i.geospatial-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -982px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
@@ -698,7 +698,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.sensory_data-bg-large,i.sensory_data-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -1227px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
@@ -706,7 +706,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.image-bg-large,i.image-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -1964px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
@@ -714,7 +714,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.video-bg-large,i.video-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -1473px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
@@ -722,7 +722,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.audio-bg-large,i.audio-125 {
 /* Temporary placeholder image until we get a better quality one... */
-    background: url(/images/sound-125.gif) no-repeat;
+    background: url(/images/sound-125.gif) ; background-repeat: no-repeat;
     width: 125px;
     height: 125px;
     display: inline-block;
@@ -730,7 +730,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.collection-bg-large,i.collection-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -1719px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
@@ -738,7 +738,7 @@ aside.tdar-icon:before {
 
 .responsive-tablet i.project-bg-large,i.project-125 {
 	background: url(/images/r4/resource-types-large.gif) -548px -2210px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
@@ -746,7 +746,7 @@ aside.tdar-icon:before {
 
 .search-map-icon-red {
 	background: url(/images/r4/resource-types-large.gif) -75px -2531px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -754,7 +754,7 @@ aside.tdar-icon:before {
 
 .search-grid-icon-red {
 	background: url(/images/r4/resource-types-large.gif) -91px -2531px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -762,7 +762,7 @@ aside.tdar-icon:before {
 
 .search-download-icon-red {
 	background: url(/images/r4/resource-types-large.gif) -58px -2531px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -770,7 +770,7 @@ aside.tdar-icon:before {
 
 .search-magnify-icon-red {
 	background: url(/images/r4/resource-types-large.gif) -40px -2531px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -778,7 +778,7 @@ aside.tdar-icon:before {
 
 .search-list-icon-red {
 	background: url(/images/r4/resource-types-large.gif) -124px -2531px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -786,7 +786,7 @@ aside.tdar-icon:before {
 
 .search-list-checkbox-grey {
 	background: url(/images/r4/resource-types-large.gif) -30px -2564px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 13.5px;
 	display: inline-block;
@@ -798,7 +798,7 @@ pull-left search-list-checkedbox-grey {
 
 .search-list-checkedbox-grey {
 	background: url(/images/r4/resource-types-large.gif) -30px -2578px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	margin-bottom: -2px;
 	height: 14px;
@@ -806,7 +806,7 @@ pull-left search-list-checkedbox-grey {
 }
 
 h3.document-mid-red:before {
-	background: url(/images/r4/tdar-sprites.gif) -471px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -471px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -815,7 +815,7 @@ h3.document-mid-red:before {
 }
 
 h3.dataset-mid-red:before {
-	background: url(/images/r4/tdar-sprites.gif) -508px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -508px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -824,7 +824,7 @@ h3.dataset-mid-red:before {
 }
 
 h3.coding_sheet-mid-red:before {
-	background: url(/images/r4/tdar-sprites.gif) -547px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -547px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -833,7 +833,7 @@ h3.coding_sheet-mid-red:before {
 }
 
 h3.ontology-mid-red:before {
-	background: url(/images/r4/tdar-sprites.gif) -585px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -585px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -842,7 +842,7 @@ h3.ontology-mid-red:before {
 }
 
 h3.image-mid-red:before {
-	background: url(/images/r4/tdar-sprites.gif) -703px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -703px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -852,7 +852,7 @@ h3.image-mid-red:before {
 
 h3.audio-mid-red:before {
 	/* Temporary placeholder image until we get a better quality one... */
-	background: url(/images/sound.gif) no-repeat;
+	background: url(/images/sound.gif) ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -861,7 +861,7 @@ h3.audio-mid-red:before {
 }
 
 h3.video-mid-red:before {
-    background: url(/images/r4/tdar-sprites.gif) -745px -487px no-repeat;
+    background: url(/images/r4/tdar-sprites.gif) -745px -487px ; background-repeat: no-repeat;
     display: inline-block;
     width: 34px;
     height: 37px;
@@ -870,7 +870,7 @@ h3.video-mid-red:before {
 }
 
 h3.sensory_data-mid-red:before {
-	background: url(/images/r4/tdar-sprites.gif) -665px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -665px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -879,7 +879,7 @@ h3.sensory_data-mid-red:before {
 }
 
 h3.geospatial-mid-red:before {
-	background: url(/images/r4/tdar-sprites.gif) -623px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -623px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -888,7 +888,7 @@ h3.geospatial-mid-red:before {
 }
 
 h3.project-mid-red:before {
-	background: url(/images/r4/tdar-sprites.gif) -825px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -825px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -897,7 +897,7 @@ h3.project-mid-red:before {
 }
 
 h3.collection-mid-red:before {
-	background: url(/images/r4/tdar-sprites.gif) -781px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -781px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 40px;
 	height: 37px;
@@ -908,7 +908,7 @@ h3.collection-mid-red:before {
 
 
 h3.document-mid-black:before {
-	background: url(/images/r4/tdar-sprites.gif) -39px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -39px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -917,7 +917,7 @@ h3.document-mid-black:before {
 }
 
 h3.dataset-mid-black:before {
-	background: url(/images/r4/tdar-sprites.gif) -76px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -76px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -926,7 +926,7 @@ h3.dataset-mid-black:before {
 }
 
 h3.coding_sheet-mid-black:before {
-	background: url(/images/r4/tdar-sprites.gif) -115px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -115px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -935,7 +935,7 @@ h3.coding_sheet-mid-black:before {
 }
 
 h3.ontology-mid-black:before {
-	background: url(/images/r4/tdar-sprites.gif) -152px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -152px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -944,7 +944,7 @@ h3.ontology-mid-black:before {
 }
 
 h3.image-mid-black:before {
-	background: url(/images/r4/tdar-sprites.gif) -271px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -271px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -953,7 +953,7 @@ h3.image-mid-black:before {
 }
 
 h3.video-mid-black:before {
-	background: url(/images/r4/tdar-sprites.gif) -313px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -313px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -962,7 +962,7 @@ h3.video-mid-black:before {
 }
 
 h3.sensory_data-mid-black:before {
-	background: url(/images/r4/tdar-sprites.gif) -233px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -233px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -971,7 +971,7 @@ h3.sensory_data-mid-black:before {
 }
 
 h3.geospatial-mid-black:before {
-	background: url(/images/r4/tdar-sprites.gif) -191px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -191px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -980,7 +980,7 @@ h3.geospatial-mid-black:before {
 }
 
 h3.project-mid-black:before {
-	background: url(/images/r4/tdar-sprites.gif) -391px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -391px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 34px;
 	height: 37px;
@@ -989,7 +989,7 @@ h3.project-mid-black:before {
 }
 
 h3.collection-mid-black:before {
-	background: url(/images/r4/tdar-sprites.gif) -349px -487px no-repeat;
+	background: url(/images/r4/tdar-sprites.gif) -349px -487px ; background-repeat: no-repeat;
 	display: inline-block;
 	width: 40px;
 	height: 37px;
@@ -1045,7 +1045,7 @@ select.searchType {
 
 .icon-document {
 	background: url(/images/r4/resource-types-large.gif) -296px -2477px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 15px;
 	display: inline-block;
@@ -1053,7 +1053,7 @@ select.searchType {
 
 .icon-dataset {
 	background: url(/images/r4/resource-types-large.gif) -344px -2477px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -1061,7 +1061,7 @@ select.searchType {
 
 .icon-image {
 	background: url(/images/r4/resource-types-large.gif) -326px -2477px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -1069,7 +1069,7 @@ select.searchType {
 
 .icon-codingsheet {
 	background: url(/images/r4/resource-types-large.gif) -361px -2475px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	margin-top: -1px;
 	height: 14px;
@@ -1078,7 +1078,7 @@ select.searchType {
 
 .icon-project {
 	background: url(/images/r4/resource-types-large.gif) -398px -2474px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 16px;
 	margin-top: -1px;
@@ -1087,7 +1087,7 @@ select.searchType {
 
 .icon-collection {
 	background: url(/images/r4/resource-types-large.gif) -447px -2477px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -1108,7 +1108,7 @@ select.searchType {
 
 .icon-geospatial {
 	background: url(/images/r4/resource-types-large.gif) -431px -2477px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -1116,7 +1116,7 @@ select.searchType {
 
 .icon-sensorydata {
 	background: url(/images/r4/resource-types-large.gif) -462px -2473px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	margin-top: -2px;
@@ -1125,7 +1125,7 @@ select.searchType {
 
 .icon-ontology {
 	background: url(/images/r4/resource-types-large.gif) -378px -2477px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -1133,7 +1133,7 @@ select.searchType {
 
 .icon-video {
 	background: url(/images/r4/resource-types-large.gif) -415px -2472px
-		no-repeat;
+		; background-repeat: no-repeat;
 	width: 14px;
 	height: 14px;
 	display: inline-block;
@@ -1375,3 +1375,27 @@ div.tdarresults .row.GRID:first-child div.listItem {
 .ui-menu-item.addnew {
     border-top: solid 2px #ddd;
 }
+
+
+
+/* Base class */
+.error-banner {
+    border: 2px solid #444;
+    padding-top: 1em;
+    color: black;
+}
+.error-codes {
+    position:relative;
+    left: 30px;
+    top: -10px;
+    font-size: 8pt;
+    border-radius: 2px;
+    padding: 1px 3px 1px 3px;
+    border: 1px solid #dcc;
+    color: #555;
+}
+.error-code {
+    font-family: monospace;
+    padding-right: 4px;
+}
+

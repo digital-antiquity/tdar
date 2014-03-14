@@ -91,7 +91,7 @@ public class WebElementSelection implements Iterable<WebElement> {
     /**
      * click on every item in the selection
      */
-    public void click() {
+    public WebElementSelection click() {
         for (WebElement elem : this) {
             try {
                 elem.click();
@@ -102,6 +102,7 @@ public class WebElementSelection implements Iterable<WebElement> {
                 elem.click();
             }
         }
+        return this;
     }
 
     /**
@@ -135,6 +136,7 @@ public class WebElementSelection implements Iterable<WebElement> {
             logger.debug("{} sendKeys: {}", elem, keysToSend);
             elem.sendKeys(keysToSend);
         }
+
     }
 
     /**
@@ -229,8 +231,8 @@ public class WebElementSelection implements Iterable<WebElement> {
      * create a WebElementSelection of the combined results of applying findElements() to each element in the selection
      * 
      * @see WebElement#findElements(By)
-     * @param css
-     *            selector
+     * @param cssSelector
+     *            css selector string
      * @return selection containing combined results of all findElements(By) from each element in the selection.
      */
     public WebElementSelection find(String cssSelector) {
@@ -296,7 +298,7 @@ public class WebElementSelection implements Iterable<WebElement> {
     /**
      * return the element at the specified index
      * 
-     * @param idx
+     * @param i
      *            index of the element to retreive
      * @return element at idx
      */
@@ -381,10 +383,11 @@ public class WebElementSelection implements Iterable<WebElement> {
      * 
      * @param val
      *            the string value apply to the selected elements
+     * @return the selection.
      */
     // TODO: implement convention that makes it easy choose SELECT option by index. for example, if val is "[0]" and tag is SELECT, extract number and
     // translate to Select.selectByIndex();
-    public void val(String val) {
+    public WebElementSelection val(String val) {
         for (WebElement elem : this) {
             String tag = elem.getTagName();
             String type = elem.getAttribute("type");
@@ -439,6 +442,7 @@ public class WebElementSelection implements Iterable<WebElement> {
 
             }
         }
+        return this;
     }
 
     /**

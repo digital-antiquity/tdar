@@ -262,7 +262,11 @@ public abstract class AbstractSeleniumWebITCase {
                 for (String key : environment.keySet()) {
                     fb.setEnvironmentProperty(key, environment.get(key));
                 }
-                driver = new FirefoxDriver(fb, new FirefoxProfile());
+                FirefoxProfile profile = new FirefoxProfile();
+                if (isOSX()) {
+                    profile.setPreference("focusmanager.testmode", true);
+                }
+                driver = new FirefoxDriver(fb, profile);
                 break;
             case CHROME:
                 // http://peter.sh/experiments/chromium-command-line-switches
@@ -309,6 +313,11 @@ public abstract class AbstractSeleniumWebITCase {
         eventFiringWebDriver.register(eventListener);
 
         this.driver = eventFiringWebDriver;
+    }
+    
+    public static boolean isOSX() {
+        String osName = System.getProperty("os.name");
+        return osName.contains("OS X");
     }
 
     private Capabilities configureCapabilities(DesiredCapabilities caps) {
@@ -482,6 +491,7 @@ public abstract class AbstractSeleniumWebITCase {
             gotoPage(getBaseUrl(), path);
         }
     }
+
 
     /**
      * 

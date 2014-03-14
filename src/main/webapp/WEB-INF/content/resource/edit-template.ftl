@@ -102,7 +102,7 @@
 	             cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
 	    </div>
 	    <#if resource.resourceType != 'PROJECT'>
-	    <div data-tiplabel="Year" data-tooltipcontent="Four digit year, e.g. 1966 or 2005.">
+	    <div data-tiplabel="Year" data-tooltipcontent="Four digit year, e.g. 1966 or 2005. The publication year for a document, or the year a photograph was taken. Otherwise, the year the resource was created.">
 	        <#assign dateVal = ""/>
 	        <#if resource.date?? && resource.date != -1>
 	        <#assign dateVal = resource.date?c />

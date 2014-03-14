@@ -177,26 +177,35 @@
     </#if>
     
 
-    <div class="row" >
-    <!-- action errors  fix me only show if visible -->
+    <#if actionErrors?has_content || fieldErrors?has_content>
+            <div class="alert alert-error error-banner">
+                <#if stackTraces?has_content>
+                <div class="error-codes pull-right" >
+                    <strong>Error codes</strong>:
+                    <#list stackTraces as code>
+                    <span class="error-code">${code}</span>
+                    </#list>
+                </div>
+                </#if>
+                <h4>${siteAcronym} <@s.text name="error.action_error_header"/></h4>
+                <@s.actionerror cssClass="action-errors" theme="simple" />
+                <@s.fielderror  cssClass="field-errors"  theme="simple"/>
+                <#if stackTraces?has_content>
+                </#if>
+            </div>
+    </#if>
+
+    <#if actionMessages?has_content || (page.properties["div.messages"])?has_content>
+    <div class="row">
         <div class="span12">
-            <#if  page.properties["div.messages"]?? && page.properties["div.messages"] != "">
-                ${page.properties["div.messages"]}
-            </#if>
-            <@common.actionmessage />
-            <#if ((actionErrors![])?size > 0)>
-            <h3>${siteAcronym} <@s.text name="error.action_error_header"/></h3>
-				<#-- fixme -- @s.actionerrors need to be here, but in some cases, it duplicates errors -->
-	            <#if ((stackTraces![])?size > 0)>
-	            <small class="pull-right">Error Code(s): <#list stackTraces as code><#if (code_index > 0)>, </#if>${code}</#list></small>
-	             </#if>
-            	<@s.actionerror cssClass="action-errors" />
-            </#if>
-            <@s.fielderror />
+        <@s.actionmessage />
+        ${(page.properties["div.messages"])!}
         </div>
     </div>
+    </#if>
 
-    <#assign part="" />
+
+        <#assign part="" />
     <#assign spanSize = 12/>
     <#if  page.properties["div.sidebar-left"]?has_content ||  page.properties["div.sidebar-right"]?has_content >
         <#assign part="cols" />
@@ -305,7 +314,7 @@
 
     <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
 		<script type="text/javascript">
-            TDAR.loadScript('${jiraScriptLink}');
+            TDAR.loadScript('${protocol}//${jiraScriptLink}');
 		</script>
 	</#if>
 

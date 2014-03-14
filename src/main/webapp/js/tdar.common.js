@@ -657,6 +657,7 @@ TDAR.common = function() {
             TDAR.maps.initMapApi();
             TDAR.maps.setupMap(mapdiv, inputContainer);
         }
+
         if($divSearchContext.length === 1) {
             $(".searchbox").focus(function() {
                 $divSearchContext.addClass("active");

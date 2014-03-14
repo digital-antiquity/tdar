@@ -463,7 +463,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.getIncludedStatuses().add(null);
         controller.setSortField(SortOption.RELEVANCE);
         controller.setTerm(null);
-        controller.setProjectId((String) null);
+        controller.setProjectId(null);
         controller.setCollectionId(null);
     }
 

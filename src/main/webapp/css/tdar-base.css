@@ -104,11 +104,11 @@ a.button:hover , .tdar-button:hover {
 }
 
 #home {
-	background: url(/images/r4/bg-home.jpg) center 115px no-repeat;
+	background: url(/images/r4/bg-home.jpg) center 115px ; background-repeat: no-repeat;
 }
 
 #alt,#sub {
-	background: url(/images/r4/bg-sub.jpg) top center no-repeat;
+	background: url(/images/r4/bg-sub.jpg) top center ; background-repeat: no-repeat;
 }
 
 /* header */
@@ -149,7 +149,7 @@ header form input.searchbox {
     font-size: 13px;
     line-height: 13px;
     border: 1px solid #dedede;
-    background: url(/images/r4/bg-search.png) 195px 50% no-repeat;
+    background: url(/images/r4/bg-search.png) 195px 50% ; background-repeat: no-repeat;
     
 }
 
@@ -251,7 +251,7 @@ header .welcome {
 /*
 header .welcome a {
 	 padding-right: 13px;
-	 background: url(/images/r4/bg-welcome.png) right 3px no-repeat;
+	 background: url(/images/r4/bg-welcome.png) right 3px ; background-repeat: no-repeat;
 }
 */
 
@@ -260,14 +260,14 @@ header .welcome-drop {
 	top: 25px;
 	right: -5px;
 	width: 229px;
-	background: url(/images/r4/bg-welcome-drop.png) bottom center no-repeat;
+	background: url(/images/r4/bg-welcome-drop.png) bottom center ; background-repeat: no-repeat;
 	padding-bottom: 12px;
 	display: none;
 	z-index: 200;
 }
 
 header .welcome-drop p {
-	background: url(/images/r4/bg-welcome-top.png) 0 0 no-repeat;
+	background: url(/images/r4/bg-welcome-top.png) 0 0 ; background-repeat: no-repeat;
 	margin: 0;
 	padding: 30px 20px 0 20px; 
 	font-weight: 700;
@@ -283,7 +283,7 @@ header .welcome-drop ul {
 }
 
 #home {
-	background: url(/images/r4/bg-home.jpg) center 115px no-repeat;
+	background: url(/images/r4/bg-home.jpg) center 115px ; background-repeat: no-repeat;
 }
 
 .hero {
@@ -375,7 +375,7 @@ header .welcome-drop ul {
 	display: block;
 	width: 24px;
 	height: 38px;
-	background: url(/images/r4/btns-slider.png) 0 0 no-repeat;
+	background: url(/images/r4/btns-slider.png) 0 0 ; background-repeat: no-repeat;
 	text-indent: -999em;
 	opacity: 0.5;
 	transition: opacity 0.1s ease-out;
@@ -525,7 +525,7 @@ header .welcome-drop ul {
 }
 
 .subnav ul.subnav-lft li.current_page_item {
-	background: url(/images/r4/bg-subnav.png) bottom center no-repeat;
+	background: url(/images/r4/bg-subnav.png) bottom center ; background-repeat: no-repeat;
 }
 
 .subnav ul.subnav-rht {
@@ -882,7 +882,7 @@ h1 span,h4 span {
 }
 
 .why article.find {
-	background: url(/images/r4/bg-find.png) top right no-repeat;
+	background: url(/images/r4/bg-find.png) top right ; background-repeat: no-repeat;
 	padding-bottom: 35px;
 }
 
@@ -892,7 +892,7 @@ h1 span,h4 span {
 
 .why article.preserve {
 	padding: 43px 0 35px 0;
-	background: url(/images/r4/bg-preserve.png) 120px 30px no-repeat;
+	background: url(/images/r4/bg-preserve.png) 120px 30px ; background-repeat: no-repeat;
 	border-top: 1px solid #dadada;
 	border-bottom: 1px solid #dadada;
 }
@@ -904,7 +904,7 @@ h1 span,h4 span {
 
 .why article.extend {
 	padding-top: 40px;
-	background: url(/images/r4/bg-extend.png) 520px 55px no-repeat;
+	background: url(/images/r4/bg-extend.png) 520px 55px ; background-repeat: no-repeat;
 }
 
 .why article.extend h2,.why article.extend p,.why article.extend ul {
