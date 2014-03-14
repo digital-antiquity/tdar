@@ -1,5 +1,7 @@
 package org.tdar.core.dao.resource;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -14,10 +16,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.ResourceProxy;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.dao.Dao.HibernateBase;
@@ -107,5 +113,24 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         Query query = getCurrentSession().getNamedQuery(QUERY_FILE_STATUS);
         query.setParameterList("statuses", Arrays.asList(statuses));
         return query.list();
+    }
+
+    public List<InformationResource> findInformationResourcesWithFileStatus(
+            Person authenticatedUser, List<Status> resourceStatus,
+            List<FileStatus> fileStatus) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_STATUS);
+        query.setParameterList("statuses", Arrays.asList(resourceStatus));
+        query.setParameterList("fileStatuses", Arrays.asList(fileStatus));
+        query.setParameter("submitterId", authenticatedUser.getId());
+        List<InformationResource> list = new ArrayList<>();
+        for (ResourceProxy proxy : (List<ResourceProxy>)query.list()) {
+            try {
+                list.add((InformationResource)proxy.generateResource());
+            } catch (IllegalAccessException | InvocationTargetException
+                    | InstantiationException e) {
+                logger.error("error happened manifesting: {} ", e);
+            }
+        }
+        return list;
     }
 }

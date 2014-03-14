@@ -8,9 +8,12 @@ import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.dao.resource.InformationResourceFileVersionDao;
 import org.tdar.core.service.ServiceInterface;
@@ -83,6 +86,10 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
     @Transactional(readOnly = true)
     public void updateTransientDownloadCount(InformationResourceFile irFile) {
         irFile.setTransientDownloadCount(getDao().getDownloadCount(irFile).longValue());
+    }
+
+    public List<InformationResource> findInformationResourcesWithFileStatus(Person authenticatedUser, List<Status> resourceStatus, List<FileStatus> fileStatus) {
+        return getDao().findInformationResourcesWithFileStatus(authenticatedUser, resourceStatus, fileStatus);
     }
 
 }
