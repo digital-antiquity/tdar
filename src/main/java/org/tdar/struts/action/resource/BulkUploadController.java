@@ -174,6 +174,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
         } catch (Throwable e) {
             addActionErrorWithException(getText("bulkUploadController.problem_template"), e);
+        }
+        if (CollectionUtils.isNotEmpty(getActionErrors())) {
             return VALIDATE_ERROR;
         }
         addActionMessage("");
