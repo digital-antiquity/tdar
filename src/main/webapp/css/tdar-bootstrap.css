@@ -1375,3 +1375,27 @@ div.tdarresults .row.GRID:first-child div.listItem {
 .ui-menu-item.addnew {
     border-top: solid 2px #ddd;
 }
+
+
+
+/* Base class */
+.error-banner {
+    border: 2px solid #444;
+    padding-top: 1em;
+    color: black;
+}
+.error-codes {
+    position:relative;
+    left: 30px;
+    top: -10px;
+    font-size: 8pt;
+    border-radius: 2px;
+    padding: 1px 3px 1px 3px;
+    border: 1px solid #dcc;
+    color: #555;
+}
+.error-code {
+    font-family: monospace;
+    padding-right: 4px;
+}
+

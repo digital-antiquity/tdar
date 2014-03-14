@@ -14,6 +14,7 @@ public class ActionMessageErrorListener implements Serializable, ActionMessageEr
     private List<String> actionErrors = new ArrayList<>();
     private List<String> actionMessages = new ArrayList<>();
     private List<String> stackTraces = new ArrayList<>();
+    private List<String> errorCodes = new ArrayList<>();
     private Resource resource;
 
     @Override
