@@ -179,7 +179,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         image.setDescription("test description");
         image.setProject(Project.NULL);
         image.markUpdated(getBasicUser());
-        BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getBasicUser(), null);
+        BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getBasicUser(), null, null);
         return manifestProxy;
     }
 

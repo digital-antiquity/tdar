@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
@@ -143,7 +144,7 @@ public class BulkUploadService {
      * @param receiver
      * @return
      */
-    public BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource image, Person submitter, Collection<FileProxy> fileProxies) {
+    public BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource image, Person submitter, Collection<FileProxy> fileProxies, Long ticketId) {
         BulkManifestProxy manifestProxy = null;
         File excelManifest = wrapper.getFile();
         if (excelManifest != null && excelManifest.exists()) {
@@ -151,7 +152,7 @@ public class BulkUploadService {
             try {
                 wrapper.setStream(new FileInputStream(excelManifest));
                 Workbook workbook = WorkbookFactory.create(wrapper.getStream());
-                manifestProxy = validateManifestFile(workbook.getSheetAt(0), image, submitter, fileProxies);
+                manifestProxy = validateManifestFile(workbook.getSheetAt(0), image, submitter, fileProxies, ticketId);
             } catch (Exception e) {
                 logger.debug("exception happened when reading excel file", e);
                 manifestProxy = new BulkManifestProxy(null, null, null);
@@ -205,8 +206,8 @@ public class BulkUploadService {
             throw throwable;
         }
         logger.debug("mapping metadata with excelManifest:" + excelManifest);
-        BulkManifestProxy manifestProxy = loadExcelManifest(excelManifest, image, submitter, fileProxies);
-        asyncStatusMap.put(ticketId, manifestProxy.getAsyncUpdateReceiver());
+        BulkManifestProxy manifestProxy = loadExcelManifest(excelManifest, image, submitter, fileProxies, ticketId);
+        
         if (manifestProxy == null) {
             manifestProxy = new BulkManifestProxy(null, null, null);
         }
@@ -361,13 +362,16 @@ public class BulkUploadService {
      * @param fileProxies 
      * @return
      */
-    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource image, Person submitter, Collection<FileProxy> fileProxies) {
+    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource image, Person submitter, Collection<FileProxy> fileProxies,Long ticketId) {
 
         Iterator<Row> rowIterator = sheet.rowIterator();
 
         LinkedHashSet<CellMetadata> allValidFields = getAllValidFieldNames();
         Map<String, CellMetadata> cellLookupMap = getCellLookupMapByName(allValidFields);
         BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap);
+        if (Persistable.Base.isNotNullOrTransient(ticketId)) {
+            asyncStatusMap.put(ticketId, proxy.getAsyncUpdateReceiver());
+        }
         proxy.setSubmitter(submitter);
         FormulaEvaluator evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
         proxy.setColumnNamesRow(sheet.getRow(ExcelService.FIRST_ROW));

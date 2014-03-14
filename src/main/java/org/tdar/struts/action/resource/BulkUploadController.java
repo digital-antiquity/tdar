@@ -155,7 +155,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             image.setDescription("test description");
             image.setProject(Project.NULL);
 
-            BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getAuthenticatedUser(), null);
+            BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getAuthenticatedUser(), null, null);
             
             String htmlAsyncErrors = manifestProxy.getAsyncUpdateReceiver().getHtmlAsyncErrors();
             if (StringUtils.isNotBlank(htmlAsyncErrors)) {
@@ -198,7 +198,10 @@ public class BulkUploadController extends AbstractInformationResourceController<
             }
             return WAIT;
         } else {
-            return ERROR;
+            setAsyncErrors("");
+            phase = "starting up...";
+            percentDone = 0.0f;
+            return WAIT;
         }
     }
 
