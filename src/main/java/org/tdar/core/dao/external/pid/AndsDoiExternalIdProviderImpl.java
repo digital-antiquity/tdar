@@ -30,10 +30,10 @@ import au.csiro.doiclient.business.DoiDTO;
  * FAQ's: http://ands.org.au/cite-data/doi_q_and_a.html
  * Technical documentation: http://ands.org.au/resource/r9-cite-my-data-v1.1-tech-doco.pdf
  * Client source code: http://andspidclient.sourceforge.net/
- * 
+ *
  * ANDS use the same server for test and production. Hence we have had to go to quite a bit of extra work to make sure that the default is, should anything
  * go wrong, "TEST" !!! See: <a href="https://jira.ands.org.au/browse/SD-4420">SD-4420</a>
- * 
+ *
  * @author Martin Paulo
  */
 @Service
@@ -192,7 +192,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     /**
      * Simply throws an exception if the operation did not succeed.
-     * 
+     *
      * @param operation
      *            A string describing the operation attempted.
      * @param response
@@ -218,10 +218,10 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
                 creatorNames.add(copyrightHolder.getName());
             }
         }
-        if (creatorNames.size() <= 0) {
+        doiDTO.setCreators(creatorNames);
+        if (doiDTO.getCreators().isEmpty()) {
             return doiDTO; // no point in going further, this isn't going to be accepted.
         }
-        doiDTO.setCreators(creatorNames);
         // Ands mandate that we must list a publisher and a publication year.
         // so we provide a default (ourselves) and then overwrite with any actually found publisher
         doiDTO.setPublisher(assistant.getStringProperty("default.publisher", "FAIMS"));
