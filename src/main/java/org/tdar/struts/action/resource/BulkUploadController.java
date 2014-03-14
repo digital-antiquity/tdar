@@ -53,6 +53,8 @@ import org.tdar.utils.Pair;
 @Namespace("/batch")
 public class BulkUploadController extends AbstractInformationResourceController<Image> {
 
+    private static final String VALIDATE_ERROR = "validate-error";
+
     private static final long serialVersionUID = -6419692259588266839L;
 
     @Autowired
@@ -137,14 +139,14 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Action(value = "validate-template", results = {
             @Result(name = INPUT, type = "redirect", location = "template-prepare"),
+            @Result(name = VALIDATE_ERROR, type = "redirect", location = "template-prepare"),
             @Result(name = SUCCESS, type = "redirect", location = "add?ticketId=${ticketId}&templateFilename=${templateFilename}&projectId=${projectId}") })
     @SkipValidation
     public String templateValidate() {
-
         getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
         if (CollectionUtils.isEmpty(getUploadedFiles()) || getUploadedFiles().get(0) == null) {
             addActionError(getText("bulkUploadController.upload_template"));
-            return INPUT;
+            return VALIDATE_ERROR;
         }
         try {
             Workbook workbook = WorkbookFactory.create(getUploadedFiles().get(0));
@@ -166,13 +168,13 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 String filename = getUploadedFilesFileName().get(0);
                 setTemplateFilename(filename);
                 personalFilestore.store(ticket, getUploadedFiles().get(0), filename);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 addActionErrorWithException(getText("bulkUploadController.cannot_store_manifest"), e);
             }
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             addActionErrorWithException(getText("bulkUploadController.problem_template"), e);
-            return INPUT;
+            return VALIDATE_ERROR;
         }
         addActionMessage("");
         return SUCCESS;

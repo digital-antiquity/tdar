@@ -389,6 +389,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         for (ResourceCollection collection : incoming_) {
             addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, collection);
+            resource.getResourceCollections().add(collection);
         }
         logger.debug("after save: {} ({})", current, current.size());
 
@@ -409,7 +410,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, Person authenticatedUser, boolean shouldSave, ErrorHandling errorHandling,
             ResourceCollection collection) {
         ResourceCollection collectionToAdd = null;
-        if (collection.isTransient()) {
+        if (collection.isTransient() && collection.isShared()) {
+            logger.debug("collection {} is transient", collection);
             ResourceCollection potential = getDao().findCollectionWithName(authenticatedUser, collection, GeneralPermissions.ADMINISTER_GROUP);
             if (potential != null) {
                 collectionToAdd = potential;
@@ -423,7 +425,17 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 collection.setVisible(true);
                 collectionToAdd = collection;
             }
+        } else if (collection.isInternal() && collection.isTransient()) {
+            collection.setOwner(authenticatedUser);
+            collection.setName("internal resource collection");
+            collection.markUpdated(resource.getSubmitter());
+            if (collection.getSortBy() == null) {
+                collection.setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
+            }
+            collection.setVisible(false);
+            collectionToAdd = collection;
         } else {
+            logger.debug("collection {} is not transient", collection);
             collectionToAdd = find(collection.getId());
         }
 
@@ -432,6 +444,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error", Arrays.asList(collectionToAdd.getTitle()));
             }
+            logger.debug("collection: {}", collectionToAdd);
             collectionToAdd.markUpdated(authenticatedUser);
             if (collectionToAdd.isTransient()) { // && shouldSave abrin commented out for logging (3/6/2014)
                 save(collectionToAdd);
@@ -440,10 +453,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
             // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
             collectionToAdd.getResources().add(resource);
-            resource.getResourceCollections().add(collectionToAdd);
+//            resource.getResourceCollections().add(collectionToAdd);
         } else {
             if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
                 String collectionName = collectionToAdd != null ? collectionToAdd.getName(): "null collection";
+                logger.debug("error with collection: {}", collectionToAdd);
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.invalid",Arrays.asList(collectionName));
             }
         }

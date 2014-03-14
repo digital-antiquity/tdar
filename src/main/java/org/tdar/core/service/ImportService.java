@@ -207,7 +207,7 @@ public class ImportService {
      * @param incomingResource
      * @throws APIException
      */
-    private <R extends Resource> void reconcilePersistableChildBeans(Person authorizedUser, R incomingResource) throws APIException {
+    public <R extends Resource> void reconcilePersistableChildBeans(Person authorizedUser, R incomingResource) throws APIException {
         // for every field that has a "persistable" or a collection of them...
         List<Pair<Field, Class<? extends Persistable>>> testReflection = reflectionService.findAllPersistableFields(incomingResource.getClass());
         for (Pair<Field, Class<? extends Persistable>> pair : testReflection) {
@@ -304,7 +304,7 @@ public class ImportService {
      * @throws APIException
      */
     @SuppressWarnings("unchecked")
-    private <P extends Persistable, R extends Resource> P processIncoming(P property, R resource, Person authenticatedUser) throws APIException {
+    public <P extends Persistable, R extends Resource> P processIncoming(P property, R resource, Person authenticatedUser) throws APIException {
         P toReturn = property;
 
         // if we're not transient, find by id...

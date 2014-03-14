@@ -576,7 +576,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             Set<ResourceCollection> resourceCollections = resource.getResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
             for (ResourceCollection rc : resourceCollections) {
-                logger.debug("\t\t ");
+                logger.debug("\t\t {}",rc);
             }
 
             collections.addAll(resourceCollections);

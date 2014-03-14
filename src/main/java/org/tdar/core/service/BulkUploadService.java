@@ -82,6 +82,9 @@ public class BulkUploadService {
     private EntityService entityService;
 
     @Autowired
+    private ImportService importService;
+
+    @Autowired
     private PersonalFilestoreService filestoreService;
 
     @Autowired
@@ -244,6 +247,7 @@ public class BulkUploadService {
                 }
                 ActionMessageErrorListener listener = new ActionMessageErrorListener();
                 InformationResource informationResource = (InformationResource)manifestProxy.getResourcesCreated().get(fileName);
+                importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
                 genericDao.saveOrUpdate(informationResource);
                 informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
                         Arrays.asList(fileProxy));
@@ -552,7 +556,7 @@ public class BulkUploadService {
                 ActionMessageErrorListener listener = new ActionMessageErrorListener();
                 if (InformationResource.class.isAssignableFrom(resourceClass)) {
                     logger.info("saving " + fileName + "..." + suggestTypeForFile);
-                    InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass);
+                    InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass, false);
                     informationResource.setReadyToIndex(false);
                     informationResource.setTitle(fileName);
                     informationResource.markUpdated(proxy.getSubmitter());
@@ -796,8 +800,11 @@ public class BulkUploadService {
                     }
                     requiredFields.remove(cellMetadata);
                     if (resourceAssignableFrom) {
+                        try {
                         reflectionService.validateAndSetProperty(resourceToProcess, cellMetadata.getPropertyName(), value);
-
+                        } catch (RuntimeException re) {
+                            asyncUpdateReceiver.addError(re);
+                        }
                     } else {
                         if ((resourceCreatorAssignableFrom || creatorAssignableFrom)) {
 
@@ -807,7 +814,7 @@ public class BulkUploadService {
                                 reflectionService.validateAndSetProperty(creatorProxy, cellMetadata.getPropertyName(), value);
 
                                 // FIXME: This is a big assumption that role is the last field and then we repeat
-                                reconcileResourceCreator(resourceToProcess, creatorProxy);
+                                reconcileResourceCreator(manifestProxy, resourceToProcess, creatorProxy);
                                 creatorProxy = new ResourceCreatorProxy();
                                 seenCreatorFields = false;
                             }
@@ -829,7 +836,7 @@ public class BulkUploadService {
                     }
                 }
                 if (seenCreatorFields) {
-                    reconcileResourceCreator(resourceToProcess, creatorProxy);
+                    reconcileResourceCreator(manifestProxy, resourceToProcess, creatorProxy);
                 }
                 logger.debug("resourceCreators:{}", resourceToProcess.getResourceCreators());
                 if (requiredFields.size() > 0) {
@@ -842,7 +849,7 @@ public class BulkUploadService {
                     throw new TdarRecoverableRuntimeException(msg);
                 }
             } catch (Throwable t) {
-                logger.debug("excel mapping error: {}", t);
+                logger.debug("excel mapping error: {}", t.getMessage(), t);
                 resourceToProcess.setStatus(Status.DELETED);
                 asyncUpdateReceiver.addError(t);
             }
@@ -861,11 +868,11 @@ public class BulkUploadService {
      * @param resource
      * @param proxy
      */
-    private void reconcileResourceCreator(Resource resource, ResourceCreatorProxy proxy) {
+    private void reconcileResourceCreator(BulkManifestProxy manifestProxy, Resource resource, ResourceCreatorProxy proxy) {
         ResourceCreator creator = proxy.getResourceCreator();
         logger.info("reconciling creator... {}", creator);
         if (creator.isValidForResource(resource)) {
-            entityService.findOrSaveResourceCreator(creator);
+            entityService.findResourceCreator(creator);
             creator.setSequenceNumber(resource.getResourceCreators().size());
             logger.debug(creator + " (" + creator.getSequenceNumber() + ")");
 
