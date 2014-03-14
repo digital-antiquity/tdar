@@ -18,7 +18,8 @@ vim:sts=2:sw=2:filetype=jsp
 <div class="well">
     <script type="text/javascript">
         $(document).ready(function() {
-        $("#loginUsername").focus();
+        //hack for autofill
+        $("#loginUsername").focus().delay(20).focus();
             $('#loginForm').validate({
                 messages: {
                     loginUsername: {

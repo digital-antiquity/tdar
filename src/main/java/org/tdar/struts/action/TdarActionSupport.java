@@ -349,6 +349,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getSiteAcronym();
     }
 
+    public String getServiceProvider() {
+        return getTdarConfiguration().getServiceProvider();
+    }
+
     public String getSiteName() {
         return getTdarConfiguration().getSiteName();
     }

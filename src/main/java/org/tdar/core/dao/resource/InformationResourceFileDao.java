@@ -119,8 +119,9 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
             Person authenticatedUser, List<Status> resourceStatus,
             List<FileStatus> fileStatus) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_STATUS);
-        query.setParameterList("statuses", Arrays.asList(resourceStatus));
-        query.setParameterList("fileStatuses", Arrays.asList(fileStatus));
+        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        query.setParameterList("statuses", resourceStatus);
+        query.setParameterList("fileStatuses", fileStatus);
         query.setParameter("submitterId", authenticatedUser.getId());
         List<InformationResource> list = new ArrayList<>();
         for (ResourceProxy proxy : (List<ResourceProxy>)query.list()) {

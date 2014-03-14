@@ -30,12 +30,29 @@
     </#if>
 
     <div class="news alert" id="alert-jar">
-		<button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-jar">&times;</button>
+		<button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-knap">&times;</button>
         <B>${siteAcronym} Update:</B>
-        Welcome to Jar! Learn all about what's new (GIS), and what's changed (User Profile Pages &amp; file replacement) <a href="http://www.tdar.org/news/2013/08/tdar-software-update-jar/">here</a>.
+        Welcome to Knap! Learn all about what has changed <a href="http://www.tdar.org/news/2014/04/tdar-software-update-knap/">here</a>.
         <br/>
     </div>
 </div>
+
+
+<#if resourcesWithErrors?has_content>
+<div class="alert-error alert">
+<h3>The following Resources have files with Errors</h3>
+<p>${serviceProvider} cannot guarantee the proper archiving of files that have errors.  Please review and correct the errors or contact ${serviceProvider} for more information</p>
+<ul> 
+<#list resourcesWithErrors as resource>
+   <li>
+        <a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}" />">${resource.title}:
+        <#list resource.filesWithProcessingErrors as file><#if file_index !=0>,</#if>${file.fileName!"unknown"}</#list>
+        </a>
+    </li>
+</#list>
+</ul>
+</div>
+</#if>
 
 
 <#if overdrawnAccounts?has_content>
