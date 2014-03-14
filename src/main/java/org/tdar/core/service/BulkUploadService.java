@@ -157,6 +157,9 @@ public class BulkUploadService {
                 logger.debug("exception happened when reading excel file", e);
                 manifestProxy = new BulkManifestProxy(null, null, null);
                 manifestProxy.getAsyncUpdateReceiver().addError(e);
+                if (Persistable.Base.isNotNullOrTransient(ticketId)) {
+                    asyncStatusMap.put(ticketId, manifestProxy.getAsyncUpdateReceiver());
+                }
             } finally {
                 IOUtils.closeQuietly(wrapper.getStream());
             }
