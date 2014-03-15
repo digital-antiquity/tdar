@@ -244,8 +244,12 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
         // didn't find by email? cast the net a little wider...
         if (blessedPerson == null) {
-            if (transientPerson.getInstitution() != null) {
-                transientPerson.setInstitution(findInstitution(transientPerson.getInstitution()));
+            Institution transientInstitution = transientPerson.getInstitution();
+            if (transientInstitution != null) {
+                Institution foundInstitution = findInstitution(transientInstitution);
+                if (foundInstitution != null) {
+                    transientPerson.setInstitution(foundInstitution);
+                }
             }
             Set<Person> people = getDao().findByPerson(transientPerson);
             /*
@@ -292,8 +296,10 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @Transactional(readOnly = false)
     private Institution findOrSaveInstitution(Institution transientInstitution) {
         Institution blessedInstitution = findInstitution(transientInstitution);
-        
         if (blessedInstitution == null) {
+            if (transientInstitution == null || transientInstitution.hasNoPersistableValues()) {
+                return null;
+            }
             institutionDao.save(transientInstitution);
             blessedInstitution = transientInstitution;
             xmlService.logRecordXmlToFilestore(transientInstitution);
