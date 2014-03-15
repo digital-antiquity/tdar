@@ -98,7 +98,7 @@
     </tr>
 <#list resource.informationResourceFiles as file>
     <tr>
-        <td colspan="2">${file.fileName!"unnamed file"}
+        <td colspan="2">${file.filename!"unnamed file"}
         <#if file.latestThumbnail?has_content>
  	       <br><img src="<@s.url value="/filestore/${file.latestThumbnail.id?c}/thumbnail"/>"/>
         </#if>

@@ -862,7 +862,7 @@ public abstract class InformationResource extends Resource {
         
         if (CollectionUtils.isNotEmpty(getActiveInformationResourceFiles())) {
             for (InformationResourceFile file :getActiveInformationResourceFiles()) {
-                sb.append(file.getFileName());
+                sb.append(file.getFilename());
                 sb.append(" ");
                 sb.append(file.getDescription());
                 sb.append(" ");

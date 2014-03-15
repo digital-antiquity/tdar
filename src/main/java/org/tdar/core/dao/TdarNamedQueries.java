@@ -30,6 +30,7 @@ public interface TdarNamedQueries {
     String QUERY_PROJECT_EDITABLE = "project.editable";
     String QUERY_PROJECT_VIEWABLE = "project.viewable";
     String QUERY_FILE_STATUS = "file.with.statuses";
+    String QUERY_RESOURCE_FILE_STATUS = "resources.with.file.status";
     String QUERY_LOGIN_STATS = "admin.userLogin";
     String QUERY_PROJECT_ALL_OTHER = "project.all.other";
     String QUERY_RESOURCE_RESOURCETYPE = "resource.resourceType";

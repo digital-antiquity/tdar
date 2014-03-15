@@ -26,6 +26,11 @@ https.port
 # default: tDAR
 site.acronym=tDAR
 
+# The name of the organization running the site (may be the same as the acronym)
+# default: Digital Antiquity
+service.provider=Digital Antiquity
+
+
 # The full name of the site
 # default: the Digital Archaeological Record
 site.name=the Digital Archaeological Record

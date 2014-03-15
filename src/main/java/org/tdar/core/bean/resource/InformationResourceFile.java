@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.annotations.Type;
@@ -181,6 +182,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Column(name = "number_of_parts")
     private Integer numberOfParts = 0;
 
+    @Column(name = "filename", length=FieldLength.FIELD_LENGTH_255)
+    private String filename;
+
     // FIXME: cascade "delete" ?
     @OneToMany(mappedBy = "informationResourceFile", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
     @SortNatural
@@ -285,14 +289,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
             latestVersion = 0;
         }
         latestVersion++;
-    }
-
-    @Field(name = QueryFieldNames.FILENAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
-    public String getFileName() {
-        if (getLatestUploadedVersion() == null) {
-            return null;
-        }
-        return getLatestUploadedVersion().getFilename();
     }
 
     @Transient
@@ -610,5 +606,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
             logger.error("cannot tell if file has translated version {}", e);
         }
         return false;
+    }
+
+    @Field(name = QueryFieldNames.FILENAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }

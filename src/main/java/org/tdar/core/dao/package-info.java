@@ -382,6 +382,10 @@
             name=TdarNamedQueries.QUERY_FILE_STATUS,
             query= "from InformationResourceFile file where status in (:statuses)"),
     @org.hibernate.annotations.NamedQuery(
+            name=TdarNamedQueries.QUERY_RESOURCE_FILE_STATUS,
+            query="from ResourceProxy res fetch all properties left join fetch res.informationResourceFileProxies file  where res.status in (:statuses) and res.submitter.id=:submitterId and file.status in (:fileStatuses)"
+            ),
+    @org.hibernate.annotations.NamedQuery(
             name=TdarNamedQueries.QUERY_FILE_SIZE_TOTAL,
             query= "select vers.extension, sum(vers.fileLength) from InformationResourceFileVersion vers where fileVersionType in (:types) group by extension"),
     @org.hibernate.annotations.NamedQuery(

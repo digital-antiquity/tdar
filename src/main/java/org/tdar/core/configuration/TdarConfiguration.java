@@ -549,6 +549,10 @@ public class TdarConfiguration {
         return assistant.getStringProperty("site.acronym", "tDAR");
     }
 
+    public String getServiceProvider() {
+        return assistant.getStringProperty("service.provider", "Digital Antiquity");
+    }
+
     public String getSiteName() {
         return assistant.getStringProperty("site.name", "the Digital Archaeological Record");
     }

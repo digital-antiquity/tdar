@@ -75,6 +75,9 @@ public class InformationResourceFileProxy implements Serializable {
     @Column(name = "latest_version")
     private Integer latestVersion = 0;
 
+    @Column(name = "filename", length=FieldLength.FIELD_LENGTH_255)
+    private String filename;
+    
     @OneToMany()
     @SortNatural
     @JoinColumn(name="information_resource_file_id")
@@ -169,6 +172,7 @@ public class InformationResourceFileProxy implements Serializable {
         file.setInformationResourceFileType(getInformationResourceFileType());
         file.setLatestVersion(getLatestVersion());
         file.setRestriction(getRestriction());
+        file.setFilename(getFilename());
         file.setStatus(getStatus());
         file.setDateMadePublic(getDateMadePublic());
         
@@ -184,5 +188,13 @@ public class InformationResourceFileProxy implements Serializable {
 
     public void setInformationResourceFileVersionProxies(List<InformationResourceFileVersionProxy> informationResourceFileVersionProxies) {
         this.informationResourceFileVersionProxies = informationResourceFileVersionProxies;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }

@@ -131,3 +131,11 @@ alter table creator alter column date_created type timestamp;
 
 -- abrin 3/6/2014
 alter table person add column affilliation varchar(255);
+
+-- abrin 3/14/2014
+alter table information_resource_file add column filename varchar(255);
+
+update information_resource_file set filename=
+	(select filename from information_resource_file_version as irfv where 
+		irfv.information_resource_file_id=irf.id and internal_type like '%UPLOADED%' order by file_version desc limit 1)
+	from information_resource_file as irf where information_resource_file.id=irf.id;

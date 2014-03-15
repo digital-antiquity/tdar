@@ -698,4 +698,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return analyzer;
     }
 
+    public boolean isResourceEditPage() {
+        return true;
+    }
 }

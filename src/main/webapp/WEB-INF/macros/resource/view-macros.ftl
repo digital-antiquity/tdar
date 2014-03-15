@@ -576,7 +576,7 @@ $(document).ready(function() {
 </script>
 </#macro>
 <#macro _altText irfile>
-${irfile.fileName} <#if ( irfile.description?has_content && (irfile.fileName)?has_content ) >- ${irfile.description}</#if>
+${irfile.filename} <#if ( irfile.description?has_content && (irfile.filemame)?has_content ) >- ${irfile.description}</#if>
     <#if irfile.fileCreatedDate??>(<@_printCreatedDate irfile/>)</#if>
 </#macro>
 

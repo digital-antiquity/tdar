@@ -212,7 +212,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      */
     @Transactional(readOnly = true)
     private void unmapDataTablesForFile(Dataset dataset, InformationResourceFile irFile) {
-        String fileName = irFile.getFileName();
+        String fileName = irFile.getFilename();
         switch (FilenameUtils.getExtension(fileName).toLowerCase()) {
             case "tab":
             case "csv":
@@ -239,6 +239,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             logger.debug("applying {} to {}", proxy, informationResource);
             // will be reassigned in a REPLACE or ADD_DERIVATIVE
             InformationResourceFile irFile = new InformationResourceFile();
+            irFile.setFilename(proxy.getFilename());
             if (proxy.getAction().requiresExistingIrFile()) {
                 irFile = findInformationResourceFile(proxy);
                 if (irFile == null) {
