@@ -542,6 +542,9 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setUploadedFilesFileName(Arrays.asList("image_manifest.xlsx"));
         bulkUploadController.setFileProxies(proxyPair.getSecond());
         bulkUploadController.setAsync(false);
+        bulkUploadController.getResource().setTitle("test");
+        bulkUploadController.getResource().setDescription("test");
+        bulkUploadController.getResource().setDate(1234);
 
         // specify an adhoc collection
         ResourceCollection adHocCollection = new ResourceCollection();

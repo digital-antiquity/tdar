@@ -186,39 +186,26 @@ public class BulkUploadService {
     public void save(final InformationResource image_, final Long submitterId, final Long ticketId, final File excelManifest_,
             final Collection<FileProxy> fileProxies, Long accountId) {
         Person submitter = genericDao.find(Person.class, submitterId);
-        if (image_.getDate() == null) {
-            image_.setDate(0);
-        }
-        if (image_.getDescription() == null) {
-            image_.setDescription("template");
-        }
-        if (image_.getTitle() == null) {
-            image_.setTitle("template");
-        }
-        if (image_.getProject() == null) {
-            image_.setProject(Project.NULL);
-        }
+        //enforce that we're entirely on the session
         final InformationResource image = genericDao.merge(image_);
         logger.debug("BEGIN ASYNC: " + image + fileProxies);
         
         // in an async method the image's persistent associations will have become detached from the hibernate session that loaded them, and their lazy-init
         // fields will be unavailable. So we reload them to make them part of the current session and regain access to any lazy-init associations.
          
-         if (image.getProject() != null) {
+         if (image.getProject() != null && !image.getProject().equals(Project.NULL)) {
             Project p = genericDao.find(Project.class, image.getProject().getId());
             image.setProject(p);
         }
 
         logger.debug("ticketID:" + ticketId);
         Activity activity = registerActivity(fileProxies, submitter);
-//        AsyncUpdateReceiver receiver = new DefaultReceiver();
         BulkFileProxy excelManifest = new BulkFileProxy(excelManifest_, activity);
         float count = 0f;
         image.setDescription("");
         image.setDate(-1);
         if (CollectionUtils.isEmpty(fileProxies)) {
             TdarRecoverableRuntimeException throwable = new TdarRecoverableRuntimeException("bulkUploadService.the_system_has_not_received_any_files");
-//            receiver.addError(throwable);
             throw throwable;
         }
         logger.debug("mapping metadata with excelManifest:" + excelManifest);
