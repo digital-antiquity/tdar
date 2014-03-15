@@ -830,7 +830,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * Checks whether based on an incoming and an existing @link CodingSheet, whether retranslation is necessary
      */
     private boolean isRetranslationNeeded(CodingSheet incomingCodingSheet, CodingSheet existingCodingSheet) {
-        logger.info("{} {} {}", incomingCodingSheet, existingCodingSheet, ObjectUtils.equals(incomingCodingSheet, existingCodingSheet));
+        logger.info("coding(incoming):{} coding(existing):{} equals?:{}", incomingCodingSheet, existingCodingSheet, ObjectUtils.equals(incomingCodingSheet, existingCodingSheet));
         if (ObjectUtils.equals(incomingCodingSheet, existingCodingSheet)) {
             return false;
         }
