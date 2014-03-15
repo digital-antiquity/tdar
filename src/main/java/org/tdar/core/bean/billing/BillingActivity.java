@@ -1,5 +1,6 @@
 package org.tdar.core.bean.billing;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -53,7 +54,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     @Column(name = "sort_order")
     private Integer order;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false,cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @NotNull
     private BillingActivityModel model;
 

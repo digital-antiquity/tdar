@@ -43,11 +43,11 @@ import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Project;
@@ -183,11 +183,23 @@ public class BulkUploadService {
      * @param accountId
      */
     @Transactional
-    public void save(final InformationResource image, final Long submitterId, final Long ticketId, final File excelManifest_,
+    public void save(final InformationResource image_, final Long submitterId, final Long ticketId, final File excelManifest_,
             final Collection<FileProxy> fileProxies, Long accountId) {
         Person submitter = genericDao.find(Person.class, submitterId);
+        if (image_.getDate() == null) {
+            image_.setDate(0);
+        }
+        if (image_.getDescription() == null) {
+            image_.setDescription("template");
+        }
+        if (image_.getTitle() == null) {
+            image_.setTitle("template");
+        }
+        if (image_.getProject() == null) {
+            image_.setProject(Project.NULL);
+        }
+        final InformationResource image = genericDao.merge(image_);
         logger.debug("BEGIN ASYNC: " + image + fileProxies);
-
         
         // in an async method the image's persistent associations will have become detached from the hibernate session that loaded them, and their lazy-init
         // fields will be unavailable. So we reload them to make them part of the current session and regain access to any lazy-init associations.
@@ -258,8 +270,10 @@ public class BulkUploadService {
                 ActionMessageErrorListener listener = new ActionMessageErrorListener();
                 InformationResource informationResource = (InformationResource)manifestProxy.getResourcesCreated().get(fileName);
                 //createInternalResourceCollectionWithResource
+                informationResource = genericDao.merge(informationResource);
                 importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
-                genericDao.saveOrUpdate(informationResource);
+                genericDao.saveOrUpdate(genericDao.merge(informationResource));
+                manifestProxy.getResourcesCreated().put(fileName,informationResource);
                 informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
                         Arrays.asList(fileProxy));
                 manifestProxy.getAsyncUpdateReceiver().getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
@@ -283,7 +297,11 @@ public class BulkUploadService {
     private void updateAccountQuotas(Long accountId, Map<String, Resource> resourcesCreated) {
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             final Account account = genericDao.find(Account.class, accountId);
-                accountService.updateQuota(account, resourcesCreated.values().toArray(new Resource[0]));
+            Resource[] array = resourcesCreated.values().toArray(new Resource[0]);
+            for (int i=0; i < array.length; i++) {
+                array[i] = genericDao.merge(array[i]);
+            }
+            accountService.updateQuota(account, array);
         }
     }
 
@@ -372,6 +390,7 @@ public class BulkUploadService {
      * @param fileProxies 
      * @return
      */
+    @Transactional(readOnly=true)
     public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource image, Person submitter, Collection<FileProxy> fileProxies,Long ticketId) {
 
         Iterator<Row> rowIterator = sheet.rowIterator();
@@ -733,7 +752,7 @@ public class BulkUploadService {
      * @throws InvalidFormatException
      * @throws IOException
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public <R extends Resource> void readExcelFile(BulkManifestProxy manifestProxy) throws InvalidFormatException, IOException {
 
         if (manifestProxy == null) {

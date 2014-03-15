@@ -278,7 +278,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @param resourcesToEvaluate
      * @return
      */
-    @Transactional
+    @Transactional(readOnly=false)
     public AccountAdditionStatus updateQuota(Account account, Collection<Resource> resourcesToEvaluate) {
         logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
         logger.trace("model {}", getLatestActivityModel());
