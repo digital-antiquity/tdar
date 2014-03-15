@@ -1388,7 +1388,7 @@ $(function() {
                 autocompleteParentElement="#${rowIdElement}" 
                  title="${nameTitle}"
                 dynamicAttributes={"data-msg-notValidIfIdEmpty":"Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."}
-                value="${_val}"
+
                 />
 
             <#if includeRights>
