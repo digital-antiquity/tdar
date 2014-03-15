@@ -223,17 +223,19 @@ public class ImportService {
             if (Collection.class.isAssignableFrom(content.getClass())) {
                 List<Persistable> toAdd = new ArrayList<Persistable>();
                 @SuppressWarnings("unchecked")
-                Collection<Persistable> contents = (Collection<Persistable>) content;
+                Collection<Persistable> originalList = (Collection<Persistable>)content;
+                Collection<Persistable> contents = new ArrayList<Persistable>(originalList);
+                //using a separate collection to avoid concurrent modification of bi-directional double-lists 
                 Iterator<Persistable> iterator = contents.iterator();
+                originalList.clear();
                 while (iterator.hasNext()) {
                     Persistable p = iterator.next();
                     toAdd.add(processIncoming(p, incomingResource, authorizedUser));
                 }
-                contents.clear();
                 if (toAdd.size() > 0) {
                     logger.info("{} adding ({})", contents, toAdd);
                 }
-                contents.addAll(toAdd);
+                originalList.addAll(toAdd);
             } else if (Persistable.class.isAssignableFrom(content.getClass())) {
                 reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource, authorizedUser));
             }
@@ -321,6 +323,11 @@ public class ImportService {
             // return toReturn;
             // } else {
             toReturn = (P) findById(property.getClass(), property.getId());
+            if (toReturn instanceof ResourceCollection) {
+                ResourceCollection collection = (ResourceCollection) toReturn;
+                collection.getResources().add(resource);
+                resource.getResourceCollections().add(collection);
+            }
             // }
         }
         else // otherwise, reconcile appropriately
@@ -360,6 +367,8 @@ public class ImportService {
                         toReturn = (P) Project.NULL;
                     } else if (property instanceof Creator && ((Creator) property).hasNoPersistableValues()) {
                         toReturn = null;
+                    } else if (property instanceof ResourceCollection && ((ResourceCollection)property).isInternal()) {
+                        toReturn = property;
                     } else {
                         throw new APIException("importService.object_invalid", Arrays.asList(property.getClass(), property), StatusCode.FORBIDDEN);
                     }

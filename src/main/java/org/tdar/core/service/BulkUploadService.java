@@ -43,6 +43,7 @@ import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -228,11 +229,16 @@ public class BulkUploadService {
         
         
         logger.info("bulk: applying manifest file data to resources");
-
-        updateAccountQuotas(accountId, manifestProxy.getResourcesCreated());
+        try {
+            updateAccountQuotas(accountId, manifestProxy.getResourcesCreated());
+        } catch (Throwable t) {
+            logger.error("{}", t);
+        }
+        logger.info("bulk: log and persist");
         logAndPersist(manifestProxy);
+        logger.info("bulk: completing");
         completeBulkUpload(image, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
-
+        logger.info("bulk: done");
     }
 
     private float processFileProxies(BulkManifestProxy manifestProxy, float count) {
@@ -251,6 +257,7 @@ public class BulkUploadService {
                 }
                 ActionMessageErrorListener listener = new ActionMessageErrorListener();
                 InformationResource informationResource = (InformationResource)manifestProxy.getResourcesCreated().get(fileName);
+                //createInternalResourceCollectionWithResource
                 importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
                 genericDao.saveOrUpdate(informationResource);
                 informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,

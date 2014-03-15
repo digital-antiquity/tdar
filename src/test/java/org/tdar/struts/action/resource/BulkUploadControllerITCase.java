@@ -50,7 +50,6 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -569,10 +568,11 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         List<Pair<Long, String>> details = bulkUploadController.getDetails();
         logger.info("{}", details);
         Set<ResourceCollection> collections = new HashSet<ResourceCollection>();
-
+        genericService.synchronize();
         logger.debug("inspecting collections created:");
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
+            genericService.refresh(resource);
             Set<ResourceCollection> resourceCollections = resource.getResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
             for (ResourceCollection rc : resourceCollections) {

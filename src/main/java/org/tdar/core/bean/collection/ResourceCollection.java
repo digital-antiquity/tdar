@@ -41,7 +41,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
@@ -57,6 +56,8 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
@@ -115,6 +116,9 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @XmlRootElement(name="ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable {
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private transient boolean viewable;
 
@@ -562,7 +566,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Override
     public boolean isValid() {
-        if (isValidForController() || getType() == CollectionType.INTERNAL) {
+        logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner(), getName(), getSortBy()); 
+        if (getType() == CollectionType.INTERNAL || isValidForController()) {
             if (getType() == CollectionType.SHARED && sortBy == null) {
                 return false;
             }
@@ -658,7 +663,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     public static final void normalizeAuthorizedUsers(Collection<AuthorizedUser> authorizedUsers) {
-        Logger staticLogger = Logger.getLogger(ResourceCollection.class);
+        Logger staticLogger = LoggerFactory.getLogger(ResourceCollection.class);
         staticLogger.trace("incoming " + authorizedUsers);
         Map<Long, AuthorizedUser> bestMap = new HashMap<Long, AuthorizedUser>();
         Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();

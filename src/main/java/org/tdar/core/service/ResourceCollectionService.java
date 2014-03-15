@@ -142,16 +142,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         // if none, create one
         if (internalCollection == null) {
-            internalCollection = new ResourceCollection();
-            internalCollection.setType(CollectionType.INTERNAL);
-            internalCollection.setOwner(resource.getSubmitter());
-            internalCollection.markUpdated(resource.getSubmitter());
-            resource.getResourceCollections().add(internalCollection);
-            // internalCollection.getResources().add(resource); // WATCH -- may cause failure, if so, remove
-            if (shouldSave) {
-                getDao().saveOrUpdate(internalCollection);
-                getDao().refresh(internalCollection);
-            }
+            internalCollection = createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, shouldSave);
         }
         // note: we assume here that the authorizedUser validation will happen in saveAuthorizedUsersForResourceCollection
         saveAuthorizedUsersForResourceCollection(internalCollection, authorizedUsers, shouldSave);
@@ -159,6 +150,23 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // resource.getResourceCollections().remove(internalCollection);
         // getDao().delete(internalCollection);
         // }
+    }
+
+    private ResourceCollection createInternalResourceCollectionWithResource(Person owner, Resource resource, boolean shouldSave) {
+        ResourceCollection internalCollection;
+        internalCollection = new ResourceCollection();
+        internalCollection.setType(CollectionType.INTERNAL);
+        internalCollection.setOwner(owner);
+        internalCollection.markUpdated(owner);
+        if (resource != null) {
+            resource.getResourceCollections().add(internalCollection);
+        }
+        // internalCollection.getResources().add(resource); // WATCH -- may cause failure, if so, remove
+        if (shouldSave) {
+            getDao().saveOrUpdate(internalCollection);
+            getDao().refresh(internalCollection);
+        }
+        return internalCollection;
     }
 
     /**
@@ -409,7 +417,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, Person authenticatedUser, boolean shouldSave, ErrorHandling errorHandling,
             ResourceCollection collection) {
         ResourceCollection collectionToAdd = null;
-        if (collection.isTransient()) {
+        logger.trace("{}", collection);
+        if (collection.isTransient() && !collection.isInternal()) {
             ResourceCollection potential = getDao().findCollectionWithName(authenticatedUser, collection, GeneralPermissions.ADMINISTER_GROUP);
             if (potential != null) {
                 collectionToAdd = potential;
@@ -423,9 +432,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 collection.setVisible(true);
                 collectionToAdd = collection;
             }
+        } else if (collection.isInternal()) {
+            collectionToAdd = collection;
         } else {
             collectionToAdd = find(collection.getId());
         }
+        logger.trace("{}", collectionToAdd);
 
         if (collectionToAdd != null && collectionToAdd.isValid()) {
             if (Persistable.Base.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
