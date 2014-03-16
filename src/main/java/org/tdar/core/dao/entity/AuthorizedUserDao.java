@@ -113,6 +113,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
                 updateUserPermissionsCache(person, permission, collectionIds, getCurrentSession(), CacheResult.TRUE );
                 return true;
         }
+        getLogger().debug("bypassing database lookup for {}=={}", person, cacheResult);
         return cacheResult.getBooleanEquivalent();
     }
     
@@ -133,12 +134,16 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
     private void updateUserPermissionsCache(Person person, GeneralPermissions permission, Collection<Long> collectionIds, Session currentSession,
             CacheResult result) {
-        // could be enhanced to check each ID
         Map<UserPermissionCacheKey, Boolean> sessionMap = userPermissionsCache.get(currentSession);
         if (sessionMap == null) {
             sessionMap = new HashMap<>();
             userPermissionsCache.put(currentSession, sessionMap);
         }
+        /*
+         * FIXME: this can be enhanced to add keys for:
+         * each collectionId
+         * sub-permissions for more advanced permissions?
+         */
         UserPermissionCacheKey key = new UserPermissionCacheKey(person, permission, collectionIds);
         if (result != null && result != CacheResult.NOT_FOUND) {
             sessionMap.put(key, result.getBooleanEquivalent());
