@@ -35,5 +35,18 @@ public class UserPermissionCacheKey {
     public int getKey() {
         return key;
     }
+    
+    @Override
+    public int hashCode() {
+        return key;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        return key == obj.hashCode();
+    }
 
 }
