@@ -66,7 +66,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             return true;
         }
 
-        // get all of the resource collections and their hierarchical tree, permissions are additive
+//        // get all of the resource collections and their hierarchical tree, permissions are additive
         for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
             ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
@@ -86,6 +86,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         }
         List<Long> ids = new ArrayList<>(collection.getParentIds());
         ids.add(collection.getId());
+        ids.addAll(collection.getParentIds());
         return isAllowedTo(person, permission, ids);
     }
 
@@ -93,33 +94,33 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
     private final WeakHashMap<Session,Map<UserPermissionCacheKey, Boolean>> userPermissionsCache = new WeakHashMap<>();
 
     /**
-     * Used to simulate change in session or to wipe out cache. Our tests all run in the "same" session, so this is ncessary, unfortunately
+     * Used to simulate change in session or to wipe out cache. Our tests all run in the "same" session, so this is necessary, unfortunately
      */
     public void clearUserPermissionsCache() {
         getLogger().debug("clearing permissions cache");
         userPermissionsCache.clear();
     }
     
-    public boolean isAllowedTo(Person person, GeneralPermissions permission, Collection<Long> collectionIds) {
-        if (collectionIds.isEmpty() || Persistable.Base.isNullOrTransient(person)) {
+    public boolean isAllowedTo(Person person, GeneralPermissions permission, Collection<Long> ids) {
+        if (CollectionUtils.isEmpty(ids) || Persistable.Base.isNullOrTransient(person) ) {
             return false;
         }
         
-        CacheResult cacheResult = checkUserPermissionsCache(person, permission, collectionIds, getCurrentSession());
+        CacheResult cacheResult = checkUserPermissionsCache(person, permission, ids, getCurrentSession());
         if (cacheResult == null || cacheResult == CacheResult.NOT_FOUND) {
                 Query query = getCurrentSession().getNamedQuery(QUERY_IS_ALLOWED_TO_MANAGE);
                 query.setLong("userId", person.getId());
                 query.setInteger("effectivePermission", permission.getEffectivePermissions() - 1);
-                query.setParameterList("resourceCollectionIds", collectionIds);
+                query.setParameterList("resourceCollectionIds", ids);
 
                 @SuppressWarnings("unchecked")
                 List<Integer> result = query.list();
                 getLogger().debug("results: {}", result);
                 if (result.isEmpty() || result.get(0) != 1) {
-                    updateUserPermissionsCache(person, permission, collectionIds, getCurrentSession(), CacheResult.FALSE );
+                    updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.FALSE );
                     return false;
                 }
-                updateUserPermissionsCache(person, permission, collectionIds, getCurrentSession(), CacheResult.TRUE );
+                updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.TRUE );
                 return true;
         }
         getLogger().debug("  [{}] bypassing database lookup for {}", cacheResult, person);
