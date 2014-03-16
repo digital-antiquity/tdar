@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -22,6 +26,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.entity.UserPermissionCacheKey.CacheResult;
 /**
  * $Id$
  * 
@@ -63,7 +68,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
         // get all of the resource collections and their hierarchical tree, permissions are additive
         for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
-            ids.addAll(collection.getParentIds());
+//            ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
         }
         if (getLogger().isTraceEnabled()) {
@@ -79,29 +84,68 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         if (ObjectUtils.equals(collection.getOwner(), person)) {
             return true;
         }
-        List<Long> ids = new ArrayList<>(collection.getParentIds());
-        ids.add(collection.getId());
-        return isAllowedTo(person, permission, ids);
+
+        return isAllowedTo(person, permission, Arrays.asList(collection.getId()));
     }
+
+    // basic weak hashMap to cache session and user permissions... 
+    private final WeakHashMap<Session,Map<UserPermissionCacheKey, Boolean>> userPermissionsCache = new WeakHashMap<>();
 
     public boolean isAllowedTo(Person person, GeneralPermissions permission, Collection<Long> collectionIds) {
         if (collectionIds.isEmpty() || Persistable.Base.isNullOrTransient(person)) {
             return false;
         }
+        
+        CacheResult cacheResult = checkUserPermissionsCache(person, permission, collectionIds, getCurrentSession());
+        if (cacheResult == null || cacheResult == CacheResult.NOT_FOUND) {
+                Query query = getCurrentSession().getNamedQuery(QUERY_IS_ALLOWED_TO_MANAGE);
+                query.setLong("userId", person.getId());
+                query.setInteger("effectivePermission", permission.getEffectivePermissions() - 1);
+                query.setParameterList("resourceCollectionIds", collectionIds);
 
-        Query query = getCurrentSession().getNamedQuery(QUERY_IS_ALLOWED_TO_MANAGE);
-        query.setLong("userId", person.getId());
-        query.setInteger("effectivePermission", permission.getEffectivePermissions() - 1);
-        query.setParameterList("resourceCollectionIds", collectionIds);
-
-        @SuppressWarnings("unchecked")
-        List<Integer> result = query.list();
-        getLogger().debug("results: {}", result);
-        if (result.isEmpty() || result.get(0) != 1) {
-            return false;
+                @SuppressWarnings("unchecked")
+                List<Integer> result = query.list();
+                getLogger().debug("results: {}", result);
+                if (result.isEmpty() || result.get(0) != 1) {
+                    updateUserPermissionsCache(person, permission, collectionIds, getCurrentSession(), CacheResult.FALSE );
+                    return false;
+                }
+                updateUserPermissionsCache(person, permission, collectionIds, getCurrentSession(), CacheResult.TRUE );
+                return true;
         }
-        return true;
+        return cacheResult.getBooleanEquivalent();
     }
+    
+    private CacheResult checkUserPermissionsCache(Person person, GeneralPermissions permission, Collection<Long> collectionIds, Session currentSession) {
+        UserPermissionCacheKey key = new UserPermissionCacheKey(person, permission, collectionIds);
+        // could be enhanced to check each ID
+        Map<UserPermissionCacheKey, Boolean> sessionMap = userPermissionsCache.get(currentSession); 
+        if (sessionMap != null) {
+            Boolean result = sessionMap.get(key);
+            if (result == Boolean.TRUE) {
+                return CacheResult.TRUE;
+            } else if (result == Boolean.FALSE) {
+                return CacheResult.FALSE;
+            }
+        }
+        return CacheResult.NOT_FOUND;
+    }
+
+    private void updateUserPermissionsCache(Person person, GeneralPermissions permission, Collection<Long> collectionIds, Session currentSession,
+            CacheResult result) {
+        // could be enhanced to check each ID
+        Map<UserPermissionCacheKey, Boolean> sessionMap = userPermissionsCache.get(currentSession);
+        if (sessionMap == null) {
+            sessionMap = new HashMap<>();
+            userPermissionsCache.put(currentSession, sessionMap);
+        }
+        UserPermissionCacheKey key = new UserPermissionCacheKey(person, permission, collectionIds);
+        if (result != null && result != CacheResult.NOT_FOUND) {
+            sessionMap.put(key, result.getBooleanEquivalent());
+        }
+    }
+
+
 
     /**
      * @param person
