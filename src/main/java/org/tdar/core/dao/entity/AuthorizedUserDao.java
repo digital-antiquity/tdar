@@ -68,7 +68,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
         // get all of the resource collections and their hierarchical tree, permissions are additive
         for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
-//            ids.addAll(collection.getParentIds());
+            ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
         }
         if (getLogger().isTraceEnabled()) {
@@ -84,13 +84,22 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         if (ObjectUtils.equals(collection.getOwner(), person)) {
             return true;
         }
-
-        return isAllowedTo(person, permission, Arrays.asList(collection.getId()));
+        List<Long> ids = new ArrayList<>(collection.getParentIds());
+        ids.add(collection.getId());
+        return isAllowedTo(person, permission, ids);
     }
 
     // basic weak hashMap to cache session and user permissions... 
     private final WeakHashMap<Session,Map<UserPermissionCacheKey, Boolean>> userPermissionsCache = new WeakHashMap<>();
 
+    /**
+     * Used to simulate change in session or to wipe out cache. Our tests all run in the "same" session, so this is ncessary, unfortunately
+     */
+    public void clearUserPermissionsCache() {
+        getLogger().debug("clearing permissions cache");
+        userPermissionsCache.clear();
+    }
+    
     public boolean isAllowedTo(Person person, GeneralPermissions permission, Collection<Long> collectionIds) {
         if (collectionIds.isEmpty() || Persistable.Base.isNullOrTransient(person)) {
             return false;
@@ -113,7 +122,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
                 updateUserPermissionsCache(person, permission, collectionIds, getCurrentSession(), CacheResult.TRUE );
                 return true;
         }
-        getLogger().debug("bypassing database lookup for {}=={}", person, cacheResult);
+        getLogger().debug("  [{}] bypassing database lookup for {}", cacheResult, person);
         return cacheResult.getBooleanEquivalent();
     }
     
@@ -121,15 +130,17 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         UserPermissionCacheKey key = new UserPermissionCacheKey(person, permission, collectionIds);
         // could be enhanced to check each ID
         Map<UserPermissionCacheKey, Boolean> sessionMap = userPermissionsCache.get(currentSession); 
+        CacheResult result = CacheResult.NOT_FOUND;
         if (sessionMap != null) {
-            Boolean result = sessionMap.get(key);
-            if (result == Boolean.TRUE) {
-                return CacheResult.TRUE;
-            } else if (result == Boolean.FALSE) {
-                return CacheResult.FALSE;
+            Boolean res = sessionMap.get(key);
+            if (res == Boolean.TRUE) {
+                result = CacheResult.TRUE;
+            } else if (res == Boolean.FALSE) {
+                result = CacheResult.FALSE;
             }
         }
-        return CacheResult.NOT_FOUND;
+        getLogger().debug("  [{}] checkUserPermissionCache: {}", result, person);
+        return result;
     }
 
     private void updateUserPermissionsCache(Person person, GeneralPermissions permission, Collection<Long> collectionIds, Session currentSession,

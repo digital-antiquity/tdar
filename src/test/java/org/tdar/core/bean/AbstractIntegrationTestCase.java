@@ -84,6 +84,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -172,6 +173,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     private XmlService xmlService;
     @Autowired
     protected ResourceCollectionService resourceCollectionService;
+    @Autowired 
+    AuthorizedUserDao authorizedUserDao;
+
 
     @Autowired
     protected EmailService emailService;
@@ -451,7 +455,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return logger;
     }
 
+
     protected <T> T generateNewController(Class<T> controllerClass) {
+        authorizedUserDao.clearUserPermissionsCache();
+
         T controller = (T) applicationContext.getBean(controllerClass);
         if (controller instanceof AuthenticationAware.Base) {
             TdarActionSupport tas = (TdarActionSupport) controller;
