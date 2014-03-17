@@ -99,7 +99,9 @@ label.error {display:block;}
 
 	<div class="row">
 	<div class="span5">
-		<@s.select list="userAffiliations" name="person.affilliation" label="Affiliation / Interest" listValue="label" />
+		<@s.select list="userAffiliations" name="person.affilliation" label="Affiliation / Interest" listValue="label"
+		       headerKey="" headerValue="Select Affiliation" 
+		 />
 	</div>
 	<div class="span4">
 	    <#if RPAEnabled>
