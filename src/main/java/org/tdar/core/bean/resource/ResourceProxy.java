@@ -111,7 +111,7 @@ public class ResourceProxy implements Serializable {
     private Date dateUpdated;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 50)
+    @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
     private Status status = Status.ACTIVE;
     
     @Lob

@@ -190,7 +190,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(length = FieldLength.FIELD_LENGTH_50)
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
 
     @Lob

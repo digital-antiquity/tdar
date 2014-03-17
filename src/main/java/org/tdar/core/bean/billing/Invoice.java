@@ -171,7 +171,7 @@ public class Invoice extends Base implements Updatable {
     private String otherReason;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transactionstatus", length = 25)
+    @Column(name = "transactionstatus", length = FieldLength.FIELD_LENGTH_25)
     private TransactionStatus transactionStatus = TransactionStatus.PREPARED;
 
     /**

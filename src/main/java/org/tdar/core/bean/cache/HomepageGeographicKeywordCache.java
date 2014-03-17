@@ -33,7 +33,7 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
     private String label;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(length = FieldLength.FIELD_LENGTH_50)
     private Level level;
 
     public HomepageGeographicKeywordCache() {

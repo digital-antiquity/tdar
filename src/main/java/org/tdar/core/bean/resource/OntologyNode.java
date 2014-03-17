@@ -75,7 +75,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String displayName;
 
-    @Length(max = 2048)
+    @Length(max = FieldLength.FIELD_LENGTH_2048)
     private String description;
 
     @ElementCollection(fetch = FetchType.LAZY)

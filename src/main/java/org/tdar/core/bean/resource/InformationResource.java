@@ -160,18 +160,18 @@ public abstract class InformationResource extends Resource {
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "metadata_language", length = 100)
+    @Column(name = "metadata_language", length = FieldLength.FIELD_LENGTH_100)
     private Language metadataLanguage;
 
     @BulkImportField(label = "Resource Language", comment = BulkImportField.RESOURCE_LANGAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "resource_language", length = 100)
+    @Column(name = "resource_language", length = FieldLength.FIELD_LENGTH_100)
     private Language resourceLanguage;
 
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "license_type", length = 128)
+    @Column(name = "license_type", length = FieldLength.FIELD_LENGTH_128)
     @BulkImportField(label = BulkImportField.LICENSE_TYPE, required = true)
     private LicenseType licenseType;
 

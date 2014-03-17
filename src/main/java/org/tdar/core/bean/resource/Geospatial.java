@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Indexed;
+import org.tdar.core.bean.FieldLength;
 
 /**
  * $Id$
@@ -38,13 +39,13 @@ public class Geospatial extends Dataset {
     @Type(type = "org.hibernate.type.StringClobType")
     private String currentnessUpdateNotes;
 
-    @Column(name = "spatial_reference_system", length = 50)
+    @Column(name = "spatial_reference_system", length = FieldLength.FIELD_LENGTH_50)
     private String spatialReferenceSystem;
 
-    @Column(name = "map_source", length = 500)
+    @Column(name = "map_source", length = FieldLength.FIELD_LENGTH_500)
     private String mapSource;
 
-    @Column(name = "scale", length = 100)
+    @Column(name = "scale", length = FieldLength.FIELD_LENGTH_100)
     private String scale;
 
     @Override

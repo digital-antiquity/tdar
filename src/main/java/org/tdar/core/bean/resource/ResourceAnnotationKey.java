@@ -56,13 +56,13 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     @Column(name = "annotation_data_type", length = FieldLength.FIELD_LENGTH_255)
     private ResourceAnnotationDataType annotationDataType;
 
-    @Column(length = 128, unique = true, nullable = false)
+    @Column(length = FieldLength.FIELD_LENGTH_128, unique = true, nullable = false)
     @Fields({ @Field(name = "annotationkey_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
-    @Length(max = 128)
+    @Length(max = FieldLength.FIELD_LENGTH_128)
     private String key;
 
-    @Column(length = 128, name = "format_string")
-    @Length(max = 128)
+    @Column(length = FieldLength.FIELD_LENGTH_128, name = "format_string")
+    @Length(max = FieldLength.FIELD_LENGTH_128)
     private String formatString;
 
     private transient Float score = -1f;

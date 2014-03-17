@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.hibernate.search.annotations.Indexed;
+import org.tdar.core.bean.FieldLength;
 
 /**
  * $Id$
@@ -66,7 +67,7 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(length = FieldLength.FIELD_LENGTH_50)
     private Level level;
 
     /**

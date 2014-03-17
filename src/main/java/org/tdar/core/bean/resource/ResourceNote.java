@@ -41,9 +41,9 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     // @ManyToOne(optional = false)
     // private Resource resource;
 
-    @Column(length = 5000)
+    @Column(length = FieldLength.FIELD_LENGTH_5000)
     @Field
-    @Length(max = 5000)
+    @Length(max = FieldLength.FIELD_LENGTH_5000)
     private String note;
 
     @Enumerated(EnumType.STRING)

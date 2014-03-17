@@ -84,7 +84,7 @@ public class InformationResourceFileProxy implements Serializable {
     private List<InformationResourceFileVersionProxy> informationResourceFileVersionProxies = new ArrayList<InformationResourceFileVersionProxy>();
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(length = FieldLength.FIELD_LENGTH_50)
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
 
     // a date in standard form that a resource will become public if availableToPublic was set to false.
@@ -94,7 +94,7 @@ public class InformationResourceFileProxy implements Serializable {
     private Date dateMadePublic = new Date();
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 32)
+    @Column(length = FieldLength.FIELD_LENGTH_32)
     private FileStatus status;
 
 

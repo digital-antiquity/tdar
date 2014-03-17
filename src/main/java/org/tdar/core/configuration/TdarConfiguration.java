@@ -31,6 +31,7 @@ import org.tdar.filestore.PairtreeFilestore;
  */
 public class TdarConfiguration {
 
+    public static final int HTTPS_PORT_DEFAULT = 443;
     public static final List<String> STOP_WORDS = Arrays.asList("the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
             "but", "with", "are", "have", "be", "at", "or", "as", "was", "so", "if", "out", "not");
     private static final String JIRA_LINK = "dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3";
@@ -232,7 +233,7 @@ public class TdarConfiguration {
 
     public String getBaseUrl() {
         String base = "http://" + getHostName();
-        if (getPort() != 80) {
+        if (getPort() != DEFAULT_PORT) {
             base += ":" + getPort();
         }
         return base;
@@ -240,7 +241,7 @@ public class TdarConfiguration {
 
     public String getBaseSecureUrl() {
         String base = "https://" + getHostName();
-        if (getHttpsPort() != 443) {
+        if (getHttpsPort() != HTTPS_PORT_DEFAULT) {
             base += ":" + getHttpsPort();
         }
         return base;
@@ -594,7 +595,7 @@ public class TdarConfiguration {
     }
 
     public Integer getHttpsPort() {
-        return assistant.getIntProperty("https.port", 443);
+        return assistant.getIntProperty("https.port", HTTPS_PORT_DEFAULT);
     }
 
     public Integer getMaxUploadFilesPerRecord() {
@@ -720,10 +721,10 @@ public class TdarConfiguration {
     }
     
     public int getStaticContentSSLPort() {
-        return assistant.getIntProperty("static.content.sslPort", 443);
+        return assistant.getIntProperty("static.content.sslPort", HTTPS_PORT_DEFAULT);
     }
     public int getStaticContentPort() {
-        return assistant.getIntProperty("static.content.port", 80);
+        return assistant.getIntProperty("static.content.port", DEFAULT_PORT);
     }
     
     public String getStaticContentHost() {
