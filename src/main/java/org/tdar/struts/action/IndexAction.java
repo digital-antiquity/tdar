@@ -67,6 +67,10 @@ public class IndexAction extends AuthenticationAware.Base {
             @Action("contact"),
             @Action("credit"),
             @Action(value = "page-not-found", results = { @Result(name = SUCCESS, location = "errors/page-not-found.ftl") }),
+            @Action(value = "gone", results = { @Result(name = SUCCESS, location = "errors/resource-deleted.ftl") }),
+            @Action(value = "unauthorized", results = { @Result(name = SUCCESS, location = "errors/unauthorized.ftl") }),
+            @Action(value = "not-found", results = { @Result(name = SUCCESS, location = "errors/page-not-found.ftl") }),
+            @Action(value = "invalid-token", results = { @Result(name = SUCCESS, location = "errors/double-submit.ftl") }),
             @Action(value = "access-denied", results = { @Result(name = SUCCESS, location = "errors/access-denied.ftl") }),
             @Action(value = "opensearch", results = {
                     @Result(name = SUCCESS, location = "opensearch.ftl", type = "freemarker", params = { "contentType", "application/xml" })
