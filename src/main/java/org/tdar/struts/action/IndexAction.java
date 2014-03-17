@@ -60,18 +60,26 @@ public class IndexAction extends AuthenticationAware.Base {
 
     private String sitemapFile = "sitemap_index.xml";
 
+    
+    @HttpOnlyIfUnauthenticated
+    @Actions({
+        @Action(value = "page-not-found", results = { @Result(name = ERROR, location = "errors/page-not-found.ftl") }),
+        @Action(value = "not-found", results = { @Result(name = ERROR, location = "errors/page-not-found.ftl") }),
+        @Action(value = "gone", results = { @Result(name = ERROR, location = "errors/resource-deleted.ftl") }),
+        @Action(value = "unauthorized", results = { @Result(name = ERROR, location = "errors/unauthorized.ftl") }),
+        @Action(value = "access-denied", results = { @Result(name = ERROR, location = "errors/access-denied.ftl") }),
+        @Action(value = "invalid-token", results = { @Result(name = ERROR, location = "errors/double-submit.ftl") })
+    })
+    public String error() {
+        return ERROR;
+    }
+
     @HttpOnlyIfUnauthenticated
     @Override
     @Actions({
             @Action("terms"),
             @Action("contact"),
             @Action("credit"),
-            @Action(value = "page-not-found", results = { @Result(name = SUCCESS, location = "errors/page-not-found.ftl") }),
-            @Action(value = "gone", results = { @Result(name = SUCCESS, location = "errors/resource-deleted.ftl") }),
-            @Action(value = "unauthorized", results = { @Result(name = SUCCESS, location = "errors/unauthorized.ftl") }),
-            @Action(value = "not-found", results = { @Result(name = SUCCESS, location = "errors/page-not-found.ftl") }),
-            @Action(value = "invalid-token", results = { @Result(name = SUCCESS, location = "errors/double-submit.ftl") }),
-            @Action(value = "access-denied", results = { @Result(name = SUCCESS, location = "errors/access-denied.ftl") }),
             @Action(value = "opensearch", results = {
                     @Result(name = SUCCESS, location = "opensearch.ftl", type = "freemarker", params = { "contentType", "application/xml" })
             }),
