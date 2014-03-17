@@ -40,8 +40,8 @@
 		<link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
 
         <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
-        <link href="${staticHost}<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet">
-        <link href="${staticHost}<@s.url value="/css/vc/${common.tdarBuildId}/tdar-print.css"/>" rel="stylesheet" media="print">        
+        <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
+        <link href="${staticHost}<@s.url value="/css/tdar-print.css"/>" rel="stylesheet" media="print">        
         <#if qunit>
             <link rel="stylesheet" href="/css/qunit-1.11.0.css" type="text/css">
         </#if>

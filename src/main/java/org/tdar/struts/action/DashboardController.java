@@ -29,6 +29,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 
 /**
  * $Id$
@@ -272,6 +273,7 @@ public class DashboardController extends AuthenticationAware.Base {
         return SortOption.getOptionsForContext(Resource.class);
     }
 
+    @DoNotObfuscate(reason="not needed / performance test")
     public List<ResourceCollection> getResourceCollections() {
         return resourceCollections;
     }
@@ -283,6 +285,7 @@ public class DashboardController extends AuthenticationAware.Base {
     /**
      * @return the sharedResourceCollections
      */
+    @DoNotObfuscate(reason="not needed / performance test")
     public List<ResourceCollection> getSharedResourceCollections() {
         return sharedResourceCollections;
     }
