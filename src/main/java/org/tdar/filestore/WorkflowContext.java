@@ -219,7 +219,7 @@ public final class WorkflowContext implements Serializable {
             maxDepth--;
         }
 
-        this.getExceptions().add(new ExceptionWrapper(sb.toString(), ExceptionUtils.getFullStackTrace(e)));
+        this.getExceptions().add(new ExceptionWrapper(sb.toString(), e));
     }
 
     /**

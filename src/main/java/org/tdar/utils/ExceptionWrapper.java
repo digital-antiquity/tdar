@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 /**
  * Java exceptions are serializable: in the traditional sense of byte flattening... However, when attempting to transfer them via XML the lack of a no
  * args constructor in the StackTraceElement class causes problems. Hence this wrapper, which wraps exceptions flattened to Strings, thus allowing them to be
@@ -17,16 +19,19 @@ public class ExceptionWrapper implements Serializable {
     private String message;
     private boolean fatal;
     private String stackTrace;
-
+    private String code;
+    private String moreInfoUrlKey;
+    
     private static final String CODE_NULL_STACKTRACE = "0";
     public static final int CODE_MAXLENGTH = 5;
 
     public ExceptionWrapper() {
     }
 
-    public ExceptionWrapper(String string, String fullStackTrace) {
-        setMessage(string);
-        setStackTrace(fullStackTrace);
+    public ExceptionWrapper(String string, Throwable e) {
+        this.message = string;
+        this.stackTrace = ExceptionUtils.getFullStackTrace(e);
+        this.code = ExceptionWrapper.convertExceptionToCode(stackTrace);
     }
 
     public String getStackTrace() {
@@ -58,17 +63,29 @@ public class ExceptionWrapper implements Serializable {
         this.fatal = fatal;
     }
 
-    private String codify() {
-        if(stackTrace == null) return CODE_NULL_STACKTRACE;
-        String code = Integer.toHexString(stackTrace.hashCode());
-        code = code.length() > CODE_MAXLENGTH ? code.substring(0,   CODE_MAXLENGTH) : code;
+    public static String convertExceptionToCode(Throwable t) {
+        if(t == null) return CODE_NULL_STACKTRACE;
+        String trace = ExceptionUtils.getFullStackTrace(t);
+        String code = Integer.toHexString(trace.hashCode());
+        return code.toUpperCase();
+    }
+
+    public static String convertExceptionToCode(String trace) {
+        if(trace == null) return CODE_NULL_STACKTRACE;
+        String code = Integer.toHexString(trace.hashCode());
         return code.toUpperCase();
     }
 
     public String getErrorCode() {
-        return codify();
+        return code;
     }
 
+    public String getMoreInfoUrlKey() {
+        return moreInfoUrlKey;
+    }
 
+    public void setMoreInfoUrlKey(String moreInfoUrl) {
+        this.moreInfoUrlKey = moreInfoUrl;
+    }
 
 }

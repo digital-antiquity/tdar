@@ -88,7 +88,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
             parseUpload(codingSheet, toProcess);
             saveOrUpdate(codingSheet);
         } catch (Throwable e) {
-            ctx.getExceptions().add(new ExceptionWrapper(e.getMessage(), ExceptionUtils.getFullStackTrace(e)));
+            ctx.getExceptions().add(new ExceptionWrapper(e.getMessage(), e));
             ctx.setErrorFatal(true);
             ctx.setProcessedSuccessfully(false);
             getDao().saveOrUpdate(toProcess.getInformationResourceFile());

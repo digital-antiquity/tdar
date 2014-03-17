@@ -190,7 +190,9 @@
                 <h4>${siteAcronym} <#if (resourceEditPage??)><@s.text name="error.action_resource_edit_error_header"/><#else><@s.text name="error.action_error_header"/></#if></h4>
                 <@s.actionerror cssClass="action-errors" theme="simple" />
                 <@s.fielderror  cssClass="field-errors"  theme="simple"/>
-                <#if stackTraces?has_content>
+                <br/>
+                <#if moreInfoUrlKey?has_content>
+                More information about these errors is available at: <a href="<@s.text value="${moreInfoUrlKey}"/>"><@s.text value="${moreInfoUrlKey}"/></a>
                 </#if>
             </div>
     </#if>
