@@ -120,7 +120,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         OntologyNode node = map.get("Navicular__Central____Cuboid");
         assertNotNull(node);
         assertEquals("Navicular (Central) & Cuboid", node.getDisplayName());
-        assertEquals("4th Tarsal", node.getSynonyms().iterator().next());
+        assertEquals("4th Tarsal2", node.getSynonyms().iterator().next());
         assertEquals("<Fish Element Additional>", map.get("_Fish_Element_Additional_").getDisplayName());
         assertEquals("Clavicle % Clavicle.clavicle", map.get("Clavicle___Clavicle.clavicle").getDisplayName());
     }

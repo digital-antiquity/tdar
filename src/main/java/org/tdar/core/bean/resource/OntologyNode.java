@@ -90,6 +90,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     private String iri;
 
+    private transient boolean synonym = false;
     // @Column(unique=true)
     private String uri;
 
@@ -306,6 +307,16 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     public void setColumnHasValueArray(boolean[] columnsWithValue) {
         this.columnHasValueArray = columnsWithValue;
+    }
+
+    @XmlTransient
+    @JSONTransient
+    public boolean isSynonym() {
+        return synonym;
+    }
+
+    public void setSynonym(boolean synonym) {
+        this.synonym = synonym;
     }
 
 }

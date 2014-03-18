@@ -6,14 +6,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -31,15 +34,12 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.filestore.Filestore.ObjectType;
+
 /**
  * Converts a text formatted Ontology into an OWL XML ontology
  *
  */
 public class OwlOntologyConverter {
-
-    private static final String CLASS = "class";
-
-    private static final String COMMENT = "comment";
 
     private OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
 
@@ -116,7 +116,7 @@ public class OwlOntologyConverter {
         if (StringUtils.isBlank(inputString))
             return "";
         List<OntologyNode> nodes = new ArrayList<>();
-        Set<String> uniqueIriSet = new HashSet<>();
+        Map<String,List<OntologyNode>> uniqueIriSet = new HashMap<>();
         List<OntologyNode> parentNodes = new ArrayList<>();
         long order = -1;
         String line;
@@ -150,7 +150,10 @@ public class OwlOntologyConverter {
                 OntologyNode currentNode = new OntologyNode(labelToFragmentId(line), line.trim());
                 currentNode.setSynonymNodes(synonymNodes);
                 currentNode.setDescription(description);
-                uniqueIriSet.add(currentNode.getIri());
+                addToDuplicateCheck(uniqueIriSet, currentNode);
+                for (OntologyNode synonym: synonymNodes) {
+                    addToDuplicateCheck(uniqueIriSet, synonym);
+                }
                 nodes.add(currentNode);
                 currentNode.setImportOrder(order);
                 if (currentDepth == 0) {
@@ -183,7 +186,8 @@ public class OwlOntologyConverter {
             IOUtils.closeQuietly(reader);
         }
 
-        testOntologyNodesUnique(nodes,uniqueIriSet);
+        testOntologyNodesUnique(uniqueIriSet);
+        uniqueIriSet.clear();
         Map<String,Object> map = new HashMap<>();
         map.put("baseUrl",TdarConfiguration.getInstance().getBaseUrl());
         map.put("id",ontologyId);
@@ -197,17 +201,37 @@ public class OwlOntologyConverter {
         }
     }
 
+    private void addToDuplicateCheck(Map<String, List<OntologyNode>> uniqueIriSet, OntologyNode currentNode) {
+        List<OntologyNode> key = uniqueIriSet.get(currentNode.getIri());
+        logger.trace("{} {}", currentNode.getIri(), key);
+        if (key == null) {
+            key =  new ArrayList<OntologyNode>();
+            uniqueIriSet.put(currentNode.getIri(),key);
+        }
+        key.add(currentNode);
+    }
+
     /**
      * Tests that the List of OntologyNodes are unique.
      * @param nodeList
      */
-    public void testOntologyNodesUnique(List<OntologyNode> nodeList, Set<String> uniqueSet) {
-        logger.debug("unique: {} incoming: {}", uniqueSet.size(), nodeList.size());
-        if (nodeList.size() != uniqueSet.size()) {
-            List<Object> errs = new ArrayList<>();
-            errs.add(nodeList.size());
-            errs.add(uniqueSet.size());
-            throw new TdarRecoverableRuntimeException("owlOntologyConverter.node_names_unique",errs);
+    public void testOntologyNodesUnique(Map<String,List<OntologyNode>> uniqueSet) {
+        StringBuilder dups = new StringBuilder();
+        int dupCount = 0;
+        for (Entry<String,List<OntologyNode>> entry : uniqueSet.entrySet()) {
+            if (CollectionUtils.isNotEmpty(entry.getValue()) && CollectionUtils.size(entry.getValue()) > 1) {
+                dupCount++;
+                if (dups.length() != 0) {
+                    dups.append(", ");
+                }
+                dups.append(entry.getKey());
+            }
+        }
+        
+        logger.debug("incoming: {} duplicates: {}", uniqueSet.size(), dupCount);
+        if (dups.length() > 0) {
+            logger.debug("duplicates: {}", dups);
+            throw new TdarRecoverableRuntimeException("owlOntologyConverter.node_names_unique",Arrays.asList(dupCount, dups.toString()));
         }
     }
 
