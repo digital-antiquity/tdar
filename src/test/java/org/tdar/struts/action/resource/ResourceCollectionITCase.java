@@ -29,6 +29,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
@@ -267,6 +268,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertEquals(Action.SUCCESS, save);
     }
 
+    @Autowired
+    AuthorizedUserDao authorizedUserDao;
     
     @Test
     @Rollback
@@ -283,12 +286,14 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile));
         ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, false, users, null, null);
         ResourceCollection collection2 = generateResourceCollection(name, description, CollectionType.SHARED, false, null, resources, collection.getId());
-
         logger.info("{}", generateInformationResourceWithFile);
+
         assertTrue("user can edit based on parent of parent resource collection",
                 authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile));
         collection.getAuthorizedUsers().clear();
         genericService.save(collection);
+        assertTrue("user can no longer edit", authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile));
+        authorizedUserDao.clearUserPermissionsCache();
         assertFalse("user can no longer edit", authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile));
     }
 

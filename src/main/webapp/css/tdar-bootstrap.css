@@ -1415,3 +1415,7 @@ are governed by several media queries and thus easy to screw up the formatting o
 .alert.alert-error {
     background-color: #fffe86;
 }
+
+.alert.alert-error p, .alert.alert-error ul, .alert.alert-error li {
+    color:#000;
+}

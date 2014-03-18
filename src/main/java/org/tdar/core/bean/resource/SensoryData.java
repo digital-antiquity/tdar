@@ -77,7 +77,7 @@ public class SensoryData extends Dataset {
     @Type(type = "org.hibernate.type.StringClobType")
     private String rgbDataCaptureInfo;
 
-    @Column(name = "estimated_data_resolution", length = 254)
+    @Column(name = "estimated_data_resolution", length = FieldLength.FIELD_LENGTH_254)
     private String estimatedDataResolution;
 
     @Column(name = "total_scans_in_project")

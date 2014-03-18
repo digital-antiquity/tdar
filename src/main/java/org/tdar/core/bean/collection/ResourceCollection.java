@@ -169,15 +169,15 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sort_order", length = 25)
+    @Column(name = "sort_order", length = FieldLength.FIELD_LENGTH_25)
     private SortOption sortBy = DEFAULT_SORT_OPTION;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "secondary_sort_order", length = 25)
+    @Column(name = "secondary_sort_order", length = FieldLength.FIELD_LENGTH_25)
     private SortOption secondarySortBy;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "orientation", length = 50)
+    @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Field(name = QueryFieldNames.COLLECTION_TYPE)

@@ -47,7 +47,7 @@ public class AccountGroup extends Base implements Updatable {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 25)
+    @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
     private Status status = Status.ACTIVE;
 
     @NotNull

@@ -27,6 +27,8 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 @Table(name = "pos_billing_activity")
 public class BillingActivity extends Persistable.Base implements Comparable<BillingActivity> {
 
+    private static final long BYTES_IN_MB = 1_048_576L;
+
     private static final long serialVersionUID = 6891881586235180640L;
 
     @Transient
@@ -48,7 +50,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     private Long numberOfFiles = 0L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "activity_type", length = 25)
+    @Column(name = "activity_type", length = FieldLength.FIELD_LENGTH_25)
     private BillingActivityType activityType = BillingActivityType.PRODUCTION;
 
     @Column(name = "sort_order")
@@ -110,7 +112,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     }
 
     public Long getNumberOfBytes() {
-        return getNumberOfMb() * 1048576L;
+        return getNumberOfMb() * BYTES_IN_MB;
     }
 
     public void setNumberOfMb(Long numberOfMb) {

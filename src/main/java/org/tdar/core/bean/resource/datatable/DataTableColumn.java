@@ -112,7 +112,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private DataTableColumnType columnDataType = DataTableColumnType.VARCHAR;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "column_encoding_type", length = 25)
+    @Column(name = "column_encoding_type", length = FieldLength.FIELD_LENGTH_25)
     private DataTableColumnEncodingType columnEncodingType;
 
     @ManyToOne
@@ -128,7 +128,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private CodingSheet defaultCodingSheet;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "measurement_unit", length = 25)
+    @Column(name = "measurement_unit", length = FieldLength.FIELD_LENGTH_25)
     private MeasurementUnit measurementUnit;
 
     @Column(columnDefinition = "boolean default FALSE")

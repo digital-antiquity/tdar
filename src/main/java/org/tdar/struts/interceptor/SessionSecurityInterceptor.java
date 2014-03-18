@@ -111,7 +111,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             if (StatusCode.shouldShowException(exception.getStatusCode())) {
                 logger.warn("caught TdarActionException", exception.getMessage());
             } else {
-                logger.warn("caught TdarActionException", exception);
+                logger.warn("caught TdarActionException ({})", exception.getStatusCode(), exception);
             }
             response.setStatus(exception.getStatusCode());
             logger.debug("clearing session due to {} -- returning to {}", exception.getResponseStatusCode(), exception.getResultName());

@@ -54,7 +54,7 @@ public class AuthorizedUser extends Base implements Persistable {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "general_permission", length = 50)
+    @Column(name = "general_permission", length = FieldLength.FIELD_LENGTH_50)
     private GeneralPermissions generalPermission;
 
     @Column(name = "general_permission_int")

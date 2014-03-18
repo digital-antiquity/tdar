@@ -54,7 +54,7 @@ public class Document extends InformationResource {
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "degree", length = 50)
+    @Column(name = "degree", length = FieldLength.FIELD_LENGTH_50)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Degree")
     private DegreeType degree;

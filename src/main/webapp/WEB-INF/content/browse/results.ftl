@@ -143,7 +143,7 @@
                         <td>
                         <#if showAdminInfo>
                             <#if creator.lastLogin?has_content>
-                                <_@_datefield "Last Login"  creator.lastLogin />
+                                <@_datefield "Last Login"  creator.lastLogin />
                             <#else>
                                 <@_textfield "Last Login"  "No record" />
                             </#if>
@@ -188,6 +188,9 @@
                         <td>
                             <#escape x as x?html>
                     <@_textfield "Agreement Version" creator.contributorAgreementVersion true />
+                    <br/>
+                    <@_textfield "Affiliation" creator.affilliation />
+                    
                     </#escape>
                         </td>
                     </tr>
@@ -274,7 +277,7 @@
     <#if _alwaysShow || _val?is_date>
         <b>${_label}</b>
         <#if _val?is_date>
-        <@shortDate _val true/>
+        <@view.shortDate _val true/>
         </#if>
     </#if>
 	</#macro>

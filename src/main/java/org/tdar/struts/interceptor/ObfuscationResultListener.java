@@ -34,6 +34,7 @@ public class ObfuscationResultListener implements PreResultListener {
     }
 
     public void prepareResult(Action action) throws Exception {
+        logger.debug("begin obfuscation");
         Class<? extends Object> controllerClass = action.getClass();
         List<Pair<Method, Class<? extends Obfuscatable>>> testReflection = reflectionService.findAllObfuscatableGetters(controllerClass);
 
@@ -54,6 +55,7 @@ public class ObfuscationResultListener implements PreResultListener {
             // logger.error("{}", e);
             // }
         }
+        logger.debug("complete obfuscation");
     }
 
     @Override
@@ -63,8 +65,8 @@ public class ObfuscationResultListener implements PreResultListener {
         } catch (Exception e) {
             // if the session is already closed, then we don't want to actually worry about session closed errors
             // if the session is not closed, then we probably have a real error here
-            logger.error("error durring obfuscation",e);
             if (sessionSecurityInterceptor != null && !sessionSecurityInterceptor.isSessionClosed()) {
+                logger.error("error durring obfuscation",e);
                 invocation.setResultCode("error");
             } 
         }

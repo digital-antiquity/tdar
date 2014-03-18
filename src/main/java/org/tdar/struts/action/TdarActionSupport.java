@@ -61,6 +61,7 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceRelationshipService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
+import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
 
@@ -139,6 +140,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      * 
      */
 
+    private String moreInfoUrlKey;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -539,7 +541,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         } else {
             super.addActionError(message);
         }
-        stackTraces.add(Integer.toString(exception.hashCode()));
+        stackTraces.add(ExceptionWrapper.convertExceptionToCode(exception));
     }
 
     @Override
@@ -766,6 +768,14 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public boolean isWebFilePreprocessingEnabled() {
         return filesystemResourceService.testWRO();
+    }
+
+    public String getMoreInfoUrlKey() {
+        return moreInfoUrlKey;
+    }
+
+    public void setMoreInfoUrlKey(String moreInfoUrl) {
+        this.moreInfoUrlKey = moreInfoUrl;
     }
     
 }

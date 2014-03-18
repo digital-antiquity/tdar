@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -68,6 +69,9 @@ public class WorkflowResult implements Serializable {
             }
             logger.error("error processing file [code:{}]: {} ", exception.getErrorCode(), exception.getStackTrace());
             actionSupport.getStackTraces().add(exception.getErrorCode());
+            if (StringUtils.isNotBlank(exception.getMoreInfoUrlKey())) {
+                actionSupport.setMoreInfoUrlKey(exception.getMoreInfoUrlKey());
+            }
         }
     }
 

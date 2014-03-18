@@ -43,9 +43,6 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public static String REGEX_IMAGE_VIEW = "\\/image\\/\\d+$";
 
-    public ThumbnailWebITCase() {
-    }
-
     @Test
     // create image as confidential, then log out and see if we see the image.
     public void testThumbnailOnViewPage() {
@@ -141,6 +138,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(editPage);
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
         int statusCode = login(CONFIG.getUsername(), CONFIG.getPassword(), true);
+        logger.debug("statusCode: {} ", statusCode);
         assertTrue(getCurrentUrlPath().contains("edit")); // we can be on the "edit" page with an error message
         logger.info(getPageText());
         assertFalse(statusCode == 200); // make sure we have a "bad" status code though
