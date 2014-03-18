@@ -50,7 +50,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     }
 
     @Override
-    public final void cleanup() {
+    public synchronized final void cleanup() {
         if (!isCompleted()) {
             logger.warn("Trying to cleanup {} which hasn't run to completion yet (remaining ids: {}), ignoring.",
                     this, getBatchIdQueue());
@@ -81,11 +81,11 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     }
 
     @Override
-    public void execute() {
+    public synchronized void execute() {
         processBatch(getNextBatch());
     }
 
-    public List<Long> getNextBatch() {
+    public synchronized List<Long> getNextBatch() {
         List<Long> queue = getBatchIdQueue();
         if (queue.isEmpty()) {
             logger.trace("No more ids to process");

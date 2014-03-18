@@ -13,10 +13,12 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.junit.Test;
@@ -122,28 +124,38 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
     }
 
     @Test
-    public void testValidTextToOwlXml() {
-        String ontologyTextInput = "Parent\n\tFirst Child\n\t\tFirst Child's Child1\n\t\tFirst Child's Second Child\n\t\tFirst Child's Child\n"
-                + "\tSecond Child\n" + "\tThird Child\n\t\tThird Child's Child\n\t\tThird Child's Child2\n"
-                + "\tFourth Child\n\t\tFourth Child's Child\n\t\tFourth Child's Nondegenerate Child\n"
-                + "Second Root Parent\n\tSecond Root Parent's Degenerate Child ";
+    public void testDuplicateNodeToSynonym() throws IOException {
+        String ontologyTextInput = FileUtils.readFileToString(new File(TestConstants.TEST_ONTOLOGY_DIR, "parentSynonymDuplicate.txt"));
+        Exception exception = null;
+        try {
+            ontologyService.toOwlXml(239L, ontologyTextInput);
+            fail("Should raise an java.lang.IndexOutOfBoundsException");
+        } catch (TdarRecoverableRuntimeException successException) {
+            exception = successException;
+        }
+        assertNotNull("expecting an exception", exception);
+        assertTrue(exception.getMessage().contains("Falconiformes"));
+    }
+    
+    @Test
+    public void testValidTextToOwlXml() throws IOException {
+        String ontologyTextInput = FileUtils.readFileToString(new File(TestConstants.TEST_ONTOLOGY_DIR, "simpleValid.txt"));
         String owlXml = ontologyService.toOwlXml(237L, ontologyTextInput);
         // FIXME: make assertions on the generated OWL XML.
         assertNotNull(owlXml);
     }
 
     @Test
-    public void testDegenerateTextToOwlXml() {
-        String ontologyTextInput = "Parent\n\tFirst Child\n\t\tFirst Child's Child\n\t\tFirst Child's Second Child\n\t\tFirst Child's Child\n"
-                + "\tSecond Child\n" + "\tThird Child\n\t\tThird Child's Child\n\t\tThird Child's Child\n"
-                + "\tFourth Child\n\t\t\t\tFourth Child's Degenerate Child\n\t\tFourth Child's Nondegenerate Child\n"
-                + "Second Root Parent\n\t\tSecond Root Parent's Degenerate Child ";
-
+    public void testDegenerateTextToOwlXml() throws IOException {
+        String ontologyTextInput = FileUtils.readFileToString(new File(TestConstants.TEST_ONTOLOGY_DIR, "degenerate.txt"));
+        Exception exception = null;
         try {
             logger.info(ontologyService.toOwlXml(238L, ontologyTextInput));
             fail("Should raise an java.lang.IndexOutOfBoundsException");
         } catch (IndexOutOfBoundsException successException) {
+            exception = successException;
         }
+        assertNotNull("expecting an exception", exception);
     }
 
 }

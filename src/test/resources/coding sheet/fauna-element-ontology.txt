@@ -154,7 +154,7 @@ Appendicular
 Foot
 	Carpal or Tarsal
 		Carpal
-			Scaphoid (Radial)
+			Scaphoid (Carpal Radial)
 			Lunate (Intermediate)
 			Scaphoid & Lunate (Radial & Intermediate)
 			Triquetrum (Ulnar; Cuneiform)

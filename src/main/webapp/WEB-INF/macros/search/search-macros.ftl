@@ -239,7 +239,7 @@
                 </@s.url>">
                 <i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
                 ${facetLabel}</a> <span>(${facet.count})</span></span>
-            <#elseif currentValues?size == 1>
+            <#elseif (currentValues?size > 0) >
                 <@removeFacet facetlist=currentValues facetParam=facetParam />
             <#else>
                 <span class="media-body">${facetLabel} <span>(${facet.count})</span></span>
