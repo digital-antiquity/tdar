@@ -100,12 +100,22 @@
                 <param name="status">500</param>
                 <param name="location">/WEB-INF/content/errors/exception.ftl</param>
             </result>
+            <result name="not_found" type="freemarkerhttp">
+                <param name="status">404</param>
+                <param name="location">/WEB-INF/content/errors/page-not-found.ftl</param>
+            </result>
+            <result name="gone" type="freemarkerhttp">
+                <param name="status">404</param>
+                <param name="location">/WEB-INF/content/errors/page-not-found.ftl</param>
+            </result>
             <!--  NOTE: we should be doing ONLY redirects here because if something went wrong , the values are likely not on the stack; 
             		thus a redirect clears the stack (values match IndexAction)-->
-            <result name="unauthorized" type="redirect">/unauthorized</result>
-            <result name="gone" type="redirect" >/gone</result>
-            <result name="not_found" type="redirect"><param name="status">404</param>/not-found</result>
-            <result name="invalid.token" type="redirect">/invalid-token</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/unauthorized</param>
+			</result>
+			<result name="invalid.token" type="redirect">
+				<param name="location">/invalid-token</param>
+			</result>
             <result name="user_agreement" type="redirect">/show-notices</result>
             <result name="login" type="redirect">/login</result>
         </global-results>
