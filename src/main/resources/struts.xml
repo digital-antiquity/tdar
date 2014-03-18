@@ -105,8 +105,8 @@
                 <param name="location">/WEB-INF/content/errors/page-not-found.ftl</param>
             </result>
             <result name="gone" type="freemarkerhttp">
-                <param name="status">404</param>
-                <param name="location">/WEB-INF/content/errors/page-not-found.ftl</param>
+                <param name="status">410</param>
+                <param name="location">/WEB-INF/content/errors/resource-deleted.ftl</param>
             </result>
             <!--  NOTE: we should be doing ONLY redirects here because if something went wrong , the values are likely not on the stack; 
             		thus a redirect clears the stack (values match IndexAction)-->
