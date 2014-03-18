@@ -19,6 +19,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
@@ -29,6 +30,7 @@ import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AutocompleteTitleQueryPart;
 import org.tdar.search.query.part.CategoryTermQueryPart;
+import org.tdar.search.query.part.CollectionAccessQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.ProjectIdLookupQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
@@ -192,32 +194,12 @@ public class LookupController extends AbstractLookupController<Indexable> {
         // only return results if query length has enough characters
         if (checkMinString(term)) {
             q.append(new AutocompleteTitleQueryPart(getTerm()));
-            q.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
-
-            // setup the rights; by default allow people to see things they have the rights to "view" or are public
-            QueryPartGroup rightsGroup = new QueryPartGroup(Operator.OR);
-            rightsGroup.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
-
-            // if the Permissions property is set, we're in the context of the Resource or Collection Controllers and are likely looking
-            // for collections the person administers and thus can modify contents (ADMINISTER_GROUP); but MODIFY may be useful in the future
-            if (Persistable.Base.isNotNullOrTransient(getAuthenticatedUser())) {
-                FieldQueryPart<Long> fieldQueryPart = new FieldQueryPart<>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, getAuthenticatedUser().getId());
-                switch (getPermission()) {
-                    case MODIFY_RECORD:
-                    case MODIFY_METADATA:
-                        fieldQueryPart.setFieldName(QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY);
-                        q.append(fieldQueryPart);
-                        break;
-                    case ADMINISTER_GROUP:
-                        fieldQueryPart.setFieldName(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER);
-                        q.append(fieldQueryPart);
-                        break;
-                    default:
-                        rightsGroup.append(fieldQueryPart);
-                        q.append(rightsGroup);
-                        break;
-                }
+            boolean admin = false;
+            if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
+                admin = true;
             }
+            CollectionAccessQueryPart queryPart = new CollectionAccessQueryPart(getAuthenticatedUser(), admin, getPermission());
+            q.append(queryPart);
             try {
                 handleSearch(q);
             } catch (ParseException e) {
