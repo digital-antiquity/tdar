@@ -25,12 +25,20 @@ public class ExceptionWrapper implements Serializable {
     private static final String CODE_NULL_STACKTRACE = "0";
     public static final int CODE_MAXLENGTH = 5;
 
+    public static final String SEPARATOR = "::";
+
     public ExceptionWrapper() {
     }
 
     public ExceptionWrapper(String string, Throwable e) {
         this.message = string;
         this.stackTrace = ExceptionUtils.getFullStackTrace(e);
+        this.code = ExceptionWrapper.convertExceptionToCode(stackTrace);
+    }
+
+    public ExceptionWrapper(String string, String stackTrace) {
+        this.message = string;
+        this.stackTrace = stackTrace;
         this.code = ExceptionWrapper.convertExceptionToCode(stackTrace);
     }
 
@@ -52,7 +60,7 @@ public class ExceptionWrapper implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s :: %s", getMessage(), getStackTrace());
+        return String.format("%s %s %s", getMessage(), SEPARATOR, getStackTrace());
     }
 
     public boolean isFatal() {

@@ -182,7 +182,7 @@
     </#if>
     
 
-    <#if actionErrors?has_content || fieldErrors?has_content>
+    <#if actionErrors?has_content || fieldErrors?has_content || historicalFileErrors?has_content>
             <div class="alert alert-error error-banner">
                 <#if stackTraces?has_content>
                 <div class="error-codes pull-right" >
@@ -193,7 +193,17 @@
                 </div>
                 </#if>
                 <h4>${siteAcronym} <#if (resourceEditPage??)><@s.text name="error.action_resource_edit_error_header"/><#else><@s.text name="error.action_error_header"/></#if></h4>
-<img src="/images/caution.gif" alt='caution' class="pull-left">                <@s.actionerror cssClass="action-errors" theme="simple" />
+<img src="/images/caution.gif" alt='caution'  width="60" class="pull-left">                <@s.actionerror cssClass="action-errors" theme="simple" />
+				<#if historicalFileErrors?has_content>
+				<b>These errors occurred in the past, when the file was initially processed. </b>
+					<ul>
+					<#list historicalFileErrors as fileError>
+						<li>${fileError.first.filename} ${fileError.second.message} 
+							<#if fileError.second.errorCode?has_content>[${fileError.second.errorCode}]</#if></li>
+					</#list>
+					</ul>
+				</#if>
+
                 <@s.fielderror  cssClass="field-errors"  theme="simple"/>
                 <br/>
                 <#if moreInfoUrlKey?has_content>

@@ -104,7 +104,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 }
             }
             if (CollectionUtils.isNotEmpty(gpsValues)) {
-                getWorkflowContext().getExceptions().add(new ExceptionWrapper(MessageHelper.getMessage("indexableText.gps_message", gpsValues), null));
+                getWorkflowContext().getExceptions().add(new ExceptionWrapper(MessageHelper.getMessage("indexableText.gps_message", gpsValues), ""));
             }
         } catch (Throwable t) {
             // Marking this as a "warn" as it's a derivative

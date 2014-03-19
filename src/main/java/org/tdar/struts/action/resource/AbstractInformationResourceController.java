@@ -36,6 +36,8 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.utils.ExceptionWrapper;
+import org.tdar.utils.Pair;
 
 /**
  * $Id$
@@ -72,7 +74,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private List<Language> languages;
     private List<FileProxy> fileProxies = new ArrayList<>();
     private String json = "{}";
-
     private Long projectId;
 
     // previously uploaded files list in json format, needed by blueimp jquery file upload
@@ -701,4 +702,20 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public boolean isResourceEditPage() {
         return true;
     }
+    
+    public List<Pair<InformationResourceFile, ExceptionWrapper>> getHistoricalFileErrors() {
+        List<Pair<InformationResourceFile, ExceptionWrapper>> toReturn = new ArrayList<>();
+        for (InformationResourceFile file : getPersistable().getFilesWithProcessingErrors()) {
+            String message = file.getErrorMessage();
+            String stackTrace = file.getErrorMessage();
+            if (StringUtils.contains(message, ExceptionWrapper.SEPARATOR)) {
+                message = message.substring(0, message.indexOf(ExceptionWrapper.SEPARATOR));
+                stackTrace = stackTrace.substring(stackTrace.indexOf(ExceptionWrapper.SEPARATOR) + 2);
+            }
+            Pair<InformationResourceFile, ExceptionWrapper> pair = Pair.create(file, new ExceptionWrapper(message, stackTrace));
+            toReturn.add(pair);
+        }
+        return toReturn;
+    }
+    
 }
