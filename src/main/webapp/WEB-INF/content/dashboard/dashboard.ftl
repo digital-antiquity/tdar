@@ -57,8 +57,10 @@
 
 <#if overdrawnAccounts?has_content>
 <div class="alert-error alert">
-<h3>The following accounts are overdrawn</h3>
-<p>An overdrawn account means that some resources will not be visible or usable within tDAR, and may ultimately be deleted or removed from tDAR.  To address this, please <a href="<@s.url value="/cart/add"/>">purchase more space or files</a> to cover the additional usage.</p>
+<h3><@s.text name="dashboard.overdrawn_title"/></h3>
+<p><@s.text name="dashboard.overdrawn_description" />
+	<a href="<@s.url value="/cart/add"/>"><@s.text name="dashboard.overdrawn_purchase_link_text" /></a>
+	</p>
 <ul> 
 <#list overdrawnAccounts as account>
    <li>
