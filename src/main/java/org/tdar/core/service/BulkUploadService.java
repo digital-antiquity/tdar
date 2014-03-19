@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -47,7 +48,6 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Project;
@@ -79,6 +79,8 @@ import org.tdar.utils.activity.Activity;
 @Transactional
 @Service
 public class BulkUploadService {
+
+    private static final String ASTERISK = "*";
 
     @Autowired
     private EntityService entityService;
@@ -508,7 +510,7 @@ public class BulkUploadService {
         Row columnNamesRow = proxy.getColumnNamesRow();
         for (int i = columnNamesRow.getFirstCellNum(); i <= columnNamesRow.getLastCellNum(); i++) {
             String name = excelService.getCellValue(formatter, evaluator, columnNamesRow, i);
-            name = StringUtils.replace(name, "*", "").trim(); // remove required char
+            name = StringUtils.replace(name, ASTERISK, "").trim(); // remove required char
             proxy.getColumnNames().add(name);
 
             CellMetadata cellMetadata = cellLookupMap.get(name);
@@ -561,31 +563,14 @@ public class BulkUploadService {
                 count++;
                 float percent = (count / Float.valueOf(proxy.getFileProxies().size())) * 50;
                 proxy.getAsyncUpdateReceiver().update(percent, " processing " + fileName);
-                String extension = FilenameUtils.getExtension((fileName.toLowerCase()));
-                ResourceType suggestTypeForFile = analyzer.suggestTypeForFileExtension(extension, getResourceTypesSupportingBulkUpload());
+                ResourceType suggestTypeForFile = analyzer.suggestTypeForFileName(fileName, getResourceTypesSupportingBulkUpload());
                 if (suggestTypeForFile == null) {
-                    // fail fast for validation
                     logger.debug("skipping because cannot figure out extension for file {}",fileName);
-                    List<Object> vals = new ArrayList<>();
-                    vals.add(fileName);
-                    proxy.getAsyncUpdateReceiver().addError(new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", vals));
+                    proxy.getAsyncUpdateReceiver().addError(new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", Arrays.asList(fileName)));
                     continue;
                 }
-                Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
 
-                ActionMessageErrorListener listener = new ActionMessageErrorListener();
-                if (InformationResource.class.isAssignableFrom(resourceClass)) {
-                    logger.info("saving " + fileName + "..." + suggestTypeForFile);
-                    InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass, false);
-                    informationResource.setReadyToIndex(false);
-                    informationResource.setTitle(fileName);
-                    informationResource.markUpdated(proxy.getSubmitter());
-                    informationResource.setDescription(" ");
-                    proxy.getResourcesCreated().put(fileName, informationResource);
-                    if (listener.hasActionErrors()) {
-                        proxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
-                    }
-                }
+                createResourceAndAddToProxyList(image, proxy, fileName, suggestTypeForFile);
             } catch (Exception e) {
                 logger.error("something happend", e);
                 proxy.getAsyncUpdateReceiver().addError(e);
@@ -595,16 +580,36 @@ public class BulkUploadService {
     }
 
     /**
+     * Create the actual resource and add it to the proxy list
+     * @param image
+     * @param proxy
+     * @param fileName
+     * @param suggestTypeForFile
+     */
+    private void createResourceAndAddToProxyList(final InformationResource image, final BulkManifestProxy proxy, String fileName,
+            ResourceType suggestTypeForFile) {
+        ActionMessageErrorListener listener = new ActionMessageErrorListener();
+        Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
+        if (InformationResource.class.isAssignableFrom(resourceClass)) {
+            logger.info("saving " + fileName + "..." + suggestTypeForFile);
+            InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass, false);
+            informationResource.setReadyToIndex(false);
+            informationResource.setTitle(fileName);
+            informationResource.markUpdated(proxy.getSubmitter());
+            informationResource.setDescription(" ");
+            proxy.getResourcesCreated().put(fileName, informationResource);
+            if (listener.hasActionErrors()) {
+                proxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
+            }
+        }
+    }
+
+    /**
      * get the set of @link ResourceType enums that support BulkUpload
      * @return
      */
     public ResourceType[] getResourceTypesSupportingBulkUpload() {
-        List<ResourceType> types = new ArrayList<ResourceType>();
-        for (ResourceType type : ResourceType.values()) {
-            if (type.supportBulkUpload())
-                types.add(type);
-        }
-        return types.toArray(new ResourceType[0]);
+        return ResourceType.getTypesSupportingBulkUpload();
 
     }
 
@@ -746,7 +751,6 @@ public class BulkUploadService {
             return;
         }
         AsyncUpdateReceiver asyncUpdateReceiver = manifestProxy.getAsyncUpdateReceiver();
-
         FormulaEvaluator evaluator = manifestProxy.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
 
         int rowNum = 0;
@@ -860,13 +864,8 @@ public class BulkUploadService {
                 }
                 logger.debug("resourceCreators:{}", resourceToProcess.getResourceCreators());
                 if (requiredFields.size() > 0) {
-                    String msg = MessageHelper.getMessage("bulkUploadService.required_fields_missing",Arrays.asList(filename));
-                    for (CellMetadata meta : requiredFields) {
-                        logger.trace("{}", meta);
-                        msg += meta.getDisplayName() + ", ";
-                    }
-                    msg = msg.substring(0, msg.length() - 2);
-                    throw new TdarRecoverableRuntimeException(msg);
+                    List<String> required = (List<String>) CollectionUtils.collect(requiredFields, new BeanToPropertyValueTransformer("displayName"));
+                    throw new TdarRecoverableRuntimeException("bulkUploadService.required_fields_missing",Arrays.asList(filename, StringUtils.join(required, ", ")));
                 }
             } catch (Throwable t) {
                 logger.debug("excel mapping error: {}", t.getMessage(), t);
@@ -876,10 +875,19 @@ public class BulkUploadService {
         }
     }
 
+    /**
+     * is this one of the test file names, or is there something wrong with the resource?
+     * @param filename
+     * @param resourceToProcess
+     * @return
+     */
     private boolean shouldSkipFilename(String filename, Resource resourceToProcess) {
-        return resourceToProcess == null || StringUtils.isBlank(filename) || 
-                filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)
-                || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF);
+        if (filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)
+                || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF)) {
+            logger.debug("skipping template sample filenames (example...)");
+            return true;
+        }
+        return resourceToProcess == null || StringUtils.isBlank(filename);
     }
 
     /**

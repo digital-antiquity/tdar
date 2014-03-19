@@ -70,10 +70,17 @@
             <#assign itemKey = stack.findValue('top')/>
             <#assign itemKeyStr = stack.findString('top')>
         </#if>
+
+		<#-- fixme remove when done testing 
 		<#if parameters.listValueKey??>
 			<#assign itemValue = stack.findString(parameters.listValueKey)/>
-			<#assign itemValue><@s.text name="${itemValue}"/></#assign>
+			<#if itemValue??>
+			${struts.getText?is_method?string }
+				<#assign itemValue = struts.getText('struts.messages.invalid.token')!"undef" />
+			</#if>
 	    <#elseif parameters.listValue??>
+		-->
+	    <#if parameters.listValue??>
             <#if stack.findString(parameters.listValue)??>
               <#assign itemValue = stack.findString(parameters.listValue)/>
             <#else>

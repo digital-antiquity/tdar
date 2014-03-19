@@ -1,5 +1,8 @@
 package org.tdar.core.bean.resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
@@ -286,5 +289,15 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizab
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
+    }
+
+    public static ResourceType[] getTypesSupportingBulkUpload() {
+        List<ResourceType> types = new ArrayList<>();
+        for (ResourceType type: values()) {
+            if (type.supportBulkUpload()) {
+                types.add(type);
+            }
+        }
+        return types.toArray(new ResourceType[0]);
     }
 }

@@ -73,7 +73,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private String phase;
     private List<Pair<Long, String>> details;
     private String asyncErrors;
-    private int maxReferenceRow = 0;
     private File templateFile;
     private String templateFilename;
 
@@ -250,7 +249,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Override
     public Collection<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT, ResourceType.DATASET);
+        return analyzer.getExtensionsForTypes(ResourceType.getTypesSupportingBulkUpload());
     }
 
     @Override

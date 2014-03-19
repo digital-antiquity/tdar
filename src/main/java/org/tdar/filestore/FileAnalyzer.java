@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,6 +180,11 @@ public class FileAnalyzer {
             return true;
         }
         return false;
+    }
+
+    public ResourceType suggestTypeForFileName(String fileName, ResourceType[] resourceTypesSupportingBulkUpload) {
+        String extension = FilenameUtils.getExtension((fileName.toLowerCase()));
+        return suggestTypeForFileExtension(extension, resourceTypesSupportingBulkUpload);
     }
 
 }
