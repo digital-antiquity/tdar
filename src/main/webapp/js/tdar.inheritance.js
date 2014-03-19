@@ -515,7 +515,7 @@ function _processInheritance(formId) {
     var optionsList = [
         {
             //todo:  derive section name from section header
-            sectionName: "Site Information",
+            sectionNameSelector: "#siteInfoSectionLabel",
             cbSelector : '#cbInheritingSiteInformation',
             divSelector : '#siteSection',
             mappedData : "siteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -530,7 +530,7 @@ function _processInheritance(formId) {
             }
         },
         {
-            sectionName: "Temporal Coverage",
+            sectionNameSelector: "#temporalInfoSectionLabel",
             cbSelector : '#cbInheritingTemporalInformation',
             divSelector : '#temporalSection',
             mappedData : "temporalInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -543,7 +543,7 @@ function _processInheritance(formId) {
             }
         },
         {
-            sectionName: "Cultural Information",
+            sectionNameSelector: "#culturalInfoSectionLabel",
             cbSelector : '#cbInheritingCulturalInformation',
             divSelector : '#divCulturalInformation',
             mappedData : "culturalInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -556,7 +556,7 @@ function _processInheritance(formId) {
             }
         },
         {
-            sectionName: "General Keywords",
+            sectionNameSelector: "#generalInfoSectionLabel",
             cbSelector : '#cbInheritingOtherInformation',
             divSelector : '#divOtherInformation',
             mappedData : "otherInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -568,7 +568,7 @@ function _processInheritance(formId) {
             }
         },
         {
-            sectionName: "Investigation Information",
+            sectionNameSelector: "#investigationInfoSectionLabel",
             cbSelector : '#cbInheritingInvestigationInformation',
             divSelector : '#divInvestigationInformation',
             mappedData : "investigationInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -580,7 +580,7 @@ function _processInheritance(formId) {
             }
         },
         {
-            sectionName: "Material Types",
+            sectionNameSelector: "#materialInfoSectionLabel",
             cbSelector : '#cbInheritingMaterialInformation',
             divSelector : '#divMaterialInformation',
             mappedData : "materialInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -592,7 +592,7 @@ function _processInheritance(formId) {
             }
         },
         {
-            sectionName: "Notes",
+            sectionNameSelector: "#notesInfoSectionLabel",
             cbSelector : '#cbInheritingNoteInformation',
             divSelector : '#resourceNoteSection',
             mappedData : "noteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -634,7 +634,7 @@ function _processInheritance(formId) {
             }
         },
         {
-            sectionName: "Museum or Archive Collections",
+            sectionNameSelector: "#relatedCollectionInfoSectionLabel",
             cbSelector : '#cbInheritingCollectionInformation',
             divSelector : '#relatedCollectionsSection',
             mappedData : "collectionInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -665,7 +665,7 @@ function _processInheritance(formId) {
             }
         },
         {
-            sectionName: "Agency Identifiers",
+            sectionNameSelector: "#identifierInfoSectionLabel",
             cbSelector : '#cbInheritingIdentifierInformation',
             divSelector : '#divIdentifiers',
             mappedData : "resourceAnnotations", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -685,7 +685,7 @@ function _processInheritance(formId) {
             }
         },
         {
-            sectionName: "Spatial Terms / Agencey Information",
+            sectionNameSelector: "#spatialInfoSectionLabel",
             cbSelector : '#cbInheritingSpatialInformation',
             divSelector : '#divSpatialInformation',
             mappedData : "collectionInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -703,7 +703,7 @@ function _processInheritance(formId) {
         },
 
         {
-            sectionName: "Individual and Institutional Roles",
+            sectionNameSelector: "#creditInfoSectionLabel",
             cbSelector: "#cbInheritingCreditRoles",
             divSelector: "#creditSection",
             mappedData: "creditProxies",
@@ -827,7 +827,7 @@ function _displayOverwritePrompt(optionsList, okaySelected, cancelSelected) {
     //populate list of conflicting sections
     var $ul = $("<ul></ul>");
     $.each(optionsList, function(idx, options){
-        $ul.append("<li>" + options.sectionName + "</li>");
+        $ul.append("<li>" + $(options.sectionNameSelector).text() + "</li>");
     });
     $modalDiv.find('.list-container').empty().append($ul);
 
@@ -992,7 +992,7 @@ function _enableMap() {
      *
      * @param options  settings object (all properties required)
      *          cbSelector: selector for the checkbox element that enables/disables inheritance for the section,
-     *          sectionName: string used for the label beside the section checkbox
+     *          sectionNameSelector: string used for the label beside the section checkbox
      *          divSelector: selector for the DIV that contains all of the elements in the inheritence section
      *
      */
@@ -1003,7 +1003,7 @@ function _enableMap() {
         var $form = $checkbox.closest("form");
         var formId = $form.attr("id");
         var _options = {
-                sectionName: "",
+                sectionNameSelector: "",
                 isSafeCallback: function(){return true;},
                 //fixme: getObjValue(json, options.mappedData) instead?
                 inheritSectionCallback: function() {_inheritInformation(formId, TDAR.inheritance.json[_options.mappedData]);}, 

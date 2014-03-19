@@ -77,7 +77,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#-- render the "spatial information" section:geographic keywords, map, coordinates, etc. -->
 <#macro spatialContext showInherited=true>
 <div class="well-alt" id="spatialSection">
-    <h2>Spatial Terms</h2>
+    <h2 id="spatialInfoSectionLabel">Spatial Terms</h2>
     <@_inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited />
     <div id="divSpatialInformation">
 
@@ -152,7 +152,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#-- emit the "temporal context" section (temporal coverage, temporal keywords) -->
 <#macro temporalContext showInherited=true>
 <div class="well-alt" id="temporalSection">
-    <h2>Temporal Coverage</h2>
+    <h2 id="temporalInfoSectionLabel">Temporal Coverage</h2>
     <@_inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
     <div  id="divTemporalInformation">
         <div data-tiplabel="Temporal Terms" data-tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
@@ -185,7 +185,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <div  
     data-tiplabel="General Keywords"
     data-tooltipcontent="Keyword list: Select the artifact types discussed in the document.">   
-    <h2>General Keywords</h2>
+    <h2 id="generalInfoSectionLabel">General Keywords</h2>
     <@_inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited />
     <div id="divOtherInformation">
         <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
@@ -199,7 +199,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro siteKeywords showInherited=true divTitle="Site Information">
 <@helptext.siteName />
 <div id="siteSection" data-tooltipcontent="#siteinfohelp">
-    <h2>${divTitle}</h2>
+    <h2 id="siteInfoSectionLabel">${divTitle}</h2>
     <@_inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
     <div id="divSiteInformation" >
         <@keywordRows "Site Name" siteNameKeywords 'siteNameKeywords' />
@@ -225,7 +225,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro materialTypes showInherited=true>
 <div data-tooltipcontent="#materialtypehelp">
 <@helptext.materialType />
-    <h2>Material Types</h2>
+    <h2 id="materialInfoSectionLabel">Material Types</h2>
     <@_inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
     <div id="divMaterialInformation">
         <@s.checkboxlist theme="bootstrap" name='materialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
@@ -243,7 +243,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro culturalTerms showInherited=true inline=false>
 <div data-tooltipcontent="#culturehelp">
 <@helptext.cultureTerms />
-    <h2>${culturalTermsLabel!"Cultural Terms"}</h2>
+    <h2 id="culturalInfoSectionLabel">${culturalTermsLabel!"Cultural Terms"}</h2>
     <@_inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
     <div id="divCulturalInformation" >
         <div class="control-group">
@@ -265,7 +265,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
  -->
 <#macro investigationTypes showInherited=true >
 <div data-tiplabel="Investigation Types" data-tooltipcontent="#investigationtypehelp" id="investigationSection">
-    <h2>Investigation Types</h2>
+    <h2 id="investigationInfoSectionLabel">Investigation Types</h2>
     <@_inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited />
     <div id="divInvestigationInformation">
     
@@ -429,7 +429,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#if _sourceCollections.empty><#local _sourceCollections = [blankSourceCollection] /></#if>
 <#if _relatedComparativeCollections.empty><#local _relatedComparativeCollections = [blankRelatedComparativeCollection] /></#if>
 <div class="well-alt" id="relatedCollectionsSectionGlide">
-    <h2>Museum or Archive Collections</h2>
+    <h2 id="relatedCollectionInfoSectionLabel">Museum or Archive Collections</h2>
     <@_inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited />
     <div id="relatedCollectionsSection">
         <div id="divSourceCollectionControl" class="control-group repeatLastRow">
@@ -493,7 +493,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#if _resourceNotes.empty >
     <#local _resourceNotes = [blankResourceNote] />
     </#if>
-    <h2>Notes</h2>
+    <h2 id="notesInfoSectionLabel">Notes</h2>
     <@_inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited />
     <div id="resourceNoteSection" class="control-group repeatLastRow">
         <label class="control-label">Type / Contents</label>
@@ -565,7 +565,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <div class="" data-tiplabel="${sectionTitle}" 
     id="${prefix}Section"
     data-tooltipcontent="#divResourceCreatorsTip">
-    <h2>${sectionTitle}</h2>
+    <h2 id="${prefix}InfoSectionLabel">${sectionTitle}</h2>
     <#nested>
     <div id="${prefix}Table" class="table repeatLastRow creatorProxyTable">
         <#list _proxies as proxy>
@@ -688,7 +688,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </#if>
     <div id="divIdentifiersGlide" data-tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" data-tooltipcontent="#divIdentifiersTip">
         <@helptext.identifiers />
-        <h2><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
+        <h2 id="identifierInfoSectionLabel"><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
         <@_inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
         <div id="divIdentifiers" class="repeatLastRow">
             <div class="control-group">
