@@ -186,16 +186,17 @@
             <div class="alert alert-error error-banner">
                 <#if stackTraces?has_content>
                 <div class="error-codes pull-right" >
-                    <strong>Error codes</strong>:
+                    <strong><@s.text name="error.action_error_codes"/></strong>
                     <#list stackTraces as code>
                     <span class="error-code">${code}</span>
                     </#list>
                 </div>
                 </#if>
                 <h4>${siteAcronym} <#if (resourceEditPage??)><@s.text name="error.action_resource_edit_error_header"/><#else><@s.text name="error.action_error_header"/></#if></h4>
-<img src="/images/caution.gif" alt='caution'  width="60" class="pull-left">                <@s.actionerror cssClass="action-errors" theme="simple" />
+				<img src="/images/caution.gif" alt='caution'  width="60" class="pull-left"> 
+				<@s.actionerror cssClass="action-errors" theme="simple" />
 				<#if historicalFileErrors?has_content>
-				<b>These errors occurred in the past, when the file was initially processed. </b>
+				<b><@s.text name="error.action_resource_edit_historical"/></b>
 					<ul>
 					<#list historicalFileErrors as fileError>
 						<li>${fileError.first.filename} ${fileError.second.message} 
@@ -207,7 +208,8 @@
                 <@s.fielderror  cssClass="field-errors"  theme="simple"/>
                 <br/>
                 <#if moreInfoUrlKey?has_content>
-                More information about these errors is available at: <a href="<@s.text value="${moreInfoUrlKey}"/>"><@s.text value="${moreInfoUrlKey}"/></a>
+				<@s.text name="error.action_more_info_url" />
+                <a href="<@s.text value="${moreInfoUrlKey}"/>"><@s.text value="${moreInfoUrlKey}"/></a>
                 </#if>
             </div>
     </#if>
