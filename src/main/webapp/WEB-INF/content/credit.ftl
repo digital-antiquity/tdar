@@ -73,3 +73,6 @@ Australia  2012</p>
 <b>Collaboration by</b>  Jack Biesek, Gladys Brenner, Margaret Faye, Healther Merrifield, Kate Keating, Wendy Olmstead, Todd Pierce, Jamie Cowgill & Jim Bolek <br/>
 United States  2004</p>
 
+<p><b><a href="http://thenounproject.com/term/caution/7526/">http://thenounproject.com/term/caution/7526/</a><br/>
+<b>Designed By</b> Benni<br/>
+DE 2012</p>
