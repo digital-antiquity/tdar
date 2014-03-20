@@ -159,7 +159,7 @@
 		                <#assign typeLabel = ""/>
 		                <#if column.measurementUnit?has_content><#assign typeLabel = "measurement"/></#if>
 		                <#if column.defaultCodingSheet?has_content><#assign typeLabel = "coded"/></#if>
-		                <#if column.defaultOntology?has_content><#assign typeLabel = "integration"/></#if>
+		                <#if column.defaultOntology?has_content || (column.defaultCodingSheet.defaultOntology)?has_content><#assign typeLabel = "integration"/></#if>
 		                <#if column.columnEncodingType?has_content && column.columnEncodingType == 'COUNT'><#assign typeLabel = "count"/></#if>
 		                <#if column.mappingColumn?has_content && column.mappingColumn ><#assign typeLabel = "mapped"/></#if>
 		                <td class="guide" nowrap><span class="columnSquare ${typeLabel}"></span><b>
@@ -180,9 +180,16 @@
 		                    <#else>none</#if>
 		                </td><td>
 		                <#if column.defaultOntology?? >
-		                <a href="<@s.url value="/ontology/${column.defaultOntology.id?c}"/>">
-		                    ${column.defaultOntology.title!"no title"}</a>
-		                <#else>none</#if>
+			                <#assign ont = column.defaultOntology/>
+		                <#elseif (column.defaultCodingSheet.defaultOntology)?has_content>
+		                	<#assign ont = column.defaultCodingSheet.defaultOntology />
+						</#if>
+						<#if ont??>
+		                <a href="<@s.url value="/ontology/${ont.id?c}"/>">
+		                    ${ont.title!"no title"}</a>
+		                <#else>
+		                none
+		                </#if>
 		                </td>
 		            </tr>
 		            </#list>
