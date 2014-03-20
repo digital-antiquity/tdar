@@ -414,7 +414,7 @@
         </#list>
         <#if contents?has_content>
         	<#assign keyLabel>${key.key}(s)</#assign>
-            <@kvp key=keyLabel val=contents noescape=true />
+            <@view.kvp key=keyLabel val=contents noescape=true />
         </#if>
     </#list>
     </#if>
@@ -462,7 +462,7 @@
             <h3>Additional Metadata</h3>
             <#list map?keys as key>
                 <#if key?? && map.get(key)?? && key.visible?? && key.visible>
-				   <@kvp key=key.displayName!"unknown field" val=map.get(key)!"unknown value" />
+				   <@view.kvp key=key.displayName!"unknown field" val=map.get(key)!"unknown value" />
                 </#if>
             </#list>
         </#if>

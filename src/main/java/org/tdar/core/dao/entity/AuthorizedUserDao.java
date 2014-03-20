@@ -140,7 +140,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
                 result = CacheResult.FALSE;
             }
         }
-        getLogger().debug("  [{}] checkUserPermissionCache: {} {} [sesion: {}]", result, person, permission, currentSession);
+        getLogger().debug("  [{}] checkUserPermissionCache: {} {} [sesion: {}] {}", result, person, permission, currentSession, collectionIds);
         return result;
     }
 
