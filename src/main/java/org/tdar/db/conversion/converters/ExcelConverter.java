@@ -230,7 +230,7 @@ public class ExcelConverter extends DatasetConverter.Base {
                         cellValue = null;
                     }
                     valueColumnMap.put(dataTable.getDataTableColumns().get(columnIndex), cellValue);
-                    statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(columnIndex), cellValue);
+                    statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(columnIndex), cellValue, rowIndex);
                 }
             }
             logger.trace("inserting {} into {}", valueColumnMap, dataTable.getName());

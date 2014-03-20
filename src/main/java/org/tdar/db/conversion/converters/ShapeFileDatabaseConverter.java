@@ -144,7 +144,9 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         try {
             @SuppressWarnings("unused")
             int rowCount = collection.size();
+            int rowNum = 0;
             while (iterator.hasNext()) {
+                rowNum++;
                 HashMap<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
                 Feature feature = iterator.next();
                 StringBuilder sb = new StringBuilder();
@@ -153,7 +155,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
                     String value = prop.getValue().toString();
                     valueColumnMap.put(column, value);
                     sb.append(value).append(" ");
-                    statisticsManager.updateStatistics(column, value);
+                    statisticsManager.updateStatistics(column, value, rowNum);
 
                 }
                 targetDatabase.addTableRow(dataTable, valueColumnMap);

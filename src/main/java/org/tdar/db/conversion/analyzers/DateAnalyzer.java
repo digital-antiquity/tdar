@@ -7,6 +7,7 @@ import org.antlr.runtime.tree.Tree;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 import com.joestelmach.natty.DateGroup;
@@ -102,7 +103,7 @@ public class DateAnalyzer implements ColumnAnalyzer {
      * For a String, see if it can be converted to a valid date
      */
     @Override
-    public boolean analyze(final String value) {
+    public boolean analyze(final String value, final DataTableColumn column, final int rowNumber) {
         if (null == value) {
             return false;
         }

@@ -67,7 +67,7 @@ public class DateAnalyzerTest {
     }
 
     private void testLength(final String target, final int expectation) {
-        da.analyze(target);
+        da.analyze(target, null, 1);
         final int length = da.getLength();
         assertTrue("DateAnalyzer.getLength() should return " + expectation + " for the string '" + target + "', not " + length, length == expectation);
     }
@@ -96,46 +96,46 @@ public class DateAnalyzerTest {
 
     @Test
     public void doesNotThrowExceptionOnNonDateString() {
-        da.analyze("ostridge");
+        da.analyze("ostridge", null, 1);
     }
 
     @Test
     public void doesNotReturnDateOnNonDateString() {
-        assertFalse("An ostridge is not a date!", da.analyze("ostridge"));
+        assertFalse("An ostridge is not a date!", da.analyze("ostridge", null, 1));
     }
 
     @Test
     public void doesFindValidDate() {
         for (String aDate : validDates) {
-            assertTrue("A valid date has not been found: " + aDate, da.analyze(aDate));
+            assertTrue("A valid date has not been found: " + aDate, da.analyze(aDate, null, 1));
         }
     }
 
     @Test
     public void doesFindFaultyDates() {
         for (String aDate : faultyDates) {
-            assertTrue("A valid date has not been created: " + aDate, da.analyze(aDate));
+            assertTrue("A valid date has not been created: " + aDate, da.analyze(aDate, null, 1));
         }
     }
 
     @Test
     public void invalidDatesAreRejected() {
         for (String aDate : invalidDates) {
-            assertFalse("An invalid date has been accepted: " + aDate, da.analyze(aDate));
+            assertFalse("An invalid date has been accepted: " + aDate, da.analyze(aDate, null, 1));
         }
     }
 
     @Test
     public void alternativeDatesAreRejected() {
         for (String aDate : alternativeDates) {
-            assertFalse("An alternate date has been accepted: " + aDate, da.analyze(aDate));
+            assertFalse("An alternate date has been accepted: " + aDate, da.analyze(aDate, null, 1));
         }
     }
 
     @Test
     public void recurringDatesAreRejected() {
         for (String aDate : recurringDates) {
-            assertFalse("An recurring date has been accepted: " + aDate, da.analyze(aDate));
+            assertFalse("An recurring date has been accepted: " + aDate, da.analyze(aDate, null, 1));
         }
     }
 }

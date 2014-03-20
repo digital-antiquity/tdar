@@ -1,5 +1,10 @@
 package org.tdar.db.conversion.analyzers;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang.StringUtils;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
@@ -19,13 +24,22 @@ public class CharAnalyzer implements ColumnAnalyzer {
      * Analyze the String for length and validity
      */
     @Override
-    public boolean analyze(String value) {
+    public boolean analyze(String value, DataTableColumn column, int rowNumber) {
         if (value == null)
             return true;
         if ("".equals(value))
             return true;
         if (value.matches(EXCEL_BAD_REGEX)) {
-            throw new TdarRecoverableRuntimeException("charAnalyzer.excel_data_error");
+            String columnName = "unknown";
+            String tableName = "unknown";
+            if (StringUtils.isNotBlank(column.getDisplayName())) {
+                columnName = column.getDisplayName();
+            }
+            DataTable table = column.getDataTable();
+            if (table != null && StringUtils.isNotBlank(table.getDisplayName())) {
+                tableName =table.getDisplayName();
+            }
+            throw new TdarRecoverableRuntimeException("charAnalyzer.excel_data_error", Arrays.asList(rowNumber, columnName, tableName));
         }
         if (value.length() > len) {
             len = value.length();
