@@ -40,8 +40,8 @@
 
 <#if resourcesWithErrors?has_content>
 <div class="alert-error alert">
-<h3>The following Resources have files with Errors</h3>
-<p>${serviceProvider} cannot guarantee the proper archiving of files that have errors.  Please review and correct the errors or contact ${serviceProvider} for more information</p>
+<h3><@s.text name="dashboard.archiving_heading"/></h3>
+<p><@common.localtext "dashboard.archiving_errors", serviceProvider, serviceProvider /> </p>
 <ul> 
 <#list resourcesWithErrors as resource>
    <li>
@@ -73,8 +73,7 @@
 
 <div id="messages" style="margin:2px" class="hidden lt-ie8">
     <div id="message-ie-obsolete" class="message-error">
-    You appear to be using an older version of Internet Explorer.  Note that certain features in ${siteAcronym} may not work properly.  
-    <a href="http://www.microsoft.com/ie" target="_blank">Click here to learn more about Internet Explorer</a>
+    <@common.localtext "dashboard.ie_warning", siteAcronym, "<a href=\"http://www.microsoft.com/ie\" target=\"_blank\">","</a>" />
     </div>
 </div>
 
@@ -97,7 +96,7 @@
      The resources you can access are listed below.  To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or 
      <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on  the "upload" button above.
     </#if>
-    <p><strong>Jump To:</strong><a href="#project-list">Browse Resources</a> | <a href="#collection-section">Collections</a> | <a href="#divAccountInfo">Your Profile</a> | <a href="#billing">Billing Accounts</a> | <a href="#boomkarks">Bookmarks</a>
+    <p><strong>Jump To:</strong><a href="#project-list">Browse Resources</a> | <a href="#collection-section">Collections</a> | <a href="#divAccountInfo">Profile</a> | <a href="#billing">Billing Accounts</a> | <a href="#boomkarks">Bookmarks</a>
     </p>
     <hr/>
     </div>
@@ -144,7 +143,7 @@
 	        <h2>At a glance</h2>
 	            <div class="piechart row">
 	            <@common.generatePieJson statusCountForUser "statusForUser" />
-	            <@common.barGraph  data="statusForUser" searchKey="includedStatuses" graphHeight=150 context=true graphLabel="Your Resources By Status"/>
+	            <@common.barGraph  data="statusForUser" searchKey="includedStatuses" graphHeight=150 context=true graphLabel="Resources By Status"/>
 		     </div>
 	         <div class="piechart row">
  	            <@common.generatePieJson resourceCountForUser "resourceCountForUser" />
@@ -153,7 +152,7 @@
  	               legend: { show:true, location: 's', rendererOptions: {numberColumns: 3} }
  	               };
  	            </script>
-	            <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=280 context=true config="pcconfig" graphLabel="Your Resources By Type"/>
+	            <@common.pieChart  data="resourceCountForUser" searchKey="resourceTypes" graphHeight=280 context=true config="pcconfig" graphLabel="Resources By Type"/>
 	        </div>
 	    </div>
 	</div>
@@ -164,7 +163,7 @@
 
 	<div class="row">
 	    <div class="span9">
-	        <h2>Item(s) You've Recently Updated</h2>
+	        <h2><@s.text name="dashboard.recently_updated"/></h2>
 	        <ol id='recentlyEditedResources'>
 	          
 	            <#list recentlyEditedResources as res>
@@ -172,8 +171,8 @@
 	               <span class="fixed">
 	                        <@common.cartouche res true>
 	                <span class="recent-nav">
-	                    <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
-	                    <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
+	                    <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
+	                    <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
 	                </span>
 	                        <a href="<@s.url value='/${res.urlNamespace}/view'
 	                           ><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 60 /></a>
@@ -204,8 +203,8 @@
 	                 
 	            <div class="recent-nav pull-right">
 	                <a href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>" title="add a resource to this project">add resource</a> |
-	                <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
-	                <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>" >delete</a>
+	                <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
+	                <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>" ><@s.text name="menu.delete" /></a>
 	            </div>
 	        </li>
 	        </#list>
@@ -254,7 +253,7 @@
 <#macro accountSection>
 <div id="accountSection" class="row">
 	<div id="divAccountInfo" class="<#if payPerIngestEnabled>span4<#else>span9</#if>">
-	<h2>About You</h2>
+	<h2>About ${authenticatedUser.firstName}</h2>
 	    <strong>Full Name: </strong>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
 	    <#if authenticatedUser.penultimateLogin??>
 	        <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
@@ -274,7 +273,7 @@
 <#macro bookmarksSection>
 <div class="row">
 	<div class="span9">
-	<h2 id="bookmarks">Your Bookmarks</h2>
+	<h2 id="bookmarks">Bookmarks</h2>
 	<#if bookmarkedResources??>
 	<#--	   <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE'  bookmarkable=true  orientation='LIST_LONG' listTag='ol' headerTag="h3" /> -->
 	

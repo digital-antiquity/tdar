@@ -1020,10 +1020,10 @@ this bit of freemarker is voodoo:
            ${address.street2}</span><br/>
            <span itemprop="addressLocality">${address.city}</span>, <span itemprop="addressRegion">${address.state}</span>, <span itemprop="postalCode">${address.postal}</span><br/>
            <span itemprop="addressCountry">${address.country}</span><#if modifiable><br/>
-           <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/address?addressId=${address.id}"/>">edit</a>
+           <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/address?addressId=${address.id}"/>"><@s.text name="menu.edit" /></a>
            </#if><#if deletable && modifiable> |</#if> 
            <#if deletable>
-               <a href="/entity/${creatorType}/${creatorId?c}/delete-address?addressId=${address.id}">delete</a>
+               <a href="/entity/${creatorType}/${creatorId?c}/delete-address?addressId=${address.id}"><@s.text name="menu.delete" /></a>
            </#if>
         </p>
 </#macro>
