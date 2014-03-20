@@ -1190,38 +1190,6 @@
 					<configLocation>src/main/resources/check_style.xml</configLocation>
 				</configuration>
 			</plugin>
-
-
-<!-- 
-			 <plugin>
-                <groupId>org.nanoko.coffee-mill</groupId>
-                <artifactId>coffee-mill-maven-plugin</artifactId>
-                <version>1.0.1</version>
-                <configuration>
-                
-	             <javaScriptDir>src/main/webapp/js/</javaScriptDir>
-	             <stylesheetsDir>src/main/webapp/css/</stylesheetsDir>
-                </configuration>
-            </plugin>
-	      <plugin>
-	         <groupId>gr.abiss.mvn.plugins</groupId>
-	         <artifactId>maven-jstools-plugin</artifactId>
-	         <inherited>false</inherited>
-	         <configuration>
-	            <jsDir>src/main/webapp/js</jsDir>
-	            <includes>**/*.js</includes>
-	            <excludes>**/*-compressed.js</excludes>
-	            <caseSensitive>true</caseSensitive>
-	         </configuration>
-	         <reportSets>
-	            <reportSet>
-	               <reports>
-	                  <report>jslint</report>
-	               </reports>
-	            </reportSet>
-	         </reportSets>
-	      </plugin>
- -->
 	      <plugin>
 	        <groupId>org.apache.maven.plugins</groupId>
 	        <artifactId>maven-pmd-plugin</artifactId>
@@ -1232,6 +1200,11 @@
 	            <!-- Two rule sets that come bundled with PMD -->
 	            <ruleset>rulesets/java/braces.xml</ruleset>
 	            <ruleset>rulesets/java/naming.xml</ruleset>
+<!-- 
+	            <ruleset>rulesets/java/coupling.xml</ruleset>
+	            <ruleset>rulesets/java/design.xml</ruleset>
+ -->	            <ruleset>rulesets/java/optimizations.xml</ruleset>
+	            <ruleset>rulesets/java/sunsecure.xml</ruleset>
 	            <!-- Custom local file system rule set 
 	            <ruleset>d:\rulesets\strings.xml</ruleset>
 	             Custom remote rule set accessed via a URL 
