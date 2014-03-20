@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -193,7 +194,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         manifestProxy.setResourcesCreated(filenameResourceMap);
 
         bulkUploadService.readExcelFile(manifestProxy);
-        assertTrue(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors().contains("is not a valid value for the"));
+        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(),"");
+        assertTrue(asyncErrors.contains("is not a valid value for the"));
     }
 
     @Test
@@ -237,7 +239,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
         manifestProxy.setResourcesCreated(filenameResourceMap);
         bulkUploadService.readExcelFile(manifestProxy);
-        assertTrue(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors().contains("skipping line in excel file as resource with the filename"));
+        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(),"");
+        assertTrue(asyncErrors.contains("skipping line in excel file as resource with the filename"));
     }
 
     @Test
@@ -265,7 +268,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         manifestProxy.setResourcesCreated(filenameResourceMap);
 
         bulkUploadService.readExcelFile(manifestProxy);
-        assertTrue(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors().contains("is not valid for the resource type"));
+        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(),"");
+        assertTrue(asyncErrors.contains("is not valid for the resource type"));
     }
 
     @Test
