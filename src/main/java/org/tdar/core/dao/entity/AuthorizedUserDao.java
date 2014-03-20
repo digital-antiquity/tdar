@@ -152,13 +152,13 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             userPermissionsCache.put(currentSession, sessionMap);
         }
         /*
-         * FIXME: this can be enhanced to add keys for:
-         * each collectionId
-         * sub-permissions for more advanced permissions?
+         * FIXME: this can be enhanced to add keys for: each collectionId?
          */
-        UserPermissionCacheKey key = new UserPermissionCacheKey(person, permission, collectionIds);
-        if (result != null && result != CacheResult.NOT_FOUND) {
-            sessionMap.put(key, result.getBooleanEquivalent());
+        for (GeneralPermissions subPermission : permission.getLesserAndEqualPermissions()) {
+            UserPermissionCacheKey key = new UserPermissionCacheKey(person, subPermission, collectionIds);
+            if (result != null && result != CacheResult.NOT_FOUND) {
+                sessionMap.put(key, result.getBooleanEquivalent());
+            }
         }
     }
 

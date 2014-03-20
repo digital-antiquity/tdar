@@ -6,6 +6,9 @@
  */
 package org.tdar.core.bean.entity.permissions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
@@ -83,6 +86,16 @@ public enum GeneralPermissions implements HasLabel, Localizable {
         this.context = context;
     }
 
+    public List<GeneralPermissions> getLesserAndEqualPermissions() {
+        List<GeneralPermissions> permissions = new ArrayList<>();
+        for (GeneralPermissions permission : GeneralPermissions.values()) {
+            if (permission.getEffectivePermissions() <= getEffectivePermissions()) {
+                permissions.add(permission);
+            }
+        }
+        return permissions;
+    }
+    
     /**
      * @return the context
      */
