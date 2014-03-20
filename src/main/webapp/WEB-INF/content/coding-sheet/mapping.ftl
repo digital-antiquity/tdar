@@ -59,18 +59,18 @@
         <label class="control-label">Mappings</label>
         <#list codingRules as rule>
         <div class="controls controls-row mappingPair ${rule.code}" id="row_${rule.code}">
-                <@s.hidden name='codingRules[${rule_index}].id' />
-                <@s.textfield theme="simple" name='codingRules[${rule_index}].term' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
+                <@s.hidden name='codingRules[${rule_index?c}].id' />
+                <@s.textfield theme="simple" name='codingRules[${rule_index?c}].term' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
         
             <div class="span1">
                 <img src="<@s.url value='/images/arrow_right.png' />" alt="right arrow"/>
             </div>
         
             <div>
-                <@s.hidden name="codingRules[${rule_index}].ontologyNode.id" id="ontologyNodeId_${rule_index}" />
+                <@s.hidden name="codingRules[${rule_index?c}].ontologyNode.id" id="ontologyNodeId_${rule_index?c}" />
                 <div class="input-append">
-                    <@s.textfield theme="simple" name="codingRules[${rule_index}].ontologyNode.displayName" id="autocomp_${rule_index}"
-                         cssClass="manualAutocomplete ontologyValue span4" autocompleteIdElement="#ontologyNodeId_${rule_index}"/>
+                    <@s.textfield theme="simple" name="codingRules[${rule_index?c}].ontologyNode.displayName" id="autocomp_${rule_index?c}"
+                         cssClass="manualAutocomplete ontologyValue span4" autocompleteIdElement="#ontologyNodeId_${rule_index?c}"/>
                         <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
                 </div>
             </div>
@@ -86,7 +86,7 @@
 
     <#noescape>
      <#list codingRules as rule>
-    var autocomp_${rule_index}Suggestions = [
+    var autocomp_${rule_index?c}Suggestions = [
     {id:"", name:""}<#t>
         <#list rule.suggestions as suggestion>
         <#if suggestion_index == 0>,{id:"", name:" -- Suggested Values --"}</#if>
