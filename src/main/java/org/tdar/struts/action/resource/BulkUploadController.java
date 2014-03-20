@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -24,6 +25,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -191,13 +193,24 @@ public class BulkUploadController extends AbstractInformationResourceController<
         if (reciever != null) {
             phase = reciever.getStatus();
             percentDone = reciever.getPercentComplete();
+            boolean success = true;
             if (CollectionUtils.isNotEmpty(reciever.getAsyncErrors())) {
                 getLogger().warn("bulkUploadErrors: {}", reciever.getAsyncErrors());
-                setAsyncErrors(StringUtils.join(reciever.getHtmlAsyncErrors().toArray(new String[0])));
+                setAsyncErrors(StringUtils.join(reciever.getHtmlAsyncErrors(), ""));
+                success = false;
             }
             if (percentDone == 100f) {
                 List<Pair<Long, String>> details = reciever.getDetails();
                 setDetails(details);
+                ResourceRevisionLog log = new ResourceRevisionLog();
+                log.setPayload(StringUtils.join(reciever.getAsyncErrors(), "\r\n"));
+                log.setTimestamp(new Date());
+                int size = 0;
+                if (CollectionUtils.isNotEmpty(details)) {
+                    size = details.size();
+                }
+                log.setLogMessage(String.format("BulkUpload: %s files %s ",size, success));
+                getGenericService().save(log);
             }
             return WAIT;
         } else {
