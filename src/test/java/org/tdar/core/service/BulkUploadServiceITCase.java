@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -223,8 +224,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         manifestProxy.setResourcesCreated(filenameResourceMap);
 
         bulkUploadService.readExcelFile(manifestProxy);
-        logger.info(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors());
-        assertTrue(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors().contains("is expecting an integer value, but found"));
+        logger.info("{}", manifestProxy.getAsyncUpdateReceiver().getAsyncErrors());
+        assertTrue(StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors().toArray()).contains("is expecting an integer value, but found"));
     }
 
     @Test

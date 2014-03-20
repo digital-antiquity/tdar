@@ -218,8 +218,8 @@ public class BulkUploadService {
         }
         manifestProxy.setFileProxies(fileProxies);
         // If there are errors, then stop...
-        String asyncErrors = manifestProxy.getAsyncUpdateReceiver().getAsyncErrors();
-        if (StringUtils.isNotBlank(asyncErrors)) {
+        List<String> asyncErrors = manifestProxy.getAsyncUpdateReceiver().getAsyncErrors();
+        if (CollectionUtils.isNotEmpty(asyncErrors)) {
             logger.debug("not moving further because of async validation errors: {}", asyncErrors);
             completeBulkUpload(image, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
             return;

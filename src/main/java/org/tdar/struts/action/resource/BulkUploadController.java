@@ -156,9 +156,11 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
             BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getAuthenticatedUser(), null, null);
             
-            String htmlAsyncErrors = manifestProxy.getAsyncUpdateReceiver().getHtmlAsyncErrors();
-            if (StringUtils.isNotBlank(htmlAsyncErrors)) {
-                addActionError(htmlAsyncErrors);
+            List<String> htmlAsyncErrors = manifestProxy.getAsyncUpdateReceiver().getHtmlAsyncErrors();
+            if (CollectionUtils.isNotEmpty(htmlAsyncErrors)) {
+                for (String error : htmlAsyncErrors) {
+                    addActionError(error);
+                }
             }
             PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
             setTicketId(ticket.getId());
@@ -189,10 +191,10 @@ public class BulkUploadController extends AbstractInformationResourceController<
         if (reciever != null) {
             phase = reciever.getStatus();
             percentDone = reciever.getPercentComplete();
-            if (StringUtils.isNotBlank(reciever.getAsyncErrors())) {
+            if (CollectionUtils.isNotEmpty(reciever.getAsyncErrors())) {
                 getLogger().warn("bulkUploadErrors: {}", reciever.getAsyncErrors());
+                setAsyncErrors(StringUtils.join(reciever.getHtmlAsyncErrors().toArray(new String[0])));
             }
-            setAsyncErrors(reciever.getHtmlAsyncErrors());
             if (percentDone == 100f) {
                 List<Pair<Long, String>> details = reciever.getDetails();
                 setDetails(details);

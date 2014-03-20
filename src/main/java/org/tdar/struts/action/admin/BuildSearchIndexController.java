@@ -181,21 +181,21 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     }
 
     @Override
-    public String getAsyncErrors() {
-        StringBuilder sb = new StringBuilder();
+    public List<String> getAsyncErrors() {
+        List<String> ers = new ArrayList<>();
         for (Throwable t : errors) {
-            sb.append("\n").append(t.getMessage());
+            ers.add(t.getLocalizedMessage());
         }
-        return sb.toString();
+        return ers;
     }
 
     @Override
-    public String getHtmlAsyncErrors() {
-        StringBuilder sb = new StringBuilder();
+    public List<String> getHtmlAsyncErrors() {
+        List<String> ers = new ArrayList<>();
         for (Throwable t : errors) {
-            sb.append("<br />").append(t.getMessage());
+            ers.add("<br />" + t.getLocalizedMessage());
         }
-        return sb.toString();
+        return ers;
     }
 
     @Override

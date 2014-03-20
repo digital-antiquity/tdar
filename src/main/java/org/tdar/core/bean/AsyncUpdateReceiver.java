@@ -22,9 +22,9 @@ public interface AsyncUpdateReceiver {
 
     void addDetail(Pair<Long, String> detail);
 
-    String getAsyncErrors();
+    List<String> getAsyncErrors();
 
-    String getHtmlAsyncErrors();
+    List<String> getHtmlAsyncErrors();
 
     List<Pair<Long, String>> getDetails();
 
@@ -87,21 +87,21 @@ public interface AsyncUpdateReceiver {
         }
 
         @Override
-        public String getAsyncErrors() {
-            StringBuilder sb = new StringBuilder();
+        public List<String> getAsyncErrors() {
+            List<String> messages = new ArrayList<>();
             for (Throwable throwable : getThrowables()) {
-                sb.append(throwable.getLocalizedMessage());
+                messages.add(throwable.getLocalizedMessage());
             }
-            return sb.toString();
+            return messages;
         }
 
         @Override
-        public String getHtmlAsyncErrors() {
-            StringBuilder sb = new StringBuilder();
+        public List<String> getHtmlAsyncErrors() {
+            List<String> messages = new ArrayList<>();
             for (Throwable throwable : getThrowables()) {
-                sb.append("<li>").append(throwable.getLocalizedMessage()).append("</li>");
+                    messages.add("<li>" + throwable.getLocalizedMessage() +"</li>");
             }
-            return sb.toString();
+            return messages;
         }
 
         @Override
