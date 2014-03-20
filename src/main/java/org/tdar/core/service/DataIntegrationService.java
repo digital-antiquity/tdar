@@ -369,13 +369,13 @@ public class DataIntegrationService {
         genericDao.save(codingSheet);
         // generate identity coding rules
         List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);
-        List<CodingRule> rules = new ArrayList<CodingRule>();
+        Set<CodingRule> rules = new HashSet<CodingRule>();
         for (int index = 0; index < dataColumnValues.size(); index++) {
             String dataValue = dataColumnValues.get(index);
             CodingRule rule = new CodingRule(codingSheet, dataValue);
-            genericDao.save(rule);
             rules.add(rule);
         }
+        genericDao.save(rules);
         try {
             String baseFileName = codingSheet.getTitle().replace(" ", "_");
             String csvText = convertCodingSheetToCSV(codingSheet, rules);
