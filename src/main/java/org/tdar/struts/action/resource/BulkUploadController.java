@@ -205,6 +205,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 ResourceRevisionLog log = new ResourceRevisionLog();
                 log.setPayload(StringUtils.join(reciever.getAsyncErrors(), "\r\n"));
                 log.setTimestamp(new Date());
+                log.setResource(null);
                 int size = 0;
                 if (CollectionUtils.isNotEmpty(details)) {
                     size = details.size();
