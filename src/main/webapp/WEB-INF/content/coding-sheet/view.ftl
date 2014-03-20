@@ -4,7 +4,8 @@
 
 <#macro toolbarAdditions>
 	<#if editable>
-		<#assign disabled = !resource.defaultOntology?? />
+	<!-- disabled if coding sheet has errors, ontology is not mapped -->
+		<#assign disabled = !okToMapOntology />
 		<@nav.makeLink "coding-sheet" "mapping" "map ontology" "mapping"   current true disabled "mappingLink"/>
 	</#if>
 </#macro>

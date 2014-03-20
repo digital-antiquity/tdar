@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -195,5 +196,18 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     public void setOntology(Ontology ontology) {
         this.ontology = ontology;
+    }
+
+    public boolean isOkToMapOntology() {
+        Ontology defaultOntology = getPersistable().getDefaultOntology();
+        if (Persistable.Base.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())){
+            getLogger().debug("cannot map, ontology issues, null or transient");
+            return false;
+        }
+        if (CollectionUtils.isEmpty(getPersistable().getCodingRules()) || CollectionUtils.isNotEmpty(getPersistable().getFilesWithProcessingErrors())) {
+            getLogger().debug("cannot map, coding sheet has errors or no rules");
+            return false;
+        }
+        return true;
     }
 }
