@@ -215,21 +215,7 @@ public class PdfService {
         content.setFont(fontHelper.getFont(), fontHelper.getFontSize());
 
         text = StringUtils.repeat(" ", label.length()) + text; // take into account the label when wrapping
-        if (text.length() > fontHelper.getCharsPerLine()) {
-            text = WordUtils.wrap(text, fontHelper.getCharsPerLine(), "\r\n", true);
-        }
-        text = text.trim();
-
-        for (String line : text.split("([\r|\n]+)")) {
-            logger.trace(line);
-            content.drawString(line);
-            yFromBottom -= fontHelper.getLineHeight();
-            content.endText();
-            content.beginText();
-            content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
-        }
-        content.endText();
-        return yFromBottom;
+        return writeTextOnPage(content, text, fontHelper, xFromLeft, yFromBottom);
     }
 
     /**
