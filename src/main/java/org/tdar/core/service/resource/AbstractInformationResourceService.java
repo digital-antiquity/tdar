@@ -263,7 +263,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                     createVersionMetadataAndStore(irFile, proxy);
                     break;
                 case DELETE:
-                    irFile.markAsDeleted();
+                    irFile.setDeleted(true);
                     getDao().update(irFile);
                     if (informationResource instanceof Dataset) {
                         unmapDataTablesForFile((Dataset) informationResource, irFile);

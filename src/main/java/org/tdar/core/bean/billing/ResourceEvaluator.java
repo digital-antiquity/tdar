@@ -82,7 +82,7 @@ public class ResourceEvaluator implements Serializable {
     /*
      * Convenience method
      */
-    public void evaluateResources(Collection<Resource> resources) {
+    public void evaluateResources(Collection<? extends Resource> resources) {
         evaluateResources(resources.toArray(new Resource[0]));
     }
 

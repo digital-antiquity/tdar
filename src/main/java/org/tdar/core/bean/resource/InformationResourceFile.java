@@ -149,7 +149,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         QUEUED,
         // whether or not this InformationResourceFile has been converted into postgres
         PROCESSED,
-        DELETED,
         PROCESSING_ERROR,
         PROCESSING_WARNING;
     }
@@ -170,6 +169,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     @Column(name = "part_of_composite")
     private Boolean partOfComposite = Boolean.FALSE;
+
+    @Column(name = "deleted")
+    private Boolean deleted = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "general_type", length = FieldLength.FIELD_LENGTH_255)
@@ -461,7 +463,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Transient
     @XmlTransient
     public boolean isDeleted() {
-        return status == FileStatus.DELETED;
+        return deleted;
     }
 
     @Transient
@@ -482,10 +484,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public void clearStatus() {
         setStatus(null);
-    }
-
-    public void markAsDeleted() {
-        setStatus(FileStatus.DELETED);
     }
 
     @Override
@@ -614,5 +612,13 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

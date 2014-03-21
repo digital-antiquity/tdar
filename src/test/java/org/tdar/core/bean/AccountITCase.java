@@ -360,8 +360,10 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         InformationResource irfile = generateDocumentWithFileAndUser();
         InformationResource irfile2 = generateDocumentWithFileAndUser();
         InformationResourceFile irfProcessed = new InformationResourceFile(FileStatus.PROCESSED, null);
+        InformationResourceFile irfDeleted = new InformationResourceFile(FileStatus.PROCESSED, null);
+        irfDeleted.setDeleted(true);
         img.getInformationResourceFiles().addAll(
-                Arrays.asList(new InformationResourceFile(FileStatus.DELETED, null), irfProcessed,
+                Arrays.asList(irfDeleted, irfProcessed,
                         irfProcessed, irfProcessed));
         img.setStatus(null);
         List<Resource> resources = Arrays.asList(irfile, irfile2, new Project(), new Ontology(), new CodingSheet(), img);

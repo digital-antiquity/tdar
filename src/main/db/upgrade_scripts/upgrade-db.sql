@@ -139,3 +139,8 @@ update information_resource_file set filename=
 	(select filename from information_resource_file_version as irfv where 
 		irfv.information_resource_file_id=irf.id and internal_type like '%UPLOADED%' order by file_version desc limit 1)
 	from information_resource_file as irf where information_resource_file.id=irf.id;
+	
+-- abrin 3/21/2014
+alter table information_resource_file add column deleted boolean default false;
+update information_resource_file set deleted=TRUE where status='DELETED';
+update information_resource_file set status='PROCESSED' where status='DELETED';

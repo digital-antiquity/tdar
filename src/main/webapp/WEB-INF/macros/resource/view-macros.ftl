@@ -144,7 +144,7 @@ View freemarker macros
     <blockquote>
         <b>Translated version</b> <@createFileLink irfile.latestTranslatedVersion /></br>
         Data column(s) in this dataset have been associated with coding sheet(s) and translated:
-        <#if sessionData?? && sessionData.authenticated>
+        <#if userAbleToReTranslate>
             <br><small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> - <b>Note: this process may take some time</b>)</small>
         </#if>
     </blockquote>
@@ -246,7 +246,7 @@ View freemarker macros
             </thead>
         <tbody>
         <@fileInfoSection extended=true; irfile, showAll, ext>
-        <#if irfile.viewable>
+        <#if !irfile.deleted || userAbleToViewDeletedFiles >
         <#local twoRow = (irfile.hasTranslatedVersion || irfile.description?has_content ) />
             <tr class="${irfile.status!""}">
                 <td <#if twoRow>rowspan=2</#if>><@fileIcon irfile=irfile /></td>

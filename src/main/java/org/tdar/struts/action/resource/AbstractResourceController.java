@@ -1200,4 +1200,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return json;
     }
 
+    public boolean isUserAbleToReTranslate() {
+        if (getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), getPersistable())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isUserAbleToViewDeletedFiles() {
+        return isEditor();
+    }
+    
+    public boolean isUserAbleToViewUnobfuscatedMap() {
+        return isEditor();
+    }
+    
 }

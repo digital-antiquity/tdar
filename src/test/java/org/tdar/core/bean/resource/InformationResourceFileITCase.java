@@ -224,9 +224,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
             assertTrue(file.isProcessed());
             genericService.save(file);
             flush();
-            file.setStatus(FileStatus.DELETED);
-            genericService.save(file);
-            flush();
+
         }
     }
 

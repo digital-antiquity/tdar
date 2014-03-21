@@ -380,7 +380,7 @@
                   max long: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}; max lat: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude} ;
                   <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
                   <!-- ${resource.managedGeographicKeywords } -->
-                  <#if editor>
+                  <#if userAbleToViewUnobfuscatedMap>
 	                  <#if resource.firstActiveLatitudeLongitudeBox.actuallyObfuscated!false> [obfuscated]</#if>
                   </#if>
                 </p>

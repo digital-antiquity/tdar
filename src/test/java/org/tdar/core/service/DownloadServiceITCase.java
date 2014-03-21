@@ -169,7 +169,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         }
         
         InformationResourceFile deleted = document.getFirstInformationResourceFile();
-        deleted.setStatus(FileStatus.DELETED);
+        deleted.setDeleted(true);
         genericService.saveOrUpdate(deleted);
         
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
