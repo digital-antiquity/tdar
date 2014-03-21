@@ -193,6 +193,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         if (reciever != null) {
             phase = reciever.getStatus();
             percentDone = reciever.getPercentComplete();
+            getLogger().debug("{} {}%", phase, percentDone);
             boolean success = true;
             if (CollectionUtils.isNotEmpty(reciever.getAsyncErrors())) {
                 getLogger().warn("bulkUploadErrors: {}", reciever.getAsyncErrors());

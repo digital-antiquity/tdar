@@ -350,12 +350,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             return;
         }
 
-        List<FileProxy> fileProxies = new ArrayList<>();
-        for (InformationResourceFile informationResourceFile : getResource().getInformationResourceFiles()) {
-            if (!informationResourceFile.isDeleted()) {
-                fileProxies.add(new FileProxy(informationResourceFile));
-            }
+        if (fileProxies == null) {
+            initializeFileProxies();
         }
+        
         try {
             filesJson = getXmlService().convertToJson(fileProxies);
         } catch (IOException e) {

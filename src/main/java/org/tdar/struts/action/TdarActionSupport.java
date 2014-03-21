@@ -13,6 +13,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.ServletActionContext;
@@ -61,6 +63,7 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceRelationshipService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
+import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
@@ -84,6 +87,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private static final long serialVersionUID = 7084489869489013998L;
 
     // result name constants
+    private boolean hideExceptionArea = false;
     public static final String REDIRECT = "redirect";
     public static final String WAIT = "wait";
     public static final String THUMBNAIL = "thumbnail";
@@ -521,6 +525,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         String trace = ExceptionUtils.getFullStackTrace(exception);
 
         getLogger().error("{} [code: {}]: {} -- {}", new Object[] { message, exception.hashCode(),  exception, trace });
+        if (exception instanceof TdarActionException) {
+            setHideExceptionArea(true);
+        }
         if (exception instanceof TdarRecoverableRuntimeException) {
             int maxDepth = 4;
             Throwable thrw = exception;
@@ -777,5 +784,33 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public void setMoreInfoUrlKey(String moreInfoUrl) {
         this.moreInfoUrlKey = moreInfoUrl;
     }
-    
+
+    public boolean isHideExceptionArea() {
+        return hideExceptionArea;
+    }
+
+    public void setHideExceptionArea(boolean hideExceptionArea) {
+        this.hideExceptionArea = hideExceptionArea;
+    }
+ 
+    public boolean isErrorWarningSectionVisible() {
+        if (hideExceptionArea) {
+            return false;
+        }
+        
+        if (CollectionUtils.isNotEmpty(getActionErrors())) {
+            return true;
+        }
+        if (MapUtils.isNotEmpty(getFieldErrors())) {
+            return true;
+        }
+        if (this instanceof AbstractInformationResourceController) {
+            AbstractInformationResourceController<?> cast = (AbstractInformationResourceController<?>)this;
+            if (cast.isEditable() && CollectionUtils.isNotEmpty(cast.getHistoricalFileErrors())) {
+                return true;
+        }
+            
+        }
+        return false;
+    }
 }

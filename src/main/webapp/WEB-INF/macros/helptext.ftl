@@ -1,5 +1,56 @@
 <#escape _untrusted as _untrusted?html>
 
+<#macro asyncUpload divId="" validFileExtensions=[] multipleFileUploadEnabled=true maxUploadFilesPerRecord=50 canReplace=false siteAcronym="tDAR">
+<div id="${divId}Help" style="display:none">
+    <div class="">
+        <h3>Adding Files</h3>
+        <ul>
+            <li>To attach files to this resource,  click the button labeled "Add Files..." </li>
+            <#if multipleFileUploadEnabled>
+                <li>You may upload up to <#if !multipleFileUploadEnabled>1 file<#else>${maxUploadFilesPerRecord} files</#if> for this resource type</li>
+            <#else>
+                <#--FIXME:  i'm pretty sure async upload for single files is untested, and wont work as described here -->
+                <li> To replace a file, simply upload the updated version</li>
+            </#if>
+            <#if validFileExtensions??>
+                <li>Accepted file types: .<@join validFileExtensions ", ." /></li>
+            </#if>
+        </ul>
+
+        <#if canReplace>
+        <h3>Replacing Files</h3>
+        <ol>
+            <li>In the list of files, locate the row (or file tab) that corresponds to the file you would like to replace.</li>
+            <li>In that row, click on the button labeled "Replace". tDAR will prompt you for a new file.</li>
+            <li>Once the upload is complete, you must save the form to confirm your changes.Click on the "Save" button in the upper right hand portion of the screen.</li>
+            <li>To undo this action and restore the original file, simply click the button again (which will now be labeled "Restore Original").</li>
+        </ol>
+
+        </#if>
+
+        <h3>Deleting Files</h3>
+        You can remove files by clicking on the button labeled "Delete". If you change your mind or if you
+        mistakenly clicked on the delete button, do not worry. You can restore the file by clicking the button a
+        second time (the button will now be labeled "Undelete").
+
+
+        <h3>File Information</h3>
+        <dl>
+            <dt>Restriction</dt>
+            <dd><em>Public Files</em> are accessible to all registered ${siteAcronym} users.  <em>Confidential</em> and <em>Embargoed</em> files can only be downloaded by registered ${siteAcronym} users that you specify in the Access Rights section</dd>
+            <dt>Date Created</dt>
+            <dd>The date this file was created. For image files, it is the calendar date when the image was taken, rendered, etc.</dd>
+            <dt>Description</dt>
+            <dd>
+                Additional information specific to this file.
+            </dd>
+        </dl>
+
+    </span>
+    </div>
+</div>
+</#macro>
+
 
 <#macro projectInheritance>
 <div tooltipfor="cbInheritingInvestigationInformationhint,cbInheritingSiteInformationhint,cbInheritingMaterialInformationhint,cbInheritingCulturalInformationhint,cbInheritingTemporalInformationhint,cbInheritingOtherInformationhint,cbInheritingSpatialInformationhint" class="hidden">
@@ -202,8 +253,6 @@ Use these fields to properly credit individuals and institutions for their contr
 </div>
 </#macro>
 
-</#escape>
-
 <#macro copyrightHoldersTip>
 <div id="divCopyrightHolderTip" class="hidden">
 Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.
@@ -243,3 +292,18 @@ Please enter a Spatial Reference System ID, datum and projection. e.g.:
     <b>Leave unchecked</b> if you don't want the world to see the location. If in doubt, leave unchecked!
 </div>
 </#macro>
+
+<#--
+  emit the  joined string values of a collection, same as
+    <#list mylist as item>${item}<#if item_has_next>,</#if></#list>
+-->
+<#macro join sequence=[] delimiter=",">
+  <#if sequence?has_content>
+    <#list sequence as item>
+        ${item}<#if item_has_next><#noescape>${delimiter}</#noescape></#if><#t>
+    </#list>
+  </#if>
+</#macro>
+
+
+</#escape>

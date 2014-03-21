@@ -182,7 +182,7 @@
     </#if>
     
 
-    <#if actionErrors?has_content || fieldErrors?has_content || historicalFileErrors?has_content>
+    <#if errorWarningSectionVisible >
             <div class="alert alert-error error-banner">
                 <#if stackTraces?has_content>
                 <div class="error-codes pull-right" >
