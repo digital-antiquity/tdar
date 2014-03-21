@@ -436,9 +436,9 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 <#--emit a key/value pair -->
-<#macro kvp key="" val="" noescape=false>
-	<#if val?has_content && val != 'NULL' >
-       <p class="sml"><strong>${key}:</strong> <#if noescape><#noescape>${val}</#noescape><#else>${val}</#if></p>
+<#macro kvp key="" val="" noescape=false nested=false>
+	<#if val?has_content && val != 'NULL' || nested>
+       <p class="sml"><strong>${key}:</strong> <#if noescape><#noescape>${val}</#noescape><#else>${val}</#if><#nested></p>
     </#if>
 </#macro>
 

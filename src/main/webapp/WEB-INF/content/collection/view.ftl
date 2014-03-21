@@ -48,16 +48,7 @@
 <#if !collections.empty>
 <!-- Don't show header if header doesn't exist -->
     <div id="sidebar-right" parse="true">
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/> <#-- Nooooooo!!!!! -->
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-			<h3>Child Collections</h3>
+			<h3 class="sidebar-spacer">Child Collections</h3>
 			<@common.listCollections collections=collections showOnlyVisible=true />
 	</div>
 </#if>
@@ -131,19 +122,32 @@ ${resourceTypeFacets[0].plural}
 		  <h3>Administrative Information</h3>
 		  
 		    <@common.resourceUsageInfo />
-		  <dl>
-		    <dt><p><strong>Collection Type:</strong></p><dt>
-		    <dd><p> ${resourceCollection.type.label}</p></dd>
-            <dt><p><strong>Created by</strong></p></dt>
-            <dd><p><a href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner.properName}</a> on ${resourceCollection.dateCreated}</p></dd>
-            <dt><p><strong>Updated By</strong></p></dt>
-            <dd><p><a href="<@s.url value="/browse/creators/${resourceCollection.updater.id?c}"/>">${resourceCollection.updater.properName}</a> on ${resourceCollection.dateUpdated}</p></dd>
-		    <dt><p><strong>Visible:</strong></p></dt>
-		    <dd><p> ${resourceCollection.visible?string}</p></dd>
-		    <#if resourceCollection.sortBy??><dt><p><strong>Sort by:</strong></dt><dd><p> ${resourceCollection.sortBy.label}</p></dd></#if>
-			<dt><b>This Collection was viewed:</b></dt><dd>${viewCount} times</dd>
+		    <div class="row">
+			    <div class="span4">
+				    <@view.kvp key="Collection Type" val=resourceCollection.type.label />
+			    </div>
+			    <div class="span4">
+				    <@view.kvp key="Visible" val=resourceCollection.visible?string />
+			    </div>
+		    </div>
+		    <div class="row">
+			    <div class="span4">
+				    <@view.kvp key="Sort By" val=resourceCollection.sortBy.label />
+			    </div>
+			    <div class="span4">
+			    	<#assign viewed>${viewCount} times</#assign>
+				    <@view.kvp key="Viewed" val=viewed />
+			    </div>
+		    </div>
+		    <div class="row">
+			    <div class="span4">
+				    <@view.kvp key="Created By" nested=true><a href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner.properName}</a> on ${resourceCollection.dateCreated}</@view.kvp>
+			    </div>
+			    <div class="span4">
+				    <@view.kvp key="Updated By" nested=true><a href="<@s.url value="/browse/creators/${resourceCollection.updater.id?c}"/>">${resourceCollection.updater.properName}</a> on ${resourceCollection.dateUpdated}</@view.kvp>
+			    </div>
+		    </div>
 
-		</dl>
 		    <@_authorizedUsers resourceCollection />
 		</#if>
 <#else>

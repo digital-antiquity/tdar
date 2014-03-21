@@ -35,16 +35,7 @@
 <#if creator?? >
     <#if  keywords?has_content || collaborators?has_content >
             <div id="sidebar-right" parse="true">
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-            <#-- fixme -- some of these may show the h3 w/o contents if count == 1 -->
+            <div class="sidebar-spacer">
                 <#if collaborators?has_content>
                     <div id="related-creators">
                         <h3>Related Creators</h3>
@@ -84,6 +75,7 @@
                         associated with a Creator and highlighting the most commonly used.
                     </small>
                 </div>
+            </div>
             </div>
         </#if>
 

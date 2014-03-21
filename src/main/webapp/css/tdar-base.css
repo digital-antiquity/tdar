@@ -1465,3 +1465,7 @@ tr.DELETED {
     font-style: italic;
     font-weight: normal;
 }
+
+.sidebar-spacer {
+    padding-top:160px;
+}

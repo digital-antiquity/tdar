@@ -167,10 +167,10 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Column(name = "file_created_date")
     private Date fileCreatedDate;
 
-    @Column(name = "part_of_composite")
+    @Column(name = "part_of_composite", columnDefinition="boolean default false")
     private Boolean partOfComposite = Boolean.FALSE;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", columnDefinition="boolean default false")
     private Boolean deleted = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
@@ -462,7 +462,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     @Transient
     @XmlTransient
-    public boolean isDeleted() {
+    public Boolean isDeleted() {
         return deleted;
     }
 
