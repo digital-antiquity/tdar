@@ -122,8 +122,9 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
                 }
                 updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.TRUE );
                 return true;
+        } else {
+            getLogger().debug("  [{}] bypassing database lookup for {}", cacheResult, person);
         }
-        getLogger().debug("  [{}] bypassing database lookup for {}", cacheResult, person);
         return cacheResult.getBooleanEquivalent();
     }
     
@@ -140,7 +141,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
                 result = CacheResult.FALSE;
             }
         }
-        getLogger().debug("  [{}] checkUserPermissionCache: {} {} [sesion: {}] {}", result, person, permission, currentSession.hashCode(), collectionIds);
+        getLogger().debug("  [{}] checkUserPermissionCache: {}:{} [sesion: {}] {}", result, person.getId(), permission, currentSession.hashCode(), collectionIds);
         return result;
     }
 
@@ -154,12 +155,16 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         /*
          * FIXME: this can be enhanced to add keys for: each collectionId?
          */
+        getLogger().trace("{} ==> {}", permission, permission.getLesserAndEqualPermissions());
         for (GeneralPermissions subPermission : permission.getLesserAndEqualPermissions()) {
             UserPermissionCacheKey key = new UserPermissionCacheKey(person, subPermission, collectionIds);
-            if (result != null && result != CacheResult.NOT_FOUND) {
+            // if things are positive, then set lower permissions to positive too.  Don't make negative assumptions.
+            if (result != null && result == CacheResult.TRUE) {
                 sessionMap.put(key, result.getBooleanEquivalent());
             }
         }
+        UserPermissionCacheKey key = new UserPermissionCacheKey(person, permission, collectionIds);
+        sessionMap.put(key, result.getBooleanEquivalent());
     }
 
 

@@ -202,16 +202,16 @@ public class BulkUploadController extends AbstractInformationResourceController<
             if (percentDone == 100f) {
                 List<Pair<Long, String>> details = reciever.getDetails();
                 setDetails(details);
-                ResourceRevisionLog log = new ResourceRevisionLog();
-                log.setPayload(StringUtils.join(reciever.getAsyncErrors(), "\r\n"));
-                log.setTimestamp(new Date());
-                log.setResource(Project.NULL);
-                int size = 0;
-                if (CollectionUtils.isNotEmpty(details)) {
-                    size = details.size();
-                }
-                log.setLogMessage(String.format("BulkUpload: %s files %s ",size, success));
-                getGenericService().save(log);
+//                ResourceRevisionLog log = new ResourceRevisionLog();
+//                log.setPayload(StringUtils.join(reciever.getAsyncErrors(), "\r\n"));
+//                log.setTimestamp(new Date());
+//                log.setResource(Project.NULL);
+//                int size = 0;
+//                if (CollectionUtils.isNotEmpty(details)) {
+//                    size = details.size();
+//                }
+//                log.setLogMessage(String.format("BulkUpload: %s files %s ",size, success));
+//                getGenericService().save(log);
             }
             return WAIT;
         } else {
