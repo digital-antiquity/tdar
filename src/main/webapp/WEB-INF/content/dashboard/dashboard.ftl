@@ -41,7 +41,7 @@
 <#if resourcesWithErrors?has_content>
 <div class="alert-error alert">
 <h3><@s.text name="dashboard.archiving_heading"/></h3>
-<p><@common.localtext "dashboard.archiving_errors", serviceProvider, serviceProvider /> </p>
+<p><@common.localText "dashboard.archiving_errors", serviceProvider, serviceProvider /> </p>
 <ul> 
 <#list resourcesWithErrors as resource>
    <li>
@@ -73,7 +73,7 @@
 
 <div id="messages" style="margin:2px" class="hidden lt-ie8">
     <div id="message-ie-obsolete" class="message-error">
-    <@common.localtext "dashboard.ie_warning", siteAcronym, "<a href=\"http://www.microsoft.com/ie\" target=\"_blank\">","</a>" />
+    <@common.localText "dashboard.ie_warning", siteAcronym, "<a href=\"http://www.microsoft.com/ie\" target=\"_blank\">","</a>" />
     </div>
 </div>
 
