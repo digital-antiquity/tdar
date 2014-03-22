@@ -460,9 +460,10 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return status == FileStatus.PROCESSED;
     }
 
-    @Transient
-    @XmlTransient
-    public Boolean isDeleted() {
+    public boolean isDeleted() {
+        if (deleted == null) {
+            return false;
+        }
         return deleted;
     }
 
@@ -614,11 +615,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         this.filename = filename;
     }
 
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
 }

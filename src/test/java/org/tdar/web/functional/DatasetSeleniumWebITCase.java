@@ -107,7 +107,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         submitForm();
 
         String path = getDriver().getCurrentUrl();
-        logger.info(find("body").getText());
+        logger.trace(find("body").getText());
         assertTrue("expecting to be on edit page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_RESOURCE_SAVE));
 
         // assertEquals("count of edit buttons", 1, find(By.partialLinkText("EDIT")).size());
@@ -122,7 +122,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         submitForm();
 
         path = getDriver().getCurrentUrl();
-        logger.info(find("body").getText());
+        logger.trace(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         logger.trace(find("body").getText());
         submitForm();

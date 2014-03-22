@@ -350,12 +350,17 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             return;
         }
 
-        if (fileProxies == null) {
-            initializeFileProxies();
+        List<FileProxy> fileProxies = new ArrayList<>();
+        //FIXME: this is the same logic as the initialization of the fileProxy... could use that instead, but causes a sesion issue
+        for (InformationResourceFile informationResourceFile : getResource().getInformationResourceFiles()) {
+            if (!informationResourceFile.isDeleted()) {
+                fileProxies.add(new FileProxy(informationResourceFile));
+            }
         }
-        
+
         try {
             filesJson = getXmlService().convertToJson(fileProxies);
+            getLogger().debug(filesJson);
         } catch (IOException e) {
             getLogger().error("could not convert file list to json", e);
             filesJson = "[]";
@@ -703,6 +708,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     
     public List<Pair<InformationResourceFile, ExceptionWrapper>> getHistoricalFileErrors() {
         List<Pair<InformationResourceFile, ExceptionWrapper>> toReturn = new ArrayList<>();
+        if (isHasFileProxyChanges()) {
+            return toReturn;
+        }
         for (InformationResourceFile file : getPersistable().getFilesWithProcessingErrors()) {
             String message = file.getErrorMessage();
             String stackTrace = file.getErrorMessage();
