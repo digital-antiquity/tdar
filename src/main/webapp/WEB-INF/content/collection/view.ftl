@@ -44,6 +44,7 @@
 
 <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>
+
 <#if (resourceCollection.visible || viewable)>
 	<#if !collections.empty>
 	<!-- Don't show header if header doesn't exist -->

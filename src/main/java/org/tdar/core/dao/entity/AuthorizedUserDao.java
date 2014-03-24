@@ -107,6 +107,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         }
         
         CacheResult cacheResult = checkUserPermissionsCache(person, permission, ids, getCurrentSession());
+        String cached = "";
         if (cacheResult == null || cacheResult == CacheResult.NOT_FOUND) {
                 Query query = getCurrentSession().getNamedQuery(QUERY_IS_ALLOWED_TO_MANAGE);
                 query.setLong("userId", person.getId());
@@ -123,8 +124,9 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
                 updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.TRUE );
                 return true;
         } else {
-            getLogger().debug("  [{}] bypassing database lookup for {}", cacheResult, person);
+            cached = "CACHED";
         }
+        getLogger().debug("  [{} {}] checkUserPermissionCache: {}:{} [sesion: {}] {}", cacheResult, cached, person.getId(), permission, getCurrentSession().hashCode(), ids);
         return cacheResult.getBooleanEquivalent();
     }
     
@@ -141,7 +143,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
                 result = CacheResult.FALSE;
             }
         }
-        getLogger().debug("  [{}] checkUserPermissionCache: {}:{} [sesion: {}] {}", result, person.getId(), permission, currentSession.hashCode(), collectionIds);
+        getLogger().trace("  [{}] checkUserPermissionCache: {}:{} [sesion: {}] {}", result, person.getId(), permission, currentSession.hashCode(), collectionIds);
         return result;
     }
 
