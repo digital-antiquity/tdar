@@ -45,29 +45,29 @@
 <@view.pageStatusCallout />
 <h1>${resourceCollection.name!"untitled collection"}</h1>
 <#if (resourceCollection.visible || viewable)>
-<#if !collections.empty>
-<!-- Don't show header if header doesn't exist -->
-    <div id="sidebar-right" parse="true">
-			<h3 class="sidebar-spacer">Child Collections</h3>
-			<@common.listCollections collections=collections showOnlyVisible=true />
-	</div>
-</#if>
+	<#if !collections.empty>
+	<!-- Don't show header if header doesn't exist -->
+	    <div id="sidebar-right" parse="true">
+				<h3 class="sidebar-spacer">Child Collections</h3>
+				<@common.listCollections collections=collections showOnlyVisible=true />
+		</div>
+	</#if>
 
-<#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
-    <div class="glide">
-        <#if resourceCollection.parent??><p><b>Part of:</b> <a href="/collection/${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
-        <@common.description resourceCollection.description />
-
-		<#if resourceCollection.adminDescription??>
-		<p itemprop="description">
-		  <#noescape>
-		    ${resourceCollection.adminDescription}
-		  </#noescape>
-		</p>
-		</#if>
-		
-  </div>
-</#if>
+	<#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.adminDescription?? || collections??>
+	    <div class="glide">
+	        <#if resourceCollection.parent??><p><b>Part of:</b> <a href="/collection/${resourceCollection.parent.id?c}">${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
+	        <@common.description resourceCollection.description />
+	
+			<#if resourceCollection.adminDescription??>
+			<p itemprop="description">
+			  <#noescape>
+			    ${resourceCollection.adminDescription}
+			  </#noescape>
+			</p>
+			</#if>
+			
+	  </div>
+	</#if>
 
     <#if  results?has_content && results?size !=0 >
 
@@ -89,18 +89,18 @@
 			<#assign mapSize="1000" />
 		</#if>
         <#if selectedResourceTypes.empty>
-        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
+	        <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
         <#else>
             <h4>
-There are ${paginationHelper.totalNumberOfItems?c}
- <#if selectedResourceTypes?has_content>
-${resourceTypeFacets[0].plural}
-
- <#else>Resources</#if> within this Project <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: " href="<@s.url includeParams="all">
-            <@s.param name="selectedResourceTypes"value="" />
-            <@s.param name="startRecord" value=""/>
-</@s.url>">[remove this filter]</a></sup>
- </#if>
+			There are ${paginationHelper.totalNumberOfItems?c}
+			 <#if selectedResourceTypes?has_content>
+			${resourceTypeFacets[0].plural}
+			
+			 <#else>Resources</#if> within this Project <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: " href="<@s.url includeParams="all">
+			            <@s.param name="selectedResourceTypes"value="" />
+			            <@s.param name="startRecord" value=""/>
+			</@s.url>">[remove this filter]</a></sup>
+			 </#if>
             </h4>
         </#if>
 		<div class="tdarresults">
@@ -116,6 +116,7 @@ ${resourceTypeFacets[0].plural}
 
 		<@search.basicPagination "Records" />
 	<#else>
+	<hr/>
 	This collection is either empty or you do not currently have permissions to view the contents.
 	</#if>
 		<#if editable>
