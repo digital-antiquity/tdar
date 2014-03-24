@@ -519,6 +519,7 @@ public abstract class AbstractSeleniumWebITCase {
             String url = absoluteUrl(base, path);
             logger.debug("going to: {}", url);
             driver.get(url);
+            waitForPageload();
         } catch (MalformedURLException ex) {
             String err = String.format("bad url:: base:%s\tpath:%s", base, path);
             logger.error(err, ex);

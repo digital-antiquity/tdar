@@ -19,7 +19,7 @@ import org.tdar.utils.TestConfiguration;
 public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
 
     private static final String TITLE = "Selenium Collection Test";
-    private static final String DESCRIPTION = "This is a simple description of a page.... ";
+    private static final String DESCRIPTION = "This is a simple description of a page....";
     private static final String HARP_FAUNA_SPECIES_CODING_SHEET = "HARP Fauna Species Coding Sheet";
     private static final String _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT = "2008 New Philadelphia Archaeology Report";
     private static final String TAG_FAUNAL_WORKSHOP = "TAG Faunal Workshop";
@@ -132,7 +132,7 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
         setFieldByName("resourceCollection.visible", visible.toString().toLowerCase());
         addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(),"person-"+config.getEditorUserId(),
                 GeneralPermissions.MODIFY_RECORD);
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "test user", config.getUsername(),"person-"+config.getUserId(),
+        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "admin user", config.getAdminUsername(),"person-"+config.getAdminUserId(),
                 GeneralPermissions.MODIFY_RECORD);
         addResourceToCollection("139");
         for (String title : titles) {
@@ -157,11 +157,14 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
         for (String title : titles) {
             Assert.assertFalse("view page contains title", text.contains(title));
         }
+        Assert.assertTrue(text.contains(TITLE));
+        Assert.assertFalse(text.contains(DESCRIPTION));
     }
 
 
     private void assertPageViewable(List<String> titles) {
         String text = getText();
+        logger.trace(text);
         for (String title : titles) {
             Assert.assertTrue("view page contains title", text.contains(title));
         }
@@ -195,8 +198,9 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
     private void removeResourceFromCollection(String title) {
         boolean found = false;
         for (WebElement tr : find("#tblCollectionResources tbody tr")) {
+            logger.debug(tr.getText());
             if (tr.getText().contains(title)) {
-                tr.findElement(By.cssSelector(".button")).click();
+                tr.findElement(By.tagName("button")).click();
                 found = true;
                 break;
             }
