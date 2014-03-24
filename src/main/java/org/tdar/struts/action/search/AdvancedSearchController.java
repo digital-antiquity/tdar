@@ -742,12 +742,12 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         } else if (isExplore()) {
             // FIXME -- Why can't we delegate this to the searchParameter object?
             if (getExploreKeyword() != null) {
-                setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword",getExploreKeyword().getLabel()));
+                setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword",Arrays.asList(getExploreKeyword().getLabel())));
             } else if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
-                setSearchTitle(getText("advancedSearchController.title_beginning_with_s", getFirstGroup().getStartingLetter()));
+                setSearchTitle(getText("advancedSearchController.title_beginning_with_s", Arrays.asList(getFirstGroup().getStartingLetter())));
                 // FIXME: only supports 1
             } else if (CollectionUtils.isNotEmpty(getFirstGroup().getCreationDecades())) {
-                setSearchTitle(getText("advancedSearchController.created_in_the_decade_s", getFirstGroup().getCreationDecades().get(0)));
+                setSearchTitle(getText("advancedSearchController.created_in_the_decade_s", Arrays.asList(getFirstGroup().getCreationDecades().get(0))));
             }
         } else if (isKeywordSearch()) {
             setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword"));
