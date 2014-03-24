@@ -47,6 +47,7 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
         gotoPage(url);
         assertPageNotViewable(titles);
         // add basic user
+        logout();
         loginAdmin();
         gotoEdit(url);
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
@@ -92,13 +93,13 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
 
     @Test
     public void testCollectionOrientiationOptions() {
-        TestConfiguration config = TestConfiguration.getInstance();
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(titles, false);
         for (DisplayOrientation orient : DisplayOrientation.values()) {
             gotoEdit(url);
+            logger.debug("{} {}", url ,orient);
             setFieldByName("resourceCollection.orientation", orient.name());
             submitForm();
             assertPageViewable(titles);
@@ -146,8 +147,8 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
 
 
     private void gotoEdit(String url) {
-        gotoPage(url);
-        find(By.linkText("edit")).click();
+        gotoPage(url + "/edit");
+//        find(By.linkText(" edit")).click();
         waitForPageload();
     }
 
@@ -157,7 +158,6 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
         for (String title : titles) {
             Assert.assertFalse("view page contains title", text.contains(title));
         }
-        Assert.assertTrue(text.contains(TITLE));
         Assert.assertFalse(text.contains(DESCRIPTION));
     }
 
@@ -197,7 +197,9 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
 
     private void removeResourceFromCollection(String title) {
         boolean found = false;
-        for (WebElement tr : find("#tblCollectionResources tbody tr")) {
+        WebElementSelection rows = find("#tblCollectionResources tr");
+        logger.debug("rows: {}", rows);
+        for (WebElement tr : rows) {
             logger.debug(tr.getText());
             if (tr.getText().contains(title)) {
                 tr.findElement(By.tagName("button")).click();

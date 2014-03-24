@@ -599,6 +599,7 @@ public abstract class AbstractSeleniumWebITCase {
         find("#loginUsername").sendKeys(username);
         find("#loginPassword").sendKeys(password);
         find("#btnLogin").click();
+        waitForPageload();
     }
 
     public void logout() {
