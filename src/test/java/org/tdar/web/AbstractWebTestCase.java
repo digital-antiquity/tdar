@@ -660,19 +660,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void assertNoErrorTextPresent() {
         assertTextNotPresent("Exception stack trace: " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
                                                                                                      // rendering)
-        assertTextNotPresentIgnoreCase("http error");
-        assertTextNotPresentIgnoreCase("server error");
-        assertTextNotPresentIgnoreCase("{0}"); // should be a regex
-        assertTextNotPresentIgnoreCase("{1}");
-        assertTextNotPresentIgnoreCase("{2}");
-        assertTextNotPresentIgnoreCase("{3}");
-        assertTextNotPresentIgnoreCase("{4}");
-        assertTextNotPresentIgnoreCase(".exception.");
-        assertTextNotPresentIgnoreCase("caused by");
+        for (String err : errorPatterns) {
+            assertTextNotPresentIgnoreCase(err);
+        }
         assertTextNotPresentIgnoreCase("Exception " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
                                                                                                   // rendering)
         assertFalse("page shouldn't contain action errors " + getCurrentUrlPath() + ":" + getPageText(), getPageCode().contains("class=\"action-error\""));
     }
+
+public static List<String> errorPatterns = Arrays.asList("http error","server error","{0}","{1}", "{2}","{3}","{4}",".exception.","caused by");
 
     public void assertNoEscapeIssues() {
         String html = getPageCode().toLowerCase();

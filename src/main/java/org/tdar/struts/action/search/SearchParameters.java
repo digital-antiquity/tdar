@@ -360,7 +360,7 @@ public class SearchParameters {
         // explore: title starts with
         if (startingLetter != null) {
             FieldQueryPart<String> part = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, startingLetter.toLowerCase());
-            part.setDisplayName(support.getText("searchParameter.title_starts_with"));
+            part.setDisplayName(support.getText("searchParameter.title_starts_with",Arrays.asList(startingLetter)));
             part.setPhraseFormatters(PhraseFormatter.WILDCARD);
             queryPartGroup.append(part);
         }

@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 
-import static java.util.regex.Pattern.quote;
-
 /**
  * User: jimdevos
  * Date: 7/1/13

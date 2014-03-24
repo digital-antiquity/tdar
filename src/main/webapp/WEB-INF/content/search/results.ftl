@@ -72,16 +72,16 @@
 	        <ul class="tools media-list">
 	                <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">LIST</@s.param>
-	                </@s.url>"><i class="search-list-icon-red"></i> List (Title)</a></li>
+	                </@s.url>"><i class="search-list-icon-red"></i> <@s.text name="DisplayOrientation.LIST"/></a></li>
 	                <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">LIST_FULL</@s.param>
-	                </@s.url>"><i class="search-list-icon-red"></i> List (Expanded)</a></li>
+	                </@s.url>"><i class="search-list-icon-red"></i> <@s.text name="DisplayOrientation.LIST_FULL"/></a></li>
 	                <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">GRID</@s.param>
-	                </@s.url>"><i class="search-grid-icon-red"></i> Grid</a></li>
+	                </@s.url>"><i class="search-grid-icon-red"></i> <@s.text name="DisplayOrientation.GRID"/></a></li>
 	                <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">MAP</@s.param>
-	                </@s.url>"><i class="search-map-icon-red"></i> Map</a></li>
+	                </@s.url>"><i class="search-map-icon-red"></i> <@s.text name="DisplayOrientation.MAP"/></a></li>
 	        </ul>
 	</#if>
     <form>

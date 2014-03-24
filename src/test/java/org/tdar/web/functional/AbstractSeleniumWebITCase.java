@@ -66,6 +66,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
 import org.tdar.utils.TestConfiguration;
+import org.tdar.web.AbstractWebTestCase;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -98,6 +99,7 @@ public abstract class AbstractSeleniumWebITCase {
     static int MAX_SCREENSHOTS_PER_TEST = 100;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+    private boolean ignorePageErrorChecks;
 
     // Predicates that can be used as arguments for FluentWait.until.
     private Predicate<WebDriver> pageReady = new Predicate<WebDriver>() {
@@ -213,6 +215,17 @@ public abstract class AbstractSeleniumWebITCase {
         }
         removeAffix();
         takeScreenshot();
+        if (!isIgnorePageErrorChecks()) {
+            String text = getText();
+            String lcText = text.toLowerCase();
+            for (String err : AbstractWebTestCase.errorPatterns) {
+                if (text.contains(err) || lcText.contains(err)) {
+                    fail("page has '"+ err + "'");
+                }
+            }
+            setIgnorePageErrorChecks(false);
+        }
+
     }
 
 
@@ -1093,6 +1106,14 @@ public abstract class AbstractSeleniumWebITCase {
         }
         find(By.name(selectField)).val(permissions.name());
 
+    }
+
+    public boolean isIgnorePageErrorChecks() {
+        return ignorePageErrorChecks;
+    }
+
+    public void setIgnorePageErrorChecks(boolean ignorePageErrorChecks) {
+        this.ignorePageErrorChecks = ignorePageErrorChecks;
     }
 
 }
