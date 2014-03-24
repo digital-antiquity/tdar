@@ -389,17 +389,4 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         assertThat(getSource(), containsString(TEST_DOCUMENT_NAME));
     }
 
-    private void addAuthuser(String nameField, String selectField, String name, String email, String selector, GeneralPermissions permissions) {
-
-        WebElement blankField = find(By.name(nameField)).first();
-        if (!selectAutocompleteValue(blankField, name, email, selector)) {
-            String fmt = "Failed to add authuser %s because selenium failed to select a user from the autocomplete " +
-                    "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
-                    "menu.";
-            fail(String.format(fmt, email));
-        }
-        find(By.name(selectField)).val(permissions.name());
-
-    }
-
 }

@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
@@ -764,6 +765,10 @@ public abstract class AbstractSeleniumWebITCase {
         login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
     }
 
+    public void loginEditor() {
+        login(CONFIG.getEditorUsername(), CONFIG.getEditorPassword());
+    }
+
     public static boolean hasReindexedOnce() {
         return AbstractSeleniumWebITCase.reindexed;
     }
@@ -1032,7 +1037,7 @@ public abstract class AbstractSeleniumWebITCase {
             fail("could not set value on  " + field + " because autocomplete never appeared or was dismissed too soon");
         }
         
-        logger.info("menuItems: {} ({})", menuItems.getHtml(), menuItems.size());
+        logger.trace("menuItems: {} ({})", menuItems.getHtml(), menuItems.size());
         String partialText = partialMenuItemTest.toLowerCase();
         WebElement firstMatch = null;
         for (WebElement menuItem : menuItems) {
@@ -1074,6 +1079,20 @@ public abstract class AbstractSeleniumWebITCase {
     //return true if this is an ignorable error
     public boolean isIgnoreableJavascriptError(String error) {
         return !isLegitJavascriptError(error);
+    }
+
+
+    public void addAuthuser(String nameField, String selectField, String name, String email, String selector, GeneralPermissions permissions) {
+
+        WebElement blankField = find(By.name(nameField)).first();
+        if (!selectAutocompleteValue(blankField, name, email, selector)) {
+            String fmt = "Failed to add authuser %s because selenium failed to select a user from the autocomplete " +
+                    "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
+                    "menu.";
+            fail(String.format(fmt, email));
+        }
+        find(By.name(selectField)).val(permissions.name());
+
     }
 
 }

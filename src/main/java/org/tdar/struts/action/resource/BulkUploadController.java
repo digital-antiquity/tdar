@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -17,6 +16,8 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -56,7 +56,6 @@ import org.tdar.utils.Pair;
 public class BulkUploadController extends AbstractInformationResourceController<Image> {
 
     private static final String VALIDATE_ERROR = "validate-error";
-
     private static final long serialVersionUID = -6419692259588266839L;
 
     @Autowired
@@ -74,7 +73,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private Float percentDone = 0f;
     private String phase;
     private List<Pair<Long, String>> details;
-    private String asyncErrors;
+    private String asyncErrors = "";
     private File templateFile;
     private String templateFilename;
 
