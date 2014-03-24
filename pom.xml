@@ -7,7 +7,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
-		<struts2.version>2.3.16</struts2.version>
+		<struts2.version>2.3.16.1</struts2.version>
 		<hibernate.version>4.3.3.Final</hibernate.version>
 		<hibernate.search.version>4.5.0.Final</hibernate.search.version>
 		<spring.framework.version>4.0.2.RELEASE</spring.framework.version>
@@ -24,7 +24,7 @@
 		<jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
 		<generated.schema.file>schema.sql</generated.schema.file>
-        <wro4j.version>1.7.2</wro4j.version>
+        <wro4j.version>1.7.4</wro4j.version>
 		<jetty.version>8.1.11.v20130520</jetty.version>
 		<jetty.port>8080</jetty.port>
 		<jetty.ssl.port>8443</jetty.ssl.port>
@@ -238,7 +238,7 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-			<version>1.48i</version>
+			<version>1.48s</version>
 			<!--  LICENSE: PUBLIC DOMAIN -->
 		</dependency>
 		<dependency>
@@ -1140,12 +1140,6 @@
 			<artifactId>arquillian-phantom-driver</artifactId>
 			<version>1.1.2.Final</version>
 			<scope>test</scope>
-			<!--  LICENSE: APACHE 2.0 -->
-		</dependency>
-		<dependency>
-			<groupId>org.jooq</groupId>
-			<artifactId>jooq</artifactId>
-			<version>3.2.2</version>
 			<!--  LICENSE: APACHE 2.0 -->
 		</dependency>
         <dependency>
