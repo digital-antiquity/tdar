@@ -1649,7 +1649,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     // should be in the form {creartorType}{creatorId}{creatorRole}
     public List<String> getCreatorRoleIdentifiers() {
         List<String> list = new ArrayList<String>();
-        for (ResourceCreator resourceCreator : resourceCreators) {
+        for (ResourceCreator resourceCreator : getActiveResourceCreators()) {
             list.add(resourceCreator.getCreatorRoleIdentifier());
         }
         list.add(ResourceCreator.getCreatorRoleIdentifier(getSubmitter(),

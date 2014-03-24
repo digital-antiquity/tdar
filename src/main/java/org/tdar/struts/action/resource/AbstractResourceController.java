@@ -157,14 +157,18 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<>();
     private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<>();
 
-    private void initializeResourceCreatorProxyLists() {
-        if (getPersistable().getResourceCreators() == null)
+    private void initializeResourceCreatorProxyLists(boolean isViewPage) {
+        Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
+        if (isViewPage) {
+            resourceCreators = getPersistable().getActiveResourceCreators();
+        }
+        if (resourceCreators == null)
             return;
         authorshipProxies = new ArrayList<>();
         creditProxies = new ArrayList<>();
 
         // this may be duplicative... check
-        for (ResourceCreator rc : getPersistable().getResourceCreators()) {
+        for (ResourceCreator rc : resourceCreators) {
             if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
                 if (rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()) {
                     getObfuscationService().obfuscate(rc.getCreator(),getAuthenticatedUser());
@@ -281,7 +285,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getResource() == null)
             return ERROR;
         // loadBasicMetadata();
-        initializeResourceCreatorProxyLists();
+        initializeResourceCreatorProxyLists(true);
         loadCustomMetadata();
         getResourceService().updateTransientAccessCount(getResource());
         // don't count if we're an admin
@@ -639,7 +643,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
-        initializeResourceCreatorProxyLists();
+        initializeResourceCreatorProxyLists(false);
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
         loadEffectiveResourceCollections();
     }
