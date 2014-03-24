@@ -24,7 +24,7 @@
 		<jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
 		<generated.schema.file>schema.sql</generated.schema.file>
-        <wro4j.version>1.7.4</wro4j.version>
+        <wro4j.version>1.7.2</wro4j.version>
 		<jetty.version>8.1.11.v20130520</jetty.version>
 		<jetty.port>8080</jetty.port>
 		<jetty.ssl.port>8443</jetty.ssl.port>
