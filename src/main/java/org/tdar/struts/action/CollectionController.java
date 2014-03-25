@@ -231,6 +231,8 @@ public class CollectionController extends AbstractPersistableController<Resource
     })
     public String edit() throws TdarActionException {
         String result = super.edit();
+        logger.trace(" resources (original:{}", resources);
+        logger.trace("resources (retained):{}", getRetainedResources());
         resources.removeAll(getRetainedResources());
         return result;
     }
