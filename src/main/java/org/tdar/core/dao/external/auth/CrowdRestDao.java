@@ -29,6 +29,7 @@ import com.atlassian.crowd.exception.InvalidUserException;
 import com.atlassian.crowd.exception.MembershipAlreadyExistsException;
 import com.atlassian.crowd.exception.ObjectNotFoundException;
 import com.atlassian.crowd.exception.OperationFailedException;
+import com.atlassian.crowd.exception.UserNotFoundException;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticator;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticatorImpl;
 import com.atlassian.crowd.integration.http.util.CrowdHttpTokenHelperImpl;
@@ -175,16 +176,24 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     @Override
     public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
         String login = person.getUsername();
+        User user = null;
         try {
             
-            securityServerClient.getUser(login);
+            user = securityServerClient.getUser(login);
             // if this succeeds, then this principal already exists.
             // FIXME: if they already exist in the system, we should let them know
             // that they already have an account in the system and that they can
             // just authenticate to edit their account / profile.
             logger.warn("XXX: Trying to add a user that already exists: [" + person.toString() + "]\n Returning and attempting to authenticate them.");
             // just check if authentication works then.
-            return AuthenticationResult.ACCOUNT_EXISTS;
+            if (user != null) {
+                try {
+                    securityServerClient.authenticateUser(login, password);
+                } catch (Exception e) {
+                    logger.error("AccountExists, but issues... ", e);
+                    return AuthenticationResult.ACCOUNT_EXISTS;
+                }
+             }
         } catch (ObjectNotFoundException expected) {
             logger.debug("Object not found, as expected.");
         } catch (OperationFailedException e) {
@@ -197,19 +206,28 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             logger.error("Invalid auth token", e);
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         }
-        logger.debug("Adding user : " + person);
+        boolean userNew = false;
         PasswordEntity passwordEntity = new PasswordEntity(password);
         PasswordCredential credential = new PasswordCredential(password);
-        
-        UserEntity user = new UserEntity(person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), passwordEntity , true);
-
+ 
+        if (user == null)  {
+            userNew = true;
+            logger.debug("Adding user : " + person);
+            user = new UserEntity(person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), passwordEntity , true);
+        }
         if (ArrayUtils.isEmpty(groups)) {
             groups = AuthenticationProvider.DEFAULT_GROUPS;
         }
         try {
-            securityServerClient.addUser(user, credential);
+            if (userNew) {
+                securityServerClient.addUser(user, credential);
+            }
             for (TdarGroup group : groups) {
-                securityServerClient.addUserToGroup(login, group.getGroupName());
+                try {
+                    securityServerClient.addUserToGroup(login, group.getGroupName());
+                } catch (MembershipAlreadyExistsException e) {
+                    // we'll ignore it if membership already exissts
+                }
             }
         } catch (ApplicationPermissionException e) {
             logger.error("Crowd server does not permit this application to connect", e);
@@ -229,9 +247,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         } catch (InvalidAuthenticationException e) {
             logger.error("Unable to add user (invalid authentication): " + login, e);
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
-        } catch (MembershipAlreadyExistsException e) {
-            // we'll ignore it if membership already exissts
-        }
+        } 
 
         return AuthenticationResult.VALID;
     }

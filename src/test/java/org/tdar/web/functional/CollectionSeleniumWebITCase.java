@@ -48,6 +48,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         // add basic user
         logout();
         loginAdmin();
+        gotoPage(url);
         assertPageViewable(titles);
         addUserWithRights(config, url,GeneralPermissions.VIEW_ALL);
         logout();
@@ -154,7 +155,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         for (WebElement el : find(".media-body a")) {
             urls.add(el.getAttribute("href"));
         }
-        
+        logger.debug("urls: {}", urls);
         for (String link : urls) {
             gotoPage(url);
             gotoPage(link);
@@ -165,8 +166,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                     seen++;
                 }
             }
+            logger.debug("seen:{} total:{}", seen, titles.size());
             Assert.assertTrue("Should see at least one title on page", seen > 0);
-            Assert.assertFalse("should not see every title on each page", seen != titles.size());
+            Assert.assertNotEquals("should not see every title on each page", seen, titles.size());
         }
 }
 
