@@ -195,8 +195,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
 
-        List<Resource> sparseResources = getResourceCollectionService().findCollectionSparseResources(getId());
-        resources.addAll(sparseResources);
+        //List<Resource> sparseResources = getResourceCollectionService().findCollectionSparseResources(getId());
+        resources.addAll(getPersistable().getResources());
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
@@ -241,7 +241,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private List<Resource> getRetainedResources() {
         List<Resource> retainedResources = new ArrayList<Resource>();
-        for (Resource resource : resources) {
+        for (Resource resource : getPersistable().getResources()) {
             boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
             if (!canEdit) {
                 retainedResources.add(resource);
