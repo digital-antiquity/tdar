@@ -92,6 +92,9 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(titles, false);
         gotoEdit(url);
+        Assert.assertTrue(getText().contains(TAG_FAUNAL_WORKSHOP));
+        Assert.assertTrue(getText().contains(HARP_FAUNA_SPECIES_CODING_SHEET));
+        Assert.assertTrue(getText().contains(_2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT));
         removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
         submitForm();
         Assert.assertFalse(getText().contains(TAG_FAUNAL_WORKSHOP));
