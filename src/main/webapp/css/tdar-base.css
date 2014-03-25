@@ -1469,3 +1469,7 @@ tr.DELETED {
 .sidebar-spacer {
     padding-top:160px;
 }
+
+.tableFormat th {
+    background-color: black !important;
+}

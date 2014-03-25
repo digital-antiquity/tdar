@@ -463,17 +463,20 @@ No coding rules have been entered for this coding sheet yet.
 
 <#-- emit a warning callout if the current resource is DRAFT or DELETED -->
 <#macro pageStatusCallout>
-<#local status="error">
+<#local status="danger">
 <#if (persistable.status)?has_content && !persistable.active >
 <#if persistable.status == 'DRAFT'>
   <#local status="info"/>
 </#if>
 
-<@_statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
-    This record has been marked as <strong>${persistable.status.label}</strong> <#if authorityForDup?has_content> of 
-    <a href="<@s.url value="/${authorityForDup.urlNamespace}/${authorityForDup.id?c}"/>">${authorityForDup.name}</a></#if>. 
-    <#if !persistable.draft> While ${siteAcronym} will retain this record, it will not appear in search results.</#if>
-</@_statusCallout>
+<#if persistable.status.flaggedForBilling && namespace=='/billing'>
+<#else>
+	<@_statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
+	    This record has been marked as <strong>${persistable.status.label}</strong> <#if authorityForDup?has_content> of 
+	    <a href="<@s.url value="/${authorityForDup.urlNamespace}/${authorityForDup.id?c}"/>">${authorityForDup.name}</a></#if>. 
+	    <#if !persistable.draft> While ${siteAcronym} will retain this record, it will not appear in search results.</#if>
+	</@_statusCallout>
+</#if> 
 
 </#if> 
 </#macro>

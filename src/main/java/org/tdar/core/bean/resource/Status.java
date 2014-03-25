@@ -35,6 +35,9 @@ public enum Status implements HasLabel, Localizable {
         return label;
     }
 
+    public boolean isFlaggedForBilling() {
+        return equals(FLAGGED_ACCOUNT_BALANCE);
+    }
     public static Status fromString(String string) {
         if (StringUtils.isBlank(string)) {
             return null;
