@@ -110,7 +110,9 @@ public class CollectionController extends AbstractPersistableController<Resource
         getResourceCollectionService().updateCollectionParentTo(persistable, parent);
         getGenericService().saveOrUpdate(persistable);
         getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, getAuthorizedUsers(), shouldSaveResource());
-
+        resources.addAll(getRetainedResources());
+        getLogger().trace("resources (original):{}", resources);
+        getLogger().trace("resources (retained):{}", getRetainedResources());
         List<Resource> rehydratedIncomingResources = getResourceCollectionService().reconcileIncomingResourcesForCollection(persistable,
                 getAuthenticatedUser(), resources);
         getLogger().trace("{}", rehydratedIncomingResources);
@@ -199,8 +201,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     public String loadEditMetadata() throws TdarActionException {
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
-        List<Resource> sparseResources = getResourceCollectionService().findCollectionSparseResources(getId());
-        resources.addAll(sparseResources);
+        resources.addAll(getPersistable().getResources());
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
@@ -236,6 +237,8 @@ public class CollectionController extends AbstractPersistableController<Resource
     })
     public String edit() throws TdarActionException {
         String result = super.edit();
+        getLogger().trace(" resources (original:{}", resources);
+        getLogger().trace("resources (retained):{}", getRetainedResources());
         resources.removeAll(getRetainedResources());
         return result;
     }
@@ -246,7 +249,7 @@ public class CollectionController extends AbstractPersistableController<Resource
      */
     private List<Resource> getRetainedResources() {
         List<Resource> retainedResources = new ArrayList<Resource>();
-        for (Resource resource : getResources()) {
+        for (Resource resource : getPersistable().getResources()) {
             getLogger().trace("retain?: {}", resource);
             getLogger().trace("{} <--> {}", getAuthenticatedUser(), resource.getSubmitter());
             boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
