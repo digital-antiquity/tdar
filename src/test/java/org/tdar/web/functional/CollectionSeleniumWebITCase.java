@@ -13,13 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.TestConfiguration;
 
 public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
 
+    private static final String _139 = "139";
     private static final String TITLE = "Selenium Collection Test";
     private static final String DESCRIPTION = "This is a simple description of a page....";
+    private static final String RUDD_CREEK_ARCHAEOLOGICAL_PROJECT = "Rudd Creek Archaeological Project";
     private static final String HARP_FAUNA_SPECIES_CODING_SHEET = "HARP Fauna Species Coding Sheet";
     private static final String _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT = "2008 New Philadelphia Archaeology Report";
     private static final String TAG_FAUNAL_WORKSHOP = "TAG Faunal Workshop";
@@ -49,12 +52,7 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
         // add basic user
         logout();
         loginAdmin();
-        gotoEdit(url);
-        WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
-        addAnother.click();
-        addAuthuser("authorizedUsers[2].user.tempDisplayName", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),"person-"+config.getUserId(),
-                GeneralPermissions.VIEW_ALL);
-        submitForm();
+        addUserWithRights(config, url,GeneralPermissions.VIEW_ALL);
         logout();
         // make sure unauthenticated user cannot see
         gotoPage(url);
@@ -75,6 +73,16 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
         assertPageViewable(titles);
     }
 
+
+    private void addUserWithRights(TestConfiguration config, String url, GeneralPermissions permissions) {
+        gotoEdit(url);
+        WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
+        addAnother.click();
+        addAuthuser("authorizedUsers[2].user.tempDisplayName", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),"person-"+config.getUserId(),
+                permissions);
+        submitForm();
+    }
+
     @Test
     public void testCollectionRemoveElement() {
         TestConfiguration config = TestConfiguration.getInstance();
@@ -91,6 +99,36 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
         
     }
 
+
+    @Test
+    public void testCollectionRetain() {
+        TestConfiguration config = TestConfiguration.getInstance();
+        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
+                TAG_FAUNAL_WORKSHOP,
+                _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
+        String url = setupCollectionForTest(titles, true);
+        addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
+        gotoPage("/project/" + _139 + "/edit");
+        setFieldByName("status", Status.DELETED.name());
+        submitForm();
+        logout();
+        login();
+        gotoEdit(url);
+//        removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
+        Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
+        submitForm();
+        Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
+        logout();
+        loginAdmin();
+        gotoPage("/project/" + _139 + "/edit");
+        setFieldByName("status", Status.ACTIVE.name());
+        submitForm();
+        logout();
+        gotoPage(url);
+        Assert.assertTrue(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
+    }
+
+    
     @Test
     public void testCollectionOrientiationOptions() {
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
@@ -135,7 +173,7 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
                 GeneralPermissions.MODIFY_RECORD);
         addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "admin user", config.getAdminUsername(),"person-"+config.getAdminUserId(),
                 GeneralPermissions.MODIFY_RECORD);
-        addResourceToCollection("139");
+        addResourceToCollection(_139);
         for (String title : titles) {
             addResourceToCollection(title);
         }
