@@ -381,12 +381,14 @@ bookmark indicator, etc..
     </thead>
     <tbody>
         <#list data?keys as key>
+        <#if key?has_content>
         <#local val = data[key]!''>
         <#if val?is_date><#local val = val?datetime></#if>
             <tr>
                 <td>${key}</td>
                 <td>${val}</td>
             </tr>
+		</#if>
         </#list>
     </tbody>
 </table>
