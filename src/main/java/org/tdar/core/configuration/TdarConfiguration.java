@@ -264,7 +264,7 @@ public class TdarConfiguration {
     }
 
     public String getHelpUrl() {
-        return assistant.getStringProperty("help.url", "http://dev.tdar.org/confluence/display/TDAR/User+Documentation");
+        return assistant.getStringProperty("help.url", "http://dev.tdar.org/confluence/display/TDAR/Documentation+Home");
     }
 
     public String getAboutUrl() {
