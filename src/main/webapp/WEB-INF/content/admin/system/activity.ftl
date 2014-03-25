@@ -86,6 +86,13 @@ pre, td {
  Scheduled Processes are not enabled on this machine
 </#if>
 
+<h3>System Statistics</h3>
+<table class="tableFormat table" id="tblQueryStats">
+<#list moreInfo?keys as key>
+<tr><th>${key}</th><td>${(moreInfo[key]!"")?string}</td></tr>
+</#list>
+</table>
+
 <h3>Hibernate Statistics</h3>
 <pre>
 ${sessionStatistics}

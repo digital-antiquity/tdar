@@ -1,5 +1,9 @@
 package org.tdar.struts.action.admin;
 
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,6 +54,7 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
     private List<Activity> activityList = new ArrayList<Activity>();
 
+    private HashMap<String,Object> moreInfo = new HashMap<>();
     private HashMap<String, Integer> counters;
     private List<Person> activePeople;
 
@@ -106,9 +111,29 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
         setActivePeople(getAuthenticationAndAuthorizationService().getCurrentlyActiveUsers());
 
+        
+        initSystemStats();
         return SUCCESS;
     }
 
+    
+    public void initSystemStats() {
+        ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
+        getMoreInfo().put("Heap Memory", ManagementFactory.getMemoryMXBean().getHeapMemoryUsage());
+        getMoreInfo().put("NonHeap Memory", ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage());
+        List<MemoryPoolMXBean> beans = ManagementFactory.getMemoryPoolMXBeans();
+        for (MemoryPoolMXBean bean: beans) {
+            getLogger().trace("{}: {}", bean.getName(), bean.getUsage());
+        }
+
+        for (GarbageCollectorMXBean bean: ManagementFactory.getGarbageCollectorMXBeans()) {
+            getLogger().trace("{}: {} {}", bean.getName(), bean.getCollectionCount(), bean.getCollectionTime());
+        }
+        
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        // What % CPU load this current JVM is taking, from 0.0-1.0
+        getMoreInfo().put("system load", osBean.getSystemLoadAverage());
+    }
     public Collection<ScheduledProcess<Persistable>> getScheduledProcessQueue() {
         return scheduledProcessQueue;
     }
@@ -163,6 +188,16 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
     public void setActivePeople(List<Person> activePeople) {
         this.activePeople = activePeople;
+    }
+
+
+    public HashMap<String,Object> getMoreInfo() {
+        return moreInfo;
+    }
+
+
+    public void setMoreInfo(HashMap<String,Object> moreInfo) {
+        this.moreInfo = moreInfo;
     }
 
 }
