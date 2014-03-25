@@ -665,7 +665,7 @@ search page associated with the datapoint -->
  that lie within the selected country -->
 <#-- @param forceAddSchemeHostAndPort:boolean if true, clickhandler always includes hostname and port when bulding
             the redirect url.  If false,   the clickhandler builds a url based on the current hostname and port -->
-<#macro worldMap forceAddSchemeHostAndPort=false>
+<#macro renderWorldMap forceAddSchemeHostAndPort=false>
 <div class="mapcontainer" style="">
 <script type="text/javascript">
 $(function() {
@@ -710,31 +710,8 @@ $('.worldmap').maphilight({
     }
     $(element).data('maphilight',data).trigger('alwaysOn.maphilight');
   }
+</script>
 
-<#-- 
-FIXME: refactor this macro so that it relies on less dark magic (TDAR-3415)
-this bit of freemarker is voodoo:
-  1. it iterates through our country code hash
-  2. it creates a template which is the hash contents {"US":5, "CA":25}
-  3. it evaluates the hash contents via hash addition to produce a new hash that can be used like ${codes['US']}
-     which is important because ${iSOCountryCodes['US (ISO Country Code)']} does not work, nor does
-     ${iSOCountryCodes.get('US (ISO Country Code)')
-  -->
-<#assign countryTotal = 0>
-<#assign max = 0>
-<#assign countryLogTotal = 0>
-<#assign templateSource>{<#list geographicKeywordCache as key>
- <#assign code=key.label?substring(0,2) />
- "${code}" : ${key.count?c},<#assign countryTotal = key.count />
- "${code}_id" : ${(key.keywordId!-1)?c},
- "${code}_" : ${key.logCount?c}<#if key_has_next>,</#if>
-    <#if (countryLogTotal < key.logCount)><#assign countryLogTotal = key.logCount /></#if>
-    <#if (max < key.count)><#assign max = key.count /></#if>
-   </#list>}</#assign>
-  
-<#assign codes= {} + (templateSource?eval) />
-
-</script> 
 <!-- div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px" -->
 <img class="worldmap" alt="world map" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png" />" width=480 height=304 usemap="#world" > 
  <div id="map_legend">
@@ -873,45 +850,20 @@ this bit of freemarker is voodoo:
 </map>
  </div> 
 
-<#--"private" macro used by #worldMap.  I have no idea what it does. FIXME: adam, help me! -->
 </#macro>
+<#--"private" macro used by #worldMap.  I have no idea what it does. FIXME: adam, help me! -->
 <#macro renderMap code coords title forceAddSchemeHostAndPort=false>
- <#local val=codes[code]?default(0)/>
- <#local logCode= code+'_'/>
- 
- <#local keywordId_>${code+'_id'}</#local>
- <#local keywordId=(codes[keywordId_]?default(-1))?c />
- <#if (val > 0)>
+<#list worldMapData?values as value>
+<#if value.key == code>
+ <#local entry = value />
+ <#local color = settings.mapColors[entry.colorGroup]!"#ffffff" />
 
-    <#if countryLogTotal == 0>
-        <#local countryLogTotal = 0 />
-    </#if>
-
-    <#local percent = ((codes[logCode]/countryLogTotal) * 100)?floor />
-    <#local color = "#ffffff" />
-    
-     <#if (percent < 9) >
-        <#local color = settings.mapColors[1] />
-     <#elseif (percent > 8 && percent < 17)>
-        <#local color = settings.mapColors[2] />
-     <#elseif (percent > 16 && percent < 32)>
-        <#local color = settings.mapColors[3]/>
-     <#elseif (percent > 31 && percent < 46)>
-        <#local color = settings.mapColors[4] />
-     <#elseif (percent > 45 && percent < 61)>
-        <#local color = settings.mapColors[5] />
-     <#elseif (percent > 60 && percent < 76)>
-        <#local color = settings.mapColors[6] />
-     <#elseif (percent > 76 && percent < 85)>
-        <#local color = settings.mapColors[7] />
-    <#else>
-        <#local color = settings.mapColors[8] />
-    </#if>
-<!-- [${code} : ${percent} ] -->
-<#local term>geographicKeywords=${keywordId}</#local>
-     <area coords="${coords}" shape="poly" title="${title} (${val})" alt="${title} (${val})" target="_top"  href='<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/search/results?${term}"/>' iso="${code}"
+<#local term>geographicKeywords=${entry.keywordId}</#local>
+     <area coords="${coords}" shape="poly" title="${title} (${entry.count?c})" alt="${title} (${entry.count?c})" target="_top" 
+     	 href='<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/search/results?${term}"/>' iso="${code}"
      class="{alwaysOn:true,strokeColor:'666666',strokeWidth:'.5',fillColor:'${color}',fillOpacity:1}" >
- </#if>
+</#if>
+</#list>
 </#macro>
 
 <#macro cartouche persistable useDocumentType=false>

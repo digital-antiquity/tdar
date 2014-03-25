@@ -3,8 +3,12 @@ package org.tdar.struts.action;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -49,10 +53,11 @@ public class IndexAction extends AuthenticationAware.Base {
 
     private Project featuredProject;
 
-    private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
+//    private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private List<Resource> featuredResources = new ArrayList<Resource>();
-
+    private HashMap<String,HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
+    
     @Autowired
     private RssService rssService;
 
@@ -106,7 +111,8 @@ public class IndexAction extends AuthenticationAware.Base {
     })
     @HttpOnlyIfUnauthenticated
     public String about() {
-        setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
+        setupWorldMap();
+        
         setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
         try {
             setRssEntries(rssService.parseFeed(new URL(getTdarConfiguration().getNewsRssFeed())));
@@ -134,6 +140,26 @@ public class IndexAction extends AuthenticationAware.Base {
             }
         }
         return SUCCESS;
+    }
+
+    private void setupWorldMap() {
+        Long countryTotal = 0l;
+        Double countryLogTotal = 0d;
+        for (HomepageGeographicKeywordCache item : getGenericService().findAll(HomepageGeographicKeywordCache.class)) {
+            Long count = item.getCount();
+            Double logCount = item.getLogCount();
+            if (logCount > countryLogTotal) {
+                countryLogTotal = logCount;
+            }
+            if (count > countryTotal) {
+                countryTotal = count;
+            }
+            getWorldMapData().put(item.getKey(), item);
+        }
+        for (Entry<String, HomepageGeographicKeywordCache> entrySet : getWorldMapData().entrySet()) {
+            entrySet.getValue().setTotalCount(countryTotal);
+            entrySet.getValue().setTotalLogCount(countryLogTotal);
+        }
     }
 
     @Action("login")
@@ -166,14 +192,6 @@ public class IndexAction extends AuthenticationAware.Base {
         this.featuredProject = featuredProject;
     }
 
-    public List<HomepageGeographicKeywordCache> getGeographicKeywordCache() {
-        return geographicKeywordCache;
-    }
-
-    public void setGeographicKeywordCache(List<HomepageGeographicKeywordCache> geographicKeywordCache) {
-        this.geographicKeywordCache = geographicKeywordCache;
-    }
-
     public List<HomepageResourceCountCache> getHomepageResourceCountCache() {
         return homepageResourceCountCache;
     }
@@ -204,6 +222,14 @@ public class IndexAction extends AuthenticationAware.Base {
 
     public void setSitemapFile(String sitemapFile) {
         this.sitemapFile = sitemapFile;
+    }
+
+    public HashMap<String,HomepageGeographicKeywordCache> getWorldMapData() {
+        return worldMapData;
+    }
+
+    public void setWorldMapData(HashMap<String,HomepageGeographicKeywordCache> worldMapData) {
+        this.worldMapData = worldMapData;
     }
 
 }

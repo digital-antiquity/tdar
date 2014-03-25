@@ -36,6 +36,10 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
     @Column(length = FieldLength.FIELD_LENGTH_50)
     private Level level;
 
+    
+    private transient double totalLogCount = 0d;
+    private transient long totalCount = 0l;
+    
     public HomepageGeographicKeywordCache() {
 
     }
@@ -85,7 +89,7 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
 
     @Override
     public String getKey() {
-        return getLabel();
+        return getLabel().substring(0,2);
     }
 
     @Override
@@ -101,4 +105,46 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
         this.keywordId = keywordId;
     }
 
+    public long getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(long totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public double getTotalLogCount() {
+        return totalLogCount;
+    }
+
+    public void setTotalLogCount(double totalLogCount) {
+        this.totalLogCount = totalLogCount;
+    }
+
+    public int getColorGroup() {
+        int percent = (int) Math.floor((getLogCount().doubleValue() / getTotalLogCount()) * 100d);
+        if (percent < 9) {
+            return 1;
+        }
+        if (percent > 8) {
+            return 2;
+        }
+        if (percent > 16) {
+            return 3;
+        }
+        if (percent > 31) {
+            return 4;
+        }
+        if (percent > 45) {
+            return 5;
+        }
+        if (percent > 60) {
+            return 6;
+        }
+        if (percent > 76) {
+            return 7;
+        }
+        return 8;
+
+    }
 }
