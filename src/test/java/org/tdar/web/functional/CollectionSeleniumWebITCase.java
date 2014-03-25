@@ -18,7 +18,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.TestConfiguration;
 
-public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
+public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
     private static final String _139 = "139";
     private static final String TITLE = "Selenium Collection Test";
@@ -41,11 +41,6 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,TAG_FAUNAL_WORKSHOP,_2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(titles, false);
         logout();
-        // make sure editor can see restricted page
-        loginEditor();
-        gotoPage(url);
-        assertPageViewable(titles);
-        logout();
         // make sure basic user cannot see restricted page
         login();
         gotoPage(url);
@@ -53,6 +48,7 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
         // add basic user
         logout();
         loginAdmin();
+        assertPageViewable(titles);
         addUserWithRights(config, url,GeneralPermissions.VIEW_ALL);
         logout();
         // make sure unauthenticated user cannot see
