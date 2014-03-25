@@ -18,11 +18,12 @@
 <h2>Resources by ${siteAcronym} Year</h2>
 
 <div>
+   <ul class="inline">
    <#list scholarData?sort_by("key") as key>
-
 	<#assign tdarYear = key.key?substring(3) />
-	<span class="bullet"> <a href="<@s.url value="/scholar/scholar?year=${key.key?c}"/>">${key.key?c}</a> </span>
+		<li class="bullet"> <a href="<@s.url value="/scholar/scholar?year=${key.key?c}"/>">${key.key?c}</a> </li>
 	</#list>
+	</ul>
 <br/>
 </div>
 <br/>

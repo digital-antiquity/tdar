@@ -23,28 +23,39 @@ public class BasicSeachSeleniumITCase extends AbstractSeleniumWebITCase {
     @Test
     public void testBrowse() {
         gotoPage("/browse/explore");
-        Set<String> urls = findAndAddUrls();
+        Set<String> urls = new HashSet<>();
+        for (WebElement el_ : find("article ul")) {
+            // only add one per selection group
+            for (WebElement el : new WebElementSelection(el_, getDriver()).find("a")) {
+                String url = el.getAttribute("href");
+                if (url.contains(TestConfiguration.getInstance().getHostName())) {
+                    urls.add(url);
+                    break;
+                }
+            }
+        }
+
         for (String url : urls) {
             gotoPage("/browse/explore");
             gotoPage(url);
         }
     }
 
-    private Set<String> findAndAddUrls() {
-        Set<String> urls = new HashSet<>();
-        for (WebElement el : find(By.tagName("a"))) {
-            String url = el.getAttribute("href");
-            if (url.contains(TestConfiguration.getInstance().getHostName())) {
-                urls.add(url);
-            }
-        }
-        return urls;
-    }
-
     @Test
     public void testResults() {
         gotoPage("/search/results");
-        Set<String> urls = findAndAddUrls();
+        Set<String> urls = new HashSet<>();
+        for (WebElement el : find("article ul a")) {
+            String url = el.getAttribute("href");
+            if (url.contains(TestConfiguration.getInstance().getHostName())) {
+                urls.add(url);
+                break;
+            }
+        }
+        for (String url : urls) {
+            gotoPage("/search/results");
+            gotoPage(url);
+        }
         Select sel = new Select(driver.findElement(By.id("recordsPerPage")));
         int size = sel.getOptions().size();
         for (int i=0; i < size; i++) {
@@ -58,10 +69,6 @@ public class BasicSeachSeleniumITCase extends AbstractSeleniumWebITCase {
             sel = new Select(driver.findElement(By.id("sortField")));
             sel.selectByIndex(i);
             waitForPageload();
-        }
-        for (String url : urls) {
-            gotoPage("/search/results");
-            gotoPage(url);
         }
     }
 

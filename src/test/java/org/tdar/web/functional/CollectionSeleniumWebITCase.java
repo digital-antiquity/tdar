@@ -1,6 +1,7 @@
 package org.tdar.web.functional;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -148,6 +149,25 @@ public class CollectionSeleniumWebITCase extends AbstractAdminSeleniumWebITCase 
             setFieldByName("resourceCollection.sortBy", option.name());
             submitForm();
             assertPageViewable(titles);
+        }
+        
+        List<String> urls = new ArrayList<>();
+        for (WebElement el : find(".media-body a")) {
+            urls.add(el.getAttribute("href"));
+        }
+        
+        for (String link : urls) {
+            gotoPage(url);
+            gotoPage(link);
+            String text = getText();
+            int seen = 0;
+            for (String title : titles) {
+                if (text.contains(title)) {
+                    seen++;
+                }
+            }
+            Assert.assertTrue("Should see at least one title on page", seen > 0);
+            Assert.assertFalse("should not see every title on each page", seen != titles.size());
         }
 }
 
