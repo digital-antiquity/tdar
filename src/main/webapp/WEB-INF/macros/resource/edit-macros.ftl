@@ -1063,7 +1063,7 @@ var checked = $('#resource_datatable td input[type=checkbox]:checked');
 <script type="text/javascript">
 $(function() {
     TDAR.datatable.setupDashboardDataTable({
-        isAdministrator: ${(administrator!false)?string},
+        isAdministrator: ${(editor!false)?string},
         isSelectable: ${selectable?string},
         showDescription: ${showDescription?string}
     });

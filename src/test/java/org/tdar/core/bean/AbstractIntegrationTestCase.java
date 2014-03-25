@@ -565,7 +565,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected Person getBasicUser() {
         return getUser(getBasicUserId());
     }
-    
+
+
+    protected Person getEditorUser() {
+        return getUser(getEditorUserId());
+    }
+
     protected Person getBillingUser() {
         return getUser(getBillingAdminUserId());
     }
@@ -592,6 +597,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected Long getAdminUserId() {
         return TestConfiguration.getInstance().getAdminUserId();
+    }
+
+    protected Long getEditorUserId() {
+        return TestConfiguration.getInstance().getEditorUserId();
     }
 
     public void setHttpServletRequest(HttpServletRequest httpServletRequest) {

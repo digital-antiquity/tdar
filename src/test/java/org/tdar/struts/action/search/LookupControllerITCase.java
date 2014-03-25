@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.sf.json.JSONArray;
@@ -20,6 +21,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.JsonModel;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -134,6 +136,29 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setTerm("test");
         controller.lookupResourceCollection();
         assertTrue(controller.getResults().contains(e));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testModifyEditor() {
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        init(controller, getEditorUser());
+        controller.setRecordsPerPage(1000);
+        controller.setTerm("");
+        controller.setPermission(GeneralPermissions.MODIFY_METADATA);
+        controller.lookupResource();
+        logger.debug("results:{}", controller.getResults());
+        List<Long> ids = Persistable.Base.extractIds(controller.getResults());
+
+        controller = generateNewController(LookupController.class);
+        init(controller, getAdminUser());
+        controller.setRecordsPerPage(1000);
+        controller.setTerm("");
+        controller.setPermission(GeneralPermissions.MODIFY_METADATA);
+        controller.lookupResource();
+        logger.debug("results:{}", controller.getResults());
+        List<Long> ids2 = Persistable.Base.extractIds(controller.getResults());
+        Assert.assertArrayEquals(ids.toArray(), ids2.toArray());
     }
 
     @Test
