@@ -5,7 +5,8 @@ TDAR.inheritance = (function() {
  * DOWNWARD INHERITANCE SUPPORT
  */
 var indexExclusions = [ 'investigationTypeIds', 'approvedSiteTypeKeywordIds', 'materialKeywordIds', 'approvedCultureKeywordIds' ];
-
+var TYPE_PERSON = "PERSON";
+var TYPE_INSTITUTION = "INSTITUTION";
 
     /**
      * convenience function for $.populate()
@@ -114,7 +115,7 @@ function _convertCreator(raw) {
     var obj = {
         id: raw.creator.id,
         role: raw.role,
-        type: bPerson ? "person" : "institution",
+        type: bPerson ? TYPE_PERSON : TYPE_INSTITUTION,
         person: {},
         institution: {}
     };
@@ -380,7 +381,7 @@ function _inheritCreditInformation(divSelector, creators) {
         //now set the correct toggle state for eachrow
         var $proxyRows = $(divSelector).find(".repeat-row");
         $proxyRows.each(function(i, rowElem){
-            if(creators[i].type === "person") {
+            if(creators[i].type === TYPE_PERSON) {
                 $(rowElem).find(".creatorPerson").removeClass("hidden");
                 $(rowElem).find(".creatorInstitution").addClass("hidden");
 
