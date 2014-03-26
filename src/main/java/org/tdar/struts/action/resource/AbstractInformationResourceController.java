@@ -378,6 +378,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
 
+    @Override
+    public String loadAddMetadata() {
+        String retval = super.loadAddMetadata();
+        resolveProject();
+        return retval;
+    }
+
     protected void loadInformationResourceProperties() {
         setResourceLanguage(getResource().getResourceLanguage());
         setMetadataLanguage(getResource().getMetadataLanguage());
