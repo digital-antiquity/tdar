@@ -544,8 +544,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             }
         }
         
-        // FIXME: we need to set the project at this point to avoid getProjectId() being indexed too early
-        // see TDAR-2001
+        // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
         resolveProject();
         getResource().setProject(getProject());
         super.saveBasicResourceMetadata();
