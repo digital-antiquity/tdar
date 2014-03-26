@@ -29,7 +29,7 @@ import org.tdar.filestore.PairtreeFilestore;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-public class TdarConfiguration {
+public class TdarConfiguration  {
 
     public static final int HTTPS_PORT_DEFAULT = 443;
     public static final List<String> STOP_WORDS = Arrays.asList("the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
@@ -82,11 +82,16 @@ public class TdarConfiguration {
         assistant = new ConfigurationAssistant();
         assistant.loadProperties(configurationFile);
         this.configurationFile = configurationFile;
+    }
+    
+    public void initialize() {
+        logger.debug("initializing filestore and setup");
         filestore = loadFilestore();
         initPersonalFilestorePath();
         testQueue();
         initializeStopWords();
-
+        intializeCouponCodes();
+        
         if (ImageUtilities.isMediaLibAvailable()) {
             logger.info("JAI ImageIO available and configured");
         } else {
@@ -95,10 +100,9 @@ public class TdarConfiguration {
                 throw new IllegalStateException("cannot start up in production without JAI");
             }
         }
-        intializeCouponCodes();
-        
+
         if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
-        	throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
+            throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
         }
         
     }
