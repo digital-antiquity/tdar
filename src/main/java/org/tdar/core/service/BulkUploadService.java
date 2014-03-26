@@ -105,6 +105,9 @@ public class BulkUploadService {
     private AccountService accountService;
 
     @Autowired
+    private SearchIndexService searchIndexService;
+
+    @Autowired
     private FileAnalyzer analyzer;
 
     @Autowired
@@ -240,6 +243,10 @@ public class BulkUploadService {
         logger.info("bulk: completing");
         completeBulkUpload(image, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
         logger.info("bulk: done");
+        if (image.getProject() != Project.NULL) {
+        	Project project = genericDao.merge(image.getProject());
+        	searchIndexService.indexProject(project);
+        }
     }
 
     private float processFileProxies(BulkManifestProxy manifestProxy, float count) {
