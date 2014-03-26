@@ -109,7 +109,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
         final Long ticketId = proxyPair.getFirst().getId();
         bulkUploadController.setTicketId(ticketId);
-        bulkUploadController.setProjectId(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID);
+        Long projectId = 3462L;
+        bulkUploadController.setProjectId(projectId);
         // setup controller
         bulkUploadController.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_BULK_DIR + "image_manifest.xlsx")));
         bulkUploadController.setUploadedFilesFileName(Arrays.asList("image_manifest.xlsx"));
@@ -118,6 +119,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setMaterialKeywordIds(materialKeywordIds);
         List<Long> siteTypeKeywordIds = genericService.findRandomIds(SiteTypeKeyword.class, 3);
         Collections.sort(siteTypeKeywordIds);
+        bulkUploadController.getPersistable().setInheritingCulturalInformation(true);
+        bulkUploadController.getPersistable().setInheritingIndividualAndInstitutionalCredit(true);
         bulkUploadController.setApprovedSiteTypeKeywordIds(siteTypeKeywordIds);
         ResourceNote note = new ResourceNote(ResourceNoteType.GENERAL, "A harrowing tale of note");
         bulkUploadController.getResourceNotes().addAll(Arrays.asList(note));
@@ -153,7 +156,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             assertEquals(note.getType(), resourceNote.getType());
             assertEquals(note.getNote(), resourceNote.getNote());
             assertFalse(resource.getResourceCreators().isEmpty());
-            assertEquals(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID, ((InformationResource) resource).getProjectId());
+			assertEquals(projectId, ((InformationResource) resource).getProjectId());
             if (resource.getTitle().equals("Grand Canyon")) {
                 assertEquals("A photo of the grand canyon", resource.getDescription());
                 assertEquals(1, resource.getResourceCreators().size());
