@@ -502,7 +502,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         getResourceService().saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, latitudeLongitudeBoxes,
                 getResource().getLatitudeLongitudeBoxes(), LatitudeLongitudeBox.class);
-        if (CollectionUtils.isEmpty(getPersistable().getActiveLatitudeLongitudeBoxes())) {
+        
+        if (CollectionUtils.isEmpty(getPersistable().getActiveLatitudeLongitudeBoxes()) && !(this instanceof BulkUploadController)) {
             addActionMessage(getText("abstractResourceController.no_map",Arrays.asList(getResource().getResourceType().getLabel())));
         }
         Persistable.Base.reconcileSet(getPersistable().getGeographicKeywords(),

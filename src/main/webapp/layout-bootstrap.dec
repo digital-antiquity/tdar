@@ -193,24 +193,30 @@
                 </div>
                 </#if>
                 <h4>${siteAcronym} <#if (resourceEditPage??)><@s.text name="error.action_resource_edit_error_header"/><#else><@s.text name="error.action_error_header"/></#if></h4>
-				<img src="/images/caution.gif" alt='caution'  width="60" class="pull-left"> 
-				<@s.actionerror cssClass="action-errors" theme="simple" />
-				<#if historicalFileErrors?has_content>
-				<b><@s.text name="error.action_resource_edit_historical"/></b>
-					<ul>
-					<#list historicalFileErrors as fileError>
-						<li>${fileError.first.filename} ${fileError.second.message} 
-							<#if fileError.second.errorCode?has_content>[${fileError.second.errorCode}]</#if></li>
-					</#list>
-					</ul>
-				</#if>
-
-                <@s.fielderror  cssClass="field-errors"  theme="simple"/>
-                <br/>
-                <#if moreInfoUrlKey?has_content>
-				<@s.text name="error.action_more_info_url" />
-                <a href="<@s.text value="${moreInfoUrlKey}"/>"><@s.text value="${moreInfoUrlKey}"/></a>
-                </#if>
+	            <div class="row">
+	            	<div class="span1">
+						<img src="/images/caution.gif" alt='caution'  width="60">
+					</div>
+					<div> 
+						<@s.actionerror cssClass="action-errors" theme="simple" />
+						<#if historicalFileErrors?has_content>
+						<b><@s.text name="error.action_resource_edit_historical"/></b>
+							<ul>
+							<#list historicalFileErrors as fileError>
+								<li>${fileError.first.filename} ${fileError.second.message} 
+									<#if fileError.second.errorCode?has_content>[${fileError.second.errorCode}]</#if></li>
+							</#list>
+							</ul>
+						</#if>
+			
+			            <@s.fielderror  cssClass="field-errors"  theme="simple"/>
+			            <br/>
+			            <#if moreInfoUrlKey?has_content>
+						<@s.text name="error.action_more_info_url" />
+			            <a href="<@s.text value="${moreInfoUrlKey}"/>"><@s.text value="${moreInfoUrlKey}"/></a>
+			            </#if>
+		            </div>
+	            </div>
             </div>
     </#if>
 
