@@ -164,16 +164,16 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     public void setAllScheduledProcesses(List<ScheduledProcess<?>> processes) {
         for (ScheduledProcess<?> process_ : processes) {
             ScheduledProcess<Persistable> process = (ScheduledProcess<Persistable>)process_;
-            if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
-                scheduledProcessMap.clear();
-                logger.warn("current tdar configuration doesn't support running scheduled processes, skipping {}", processes);
-                return;
-            }
+//            if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
+//                scheduledProcessMap.clear();
+//                logger.warn("current tdar configuration doesn't support running scheduled processes, skipping {}", processes);
+//                return;
+//            }
             if (!process.isEnabled()) {
                 logger.warn("skipping disabled process {}", process);
                 continue;
             }
-            if (process.isSingleRunProcess()) {
+            if (!getTdarConfiguration().shouldRunPeriodicEvents() && process.isSingleRunProcess()) {
                 logger.debug("adding {} to the process queue {}", process.getDisplayName(), scheduledProcessQueue);
                 queue(process);
             }
@@ -199,7 +199,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(fixedDelay = 10000)
     @Transactional(readOnly = false, noRollbackFor = { TdarRecoverableRuntimeException.class })
     public void runScheduledProcesses() {
-        if (!getTdarConfiguration().shouldRunPeriodicEvents() || CollectionUtils.isEmpty(scheduledProcessQueue)) {
+        if (CollectionUtils.isEmpty(scheduledProcessQueue)) {
             return;
         }
         logger.debug("processes in Queue: {}", scheduledProcessQueue);
@@ -333,5 +333,10 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         hasRunStartupProcesses = true;
 
     }
+
+    @Transactional
+	public void queueTask(Class<? extends ScheduledProcess> class1) {
+		queue(scheduledProcessMap.get(class1));
+	}
 
 }
