@@ -322,6 +322,15 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(owner);
         resourceCollection.setOwner(owner);
         genericService.saveOrUpdate(resourceCollection);
+
+        genericService.saveOrUpdate(resourceCollection);
+        for (Document doc : docList) {
+            doc.getResourceCollections().add(resourceCollection);
+            doc.setSubmitter(owner);
+            genericService.saveOrUpdate(doc);
+        }
+        genericService.saveOrUpdate(resourceCollection);
+
         genericService.synchronize();
 
         // okay, now let's try to remove the resources from the collection via the
@@ -455,10 +464,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         AuthorizedUser authorizedUser = new AuthorizedUser(owner, GeneralPermissions.MODIFY_RECORD);
         resourceCollection.getAuthorizedUsers().addAll(Arrays.asList(authorizedUser));
         genericService.saveOrUpdate(resourceCollection);
-        for (Document doc : docList) {
-        	doc.getResourceCollections().add(resourceCollection);
-        	genericService.saveOrUpdate(doc);
-        }
         genericService.synchronize();
 
         // okay, now let's try to remove the resources from the collection via the
