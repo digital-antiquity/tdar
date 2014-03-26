@@ -96,6 +96,11 @@ public class TdarConfiguration {
             }
         }
         intializeCouponCodes();
+        
+        if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
+        	throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
+        }
+        
     }
 
     public String getConfigurationFile() {
