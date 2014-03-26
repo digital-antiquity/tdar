@@ -101,7 +101,8 @@ public class BrowseController extends AbstractLookupController {
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private List<String> groups = new ArrayList<String>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
-    private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
+    private HashMap<String,HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
+
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private List<Resource> recentResources = new ArrayList<Resource>();
@@ -122,7 +123,6 @@ public class BrowseController extends AbstractLookupController {
 
     @Action(EXPLORE)
     public String explore() {
-        setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
         setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
         setMaterialTypes(getGenericKeywordService().findAllWithCache(MaterialKeyword.class));
         setInvestigationTypes(getGenericKeywordService().findAllWithCache(InvestigationType.class));
@@ -130,7 +130,8 @@ public class BrowseController extends AbstractLookupController {
         setSiteTypeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
         setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
-        
+        getResourceService().setupWorldMap(worldMapData);
+
         Long count = 10L;
         try {
             int cacheCount =0;
@@ -365,14 +366,6 @@ public class BrowseController extends AbstractLookupController {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-    public List<HomepageGeographicKeywordCache> getGeographicKeywordCache() {
-        return geographicKeywordCache;
-    }
-
-    public void setGeographicKeywordCache(List<HomepageGeographicKeywordCache> geographicKeywordCache) {
-        this.geographicKeywordCache = geographicKeywordCache;
-    }
-
     public List<HomepageResourceCountCache> getHomepageResourceCountCache() {
         return homepageResourceCountCache;
     }
@@ -547,6 +540,14 @@ public class BrowseController extends AbstractLookupController {
 
     public void setViewCount(Long viewCount) {
         this.viewCount = viewCount;
+    }
+
+    public HashMap<String,HomepageGeographicKeywordCache> getWorldMapData() {
+        return worldMapData;
+    }
+
+    public void setWorldMapData(HashMap<String,HomepageGeographicKeywordCache> worldMapData) {
+        this.worldMapData = worldMapData;
     }
 
 }

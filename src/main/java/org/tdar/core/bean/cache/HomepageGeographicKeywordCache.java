@@ -126,23 +126,20 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
         if (percent < 9) {
             return 1;
         }
-        if (percent > 8) {
+        if (percent < 16) {
             return 2;
         }
-        if (percent > 16) {
+        if (percent < 31) {
             return 3;
         }
-        if (percent > 31) {
+        if (percent < 45) {
             return 4;
         }
-        if (percent > 45) {
+        if (percent < 60) {
             return 5;
         }
-        if (percent > 60) {
+        if (percent < 76) {
             return 6;
-        }
-        if (percent > 76) {
-            return 7;
         }
         return 8;
 

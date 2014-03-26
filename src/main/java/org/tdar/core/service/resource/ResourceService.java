@@ -5,12 +5,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -645,5 +647,26 @@ public class ResourceService extends GenericService {
     public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
         return datasetDao.findAllResourcesWithPublicImagesForSitemap(gisg);
         
+    }
+
+    @Transactional
+    public void setupWorldMap(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
+        Long countryTotal = 0l;
+        Double countryLogTotal = 0d;
+        for (HomepageGeographicKeywordCache item : findAll(HomepageGeographicKeywordCache.class)) {
+            Long count = item.getCount();
+            Double logCount = item.getLogCount();
+            if (logCount > countryLogTotal) {
+                countryLogTotal = logCount;
+            }
+            if (count > countryTotal) {
+                countryTotal = count;
+            }
+            worldMapData.put(item.getKey(), item);
+        }
+        for (Entry<String, HomepageGeographicKeywordCache> entrySet : worldMapData.entrySet()) {
+            entrySet.getValue().setTotalCount(countryTotal);
+            entrySet.getValue().setTotalLogCount(countryLogTotal);
+        }
     }
 }

@@ -111,7 +111,7 @@ public class IndexAction extends AuthenticationAware.Base {
     })
     @HttpOnlyIfUnauthenticated
     public String about() {
-        setupWorldMap();
+        getResourceService().setupWorldMap(worldMapData);
         
         setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
         try {
@@ -140,26 +140,6 @@ public class IndexAction extends AuthenticationAware.Base {
             }
         }
         return SUCCESS;
-    }
-
-    private void setupWorldMap() {
-        Long countryTotal = 0l;
-        Double countryLogTotal = 0d;
-        for (HomepageGeographicKeywordCache item : getGenericService().findAll(HomepageGeographicKeywordCache.class)) {
-            Long count = item.getCount();
-            Double logCount = item.getLogCount();
-            if (logCount > countryLogTotal) {
-                countryLogTotal = logCount;
-            }
-            if (count > countryTotal) {
-                countryTotal = count;
-            }
-            getWorldMapData().put(item.getKey(), item);
-        }
-        for (Entry<String, HomepageGeographicKeywordCache> entrySet : getWorldMapData().entrySet()) {
-            entrySet.getValue().setTotalCount(countryTotal);
-            entrySet.getValue().setTotalLogCount(countryLogTotal);
-        }
     }
 
     @Action("login")

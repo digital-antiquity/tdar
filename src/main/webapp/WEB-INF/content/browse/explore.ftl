@@ -35,7 +35,7 @@
     <div class="span6 map">
     <!-- fixme styling -->
     <h3 style="">${siteAcronym} Worldwide</h3>
-        <@common.worldMap />
+        <@common.renderWorldMap />
     </div>
 </div>
 
