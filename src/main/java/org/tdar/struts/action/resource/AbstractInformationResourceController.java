@@ -712,6 +712,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             return toReturn;
         }
         for (InformationResourceFile file : getPersistable().getFilesWithProcessingErrors()) {
+        	if (file.isDeleted()) {
+        		continue;
+        	}
             String message = file.getErrorMessage();
             String stackTrace = file.getErrorMessage();
             if (StringUtils.contains(message, ExceptionWrapper.SEPARATOR)) {

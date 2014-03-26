@@ -8,11 +8,11 @@ server.environment=test
 
 # the hostname of the server
 # default: core.tdar.org
-app.hostname=core.tdar.org
+app.hostname=localhost
 
 # the default port for the server (http)
 # default: 80
-app.port=80
+app.port=8080
 
 # Whether HTTPS is enabled
 # default: false
@@ -20,7 +20,7 @@ https.enabled = false
 
 # What the default port for https should be
 # default: 443
-https.port
+https.port=8443
 
 # The short name of the site
 # default: tDAR

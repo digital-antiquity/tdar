@@ -173,7 +173,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
                 logger.warn("skipping disabled process {}", process);
                 continue;
             }
-            if (!getTdarConfiguration().shouldRunPeriodicEvents() && process.isSingleRunProcess()) {
+            if (getTdarConfiguration().shouldRunPeriodicEvents() && process.isSingleRunProcess()) {
                 logger.debug("adding {} to the process queue {}", process.getDisplayName(), scheduledProcessQueue);
                 queue(process);
             }

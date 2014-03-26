@@ -288,7 +288,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         logger.info("deleting unmerged tables: {}", tablesToRemove);
         ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
         for (DataTable table : tablesToRemove) {
-            columnsToUnmap.addAll(table.getDataTableColumns());
+        	if (table != null && CollectionUtils.isNotEmpty(table.getDataTableColumns())) {
+        		columnsToUnmap.addAll(table.getDataTableColumns());
+        	}
         }
         // first unmap all columns from the removed tables
         datasetDao.unmapAllColumnsInProject(dataset.getProject(), columnsToUnmap);
