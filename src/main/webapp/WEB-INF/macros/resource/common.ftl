@@ -856,7 +856,7 @@ $('.worldmap').maphilight({
 <#list worldMapData?values as value>
 <#if value.key == code>
  <#local entry = value />
- <#if entry?has_content>
+ <#if entry.keywordId?has_content>
 	 <#local color = settings.mapColors[entry.colorGroup]!"#ffffff" />
 	
 	<#local term>geographicKeywords=${entry.keywordId?c}</#local>
