@@ -4,7 +4,7 @@
 
 # Is the server running in production mode (less debuging data, and optimized JavaScript and CSS)
 # default: test
-server.environment=production
+server.environment=test
 
 # the hostname of the server
 # default: core.tdar.org

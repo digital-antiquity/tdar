@@ -42,7 +42,7 @@ public class FileSystemResourceDao {
     private static final String TESTING_PATH_FOR_INCLUDES_DIRECTORY = "target/ROOT/";
     private XPathFactory xPathFactory = XPathFactory.newInstance();
 
-    public static Boolean wroExists;
+    public static Boolean wroExists = null;
     
     public boolean testWRO() {
         if (wroExists != null) {
@@ -64,6 +64,7 @@ public class FileSystemResourceDao {
                     return true;
                 }
             } else {
+            	logger.debug("wro does not exist");
                 wroExists = false;
             }
 
