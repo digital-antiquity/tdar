@@ -3,6 +3,7 @@ package org.tdar.struts.action.resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,8 +17,6 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -37,6 +36,7 @@ import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
+
 
 /**
  * $Id$
@@ -180,7 +180,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         if (CollectionUtils.isNotEmpty(getActionErrors())) {
             return VALIDATE_ERROR;
         }
-        addActionMessage(getText("bulkUploadController.template_validation_success",getTemplateFilename()));
+        addActionMessage(getText("bulkUploadController.template_validation_success",Arrays.asList(getTemplateFilename())));
         return SUCCESS;
     }
 
