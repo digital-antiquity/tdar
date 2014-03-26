@@ -33,7 +33,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -185,8 +184,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Enumerated(EnumType.STRING)
     @Column(name = "collection_type", length = FieldLength.FIELD_LENGTH_255)
-    @NotNull
-    private CollectionType type;
+    private CollectionType type = CollectionType.INTERNAL;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")

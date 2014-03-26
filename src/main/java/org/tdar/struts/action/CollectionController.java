@@ -110,9 +110,9 @@ public class CollectionController extends AbstractPersistableController<Resource
         getResourceCollectionService().updateCollectionParentTo(persistable, parent);
         getGenericService().saveOrUpdate(persistable);
         getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, getAuthorizedUsers(), shouldSaveResource());
-        resources.addAll(getRetainedResources());
         getLogger().trace("resources (original):{}", resources);
         getLogger().trace("resources (retained):{}", getRetainedResources());
+        resources.addAll(getRetainedResources());
         List<Resource> rehydratedIncomingResources = getResourceCollectionService().reconcileIncomingResourcesForCollection(persistable,
                 getAuthenticatedUser(), resources);
         getLogger().trace("{}", rehydratedIncomingResources);
