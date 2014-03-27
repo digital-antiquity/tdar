@@ -68,6 +68,7 @@ public interface AsyncUpdateReceiver {
 
         @Override
         public void addError(Throwable t) {
+        	setStatus("Error occurred");
             throwables.add(t);
         }
 

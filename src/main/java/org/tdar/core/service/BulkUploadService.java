@@ -198,8 +198,9 @@ public class BulkUploadService {
         // in an async method the image's persistent associations will have become detached from the hibernate session that loaded them, and their lazy-init
         // fields will be unavailable. So we reload them to make them part of the current session and regain access to any lazy-init associations.
          
-         if (image.getProject() != null && !image.getProject().equals(Project.NULL)) {
-            Project p = genericDao.find(Project.class, image.getProject().getId());
+         Project project = image.getProject();
+		if (project != null && !project.equals(Project.NULL)) {
+            Project p = genericDao.find(Project.class, project.getId());
             image.setProject(p);
         }
 
@@ -221,10 +222,11 @@ public class BulkUploadService {
         }
         manifestProxy.setFileProxies(fileProxies);
         // If there are errors, then stop...
-        List<String> asyncErrors = manifestProxy.getAsyncUpdateReceiver().getAsyncErrors();
+        AsyncUpdateReceiver updateReciever = manifestProxy.getAsyncUpdateReceiver();
+		List<String> asyncErrors = updateReciever.getAsyncErrors();
         if (CollectionUtils.isNotEmpty(asyncErrors)) {
             logger.debug("not moving further because of async validation errors: {}", asyncErrors);
-            completeBulkUpload(image, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
+            completeBulkUpload(image, accountId, updateReciever, excelManifest, ticketId);
             return;
         }
 
@@ -236,18 +238,31 @@ public class BulkUploadService {
         try {
             updateAccountQuotas(accountId, manifestProxy.getResourcesCreated());
         } catch (Throwable t) {
-            logger.error("{}", t);
+            logger.error("quota error happend", t);
+        	updateReciever.addError(t);
         }
         logger.info("bulk: log and persist");
         logAndPersist(manifestProxy);
         logger.info("bulk: completing");
+        genericDao.detachFromSession(image);
+//        genericDao.detachFromSession(project);
+        try {
+        if (project != Project.NULL) {
+//        	for (Resource r : manifestProxy.getResourcesCreated().values()) {
+//        		genericDao.detachFromSession(r);
+//        	}
+//        	boolean exceptions = searchIndexService.indexProject(genericDao.merge(project));
+//        	if (exceptions) {
+//        		throw new TdarRecoverableRuntimeException("bulkUploadService.exceptionDuringIndexing");
+//        	}
+        }
+        } catch (Throwable t) {
+        	logger.error("error happened" , t);
+        	updateReciever.addError(t);
+        }
         completeBulkUpload(image, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
         logger.info("bulk: done");
-        if (image.getProject() != Project.NULL) {
-        	Project project = genericDao.merge(image.getProject());
-        	searchIndexService.indexProject(project);
-        }
-    }
+     }
 
     private float processFileProxies(BulkManifestProxy manifestProxy, float count) {
         for (FileProxy fileProxy : manifestProxy.getFileProxies()) {
@@ -267,8 +282,8 @@ public class BulkUploadService {
                 InformationResource informationResource = (InformationResource)manifestProxy.getResourcesCreated().get(fileName);
                 //createInternalResourceCollectionWithResource
                 importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
-                informationResource = genericDao.merge(informationResource);
-                genericDao.saveOrUpdate(genericDao.merge(informationResource));
+//                informationResource = genericDao.merge(informationResource);
+                genericDao.saveOrUpdate(informationResource);
                 manifestProxy.getResourcesCreated().put(fileName,informationResource);
                 informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
                         Arrays.asList(fileProxy));

@@ -269,7 +269,8 @@ public class SearchIndexService {
      * 
      * @param indexable
      */
-    public <C extends Indexable> void indexCollection(Collection<C> indexable) {
+    public <C extends Indexable> boolean indexCollection(Collection<C> indexable) {
+    	boolean exceptions = false;
         if (indexable != null) {
             log.debug("manual indexing ... " + indexable.size());
             FullTextSession fullTextSession = getFullTextSession();
@@ -285,10 +286,12 @@ public class SearchIndexService {
                     log.error("exception in indexing", e);
                     log.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
                             ExceptionUtils.getRootCause(e));
+                    exceptions = true;
                 }
             }
             fullTextSession.flushToIndexes();
         }
+        return exceptions;
     }
 
     /**
@@ -399,13 +402,14 @@ public class SearchIndexService {
      * 
      * @param project
      */
-    public void indexProject(Project project) {
+    public boolean indexProject(Project project) {
         project.setCachedInformationResources(new HashSet<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT)));
         project.setReadyToIndex(true);
         index(project);
         log.debug("reindexing project contents");
-        indexCollection(project.getCachedInformationResources());
+        boolean exceptions = indexCollection(project.getCachedInformationResources());
         log.debug("completed reindexing project contents");
+        return exceptions;
     }
     
     /**
