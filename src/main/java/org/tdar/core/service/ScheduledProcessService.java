@@ -278,7 +278,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * @return
      */
     public boolean queue(ScheduledProcess<Persistable> process) {
-        if (process == null) {
+        if (process == null || !TdarConfiguration.getInstance().shouldRunPeriodicEvents()) {
             return false;
         }
         return scheduledProcessQueue.add(process);
@@ -336,7 +336,10 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 
     @Transactional
 	public void queueTask(Class<? extends ScheduledProcess> class1) {
-		queue(scheduledProcessMap.get(class1));
+		ScheduledProcess<Persistable> process = scheduledProcessMap.get(class1);
+		if (process != null) {
+			scheduledProcessQueue.add(process);
+		}
 	}
 
 }

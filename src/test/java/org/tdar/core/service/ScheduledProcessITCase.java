@@ -58,7 +58,7 @@ import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
-    private ScheduledProcessService scheduledProcessService;
+//    private ScheduledProcessService scheduledProcessService;
     private static final int MOCK_NUMBER_OF_IDS = 2000;
 
     @Autowired
