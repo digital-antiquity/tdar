@@ -1,13 +1,26 @@
 package org.tdar.struts.action.resource;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
@@ -42,7 +55,6 @@ import org.tdar.struts.action.search.BrowseController;
 
 import com.opensymphony.xwork2.Action;
 
-//import static org.hamcrest.MatcherAssert.assertThat;
 public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Autowired
@@ -308,7 +320,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testRemoveResources() throws Exception
     {
-        ResourceCollection resourceCollection = new ResourceCollection();
+        ResourceCollection resourceCollection = new ResourceCollection(CollectionType.SHARED);
         resourceCollection.setName("a resource collection");
         resourceCollection.setDescription("testing add then remove resources");
         List<Document> docList = new ArrayList<Document>();
