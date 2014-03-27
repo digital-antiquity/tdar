@@ -484,6 +484,7 @@ function _getBlankProject() {
         "coverageDates" : [],
         "title" : null,
         "resourceNotes" : [],
+        "sourceCollections": [],
         "relatedComparativeCollections" : [],
         "resourceAnnotations" : [],
         "uncontrolledCultureKeywords" : [],
