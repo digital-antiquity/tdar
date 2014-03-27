@@ -82,11 +82,11 @@ public class TdarConfiguration  {
         assistant = new ConfigurationAssistant();
         assistant.loadProperties(configurationFile);
         this.configurationFile = configurationFile;
+        filestore = loadFilestore();
     }
     
     public void initialize() {
         logger.debug("initializing filestore and setup");
-        filestore = loadFilestore();
         initPersonalFilestorePath();
         testQueue();
         initializeStopWords();
@@ -105,6 +105,16 @@ public class TdarConfiguration  {
             throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
         }
         
+        File filestoreLoc = new File(getFileStoreLocation());
+        try {
+            if (!filestoreLoc.exists()) {
+                filestoreLoc.mkdirs();
+            }
+        } catch (Exception e) {
+            logger.error("could not create filestore path:" + filestoreLoc.getAbsolutePath(), e);
+        }
+
+
     }
 
     public String getConfigurationFile() {
@@ -187,15 +197,6 @@ public class TdarConfiguration  {
         String filestoreClassName = assistant.getStringProperty("file.store.class",
                 PairtreeFilestore.class.getCanonicalName());
         Filestore filestore = null;
-
-        File filestoreLoc = new File(getFileStoreLocation());
-        try {
-            if (!filestoreLoc.exists()) {
-                filestoreLoc.mkdirs();
-            }
-        } catch (Exception e) {
-            logger.error("could not create filestore path:" + filestoreLoc.getAbsolutePath(), e);
-        }
 
         try {
             Class<?> filestoreClass = Class.forName(filestoreClassName);
