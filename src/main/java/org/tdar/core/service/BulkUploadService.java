@@ -266,8 +266,8 @@ public class BulkUploadService {
                 ActionMessageErrorListener listener = new ActionMessageErrorListener();
                 InformationResource informationResource = (InformationResource)manifestProxy.getResourcesCreated().get(fileName);
                 //createInternalResourceCollectionWithResource
-                informationResource = genericDao.merge(informationResource);
                 importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
+                informationResource = genericDao.merge(informationResource);
                 genericDao.saveOrUpdate(genericDao.merge(informationResource));
                 manifestProxy.getResourcesCreated().put(fileName,informationResource);
                 informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
@@ -604,6 +604,8 @@ public class BulkUploadService {
             informationResource.setTitle(fileName);
             informationResource.markUpdated(proxy.getSubmitter());
             informationResource.setDescription(" ");
+            //make sure we're not on the session, period
+        	genericDao.detachFromSession(informationResource);
             proxy.getResourcesCreated().put(fileName, informationResource);
             if (listener.hasActionErrors()) {
                 proxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
