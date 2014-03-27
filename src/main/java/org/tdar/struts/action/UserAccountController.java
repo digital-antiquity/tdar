@@ -193,6 +193,8 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 setPerson(result.getPerson());
                 getLogger().debug("Authenticated successfully with auth service.");
                 getEntityService().registerLogin(person);
+                getXmlService().logRecordXmlToFilestore(person);
+
                 getAuthenticationAndAuthorizationService().createAuthenticationToken(person, getSessionData());
                 addActionMessage(getText("userAccountController.successful_registration_message"));
                 return SUCCESS;
