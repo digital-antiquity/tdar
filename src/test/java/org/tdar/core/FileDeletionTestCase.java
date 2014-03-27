@@ -20,7 +20,9 @@ public class FileDeletionTestCase {
 
     @Test
     public void testDeletion() throws IOException {
-        String parent = TdarConfiguration.getInstance().getFileStoreLocation();
+        TdarConfiguration configuration = TdarConfiguration.getInstance();
+        configuration.initialize();
+        String parent = configuration.getFileStoreLocation();
         File file = new File(parent, "test.txt");
         FileOutputStream fos = new FileOutputStream(file);
         IOUtils.write("this isa  test", fos);
