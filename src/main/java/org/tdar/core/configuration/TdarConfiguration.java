@@ -83,11 +83,12 @@ public class TdarConfiguration  {
         assistant.loadProperties(configurationFile);
         this.configurationFile = configurationFile;
         filestore = loadFilestore();
+        initPersonalFilestorePath();
     }
     
     public void initialize() {
         logger.debug("initializing filestore and setup");
-        initPersonalFilestorePath();
+        //initPersonalFilestorePath();
         testQueue();
         initializeStopWords();
         intializeCouponCodes();
@@ -106,12 +107,8 @@ public class TdarConfiguration  {
         }
         
         File filestoreLoc = new File(getFileStoreLocation());
-        try {
-            if (!filestoreLoc.exists()) {
-                filestoreLoc.mkdirs();
-            }
-        } catch (Exception e) {
-            logger.error("could not create filestore path:" + filestoreLoc.getAbsolutePath(), e);
+        if (!filestoreLoc.exists()) {
+            throw new IllegalStateException("could not create filestore path:" + filestoreLoc.getAbsolutePath());
         }
 
 
@@ -197,6 +194,14 @@ public class TdarConfiguration  {
         String filestoreClassName = assistant.getStringProperty("file.store.class",
                 PairtreeFilestore.class.getCanonicalName());
         Filestore filestore = null;
+        File filestoreLoc = new File(getFileStoreLocation());
+        try {
+            if (!filestoreLoc.exists()) {
+                filestoreLoc.mkdirs();
+            }
+        } catch (Exception e) {
+            logger.error("could not create filestore path:" + filestoreLoc.getAbsolutePath(), e);
+        }
 
         try {
             Class<?> filestoreClass = Class.forName(filestoreClassName);
