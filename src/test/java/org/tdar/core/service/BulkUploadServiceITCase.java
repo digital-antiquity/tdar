@@ -16,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -240,7 +239,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         manifestProxy.setResourcesCreated(filenameResourceMap);
         bulkUploadService.readExcelFile(manifestProxy);
         String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(),"");
-        assertTrue(asyncErrors.contains("skipping line in excel file as resource with the filename"));
+        logger.debug(asyncErrors);
+        assertTrue(asyncErrors.contains("was not found in the import batchFilename"));
     }
 
     @Test
