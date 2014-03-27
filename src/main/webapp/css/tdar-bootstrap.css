@@ -1380,11 +1380,17 @@ div.tdarresults .row.GRID:first-child div.listItem {
 
 /* Error banners are a more attention-grabbing form of user notifications. */
 .error-banner {
+    background: url(/images/caution.gif) 0.2em 0.2em ; background-repeat: no-repeat;
+    background-size: 1.5em;
     margin-top: 3em;
+    padding: 0.2em 0.2em 0.2em 2em;
     border: 2px solid #444;
-    padding-top: 1em;
     color: black;
 }
+
+.error-banner {
+}
+
 .error-banner h1, .error-banner h2, .error-banner h3, .error-banner h4 {
     color: #7a1501  /* "tDAR red" */
 }
@@ -1402,6 +1408,7 @@ upper-right corner. Individual codes should be wrapped in span.error-code elemen
     color: #555;
 }
 
+
 .error-banner .error-code {
     font-family: monospace;
     padding-right: 1em;
@@ -1413,9 +1420,10 @@ upper-right corner. Individual codes should be wrapped in span.error-code elemen
 /* Overide bootstrap default error alert color. Note: avoid modifying anything other than fonts and colors, as the styles here
 are governed by several media queries and thus easy to screw up the formatting of various responsive profiles. */
 .alert.alert-error {
-    background-color: #fffe86;
+    background-color: #fffecc;
 }
 
 .alert.alert-error p, .alert.alert-error ul, .alert.alert-error li {
     color:#000;
 }
+
