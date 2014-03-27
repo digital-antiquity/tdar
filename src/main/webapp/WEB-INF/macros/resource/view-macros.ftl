@@ -656,9 +656,16 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 
 
-<#--FIXME: currently broken (TDAR-3531). also,  this should go into external javascript -->
 <#macro datatableChildJavascript>
-    if(window.opener && window.opener.TDAR.common.adhocTarget)  {
+    var _windowOpener = null;
+    //swallow cors exception. this can happen if window is a child but not an adhoc target
+    try {
+        if(window.opener) {
+            windowOpener = window.opener.TDAR.common.adhocTarget;
+        }
+    }catch(ex) {console.log("window parent not available - skipping adhoctarget check");}
+
+    if(_windowOpener)  {
         window.opener.TDAR.common.populateTarget({
             id:${resource.id?c},
             title:"${resource.title?js_string}"
