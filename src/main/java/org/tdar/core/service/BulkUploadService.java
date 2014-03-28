@@ -941,24 +941,19 @@ public class BulkUploadService {
      */
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
-    public <R extends Resource> void readExcelFile(
-            BulkManifestProxy manifestProxy) throws InvalidFormatException,
-            IOException {
+    public <R extends Resource> void readExcelFile(BulkManifestProxy manifestProxy) throws InvalidFormatException, IOException {
 
         if (manifestProxy == null) {
             return;
         }
-        AsyncUpdateReceiver asyncUpdateReceiver = manifestProxy
-                .getAsyncUpdateReceiver();
-        FormulaEvaluator evaluator = manifestProxy.getSheet().getWorkbook()
-                .getCreationHelper().createFormulaEvaluator();
+        AsyncUpdateReceiver asyncUpdateReceiver = manifestProxy.getAsyncUpdateReceiver();
+        FormulaEvaluator evaluator = manifestProxy.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
 
         int rowNum = 0;
-        Map<String, CellMetadata> cellLookupMap = manifestProxy
-                .getCellLookupMap();
+        Map<String, CellMetadata> cellLookupMap = manifestProxy.getCellLookupMap();
 
-        // if we use a manifest file, then keep track of all resources that have
-        // errors
+        // if we use a manifest file, then keep track of all resources that have errors
+        List<String> allFilenames = new ArrayList<>();
         for (Row row : manifestProxy.getSheet()) {
             if (row == null) {
                 logger.warn("null row.");
@@ -973,8 +968,7 @@ public class BulkUploadService {
             int startColumnIndex = manifestProxy.getFirstCellNum();
             int endColumnIndex = manifestProxy.getLastCellNum();
 
-            String filename = excelService.getCellValue(formatter, evaluator,
-                    row, startColumnIndex);
+            String filename = excelService.getCellValue(formatter, evaluator, row, startColumnIndex);
 
             // look in the hashmap for the filename, skip the examples
             Resource resourceToProcess = findResource(filename, manifestProxy.getResourcesCreated());
@@ -986,6 +980,11 @@ public class BulkUploadService {
                 asyncUpdateReceiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found",vals));
 
                 continue;
+            }
+            if (manifestProxy.isCaseSensitive()) {
+                allFilenames.add(filename);
+            } else {
+                allFilenames.add(filename.toLowerCase());
             }
             logger.info("processing:" + filename);
 
@@ -1081,7 +1080,22 @@ public class BulkUploadService {
                 asyncUpdateReceiver.addError(t);
             }
         }
-    }
+        
+        for (String filename : manifestProxy.getResourcesCreated().keySet()) {
+            if (manifestProxy.isCaseSensitive()) {
+                allFilenames.remove(filename);
+            } else {
+                allFilenames.remove(filename);
+                allFilenames.remove(filename.toLowerCase());
+            }
+            logger.debug("removing: {}", filename);
+        }
+        logger.debug("{}", allFilenames);
+        if (CollectionUtils.isNotEmpty(allFilenames)) {
+            asyncUpdateReceiver.addError(new TdarRecoverableRuntimeException("bulkUploadService.tooManyFiles",
+                    Arrays.asList(StringUtils.join(allFilenames.toArray(),", "))));
+        }
+     }
 
     /**
      * is this one of the test file names, or is there something wrong with the

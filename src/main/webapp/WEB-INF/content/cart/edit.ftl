@@ -62,12 +62,12 @@
 				<div class="span8">
 				<h2>Cost Calculator</h2>
 				<div class="well">
-					<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer span2"/>
+					<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer span2" maxlength=9  />
 					
 					<div class="control-group">
 					    <label class="control-label">Number of Mb</label>
 					    <div class="controls">
-							<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2"/>
+							<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2" maxlength=9 />
 							<span id="convert"></span>
 						</div>
 					</div>
