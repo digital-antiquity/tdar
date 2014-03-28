@@ -497,7 +497,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 break;
         }
         addActionError(getText("abstactPersistableController.no_permissions"));
-        abort(StatusCode.FORBIDDEN.withResultName(GONE),getText("abstactPersistableController.could_not_load"));
+        abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED),getText("abstactPersistableController.no_permissions"));
 
     }
 
