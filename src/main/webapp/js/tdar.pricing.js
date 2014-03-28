@@ -1,10 +1,13 @@
 (function (TDAR, $) {
     'use strict';
 
+
+    //parse string to integer.  replace blank and NaN with 0.
     var _parse = function(num) {
-        num = num.replace(",","");
-        num = Math.ceil(num);
-        return num;
+        var _num = num.replace(",","");
+        _num = Math.ceil(_num);
+        _num = isNaN(_num) ? 0 : _num;
+        return _num;
     };
 
     
@@ -33,20 +36,18 @@
             var numFiles = _parse($("#MetadataForm_invoice_numberOfFiles").val());
             var numMb = _parse($("#MetadataForm_invoice_numberOfMb").val());
 
-            if (isNaN(numMb)) {
-                numMb = 0;
-            }
+            $("#MetadataForm_invoice_numberOfFiles, #MetadataForm_invoice_numberOfMb").each(function(){
+                this.value = _parse(this.value).toFixed(0);
+            });
 
-            if (isNaN(numFiles)){
-                numFiles = 0;
-            }
+
             if (numFiles == numMb && numMb == 0 && $(MetadataForm_code).val() == '') {
                 alert('please enter space or files');
                 return false;
             }
             return true;
         });
-        
+
         $form.change(function () {
             var numFiles = _parse($("#MetadataForm_invoice_numberOfFiles").val());
             var numMb = _parse($("#MetadataForm_invoice_numberOfMb").val());
