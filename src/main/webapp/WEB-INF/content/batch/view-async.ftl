@@ -1,31 +1,37 @@
 <body>
 <title>Bulk Upload Status</title>
-<div class="glide">
+<div>
     <h3>Bulk Upload Status (this may take some time)</h3>
-    <span id="asyncErrors" >
-        <div id="unspecifiedError" class="alert alert-error" style="display:none">
-            <h3>Unspecified Error</h3>
-            <p>An error occurred while asking the server for an upload status update.   This does not mean that your upload failed.  
-            Please check the <a href="<@s.url value="/dashboard"/>">dashboard</a> to determine
-            whether you successfully uploaded your files. Please notify an administrator if this problem persists.
+    <div>
+        <div id="progressbar"></div>
+        <span id="buildStatus"></span>
+    </div>
+
+    <div id="asyncErrors" class ="alert alert-error error-banner" style="display:none">
+        <h4>tDAR Encountered Errors During Processing</h4>
+        <div id="unspecifiedError"  style="display:none">
+            <p>An error occurred while asking the server for an upload status update.   This does not mean that your upload failed.
+                Please check the <a href="<@s.url value="/dashboard"/>">dashboard</a> to determine
+                whether you successfully uploaded your files. Please notify an administrator if this problem persists.
             </p>
-            <div id="errorDetails"></div>
         </div>
+        <div id="errorDetails"></div>
     <#if !ticketId??>
         The system has not received any files.   Please try again or notify an administrator if the problem persists.
     </#if>
-    </span>
-    <div>
-        <div id="progressbar" style="width:80%"></div>
-        <span id="buildStatus"></span>
     </div>
 </div>
 
 <div id="divUploadComplete" class="glide" style="display:none">
-    <h3>Upload Complete!</h3>
-    <p>The upload process is complete.  If ${siteAcronym} experienced any errors they will be displayed at the top of this page. 
+    <h3>Upload Complete</h3>
+    <p class="success">The upload process is complete.
     You can visit the <a href="<@s.url value="/dashboard"/>">dashboard</a> to review your recently uploaded files.</p>
-    <div><a href="<@s.url value="/dashboard"/>" id="btnDashboard">Continue to the Dashboard</a></div></div>
+
+    <div class="form-actions">
+        <@s.a cssClass="btn btn-large btn-primary" href="/dashboard" id="btnDashboard">Continue to the Dashboard</@s.a>
+        <@s.a cssClass="btn btn-large " href="/batch/template-prepare/" id="btnBatch">Return to Batch Upload Page</@s.a>
+
+    </div>
 </div>
 <#if ticketId??>
 <script type="text/javascript">
@@ -40,7 +46,7 @@ var updateProgress = function() {
         console.log("progress at 100. no need to continue");
         return;
     };
-    
+
     var url = "<@s.url value="checkstatus"><@s.param name="ticketId" value="${ticketId?c}" /></@s.url>";
     $.ajax({
       url: url,
@@ -61,17 +67,17 @@ var updateProgress = function() {
                 $("#btnDashboard").button();
             }
             if (data.errors  != undefined && data.errors != "") {
-                $("#asyncErrors").html("<div class='alert alert-error'><ul>"+data.errors+"</ul></div>");
-            }        
+                $("#asyncErrors").show().find("#errorDetails").html("<div class=''><ul>"+data.errors+"</ul></div>");
+            }
         },
       error: function(xhr,txtStatus, errorThrown) {
         gPercentDone = 101;
         console.error("error: %s, %s", txtStatus, errorThrown);
-        $('#unspecifiedError').show();
+        $('#unspecifiedError, #asyncErrors').show();
         $("#progressbar").progressbar("disable");
       }
     });
-    
+
     console.log("registered ajax callback");
 }
 
