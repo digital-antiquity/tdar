@@ -1,6 +1,13 @@
 (function (TDAR, $) {
     'use strict';
 
+    var _parse = function(num) {
+        num = num.replace(",","");
+        num = Math.ceil(num);
+        return num;
+    };
+
+    
     var _initPricing = function (form, ajaxUrl) {
         var $form = $(form);
         $("#small-option").click(function () {
@@ -22,11 +29,36 @@
             $form.submit();
         });
 
-        $form.change(function () {
-            var numFiles = $("#MetadataForm_invoice_numberOfFiles").val();
-            var numMb = Math.ceil($("#MetadataForm_invoice_numberOfMb").val());
+        $form.submit(function(f) {
+            var numFiles = _parse($("#MetadataForm_invoice_numberOfFiles").val());
+            var numMb = _parse($("#MetadataForm_invoice_numberOfMb").val());
 
-            /* give the user an understanding of size in GB if size is > 1/2 GB */
+            if (isNaN(numMb)) {
+                numMb = 0;
+            }
+
+            if (isNaN(numFiles)){
+                numFiles = 0;
+            }
+            if (numFiles == numMb && numMb == 0 && $(MetadataForm_code).val() == '') {
+                alert('please enter space or files');
+                return false;
+            }
+            return true;
+        });
+        
+        $form.change(function () {
+            var numFiles = _parse($("#MetadataForm_invoice_numberOfFiles").val());
+            var numMb = _parse($("#MetadataForm_invoice_numberOfMb").val());
+
+            if (isNaN(numMb)) {
+                numMb = 0;
+            }
+
+            if (isNaN(numFiles)){
+                numFiles = 0;
+            }
+/* give the user an understanding of size in GB if size is > 1/2 GB */
             var mb = "";
             if (numMb > 512) {
                 var num = numMb / 1024;
