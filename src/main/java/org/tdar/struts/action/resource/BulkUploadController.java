@@ -26,6 +26,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadService;
@@ -84,6 +85,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
      */
     @Override
     protected String save(Image image) {
+        getPersistable().setStatus(Status.DELETED);
+        getGenericService().markReadOnly(getPersistable());
         getLogger().info("saving batches...");
 
         if (Persistable.Base.isNullOrTransient(getTicketId())) {
@@ -118,8 +121,12 @@ public class BulkUploadController extends AbstractInformationResourceController<
         handleAsyncUploads();
         Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
         setupAccountForSaving();
-        getGenericService().markReadOnly(getPersistable());
+        getCreditProxies().clear();
         getGenericService().detachFromSession(getPersistable());
+        setPersistable(null);
+        getGenericService().detachFromSession(getAuthenticatedUser());
+//        getGenericService().detachFromSession(getPersistable().getResourceCollections());
+        getAuthorizedUsers().clear();
         if (isAsync()) {
             getLogger().info("running asyncronously");
             bulkUploadService.saveAsync(image, getAuthenticatedUser().getId(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
@@ -127,7 +134,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             getLogger().info("running inline");
             bulkUploadService.save(image, getAuthenticatedUser().getId(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         }
-        setPersistable(null);
+//        setPersistable(null);
         return SUCCESS_ASYNC;
     }
 

@@ -354,6 +354,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         saveOrUpdate(account);
+        helper = null;
         logger.trace("files used: {} ", account.getFilesUsed());
         logger.trace("files avail: {} ", account.getAvailableNumberOfFiles());
         logger.trace("space used: {} ", account.getSpaceUsedInMb());

@@ -81,7 +81,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return name.compareTo(candidate.name);
     }
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY, optional = true)
     private Institution parentInstitution;
 
     public Institution() {

@@ -420,4 +420,9 @@ public class SearchIndexService {
     public void indexProjectAsync(final Project project) {
         indexProject(project);
     }
+
+    @Transactional(readOnly=true)
+	public boolean indexProject(Long id) {
+		return indexProject(genericService.find(Project.class, id));
+	}
 }

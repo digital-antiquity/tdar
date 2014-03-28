@@ -50,7 +50,9 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -75,6 +77,9 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
 
+    @Autowired
+    XmlService xmlService;
+    
     @Test
     @Rollback
     public void testExcelTemplate() throws FileNotFoundException, IOException {
@@ -95,7 +100,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     }
 
     @Test
-    @Rollback
+    @Rollback()
     public void testBulkUpload() throws Exception {
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
         bulkUploadController.prepare();
@@ -151,6 +156,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             ids = genericService.extractIds(resource.getSiteTypeKeywords());
             Collections.sort(ids);
             assertEquals(siteTypeKeywordIds, ids);
+            logger.debug(xmlService.convertToXML(resource));
             assertEquals(1, resource.getResourceNotes().size());
             ResourceNote resourceNote = resource.getResourceNotes().iterator().next();
             assertEquals(note.getType(), resourceNote.getType());
@@ -266,7 +272,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.info("{}", details);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertTrue(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
-        assertTrue(resourceService.find(details.get(0).getFirst()).isActive());
+        Resource find1 = resourceService.find(details.get(0).getFirst());
+		assertEquals(Status.ACTIVE, find1.getStatus());
         assertTrue(resourceService.find(details.get(1).getFirst()).isActive());
         assertEquals(new Integer(1234), ((InformationResource) resourceService.find(details.get(0).getFirst())).getDate());
         assertEquals(new Integer(2222), ((InformationResource) resourceService.find(details.get(1).getFirst())).getDate());
@@ -601,7 +608,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         }
         assertEquals("we should have a total of 3 collections (2 internal +1 shared)", 3, collections.size());
 
-        assertEquals("we should have one new adhoc collection", 1, newSharedCount - origSharedCount);
+        assertEquals("we should have one new adhoc collection", 2, newSharedCount - origSharedCount);
         // ensure N internal collections created
         // String msg = String.format("We should have %s new internal collections.  newcount:%s oldcount:%s", uploadFiles.size(),
         // newInternalCount, origInternalCount);

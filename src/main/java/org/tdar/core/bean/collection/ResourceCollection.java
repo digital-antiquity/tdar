@@ -192,12 +192,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
-    @ManyToOne
+    @ManyToOne(cascade= { CascadeType.MERGE, CascadeType.DETACH})
     @IndexedEmbedded
     @JoinColumn(name = "owner_id", nullable = false)
     private Person owner;
 
-    @ManyToOne
+    @ManyToOne(cascade= { CascadeType.MERGE, CascadeType.DETACH})
     @JoinColumn(name = "updater_id", nullable = true)
     private Person updater;
 

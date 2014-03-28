@@ -132,7 +132,7 @@ public abstract class InformationResource extends Resource {
         setResourceType(type);
     }
 
-    @ManyToOne(optional = true)
+    @ManyToOne(optional = true, cascade={CascadeType.MERGE, CascadeType.DETACH})
     // @ContainedIn /* DISABLED TO MANAGE PERFORMANCE ISSUES*/
     private Project project;
 
@@ -208,12 +208,12 @@ public abstract class InformationResource extends Resource {
     private Integer dateNormalized = -1;
 
     // The institution providing this InformationResource
-    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE , CascadeType.DETACH})
     @JoinColumn(name = "provider_institution_id")
     @IndexedEmbedded
     private Institution resourceProviderInstitution;
 
-    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE , CascadeType.DETACH})
     @BulkImportField(label = "Publisher")
     @JoinColumn(name = "publisher_id")
     @IndexedEmbedded
@@ -225,7 +225,7 @@ public abstract class InformationResource extends Resource {
     private String publisherLocation;
 
     @JoinColumn(name = "copyright_holder_id")
-    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE , CascadeType.DETACH})
     @BulkImportField(label = BulkImportField.COPYRIGHT_HOLDER, required = true, implementedSubclasses = { Person.class, Institution.class }, order = 1)
     private Creator copyrightHolder;
 
