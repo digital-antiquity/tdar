@@ -608,9 +608,9 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
     private void setTransientViewableStatus(InformationResource ir, Person p) {
         Boolean viewable = null;
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
-            if (viewable == null) {
+//            if (viewable == null) {
                 viewable = canDownload(irf, p);
-            }
+//            }
 
             irf.setViewable(viewable);
             for (InformationResourceFileVersion irfv : irf.getInformationResourceFileVersions()) {
