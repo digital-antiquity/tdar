@@ -70,6 +70,7 @@
         var uncoded = false;
         if (val == 'COUNT') {
             square.addClass("count");
+            valid = true;
         } else if (val == 'MEASUREMENT') {
             if (unit != undefined && unit.val() != '') {
                 square.addClass("measurement");
