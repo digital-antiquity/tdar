@@ -298,56 +298,7 @@
         </div>
         <hr/>
   </#if>
-  
-    
-      <#if resource.containsActiveKeywords >
-        <h2>Keywords</h2>
-        <#if resource.projectVisible?? && !resource.projectVisible && resource.inheritingSomeMetadata>
-            <em>Note: Inherited values from this project are not available because the project is not active</em>
-        </#if>
-        <div class="row">
-                <#if (resource.keywordProperties?size > 1)>        
-                    <div class="span45">
-                <#elseif resource.keywordProperties?size == 1>
-                    <div class="span9">
-                </#if>
-                
-                <#list resource.keywordProperties as prop>
-                <#-- FIXME: somehow this should be folded into SearchFieldType to not have all of this if/else -->
-                    <#if ((resource.keywordProperties?size /2)?ceiling == prop_index)>        
-                        </div><div class="span45">
-                    </#if>
-                    <#if prop == "activeSiteNameKeywords">
-                        <@_keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
-                    </#if>
-                    <#if prop == "activeSiteTypeKeywords">
-                        <@_keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
-                    </#if>
-                    <#if prop == "activeCultureKeywords">
-                        <@_keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
-                    </#if>                    
-                    <#if prop == "activeMaterialKeywords">
-                        <@_keywordSection "Material" resource.activeMaterialKeywords "query" />
-                    </#if>
-                    <#if prop == "activeInvestigationTypes">
-                        <@_keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
-                    </#if>
-                    <#if prop == "activeOtherKeywords">
-                        <@_keywordSection "General" resource.activeOtherKeywords "query" />
-                    </#if>
-                    <#if prop == "activeTemporalKeywords">
-                        <@_keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
-                    </#if>
-                    <#if prop == "activeGeographicKeywords">
-                           <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
-                    </#if>
-                </#list>
-                <#if (resource.keywordProperties?size > 0)>        
-                    </div>
-                </#if>                
-        </div>
-        <hr/>
-  </#if>
+
 
 <#macro _keywordSection label keywordList searchParam>
     <#if keywordList?has_content>
