@@ -156,10 +156,12 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.informationResourceFile = informationResourceFile;
     }
 
+    @Override
     public String getFilename() {
         return filename;
     }
 
+    @Override
     public void setFilename(String filename) {
         this.filename = filename;
     }
@@ -214,6 +216,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.filestoreId = filestoreId;
     }
 
+    @Override
     public String getChecksum() {
         return checksum;
     }
@@ -221,6 +224,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     /*
      * Only set the checksum if it is not set
      */
+    @Override
     public void setChecksum(String checksum) {
         if (StringUtils.isEmpty(this.checksum)) {
             this.checksum = checksum;
@@ -233,10 +237,12 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.checksum = checksum;
     }
 
+    @Override
     public String getChecksumType() {
         return checksumType;
     }
 
+    @Override
     public void setChecksumType(String checksumType) {
         this.checksumType = checksumType;
     }

@@ -48,6 +48,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResultMetadataWrapper;
@@ -464,6 +465,13 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             ExcelUnit excelUnit = new ExcelUnit();
             excelUnit.open(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, translatedFile.getTranslatedFile()));
             assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
+            
+            DownloadController dc = generateNewInitializedController(DownloadController.class);
+            dc.setInformationResourceFileId(translatedFile.getLatestTranslatedVersion().getId());
+            dc.execute();
+            assertEquals("bigsheet_translated.xls", dc.getFileName());
+            
+            
         } catch (OutOfMemoryError oem) {
             logger.debug("Well, guess I ran out of memory...", oem);
         }

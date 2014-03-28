@@ -93,6 +93,7 @@ public class DownloadService {
                 continue;
             }
             addFileToDownload(dh, files, authenticatedUser, irFileVersion, dh.isCoverPageIncluded());
+            fileName = irFileVersion.getFilename();
             if (!irFileVersion.isDerivative()) {
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
                 // don't count download stats if you're downloading your own stuff

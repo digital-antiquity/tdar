@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -74,6 +75,45 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
         extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
         extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
+        extra.put(PROJECT_ID_FIELDNAME, "3805");
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            extra.put("accountId", accountId);
+        }
+        extra.put("resource.inheritingInvestigationInformation", "true");
+        extra.put("resourceProviderInstitutionName", "Digital Antiquity");
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
+        assertFalse(getPageCode().contains("resource creator is not"));
+    }
+
+    
+
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
+    public void testValidBulkUploadWithConfidentialSelf() throws MalformedURLException {
+        String accountId = "";
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            gotoPage("/cart/add");
+            setInput("invoice.numberOfMb", "200");
+            setInput("invoice.numberOfFiles", "20");
+            submitForm();
+            setInput("invoice.paymentMethod", "CREDIT_CARD");
+            String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+            accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        }
+
+        Map<String, String> extra = new HashMap<String, String>();
+        extra.put("investigationTypeIds", "1");
+        extra.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
+        extra.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
+        extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
+        extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
+        extra.put("creditProxies[0].person.id", getUserId().toString());
+        extra.put("creditProxies[0].person.firstName", getUser().getFirstName());
+        extra.put("creditProxies[0].person.lastName", getUser().getLastName());
+        extra.put("creditProxies[0].person.institution.name", getUser().getInstitutionName());
+        extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
         extra.put(PROJECT_ID_FIELDNAME, "3805");
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             extra.put("accountId", accountId);
