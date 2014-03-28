@@ -54,7 +54,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @IndexedEmbedded
     @JoinColumn(nullable = false, name = "creator_id")
     @NotNull

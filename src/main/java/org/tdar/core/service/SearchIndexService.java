@@ -283,7 +283,7 @@ public class SearchIndexService {
                     fullTextSession.purge(toIndex.getClass(), toIndex.getId());
                     index(fullTextSession, genericService.merge(toIndex));
                 } catch (Exception e) {
-                    log.error("exception in indexing", e);
+                    log.error(String.format("exception in indexing, %s [%s]", toIndex, e.getMessage()), e);
                     log.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
                             ExceptionUtils.getRootCause(e));
                     exceptions = true;

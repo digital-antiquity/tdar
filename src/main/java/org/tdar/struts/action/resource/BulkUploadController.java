@@ -118,6 +118,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
         handleAsyncUploads();
         Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
         setupAccountForSaving();
+        getGenericService().markReadOnly(getPersistable());
+        getGenericService().detachFromSession(getPersistable());
         if (isAsync()) {
             getLogger().info("running asyncronously");
             bulkUploadService.saveAsync(image, getAuthenticatedUser().getId(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
@@ -125,8 +127,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
             getLogger().info("running inline");
             bulkUploadService.save(image, getAuthenticatedUser().getId(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         }
-        getGenericService().markReadOnly(getPersistable());
-        getGenericService().detachFromSession(getPersistable());
         setPersistable(null);
         return SUCCESS_ASYNC;
     }

@@ -27,6 +27,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.ResourceEvaluator;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -385,6 +386,14 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         // Account localAccount = account;
         Set<Account> additionalAccountsToCleanup = new HashSet<Account>();
         boolean hasUpdates = false;
+//        for (Resource r : account.getResources()) {
+//            for (ResourceCollection rc : r.getResourceCollections()) {
+//                rc.setUpdater(getDao().merge(rc.getUpdater()));
+//                rc.setOwner(getDao().merge(rc.getOwner()));
+//            }
+//        }
+        getDao().merge(account);
+
         for (Resource resource : resourcesToEvaluate) {
             if (resource == null) {
                 continue;
@@ -410,7 +419,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
             helper.getExistingItems().add(resource);
         }
-        getDao().merge(account);
 
         for (Account old : additionalAccountsToCleanup) {
             updateAccountInfo(old);

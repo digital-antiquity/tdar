@@ -405,6 +405,13 @@ public class GenericDao {
         session.evict(entity);
     }
 
+    public<T> void detachFromSession(Collection<T> entities) {
+        Session session = getCurrentSession();
+        for (T entity : entities) {
+            session.evict(entity);
+        }
+    }
+
     public<T> void detachFromSessionAndWarn(T entity) {
         Session session = getCurrentSession();
         if (session.contains(entity)) {

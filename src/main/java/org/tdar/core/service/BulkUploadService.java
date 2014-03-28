@@ -44,6 +44,7 @@ import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -70,6 +71,8 @@ import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
+
+import ucar.nc2.ft.point.standard.plug.GempakCdm;
 
 /**
  * The BulkUploadService support the bulk loading of resources into tDAR through the user interface
@@ -192,9 +195,9 @@ public class BulkUploadService {
             final Collection<FileProxy> fileProxies, Long accountId) {
         Person submitter = genericDao.find(Person.class, submitterId);
         //enforce that we're entirely on the session
-        final InformationResource image = genericDao.merge(image_);
+        InformationResource image = genericDao.merge(image_);
         logger.debug("BEGIN ASYNC: " + image + fileProxies);
-        
+        image.setAccount(null);
         // in an async method the image's persistent associations will have become detached from the hibernate session that loaded them, and their lazy-init
         // fields will be unavailable. So we reload them to make them part of the current session and regain access to any lazy-init associations.
          
@@ -234,32 +237,48 @@ public class BulkUploadService {
         count = processFileProxies(manifestProxy, count);
         
         
+        Collection<Resource> remainingResources = new ArrayList<>();
+        try {
+            manifestProxy.setSubmitter(null);
+            submitter = genericDao.merge(submitter);
+//            genericDao.markWritable(image);
+//            image.setStatus(Status.DELETED);
+//            genericDao.delete(image);
+            image.setProject(null);
+            image = null;
+            for (Resource resource : manifestProxy.getResourcesCreated().values()) {
+                remainingResources.add(resource);
+            }
+            manifestProxy.getResourcesCreated().clear();
+//                genericDao.merge(resource);
+//            }
+        } catch (Throwable t) {
+            logger.error("{}", t);
+        }
         logger.info("bulk: applying manifest file data to resources");
         try {
-            updateAccountQuotas(accountId, manifestProxy.getResourcesCreated());
+            updateAccountQuotas(accountId, remainingResources);
         } catch (Throwable t) {
             logger.error("quota error happend", t);
         	updateReciever.addError(t);
         }
         logger.info("bulk: log and persist");
-        logAndPersist(manifestProxy);
+        logAndPersist(manifestProxy.getAsyncUpdateReceiver(), remainingResources);
         logger.info("bulk: completing");
-        genericDao.detachFromSession(image);
-//        genericDao.detachFromSession(project);
-        try {
-        if (project != Project.NULL) {
-//        	for (Resource r : manifestProxy.getResourcesCreated().values()) {
-//        		genericDao.detachFromSession(r);
-//        	}
+
+//        try {
+//        if (project != Project.NULL) {
+//            remainingResources = null;
+//            submitter = null;
 //        	boolean exceptions = searchIndexService.indexProject(genericDao.merge(project));
 //        	if (exceptions) {
 //        		throw new TdarRecoverableRuntimeException("bulkUploadService.exceptionDuringIndexing");
 //        	}
-        }
-        } catch (Throwable t) {
-        	logger.error("error happened" , t);
-        	updateReciever.addError(t);
-        }
+//        }
+//        } catch (Throwable t) {
+//        	logger.error("error happened" , t);
+//        	updateReciever.addError(t);
+//        }
         completeBulkUpload(image, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
         logger.info("bulk: done");
      }
@@ -305,14 +324,14 @@ public class BulkUploadService {
      * @param accountId
      * @param resourcesCreated
      */
-    private void updateAccountQuotas(Long accountId, Map<String, Resource> resourcesCreated) {
+    private void updateAccountQuotas(Long accountId, Collection<Resource> resources) {
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             final Account account = genericDao.find(Account.class, accountId);
-            Resource[] array = resourcesCreated.values().toArray(new Resource[0]);
-            for (int i=0; i < array.length; i++) {
-                array[i] = genericDao.merge(array[i]);
-            }
-            accountService.updateQuota(account, array);
+//            Resource[] array = resources.toArray(new Resource[0]);
+//            for (int i=0; i < array.length; i++) {
+//                array[i] = genericDao.merge(array[i]);
+//            }
+            accountService.updateQuota(account, resources);
         }
     }
 
@@ -323,16 +342,17 @@ public class BulkUploadService {
      * @param submitter
      * @param receiver
      */
-    private void logAndPersist(BulkManifestProxy proxy) {
+    private void logAndPersist(AsyncUpdateReceiver receiver, Collection<Resource> resources) {
         logger.info("bulk: setting final statuses and logging");
-        AsyncUpdateReceiver receiver = proxy.getAsyncUpdateReceiver();
-        for (Resource resource : proxy.getResourcesCreated().values()) {
+        
+        for (Resource resource : resources) {
             receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
-            Person submitter = proxy.getSubmitter();
+            Person submitter = resource.getSubmitter();
             String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]", resource.getResourceType(), submitter,
                     resource.getId(), StringUtils.left(resource.getTitle(), 100));
 
             try {
+                genericDao.refresh(resource);
                 xmlService.logRecordXmlToFilestore(resource);
                 genericDao.refresh(submitter);
                 resourceService.logResourceModification(resource, submitter, logMessage);
@@ -382,9 +402,9 @@ public class BulkUploadService {
 
         receiver.setCompleted();
         logger.info("bulk upload complete");
-        logger.info("remaining: " + image.getInternalResourceCollection());
+//        logger.info("remaining: " + image.getInternalResourceCollection());
         wrapper.getActivity().end();
-        image.setStatus(Status.DELETED);
+//        image.setStatus(Status.DELETED);
         try {
             IOUtils.closeQuietly(wrapper.getStream());
         } catch (Exception e) {
