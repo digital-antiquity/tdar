@@ -92,6 +92,9 @@ public class LoginController extends AuthenticationAware.Base {
         }
 
         if (status != AuthenticationStatus.AUTHENTICATED) {
+            if (status.name() == NEW) {
+                addActionMessage("User is in crowd, but not in local db");
+            }
             return status.name().toLowerCase();
         }
 

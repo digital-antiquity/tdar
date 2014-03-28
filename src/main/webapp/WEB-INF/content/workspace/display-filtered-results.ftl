@@ -17,7 +17,7 @@ The integrated data results are displayed below.<br/>
   <#assign totalRows = totalRows + result.rowData?size />
 </#list>
 <#if (totalRows > 0 )>
-<b><a href='<@s.url value="download?ticketId=${ticketId?c}" id="downloadLink"/>'>DOWNLOAD all results as an Excel file</a></b>.
+<b><a href='<@s.url value="download?ticketId=${ticketId?c}"/>' id="downloadLink">DOWNLOAD all results as an Excel file</a></b>.
 </#if>
 </p>
 </div>

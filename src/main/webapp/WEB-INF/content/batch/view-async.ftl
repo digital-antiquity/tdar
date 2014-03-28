@@ -10,9 +10,9 @@
     <div id="asyncErrors" class ="alert alert-error error-banner" style="display:none">
         <h4>tDAR Encountered Errors During Processing</h4>
         <div id="unspecifiedError"  style="display:none">
-            <p>An error occurred while asking the server for an upload status update.   This does not mean that your upload failed.
-                Please check the <a href="<@s.url value="/dashboard"/>">dashboard</a> to determine
-                whether you successfully uploaded your files. Please notify an administrator if this problem persists.
+            <p>An error occurred while asking the server for an upload status update.   This means your bulk upload likely failed.
+<!--                Please check the <a href="<@s.url value="/dashboard"/>">dashboard</a> to determine
+                whether you successfully uploaded your files. Please notify an administrator if this problem persists. -->
             </p>
         </div>
         <div id="errorDetails"></div>
@@ -68,6 +68,7 @@ var updateProgress = function() {
             }
             if (data.errors  != undefined && data.errors != "") {
                 $("#asyncErrors").show().find("#errorDetails").html("<div class=''><ul>"+data.errors+"</ul></div>");
+                $("#progressbar").progressbar("disable");
             }
         },
       error: function(xhr,txtStatus, errorThrown) {
