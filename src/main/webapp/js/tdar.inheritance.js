@@ -149,12 +149,14 @@ function _disableSection(idSelector) {
     $(':input', idSelector).not(".alwaysEnabled").prop('disabled', true);
     $('label', idSelector).not(".alwaysEnabled").addClass('disabled');
     $('.addAnother, .minus', idSelector).hide();
+    $(":input", $(idSelector).siblings(".add-another-control")).prop('disabled',true);
 }
 
 function _enableSection(idSelector) {
     $(':input', idSelector).prop('disabled', false);
     $('label', idSelector).removeClass('disabled');
     $('.addAnother, .minus', idSelector).show();
+    $(":input", $(idSelector).siblings(".add-another-control")).prop('disabled',false);
 }
 
 // modify id/name attribute in element and children if they follow 'indexed'
@@ -957,17 +959,6 @@ function _enableMap() {
     var resetKeywords = function(keywords, repeatableSelector) {
         var $repeatable = $(repeatableSelector);
         resetRepeatable(repeatableSelector, keywords.length);
-    };
-
-    /**
-     * Enable inputs and remove disabled styling for labels  inside the specified container
-     * @param idSelector element that contains the inputs/labels to enable.
-     * @private
-     */
-    var _enableSection = function (idSelector) {
-        $(':input', idSelector).prop('disabled', false);
-        $('label', idSelector).removeClass('disabled');
-        $('.addAnother, .minus', idSelector).show();
     };
 
     /**
