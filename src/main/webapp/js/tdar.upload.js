@@ -116,8 +116,7 @@ TDAR.fileupload = (function(TDAR, $) {
 
                 updateFileAction: _updateFileAction,
 
-                //list of existing and new files that are not deleted or serving as a file replacement
-                //FIXME: needs to not include files that were uploaded but failed part way.
+                //list of existing and new files that are not deleted, serving as a file replacement, or that failed to upload properly
                 validFiles: function() {
                     /** {id:string, action:string, filename:string, sequence:number, ext:string, base:string, context:string}[] array of file objects */
                     var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file, .hidden, .fileupload-error');

@@ -94,14 +94,14 @@ var FileuploadValidator;
 
         /** html snippet used as wrapper for each error message. Default wrapper is an LI element w/ css class of
          * "fileupload-error".  The error message is always a text node */
-        errorWrapper: "<li class='fileupload-error'></li>",
+        errorWrapper: "<li class='validation-error'></li>",
 
         /** name of the css class the validator adds to a fileupload table row when the file has at least one
          * validation error.  The validator removes this class once the file for that row is error-free  */
-        errorClass: "fileupload-error",
+        errorClass: "validation-error",
 
         /** name of the css class added to a fileupload that had errors but was 'fixed' (i.e subsequent call to validate() yielded no errors)  */
-        okayClass:  "fileupload-okay",
+        okayClass:  "validation-okay",
 
         /** implicitly execute validate() whenever the user updates the fileupload list. If false, handlers must call validate() explicitly */
         validateOnChange: true,
