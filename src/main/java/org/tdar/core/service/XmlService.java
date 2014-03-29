@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -157,6 +158,14 @@ public class XmlService {
             logger.error("something happend when converting record to XML:" + resource, e);
             throw new TdarRecoverableRuntimeException("xmlService.could_not_save");
         }
+        if (resource instanceof Resource) {
+            for (ResourceCollection rc : ((Resource) resource).getResourceCollections()) {
+                if (rc.isChangesNeedToBeLogged()) {
+                    logRecordXmlToFilestore(rc);
+                }
+            }
+        }
+
         logger.trace("done saving");
     }
 

@@ -120,7 +120,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
+    private transient boolean changesNeedToBeLogged = false;
     private transient boolean viewable;
 
     // private transient boolean readyToIndex = true;
@@ -736,5 +736,13 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setParentIds(Set<Long> parentIds) {
         this.parentIds = parentIds;
+    }
+
+    public boolean isChangesNeedToBeLogged() {
+        return changesNeedToBeLogged;
+    }
+
+    public void setChangesNeedToBeLogged(boolean changesNeedToBeLogged) {
+        this.changesNeedToBeLogged = changesNeedToBeLogged;
     }
 }

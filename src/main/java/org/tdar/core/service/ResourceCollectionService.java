@@ -383,6 +383,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             // retain internal collections, but remove any existing shared collections that don't exist in the incoming list of shared collections
             if (!incoming_.contains(resourceCollection) && resourceCollection.isShared()) {
                 toRemove.add(resourceCollection);
+
                 logger.trace("removing unmatched: {}", resourceCollection);
             }
         }
@@ -446,8 +447,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
             collectionToAdd.markUpdated(authenticatedUser);
             if (collectionToAdd.isTransient()) { // && shouldSave abrin commented out for logging (3/6/2014)
-                save(collectionToAdd);
-                xmlService.logRecordXmlToFilestore(collection);
+                collectionToAdd.setChangesNeedToBeLogged(true);
             }
 
             // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
