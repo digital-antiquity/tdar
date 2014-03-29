@@ -9,6 +9,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.tdar.core.bean.collection.ResourceCollection;
 
 @Entity
@@ -21,6 +24,8 @@ public class ResourceCollectionViewStatistic extends AbstractResourceStatistic<R
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "resource_collection_id")
+    @NotFound(action = NotFoundAction.IGNORE)
+    @ForeignKey(name = "none")
     private ResourceCollection reference;
 
     public ResourceCollectionViewStatistic() {

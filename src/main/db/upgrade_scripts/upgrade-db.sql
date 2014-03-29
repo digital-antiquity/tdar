@@ -144,3 +144,7 @@ update information_resource_file set filename=
 alter table information_resource_file add column deleted boolean default false;
 update information_resource_file set deleted=TRUE where status='DELETED';
 update information_resource_file set status='PROCESSED' where status='DELETED';
+
+-- abrin 3/29/2014
+-- no foreign key as collections are simply deleted
+alter table resource_collection_view_statistics drop constraint resource_collection_view_statistics_resource_collection_id_fkey
