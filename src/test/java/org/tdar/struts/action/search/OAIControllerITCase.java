@@ -13,6 +13,7 @@ import javax.xml.bind.JAXBException;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.oai.OAIMetadataFormat;
 import org.tdar.struts.data.oai.OAIVerb;
 
@@ -32,10 +33,15 @@ public class OAIControllerITCase extends AbstractSearchControllerITCase {
     public void testOAIDCDocument() throws JAXBException {
         OAIController oaiController = generateNewInitializedController(OAIController.class);
         oaiController.setVerb(OAIVerb.GET_RECORD.getVerb());
-        oaiController.setIdentifier("oai:tdar:Resource:" +TestConstants.TEST_DOCUMENT_ID);
+        oaiController.setIdentifier("oai:tdar.org:Resource:" +TestConstants.TEST_DOCUMENT_ID);
         oaiController.setMetadataPrefix(OAIMetadataFormat.DC.getPrefix());
 
-        oaiController.oai();
-        fail("I'm a bad test");
+        String oai = oaiController.oai();
+        assertEquals(OAIController.SUCCESS_GET_RECORD, oai);
+        
+        oaiController.setIdentifier(TestConstants.TEST_DOCUMENT_ID);
+
+        String oai2 = oaiController.oai();
+        assertEquals(TdarActionSupport.ERROR, oai2);
     }
 }

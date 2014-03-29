@@ -86,13 +86,13 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     ObfuscationService obfuscationService;
 
     // results
-    private static final String SUCCESS_IDENTIFY = "success-identify";
-    private static final String SUCCESS_LIST_IDENTIFIERS = "success-list-identifiers";
-    private static final String SUCCESS_LIST_METADATA_FORMATS = "success-list-metadata-formats";
-    private static final String SUCCESS_GET_RECORD = "success-get-record";
-    private static final String SUCCESS_LIST_RECORDS = "success-list-records";
+    public static final String SUCCESS_IDENTIFY = "success-identify";
+    public static final String SUCCESS_LIST_IDENTIFIERS = "success-list-identifiers";
+    public  static final String SUCCESS_LIST_METADATA_FORMATS = "success-list-metadata-formats";
+    public static final String SUCCESS_GET_RECORD = "success-get-record";
+    public static final String SUCCESS_LIST_RECORDS = "success-list-records";
     @SuppressWarnings("unused")
-    private static final String SUCCESS_LIST_SETS = "success-list-sets";
+    public  static final String SUCCESS_LIST_SETS = "success-list-sets";
 
     // OAI-PMH URL parameters
     private String verb;
