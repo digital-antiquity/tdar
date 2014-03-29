@@ -281,20 +281,22 @@ public class BulkUploadService {
             updateReciever.addError(t);
         }
 
+//        try {
+//            if (Persistable.Base.isNotNullOrTransient(projectId)) {
+//                remainingResources = null;
+//                submitter = null;
+//                boolean exceptions = searchIndexService.indexProject(projectId);
+//                if (exceptions) {
+//                    throw new TdarRecoverableRuntimeException("bulkUploadService.exceptionDuringIndexing");
+//                }
+//            }
+//        } catch (Throwable t) {
+//            logger.error("error happened", t);
+//            updateReciever.addError(t);
+//        }
 
         completeBulkUpload(image, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
         logger.info("bulk: done");
-    }
-
-    private void removeCreatorReferences(final InformationResource image_) {
-        // image_.setProject(null);
-        // image_.setSubmitter(null);
-        // image_.setUpdatedBy(null);
-        // image_.setUploader(null);
-        // image_.setCopyrightHolder(null);
-        // image_.getResourceCreators().clear();
-        // image_.getResourceCollections().clear();
-        // image_.setResourceProviderInstitution(null);
     }
 
     private float processFileProxies(BulkManifestProxy manifestProxy,
