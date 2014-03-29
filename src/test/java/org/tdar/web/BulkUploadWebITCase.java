@@ -58,7 +58,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         assertFalse(getPageCode().contains("Plate 03"));
         assertTrue(getPageCode().contains("Plate 04"));
         assertTrue(getPageCode().contains("Plate 05"));
-        assertEquals(33, StringUtils.countMatches(getPageCode(), "Filename \"Color Plate"));
+        assertEquals(33, StringUtils.countMatches(getPageCode(), "Filename \\\"Color Plate"));
     }
 
     @Test
