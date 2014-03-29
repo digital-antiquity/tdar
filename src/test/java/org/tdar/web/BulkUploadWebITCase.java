@@ -40,7 +40,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     public void testInvalidBulkUpload() {
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
-        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         Map<String, String> extra = new HashMap<String, String>();
         extra.put("resourceCollections[0].name", "template name");
         testBulkUploadController("image_manifest2.xlsx", listFiles, extra, false);
@@ -88,7 +88,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("resource.inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
-        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("resource creator is not"));
     }
@@ -102,6 +102,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         Collection<File> listFiles = new ArrayList<File>(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true));
         listFiles.add(new File(TestConstants.TEST_DOCUMENT_DIR,TestConstants.TEST_DOCUMENT_NAME));
         testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
+        logger.debug(getPageBodyCode());
         assertTrue(getPageCode().contains(TestConstants.TEST_DOCUMENT_NAME));
     }
 
@@ -132,7 +133,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             extra.put("accountId", accountId);
         }
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
-        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         testBulkUploadController("image_manifest_simple.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("resource creator is not"));
     }
@@ -169,7 +170,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("resource.inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
-        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("resource creator is not"));
     }
@@ -226,7 +227,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put(PROJECT_ID_FIELDNAME, projectId.toString());
         // extra.put("resource.inheritingInvestigationInformation","true");
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
-        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("could not save xml record"));
         assertFalse(getPageCode().contains("resource creator is not"));
