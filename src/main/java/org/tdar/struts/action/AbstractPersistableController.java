@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -179,7 +180,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             } catch (TdarActionException exception) {
                 throw exception;
             } catch (Exception e) {
-                addActionErrorWithException(getText("abstractPersistableController.cannot_delete_reason", getPersistableClass().getSimpleName()), e);
+                addActionErrorWithException(getText("abstractPersistableController.cannot_delete_reason", Arrays.asList(getPersistableClass().getSimpleName())), e);
             }
             return SUCCESS;
         }

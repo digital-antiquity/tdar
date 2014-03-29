@@ -78,6 +78,38 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextNotPresent("collection is not accessible");
     }
 
+    
+    @Test
+    // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
+    public void testDeleteCollection() {
+        assertNotNull(genericService);
+        String name = "my fancy collection: " + System.currentTimeMillis();
+        String desc = "description goes here: "+ System.currentTimeMillis();
+        List<? extends Resource> someResources = getSomeResources();
+        createTestCollection(name, desc, someResources);
+        assertTextPresent(name);
+        assertTextPresent(desc);
+        logger.trace(getHtmlPage().asText());
+        String currentUrlPath = getCurrentUrlPath();
+        logger.debug(currentUrlPath);
+        for (Resource resource : someResources) {
+            if (resource.getStatus() == Status.ACTIVE || resource.getStatus() == Status.DRAFT) {
+                assertTextPresent(resource.getTitle());
+            }
+        }
+        logout();
+        gotoPage(currentUrlPath);
+        gotoPage(currentUrlPath);
+        loginAdmin();
+        gotoPage(currentUrlPath);
+        clickLinkOnPage("delete");
+        submitForm("delete");
+        gotoPage(currentUrlPath);
+        assertFalse(getPageText().contains("my fancy collection"));
+
+    }
+
+    
     // assign a parent collection, then go back to dashboard
     @Test
     public void testCreateChildCollection() {
