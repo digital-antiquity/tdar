@@ -287,7 +287,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <div id="divAccessRights" data-tiplabel="Access Rights" data-tooltipcontent="${tipsSelector}">
 <h2><a name="accessRights"></a>Access Rights</h2>
 <h3>${label}</h3>
-<div id="accessRightsRecords" class="<#if ableToUploadFiles?? && ableToUploadFiles>repeatLastRow</#if>" data-addAnother="add another user">
+<div id="accessRightsRecords" class="<#if (ableToUploadFiles?? && ableToUploadFiles) || (!ableToUploadFiles?has_content)>repeatLastRow</#if>" data-addAnother="add another user">
     <div class="control-group">
         <label class="control-label">Users</label>
         <div class="controls">
