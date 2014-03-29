@@ -54,13 +54,13 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testBlankExceedingRowsAndExtraColumnAtEnd() throws IOException {
         importSpreadsheetAndConfirmExceptionIsThrown(new File(getTestFilePath(), "Pundo_degenerate.xls"),
-                "row #49 has more columns (6) than this sheet has column names (5) - Appendix 8 (2)");
+                "Appendix 8 (2) - row #49 has more columns (6) than this sheet has column names (5)");
     }
 
     @Test
     @Rollback
     public void testExtraColumnAtStartThrowsException() throws IOException {
-        importSpreadsheetAndConfirmExceptionIsThrown(new File(getTestFilePath(), "no_first_column_name.xlsx"), "row #1 has more columns (0) than this sheet has column names (1) - Sheet1");
+        importSpreadsheetAndConfirmExceptionIsThrown(new File(getTestFilePath(), "no_first_column_name.xlsx"), "Sheet1 - row #1 has more columns (0) than this sheet has column names (1)");
     }
 
     private void importSpreadsheetAndConfirmExceptionIsThrown(File spreadsheet, String expectedErrorMessage) throws IOException {

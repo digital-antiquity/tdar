@@ -19,6 +19,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.TestConfiguration;
@@ -139,9 +140,10 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
         int statusCode = login(CONFIG.getUsername(), CONFIG.getPassword(), true);
         logger.debug("statusCode: {} ", statusCode);
+        assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), statusCode);
         //FIXME: change from Gone->Forbidden changed how tDAR responds and thus
         // redirects to a different page... current URL is null?
-        assertTrue(getCurrentUrlPath().contains("edit")); // we can be on the "edit" page with an error message
+        assertTrue(getCurrentUrlPath().contains("unauthorized")); // we can be on the "edit" page with an error message
         logger.info(getPageText());
         assertFalse(statusCode == 200); // make sure we have a "bad" status code though
         gotoPage(viewPage);

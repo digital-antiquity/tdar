@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.Resource;
@@ -55,6 +54,7 @@ public class AndsPidsITCase extends AbstractSearchControllerITCase {
             Resource r = resourceService.find(DOCUMENT_INHERITING_CULTURE_ID);
             pidsDao.connect();
             String absoluteUrl = urlService.absoluteUrl(r);
+            logger.debug(absoluteUrl);
             Map<String, String> createdIDs = pidsDao.create(r, absoluteUrl);
             assertEquals(1, createdIDs.size());
             String doi = createdIDs.get("DOI").trim();
