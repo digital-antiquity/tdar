@@ -6,6 +6,8 @@
  */
 package org.tdar.struts.action.search;
 
+import static org.junit.Assert.*;
+
 import javax.xml.bind.JAXBException;
 
 import org.junit.Before;
@@ -34,5 +36,6 @@ public class OAIControllerITCase extends AbstractSearchControllerITCase {
         oaiController.setMetadataPrefix(OAIMetadataFormat.DC.getPrefix());
 
         oaiController.oai();
+        fail("I'm a bad test");
     }
 }
