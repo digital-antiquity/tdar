@@ -30,7 +30,7 @@ public class OAIControllerITCase extends AbstractSearchControllerITCase {
     public void testOAIDCDocument() throws JAXBException {
         OAIController oaiController = generateNewInitializedController(OAIController.class);
         oaiController.setVerb(OAIVerb.GET_RECORD.getVerb());
-        oaiController.setIdentifier(TestConstants.TEST_DOCUMENT_ID);
+        oaiController.setIdentifier("oai:tdar:Resource:" +TestConstants.TEST_DOCUMENT_ID);
         oaiController.setMetadataPrefix(OAIMetadataFormat.DC.getPrefix());
 
         oaiController.oai();

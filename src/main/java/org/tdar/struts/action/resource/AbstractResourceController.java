@@ -1090,6 +1090,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             try {
                 getInformationResourceService().reprocessInformationResourceFiles(ir, this);
             } catch (Exception e) {
+//                consider removing the "sorry we were unable to ... just showing error message"
+//                addActionErrorWithException(null, e);
                 addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
             }
             if (hasActionErrors()) {

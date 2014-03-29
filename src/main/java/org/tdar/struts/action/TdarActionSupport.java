@@ -545,7 +545,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             }
 
             super.addActionError(sb.toString());
-        } else {
+        } else if (StringUtils.isNotBlank(message)){
             super.addActionError(message);
         }
         stackTraces.add(ExceptionWrapper.convertExceptionToCode(exception));

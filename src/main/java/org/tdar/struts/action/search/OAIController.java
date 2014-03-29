@@ -38,6 +38,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
+import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.XmlService;
@@ -197,7 +198,11 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 setErrorCode(OaiErrorCode.BAD_ARGUMENT);
             }
             errorCode.setMessage(e.getMessage());
-            getLogger().debug(e.getMessage(), e);
+            if (e instanceof SearchPaginationException) {
+                getLogger().trace(e.getMessage(), e);
+            } else {
+                getLogger().debug(e.getMessage(), e);
+            }
         }
         return ERROR;
     }
@@ -355,18 +360,15 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 OaiDcProvider resource = (OaiDcProvider) i;
                 ids.add(resource.getId());
                 // create OAI metadata for the record
-                OAIRecordProxy proxy = new OAIRecordProxy(
-                        repositoryNamespaceIdentifier,
-                        recordType,
-                        resource.getId(),
-                        resource.getDateUpdated()
-                        );
+                OAIRecordProxy proxy = new OAIRecordProxy(repositoryNamespaceIdentifier, recordType, resource.getId(), resource.getDateUpdated());
                 if (includeRecords) {
                     proxy.setMetadata(createNodeModel(resource, metadataFormat));
                 }
                 records.add(proxy);
             }
             getLogger().info("ALL IDS: {}", ids);
+        } catch (SearchPaginationException spe) {
+            getLogger().debug("an pagination exception happened .. {} ", spe.getMessage());
         } catch (TdarRecoverableRuntimeException e) {
             // this is expected as the cursor follows the "max" results for person/inst/resource so, whatever the max is
             // means that the others will throw this error.
