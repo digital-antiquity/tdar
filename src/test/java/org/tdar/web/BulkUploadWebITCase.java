@@ -91,6 +91,36 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
+    public void testValidBulkUploadWithConfidentialSelfSimple() throws MalformedURLException {
+        String accountId = "";
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            gotoPage("/cart/add");
+            setInput("invoice.numberOfMb", "200");
+            setInput("invoice.numberOfFiles", "20");
+            submitForm();
+            setInput("invoice.paymentMethod", "CREDIT_CARD");
+            String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+            accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        }
+
+        Map<String, String> extra = new HashMap<String, String>();
+        extra.put("creditProxies[0].person.id", getUserId().toString());
+        extra.put("creditProxies[0].person.firstName", getUser().getFirstName());
+        extra.put("creditProxies[0].person.lastName", getUser().getLastName());
+        extra.put("creditProxies[0].person.institution.name", getUser().getInstitutionName());
+        extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
+        extra.put(PROJECT_ID_FIELDNAME, "3805");
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            extra.put("accountId", accountId);
+        }
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        testBulkUploadController("image_manifest_simple.xlsx", listFiles, extra, true);
+        assertFalse(getPageCode().contains("resource creator is not"));
+    }
+
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUploadWithConfidentialSelf() throws MalformedURLException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {

@@ -199,10 +199,9 @@ public class BulkUploadService {
             final Collection<FileProxy> fileProxies, final Long accountId) {
         Person submitter = genericDao.find(Person.class, submitterId);
         // enforce that we're entirely on the session
-        InformationResource image = genericDao.merge(image_);
+        InformationResource image = image_;
         logger.debug("BEGIN ASYNC: " + image + fileProxies);
-        // saveInternal(image, submitter, ticketId, excelManifest_, fileProxies,
-        // accountId);
+        // saveInternal(image, submitter, ticketId, excelManifest_, fileProxies, accountId);
         // }
         //
         // private void saveInternal(InformationResource image, Person
@@ -334,37 +333,21 @@ public class BulkUploadService {
                 String fileName = fileProxy.getFilename();
                 // if there is not an exact match in the manifest file then,
                 // skip it. If there is no manifest file, then go merrily along
-                if (manifestProxy != null
-                        && !manifestProxy.containsFilename(fileName)) {
-                    logger.info("skipping {} filenames: {} ", fileName,
-                            manifestProxy.listFilenames());
+                if (manifestProxy != null && !manifestProxy.containsFilename(fileName)) {
+                    logger.info("skipping {} filenames: {} ", fileName, manifestProxy.listFilenames());
                     continue;
                 }
                 ActionMessageErrorListener listener = new ActionMessageErrorListener();
-                InformationResource informationResource = (InformationResource) manifestProxy
-                        .getResourcesCreated().get(fileName);
+                InformationResource informationResource = (InformationResource) manifestProxy.getResourcesCreated().get(fileName);
                 // createInternalResourceCollectionWithResource
-                importService.reconcilePersistableChildBeans(
-                        manifestProxy.getSubmitter(), informationResource);
-                manifestProxy.getResourcesCreated().put(fileName,
-                        informationResource);
+                importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
+                manifestProxy.getResourcesCreated().put(fileName,informationResource);
                 // informationResource = genericDao.merge(informationResource);
+                informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource,manifestProxy.getSubmitter(), null, listener,Arrays.asList(fileProxy));
                 genericDao.saveOrUpdate(informationResource);
-                informationResourceService
-                        .importFileProxiesAndProcessThroughWorkflow(
-                                informationResource,
-                                manifestProxy.getSubmitter(), null, listener,
-                                Arrays.asList(fileProxy));
-                manifestProxy
-                        .getAsyncUpdateReceiver()
-                        .getDetails()
-                        .add(new Pair<Long, String>(
-                                informationResource.getId(), fileName));
+                manifestProxy.getAsyncUpdateReceiver().getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
                 if (listener.hasActionErrors()) {
-                    manifestProxy.getAsyncUpdateReceiver()
-                            .addError(
-                                    new Exception(String.format("Errors: %s",
-                                            listener)));
+                    manifestProxy.getAsyncUpdateReceiver().addError( new Exception(String.format("Errors: %s",listener)));
                 }
             } catch (Exception e) {
                 logger.warn("something happend  while processing file proxy", e);
