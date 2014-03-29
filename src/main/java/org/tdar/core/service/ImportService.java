@@ -387,7 +387,7 @@ public class ImportService {
      * @return
      */
     private <H extends Persistable> H findById(Class<H> second, Long id) {
-        logger.info("{} {}", second, id);
+        logger.trace("{} {}", second, id);
         H h = genericService.find(second, id);
         if (h == null) {
             throw new TdarRecoverableRuntimeException("error.object_does_not_exist");

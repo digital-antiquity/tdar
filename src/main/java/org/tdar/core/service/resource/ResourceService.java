@@ -514,7 +514,7 @@ public class ResourceService extends GenericService {
      */
     @Transactional
     public <T extends HasResource<Resource>> Set<T> cloneSet(Resource resource, Set<T> targetCollection, Set<T> sourceCollection) {
-        logger.debug("cloning: " + sourceCollection);
+        logger.trace("cloning: " + sourceCollection);
         for (T t : sourceCollection) {
             datasetDao.detachFromSessionAndWarn(t);
             try {

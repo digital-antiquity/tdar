@@ -6,17 +6,17 @@
  */
 package org.tdar.web;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +52,13 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testBulkUploadDups() {
         File testImagesDirectory = new File(TestConstants.TEST_BULK_DIR + "/" + "TDAR-2380");
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
-        testBulkUploadController("TDAR-2380/tdar-bulk-upload-template.xls", listFiles, null, true);
+        testBulkUploadController("TDAR-2380/tdar-bulk-upload-template.xls", listFiles, null, false);
+        assertFalse(getPageCode().contains("Plate 01"));
+        assertFalse(getPageCode().contains("Plate 02"));
+        assertFalse(getPageCode().contains("Plate 03"));
+        assertTrue(getPageCode().contains("Plate 04"));
+        assertTrue(getPageCode().contains("Plate 05"));
+        assertEquals(33, StringUtils.countMatches(getPageCode(), "Filename \"Color Plate"));
     }
 
     @Test
@@ -85,6 +91,18 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
         testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("resource creator is not"));
+    }
+
+    
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
+    public void testExtraFile() throws MalformedURLException {
+        Map<String, String> extra = new HashMap<String, String>();
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        Collection<File> listFiles = new ArrayList<File>(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true));
+        listFiles.add(new File(TestConstants.TEST_DOCUMENT_DIR,TestConstants.TEST_DOCUMENT_NAME));
+        testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
+        assertTrue(getPageCode().contains(TestConstants.TEST_DOCUMENT_NAME));
     }
 
     
