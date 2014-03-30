@@ -90,7 +90,7 @@
      */
     $.validator.addMethod("notValidIfIdEmpty", function (value, element) {
         var $id = $($(element).attr("autocompleteIdElement"));
-        if (value == undefined || value.trim() == "") {
+        if (value == undefined || $.trim(value) == "") {
             return true;
         }
         var idval = parseInt($id.val());
