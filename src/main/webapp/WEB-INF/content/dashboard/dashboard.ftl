@@ -28,13 +28,14 @@
         <br/>
     </div>
     </#if>
-
+<#--
     <div class="news alert" id="alert-jar">
 		<button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-knap">&times;</button>
         <B>${siteAcronym} Update:</B>
         Welcome to Knap! Learn all about what has changed <a href="http://www.tdar.org/news/2014/04/tdar-software-update-knap/">here</a>.
         <br/>
     </div>
+    -->
 </div>
 
 
