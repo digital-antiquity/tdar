@@ -108,8 +108,8 @@ public class APIController extends AuthenticationAware.Base {
             Resource incoming = (Resource) getXmlService().parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
             Person authenticatedUser = getAuthenticatedUser();
-            getGenericService().detachFromSession(incoming);
-            getGenericService().detachFromSession(getAuthenticatedUser());
+//            getGenericService().detachFromSession(incoming);
+//            getGenericService().detachFromSession(getAuthenticatedUser());
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId);
             updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
 
