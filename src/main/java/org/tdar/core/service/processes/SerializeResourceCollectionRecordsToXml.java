@@ -51,7 +51,7 @@ public class SerializeResourceCollectionRecordsToXml extends ScheduledBatchProce
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
 }

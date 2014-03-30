@@ -51,7 +51,7 @@ public class SerializeCreatorRecordsToXml extends ScheduledBatchProcess<Creator>
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
 }

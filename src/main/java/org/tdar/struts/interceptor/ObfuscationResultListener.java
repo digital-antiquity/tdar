@@ -34,7 +34,7 @@ public class ObfuscationResultListener implements PreResultListener {
     }
 
     public void prepareResult(Action action) throws Exception {
-        logger.debug("begin obfuscation");
+        logger.trace("begin obfuscation");
         Class<? extends Object> controllerClass = action.getClass();
         List<Pair<Method, Class<? extends Obfuscatable>>> testReflection = reflectionService.findAllObfuscatableGetters(controllerClass);
 
@@ -55,7 +55,7 @@ public class ObfuscationResultListener implements PreResultListener {
             // logger.error("{}", e);
             // }
         }
-        logger.debug("complete obfuscation");
+        logger.trace("complete obfuscation");
     }
 
     @Override
