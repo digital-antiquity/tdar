@@ -1711,7 +1711,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.setFilesUsed(resource.getPreviousFilesUsed());
         this.setSpaceInBytesUsed(resource.getSpaceInBytesUsed());
         this.setFilesUsed(resource.getFilesUsed());
-        this.getResourceCollections().addAll(resource.getResourceCollections());
+        this.getResourceCollections().addAll(new ArrayList<>(resource.getResourceCollections()));
 
     }
 

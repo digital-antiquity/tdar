@@ -74,6 +74,8 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
 
+import com.hp.hpl.jena.sparql.sse.builders.BuilderExpr.Build;
+
 /**
  * The BulkUploadService support the bulk loading of resources into tDAR through
  * the user interface
@@ -267,7 +269,7 @@ public class BulkUploadService {
         logger.info("bulk: applying manifest file data to resources");
         try {
             updateAccountQuotas(accountId, remainingResources);
-            logger.info("bulk: log and persist");
+            logger.info("bulk: finishing quota work");
         } catch (Throwable t) {
             logger.error("quota error happend", t);
             updateReciever.addError(t);
@@ -361,38 +363,38 @@ public class BulkUploadService {
         logger.info("bulk: setting final statuses and logging");
 
         ResourceCollection bulkUpload = new ResourceCollection(CollectionType.SHARED);
-        bulkUpload.markUpdated(genericDao.find(Person.class, submitterId));
+        Person submitter = genericDao.find(Person.class, submitterId);
+        bulkUpload.markUpdated(submitter);
         bulkUpload.setName(String.format("bulk upload for %s on %s", bulkUpload.getSubmitter().getProperName(), new Date()));
         genericDao.saveOrUpdate(bulkUpload);
-        for (Resource resource : bulkUpload.getResources()) {
-            resource.getResourceCollections().add(bulkUpload);
-            bulkUpload.getResources().add(resource);
-            genericDao.saveOrUpdate(resource);
+        Iterator<Resource> iterator = resources.iterator();
+        while (iterator.hasNext()) {
+            try {
+                Resource resource = iterator.next();
+                genericDao.refresh(resource);
+                bulkUpload.getResources().add(resource);
+                resource.getResourceCollections().add(bulkUpload);
+            } catch (Exception e) {
+                logger.error("could not bring resource onto session: {} ",e);
+            }
         }
         resources.clear();
-        bulkUpload = genericDao.merge(bulkUpload);
-        Account account = genericDao.find(Account.class, accountId);
+        genericDao.saveOrUpdate(bulkUpload);
+
+        Set<ResourceCollection> cols = new HashSet<>();
         for (Resource resource : bulkUpload.getResources()) {
             receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
-            Person submitter = resource.getSubmitter();
-            if (accountId != null) {
-                resource.setAccount(account);
-            }
             resource.getResourceCollections().add(bulkUpload);
             String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]",
                     resource.getResourceType(), submitter, resource.getId(), StringUtils.left(resource.getTitle(), 100));
 
             try {
-                // genericDao.refresh(resource);
-                if (account != null) {
-                    resource.setAccount(genericDao.merge(resource.getAccount()));
-                }
                 xmlService.logRecordXmlToFilestore(resource);
+                logger.debug("resource: {} {}", resource, resource.getResourceCollections());
+                cols.addAll(resource.getResourceCollections());
                 // genericDao.refresh(submitter);
                 resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage);
-                // FIXME: saveRecordToFilestore doesn't distinguish
-                // 'recoverable' from 'disastrous' exceptions. Until it does we
-                // just have to assume the worst.
+                // FIXME: saveRecordToFilestore doesn't distinguish 'recoverable' from 'disastrous' exceptions. Until it does we just have to assume the worst.
                 resource.setReadyToIndex(true);
                 genericDao.saveOrUpdate(resource);
             } catch (TdarRecoverableRuntimeException trex) {
