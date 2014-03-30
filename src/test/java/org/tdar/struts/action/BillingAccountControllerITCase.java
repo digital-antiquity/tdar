@@ -146,7 +146,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.updateQuotas();
         assertEquals(1, invoice.getFilesUsed().intValue());
         assertEquals(4, invoice.getAvailableNumberOfFiles().intValue());
-        assertEquals(5843584, invoice.getSpaceUsedInBytes().longValue());
+        assertEquals(1506924, invoice.getSpaceUsedInBytes().longValue());
         // controller.setServletRequest(getServletPostRequest());
         // String save = controller.save();
         // assertEquals(BillingAccountController.SUCCESS, save);

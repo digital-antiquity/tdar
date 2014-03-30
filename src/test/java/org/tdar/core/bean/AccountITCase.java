@@ -376,7 +376,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertEquals(3, re.getResourcesUsed());
         assertEquals(3, re.getFilesUsed());
         // WARN: brittle...
-        assertEquals(11687168, re.getSpaceUsedInBytes());
+        assertEquals(3013848, re.getSpaceUsedInBytes());
 
     }
 

@@ -126,7 +126,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertTrue(map.containsKey(VersionType.INDEXABLE_TEXT));
         InformationResourceFileVersion fileVersion = map.get(VersionType.INDEXABLE_TEXT);
         String text = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, fileVersion));
-        assertTrue(text.contains("Tree-Ring Research, University of Arizona, Tucson"));
+        assertTrue(text.contains("Grand Canyon Adjacent Lands Project"));
     }
 
     @Test
