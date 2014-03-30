@@ -461,9 +461,13 @@ TDAR.datatable = function () {
 
         jQuery.fn.dataTableExt.aTypes.unshift(
             function (sData) {
-                if (typeof sData === "number" || sData.trim().match(/\$?\-?([\d,\.])*/g)) {
+                if (typeof sData === "number") {
                     return 'tdar-number';
                 }
+                var trim = sData.replace(/^\s+|\s+$/g, '');
+                if (trim.match(/\$?\-?([\d,\.])*/g)) {
+                	return 'tdar-number';
+                } 
                 return null;
             }
         );
