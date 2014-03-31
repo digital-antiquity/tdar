@@ -408,7 +408,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (isNullOrNew())
             return false;
         if (editable == null) {
-            editable = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), getPersistable());
+            editable = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
         }
         return editable;
     }

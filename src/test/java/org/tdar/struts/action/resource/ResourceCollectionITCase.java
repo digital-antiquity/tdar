@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.velocity.runtime.parser.node.SetExecutor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -170,9 +171,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         ResourceCollection foundCollection = genericService.find(ResourceCollection.class, id);
 
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile2));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), generateInformationResourceWithFile2));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile2, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), generateInformationResourceWithFile2, GeneralPermissions.MODIFY_METADATA));
 
         assertTrue(authenticationAndAuthorizationService.canEditCollection(getBasicUser(), foundCollection));
         assertFalse(authenticationAndAuthorizationService.canEditCollection(testPerson, foundCollection));
@@ -219,10 +220,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // InformationResource normal = informationResourceService.find(normalId);
         // InformationResource draft = informationResourceService.find(draftId);
 
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal, GeneralPermissions.MODIFY_METADATA));
 
         assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), draft));
         assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), normal));
@@ -301,12 +302,12 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         logger.info("{}", generateInformationResourceWithFile);
 
         assertTrue("user can edit based on parent of parent resource collection",
-                authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile));
+                authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
         collection.getAuthorizedUsers().clear();
         genericService.save(collection);
-        assertTrue("user can no longer edit", authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile));
+        assertTrue("user can no longer edit", authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
         authorizedUserDao.clearUserPermissionsCache();
-        assertFalse("user can no longer edit", authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile));
+        assertFalse("user can no longer edit", authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
     }
 
     @Override
@@ -844,6 +845,95 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertEquals(0, controller.getResources().size());
         assertEquals(0, controller.getResourceCollection().getResources().size());
 
+    }
+
+    
+    @Test
+    @Rollback
+    public void testRightsEscalation() throws Exception
+    {
+        // Create document, add user to it with MODIFY_METADATA, have them create a collection, and add it where they're the owner and thus have higher rights
+        Document document = (Document) generateDocumentWithUser();
+        document.setSubmitter(getAdminUser());
+        genericService.save(document);
+        Long docId = document.getId();
+//        document = null;
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setId(docId);
+        controller.prepare();
+        controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA));
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+
+        controller = null;
+        // try and assign access to aa document that user should not have rights
+        // to add, assert that this document cannot be added
+
+        CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
+        cc.prepare();
+        cc.getResourceCollection().setName("test");
+        cc.getResourceCollection().setDescription("test");
+        cc.getResources().add(document);
+//        cc.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        cc.setServletRequest(getServletPostRequest());
+        String result = TdarActionSupport.SUCCESS;
+        try {
+            result = cc.save();
+        } catch (Exception e) {
+            logger.error("{}", e);
+        }
+        assertFalse(result.equals(TdarActionSupport.SUCCESS));
+        setIgnoreActionErrors(true);
+    }
+
+    
+    @Test
+    @Rollback
+    public void testRightsEscalationUserUpsSelf() throws Exception
+    {
+        // Create document, add user to it with MODIFY_METADATA, have them edit document and add it to an adhoc collection, then try and add higher rights
+        Document document = (Document) generateDocumentWithUser();
+        document.setSubmitter(getAdminUser());
+        genericService.save(document);
+        Long docId = document.getId();
+        document = null;
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setId(docId);
+        controller.prepare();
+        controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA));
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+
+        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
+        controller.setId(docId);
+        controller.prepare();
+        controller.getResourceCollections().add(new ResourceCollection("test123","test123",SortOption.RESOURCE_TYPE, CollectionType.SHARED,true,getBasicUser()));
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        Long id = -1L;
+        for (ResourceCollection c : controller.getResourceCollections()) {
+            if (c.getTitle().equals("test123")) {
+                id = c.getId();
+            }
+        }
+        controller = null;
+        // try and assign access to aa document that user should not have rights
+        // to add, assert that this document cannot be added
+
+        CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
+        cc.setId(id);
+        cc.prepare();
+//        controller.getResources().add(document);
+        cc.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        cc.setServletRequest(getServletPostRequest());
+        String result = TdarActionSupport.SUCCESS;
+        try {
+            result = cc.save();
+        } catch (Exception e) {
+            logger.error("{}", e);
+        }
+        assertFalse(result.equals(TdarActionSupport.SUCCESS));
+        setIgnoreActionErrors(true);
     }
 
     @Test

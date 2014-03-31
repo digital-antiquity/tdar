@@ -91,7 +91,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<Resource> rehydratedIncomingResources = getDao().loadFromSparseEntities(toEvaluate, Resource.class);
         logger.info("{} ", authenticatedUser);
         for (Resource resource : rehydratedIncomingResources) {
-            if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource)) {
+            if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
                 ineligibleResources.add(resource);
             } else {
                 resource.getResourceCollections().add(persistable);

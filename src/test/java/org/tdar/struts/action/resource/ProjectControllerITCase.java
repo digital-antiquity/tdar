@@ -156,7 +156,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         testResource.setProject(project_);
         genericService.saveOrUpdate(testResource);
         assertEquals(getBasicUser(), testResource.getSubmitter());
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), testResource));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), testResource, GeneralPermissions.MODIFY_METADATA));
 
         // create a new collection with an owner and three users that have each permission type (view, modify, admin)
         ResourceCollection testCollection = new ResourceCollection(CollectionType.SHARED);
@@ -181,12 +181,12 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());
         logger.info("rc:{}", project_.getResourceCollections());
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testOwner, testResource));
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testView, testResource));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testOwner, testResource, GeneralPermissions.MODIFY_METADATA));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testView, testResource, GeneralPermissions.MODIFY_METADATA));
 
         // THESE NEXT TESTS SHOULD BE TRUE IF INHERITANCE IS TURNED BACK ON FROM PROJECT -> RESOURCE
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testModify, testResource));
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testAdmin, testResource));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testModify, testResource, GeneralPermissions.MODIFY_METADATA));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testAdmin, testResource, GeneralPermissions.MODIFY_METADATA));
     }
 
     @Override

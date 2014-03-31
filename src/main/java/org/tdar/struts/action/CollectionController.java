@@ -20,6 +20,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -252,7 +253,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         for (Resource resource : getPersistable().getResources()) {
             getLogger().trace("retain?: {}", resource);
             getLogger().trace("{} <--> {}", getAuthenticatedUser(), resource.getSubmitter());
-            boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
+            boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD);
             if (!canEdit) {
                 retainedResources.add(resource);
             }
