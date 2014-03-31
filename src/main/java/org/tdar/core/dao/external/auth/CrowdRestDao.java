@@ -130,19 +130,19 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             return AuthenticationResult.VALID;
         } catch (InvalidAuthenticationException e) {
             // this is the only exception that should be DEBUG level only.
-            logger.debug("Invalid authentication for " + name, e);
+            logger.debug("++++ CROWD: Invalid authentication for " + name);
             return AuthenticationResult.INVALID_PASSWORD.exception(e);
         } catch (InactiveAccountException e) {
-            logger.debug("Inactive account for " + name, e);
+            logger.debug("++++ CROWD: Inactive account for " + name);
             return AuthenticationResult.INACTIVE_ACCOUNT.exception(e);
         } catch (ApplicationAccessDeniedException e) {
             logger.error("This webapp is not currently authorized to access crowd server", e);
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (ExpiredCredentialException e) {
-            logger.error("Credentials Expired", e);
+            logger.error("++++ CROWD: Credentials Expired");
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (ApplicationPermissionException e) {
-            logger.error("Application Permissions Exception", e);
+            logger.error("++++ CROWD: Application Permissions Exception");
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (OperationFailedException e) {
             logger.error("Operation Failed", e);
@@ -197,13 +197,13 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         } catch (ObjectNotFoundException expected) {
             logger.debug("Object not found, as expected.");
         } catch (OperationFailedException e) {
-            logger.error("Caught RemoteException while trying to contact the crowd server", e);
+            logger.error("++++ CROWD: Caught RemoteException while trying to contact the crowd server", e);
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (ApplicationPermissionException e) {
-            logger.error("Caught Permissions Exception while trying to contact the crowd server", e);
+            logger.error("++++ CROWD: Caught Permissions Exception while trying to contact the crowd server", e);
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidAuthenticationException e) {
-            logger.error("Invalid auth token", e);
+            logger.error("++++ CROWD: Invalid auth token");
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         }
         boolean userNew = false;
@@ -230,22 +230,22 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
                 }
             }
         } catch (ApplicationPermissionException e) {
-            logger.error("Crowd server does not permit this application to connect", e);
+            logger.error("++++ CROWD: Crowd server does not permit this application to connect");
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidCredentialException e) {
-            logger.debug("invalid credentials", e);
+            logger.debug("++++ CROWD: invalid credentials");
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidUserException e) {
-            logger.error("Unable to add user (invalid user): " + login, e);
+            logger.error("++++ CROWD: Unable to add user (invalid user): " + login + " " + e.getMessage());
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (ObjectNotFoundException e) {
-            logger.error("Unable to add principal " + user + " to group", e);
+            logger.error("++++ CROWD: Unable to add principal " + user + " to group " + e.getMessage());
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (OperationFailedException e) {
-            logger.error("Unable to add user (operation failed): " + login, e);
+            logger.error("++++ CROWD: Unable to add user (operation failed): " + login + " " + e.getMessage());
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidAuthenticationException e) {
-            logger.error("Unable to add user (invalid authentication): " + login, e);
+            logger.error("++++ CROWD: Unable to add user (invalid authentication): " + login +" " + e.getMessage());
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } 
 

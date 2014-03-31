@@ -258,9 +258,9 @@ public class BrowseController extends AbstractLookupController {
                     getLogger().warn("search parse exception: {}", e.getMessage());
                 }
             }
+            FileStoreFile personInfo = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + XML);
             try {
-                FileStoreFile object = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + XML);
-                File foafFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, object );
+                File foafFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo );
                 if (foafFile.exists()) {
                     dom = getFileSystemResourceService().openCreatorInfoLog(foafFile);
                     getKeywords();
@@ -272,6 +272,8 @@ public class BrowseController extends AbstractLookupController {
                     setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));
                     setCreatorMean(Float.parseFloat(attributes.getNamedItem("creatorMean").getTextContent()));
                 }
+            } catch (FileNotFoundException fnf) {
+                getLogger().debug(personInfo.getFilename() + " does not exist in filestore");
             } catch (Exception e) {
                 getLogger().debug("{}", e);
             }
