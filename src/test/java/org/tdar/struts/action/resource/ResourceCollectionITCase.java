@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.velocity.runtime.parser.node.SetExecutor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +35,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -874,15 +874,19 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         cc.getResourceCollection().setName("test");
         cc.getResourceCollection().setDescription("test");
         cc.getResources().add(document);
-//        cc.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        assertWeFailedToSave(cc);
+    }
+
+    private void assertWeFailedToSave(CollectionController cc) {
         cc.setServletRequest(getServletPostRequest());
         String result = TdarActionSupport.SUCCESS;
         try {
             result = cc.save();
         } catch (Exception e) {
             logger.error("{}", e);
+            result = null;
         }
-        assertFalse(result.equals(TdarActionSupport.SUCCESS));
+        assertFalse(TdarActionSupport.SUCCESS.equals(result));
         setIgnoreActionErrors(true);
     }
 
@@ -925,15 +929,52 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         cc.prepare();
 //        controller.getResources().add(document);
         cc.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
-        cc.setServletRequest(getServletPostRequest());
-        String result = TdarActionSupport.SUCCESS;
-        try {
-            result = cc.save();
-        } catch (Exception e) {
-            logger.error("{}", e);
+        assertWeFailedToSave(cc);
+    }
+
+
+    
+    @Test
+    @Rollback
+    public void testRightsEscalationUserUpsParent() throws Exception
+    {
+        List<AuthorizedUser> users = Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
+        ResourceCollection parent = generateResourceCollection("parent", "parent", CollectionType.SHARED, true, users , getBasicUser(), Collections.EMPTY_LIST , null);
+        Long parentId = parent.getId();
+        // Create document, add user to it with MODIFY_METADATA, have them edit document and add it to an adhoc collection, then try and add higher rights
+        Document document = (Document) generateDocumentWithUser();
+        document.setSubmitter(getAdminUser());
+        genericService.save(document);
+        Long docId = document.getId();
+        document = null;
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setId(docId);
+        controller.prepare();
+        controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA));
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+
+        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
+        controller.setId(docId);
+        controller.prepare();
+        controller.getResourceCollections().add(new ResourceCollection("test123","test123",SortOption.RESOURCE_TYPE, CollectionType.SHARED,true,getBasicUser()));
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        Long id = -1L;
+        for (ResourceCollection c : controller.getResourceCollections()) {
+            if (c.getTitle().equals("test123")) {
+                id = c.getId();
+            }
         }
-        assertFalse(result.equals(TdarActionSupport.SUCCESS));
-        setIgnoreActionErrors(true);
+        controller = null;
+        // try and assign access to aa document that user should not have rights
+        // to add, assert that this document cannot be added
+
+        CollectionController cc = generateNewInitializedController(CollectionController.class, getBasicUser());
+        cc.setId(id);
+        cc.prepare();
+        cc.setParentId(parentId);
+        assertWeFailedToSave(cc);
     }
 
     @Test
@@ -1359,6 +1400,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // Long pid = project.getId();
         controller.getPersistable().setName("test");
         controller.getPersistable().setDescription("description");
+        controller.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.ADMINISTER_GROUP));
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         String result = controller.save();

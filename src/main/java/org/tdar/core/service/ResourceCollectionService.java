@@ -643,9 +643,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly=false)
-    public void updateCollectionParentTo(ResourceCollection persistable, ResourceCollection parent) {
+    public void updateCollectionParentTo(Person authorizedUser, ResourceCollection persistable, ResourceCollection parent) {
         // find all children with me as a parent
-        List<ResourceCollection> children = getAllChildCollections(persistable);
+        if (!authenticationAndAuthorizationService.canEditCollection(authorizedUser, persistable) || 
+                parent != null && !authenticationAndAuthorizationService.canEditCollection(authorizedUser, parent)) {
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_have_permisssions");
+        }
+
+            List<ResourceCollection> children = getAllChildCollections(persistable);
         List<Long> oldParentIds = new ArrayList<>(persistable.getParentIds());
         
         persistable.setParent(parent);

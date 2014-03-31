@@ -98,8 +98,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }
-        // FIXME: may need some potential check for recursive loops here to prevent self-referential
-        // parent-child loops
+        // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
         ResourceCollection parent = getResourceCollectionService().find(parentId);
         if (Persistable.Base.isNotNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(parent)
@@ -108,7 +107,8 @@ public class CollectionController extends AbstractPersistableController<Resource
             return INPUT;
         }
 
-        getResourceCollectionService().updateCollectionParentTo(persistable, parent);
+        getResourceCollectionService().updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
+
         getGenericService().saveOrUpdate(persistable);
         getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, getAuthorizedUsers(), shouldSaveResource());
         getLogger().trace("resources (original):{}", resources);
