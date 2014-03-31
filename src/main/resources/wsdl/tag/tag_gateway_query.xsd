@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:tag="http://archaeologydataservice.ac.uk/tag/schema" 
+    targetNamespace="http://archaeologydataservice.ac.uk/tag/schema" 
+    elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+   <xs:element name="Query">
+       <xs:complexType>
+           <xs:all>
+               <xs:element name="what" minOccurs="0">
+                   <xs:complexType>
+                       <xs:sequence>
+                           <xs:element name="subjectTerm" type="tag:subjectType" maxOccurs="unbounded"/>
+                       </xs:sequence>
+                   </xs:complexType>
+               </xs:element>
+               <xs:element name="when" minOccurs="0">
+                   <xs:complexType>
+                       <xs:sequence>
+                           <xs:element name="minDate" type="xs:int"/>
+                           <xs:element name="maxDate" type="xs:int"/>
+                       </xs:sequence>
+                   </xs:complexType>
+               </xs:element>
+               <xs:element name="where" minOccurs="0">
+                   <xs:complexType>
+                       <xs:sequence>
+                           <xs:element name="minLatitude" type="xs:decimal" default="0"/>
+                           <xs:element name="minLongitude" type="xs:decimal" default="0"/>
+                           <xs:element name="maxLatitude" type="xs:decimal" default="0"/>
+                           <xs:element name="maxLongitude" type="xs:decimal" default="0"/>
+                       </xs:sequence>
+                   </xs:complexType>
+               </xs:element>
+               <xs:element name="freetext" type="xs:string" minOccurs="0"/>
+           </xs:all>
+       </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="subjectType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="AGRICULTURE_AND_SUBSISTENCE"/>
+            <xs:enumeration value="CIVIL"/>
+            <xs:enumeration value="COMMEMORATIVE"/>
+            <xs:enumeration value="COMMERCIAL"/>
+            <xs:enumeration value="COMMUNICATIONS"/>
+            <xs:enumeration value="DEFENCE"/>
+            <xs:enumeration value="DOMESTIC"/>
+            <xs:enumeration value="EDUCATION"/>
+            <xs:enumeration value="GARDENS_PARKS_AND_URBAN_SPACES"/>
+            <xs:enumeration value="HEALTH_AND_WELFARE"/>
+            <xs:enumeration value="INDUSTRIAL"/>
+            <xs:enumeration value="MARITIME"/>
+            <xs:enumeration value="MONUMENT_BY_FORM"/>
+            <xs:enumeration value="RECREATIONAL"/>
+            <xs:enumeration value="RELIGIOUS_RITUAL_AND_FUNERARY"/>
+            <xs:enumeration value="TRANSPORT"/>
+            <xs:enumeration value="UNASSIGNED"/>
+            <xs:enumeration value="WATER_SUPPLY_AND_DRAINAGE"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+</xs:schema>
