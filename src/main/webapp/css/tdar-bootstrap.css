@@ -354,6 +354,11 @@ table.legend {
 	content: "\002022  "
 }
 
+/* give inline bulleted lists equidistant spacing */
+ul.inline > li.bullet a {
+    padding-left:1em
+}
+
 #project-list .dataTables_wrapper { /*    width: 700px */
 	
 }
