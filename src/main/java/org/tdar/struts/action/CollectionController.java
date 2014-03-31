@@ -20,6 +20,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -97,8 +98,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }
-        // FIXME: may need some potential check for recursive loops here to prevent self-referential
-        // parent-child loops
+        // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
         ResourceCollection parent = getResourceCollectionService().find(parentId);
         if (Persistable.Base.isNotNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(parent)
@@ -107,7 +107,8 @@ public class CollectionController extends AbstractPersistableController<Resource
             return INPUT;
         }
 
-        getResourceCollectionService().updateCollectionParentTo(persistable, parent);
+        getResourceCollectionService().updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
+
         getGenericService().saveOrUpdate(persistable);
         getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, getAuthorizedUsers(), shouldSaveResource());
         getLogger().trace("resources (original):{}", resources);
@@ -252,7 +253,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         for (Resource resource : getPersistable().getResources()) {
             getLogger().trace("retain?: {}", resource);
             getLogger().trace("{} <--> {}", getAuthenticatedUser(), resource.getSubmitter());
-            boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
+            boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD);
             if (!canEdit) {
                 retainedResources.add(resource);
             }

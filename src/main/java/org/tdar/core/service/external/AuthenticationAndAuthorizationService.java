@@ -320,7 +320,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
      * @param resource
      * @return true if person has write permissions on resource according to the above policies, false otherwise.
      */
-    public boolean canEditResource(Person person, Resource resource) {
+    public boolean canEditResource(Person person, Resource resource, GeneralPermissions basePermission) {
         // is the request valid
         if (person == null)
             return false;
@@ -337,9 +337,10 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
         
         // finally, check if user has been granted permission
         // FIXME: technically the dao layer is doing some stuff that we should be, but I don't want to mess w/ it right now.
-        return authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.MODIFY_METADATA);
+        return authorizedUserDao.isAllowedTo(person, resource, basePermission);
     }
 
+    
     /**
      * Checks whether a @link Person has the rights to edit a @link ResourceCollection. First, checking whether the person's @link TdarGroup permissions grant them
      * additional rights, for example if ADMIN; or if their @link ResourceCollection permissions include GeneralPermission.ADMINISTER_GROUP or greater
@@ -410,7 +411,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
     @Override
     public boolean canEdit(Person authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
-            return canEditResource(authenticatedUser, (Resource) item);
+            return canEditResource(authenticatedUser, (Resource) item, GeneralPermissions.MODIFY_METADATA);
         } else if (item instanceof ResourceCollection) {
             return canEditCollection(authenticatedUser, (ResourceCollection) item);
         } else {
