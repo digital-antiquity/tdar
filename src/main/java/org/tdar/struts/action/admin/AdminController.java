@@ -33,6 +33,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ScheduledProcessService;
+import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.UpgradeResourceCollectionPermissions;
@@ -170,6 +171,16 @@ public class AdminController extends AuthenticationAware.Base {
     public String buildCollectionTree() {
         getLogger().debug("manually running 'build collection tree'");
         urcp.execute();
+        return SUCCESS;
+    }
+
+
+    @Action(value = "buildCreators", results = {
+            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+    })
+    public String buildCreators() {
+        getLogger().debug("manually running 'build creator'");
+        scheduledProcessService.queueTask(CreatorAnalysisProcess.class);
         return SUCCESS;
     }
 
