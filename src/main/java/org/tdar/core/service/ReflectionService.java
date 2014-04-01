@@ -737,7 +737,7 @@ public class ReflectionService {
             // things to add
             if (type != null || force) {
                 if (force) {
-                logger.debug("forcing method to be obfuscated because cannot figure out gneric type {} (good luck)", method);
+                    logger.trace("forcing method to be obfuscated because cannot figure out gneric type {} (good luck)", method);
                 }
                 result.add(new Pair<Method, Class<? extends Obfuscatable>>(method, type));
             }
