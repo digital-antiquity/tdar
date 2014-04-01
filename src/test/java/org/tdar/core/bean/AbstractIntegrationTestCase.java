@@ -460,7 +460,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected <T> T generateNewController(Class<T> controllerClass) {
         authorizedUserDao.clearUserPermissionsCache();
-
+        evictCache();
+        
         T controller = (T) applicationContext.getBean(controllerClass);
         if (controller instanceof AuthenticationAware.Base) {
             TdarActionSupport tas = (TdarActionSupport) controller;
@@ -600,12 +601,18 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             session.clear();
         }
 
+        evictCache();
+
+
+    }
+
+    private void evictCache() {
+        genericService.synchronize();
+        searchIndexService.flushToIndexes();
         Cache cache = sessionFactory.getCache();
-        if(cache != null) {
+        if (cache != null) {
             cache.evictAllRegions();
         }
-
-
     }
 
     protected Long getAdminUserId() {
