@@ -17,6 +17,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -43,6 +44,14 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         super(AuthorizedUser.class);
     }
 
+    
+    public boolean isAllowedTo(Person person, SimpleSearch resource, GeneralPermissions permission) {
+        if (resource instanceof ResourceCollection) {
+            return isAllowedTo(person, (ResourceCollection)resource, permission);
+        } else {
+            return isAllowedTo(person, (Resource)resource, permission);
+        }
+    }
     /**
      * @param person
      * @param resource
@@ -77,7 +86,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         return isAllowedTo(person, permission, ids);
     }
 
-    public boolean isAllowedTo(Person person, GeneralPermissions permission, ResourceCollection collection) {
+    public boolean isAllowedTo(Person person, ResourceCollection collection, GeneralPermissions permission) {
         if (collection.isPublic()) {
             return false;
         }

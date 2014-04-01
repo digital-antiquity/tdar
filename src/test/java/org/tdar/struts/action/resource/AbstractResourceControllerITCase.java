@@ -40,6 +40,8 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
     @Autowired
     AccountService accountService;
 
+    @Deprecated()
+    //don't call this, just call edit 
     public static void loadResourceFromId(AbstractResourceController<?> controller, Long id) throws TdarActionException {
         controller.setId(id);
         controller.prepare();
