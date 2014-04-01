@@ -1,14 +1,16 @@
 package org.tdar.core.service.processes;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,24 +29,21 @@ import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.google.common.primitives.Doubles;
@@ -54,32 +53,21 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     private static final long serialVersionUID = 581887107336388520L;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
-    private transient EmailService emailService;
+    private SearchService searchService;
 
     @Autowired
-    private transient SearchService searchService;
+    private GenericKeywordService genericKeywordService;
 
     @Autowired
-    private transient GenericKeywordService genericKeywordService;
+    private EntityService entityService;
 
     @Autowired
-    private transient EntityService entityService;
+    private XmlService xmlService;
 
-    @Autowired
-    private transient DatasetDao datasetDao;
-
-    @Autowired
-    private transient ProjectDao projectDao;
-
-    @Autowired
-    private transient XmlService xmlService;
-
-    private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
-
-    @Override
     public String getDisplayName() {
         return "Creator Analytics Process";
     }
@@ -89,7 +77,6 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
         return 100;
     }
 
-    @Override
     public Class<Creator> getPersistentClass() {
         return Creator.class;
     }
@@ -100,31 +87,11 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
          * Theoretically, we could use the DatasetDao.findRecentlyUpdatedItemsInLastXDays to find all resources modified in the
          * last wwek, and then use those resources to grab all associated creators, and then process those
          */
-        List<Resource> results = datasetDao.findRecentlyUpdatedItemsInLastXDays(getDaysToRun());
-        Set<Long> ids = new HashSet<>();
-        logger.debug("dealing with {} resource(s) updated in the last {} days", results.size(), getDaysToRun());
-        while (!results.isEmpty()) {
-            Resource resource = results.remove(0);
-            // add all children of project if project was modified (inheritance check)
-            if (resource instanceof Project) {
-                results.addAll(projectDao.findAllResourcesInProject((Project) resource));
-            }
-            logger.trace(" - adding {} creators", resource.getRelatedCreators().size());
-            for (Creator creator : resource.getRelatedCreators()) {
-
-                if (creator == null)
-                    continue;
-
-                if (creator.isDuplicate()) {
-                    creator = entityService.findAuthorityFromDuplicate(creator);
-                }
-                if (creator == null || !creator.isActive())
-                    continue;
-                ids.add(creator.getId());
-
-            }
+        List<Creator> results = genericDao.findAll(getPersistentClass());
+        if (CollectionUtils.isNotEmpty(results)) {
+            return Persistable.Base.extractIds(results);
         }
-        return new ArrayList<>(ids);
+        return null;
     }
 
     @Override
@@ -133,9 +100,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
         List<Long> userIdsToIgnoreInLargeTasks = getTdarConfiguration().getUserIdsToIgnoreInLargeTasks();
         boolean seen = false;
         for (Creator creator : creators) {
-            logger.trace("~~~~~ " + creator + " ~~~~~~");
+            getLogger().trace("~~~~~ " + creator + " ~~~~~~");
             if (!seen) {
-                logger.debug("~~~~~ " + creator + " ~~~~~~");
+                getLogger().debug("~~~~~ " + creator + " ~~~~~~");
                 seen = true;
             }
             if (userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
@@ -144,9 +111,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             Map<Creator, Double> collaborators = new HashMap<Creator, Double>();
             Map<Keyword, Double> keywords = new HashMap<Keyword, Double>();
             int total = 0;
-            if (!creator.isActive())
+            if (!creator.isActive()) 
                 continue;
-            QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null,null);
+            QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null, MessageHelper.getInstance());
             try {
                 FullTextQuery search = searchService.search(query, null);
                 ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
@@ -159,7 +126,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                     incrementCreators(creator, collaborators, resource, userIdsToIgnoreInLargeTasks);
                 }
             } catch (Exception e) {
-                logger.warn("Exception {}", e);
+                getLogger().warn("Exception {}", e);
             }
 
             CreatorInfoLog log = new CreatorInfoLog();
@@ -206,7 +173,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                 xmlService.generateCreatorLog(creator, log);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
-                logger.error("exception: {} ", e);
+                getLogger().error("exception: {} ", e);
             }
         }
     }
@@ -410,14 +377,6 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     @Override
     public boolean isSingleRunProcess() {
         return false;
-    }
-
-    public void setDaysToRun(int i) {
-        this.daysToRun = i;
-    }
-
-    private int getDaysToRun() {
-        return daysToRun;
     }
 
 }
