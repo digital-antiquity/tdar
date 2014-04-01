@@ -381,7 +381,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
         codingSheet = null;
         CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
-        genericService.synchronize();
+        evictCache();
         codingSheetController.setId(codingId);
         codingSheetController.prepare();
         codingSheet = codingSheetController.getCodingSheet();
@@ -682,7 +682,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         csc.setCodingRules(rules);
         csc.saveValueOntologyNodeMapping();
         ontology = setupAndLoadResource("fauna-element-ontology-v2.txt", Ontology.class, ontology_id);
-        genericService.synchronize();
+        evictCache();
         genericService.refresh(ontology);
         Set<OntologyNode> nodes = new HashSet<>(ontology.getOntologyNodes());
         logger.info("what's the difference: {}", CollectionUtils.disjunction(nodes, ontology.getOntologyNodes()));

@@ -57,7 +57,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
 
         // create the dataset
         imageController.save();
-        genericService.synchronize();
+        evictCache();
         Long imgId = image.getId();
         assertNotNull(imgId);
 
@@ -70,7 +70,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         imageController.setServletRequest(getServletPostRequest());
         // create the dataset
         assertEquals(TdarActionSupport.SUCCESS, imageController.save());
-        genericService.synchronize();
+        evictCache();
         imageController = generateNewController(ImageController.class);
         init(imageController, p);
         imageController.setId(imgId);
@@ -94,7 +94,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
         users.add(new AuthorizedUser(p, GeneralPermissions.MODIFY_METADATA));
         ResourceCollection coll = generateResourceCollection("test", "test", CollectionType.SHARED, true, users, getUser(), null, null);
-        genericService.synchronize();
+        evictCache();
         ImageController imageController = generateNewInitializedController(ImageController.class);
         imageController.prepare();
         Image image = imageController.getImage();
@@ -120,7 +120,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         imageController.getResourceCollections().clear();
         imageController.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS, imageController.save());
-        genericService.synchronize();
+        evictCache();
 
         genericService.refresh(image);
         logger.debug("resource collections: {}", image.getResourceCollections());
@@ -133,7 +133,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         image.markUpdated(getAdminUser());
         genericService.saveOrUpdate(image);
         image = null;
-        genericService.synchronize();
+        evictCache();
 
         // Now p comes back, expecting to be able to edit this image. The system should not allow this request.
         imageController = generateNewController(ImageController.class);

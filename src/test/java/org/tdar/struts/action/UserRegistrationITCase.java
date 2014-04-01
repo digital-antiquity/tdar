@@ -149,7 +149,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         findByEmail.setUsername(null);
         findByEmail.setRegistered(false);
         genericService.saveOrUpdate(findByEmail);
-        genericService.synchronize();
+        evictCache();
         findByEmail = null;
         // cleanup crowd if we need to...
         authService.getAuthenticationProvider().deleteUser(p);
@@ -250,7 +250,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         if (findByEmail != null) { // this should rarely happen, but it'll clear out the test before we run it if the last time it failed...
             genericService.delete(findByEmail);
         }
-        genericService.synchronize();
+        evictCache();
         String execute = setupValidUserInController(controller, email);
         final Person p = controller.getPerson();
         final AuthenticationToken token = controller.getSessionData().getAuthenticationToken();

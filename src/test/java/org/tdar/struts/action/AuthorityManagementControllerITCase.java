@@ -99,7 +99,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
 
         // this syncronize is necessary (apparently) because we need to ensure that any pending deletes that may throw key violations fire
         // before this test terminates.
-        genericService.synchronize();
+        evictCache();
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("authorityManagementService.service_name")));
         assertTrue(received.getText().contains("Records Merged"));

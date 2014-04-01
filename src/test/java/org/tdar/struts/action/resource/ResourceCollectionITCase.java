@@ -343,7 +343,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         }
         genericService.saveOrUpdate(resourceCollection);
 
-        genericService.synchronize();
+        evictCache();
 
         // okay, now let's try to remove the resources from the collection via the
         // controller.
@@ -361,7 +361,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
                                            // necessary.
         controller.save();
 
-        genericService.synchronize();
+        evictCache();
 
         // now load our resource collection again. the resources should be gone.
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
@@ -398,7 +398,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(resourceCollection);
         genericService.saveOrUpdate(resourceCollectionParent);
         genericService.saveOrUpdate(resourceCollectionChild);
-        genericService.synchronize();
+        evictCache();
 
         Long parentId = resourceCollectionParent.getId();
         Long childId = resourceCollectionChild.getId();
@@ -426,7 +426,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             child.setParent(null);
             genericService.saveOrUpdate(child);
         }
-        genericService.synchronize();
+        evictCache();
 
         controller = generateNewController(CollectionController.class);
         controller.setId(rcid);
@@ -439,7 +439,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         setHttpServletRequest(getServletPostRequest());
         controller.setDelete(AbstractPersistableController.DELETE);
         controller.delete();
-        genericService.synchronize();
+        evictCache();
         assertEquals(0, controller.getDeleteIssues().size());
         resourceCollection = null;
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
@@ -453,7 +453,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         logger.info("children: {}", children);
         assertTrue(child.getParent() == null);
         assertTrue(children == null || children.size() == 0);
-        genericService.synchronize();
+        evictCache();
 
     }
 
@@ -476,7 +476,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         AuthorizedUser authorizedUser = new AuthorizedUser(owner, GeneralPermissions.MODIFY_RECORD);
         resourceCollection.getAuthorizedUsers().addAll(Arrays.asList(authorizedUser));
         genericService.saveOrUpdate(resourceCollection);
-        genericService.synchronize();
+        evictCache();
 
         // okay, now let's try to remove the resources from the collection via the
         // controller.
@@ -507,13 +507,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         setHttpServletRequest(getServletPostRequest());
         controller.setDelete(AbstractPersistableController.DELETE);
         controller.delete();
-        genericService.synchronize();
+        evictCache();
         assertEquals(0, controller.getDeleteIssues().size());
         resourceCollection = null;
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
         assertTrue("user should be able to delete collection", resourceCollection == null);
-        genericService.synchronize();
+        evictCache();
     }
 
     @Test
@@ -612,7 +612,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         searchIndexService.flushToIndexes();
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         testFile = null;
-        genericService.synchronize();
+        evictCache();
         // WHY DOES THE SYNCHRONIZE ON THE INDEX CALL DO ANYTHING HERE VS THE
         // SYNCHRONIZE ABOVE
         testFile = genericService.find(Document.class, fileId);
@@ -667,7 +667,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // assertTrue(collections.contains(childCollection));
         // assertTrue(collections.contains(childCollectionHidden));
 
-        genericService.synchronize();
+        evictCache();
     }
 
     @Test
@@ -678,7 +678,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
                 new ArrayList<Resource>(), null);
         ResourceCollection collection2 = generateResourceCollection("test 2 public", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), collection1.getId());
-        genericService.synchronize();
+        evictCache();
         searchIndexService.index(collection1, collection2);
         searchIndexService.flushToIndexes();
         BrowseController browseController = generateNewInitializedController(BrowseController.class);
@@ -698,7 +698,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         ResourceCollection collection2 = generateResourceCollection("test 2 public", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), collection1.getId());
 
-        genericService.synchronize();
+        evictCache();
         assertTrue(authenticationAndAuthorizationService.canEditCollection(testPerson, collection1));
         assertTrue(authenticationAndAuthorizationService.canEditCollection(testPerson, collection2));
     }
@@ -724,7 +724,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         ResourceCollection collectionWithUserAsAdministrator = generateResourceCollection(name, description, CollectionType.SHARED, true, users,
                 getAdminUser(), resources, null);
 
-        genericService.synchronize();
+        evictCache();
         searchIndexService.flushToIndexes();
 
         controller = generateNewInitializedController(CollectionController.class, getBasicUser());
@@ -750,7 +750,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.getResourceCollections().add(collection1);
         controller.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS, controller.save());
-        genericService.synchronize();
+        evictCache();
         ResourceCollection first = document.getResourceCollections().iterator().next();
         assertEquals(1, document.getResourceCollections().size());
         assertEquals(collection1, first);
@@ -984,7 +984,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         Document activeDocument = generateDocumentWithUser();
         draftDocument.setStatus(Status.DRAFT);
         genericService.save(draftDocument);
-        genericService.synchronize();
+        evictCache();
         ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", CollectionType.SHARED, true, null,
                 Arrays.asList(draftDocument, activeDocument), null);
         collection.setOwner(getAdminUser());
@@ -1043,7 +1043,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         docController.getResourceCollections().add(fake);
         docController.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS, docController.save());
-        genericService.synchronize();
+        evictCache();
 
     }
 
@@ -1143,7 +1143,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         project.getResourceCollections().add(rc);
         genericService.saveOrUpdate(project);
-        genericService.synchronize();
+        evictCache();
         // okay now lets delete the resource
         ProjectController projectController = generateNewInitializedController(ProjectController.class);
         projectController.setServletRequest(getServletPostRequest());
@@ -1195,7 +1195,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         projectController.setServletRequest(getServletPostRequest());
         projectController.setAsync(false);
         projectController.save();
-        genericService.synchronize();
+        evictCache();
         searchIndexService.flushToIndexes();
         searchIndexService.index(project2);
 
@@ -1271,7 +1271,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         controller.save();
-        genericService.synchronize();
+        evictCache();
         searchIndexService.flushToIndexes();
         // searchIndexService.indexAll();
         // registered user is now authuser of the collection, and should be able to see the resource

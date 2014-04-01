@@ -164,7 +164,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
         assertEquals(map.get(VersionType.UPLOADED).getFilename(), TestConstants.TEST_DOCUMENT_NAME);
 
-        genericService.synchronize();
+        evictCache();
         ActionMessageErrorListener listener = new ActionMessageErrorListener();
         informationResourceService.reprocessInformationResourceFiles(ir, listener);
 
@@ -198,7 +198,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
             Long id = irFile.getId();
             logger.info("{}", irFile);
             informationResourceFileService.delete(irFile);
-            genericService.synchronize();
+            evictCache();
             InformationResourceFile irFile2 = informationResourceFileService.find(id);
             assertNull("testing whether the IrFile was actually deleted", irFile2);
             assertEquals(0, ir.getInformationResourceFiles().size());

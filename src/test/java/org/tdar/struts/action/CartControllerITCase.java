@@ -411,7 +411,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         user.getAddresses().add(address);
         user.getAddresses().add(address2);
         genericService.saveOrUpdate(user);
-        genericService.synchronize();
+        evictCache();
         Long invoiceId = createAndTestInvoiceQuantity(controller, 10L, null);
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);

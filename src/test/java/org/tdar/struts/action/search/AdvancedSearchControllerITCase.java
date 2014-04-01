@@ -446,7 +446,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAsUnauthenticatedUser() {
-        genericService.synchronize();
+        evictCache();
 
         setIgnoreActionErrors(true);
         testResourceCounts(null);
@@ -455,7 +455,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAsBasicUser() {
-        genericService.synchronize();
+        evictCache();
 
         // testing as a user who did not create their own stuff
         setIgnoreActionErrors(true);
@@ -469,7 +469,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback(true)
     public void testResultCountsAsBasicContributor() {
         // testing as a user who did create their own stuff
-        genericService.synchronize();
+        evictCache();
         setIgnoreActionErrors(true);
         testResourceCounts(getBasicUser());
     }
@@ -477,7 +477,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAdmin() {
-        genericService.synchronize();
+        evictCache();
         testResourceCounts(getAdminUser());
     }
 
@@ -884,7 +884,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doc2.getGeographicKeywords().add(constantinople);
         genericService.saveOrUpdate(doc1);
         genericService.saveOrUpdate(doc2);
-        genericService.synchronize();
+        evictCache();
         searchIndexService.index(doc1,doc2);
         searchIndexService.flushToIndexes();
         SearchParameters params = new SearchParameters();
@@ -955,7 +955,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         controller.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
         controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-        genericService.synchronize();
+        evictCache();
         searchIndexService.flushToIndexes();
         assertOnlyResultAndProject(doc);
         resetController();
@@ -1086,7 +1086,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Project persisted = createAndSaveNewProject("PROJECT TEST TITLE");
         Project sparse = new Project();
         // ensure the project is in
-        genericService.synchronize();
+        evictCache();
         sparse.setId(persisted.getId());
         firstGroup().getProjects().add(sparse);
         controller.advanced();
@@ -1099,7 +1099,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     public void testRefineSearchWithSparseCollection() {
         ResourceCollection rc = createAndSaveNewResourceCollection("Mega Collection");
         ResourceCollection sparseCollection = new ResourceCollection();
-        genericService.synchronize();
+        evictCache();
         long collectionId = rc.getId();
         assertThat(collectionId, greaterThan(0L));
         sparseCollection.setId(collectionId);
@@ -1145,7 +1145,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Override
     protected void reindex() {
-        genericService.synchronize();
+        evictCache();
         searchIndexService.purgeAll();
         searchIndexService.indexAll(getAdminUser(), Resource.class, Person.class, Institution.class, ResourceCollection.class);
     }

@@ -588,12 +588,12 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Assert.assertNotSame(origImageCount, newImageCount);
         assertTrue((newImageCount - origImageCount) > 0);
         // ensure one shared collection created
-        // genericService.synchronize();
+        // evictCache();
 
         List<Pair<Long, String>> details = bulkUploadController.getDetails();
         logger.info("{}", details);
         Set<ResourceCollection> collections = new HashSet<ResourceCollection>();
-        genericService.synchronize();
+        evictCache();
         logger.debug("inspecting collections created:");
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());

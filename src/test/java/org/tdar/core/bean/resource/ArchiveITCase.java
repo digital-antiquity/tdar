@@ -43,7 +43,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(irFile.getInformationResourceFileType(), FileType.FILE_ARCHIVE);
 
         genericService.saveOrUpdate(irFile);
-        genericService.synchronize();
+        evictCache();
 
         // however, whatever caused the processing error is fixed
         File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFile.getLatestUploadedVersion());
@@ -80,10 +80,10 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         irFile.setStatus(FileStatus.PROCESSED);
         irFile.setErrorMessage("blah");
         genericService.saveOrUpdate(irFile);
-        genericService.synchronize();
+        evictCache();
         ActionMessageErrorListener listener = new ActionMessageErrorListener();
         informationResourceService.reprocessInformationResourceFiles(ir, listener);
-        genericService.synchronize();
+        evictCache();
 
         irFile = genericService.find(InformationResourceFile.class, irFile.getId());
         assertNotNull("IrFile is null", irFile);

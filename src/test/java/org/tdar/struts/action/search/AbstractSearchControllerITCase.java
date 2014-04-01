@@ -229,7 +229,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     protected void doSearch(String query, Boolean exceptions) {
-        genericService.synchronize();
+        evictCache();
         controller.setQuery(query);
         doSearch(controller, LookupSource.RESOURCE, exceptions);
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());

@@ -1238,7 +1238,7 @@ public static List<String> errorPatterns = Arrays.asList("http error","server er
         }
         setInput("timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Register");
-        genericService.synchronize();
+        evictCache();
         setSessionUser(entityService.findByUsername(username));
     }
 

@@ -101,7 +101,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         Assert.assertEquals(StatusCode.FORBIDDEN, code);
 
         // did hibernate save the person record anyway?
-        genericService.synchronize();
+        evictCache();
         runInNewTransaction(new TransactionCallback<Person>() {
             @Override
             public Person doInTransaction(TransactionStatus status) {
@@ -286,7 +286,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         address.setType(AddressType.BILLING);
         String saveAddress = controller.saveAddress();
         assertEquals(PersonController.SUCCESS, saveAddress);
-        genericService.synchronize();
+        evictCache();
         return presonId;
     }
 

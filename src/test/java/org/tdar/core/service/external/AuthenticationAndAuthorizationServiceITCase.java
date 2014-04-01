@@ -135,7 +135,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         logger.info("{}", controller.getSessionData().getPerson());
         authService.satisfyUserPrerequisites(controller.getSessionData(), list);
         assertThat(authService.getUserRequirements(user), not(hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT)));
-        genericService.synchronize();
+        evictCache();
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override
             public Image doInTransaction(TransactionStatus status) {

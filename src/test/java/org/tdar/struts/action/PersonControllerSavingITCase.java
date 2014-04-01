@@ -87,7 +87,7 @@ public class PersonControllerSavingITCase extends AbstractAdminControllerITCase 
         String result = controller.save();
         Assert.assertEquals("admin user should be able to save changes to another user's person record", TdarActionSupport.SUCCESS, result);
         Assert.assertTrue(controller.getActionErrors().isEmpty());
-        genericService.synchronize();
+        evictCache();
         setVerifyTransactionCallback(new TransactionCallback<Person>() {
             @Override
             public Person doInTransaction(TransactionStatus status) {

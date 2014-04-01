@@ -187,7 +187,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         genericService.saveOrUpdate(doc);
         final Long id = doc.getId();
         logger.debug("{}", doc.getFirstInformationResourceFile().getLatestPDF());
-        genericService.synchronize();
+        evictCache();
 
         Document document =genericService.find(Document.class, id);
         assertTrue(Persistable.Base.isNotNullOrTransient(document));

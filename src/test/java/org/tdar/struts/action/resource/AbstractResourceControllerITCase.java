@@ -81,7 +81,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.markFinal();
         genericService.saveOrUpdate(invoice);
-        genericService.synchronize();
+        evictCache();
         logger.info("{}", invoice);
 
         assertTrue(invoice.getNumberOfFiles() > 0);

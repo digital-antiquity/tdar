@@ -229,7 +229,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testAddingToExistingCollection() throws Exception {
         ResourceCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
-        genericService.synchronize();
+        evictCache();
         assertNotNull(rc);
 
         // try and fail due to rights
@@ -238,7 +238,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         rc.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.ADMINISTER_GROUP));
         genericService.saveOrUpdate(rc);
-        genericService.synchronize();
+        evictCache();
         // try ... and should succeed now that we add the user + permissions
         controller = tryAndSaveCollectionToController(rc);
         assertEquals(TdarActionSupport.SUCCESS, controller.save());
@@ -254,7 +254,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertTrue("collection list shouldn't be empty", loadedProject.getResourceCollections().size() > 0);
 
         logger.debug("resource collection id:{}\t  {}", rc.getId(), rc);
-        genericService.synchronize();
+        evictCache();
         setIgnoreActionErrors(true);
     }
 

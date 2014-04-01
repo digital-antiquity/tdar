@@ -38,7 +38,7 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
         // CodingSheet codingSheet = setupCodingSheet();
 
         Dataset dataset = setupAndLoadResource(TEST_DATA_SET_FILE_PATH, Dataset.class, FileAccessRestriction.CONFIDENTIAL);
-        genericService.synchronize();
+        evictCache();
         datasetId = dataset.getId();
         assertNotNull(datasetId);
 

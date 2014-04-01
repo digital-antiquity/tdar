@@ -210,7 +210,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
             genericService.saveOrUpdate(doc);
         }
         Long projectId = project.getId();
-        genericService.synchronize();
+        evictCache();
         project = null;
 
         // this the test...
@@ -558,7 +558,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         dc.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS, dc.save());
 
-        genericService.synchronize();
+        evictCache();
 
     }
 
@@ -581,7 +581,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Long id = doc.getId();
         doc = null;
 
-        genericService.synchronize();
+        evictCache();
         UploadController uc = generateNewInitializedController(UploadController.class, newUser);
         uc.grabTicket();
         Long ticketId = uc.getPersonalFilestoreTicket().getId();

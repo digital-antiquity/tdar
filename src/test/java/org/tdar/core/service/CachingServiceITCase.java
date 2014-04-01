@@ -92,7 +92,7 @@ public class CachingServiceITCase extends AbstractControllerITCase {
         genericService.save(mgc);
         cs.getManagedGeographicKeywords().add(mgc);
         genericService.saveOrUpdate(cs);
-        genericService.synchronize();
+        evictCache();
         count_ = new Long(findAll.size());
         assertEquals(count, count_);
         logger.info("list: {} ", findAll);
