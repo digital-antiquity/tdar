@@ -70,8 +70,8 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
     @Override
     public void add(CoverageDate... coverageDates) {
         for (CoverageDate date : coverageDates) {
-            logger.info("adding {}", date);
             if (date != null && date.getDateType() != null && date.getDateType() != CoverageType.NONE && date.isInitialized()) {
+                logger.info("adding {}", date);
                 super.add(date);
             }
         }
