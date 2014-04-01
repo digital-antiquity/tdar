@@ -84,19 +84,8 @@ public class PairtreeFilestore extends BaseFilestore {
         String path = getAbsoluteFilePath(type, version);
 
         File outFile = new File(path);
-        if (outFile.exists() && rotate.getRotations() > 0) {
-            rotate(outFile, rotate);
-        }
+        outFile = rotateFileIfNeeded(rotate, outFile);
 
-        if (rotate == StorageMethod.DATE) {
-            String baseName = FilenameUtils.getBaseName(outFile.getName());
-            String ext = FilenameUtils.getExtension(outFile.getName());
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss");
-            String rotationTarget = String.format("%s.%s.%s", baseName, sdf.format(new Date()), ext);
-            outFile = new File(outFile.getParentFile(), rotationTarget);
-
-        }
         logger.info("storing at: {}", outFile.getAbsolutePath());
         String errorMessage = MessageHelper.getMessage("pairtreeFilestore.cannot_write", Arrays.asList(outFile.getAbsolutePath()));
         DigestInputStream digestInputStream = appendMessageDigestStream(content);
@@ -134,6 +123,23 @@ public class PairtreeFilestore extends BaseFilestore {
             IOUtils.closeQuietly(digestInputStream);
             IOUtils.closeQuietly(outputStream);
         }
+    }
+
+    private File rotateFileIfNeeded(StorageMethod rotate, File outFile) {
+        if (outFile.exists() && rotate.getRotations() > 0) {
+            rotate(outFile, rotate);
+        }
+
+        if (rotate == StorageMethod.DATE) {
+            String baseName = FilenameUtils.getBaseName(outFile.getName());
+            String ext = FilenameUtils.getExtension(outFile.getName());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss");
+            String rotationTarget = String.format("%s.%s.%s", baseName, sdf.format(new Date()), ext);
+            outFile = new File(outFile.getParentFile(), rotationTarget);
+
+        }
+        return outFile;
     }
 
     public static String toPairTree(Number val) {

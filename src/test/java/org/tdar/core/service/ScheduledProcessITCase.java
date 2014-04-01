@@ -185,6 +185,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAll(getAdminUser(), Resource.class, Person.class, Institution.class, ResourceCollection.class);
         pap.setDaysToRun(3000);
         pap.execute();
+        pap.cleanup();
+        pap.setAllIds(null);
+        //resetting
+        pap.execute();
     }
 
     @Autowired

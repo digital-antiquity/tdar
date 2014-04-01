@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.Pair;
 
-import com.mchange.v2.util.CollectionUtils;
 
 /**
  * Abstract class to help with batch processes, track errors, and managing the batches.
@@ -68,7 +68,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
                 logger.error("could not send email:{}\n\n{}", sb.toString(), e);
             }
         }
-        allIds = null;
+        setAllIds(null);
         batchCleanup();
     }
 
@@ -150,12 +150,12 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     }
 
     public synchronized List<Long> getBatchIdQueue() {
-        if (allIds == null) {
-            allIds = findAllIds();
-            Collections.sort(allIds);
-            logger.debug("{} ids in queue", CollectionUtils.size(allIds) );
+        if (getAllIds() == null) {
+            setAllIds(findAllIds());
+            Collections.sort(getAllIds());
+            logger.debug("{} ids in queue", CollectionUtils.size(getAllIds()) );
         }
-        return allIds;
+        return getAllIds();
     }
 
     @Override
@@ -171,5 +171,13 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     @Override
     public boolean isCompleted() {
         return getBatchIdQueue().isEmpty();
+    }
+
+    public List<Long> getAllIds() {
+        return allIds;
+    }
+
+    public void setAllIds(List<Long> allIds) {
+        this.allIds = allIds;
     }
 }
