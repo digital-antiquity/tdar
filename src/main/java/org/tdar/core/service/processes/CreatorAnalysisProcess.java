@@ -1,16 +1,14 @@
 package org.tdar.core.service.processes;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -34,9 +32,12 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchService;
@@ -54,20 +55,31 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     private static final long serialVersionUID = 581887107336388520L;
 
     @Autowired
-    private EmailService emailService;
+    private transient EmailService emailService;
 
     @Autowired
-    private SearchService searchService;
+    private transient SearchService searchService;
 
     @Autowired
-    private GenericKeywordService genericKeywordService;
+    private transient GenericKeywordService genericKeywordService;
 
     @Autowired
-    private EntityService entityService;
+    private transient EntityService entityService;
 
     @Autowired
-    private XmlService xmlService;
+    private transient DatasetDao datasetDao;
 
+    @Autowired
+    private transient ProjectDao projectDao;
+
+    @Autowired
+    private transient XmlService xmlService;
+
+    private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
+
+    private boolean findRecent = true;
+
+    @Override
     public String getDisplayName() {
         return "Creator Analytics Process";
     }
@@ -77,6 +89,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
         return 100;
     }
 
+    @Override
     public Class<Creator> getPersistentClass() {
         return Creator.class;
     }
@@ -84,6 +97,47 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     @Override
     public List<Long> findAllIds() {
         /*
+         * We could use the DatasetDao.findRecentlyUpdatedItemsInLastXDays to find all resources modified in the
+         * last wwek, and then use those resources to grab all associated creators, and then process those
+         */
+        if (findRecent ) {
+        return findCreatorsOfRecentlyModifiedResources();
+        } else {
+            return findEverything();
+        }
+
+    }
+
+    private List<Long> findCreatorsOfRecentlyModifiedResources() {
+        List<Resource> results = datasetDao.findRecentlyUpdatedItemsInLastXDays(getDaysToRun());
+        Set<Long> ids = new HashSet<>();
+        getLogger().debug("dealing with {} resource(s) updated in the last {} days", results.size(), getDaysToRun());
+        while (!results.isEmpty()) {
+            Resource resource = results.remove(0);
+            // add all children of project if project was modified (inheritance check)
+            if (resource instanceof Project) {
+                results.addAll(projectDao.findAllResourcesInProject((Project) resource));
+            }
+            getLogger().trace(" - adding {} creators", resource.getRelatedCreators().size());
+            for (Creator creator : resource.getRelatedCreators()) {
+
+                if (creator == null)
+                    continue;
+
+                if (creator.isDuplicate()) {
+                    creator = entityService.findAuthorityFromDuplicate(creator);
+                }
+                if (creator == null || !creator.isActive())
+                    continue;
+                ids.add(creator.getId());
+
+            }
+        }
+        return new ArrayList<>(ids);
+    }
+
+	public List<Long> findEverything() {
+	        /*
          * Theoretically, we could use the DatasetDao.findRecentlyUpdatedItemsInLastXDays to find all resources modified in the
          * last wwek, and then use those resources to grab all associated creators, and then process those
          */
@@ -92,7 +146,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             return Persistable.Base.extractIds(results);
         }
         return null;
-    }
+	}
 
     @Override
     public void execute() {
@@ -377,6 +431,14 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
     @Override
     public boolean isSingleRunProcess() {
         return false;
+    }
+
+    public void setDaysToRun(int i) {
+        this.daysToRun = i;
+    }
+
+    private int getDaysToRun() {
+        return daysToRun;
     }
 
 }
