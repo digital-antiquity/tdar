@@ -25,6 +25,7 @@ import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -359,7 +360,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
             return true;
         }
 
-        return authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.ADMINISTER_GROUP, persistable);
+        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADMINISTER_GROUP);
     }
 
     /*
@@ -469,7 +470,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
      * (c) checks if user is allowed to perform action based on @link AuthorizedUser / @link ResourceCollection permissions
      * (d) check's iuf user was submitter
      */
-    public boolean canDo(Person person, Resource resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission) {
+    public boolean canDo(Person person, SimpleSearch resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission) {
         // This function used to pre-test on the resource, but it doesn't have to and is now more granular
         if (resource == null)
             return false;
@@ -536,7 +537,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
     public boolean canViewCollection(ResourceCollection collection, Person person) {
         if (collection.isShared() && collection.isVisible())
             return true;
-        return authorizedUserDao.isAllowedTo(person, GeneralPermissions.VIEW_ALL, collection);
+        return authorizedUserDao.isAllowedTo(person, collection, GeneralPermissions.VIEW_ALL);
     }
 
     /*

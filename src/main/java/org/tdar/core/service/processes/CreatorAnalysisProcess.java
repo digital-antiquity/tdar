@@ -209,6 +209,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                 part.setName(key.getProperName());
                 log.getCollaboratorLogPart().add(part);
             }
+            
             for (Entry<Keyword, Double> entrySet : keywords.entrySet()) {
                 LogPart part = new LogPart();
                 part.setCount(entrySet.getValue().longValue());

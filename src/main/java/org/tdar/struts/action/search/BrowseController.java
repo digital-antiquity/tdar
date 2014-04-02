@@ -266,7 +266,7 @@ public class BrowseController extends AbstractLookupController {
                     getKeywords();
                     getCollaborators();
                     NamedNodeMap attributes = dom.getElementsByTagName("creatorInfoLog").item(0).getAttributes();
-                    getLogger().info("attributes: {}", attributes);
+//                    getLogger().info("attributes: {}", attributes);
                     setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
                     setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));
                     setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));

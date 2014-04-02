@@ -18,6 +18,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
@@ -96,6 +97,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
+    @Ignore
     public void testExtraFile() throws MalformedURLException {
         Map<String, String> extra = new HashMap<String, String>();
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);

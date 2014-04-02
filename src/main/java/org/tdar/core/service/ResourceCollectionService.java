@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -33,6 +34,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
@@ -119,7 +121,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param shouldSave
      */
     @Transactional
-    public void saveAuthorizedUsersForResource(Resource resource, List<AuthorizedUser> authorizedUsers, boolean shouldSave) {
+    public void saveAuthorizedUsersForResource(Resource resource, List<AuthorizedUser> authorizedUsers, boolean shouldSave, Person actor) {
         logger.info("saving authorized users...");
 
         // if the incoming set is empty and the current has nothing ... NO-OP
@@ -145,7 +147,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             internalCollection = createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, shouldSave);
         }
         // note: we assume here that the authorizedUser validation will happen in saveAuthorizedUsersForResourceCollection
-        saveAuthorizedUsersForResourceCollection(internalCollection, authorizedUsers, shouldSave);
+        saveAuthorizedUsersForResourceCollection(resource, internalCollection, authorizedUsers, shouldSave, actor);
         // if (CollectionUtils.isNotEmpty(internalCollection.getAuthorizedUsers())) {
         // resource.getResourceCollections().remove(internalCollection);
         // getDao().delete(internalCollection);
@@ -260,7 +262,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param shouldSaveResource
      */
     @Transactional
-    public void saveAuthorizedUsersForResourceCollection(ResourceCollection resourceCollection, List<AuthorizedUser> authorizedUsers, boolean shouldSaveResource) {
+    public void saveAuthorizedUsersForResourceCollection(SimpleSearch source, ResourceCollection resourceCollection, List<AuthorizedUser> authorizedUsers, boolean shouldSaveResource, Person actor) {
         if (resourceCollection == null) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_save");
         }
@@ -278,7 +280,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 if (incomingUser == null) {
                     continue;
                 }
-                addUserToCollection(shouldSaveResource, currentUsers, incomingUser);
+                addUserToCollection(shouldSaveResource, currentUsers, incomingUser, actor, resourceCollection, source);
             }
         }
         // CollectionUtils.removeAll(currentUsers, Collections.);
@@ -293,8 +295,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param shouldSaveResource
      * @param currentUsers
      * @param incomingUser
+     * @param resourceCollection 
      */
-    private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser) {
+    private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser, Person actor, ResourceCollection resourceCollection, SimpleSearch source) {
         if (Persistable.Base.isNotNullOrTransient(incomingUser.getUser())) {
             Person user = getDao().find(Person.class, incomingUser.getUser().getId());
             if (user != null) {
@@ -305,6 +308,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     return;
                 }
 
+                if (actor.equals(incomingUser.getUser()) && ObjectUtils.notEqual(source.getSubmitter(), actor)) {
+                    if (!authenticationAndAuthorizationService.canDo(actor, resourceCollection, InternalTdarRights.EDIT_ANYTHING, incomingUser.getGeneralPermission())) {
+                        throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add_user",Arrays.asList(incomingUser.getUser(), incomingUser.getGeneralPermission()));
+                    }
+                    // find highest permission for actor
+                    // check that permission is valid for actor to assign
+                    
+                }
                 currentUsers.add(incomingUser);
                 if (shouldSaveResource)
                     getDao().saveOrUpdate(incomingUser);

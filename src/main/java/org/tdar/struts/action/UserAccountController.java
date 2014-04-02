@@ -205,10 +205,8 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             // user is already in CROWD
             getLogger().error("Unable to authenticate with the auth service.");
             addActionError(result.toString());
-        return ERROR;
-//            }
+            return ERROR;
         } catch (Throwable t) {
-            getLogger().debug("authentication error", t);
             addActionErrorWithException(getText("userAccountController.could_not_create_account"), t);
         }
         return ERROR;

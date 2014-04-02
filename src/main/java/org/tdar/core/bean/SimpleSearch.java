@@ -1,5 +1,7 @@
 package org.tdar.core.bean;
 
+import org.tdar.core.bean.entity.Person;
+
 
 /**
  * This interface is designed to ensure that fields are available for basic searhing
@@ -7,7 +9,7 @@ package org.tdar.core.bean;
  * 
  * NOTE: THIS IS NOT USED
  */
-public interface SimpleSearch {
+public interface SimpleSearch extends Persistable {
     enum SimpleSearchType {
         RESOURCE("Resource"),
         COLLECTION("Collection");
@@ -36,5 +38,7 @@ public interface SimpleSearch {
     String getDescription();
 
     String getUrlNamespace();
+
+    Person getSubmitter();
 
 }

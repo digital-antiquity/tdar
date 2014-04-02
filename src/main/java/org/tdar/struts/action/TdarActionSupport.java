@@ -524,7 +524,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     protected void addActionErrorWithException(String message, Throwable exception) {
         String trace = ExceptionUtils.getFullStackTrace(exception);
 
-        getLogger().error("{} [code: {}]: {} -- {}", new Object[] { message, exception.hashCode(),  exception, trace });
+        getLogger().error("{} [code: {}]: {} -- {}", new Object[] { message, ExceptionWrapper.convertExceptionToCode(exception),  exception, trace });
         if (exception instanceof TdarActionException) {
             setHideExceptionArea(true);
         }

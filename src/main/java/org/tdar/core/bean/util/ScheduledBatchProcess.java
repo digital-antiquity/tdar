@@ -68,7 +68,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
                 logger.error("could not send email:{}\n\n{}", sb.toString(), e);
             }
         }
-        allIds = null;
+        setAllIds(null);
         batchCleanup();
     }
 
@@ -150,12 +150,12 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     }
 
     public synchronized List<Long> getBatchIdQueue() {
-        if (allIds == null) {
-            allIds = findAllIds();
-            Collections.sort(allIds);
-            logger.debug("{} ids in queue", CollectionUtils.size(allIds) );
+        if (getAllIds() == null) {
+            setAllIds(findAllIds());
+            Collections.sort(getAllIds());
+            logger.debug("{} ids in queue", CollectionUtils.size(getAllIds()) );
         }
-        return allIds;
+        return getAllIds();
     }
 
     @Override
@@ -171,5 +171,13 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     @Override
     public boolean isCompleted() {
         return getBatchIdQueue().isEmpty();
+    }
+
+    public List<Long> getAllIds() {
+        return allIds;
+    }
+
+    public void setAllIds(List<Long> allIds) {
+        this.allIds = allIds;
     }
 }

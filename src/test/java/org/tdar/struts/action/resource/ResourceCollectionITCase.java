@@ -875,8 +875,41 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         cc.getResources().add(document);
         assertWeFailedToSave(cc);
     }
+    
+    @Test
+    @Rollback
+    public void testOwnRightsEscalation() throws Exception
+    {
+        // Create document, add user to it with MODIFY_METADATA, have them create a collection, and add it where they're the owner and thus have higher rights
+        Document document = (Document) generateDocumentWithUser();
+        document.setSubmitter(getAdminUser());
+        genericService.save(document);
+        Long docId = document.getId();
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setId(docId);
+        controller.prepare();
+        controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA));
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
 
-    private void assertWeFailedToSave(CollectionController cc) {
+        controller = null;
+        // try and assign access to aa document that user should not have rights
+        // to add, assert that this document cannot be added
+        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
+        controller.setId(docId);
+        controller.prepare();
+        controller.edit();
+        controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        Exception e = null;
+        try {
+            resourceCollectionService.saveAuthorizedUsersForResource(controller.getDocument(), controller.getAuthorizedUsers(), true,  getBasicUser());
+        } catch (Exception es) {
+            e = es;
+        }
+        assertNotNull(e);
+    }
+
+    private void assertWeFailedToSave(AbstractPersistableController<?> cc) {
         cc.setServletRequest(getServletPostRequest());
         String result = TdarActionSupport.SUCCESS;
         try {

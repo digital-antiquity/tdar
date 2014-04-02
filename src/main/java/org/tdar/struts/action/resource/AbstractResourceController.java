@@ -551,9 +551,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // only modify these permissions if the user has the right to
         if (getAuthenticationAndAuthorizationService().canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
-            getResourceCollectionService().saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource());
+            getResourceCollectionService().saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource(), getAuthenticatedUser());
         }
-        ;
+
         saveKeywords();
         saveTemporalContext();
         saveSpatialContext();
