@@ -47,6 +47,7 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public class DataIntegrationWorkbook  implements Serializable {
 
+    private static final int MAX_FILENAME_LENGTH = 250;
     private static final long serialVersionUID = -2452046179173301666L;
     private transient ExcelService excelService;
     private Workbook workbook;
@@ -347,6 +348,9 @@ public class DataIntegrationWorkbook  implements Serializable {
 
     public String getFileName() {
         String fileName = provider.getText("dataIntegrationWorkbook.file_name",  Arrays.asList(StringUtils.join(names, "_")));
+        if (fileName.length() > MAX_FILENAME_LENGTH) {
+            fileName = fileName.substring(0,MAX_FILENAME_LENGTH);
+        }
         return fileName;
     }
     
